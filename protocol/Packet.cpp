@@ -12,12 +12,12 @@ namespace Protocol
     {
     }
 
-    void Packet::setPacketID(uint64_t packet_id)
+    void Packet::setPacketID(int32_t packet_id)
     {
         _packet_id = packet_id;
     }
 
-    uint64_t Packet::getPacketID(void) const
+    int32_t Packet::getPacketID(void) const
     {
         return _packet_id;
     }
@@ -131,8 +131,9 @@ namespace Protocol
         if (_payload.size() < 2)
             throw std::runtime_error("Not enough data to parse unsigned short");
 
-        result = _payload.at(0) | (_payload.at(1) << 8);
-        _payload.erase(_payload.begin(), _payload.begin() + 1);
+        result = _payload.at(1) | (_payload.at(0) << 8);
+        _payload.erase(_payload.begin());
+        _payload.erase(_payload.begin());
         return result;
     }
 

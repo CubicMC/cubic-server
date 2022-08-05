@@ -20,9 +20,10 @@ namespace Protocol
         Packet();
         ~Packet();
 
-        void setPacketID(uint64_t packet_id);
-        uint64_t getPacketID(void) const;
+        void setPacketID(int32_t packet_id);
+        int32_t getPacketID(void) const;
         std::vector<uint8_t> serialize(void) const;
+        std::vector<uint8_t> *getPayload(void) { return &_payload; }
 
         // Payload data
         int32_t popVarInt(void);
@@ -36,7 +37,7 @@ namespace Protocol
 
     private:
         std::vector<uint8_t> _payload;
-        uint64_t _packet_id;
+        int32_t _packet_id;
     };
 
 }
