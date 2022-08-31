@@ -12,7 +12,7 @@ on:
         required: false
         type: string
         default: ""
-        
+
 
 env:
   # Customize the CMake build type here (Release, Debug, RelWithDebInfo, etc.)
@@ -27,13 +27,15 @@ jobs:
 
     steps:
     - uses: actions/checkout@v3
-    
+
     - name: Setup build type
       if: inputs.BUILD_TYPE != ""
       env:
         BUILD_TYPE: ${{ inputs.BUILD_TYPE }}
+      run: |
+        echo "Setting build type to ${{ env.BUILD_TYPE }}\n"
 
-    - name: Configure CMake default build_type
+    - name: Configure CMake
       # Configure CMake in a 'build' subdirectory. `CMAKE_BUILD_TYPE` is only required if you are using a single-configuration generator such as make.
       # See https://cmake.org/cmake/help/latest/variable/CMAKE_BUILD_TYPE.html?highlight=cmake_build_type
       run: cmake -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}}
