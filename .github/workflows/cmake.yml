@@ -42,9 +42,11 @@ jobs:
 
     - name: Setup env variable
       run: |
-        ls /usr/bin
+        ls /usr/bin/clang*
         export CC=/usr/bin/clang-12
         export CXX=/usr/bin/clang++-12
+        printenv CC
+        printenv CXX
 
     - name: Configure CMake
       # Configure CMake in a 'build' subdirectory. `CMAKE_BUILD_TYPE` is only required if you are using a single-configuration generator such as make.
