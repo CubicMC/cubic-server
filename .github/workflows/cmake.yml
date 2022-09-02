@@ -47,6 +47,8 @@ jobs:
         export CXX=/usr/bin/clang++-12
         printenv CC
         printenv CXX
+        which clang-12
+        which clang++-12
 
     - name: Configure CMake
       # Configure CMake in a 'build' subdirectory. `CMAKE_BUILD_TYPE` is only required if you are using a single-configuration generator such as make.
