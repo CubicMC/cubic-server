@@ -9,6 +9,7 @@
 #include <chrono>
 #include <exception>
 #include <string.h>
+#include <algorithm>
 
 #include "Server.hpp"
 
@@ -74,7 +75,7 @@ void Server::acceptLoop()
     poll_set[0].events = POLLIN;
     while (1)
     {
-        poll(poll_set, 1, -1);
+        poll(poll_set, 1, 1000);
         if (poll_set[0].revents & POLLIN)
         {
             struct sockaddr_in client_addr;
@@ -88,9 +89,21 @@ void Server::acceptLoop()
                 throw std::runtime_error(strerror(errno));
             }
             // Add accepted client to the vector of clients
-            _clients.push_back(std::make_shared<Client>(client_fd, client_addr));
+            auto cli = std::make_shared<Client>(client_fd, client_addr);
+            _clients.push_back(cli);
+            // That line is kinda borked, but I'll check one day how to fix it
+            std::thread *cli_thread = new std::thread(&Client::networkLoop, &(*cli));
+            // That is 99.99% a data race, but aight, it will probably
+            // never happen
+            cli->setRunningThread(cli_thread);
 
             std::cout << "Client added to the list" << std::endl;
         }
+
+        _clients.erase(std::remove_if(
+                           _clients.begin(), _clients.end(),
+                           [](const std::shared_ptr<Client> &cli)
+                           { return cli->isDisconnected(); }),
+                       _clients.end());
     }
 }
