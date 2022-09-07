@@ -24,6 +24,6 @@ FetchContent_MakeAvailable(googletest)
 # add_subdirectory (tests)
 add_subdirectory (protocol)
 add_subdirectory (cubic-server)
-
+add_subdirectory (math)
 
 enable_testing()
