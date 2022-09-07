@@ -17,6 +17,21 @@ on:
         required: false
         type: string
         default: ""
+      use_custom_compiler:
+        description: "put that on true if you want tu use a custom compiler (by default it's GNU 9.4.0)"
+        required: true
+        type: boolean
+        default: false
+      CC_COMPILER:
+        description: "the CC compiler path (eg. /usr/bin/clang-12)"
+        required: false
+        type: string
+        default: ""
+      CXX_COMPILER:
+        description: "the CXX compiler path (eg. /usr/bin/clang++-12)"
+        required: false
+        type: string
+        default: ""
 
 
 env:
@@ -41,8 +56,21 @@ jobs:
         BUILD_TYPE: ${{ inputs.BUILD_TYPE }}
       run: |
         echo "Setting build type to ${{ env.BUILD_TYPE }}\n"
-        printenv CC
-        printenv CXX
+
+    - name: Setup CC compiler
+      if: inputs.use_custom_compiler
+      env:
+        CC: ${{ inputs.CC_COMPILER }}
+      run: |
+        echo "Setting CC compiler type to ${{ env.CC }}\n"
+
+    - name: Setup CXX compiler
+      if: inputs.use_custom_compiler
+      env:
+        CXX: ${{ inputs.CXX_COMPILER }}
+      run: |
+        echo "Setting CXX compiler type to ${{ env.CXX }}\n"
+
 
     - name: Configure CMake
       # Configure CMake in a 'build' subdirectory. `CMAKE_BUILD_TYPE` is only required if you are using a single-configuration generator such as make.
