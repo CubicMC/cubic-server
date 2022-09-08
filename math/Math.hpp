@@ -3,11 +3,14 @@
 
 namespace Math_Testing
 {
+    /**
+     * @brief Math library just for show how to make test from a class
+     */
     class Math
     {
         public:
-            static long factorial(int n);
-            static long fibonacci(int n);
+            static long factorial(int n); // a factorial function
+            static long fibonacci(int n); // a fibonacci function
     };
 }
 
