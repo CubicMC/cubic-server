@@ -3,7 +3,6 @@
 
 #include <fstream>
 #include <string>
-#include <experimental/filesystem>
 
 namespace logging
 {
@@ -15,9 +14,10 @@ namespace logging
     private:
         void create_folder_if_nessessary(std::string folder_name = "logs");
         void create_file(std::string filename = "");
-        std::experimental::filesystem::path _folder_path;
-        std::experimental::filesystem::path _file_path;
-        std::ofstream _file_stream;
+        bool file_exist(std::string filename);
+        std::string _folder_path;
+        std::string _file_path;
+        std::fstream _file_stream;
     };
 }
 

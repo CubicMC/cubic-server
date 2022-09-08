@@ -1,10 +1,9 @@
 #include "logger.hpp"
-#include <experimental/filesystem>
-#include <iostream>
-//#include <chrono>
-#include <string>
-#include <fstream>
 #include <ctime>
+#include <fstream>
+#include <iostream>
+#include <sys/stat.h>
+#include <errno.h>
 
 namespace logging
 {
@@ -22,51 +21,71 @@ namespace logging
 
     void Logger::create_folder_if_nessessary(std::string folder_name)
     {
-        const std::experimental::filesystem::path logs{folder_name};
-        if (std::experimental::filesystem::exists(logs))
-            std::cout << "folder exist" << std::endl;
-        else {
-            std::experimental::filesystem::create_directory(logs);
-            std::cout << "folder created" << std::endl;
+        this->_folder_path = folder_name;
+        if (mkdir(folder_name.c_str(), 0777) != 0) {
+            switch(errno) {
+                case EACCES:
+                    throw std::runtime_error("Cannot create folder, the program don't have the rights");
+                    break;
+                case EEXIST:
+                    std::cout << "Folder already exist. Passing..." << std::endl;
+                    break;
+                case ELOOP:
+                    throw std::runtime_error("Cannot create folder, the path contain a loop reference");
+                    break;
+                case EMLINK:
+                    throw std::runtime_error("Cannot create folder, the link number of the path cannot exceed LINK_MAX");
+                    break;
+                case ENAMETOOLONG:
+                    throw std::runtime_error("Cannot create folder, the path exceed PATH_MAX characters");
+                    break;
+                case ENOENT:
+                    throw std::runtime_error("Cannot create folder, a component of the path doesn't exist");
+                    break;
+                case ENOSPC:
+                    throw std::runtime_error("Cannot create folder, the file system doesn't have enough space");
+                    break;
+                case ENOTDIR:
+                    throw std::runtime_error("Cannot create folder, a component of the path is not a directory");
+                    break;
+                case EROFS:
+                    throw std::runtime_error("Cannot create folder, the file system is read only");
+                    break;
+                default:
+                    throw std::runtime_error("Cannot create folder, unknown error");
+                    break;
+            }
         }
-        this->_folder_path = logs;
     }
 
     void Logger::create_file(std::string filename)
     {
-        // this->_file_path = {this->_folder_path / filename};
-
-        // const std::chrono::year_month_day ymd{std::chrono::floor<std::chrono::days>(std::chrono::system_clock::now())};
-
-        // for (int i = 1; std::experimental::filesystem::exists(this->_file_path) && filename == ""; i++) {
-        //     filename =
-        //         std::to_string(static_cast<int>(ymd.year())) + '-' +
-        //         std::to_string(static_cast<unsigned>(ymd.month())) + '-' +
-        //         std::to_string(static_cast<unsigned>(ymd.day())) + '-' +
-        //         std::to_string(i) + ".log";
-        //         this->_file_path = {this->_folder_path / filename};
-        // }
-
-        // std::cout << "log file: " << this->_file_path << std::endl;
-
-        this->_file_path = {this->_folder_path / filename};
+        this->_file_path = this->_folder_path + '/' + filename;
 
         const std::time_t now = std::time(nullptr);
         const std::tm* tm_now = std::localtime(&now);
 
-        for (int i = 1; std::experimental::filesystem::exists(this->_file_path) && filename == ""; i++) {
+        for (int i = 1; filename == "" && file_exist(this->_file_path); i++) {
             filename =
                 std::to_string(tm_now->tm_year + 1900) + '-' +
                 std::to_string(tm_now->tm_mon + 1) + '-' +
                 std::to_string(tm_now->tm_mday) + '-' +
                 std::to_string(i) + ".log";
-                this->_file_path = {this->_folder_path / filename};
+                this->_file_path = this->_folder_path + '/' + filename;
         }
 
         std::cout << "log file: " << this->_file_path << std::endl;
     }
-}
 
-int main() {
-    logging::Logger logger;
+    bool file_exist(std::string filename)
+    {
+        std::fstream file;
+        file.open(filename);
+        if (file.is_open()) {
+            file.close();
+            return true;
+        }
+        file.close();
+        return false;
+    }
 }
