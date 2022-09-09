@@ -86,14 +86,8 @@ namespace logging
     {
         this->_file_path = this->_folder_path + '/' + filename;
 
-        const std::time_t now = std::time(nullptr);
-        const std::tm* tm_now = std::localtime(&now);
-
-        for (int i = 1; filename == "" && file_exist(this->_file_path); i++) {
-            filename =
-                std::to_string(tm_now->tm_year + 1900) + '-' +
-                std::to_string(tm_now->tm_mon + 1) + '-' +
-                std::to_string(tm_now->tm_mday) + '-' +
+        for (int i = 1; filename == "" && this->file_exist(this->_file_path); i++) {
+            filename = this->get_time("YYYY-MM-DD-") +
                 std::to_string(i) + ".log";
                 this->_file_path = this->_folder_path + '/' + filename;
         }
