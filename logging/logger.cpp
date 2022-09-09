@@ -9,8 +9,29 @@ namespace logging
 {
     Logger::Logger()
     {
-        create_folder_if_nessessary();
-        create_file();
+        this->create_folder_if_nessessary();
+        this->create_file();
+        this->_file_stream.open(this->_file_path, std::ios::app);
+    }
+
+    Logger::Logger(std::string folder_name)
+    {
+        this->create_folder_if_nessessary(folder_name);
+        this->create_file();
+        this->_file_stream.open(this->_file_path, std::ios::app);
+    }
+
+    Logger::Logger(std::string file_name)
+    {
+        this->create_folder_if_nessessary();
+        this->create_file(file_name);
+        this->_file_stream.open(this->_file_path, std::ios::app);
+    }
+
+    Logger::Logger(std::string folder_name, std::string file_name)
+    {
+        this->create_folder_if_nessessary(folder_name);
+        this->create_file(file_name);
         this->_file_stream.open(this->_file_path, std::ios::app);
     }
 

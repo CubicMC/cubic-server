@@ -10,6 +10,9 @@ namespace logging
     {
     public:
         Logger();
+        Logger(std::string folder_name);
+        Logger(std::string file_name);
+        Logger(std::string folder_name, std::string file_name);
         ~Logger();
     private:
         void create_folder_if_nessessary(std::string folder_name = "logs");
