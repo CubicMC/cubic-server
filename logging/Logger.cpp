@@ -1,4 +1,4 @@
-#include "logger.hpp"
+#include "Logger.hpp"
 #include <fstream>
 #include <iostream>
 #include <sys/stat.h>
