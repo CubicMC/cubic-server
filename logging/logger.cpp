@@ -144,4 +144,9 @@ namespace logging
         }
         return format;
     }
+
+    void Logger::log(std::string message)
+    {
+        this->_file_stream << this->get_time("YYYY/MM/DD HH:mm:SS.sss") << " " << message << std::endl;
+    }
 }

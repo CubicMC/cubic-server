@@ -14,6 +14,7 @@ namespace logging
         Logger(std::string file_name);
         Logger(std::string folder_name, std::string file_name);
         ~Logger();
+        void log(std::string message);
     private:
         void create_folder_if_nessessary(std::string folder_name = "logs");
         void create_file(std::string filename = "");
