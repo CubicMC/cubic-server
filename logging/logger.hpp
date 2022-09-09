@@ -18,6 +18,8 @@ namespace logging
         void create_folder_if_nessessary(std::string folder_name = "logs");
         void create_file(std::string filename = "");
         bool file_exist(std::string filename);
+        std::string get_time();
+        std::string get_time(std::string format);
         std::string _folder_path;
         std::string _file_path;
         std::fstream _file_stream;
