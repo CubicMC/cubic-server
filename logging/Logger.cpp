@@ -16,13 +16,6 @@ namespace logging
         this->_file_stream.open(this->_file_path, std::ios::app);
     }
 
-    Logger::Logger(std::string folder_name)
-    {
-        this->create_folder_if_nessessary(folder_name);
-        this->create_file();
-        this->_file_stream.open(this->_file_path, std::ios::app);
-    }
-
     Logger::Logger(std::string file_name)
     {
         this->create_folder_if_nessessary();

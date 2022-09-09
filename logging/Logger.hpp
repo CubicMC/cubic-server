@@ -10,7 +10,6 @@ namespace logging
     {
     public:
         Logger();
-        Logger(std::string folder_name);
         Logger(std::string file_name);
         Logger(std::string folder_name, std::string file_name);
         ~Logger();
