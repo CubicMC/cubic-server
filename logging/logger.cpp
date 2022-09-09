@@ -98,7 +98,7 @@ namespace logging
         std::cout << "log file: " << this->_file_path << std::endl;
     }
 
-    bool file_exist(std::string filename)
+    bool Logger::file_exist(std::string filename)
     {
         std::fstream file;
         file.open(filename);
