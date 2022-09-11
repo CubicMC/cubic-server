@@ -4,6 +4,7 @@
 #include <arpa/inet.h>
 #include <thread>
 #include <deque>
+#include <vector>
 
 class Client
 {
@@ -18,12 +19,17 @@ public:
 
     bool isDisconnected() const;
 
+    void sendData(const std::vector<uint8_t> &data);
+
 private:
+    void _sendData(void);
+
     const int _sockfd;
     const struct sockaddr_in _addr;
     bool _is_running;
     std::thread *_current_thread;
     std::deque<uint8_t> _recv_buffer;
+    std::deque<uint8_t> _send_buffer;
 
 protected:
 };

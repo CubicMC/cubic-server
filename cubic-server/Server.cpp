@@ -64,6 +64,9 @@ void Server::gameLoop()
         using namespace std::chrono_literals;
         std::this_thread::sleep_for(2000ms);
         std::cout << "Server ticked" << std::endl;
+        std::vector<uint8_t> to_send = {'h', 'e', 'l', 'l', 'o', '\n'};
+        for (auto &i : _clients)
+            i->sendData(to_send);
     }
 }
 
