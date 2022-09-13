@@ -24,18 +24,6 @@ FetchContent_MakeAvailable(googletest)
 # add_subdirectory (tests)
 add_subdirectory (protocol)
 add_subdirectory (cubic-server)
-
+add_subdirectory (math)
 
 enable_testing()
-
-add_executable(
-  hello_test
-  hello_test.cc
-)
-target_link_libraries(
-  hello_test
-  GTest::gtest_main
-)
-
-include(GoogleTest)
-gtest_discover_tests(hello_test)
