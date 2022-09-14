@@ -6,22 +6,25 @@ add_library (Math Math.cpp)
 # when other libraries or executables link to Hello
 target_include_directories (Math PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
 
-# Do not forget to add enable_testing() if you want to test your library !
-enable_testing()
+if (GTEST)
+  # Do not forget to add enable_testing() if you want to test your library !
+  enable_testing()
 
-# Now simply add a new executable with the test file
-add_executable(
-  math_test
-  Math.cpp
-  Math_unittest.cpp
-)
+  # Now simply add a new executable with the test file
+  add_executable(
+    math_test
+    Math.cpp
+    Math_unittest.cpp
+  )
 
-# Link the GoogleTest library to the executable
-target_link_libraries(
-  math_test
-  GTest::gtest_main
-)
+  # Link the GoogleTest library to the executable
+  target_link_libraries(
+    math_test
+    GTest::gtest_main
+  )
 
-# Enable CMake’s test runner to discover the tests included in the binary, using the GoogleTest CMake module.
-include(GoogleTest)
-gtest_discover_tests(math_test)
+  # Enable CMake’s test runner to discover the tests included in the binary, using the GoogleTest CMake module.
+  include(GoogleTest)
+  gtest_discover_tests(math_test)
+
+endif()
