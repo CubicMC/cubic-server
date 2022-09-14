@@ -11,6 +11,8 @@ namespace Math_Testing
         public:
             static long factorial(int n); // a factorial function
             static long fibonacci(int n); // a fibonacci function
+            static bool isPositive(int n); // a function to check if a number is positive
+            static int square(int n); // a function to square a number
     };
 }
 

@@ -22,4 +22,14 @@ namespace Math_Testing
             return 1;
         return fibonacci(n - 1) + fibonacci(n - 2);
     }
+
+    bool Math::isPositive(int n)
+    {
+        return n >= 0;
+    }
+
+    int Math::square(int n)
+    {
+        return n * n;
+    }
 }
