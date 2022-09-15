@@ -14,7 +14,7 @@ for now, but **contributions are more than welcome** ;).
 
 The version currently targeted is **1.19** (Which was the latest version at
 the time when we launched the project), but future versions may be implemented
-depending on how well the Cubic Server gets developed.
+depending on how well Cubic Server gets developed.
 
 The principal points we want to target are better performances, since Minecraft's
 server performance going downhill since 1.13, but also proper extensibility
