@@ -20,8 +20,8 @@ namespace protocol
         {
         }
 
-        template <typename T, typename F>
-        ParsePacket<H> &prop(F func, int offset)
+        template <typename T>
+        ParsePacket<H> &prop(std::function<bool(std::vector<uint8_t> &, T &)> func, int offset)
         {
             _toParse.emplace_back([func, offset](std::vector<uint8_t> &buffer, H *holder)
                                   {
@@ -30,7 +30,7 @@ namespace protocol
             return *this;
         }
 
-        std::optional<std::shared_ptr<H>> parse(std::vector<uint8_t> &buf)
+        std::optional<std::shared_ptr<H>> parse(std::vector<uint8_t> &buf) const
         {
             std::shared_ptr<H> hold = std::make_shared<H>();
 
