@@ -2,6 +2,10 @@
 #include <iostream>
 #include <fstream>
 
+
+Configuration::ConfigHandler::ConfigHandler(){}
+Configuration::ConfigHandler::~ConfigHandler(){}
+
 bool replace(std::string& str, const std::string& from, const std::string& to) {
     size_t start_pos = str.find(from);
     if(start_pos == std::string::npos)
@@ -29,6 +33,7 @@ std::string findKey(std::string const& s)
 
 std::map <std::string, std::string> Configuration::ConfigHandler::getConfigFile()
 {
+/*  
     std::fstream configFile;
     std::map <std::string, std::string> fileContent;
     std::string rawLine;
@@ -41,13 +46,15 @@ std::map <std::string, std::string> Configuration::ConfigHandler::getConfigFile(
          if (rawLine.find("- ip:") or rawLine.find("- motd:") or 
         rawLine.find("- max_players:") or rawLine.find("- port:")) {
              mapKey = findKey(rawLine);
-             mapValue = rawLine.substr(rawLine.find(':') + 1);
-             fileContent.insert(mapKey, mapValue);                              //put line data into a map
+             mapValue = rawLine.substr(rawLine.find(": ") + 1);
+             replace(mapValue, " ", "");
+             fileContent.insert(std::pair<std::string, std::string >(mapKey, mapValue));                              //put line data into a map
          }
       }
-      configFile.close();                                                       //close the file
+      configFile.close();
    }
    return fileContent;
+*/
 }
 
 std::string Configuration::ConfigHandler::getIP(void)
