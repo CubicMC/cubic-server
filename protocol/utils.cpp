@@ -57,7 +57,7 @@ bool protocol::popString(std::vector<uint8_t> &buffer, std::string &data)
     if (!popVarInt(buffer, size))
         return false; // TODO: Change that to a boolean
     if (size > buffer.size())
-        throw false;
+        return false;
     // This is so scuffed, no way it works
     data = std::string(buffer.begin(), buffer.begin() + size);
     buffer.erase(buffer.begin(), buffer.begin() + size);
@@ -73,7 +73,7 @@ void protocol::addVarString(const std::string &data, std::vector<uint8_t> &buffe
 bool protocol::popUnsignedShort(std::vector<uint8_t> &buffer, uint16_t &data)
 {
     if (buffer.size() < 2)
-        throw false;
+        return false;
 
     data = buffer.at(1) | (buffer.at(0) << 8);
     buffer.erase(buffer.begin());
