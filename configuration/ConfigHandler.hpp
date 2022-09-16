@@ -1,6 +1,9 @@
 #ifndef CONFIG_CONFIGHANDLER_HPP
 #define CONFIG_CONFIGHANDLER_HPP
 
+#include <string>
+#include <map>
+
 namespace Configuration
 {
 
@@ -13,8 +16,12 @@ namespace Configuration
     public:
         ConfigHandler();
         ~ConfigHandler();
-    private:
-        /* empty for now */;
+
+        std::map <std::string, std::string> getConfigFile();
+        std::string getIP(std::map <std::string, std::string> fileContent);
+        std::string getMotd(std::map <std::string, std::string> fileContent);
+        int getPort(std::map <std::string, std::string> fileContent);
+        int getMaxPlayers(std::map <std::string, std::string> fileContent);
     };
 }
 
