@@ -2,6 +2,7 @@
 #include <string.h>
 
 #include "Server.hpp"
+#include "ParsePacket.hpp"
 
 static void print_usage(const char *caller)
 {
