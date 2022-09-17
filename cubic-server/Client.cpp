@@ -78,7 +78,7 @@ void Client::sendData(const std::vector<uint8_t> &data)
 void Client::_sendData(void)
 {
     char send_buffer[2048];
-    size_t to_send = _send_buffer.size() > 2048 ? 2048 : _send_buffer.size();
+    size_t to_send = std::min(_send_buffer.size(), (size_t)2048);
     std::copy(_send_buffer.begin(), _send_buffer.begin() + to_send, send_buffer);
 
     ssize_t write_return = write(_sockfd, send_buffer, to_send);
