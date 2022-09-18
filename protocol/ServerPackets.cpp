@@ -6,13 +6,14 @@
 
 using namespace protocol;
 
-std::optional<std::shared_ptr<Handshake>> protocol::parseHandshake(std::vector<uint8_t> &buffer)
+std::shared_ptr<Handshake> protocol::parseHandshake(std::vector<uint8_t> &buffer)
 {
-    static const auto h = ParsePacket<Handshake>()
-                              .prop<int32_t>(popVarInt, offsetof(Handshake, prot_version))
-                              .prop<std::string>(popString, offsetof(Handshake, addr))
-                              .prop<uint16_t>(popUnsignedShort, offsetof(Handshake, port))
-                              .prop<int32_t>(popVarInt, offsetof(Handshake, next_state));
+    auto h = std::make_shared<Handshake>();
 
-    return h.parse(buffer);
+    parse(buffer.data(), buffer.data() + buffer.size() - 1, *h,
+          popVarInt, &Handshake::prot_version,
+          popString, &Handshake::addr,
+          popUnsignedShort, &Handshake::port,
+          popVarInt, &Handshake::next_state);
+    return h;
 }

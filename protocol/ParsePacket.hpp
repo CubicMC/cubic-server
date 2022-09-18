@@ -9,37 +9,25 @@
 namespace protocol
 {
 
-    template <class H>
-    class ParsePacket
+    template <typename H>
+    constexpr uint8_t *parse(uint8_t *begin, uint8_t *end, H &out)
     {
-    private:
-        std::vector<std::function<bool(std::vector<uint8_t> &, H *)>> _toParse;
+        return begin;
+    }
 
-    public:
-        ParsePacket()
-        {
-        }
-
-        template <typename T>
-        ParsePacket<H> &prop(std::function<bool(std::vector<uint8_t> &, T &)> func, int offset)
-        {
-            _toParse.emplace_back([func, offset](std::vector<uint8_t> &buffer, H *holder)
-                                  {
-                T *ref = (T *) (((char *)holder) + offset);
-                return func(buffer, *ref); });
-            return *this;
-        }
-
-        std::optional<std::shared_ptr<H>> parse(std::vector<uint8_t> &buf) const
-        {
-            std::shared_ptr<H> hold = std::make_shared<H>();
-
-            for (const auto &i : _toParse)
-                if (!i(buf, hold.get()))
-                    return std::nullopt;
-            return std::optional<std::shared_ptr<H>>(hold);
-        }
-    };
+    // Thanks a lot to ralismark for helping me with the constexpr parser
+    template <typename H, typename F, typename... Args>
+    constexpr uint8_t *parse(
+        uint8_t *begin,
+        uint8_t *end,
+        H &out,
+        F (*parser)(uint8_t *&begin, uint8_t *end),
+        F H::*field,
+        Args... args)
+    {
+        out.*field = parser(begin, end);
+        return parse(begin, end, out, args...);
+    }
 }
 
 #endif /* A0501C0F_377F_42C5_9420_0833FCD13CFF */
