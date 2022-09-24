@@ -15,15 +15,10 @@ namespace Configuration
     {
     public:
         ConfigHandler(std::string);
-        ~ConfigHandler();
 
-        std::string getIP(void);
-        std::string getMotd(void);
-        std::string getPort(void);
-        std::string getMaxPlayers(void);
-
+        std::string getNode(std::string);
     private:
-        std::map <std::string, std::string> _configFile;
+        const std::map <std::string, std::string> _configFile;
         void getConfigFile(std::string);
     };
 }
