@@ -1,7 +1,7 @@
 #include "Logger.hpp"
 #include "TimeFormatter.hpp"
 #include <iostream>
-#include <array>
+#include <algorithm>
 
 namespace logging
 {
@@ -18,6 +18,9 @@ namespace logging
         }
         this->_file_and_folder_handler.create_file(filename);
         this->_file_stream.open(this->_file_and_folder_handler.get_file_path(), std::ios::app);
+
+        this->_specification_level_in_file = {LogLevel::DEBUG, LogLevel::INFO, LogLevel::WARNING, LogLevel::ERROR, LogLevel::FATAL};
+        this->_specification_level_in_console = {LogLevel::DEBUG, LogLevel::INFO, LogLevel::WARNING, LogLevel::ERROR, LogLevel::FATAL};
     }
 
     /**
@@ -37,11 +40,85 @@ namespace logging
      *
      * @note The message will be written in the log file with the current time
      */
-
     void Logger::log(LogLevel level, std::string message)
     {
-        this->_file_stream << TimeFormatter::get_time("[YYYY/MM/DD HH:mm:SS.sss] ") << level_to_string(level) << message << std::endl;
-        std::cout << TimeFormatter::get_time("[YYYY/MM/DD HH:mm:SS.sss] ") << level_to_string(level) << message << std::endl;
+        if (std::find(this->_specification_level_in_file.begin(), this->_specification_level_in_file.end(), level) != this->_specification_level_in_file.end())
+            this->_file_stream << TimeFormatter::get_time("[YYYY/MM/DD HH:mm:SS.sss] ") << level_to_string(level) << message << std::endl;
+
+        if (std::find(this->_specification_level_in_console.begin(), this->_specification_level_in_console.end(), level) != this->_specification_level_in_console.end())
+            std::cout << TimeFormatter::get_time("[YYYY/MM/DD HH:mm:SS.sss] ") << level_to_string(level) << message << std::endl;
+    }
+
+    /**
+     * @brief Set log levels to display in the console
+     *
+     * @param level LogLevel to display in the console
+     */
+    void Logger::set_display_specification_level_in_console(LogLevel level)
+    {
+        this->_specification_level_in_console.push_back(level);
+    }
+
+    /**
+     * @brief Unset log levels to display in the console
+     *
+     * @param level LogLevel to not display in the console
+     */
+    void Logger::unset_display_specification_level_in_console(LogLevel level)
+    {
+        for (auto it = this->_specification_level_in_console.begin(); it != this->_specification_level_in_console.end(); it++)
+        {
+            if (*it == level)
+            {
+                this->_specification_level_in_console.erase(it);
+            }
+        }
+    }
+
+    /**
+     * @brief Get the log display settings of the console
+     *
+     * @return std::vector<LogLevel> Log levels that are displayed in the console
+     */
+    std::vector<LogLevel> Logger::get_display_specification_level_in_console() const
+    {
+        return this->_specification_level_in_console;
+    }
+
+    /**
+     * @brief Set log levels to display in the log file
+     *
+     * @param level LogLevel to display in the log file
+     */
+    void Logger::set_display_specification_level_in_file(LogLevel level)
+    {
+        this->_specification_level_in_file.push_back(level);
+    }
+
+    /**
+     * @brief Unset log levels to display in the log file
+     *
+     * @param level LogLevel to not display in the log file
+     */
+    void Logger::unset_display_specification_level_in_file(LogLevel level)
+    {
+        for (auto it = this->_specification_level_in_file.begin(); it != this->_specification_level_in_file.end(); it++)
+        {
+            if (*it == level)
+            {
+                this->_specification_level_in_file.erase(it);
+            }
+        }
+    }
+
+    /**
+     * @brief Get the log display settings of the log file
+     *
+     * @return std::vector<LogLevel> Log levels that are displayed in the log file
+     */
+    std::vector<LogLevel> Logger::get_display_specification_level_in_file() const
+    {
+        return this->_specification_level_in_file;
     }
 
     std::string level_to_string(LogLevel level)
