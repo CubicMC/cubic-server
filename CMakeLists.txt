@@ -36,6 +36,8 @@ endif()
 add_subdirectory (protocol)
 add_subdirectory (cubic-server)
 add_subdirectory (math)
+add_subdirectory (yaml-cpp)
+add_subdirectory (configuration)
 
 if(GTEST)
   enable_testing()
