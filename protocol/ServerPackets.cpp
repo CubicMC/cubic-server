@@ -1,8 +1,8 @@
 #include <optional>
 
 #include "ServerPackets.hpp"
-#include "ParsePacket.hpp"
-#include "utils.hpp"
+#include "PacketUtils.hpp"
+#include "typeSerialization.hpp"
 
 using namespace protocol;
 
