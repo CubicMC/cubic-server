@@ -3,31 +3,41 @@
 
 #include <fstream>
 #include <string>
+#include "FileAndFolderHandler.hpp"
 
 namespace logging
 {
+    enum class LogLevel
+    {
+        DEBUG,
+        INFO,
+        WARNING,
+        ERROR,
+        FATAL
+    };
+
     /**
-     * @brief Handles logging in a file, creating the file if it doesn't exist and the folder too
+     * @brief function to transform a LogLevel to a string
+     *
+     * @param level LogLevel to transform
+     *
+     * @return std::string the string corresponding to the LogLevel
+     */
+    std::string level_to_string(LogLevel level);
+
+    /**
+     * @brief Handles logging in a file.
      */
     class Logger
     {
-    public:
-        Logger();
-        Logger(std::string file_name);
-        Logger(std::string folder_name, std::string file_name);
-        Logger(bool create_all);
-        ~Logger();
-        void log(std::string message);
+        public:
+            Logger();
+            ~Logger();
+            void log(LogLevel level, std::string message);
 
-    private:
-        void create_folder_if_nessessary(std::string folder_name = "logs");
-        void create_file(std::string filename = "");
-        bool file_exist(std::string filename) const;
-        std::string get_time() const;
-        std::string get_time(std::string format) const;
-        std::string _folder_path;   /// Path to the folder where log files are stored
-        std::string _file_path;     /// Path to the current log file
-        std::fstream _file_stream;  /// Stream to the current log file
+        private:
+            std::fstream _file_stream;                      /// Stream to the current log file
+            FileAndFolderHandler _file_and_folder_handler;  /// Handler for files and folders
     };
 }
 
