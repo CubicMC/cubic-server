@@ -8,8 +8,6 @@ Configuration::ConfigHandler::ConfigHandler(std::string filePath)
     this->getConfigFile(filePath);
 }
 
-Configuration::ConfigHandler::~ConfigHandler(){}
-
 void Configuration::ConfigHandler::getConfigFile(std::string configFile)
 {
     try
