@@ -20,8 +20,8 @@ namespace Configuration
         std::map <std::string, std::string> getConfigFile(void);
         std::string getIP(void);
         std::string getMotd(void);
-        int getPort(void);
-        int getMaxPlayers(void);
+        std::string getPort(void);
+        std::string getMaxPlayers(void);
     };
 }
 
