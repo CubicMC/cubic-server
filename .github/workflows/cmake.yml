@@ -51,6 +51,7 @@ env:
   CC: /platform/bin/gcc
   # Customize the default CXX compiler here (GNU 9.4.0, clang++ 12, etc.)
   CXX: /platform/bin/g++
+  LD_LIBRARY_PATH: /platform/lib
 
 jobs:
   build:
