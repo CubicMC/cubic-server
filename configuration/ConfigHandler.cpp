@@ -1,7 +1,7 @@
 #include "ConfigHandler.hpp"
 #include <iostream>
 #include <fstream>
-#include "yaml-cpp/yaml.h"
+#include <yaml-cpp/yaml.h>
 
 Configuration::ConfigHandler::ConfigHandler(std::string filePath)
 {
