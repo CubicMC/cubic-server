@@ -3,48 +3,48 @@
 #include <fstream>
 #include "yaml-cpp/yaml.h"
 
-Configuration::ConfigHandler::ConfigHandler(){}
+Configuration::ConfigHandler::ConfigHandler(std::string filePath)
+{
+    this->getConfigFile(filePath);
+}
+
 Configuration::ConfigHandler::~ConfigHandler(){}
 
-std::map <std::string, std::string> Configuration::ConfigHandler::getConfigFile()
+void Configuration::ConfigHandler::getConfigFile(std::string configFile)
 {
-    std::fstream configFile;
-    std::map <std::string, std::string> fileContent;
-    YAML::Node config = YAML::LoadFile("../config.yml");
+    YAML::Node config = YAML::LoadFile(configFile);
 
     const std::string ip = config["network"]["ip"].as<std::string>();
     const int port = config["network"]["port"].as<int>();
     const int max_players = config["general"]["max_players"].as<int>();
     const std::string motd = config["general"]["motd"].as<std::string>();
 
-    fileContent.insert(std::pair<std::string, std::string>("ip", ip));
-    fileContent.insert(std::pair<std::string, std::string>("port", std::to_string(port)));
-    fileContent.insert(std::pair<std::string, std::string>("max_players", std::to_string(max_players)));
-    fileContent.insert(std::pair<std::string, std::string>("motd", motd));
-
-   return fileContent;
+    this->_configFile.insert(std::pair<std::string, std::string>("ip", ip));
+    this->_configFile.insert(std::pair<std::string, std::string>("port", std::to_string(port)));
+    this->_configFile.insert(std::pair<std::string, std::string>("max_players", std::to_string(max_players)));
+    this->_configFile.insert(std::pair<std::string, std::string>("motd", motd));
 }
 
 std::string Configuration::ConfigHandler::getIP(void)
 {
-    std::string value = getConfigFile().find("ip")->second;
+    std::string value = this->_configFile.find("ip")->second;
     return value;
 }
 
 std::string Configuration::ConfigHandler::getMotd(void)
 {
-    std::string value = getConfigFile().find("motd")->second;
+    std::string value = this->_configFile.find("motd")->second;
     return value;
 }
 
 std::string Configuration::ConfigHandler::getPort(void)
 {
-    std::string value = getConfigFile().find("port")->second;
+    std::string value = this->_configFile.find("port")->second;
     return value;
 }
 
 std::string Configuration::ConfigHandler::getMaxPlayers(void)
 {
-    std::string value = getConfigFile().find("max_players")->second;
+    std::string value = this->_configFile.find("max_players")->second;
     return value;
 }

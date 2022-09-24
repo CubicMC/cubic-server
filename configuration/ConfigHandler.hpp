@@ -14,14 +14,17 @@ namespace Configuration
     class ConfigHandler
     {
     public:
-        ConfigHandler();
+        ConfigHandler(std::string);
         ~ConfigHandler();
 
-        std::map <std::string, std::string> getConfigFile(void);
         std::string getIP(void);
         std::string getMotd(void);
         std::string getPort(void);
         std::string getMaxPlayers(void);
+
+    private:
+        std::map <std::string, std::string> _configFile;
+        void getConfigFile(std::string);
     };
 }
 
