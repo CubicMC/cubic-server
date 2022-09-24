@@ -1,5 +1,7 @@
 #include "Logger.hpp"
 #include "TimeFormatter.hpp"
+#include <iostream>
+#include <array>
 
 namespace logging
 {
@@ -39,6 +41,7 @@ namespace logging
     void Logger::log(LogLevel level, std::string message)
     {
         this->_file_stream << TimeFormatter::get_time("[YYYY/MM/DD HH:mm:SS.sss] ") << level_to_string(level) << message << std::endl;
+        std::cout << TimeFormatter::get_time("[YYYY/MM/DD HH:mm:SS.sss] ") << level_to_string(level) << message << std::endl;
     }
 
     std::string level_to_string(LogLevel level)
