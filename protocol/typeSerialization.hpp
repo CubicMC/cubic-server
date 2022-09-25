@@ -34,7 +34,21 @@ namespace protocol
         }
     }
 
-    // void addVarInt(int32_t data, std::vector<uint8_t> &buffer);
+    constexpr void addVarInt(std::vector<uint8_t> &out, const int32_t &data)
+    {
+        constexpr uint8_t CONTINUE_BIT = 0x80;
+        constexpr uint8_t SEGMENT_BITS = 0x7f;
+        int32_t value = data;
+
+        while (true) {
+            if ((value & ~SEGMENT_BITS) == 0) {
+                out.push_back(value & 0xF);
+                return;
+            }
+            out.push_back((value & SEGMENT_BITS) | CONTINUE_BIT);
+            value >>= 7;
+        }
+    }
 
     constexpr std::string popString(uint8_t *&at, uint8_t *eof)
     {
@@ -59,7 +73,21 @@ namespace protocol
         at += 2;
         return value;
     }
-    // void addUnsignedShort(uint16_t data, std::vector<uint8_t> &buffer);
+
+    // constexpr void addUnsignedShort(std::vector<uint8_t> &out, const uint16_t &data)
+    // {
+
+    // }
+
+    constexpr void addLong(std::vector<uint8_t> &out, const int64_t &data)
+    {
+        const size_t current_size = out.size();
+        out.reserve(current_size + 4);
+        out.push_back(data & 0xF000);
+        out.push_back(data & 0x0F00);
+        out.push_back(data & 0x00F0);
+        out.push_back(data & 0x000F);
+    }
 }
 
 #endif /* D7286F40_D05F_4DC1_9A04_28C9F7417C4E */
