@@ -48,14 +48,14 @@ int Server::launch()
     // Listen
     listen(_sockfd, SOMAXCONN);
 
-    auto acceptThread = std::thread(&Server::acceptLoop, this);
+    auto acceptThread = std::thread(&Server::_acceptLoop, this);
 
-    gameLoop();
+    _gameLoop();
 
     return 0;
 }
 
-void Server::gameLoop()
+void Server::_gameLoop()
 {
     while (1)
     {
@@ -70,7 +70,7 @@ void Server::gameLoop()
     }
 }
 
-void Server::acceptLoop()
+void Server::_acceptLoop()
 {
     struct pollfd poll_set[1];
 

@@ -18,8 +18,8 @@ public:
     int launch();
 
 private:
-    void acceptLoop();
-    void gameLoop();
+    void _acceptLoop();
+    void _gameLoop();
 
     const std::string &_host;
     const uint16_t _port;
