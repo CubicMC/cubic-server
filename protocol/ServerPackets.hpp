@@ -6,10 +6,20 @@
 #include <memory>
 #include <vector>
 #include <optional>
+#include <unordered_map>
+#include <functional>
+#include <map>
 
 namespace protocol
 {
-    struct Handshake
+
+    enum class ServerPacketsID : int32_t {
+        Handshake = 0x00
+    };
+
+    struct BaseServerPacket {};
+
+    struct Handshake : BaseServerPacket
     {
         int32_t prot_version;
         std::string addr;
@@ -18,6 +28,10 @@ namespace protocol
     };
 
     std::shared_ptr<Handshake> parseHandshake(std::vector<uint8_t> &buffer);
+
+    static const std::unordered_map<ServerPacketsID, std::function<std::shared_ptr<BaseServerPacket>(std::vector<uint8_t> &)>> packetIDToParse = {
+            {ServerPacketsID::Handshake, parseHandshake}
+    };
 }
 
 #endif /* AE9C1FA0_D3A2_4B7D_962E_4EAF72963603 */

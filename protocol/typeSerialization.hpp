@@ -58,7 +58,7 @@ namespace protocol
             throw PacketEOF("Not enough data in packet to parse a String");
         if (size == 0)
             throw ZeroLengthString("Zero length strings can't be parsed");
-        std::string value(at, at + size - 1);
+        std::string value(at, at + size);
         at += size;
         return value;
     }

@@ -41,8 +41,6 @@ void Client::networkLoop()
                 // This is extremely inefficient but it will do for now
                 for (int i = 0; i < read_size; i++)
                     _recv_buffer.push_back(in_buffer[i]);
-                std::cout << "Received " << read_size << " bytes of data!" << std::endl;
-                std::cout << "Size of deque: " << _recv_buffer.size() << std::endl;
             }
         }
         if (poll_set[0].revents & POLLOUT)
@@ -75,7 +73,7 @@ void Client::sendData(const std::vector<uint8_t> &data)
         _send_buffer.push_back(i);
 }
 
-void Client::_sendData(void)
+void Client::_sendData()
 {
     char send_buffer[2048];
     size_t to_send = std::min(_send_buffer.size(), (size_t)2048);
@@ -89,4 +87,9 @@ void Client::_sendData(void)
         return;
 
     _send_buffer.erase(_send_buffer.begin(), _send_buffer.begin() + write_return);
+}
+
+std::vector<uint8_t> &Client::get_recv_buffer()
+{
+    return _recv_buffer;
 }

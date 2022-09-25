@@ -17,19 +17,21 @@ public:
     void setRunningThread(std::thread *thread);
     std::thread *getRunningThread();
 
-    bool isDisconnected() const;
+    [[nodiscard]] bool isDisconnected() const;
 
     void sendData(const std::vector<uint8_t> &data);
 
+    std::vector<uint8_t> &get_recv_buffer();
+
 private:
-    void _sendData(void);
+    void _sendData();
 
     const int _sockfd;
     const struct sockaddr_in _addr;
     bool _is_running;
-    std::thread *_current_thread;
-    std::deque<uint8_t> _recv_buffer;
-    std::deque<uint8_t> _send_buffer;
+    std::thread *_current_thread{};
+    std::vector<uint8_t> _recv_buffer;
+    std::vector<uint8_t> _send_buffer;
 
 protected:
 };
