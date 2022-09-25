@@ -3,6 +3,7 @@
 
 #include <string>
 #include <map>
+#include <yaml-cpp/yaml.h>
 
 namespace Configuration
 {
@@ -16,10 +17,11 @@ namespace Configuration
     public:
         ConfigHandler(std::string);
 
-        std::string getNode(std::string);
+        YAML::Node getNode(std::string);
     private:
-        const std::map <std::string, std::string> _configFile;
+        std::unordered_map<std::string, YAML::Node> _configFile;
         void getConfigFile(std::string);
+        void parseFile(YAML::Node);
     };
 }
 
