@@ -33,9 +33,7 @@ namespace protocol
     constexpr void serialize(
         std::vector<uint8_t> &out
     )
-    {
-        return;
-    }
+    {}
 
     template <typename H, typename F, typename... Args>
     constexpr void serialize(

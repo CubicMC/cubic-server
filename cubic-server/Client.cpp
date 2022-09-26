@@ -1,20 +1,18 @@
 #include <iostream>
 #include <unistd.h>
 #include <poll.h>
-#include <string.h>
+#include <cstring>
 
 #include "Client.hpp"
 
 Client::Client(int sockfd, struct sockaddr_in addr)
     : _sockfd(sockfd), _addr(addr)
 {
-    std::cout << "Client created" << std::endl;
     _is_running = true;
 }
 
 Client::~Client()
 {
-    std::cout << "Client destroyed" << std::endl;
 }
 
 void Client::networkLoop()
@@ -26,9 +24,9 @@ void Client::networkLoop()
     while (1)
     {
         poll_set[0].events = POLLIN;
-        // if (_send_buffer.size() != 0)
-        poll_set[0].events |= POLLOUT;
-        poll(poll_set, 1, 50); // TODO: Check if this is can be changed
+        if (!_send_buffer.empty())
+            poll_set[0].events |= POLLOUT;
+        poll(poll_set, 1, 50); // TODO: Check how this can be changed
         if (poll_set[0].revents & POLLIN)
         {
             int read_size = read(_sockfd, in_buffer, 2048);

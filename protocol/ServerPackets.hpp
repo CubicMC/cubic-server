@@ -1,7 +1,7 @@
 #ifndef AE9C1FA0_D3A2_4B7D_962E_4EAF72963603
 #define AE9C1FA0_D3A2_4B7D_962E_4EAF72963603
 
-#include <stdint.h>
+#include <cstdint>
 #include <string>
 #include <memory>
 #include <vector>
@@ -17,7 +17,9 @@ namespace protocol
         Handshake = 0x00
     };
 
-    struct BaseServerPacket {};
+    struct BaseServerPacket {
+        virtual ~BaseServerPacket() = default;
+    };
 
     struct Handshake : BaseServerPacket
     {

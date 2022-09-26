@@ -60,9 +60,9 @@ void Server::launch()
         // This is only for test purposes
         // TODO: Remove all that
         using namespace std::chrono_literals;
-        std::this_thread::sleep_for(2000ms); // TODO: Change the tick speed
+        std::this_thread::sleep_for(50ms); // TODO: Change it to proper ticking
         _gameTick();
-        std::cout << "Server ticked" << std::endl;
+//        std::cout << "Server ticked" << std::endl;
     }
 }
 
@@ -78,8 +78,11 @@ void Server::_handleClientPacket(std::shared_ptr<Client> cli)
     auto &data = cli->get_recv_buffer();
     while (true) {
         // Get the length of the packet stored
+        auto buffer_length = data.size();
+        if (buffer_length == 0)
+            break;
         uint8_t *at = data.data();
-        uint8_t *eof = at + data.size() - 1;
+        uint8_t *eof = at + buffer_length - 1;
         int32_t length = 0;
         try {
             length = protocol::popVarInt(at, eof);
@@ -114,7 +117,7 @@ void Server::_acceptLoop()
     poll_set[0].events = POLLIN;
     while (true)
     {
-        poll(poll_set, 1, 1000);
+        poll(poll_set, 1, 50);
         if (poll_set[0].revents & POLLIN)
         {
             struct sockaddr_in client_addr{};
@@ -151,11 +154,21 @@ void Server::_handleParsedClientPacket(std::shared_ptr<Client> cli,
                                        std::shared_ptr<protocol::BaseServerPacket> packet,
                                        protocol::ServerPacketsID packetID)
 {
-    // All test code here, this will be replaced with proper callbacks
-    std::cout << "Got packet with ID: " << static_cast<int32_t>(packetID) << std::endl;
-    auto *bruh = static_cast<protocol::Handshake *>(packet.get());
-    std::cout << "Protocol version: " << bruh->prot_version << "\n"
-        << "Addr: " << bruh->addr << "\n"
-        << "Port: " << bruh->port << "\n"
-        << "Next state: " << bruh->next_state << std::endl;
+    using namespace protocol;
+
+    switch (packetID) {
+    case ServerPacketsID::Handshake:
+        return this->_onHandshake(cli, std::static_pointer_cast<protocol::Handshake>(packet));
+    default:
+        std::cout << "Unknown packet" << std::endl;
+    }
+}
+
+void Server::_onHandshake(std::shared_ptr<Client> cli, std::shared_ptr<protocol::Handshake> packet)
+{
+    std::cout << "Got an handshake !" << "\n"
+        << "Protocol version: " << packet->prot_version << "\n"
+        << "Address: " << packet->addr << "\n"
+        << "Port: " << packet->port << "\n"
+        << "Next state: " << packet->next_state << std::endl;
 }

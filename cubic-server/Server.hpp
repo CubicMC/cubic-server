@@ -36,6 +36,10 @@ private:
 
     int _sockfd;
     struct sockaddr_in _addr;
+
+    // Packet handling (This will be moved somewhere later)
+
+    void _onHandshake(std::shared_ptr<Client> cli, std::shared_ptr<protocol::Handshake> packet);
 };
 
 #endif /* F43D56DD_C750_470F_A7C9_27CE21D37FC3 */
