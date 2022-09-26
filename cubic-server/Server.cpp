@@ -151,7 +151,7 @@ void Server::_acceptLoop()
 }
 
 void Server::_handleParsedClientPacket(std::shared_ptr<Client> cli,
-                                       std::shared_ptr<protocol::BaseServerPacket> packet,
+                                       const std::shared_ptr<protocol::BaseServerPacket>& packet,
                                        protocol::ServerPacketsID packetID)
 {
     using namespace protocol;
@@ -164,7 +164,7 @@ void Server::_handleParsedClientPacket(std::shared_ptr<Client> cli,
     }
 }
 
-void Server::_onHandshake(std::shared_ptr<Client> cli, std::shared_ptr<protocol::Handshake> packet)
+void Server::_onHandshake(std::shared_ptr<Client> cli, const std::shared_ptr<protocol::Handshake>& packet)
 {
     std::cout << "Got an handshake !" << "\n"
         << "Protocol version: " << packet->prot_version << "\n"

@@ -25,7 +25,7 @@ private:
     void _gameTick();
     void _handleClientPacket(std::shared_ptr<Client> cli);
     void _handleParsedClientPacket(std::shared_ptr<Client> cli,
-                                   std::shared_ptr<protocol::BaseServerPacket> packet,
+                                   const std::shared_ptr<protocol::BaseServerPacket>& packet,
                                    protocol::ServerPacketsID packetID);
 
     const std::string &_host;
@@ -39,7 +39,7 @@ private:
 
     // Packet handling (This will be moved somewhere later)
 
-    void _onHandshake(std::shared_ptr<Client> cli, std::shared_ptr<protocol::Handshake> packet);
+    void _onHandshake(std::shared_ptr<Client> cli, const std::shared_ptr<protocol::Handshake>& packet);
 };
 
 #endif /* F43D56DD_C750_470F_A7C9_27CE21D37FC3 */
