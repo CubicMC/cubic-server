@@ -6,6 +6,17 @@
 namespace logging
 {
     /**
+     * @brief create an instance of the Logger class if it doesn't exist and return it
+     *
+     * @return Logger& the instance of the Logger class as a reference
+     */
+    Logger& Logger::get_instance()
+    {
+        static Logger* instance = new Logger();
+        return *instance;
+    }
+
+    /**
      * @brief Construct a new Logger:: Logger object
      */
     Logger::Logger()
