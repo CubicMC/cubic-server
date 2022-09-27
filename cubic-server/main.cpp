@@ -1,7 +1,8 @@
 #include <iostream>
-#include <string.h>
+#include <cstring>
 
 #include "Server.hpp"
+#include "ServerPackets.hpp"
 
 static void print_usage(const char *caller)
 {

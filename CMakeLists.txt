@@ -6,7 +6,7 @@ project (CubicServer)
 
 set(CMAKE_CXX_FLAGS_DEBUG  "-g3")
 
-set(CMAKE_CXX_STANDARD 14)
+set(CMAKE_CXX_STANDARD 20)
 
 if (NOT GTEST)
   message(WARNING
@@ -37,6 +37,7 @@ add_subdirectory (protocol)
 add_subdirectory (cubic-server)
 add_subdirectory (math)
 add_subdirectory (configuration)
+add_subdirectory (logging)
 
 if(GTEST)
   enable_testing()

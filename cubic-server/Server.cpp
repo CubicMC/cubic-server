@@ -1,17 +1,17 @@
 #include <iostream>
 #include <netdb.h>
-#include <errno.h>
+#include <cerrno>
 #include <sys/socket.h>
-#include <stdlib.h>
 #include <poll.h>
-#include <unistd.h>
 #include <thread>
 #include <chrono>
 #include <exception>
-#include <string.h>
+#include <cstring>
 #include <algorithm>
 
 #include "Server.hpp"
+#include "typeSerialization.hpp"
+#include "ServerPackets.hpp"
 
 Server::Server(const std::string &host, uint16_t port)
     : _host(host), _port(port)
@@ -24,7 +24,7 @@ Server::~Server()
     std::cout << "Server destroyed" << std::endl;
 }
 
-int Server::launch()
+void Server::launch()
 {
     // Get the socket for the server
     _sockfd = socket(AF_INET, SOCK_STREAM, getprotobyname("TCP")->p_proto);
@@ -48,40 +48,79 @@ int Server::launch()
     // Listen
     listen(_sockfd, SOMAXCONN);
 
-    auto acceptThread = std::thread(&Server::acceptLoop, this);
+    auto acceptThread = std::thread(&Server::_acceptLoop, this);
 
-    gameLoop();
-
-    return 0;
+    _gameLoop();
 }
 
-void Server::gameLoop()
+[[noreturn]] void Server::_gameLoop()
 {
-    while (1)
+    while (true)
     {
         // This is only for test purposes
         // TODO: Remove all that
         using namespace std::chrono_literals;
-        std::this_thread::sleep_for(2000ms);
-        std::cout << "Server ticked" << std::endl;
-        std::vector<uint8_t> to_send = {'h', 'e', 'l', 'l', 'o', '\n'};
-        for (auto &i : _clients)
-            i->sendData(to_send);
+        std::this_thread::sleep_for(50ms); // TODO: Change it to proper ticking
+        _gameTick();
+//        std::cout << "Server ticked" << std::endl;
     }
 }
 
-void Server::acceptLoop()
+void Server::_gameTick()
+{
+    for (const auto& i : _clients)
+        _handleClientPacket(i);
+    // TODO: All the server ticking here
+}
+
+void Server::_handleClientPacket(std::shared_ptr<Client> cli)
+{
+    auto &data = cli->get_recv_buffer();
+    while (true) {
+        // Get the length of the packet stored
+        auto buffer_length = data.size();
+        if (buffer_length == 0)
+            break;
+        uint8_t *at = data.data();
+        uint8_t *eof = at + buffer_length - 1;
+        int32_t length = 0;
+        try {
+            length = protocol::popVarInt(at, eof);
+            if (length > eof - at + 1)
+                break; // Not enough data in buffer to parse the packet
+            if (length == 0) {
+                data.erase(data.begin());
+                continue;
+            }
+        } catch (const protocol::PacketEOF &_) {
+            break; // Not enough data in buffer to parse the length of the packet
+        }
+        const uint8_t *start_payload = at;
+        // Handle the packet if the length is there
+        const auto packet_id = static_cast<protocol::ServerPacketsID>(protocol::popVarInt(at, eof));
+        auto parser_it = protocol::packetIDToParse.find(packet_id);
+        if (parser_it == protocol::packetIDToParse.end())
+            throw std::runtime_error("Unknown packet ID");
+        std::vector<uint8_t> to_parse(data.begin() + (at - data.data()), data.end());
+        auto packet = (*parser_it).second(to_parse);
+        // Callback to handle the packet
+        _handleParsedClientPacket(cli, packet, packet_id);
+        data.erase(data.begin(), data.begin() + (start_payload - data.data()) + length + 1);
+    }
+}
+
+void Server::_acceptLoop()
 {
     struct pollfd poll_set[1];
 
     poll_set[0].fd = _sockfd;
     poll_set[0].events = POLLIN;
-    while (1)
+    while (true)
     {
-        poll(poll_set, 1, 1000);
+        poll(poll_set, 1, 50);
         if (poll_set[0].revents & POLLIN)
         {
-            struct sockaddr_in client_addr;
+            struct sockaddr_in client_addr{};
             socklen_t client_addr_size = sizeof(client_addr);
             int client_fd = accept(
                 _sockfd,
@@ -95,7 +134,7 @@ void Server::acceptLoop()
             auto cli = std::make_shared<Client>(client_fd, client_addr);
             _clients.push_back(cli);
             // That line is kinda borked, but I'll check one day how to fix it
-            std::thread *cli_thread = new std::thread(&Client::networkLoop, &(*cli));
+            auto *cli_thread = new std::thread(&Client::networkLoop, &(*cli));
             // That is 99.99% a data race, but aight, it will probably
             // never happen
             cli->setRunningThread(cli_thread);
@@ -109,4 +148,27 @@ void Server::acceptLoop()
                            { return cli->isDisconnected(); }),
                        _clients.end());
     }
+}
+
+void Server::_handleParsedClientPacket(std::shared_ptr<Client> cli,
+                                       const std::shared_ptr<protocol::BaseServerPacket>& packet,
+                                       protocol::ServerPacketsID packetID)
+{
+    using namespace protocol;
+
+    switch (packetID) {
+    case ServerPacketsID::Handshake:
+        return this->_onHandshake(cli, std::static_pointer_cast<protocol::Handshake>(packet));
+    default:
+        std::cout << "Unknown packet" << std::endl;
+    }
+}
+
+void Server::_onHandshake(std::shared_ptr<Client> cli, const std::shared_ptr<protocol::Handshake>& packet)
+{
+    std::cout << "Got an handshake !" << "\n"
+        << "Protocol version: " << packet->prot_version << "\n"
+        << "Address: " << packet->addr << "\n"
+        << "Port: " << packet->port << "\n"
+        << "Next state: " << packet->next_state << std::endl;
 }
