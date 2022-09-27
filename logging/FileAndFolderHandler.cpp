@@ -85,7 +85,7 @@ namespace logging
      *
      * @return std::string Path to the folder where log files are stored
      */
-    std::string FileAndFolderHandler::get_folder_path() const
+    const std::string& FileAndFolderHandler::get_folder_path() const
     {
         return this->_folder_path;
     }
@@ -95,7 +95,7 @@ namespace logging
      *
      * @return std::string Path to the current log file
      */
-    std::string FileAndFolderHandler::get_file_path() const
+    const std::string& FileAndFolderHandler::get_file_path() const
     {
         return this->_file_path;
     }
