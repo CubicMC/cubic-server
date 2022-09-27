@@ -10,6 +10,8 @@
 #include "Client.hpp"
 #include "ServerPackets.hpp"
 
+#define PCK_CALLBACK(function, type) return this->function(cli, std::static_pointer_cast<type>(packet))
+
 class Server
 {
 public:

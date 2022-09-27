@@ -6,7 +6,7 @@
 #include "Client.hpp"
 
 Client::Client(int sockfd, struct sockaddr_in addr)
-    : _sockfd(sockfd), _addr(addr)
+    : _sockfd(sockfd), _addr(addr), _status(protocol::ClientStatus::Initial)
 {
     _is_running = true;
 }

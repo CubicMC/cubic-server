@@ -156,12 +156,23 @@ void Server::_handleParsedClientPacket(std::shared_ptr<Client> cli,
 {
     using namespace protocol;
 
-    switch (packetID) {
-    case ServerPacketsID::Handshake:
-        return this->_onHandshake(cli, std::static_pointer_cast<protocol::Handshake>(packet));
-    default:
-        std::cout << "Unknown packet" << std::endl;
+    auto status = cli->getStatus();
+
+    switch (status) {
+    case ClientStatus::Initial:
+        switch (packetID) {
+        case ServerPacketsID::Handshake:
+            PCK_CALLBACK(_onHandshake, Handshake);
+        }
+        break;
+    case ClientStatus::Status:
+        // Add packets here
+        break;
+    case ClientStatus::Login:
+        // Add packets here
+        break;
     }
+    std::cout << "Unknown packet" << std::endl; // TODO: Properly handle the unknown packet
 }
 
 void Server::_onHandshake(std::shared_ptr<Client> cli, const std::shared_ptr<protocol::Handshake>& pck)
@@ -171,4 +182,8 @@ void Server::_onHandshake(std::shared_ptr<Client> cli, const std::shared_ptr<pro
         << "Address: " << pck->addr << "\n"
         << "Port: " << pck->port << "\n"
         << "Next state: " << pck->next_state << std::endl;
+    if (pck->next_state == 1)
+        cli->setStatus(protocol::ClientStatus::Status);
+    else if (pck->next_state == 2)
+        cli->setStatus(protocol::ClientStatus::Login);
 }
