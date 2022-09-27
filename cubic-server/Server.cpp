@@ -164,11 +164,11 @@ void Server::_handleParsedClientPacket(std::shared_ptr<Client> cli,
     }
 }
 
-void Server::_onHandshake(std::shared_ptr<Client> cli, const std::shared_ptr<protocol::Handshake>& packet)
+void Server::_onHandshake(std::shared_ptr<Client> cli, const std::shared_ptr<protocol::Handshake>& pck)
 {
     std::cout << "Got an handshake !" << "\n"
-        << "Protocol version: " << packet->prot_version << "\n"
-        << "Address: " << packet->addr << "\n"
-        << "Port: " << packet->port << "\n"
-        << "Next state: " << packet->next_state << std::endl;
+        << "Protocol version: " << pck->prot_version << "\n"
+        << "Address: " << pck->addr << "\n"
+        << "Port: " << pck->port << "\n"
+        << "Next state: " << pck->next_state << std::endl;
 }
