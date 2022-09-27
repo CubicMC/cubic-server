@@ -19,8 +19,8 @@ namespace logging
         this->_file_and_folder_handler.create_file(filename);
         this->_file_stream.open(this->_file_and_folder_handler.get_file_path(), std::ios::app);
 
-        this->_specification_level_in_file = {LogLevel::DEBUG, LogLevel::INFO, LogLevel::WARNING, LogLevel::ERROR, LogLevel::FATAL};
-        this->_specification_level_in_console = {LogLevel::DEBUG, LogLevel::INFO, LogLevel::WARNING, LogLevel::ERROR, LogLevel::FATAL};
+        this->_specification_level_in_file = { {LogLevel::DEBUG, "[DEBUG] "}, {LogLevel::INFO, "[INFO] "}, {LogLevel::WARNING, "[WARNING] "}, {LogLevel::ERROR, "[ERROR] "}, {LogLevel::FATAL, "[FATAL] "} };
+        this->_specification_level_in_console = { {LogLevel::DEBUG, "[DEBUG] "}, {LogLevel::INFO, "[INFO] "}, {LogLevel::WARNING, "[WARNING] "}, {LogLevel::ERROR, "[ERROR] "}, {LogLevel::FATAL, "[FATAL] "} };
     }
 
     /**
@@ -42,11 +42,11 @@ namespace logging
      */
     void Logger::_log(LogLevel level, std::string& message)
     {
-        if (std::find(this->_specification_level_in_file.begin(), this->_specification_level_in_file.end(), level) != this->_specification_level_in_file.end())
-            this->_file_stream << TimeFormatter::get_time("[YYYY/MM/DD HH:mm:SS.sss] ") << level_to_string(level) << message << std::endl;
+        if (this->_specification_level_in_file.find(level) != this->_specification_level_in_file.end())
+            this->_file_stream << TimeFormatter::get_time("[YYYY/MM/DD HH:mm:SS.sss] ") << this->_specification_level_in_file[level] << message << std::endl;
 
-        if (std::find(this->_specification_level_in_console.begin(), this->_specification_level_in_console.end(), level) != this->_specification_level_in_console.end())
-            std::cout << TimeFormatter::get_time("[YYYY/MM/DD HH:mm:SS.sss] ") << level_to_string(level) << message << std::endl;
+        if (this->_specification_level_in_console.find(level) != this->_specification_level_in_console.end())
+            std::cout << TimeFormatter::get_time("[YYYY/MM/DD HH:mm:SS.sss] ") << this->_specification_level_in_console[level] << message << std::endl;
     }
 
     /**
@@ -156,7 +156,7 @@ namespace logging
      */
     void Logger::set_display_specification_level_in_console(LogLevel level)
     {
-        this->_specification_level_in_console.push_back(level);
+        this->_specification_level_in_console.insert({level, level_to_string(level)});
     }
 
     /**
@@ -166,13 +166,7 @@ namespace logging
      */
     void Logger::unset_display_specification_level_in_console(LogLevel level)
     {
-        for (auto it = this->_specification_level_in_console.begin(); it != this->_specification_level_in_console.end(); it++)
-        {
-            if (*it == level)
-            {
-                this->_specification_level_in_console.erase(it);
-            }
-        }
+        this->_specification_level_in_console.erase(level);
     }
 
     /**
@@ -180,7 +174,7 @@ namespace logging
      *
      * @return std::vector<LogLevel> Log levels that are displayed in the console
      */
-    std::vector<LogLevel> Logger::get_display_specification_level_in_console() const
+    const std::unordered_map<LogLevel, std::string>& Logger::get_display_specification_level_in_console() const
     {
         return this->_specification_level_in_console;
     }
@@ -192,7 +186,7 @@ namespace logging
      */
     void Logger::set_display_specification_level_in_file(LogLevel level)
     {
-        this->_specification_level_in_file.push_back(level);
+        this->_specification_level_in_file.insert({level, level_to_string(level)});
     }
 
     /**
@@ -202,13 +196,7 @@ namespace logging
      */
     void Logger::unset_display_specification_level_in_file(LogLevel level)
     {
-        for (auto it = this->_specification_level_in_file.begin(); it != this->_specification_level_in_file.end(); it++)
-        {
-            if (*it == level)
-            {
-                this->_specification_level_in_file.erase(it);
-            }
-        }
+        this->_specification_level_in_file.erase(level);
     }
 
     /**
@@ -216,7 +204,7 @@ namespace logging
      *
      * @return std::vector<LogLevel> Log levels that are displayed in the log file
      */
-    std::vector<LogLevel> Logger::get_display_specification_level_in_file() const
+    const std::unordered_map<LogLevel, std::string>& Logger::get_display_specification_level_in_file() const
     {
         return this->_specification_level_in_file;
     }

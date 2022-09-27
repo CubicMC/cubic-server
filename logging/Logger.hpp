@@ -3,7 +3,7 @@
 
 #include <fstream>
 #include <string>
-#include <vector>
+#include <unordered_map>
 #include "FileAndFolderHandler.hpp"
 
 namespace logging
@@ -52,18 +52,18 @@ namespace logging
 
             void set_display_specification_level_in_file(LogLevel level);
             void unset_display_specification_level_in_file(LogLevel level);
-            std::vector<LogLevel> get_display_specification_level_in_file() const;
+            const std::unordered_map<LogLevel, std::string>& get_display_specification_level_in_file() const;
 
             void set_display_specification_level_in_console(LogLevel level);
             void unset_display_specification_level_in_console(LogLevel level);
-            std::vector<LogLevel> get_display_specification_level_in_console() const;
+            const std::unordered_map<LogLevel, std::string>& get_display_specification_level_in_console() const;
 
         private:
             std::fstream _file_stream;                              /// Stream to the current log file
             FileAndFolderHandler _file_and_folder_handler;          /// Handler for files and folders
 
-            std::vector<LogLevel> _specification_level_in_file;     /// Vector of LogLevel to display in the log file
-            std::vector<LogLevel> _specification_level_in_console;  /// Vector of LogLevel to display in the console
+            std::unordered_map<LogLevel, std::string> _specification_level_in_file;     /// Map of LogLevel and his associated string to display in the log file
+            std::unordered_map<LogLevel, std::string> _specification_level_in_console;  /// Map of LogLevel and his associated string to display in the console
 
             void _log(LogLevel level, std::string& message);
     };

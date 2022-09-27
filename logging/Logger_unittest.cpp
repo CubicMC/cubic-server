@@ -36,18 +36,18 @@ namespace logging
         rmdir("logs");
     }
 
-    TEST(Logging, vector_specification_level_in_file)
+    TEST(Logging, map_specification_level_in_file)
     {
         Logger logger;
         std::string filename = TimeFormatter::get_time("YYYY-MM-DD-1.log");
-        std::vector<LogLevel> levels = {LogLevel::DEBUG, LogLevel::INFO, LogLevel::WARNING, LogLevel::ERROR, LogLevel::FATAL};
+        std::unordered_map<LogLevel, std::string> levels = { {LogLevel::DEBUG, "[DEBUG] "}, {LogLevel::INFO, "[INFO] "}, {LogLevel::WARNING, "[WARNING] "}, {LogLevel::ERROR, "[ERROR] "}, {LogLevel::FATAL, "[FATAL] "} };
 
         EXPECT_EQ(logger.get_display_specification_level_in_file(), levels);
         logger.set_display_specification_level_in_file(LogLevel::DEBUG);
-        levels.push_back(LogLevel::DEBUG);
+        levels.insert({LogLevel::DEBUG, "[DEBUG] "});
         EXPECT_EQ(logger.get_display_specification_level_in_file(), levels);
         logger.unset_display_specification_level_in_file(LogLevel::FATAL);
-        levels.erase(levels.end() - 2);
+        levels.erase(LogLevel::FATAL);
         EXPECT_EQ(logger.get_display_specification_level_in_file(), levels);
 
         filename = "logs/" + filename;
@@ -55,18 +55,18 @@ namespace logging
         rmdir("logs");
     }
 
-    TEST(Logging, vector_specification_level_in_console)
+    TEST(Logging, map_specification_level_in_console)
     {
         Logger logger;
         std::string filename = TimeFormatter::get_time("YYYY-MM-DD-1.log");
-        std::vector<LogLevel> levels = {LogLevel::DEBUG, LogLevel::INFO, LogLevel::WARNING, LogLevel::ERROR, LogLevel::FATAL};
+        std::unordered_map<LogLevel, std::string> levels = { {LogLevel::DEBUG, "[DEBUG] "}, {LogLevel::INFO, "[INFO] "}, {LogLevel::WARNING, "[WARNING] "}, {LogLevel::ERROR, "[ERROR] "}, {LogLevel::FATAL, "[FATAL] "} };
 
         EXPECT_EQ(logger.get_display_specification_level_in_console(), levels);
         logger.set_display_specification_level_in_console(LogLevel::DEBUG);
-        levels.push_back(LogLevel::DEBUG);
+        levels.insert({LogLevel::DEBUG, "[DEBUG] "});
         EXPECT_EQ(logger.get_display_specification_level_in_console(), levels);
         logger.unset_display_specification_level_in_console(LogLevel::FATAL);
-        levels.erase(levels.end() - 2);
+        levels.erase(LogLevel::FATAL);
         EXPECT_EQ(logger.get_display_specification_level_in_console(), levels);
 
         filename = "logs/" + filename;
