@@ -22,3 +22,12 @@ std::shared_ptr<StatusRequest> protocol::parseStatusRequest(std::vector<uint8_t>
 {
     return {};
 }
+
+std::shared_ptr<PingRequest> protocol::parsePingRequest(std::vector<uint8_t> &buffer)
+{
+    auto h = std::make_shared<PingRequest>();
+
+    parse(buffer.data(), buffer.data() + buffer.size() - 1, *h,
+          popLong, &PingRequest::payload);
+    return h;
+}

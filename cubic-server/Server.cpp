@@ -182,6 +182,7 @@ void Server::_handleParsedClientPacket(std::shared_ptr<Client> cli,
         switch (packetID) {
         case ServerPacketsID::StatusRequest:
             PCK_CALLBACK(_onStatusRequest, StatusRequest);
+            PCK_CALLBACK(_onPingRequest, PingRequest);
         }
         break;
     case ClientStatus::Login:
@@ -210,4 +211,9 @@ void Server::_onHandshake(std::shared_ptr<Client> cli, const std::shared_ptr<pro
 void Server::_onStatusRequest(std::shared_ptr<Client> cli, const std::shared_ptr<protocol::StatusRequest> &pck)
 {
     std::cout << "Got a status request" << std::endl;
+}
+
+void Server::_onPingRequest(std::shared_ptr<Client> cli, const std::shared_ptr<protocol::PingRequest> &pck)
+{
+    std::cout << "Got a ping request" << std::endl;
 }

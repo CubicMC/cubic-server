@@ -79,8 +79,21 @@ namespace protocol
 
     // }
 
+    constexpr int64_t popLong(uint8_t *&at, uint8_t *eof)
+    {
+        if (eof - at < 7)
+            throw PacketEOF("Not enough data in packet to parse a long");
+
+        int64_t value = *((int64_t *)(at));
+        at += 8;
+        return value;
+    }
+
     constexpr void addLong(std::vector<uint8_t> &out, const int64_t &data)
     {
+        // TODO: Fix this, as this just cannot work
+        // Can look at https://github.com/cuberite/cuberite/blob/5ae924ec74bab199284c451552040bcc6f39bb3a/src/Endianness.h
+        // as the endianness looks like too much pain
         const size_t current_size = out.size();
         out.reserve(current_size + 4);
         out.push_back(data & 0xF000);
