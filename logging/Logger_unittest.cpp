@@ -16,7 +16,7 @@ namespace logging
         EXPECT_TRUE(ff_handler.file_exist("logs/" + filename));
 
         testing::internal::CaptureStdout();
-        logger.log(LogLevel::DEBUG, "test");
+        logger.debug("test");
         std::string output = testing::internal::GetCapturedStdout();
 
         std::fstream file("logs/" + filename, std::ios::in);
@@ -81,7 +81,7 @@ namespace logging
         std::string filename = TimeFormatter::get_time("YYYY-MM-DD-1.log");
 
         testing::internal::CaptureStdout();
-        logger.log(LogLevel::DEBUG, "test");
+        logger.debug("test");
         std::string output = testing::internal::GetCapturedStdout();
 
         std::fstream file("logs/" + filename, std::ios::in);
@@ -94,7 +94,7 @@ namespace logging
         logger.unset_display_specification_level_in_file(LogLevel::DEBUG);
 
         testing::internal::CaptureStdout();
-        logger.log(LogLevel::DEBUG, "not_a_test");
+        logger.debug("not_a_test");
         output = testing::internal::GetCapturedStdout();
         std::getline(file, line);
 
@@ -107,7 +107,7 @@ namespace logging
         std::getline(file, line);
 
         testing::internal::CaptureStdout();
-        logger.log(LogLevel::FATAL, "fatal_test");
+        logger.fatal("fatal_test");
         output = testing::internal::GetCapturedStdout();
         std::getline(file, line);
         std::cout << "line = " << line << std::endl;
@@ -128,7 +128,7 @@ namespace logging
         std::string filename = TimeFormatter::get_time("YYYY-MM-DD-1.log");
 
         testing::internal::CaptureStdout();
-        logger.log(LogLevel::DEBUG, "test");
+        logger.debug("test");
         std::string output = testing::internal::GetCapturedStdout();
 
         std::fstream file("logs/" + filename, std::ios::in);
@@ -141,7 +141,7 @@ namespace logging
         logger.unset_display_specification_level_in_console(LogLevel::DEBUG);
 
         testing::internal::CaptureStdout();
-        logger.log(LogLevel::DEBUG, "not_a_test");
+        logger.debug("not_a_test");
         output = testing::internal::GetCapturedStdout();
         std::getline(file, line);
 
@@ -149,7 +149,7 @@ namespace logging
         EXPECT_EQ(output.find("not_a_test"), std::string::npos);
 
         testing::internal::CaptureStdout();
-        logger.log(LogLevel::FATAL, "fatal_test");
+        logger.fatal("fatal_test");
         output = testing::internal::GetCapturedStdout();
         std::getline(file, line);
 
@@ -160,5 +160,54 @@ namespace logging
         filename = "logs/" + filename;
         std::remove(filename.c_str());
         rmdir("logs");
+    }
+    TEST(Logging, test_each_log_function)
+    {
+        Logger logger;
+        FileAndFolderHandler ff_handler;
+        std::string filename = TimeFormatter::get_time("YYYY-MM-DD-1.log");
+
+        testing::internal::CaptureStdout();
+        logger.debug("This is a debug message");
+        std::string output = testing::internal::GetCapturedStdout();
+
+        std::fstream file("logs/" + filename, std::ios::in);
+        std::string line;
+        std::getline(file, line);
+
+        EXPECT_NE(line.find("[DEBUG]"), std::string::npos);
+        EXPECT_NE(output.find("[DEBUG]"), std::string::npos);
+
+        testing::internal::CaptureStdout();
+        logger.info("This is an info message");
+        output = testing::internal::GetCapturedStdout();
+        std::getline(file, line);
+
+        EXPECT_NE(line.find("[INFO]"), std::string::npos);
+        EXPECT_NE(output.find("[INFO]"), std::string::npos);
+
+        testing::internal::CaptureStdout();
+        logger.warn("This is a warning message");
+        output = testing::internal::GetCapturedStdout();
+        std::getline(file, line);
+
+        EXPECT_NE(line.find("[WARNING]"), std::string::npos);
+        EXPECT_NE(output.find("[WARNING]"), std::string::npos);
+
+        testing::internal::CaptureStdout();
+        logger.error("This is an error message");
+        output = testing::internal::GetCapturedStdout();
+        std::getline(file, line);
+
+        EXPECT_NE(line.find("[ERROR]"), std::string::npos);
+        EXPECT_NE(output.find("[ERROR]"), std::string::npos);
+
+        testing::internal::CaptureStdout();
+        logger.fatal("This is a fatal message");
+        output = testing::internal::GetCapturedStdout();
+        std::getline(file, line);
+
+        EXPECT_NE(line.find("[FATAL]"), std::string::npos);
+        EXPECT_NE(output.find("[FATAL]"), std::string::npos);
     }
 }

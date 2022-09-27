@@ -35,7 +35,11 @@ namespace logging
             Logger();
             ~Logger();
 
-            void log(LogLevel level, std::string message);
+            void debug(std::string message);
+            void info(std::string message);
+            void warn(std::string message);
+            void error(std::string message);
+            void fatal(std::string message);
 
             void set_display_specification_level_in_file(LogLevel level);
             void unset_display_specification_level_in_file(LogLevel level);
@@ -51,6 +55,8 @@ namespace logging
 
             std::vector<LogLevel> _specification_level_in_file;     /// Vector of LogLevel to display in the log file
             std::vector<LogLevel> _specification_level_in_console;  /// Vector of LogLevel to display in the console
+
+            void _log(LogLevel level, std::string message);
     };
 }
 

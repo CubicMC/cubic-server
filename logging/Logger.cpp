@@ -40,13 +40,73 @@ namespace logging
      *
      * @note The message will be written in the log file with the current time
      */
-    void Logger::log(LogLevel level, std::string message)
+    void Logger::_log(LogLevel level, std::string message)
     {
         if (std::find(this->_specification_level_in_file.begin(), this->_specification_level_in_file.end(), level) != this->_specification_level_in_file.end())
             this->_file_stream << TimeFormatter::get_time("[YYYY/MM/DD HH:mm:SS.sss] ") << level_to_string(level) << message << std::endl;
 
         if (std::find(this->_specification_level_in_console.begin(), this->_specification_level_in_console.end(), level) != this->_specification_level_in_console.end())
             std::cout << TimeFormatter::get_time("[YYYY/MM/DD HH:mm:SS.sss] ") << level_to_string(level) << message << std::endl;
+    }
+
+    /**
+     * @brief Write a debug message in the console and in the log file
+     *
+     * @param message Message to write
+     *
+     * @note The message will be written with the current time
+     */
+    void Logger::debug(std::string message)
+    {
+        this->_log(LogLevel::DEBUG, message);
+    }
+
+    /**
+     * @brief Write an info message in the console and in the log file
+     *
+     * @param message Message to write
+     *
+     * @note The message will be written with the current time
+     */
+    void Logger::info(std::string message)
+    {
+        this->_log(LogLevel::INFO, message);
+    }
+
+    /**
+     * @brief Write a warning message in the console and in the log file
+     *
+     * @param message Message to write
+     *
+     * @note The message will be written with the current time
+     */
+    void Logger::warn(std::string message)
+    {
+        this->_log(LogLevel::WARNING, message);
+    }
+
+    /**
+     * @brief Write an error message in the console and in the log file
+     *
+     * @param message Message to write
+     *
+     * @note The message will be written with the current time
+     */
+    void Logger::error(std::string message)
+    {
+        this->_log(LogLevel::ERROR, message);
+    }
+
+    /**
+     * @brief Write a fatal message in the console and in the log file
+     *
+     * @param message Message to write
+     *
+     * @note The message will be written with the current time
+     */
+    void Logger::fatal(std::string message)
+    {
+        this->_log(LogLevel::FATAL, message);
     }
 
     /**
