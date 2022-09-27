@@ -45,7 +45,7 @@ namespace logging
         ff_handler.create_folder("logs");
 
         EXPECT_EQ(ff_handler.get_folder_path(), "logs");
-        EXPECT_EQ("Folder already exist. Setting it as _folder_path\n", testing::internal::GetCapturedStdout());
+        EXPECT_EQ("Folder 'logs' already exist. Setting it as folder_path\n", testing::internal::GetCapturedStdout());
 
         rmdir("logs");
     }

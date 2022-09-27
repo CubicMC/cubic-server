@@ -3,6 +3,7 @@
 #include <errno.h>
 #include <iostream>
 #include <fstream>
+#include <cstring>
 
 namespace logging
 {
@@ -16,38 +17,11 @@ namespace logging
     void FileAndFolderHandler::create_folder(std::string folder_name)
     {
         if (mkdir(folder_name.c_str(), 0777) != 0) {
-            switch(errno) {
-                case EACCES:
-                    throw std::runtime_error("Cannot create folder, the program don't have the rights");
-                    break;
-                case EEXIST:
-                    std::cout << "Folder already exist. Setting it as _folder_path" << std::endl;
-                    this->_folder_path = folder_name;
-                    break;
-                case ELOOP:
-                    throw std::runtime_error("Cannot create folder, the path contain a loop reference");
-                    break;
-                case EMLINK:
-                    throw std::runtime_error("Cannot create folder, the link number of the path cannot exceed LINK_MAX");
-                    break;
-                case ENAMETOOLONG:
-                    throw std::runtime_error("Cannot create folder, the path exceed PATH_MAX characters");
-                    break;
-                case ENOENT:
-                    throw std::runtime_error("Cannot create folder, a component of the path doesn't exist");
-                    break;
-                case ENOSPC:
-                    throw std::runtime_error("Cannot create folder, the file system doesn't have enough space");
-                    break;
-                case ENOTDIR:
-                    throw std::runtime_error("Cannot create folder, a component of the path is not a directory");
-                    break;
-                case EROFS:
-                    throw std::runtime_error("Cannot create folder, the file system is read only");
-                    break;
-                default:
-                    throw std::runtime_error("Cannot create folder, unknown error");
-                    break;
+            if (errno != EEXIST)
+                throw std::runtime_error(std::strerror(errno));
+            else {
+                std::cout << "Folder '" << folder_name << "' already exist. Setting it as folder_path" << std::endl;
+                this->_folder_path = folder_name;
             }
         } else {
             this->_folder_path = folder_name;
