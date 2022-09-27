@@ -17,3 +17,8 @@ std::shared_ptr<Handshake> protocol::parseHandshake(std::vector<uint8_t> &buffer
           popVarInt, &Handshake::next_state);
     return h;
 }
+
+std::shared_ptr<StatusRequest> protocol::parseStatusRequest(std::vector<uint8_t> &buffer)
+{
+    return {};
+}

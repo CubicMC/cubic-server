@@ -179,7 +179,10 @@ void Server::_handleParsedClientPacket(std::shared_ptr<Client> cli,
         }
         break;
     case ClientStatus::Status:
-        // Add packets here
+        switch (packetID) {
+        case ServerPacketsID::StatusRequest:
+            PCK_CALLBACK(_onStatusRequest, StatusRequest);
+        }
         break;
     case ClientStatus::Login:
         // Add packets here
@@ -202,4 +205,9 @@ void Server::_onHandshake(std::shared_ptr<Client> cli, const std::shared_ptr<pro
         cli->setStatus(protocol::ClientStatus::Status);
     else if (pck->next_state == 2)
         cli->setStatus(protocol::ClientStatus::Login);
+}
+
+void Server::_onStatusRequest(std::shared_ptr<Client> cli, const std::shared_ptr<protocol::StatusRequest> &pck)
+{
+    std::cout << "Got a status request" << std::endl;
 }

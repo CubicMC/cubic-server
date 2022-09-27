@@ -14,7 +14,8 @@ namespace protocol
 {
 
     enum class ServerPacketsID : int32_t {
-        Handshake = 0x00
+        Handshake = 0x00,
+        StatusRequest = 0x00
     };
 
     struct BaseServerPacket {
@@ -31,11 +32,17 @@ namespace protocol
 
     std::shared_ptr<Handshake> parseHandshake(std::vector<uint8_t> &buffer);
 
+    struct StatusRequest : BaseServerPacket
+    {};
+
+    std::shared_ptr<StatusRequest> parseStatusRequest(std::vector<uint8_t> &buffer);
+
     static const std::unordered_map<ServerPacketsID, std::function<std::shared_ptr<BaseServerPacket>(std::vector<uint8_t> &)>> packetIDToParseInitial = {
             {ServerPacketsID::Handshake, parseHandshake}
     };
 
     static const std::unordered_map<ServerPacketsID, std::function<std::shared_ptr<BaseServerPacket>(std::vector<uint8_t> &)>> packetIDToParseStatus = {
+            {ServerPacketsID::StatusRequest, &parseStatusRequest}
     };
 
     static const std::unordered_map<ServerPacketsID, std::function<std::shared_ptr<BaseServerPacket>(std::vector<uint8_t> &)>> packetIDToParseLogin = {

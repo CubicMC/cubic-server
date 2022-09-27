@@ -51,6 +51,7 @@ private:
     // Packet handling (This will be moved somewhere later)
 
     void _onHandshake(std::shared_ptr<Client> cli, const std::shared_ptr<protocol::Handshake>& pck);
+    void _onStatusRequest(std::shared_ptr<Client> cli, const std::shared_ptr<protocol::StatusRequest>& pck);
 };
 
 #endif /* F43D56DD_C750_470F_A7C9_27CE21D37FC3 */
