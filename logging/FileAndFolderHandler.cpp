@@ -76,14 +76,8 @@ namespace logging
      */
     bool FileAndFolderHandler::file_exist(std::string filename) const
     {
-        std::fstream file;
-        file.open(filename);
-        if (file.is_open()) {
-            file.close();
-            return true;
-        }
-        file.close();
-        return false;
+        struct stat info;
+        return (stat(filename.c_str(), &info) == 0);
     }
 
     /**
