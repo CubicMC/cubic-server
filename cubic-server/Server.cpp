@@ -152,7 +152,7 @@ void Server::_acceptLoop()
             // never happen
             cli->setRunningThread(cli_thread);
 
-            std::cout << "Client added to the list" << std::endl;
+//            std::cout << "Client added to the list" << std::endl;
         }
 
         _clients.erase(std::remove_if(
