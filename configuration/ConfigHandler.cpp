@@ -54,6 +54,7 @@ YAML::Node Configuration::ConfigHandler::getNode(std::string node_name)
                 return got->second;
             } else {
                 throw std::invalid_argument("This node does not exist.");
+                return NULL;
             }
         }
     }
@@ -61,4 +62,5 @@ YAML::Node Configuration::ConfigHandler::getNode(std::string node_name)
     {
         std::cerr << e.what() << '\n';
     }
+    return NULL;
 }
