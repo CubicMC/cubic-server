@@ -24,7 +24,7 @@ namespace logging
      *
      * @return std::string the string corresponding to the LogLevel
      */
-    std::string level_to_string(LogLevel level);
+    const std::string level_to_string(LogLevel& level);
 
     /**
      * @brief Handles logging in a file.

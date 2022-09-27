@@ -181,27 +181,21 @@ namespace logging
         return this->_specification_level_in_file;
     }
 
-    std::string level_to_string(LogLevel level)
+    const std::string level_to_string(LogLevel& level)
     {
         switch (level) {
             case LogLevel::DEBUG:
                 return "[DEBUG] ";
-                break;
             case LogLevel::INFO:
                 return "[INFO] ";
-                break;
             case LogLevel::WARNING:
                 return "[WARNING] ";
-                break;
             case LogLevel::ERROR:
                 return "[ERROR] ";
-                break;
             case LogLevel::FATAL:
                 return "[FATAL] ";
-                break;
             default:
                 return "[UNDEFINED] ";
-                break;
         }
     }
 }
