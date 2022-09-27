@@ -46,21 +46,14 @@ void Configuration::ConfigHandler::getConfigFile(std::string configFile)
 
 YAML::Node Configuration::ConfigHandler::getNode(std::string node_name)
 {
-    try
-    {
-        if (this->_configFile.count(node_name)) {
-            std::unordered_map<std::string, YAML::Node>::const_iterator got = this->_configFile.find(node_name);
-            if (got != this->_configFile.end()) {
-                return got->second;
-            } else {
-                throw std::invalid_argument("This node does not exist.");
-                return NULL;
-            }
-        }
+    YAML::Node null_node = YAML::Load("");
+
+    if (this->_configFile.count(node_name)) {
+        std::unordered_map<std::string, YAML::Node>::const_iterator got = this->_configFile.find(node_name);
+        if (got != this->_configFile.end())
+            return got->second;
+        else
+            return null_node;
     }
-    catch(const std::invalid_argument& e)
-    {
-        std::cerr << e.what() << '\n';
-    }
-    return NULL;
+    return null_node;
 }
