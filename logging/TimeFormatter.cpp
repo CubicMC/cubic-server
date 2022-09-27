@@ -21,13 +21,7 @@ namespace logging
         const std::tm* tm_now = std::localtime(&now);
         int millis = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count() - (now * 1000);
         std::stringstream ss;
-        ss << std::setw(2) << std::setfill('0') << tm_now->tm_year + 1900 << "/"
-           << std::setw(2) << std::setfill('0') << tm_now->tm_mon + 1 << "/"
-           << std::setw(2) << std::setfill('0') << tm_now->tm_mday << " "
-           << std::setw(2) << std::setfill('0') << tm_now->tm_hour << ":"
-           << std::setw(2) << std::setfill('0') << tm_now->tm_min << ":"
-           << std::setw(2) << std::setfill('0') << tm_now->tm_sec << "."
-           << std::setw(3) << std::setfill('0') << millis;
+        ss << std::put_time(tm_now, "%Y/%m/%d %H:%M:%S.") << std::setfill('0') << std::setw(3) << millis;
         return ss.str();
     }
 
