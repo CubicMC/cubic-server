@@ -207,11 +207,6 @@ void Server::_handleParsedClientPacket(std::shared_ptr<Client> cli,
 
 void Server::_onHandshake(std::shared_ptr<Client> cli, const std::shared_ptr<protocol::Handshake>& pck)
 {
-//    std::cout << "Got an handshake !" << "\n"
-//        << "Protocol version: " << pck->prot_version << "\n"
-//        << "Address: " << pck->addr << "\n"
-//        << "Port: " << pck->port << "\n"
-//        << "Next state: " << pck->next_state << std::endl;
     if (pck->next_state == 1)
         cli->setStatus(protocol::ClientStatus::Status);
     else if (pck->next_state == 2)
