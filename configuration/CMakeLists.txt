@@ -2,8 +2,21 @@
 # The extension is already found. Any number of sources could be listed here.
 add_library (ConfigHandler ConfigHandler.cpp)
 
+include(ExternalProject)
+set(YAML_LIB yaml-cpp)
+ExternalProject_Add(
+    yaml-cpp
+    GIT_REPOSITORY https://github.com/jbeder/yaml-cpp.git
+    GIT_TAG 4ae4cb7309c07b2d8623d7e4f01efa6321441366
+    PREFIX ${PROJECT_SOURCE_DIR}/${YAML_LIB}
+    CONFIGURE_COMMAND cmake ../${YAML_LIB}
+    BUILD_COMMAND cmake --build .
+    INSTALL_COMMAND cmake --install . --prefix ${PROJECT_SOURCE_DIR}
+    UPDATE_COMMAND ""
+)
+add_dependencies(yaml-cpp yaml-cpp)
+
 find_package(yaml-cpp CONFIG REQUIRED)
-target_link_libraries(yaml-cpp)
 
 
 # Make sure the compiler can find include files for our Hello library
