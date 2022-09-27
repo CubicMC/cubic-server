@@ -8,6 +8,7 @@ namespace logging
 {
     TEST(Logging, default_behavior)
     {
+        Logger::get_instance();
         FileAndFolderHandler ff_handler;
         std::string filename = TimeFormatter::get_time("YYYY-MM-DD-1.log");
 
