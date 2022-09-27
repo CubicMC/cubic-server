@@ -8,12 +8,11 @@ namespace logging
     /**
      * @brief Handles time formatting
      */
-    class TimeFormatter
+    namespace TimeFormatter
     {
-        public:
-            static std::string get_time();
-            static std::string get_time(std::string format);
-            static std::string get_time(std::string &format);
+        std::string get_time();
+        std::string get_time(std::string format);
+        std::string get_time(std::string& format);
     };
 }
 
