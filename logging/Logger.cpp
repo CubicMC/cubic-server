@@ -221,7 +221,7 @@ namespace logging
         return this->_specification_level_in_file;
     }
 
-    const std::string level_to_string(LogLevel& level)
+    const char* level_to_string(LogLevel& level)
     {
         switch (level) {
             case LogLevel::DEBUG:
