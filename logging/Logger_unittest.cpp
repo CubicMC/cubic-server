@@ -209,5 +209,10 @@ namespace logging
 
         EXPECT_NE(line.find("[FATAL]"), std::string::npos);
         EXPECT_NE(output.find("[FATAL]"), std::string::npos);
+
+        file.close();
+        filename = "logs/" + filename;
+        std::remove(filename.c_str());
+        rmdir("logs");
     }
 }
