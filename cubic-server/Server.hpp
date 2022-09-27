@@ -12,6 +12,15 @@
 
 #define PCK_CALLBACK(function, type) return this->function(cli, std::static_pointer_cast<type>(packet))
 
+#define PARSER_IT_DECLARE(state) \
+    std::unordered_map<protocol::ServerPacketsID, std::function<std::shared_ptr<protocol::BaseServerPacket>(std::vector<uint8_t> &)>>::const_iterator __##state
+
+#define GET_PARSER(state) __##state = protocol::packetIDToParse##state.find(packet_id); \
+    if (__##state == protocol::packetIDToParse##state.end()) \
+        throw std::runtime_error("Unknown packet ID"); \
+    parser = __##state->second;                                                                  \
+    break
+
 class Server
 {
 public:

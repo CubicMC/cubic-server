@@ -98,14 +98,27 @@ void Server::_handleClientPacket(std::shared_ptr<Client> cli)
         const uint8_t *start_payload = at;
         // Handle the packet if the length is there
         const auto packet_id = static_cast<protocol::ServerPacketsID>(protocol::popVarInt(at, eof));
-        auto parser_it = protocol::packetIDToParse.find(packet_id);
-        if (parser_it == protocol::packetIDToParse.end())
-            throw std::runtime_error("Unknown packet ID");
+        auto status = cli->getStatus();
+        std::function<std::shared_ptr<protocol::BaseServerPacket>(std::vector<uint8_t> &)> parser;
+        PARSER_IT_DECLARE(Initial);
+        PARSER_IT_DECLARE(Login);
+        PARSER_IT_DECLARE(Status);
+        PARSER_IT_DECLARE(Play);
+        switch (status) {
+        case protocol::ClientStatus::Initial:
+            GET_PARSER(Initial);
+        case protocol::ClientStatus::Login:
+            GET_PARSER(Login);
+        case protocol::ClientStatus::Status:
+            GET_PARSER(Status);
+        case protocol::ClientStatus::Play:
+            GET_PARSER(Play);
+        }
         std::vector<uint8_t> to_parse(data.begin() + (at - data.data()), data.end());
-        auto packet = (*parser_it).second(to_parse);
+        auto packet = parser(to_parse);
         // Callback to handle the packet
         _handleParsedClientPacket(cli, packet, packet_id);
-        data.erase(data.begin(), data.begin() + (start_payload - data.data()) + length + 1);
+        data.erase(data.begin(), data.begin() + (start_payload - data.data()) + length);
     }
 }
 
@@ -171,17 +184,20 @@ void Server::_handleParsedClientPacket(std::shared_ptr<Client> cli,
     case ClientStatus::Login:
         // Add packets here
         break;
+    case ClientStatus::Play:
+        // Add packets here
+        break;
     }
     std::cout << "Unknown packet" << std::endl; // TODO: Properly handle the unknown packet
 }
 
 void Server::_onHandshake(std::shared_ptr<Client> cli, const std::shared_ptr<protocol::Handshake>& pck)
 {
-    std::cout << "Got an handshake !" << "\n"
-        << "Protocol version: " << pck->prot_version << "\n"
-        << "Address: " << pck->addr << "\n"
-        << "Port: " << pck->port << "\n"
-        << "Next state: " << pck->next_state << std::endl;
+//    std::cout << "Got an handshake !" << "\n"
+//        << "Protocol version: " << pck->prot_version << "\n"
+//        << "Address: " << pck->addr << "\n"
+//        << "Port: " << pck->port << "\n"
+//        << "Next state: " << pck->next_state << std::endl;
     if (pck->next_state == 1)
         cli->setStatus(protocol::ClientStatus::Status);
     else if (pck->next_state == 2)
