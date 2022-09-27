@@ -16,16 +16,10 @@ namespace logging
      */
     void FileAndFolderHandler::create_folder(std::string folder_name)
     {
-        if (mkdir(folder_name.c_str(), 0777) != 0) {
+        if (mkdir(folder_name.c_str(), 0777) != 0)
             if (errno != EEXIST)
                 throw std::runtime_error(std::strerror(errno));
-            else {
-                std::cout << "Folder '" << folder_name << "' already exist. Setting it as folder_path" << std::endl;
-                this->_folder_path = folder_name;
-            }
-        } else {
-            this->_folder_path = folder_name;
-        }
+        this->_folder_path = folder_name;
     }
 
     /**
