@@ -74,7 +74,7 @@ namespace logging
      * @return true The file exist
      * @return false The file doesn't exist
      */
-    bool FileAndFolderHandler::file_exist(std::string filename) const
+    bool FileAndFolderHandler::file_exist(std::string filename)
     {
         struct stat info;
         return (stat(filename.c_str(), &info) == 0);

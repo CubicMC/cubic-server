@@ -14,7 +14,7 @@ namespace logging
             void create_folder(std::string folder_name);
             bool folder_exist(std::string foldername) const;
             void create_file(std::string filename);
-            bool file_exist(std::string filename) const;
+            static bool file_exist(std::string filename);
             const std::string& get_folder_path() const;
             const std::string& get_file_path() const;
             void unset_folder_path();
