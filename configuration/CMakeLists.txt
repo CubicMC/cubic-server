@@ -2,50 +2,35 @@
 # The extension is already found. Any number of sources could be listed here.
 add_library (ConfigHandler ConfigHandler.cpp)
 
-################ Find yaml-cpp ################
+# include(ExternalProject)
+# set(YAML_LIB yaml-cpp)
+# ExternalProject_Add(
+#     yaml-cpp
+#     SOURCE_DIR ${PROJECT_SOURCE_DIR}/${YAML_LIB}
+#     GIT_REPOSITORY https://github.com/jbeder/yaml-cpp.git
 
-find_package (PkgConfig REQUIRED)
+#     # CONFIGURE_COMMAND cmake ../${YAML_LIB}
+#     # BUILD_COMMAND cmake --build .
+#     # INSTALL_COMMAND cmake --install . --prefix ${PROJECT_SOURCE_DIR}
+#     # UPDATE_COMMAND ""
+# )
+# add_dependencies(yaml-cpp yaml-cpp)
 
-pkg_search_module (yaml-cpp_PC yaml-cpp)
+# find_package(yaml-cpp REQUIRED)
 
-find_library (yaml-cpp_LIBRARY
-  NAMES yaml-cpp
-  HINTS
-    ${yaml-cpp_PC_LIBDIR}
-    ${yaml-cpp_PC_LIBRARY_DIRS})
+include(FetchContent)
 
-find_path (yaml-cpp_INCLUDE_DIR
-  NAMES yaml-cpp/yaml.h
-  PATH_SUFFIXES yaml-cpp
-  HINTS
-    ${yaml-cpp_PC_INCLUDEDIR}
-    ${yaml-cpp_PC_INCLUDE_DIRS})
+FetchContent_Declare(yaml-cpp
+  GIT_REPOSITORY https://github.com/jbeder/yaml-cpp.git
+  GIT_TAG 4ae4cb7309c07b2d8623d7e4f01efa6321441366)  # The latest yaml-cpp commit at the time of writing.
+FetchContent_GetProperties(yaml-cpp)
+if(NOT yaml-cpp_POPULATED)
+  message(STATUS "Fetching yaml-cpp...")
+  FetchContent_Populate(yaml-cpp)
+  add_subdirectory(${yaml-cpp_SOURCE_DIR} ${yaml-cpp_BINARY_DIR})
+endif()
 
-mark_as_advanced (
-  yaml-cpp_LIBRARY
-  yaml-cpp_INCLUDE_DIR)
-
-include (FindPackageHandleStandardArgs)
-
-find_package_handle_standard_args (yaml-cpp
-  REQUIRED_VARS
-    yaml-cpp_LIBRARY
-    yaml-cpp_INCLUDE_DIR
-  VERSION_VAR yaml-cpp_PC_VERSION)
-
-set (yaml-cpp_LIBRARIES ${yaml-cpp_LIBRARY})
-set (yaml-cpp_INCLUDE_DIRS ${yaml-cpp_INCLUDE_DIR})
-
-if (yaml-cpp_FOUND AND NOT (TARGET yaml-cpp::yaml-cpp))
-  add_library (yaml-cpp::yaml-cpp UNKNOWN IMPORTED)
-
-  set_target_properties (yaml-cpp::yaml-cpp
-    PROPERTIES
-      IMPORTED_LOCATION ${yaml-cpp_LIBRARY}
-      INTERFACE_INCLUDE_DIRECTORIES ${yaml-cpp_INCLUDE_DIRS})
-endif ()
-
-################################################
+target_link_libraries(ConfigHandler PUBLIC yaml-cpp::yaml-cpp)
 
 
 # Make sure the compiler can find include files for our Hello library
