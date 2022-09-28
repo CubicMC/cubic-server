@@ -36,6 +36,7 @@ endif()
 add_subdirectory (protocol)
 add_subdirectory (cubic-server)
 add_subdirectory (math)
+add_subdirectory (configuration)
 add_subdirectory (logging)
 add_subdirectory (interface)
 
