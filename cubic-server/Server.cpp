@@ -215,5 +215,6 @@ void Server::_onStatusRequest(std::shared_ptr<Client> cli, const std::shared_ptr
 
 void Server::_onPingRequest(std::shared_ptr<Client> cli, const std::shared_ptr<protocol::PingRequest> &pck)
 {
+    auto ping = pck->payload;
     std::cout << "Got a ping request" << std::endl;
 }
