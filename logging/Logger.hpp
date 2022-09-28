@@ -32,7 +32,7 @@ namespace logging
     class Logger
     {
         public:
-            Logger();
+            static Logger& get_instance();
             ~Logger();
 
             void debug(std::string message);
@@ -59,8 +59,15 @@ namespace logging
             const std::unordered_map<LogLevel, std::string>& get_display_specification_level_in_console() const;
 
         private:
-            std::fstream _file_stream;                              /// Stream to the current log file
-            FileAndFolderHandler _file_and_folder_handler;          /// Handler for files and folders
+            Logger();                                                                   /// Private constructor to prevent multiple instances
+            Logger(const Logger&) = delete;
+            Logger& operator=(const Logger&) = delete;
+            Logger(Logger&&) = delete;
+            Logger& operator=(Logger&&) = delete;
+
+
+            std::fstream _file_stream;                                                  /// Stream to the current log file
+            FileAndFolderHandler _file_and_folder_handler;                              /// Handler for files and folders
 
             std::unordered_map<LogLevel, std::string> _specification_level_in_file;     /// Map of LogLevel and his associated string to display in the log file
             std::unordered_map<LogLevel, std::string> _specification_level_in_console;  /// Map of LogLevel and his associated string to display in the console
