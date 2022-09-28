@@ -37,6 +37,7 @@ add_subdirectory (protocol)
 add_subdirectory (cubic-server)
 add_subdirectory (math)
 add_subdirectory (logging)
+add_subdirectory (interface)
 
 if(GTEST)
   enable_testing()
