@@ -12,117 +12,84 @@ on:
         description: the tag to put on the release
         required: true
         type: text
-      release_name:
-        description: the name of the release
-        required: true
-        type: text
 
 env:
   BUILD_TYPE: Release
-  SOLUTION_FILE_PATH: .
-  # CC: /platform/bin/gcc
-  # CXX: /platform/bin/g++
+  CC: /platform/bin/gcc
+  CXX: /platform/bin/g++
 
 jobs:
-  build-windows:
-    runs-on: windows-latest
-
-    steps:
-    - uses: actions/checkout@v3
-
-    - name: Add MSBuild to PATH
-      uses: microsoft/setup-msbuild@v1.0.2
-
-    - name: Restore NuGet packages
-      working-directory: ${{env.GITHUB_WORKSPACE}}
-      run: nuget restore ${{env.SOLUTION_FILE_PATH}}
-
-    - name: Build
-      working-directory: ${{env.GITHUB_WORKSPACE}}
-      # Add additional options to the MSBuild command line here (like platform or verbosity level).
-      # See https://docs.microsoft.com/visualstudio/msbuild/msbuild-command-line-reference
-      run: msbuild /m /p:Configuration=${{env.BUILD_TYPE}} ${{env.SOLUTION_FILE_PATH}}
-
-    - name: Path to executable
-      run: ls -l ${{env.GITHUB_WORKSPACE}}/build
-
-  build-macos:
-    runs-on: macos-latest
-
-    steps:
-    - uses: actions/checkout@v3
-
-    - name: Install dependencies
-      run: |
-        brew install cmake
-        brew install gcc@12
-        brew install g++@12
-      env:
-        CC: /usr/local/bin/gcc-12
-        CXX: /usr/local/bin/g++-12
-
-    - name: Configure CMake
-      run: cmake -S ${{github.workspace}} -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}}
-
-    - name: Build
-      run: cmake --build ${{github.workspace}}/build --config ${{env.BUILD_TYPE}} -j4
-
-    - name: Path to executable
-      run: ls -l ${{github.workspace}}/build
-
   build-ubuntu:
-    runs-on: ubuntu-22.04
+    runs-on: self-hosted
 
     steps:
     - uses: actions/checkout@v3
-
-    - name: Install dependencies
-      run: |
-        sudo apt-get update
-        sudo apt-get install cmake
-        sudo apt-get install g++-12
-      env:
-        CC: /usr/bin/gcc-12
-        CXX: /usr/bin/g++-12
 
     - name: Configure CMake
       run: cmake -S ${{github.workspace}} -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}}
 
     - name: Build
-      run: cmake --build ${{github.workspace}}/build --config ${{env.BUILD_TYPE}} -j4
+      run: cmake --build ${{github.workspace}}/build --config ${{env.BUILD_TYPE}} -j8
 
-    - name: Path to executable
-      run: ls -l ${{github.workspace}}/build
+    - name: Create temp folder
+      run: |
+        mkdir ${{github.workspace}}/temp
+        cp ${{github.workspace}}/build/cubic-server/cubic-server ${{github.workspace}}/temp
 
-#   matrix:
-#     strategy:
-#       matrix:
-#         os: [ubuntu-22.04, macos-latest, windows-latest]
+    - name: Create release
+      if: github.event_name != 'workflow_dispatch'
+        uses: actions/upload-artifact@v3
+        with:
+          name: cubic-server_${{ github.ref_name }}
+          path: ${{github.workspace}}/temp/cubic-server
+      else:
+        uses: actions/upload-artifact@v3
+        with:
+          name: cubic-server_${{ inputs.release_tag_name }}_${{ env.BUILD_TYPE }}
+          path: ${{github.workspace}}/temp/cubic-server
 
-#     runs-on: ${{ matrix.os }}
+# build-windows:
+#     runs-on: windows-latest
 
 #     steps:
 #     - uses: actions/checkout@v3
 
-#     - name: Setup Ubuntu
-#       if: matrix.os == 'ubuntu-latest'
-#       run: |
-#         sudo apt-get update
-#         sudo apt-get upgrade
-#         sudo apt install gcc-12 g++-12
-#       env:
-#         CC: /usr/bin/gcc-12
-#         CXX: /usr/bin/g++-12
+#     - name: Add MSBuild to PATH
+#       uses: microsoft/setup-msbuild@v1.0.2
 
-#       elif: matrix.os == 'macos-latest'
+#     - name: Restore NuGet packages
+#       working-directory: ${{env.GITHUB_WORKSPACE}}
+#       run: nuget restore ${{env.SOLUTION_FILE_PATH}}
+
+#     - name: Build
+#       working-directory: ${{env.GITHUB_WORKSPACE}}
+#       Add additional options to the MSBuild command line here (like platform or verbosity level).
+#       See https://docs.microsoft.com/visualstudio/msbuild/msbuild-command-line-reference
+#       run: msbuild /m /p:Configuration=${{env.BUILD_TYPE}} ${{env.SOLUTION_FILE_PATH}}
+
+#     - name: Path to executable
+#       run: ls -l ${{env.GITHUB_WORKSPACE}}/build
+
+#   build-macos:
+#     runs-on: macos-latest
+
+#     steps:
+#     - uses: actions/checkout@v3
+
+#     - name: Install dependencies
 #       run: |
+#         brew install cmake
 #         brew install gcc@12
+#         brew install g++@12
 #       env:
 #         CC: /usr/local/bin/gcc-12
 #         CXX: /usr/local/bin/g++-12
 
-#     - name: CMake configuration
-#       run: cmake -S ${{github.workspace}} -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -D GTEST=true
+#     - name: Configure CMake
+#       run: cmake -S ${{github.workspace}} -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}}
 
 #     - name: Build
-#       run: cmake --build ${{github.workspace}}/build --config ${{env.BUILD_TYPE}} -j8
+#       run: cmake --build ${{github.workspace}}/build --config ${{env.BUILD_TYPE}} -j4
+
+#     - name: Path to executable
+#       run: ls -l ${{github.workspace}}/build
