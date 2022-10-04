@@ -1,13 +1,7 @@
 # Name the workflow
-name: Build
+name: Requested build
 
 on:
-  # Trigger the workflow on push on the master branch
-  push:
-    branches: [ "master" ]
-  # Trigger the workflow on pull request events
-  pull_request:
-    branches: [ "*" ]
   # Trigger the workflow manually
   workflow_dispatch:
     # Allow the user to enter custom parameters
