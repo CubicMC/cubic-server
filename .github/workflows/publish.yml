@@ -15,15 +15,20 @@ on:
 
 env:
   BUILD_TYPE: Release
-  CC: /platform/bin/gcc
-  CXX: /platform/bin/g++
+  CC: /platform/bin/gcc # /bin/gcc-12
+  CXX: /platform/bin/g++ # /bin/g++-12
 
 jobs:
   build-ubuntu:
-    runs-on: self-hosted
+    runs-on: self-hosted # Ubuntu 20.04
 
     steps:
     - uses: actions/checkout@v3
+
+    # - name: Install dependencies
+    #   run: |
+    #     sudo apt-get update
+    #     sudo apt-get install -y gcc-12 g++-12 cmake pkg-config gtkmm-3.0
 
     - name: Configure CMake
       run: cmake -S ${{github.workspace}} -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}}
@@ -36,17 +41,19 @@ jobs:
         mkdir ${{github.workspace}}/temp
         cp ${{github.workspace}}/build/cubic-server/cubic-server ${{github.workspace}}/temp
 
-    - name: Create release
+    - name: Create release in case of tag
       if: github.event_name != 'workflow_dispatch'
-        uses: actions/upload-artifact@v3
-        with:
-          name: cubic-server_${{ github.ref_name }}
-          path: ${{github.workspace}}/temp/cubic-server
-      else:
-        uses: actions/upload-artifact@v3
-        with:
-          name: cubic-server_${{ inputs.release_tag_name }}_${{ env.BUILD_TYPE }}
-          path: ${{github.workspace}}/temp/cubic-server
+      uses: actions/upload-artifact@v3
+      with:
+        name: cubic-server_${{ github.ref_name }}
+        path: ${{github.workspace}}/temp/cubic-server
+
+    - name: Create release in case of workflow_dispatch
+      if: github.event_name == 'workflow_dispatch'
+      uses: actions/upload-artifact@v3
+      with:
+        name: cubic-server_${{ inputs.release_tag_name }}_${{ env.BUILD_TYPE }}
+        path: ${{github.workspace}}/temp/cubic-server
 
 # build-windows:
 #     runs-on: windows-latest
