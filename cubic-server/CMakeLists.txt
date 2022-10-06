@@ -7,4 +7,4 @@ find_package(Threads REQUIRED)
 # Link the executable to the Hello library. Since the Hello library has
 # public include directories we will use those link directories when building
 # helloDemo
-target_link_libraries (cubic-server PRIVATE Protocol Threads::Threads Logging)
+target_link_libraries (cubic-server PRIVATE Protocol Threads::Threads Logging nlohmann_json::nlohmann_json)
