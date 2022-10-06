@@ -10,6 +10,11 @@
 namespace protocol
 {
 
+    enum class ClientPacketID : int32_t {
+        STATUS = 0x00,
+        PING = 0x01
+    };
+
     struct PingResponse
     {
         int64_t payload;
