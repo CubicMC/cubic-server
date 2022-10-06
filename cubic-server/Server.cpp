@@ -9,9 +9,12 @@
 #include <cstring>
 #include <algorithm>
 
+#include <nlohmann/json.hpp>
+
 #include "Server.hpp"
 #include "typeSerialization.hpp"
 #include "ServerPackets.hpp"
+#include "ClientPackets.hpp"
 
 Server::Server(const std::string &host, uint16_t port)
     : _host(host), _port(port)
@@ -211,10 +214,28 @@ void Server::_onHandshake(std::shared_ptr<Client> cli, const std::shared_ptr<pro
 void Server::_onStatusRequest(std::shared_ptr<Client> cli, const std::shared_ptr<protocol::StatusRequest> &pck)
 {
     std::cout << "Got a status request" << std::endl;
+
+    nlohmann::json json;
+    json["version"]["name"] = "1.19"; // TODO: Change with the actual version
+    json["version"]["protocol"] = 759; // TODO: change with the protocol version we are using
+    json["players"]["max"] = 100; // TODO: get it from the config
+    json["players"]["online"] = std::count_if(_clients.begin(), _clients.end(), [](std::shared_ptr<Client> &each) { return each->getStatus() == protocol::ClientStatus::Play; });
+    json["description"]["text"] = "A Minecraft server"; // TODO: get it from the config
+    json["favicon"] = DEFAULT_FAVICON; // TODO: get it from the config ?
+    json["previewsChat"] = false; // TODO: check what we want to do with this
+    json["enforcesSecureChat"] = false; // TODO: check what we want to do with this
+    std::string status = json.dump();
+    const protocol::StatusResponse status_res(status);
+    // auto status_res_pck = protocol::createStatusResponse(status_res); // Why this is throwing undefined reference to `protocol::createStatusResponse(protocol::StatusResponse const&)' at link time ?
+    // cli->sendData(*status_res_pck);
+    std::cout << "Sent status response" << std::endl;
 }
 
 void Server::_onPingRequest(std::shared_ptr<Client> cli, const std::shared_ptr<protocol::PingRequest> &pck)
 {
-    auto ping = pck->payload;
     std::cout << "Got a ping request" << std::endl;
+    const protocol::PingResponse ping_res(pck->payload);
+    // auto ping_res_pck = protocol::createPingResponse(ping_res); // Why this is throwing undefined reference to `protocol::createPingResponse(protocol::PingResponse const&)' at link time ?
+    // cli->sendData(*ping_res_pck);
+    std::cout << "Sent a ping response" << std::endl;
 }
