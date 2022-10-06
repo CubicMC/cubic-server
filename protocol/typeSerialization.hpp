@@ -63,6 +63,16 @@ namespace protocol
         return value;
     }
     // void addVarString(const std::string &data, std::vector<uint8_t> &buffer);
+    constexpr void addString(std::vector<uint8_t> &out, const std::string &data)
+    {
+        if (data.size() > 32767)
+            throw MaxLengthString("String is too long");
+
+        addVarInt(out, data.size());
+
+        for (char c : data)
+            out.push_back(c);
+    }
 
     constexpr uint16_t popUnsignedShort(uint8_t *&at, uint8_t *eof)
     {
