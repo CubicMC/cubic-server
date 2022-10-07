@@ -12,19 +12,22 @@
 #include <nlohmann/json.hpp>
 
 #include "Server.hpp"
+
 #include "typeSerialization.hpp"
 #include "ServerPackets.hpp"
 #include "ClientPackets.hpp"
 
+#include "Logger.hpp"
+
 Server::Server(const std::string &host, uint16_t port)
     : _host(host), _port(port)
 {
-    std::cout << "Server created" << std::endl;
+    logging::Logger::get_instance().debug("Server created with host: " + host + " and port: " + std::to_string(port));
 }
 
 Server::~Server()
 {
-    std::cout << "Server destroyed" << std::endl;
+    logging::Logger::get_instance().debug("Server destroyed");
 }
 
 void Server::launch()
@@ -195,7 +198,8 @@ void Server::_handleParsedClientPacket(std::shared_ptr<Client> cli,
         // Add packets here
         break;
     }
-    std::cout << "Unknown packet" << std::endl; // TODO: Properly handle the unknown packet
+    logging::Logger::get_instance().error("Unhandled packet: " + std::to_string(static_cast<int>(packetID)) +
+        " in status " + std::to_string(static_cast<int>(status))); // TODO: Properly handle the unknown packet
 }
 
 void Server::_onHandshake(std::shared_ptr<Client> cli, const std::shared_ptr<protocol::Handshake>& pck)
@@ -213,7 +217,7 @@ void Server::_onHandshake(std::shared_ptr<Client> cli, const std::shared_ptr<pro
 
 void Server::_onStatusRequest(std::shared_ptr<Client> cli, const std::shared_ptr<protocol::StatusRequest> &pck)
 {
-    std::cout << "Got a status request" << std::endl;
+    logging::Logger::get_instance().debug("Got a status request");
 
     nlohmann::json json;
     json["version"]["name"] = "1.19"; // TODO: Change with the actual version
@@ -225,17 +229,16 @@ void Server::_onStatusRequest(std::shared_ptr<Client> cli, const std::shared_ptr
     json["previewsChat"] = false; // TODO: check what we want to do with this
     json["enforcesSecureChat"] = false; // TODO: check what we want to do with this
     std::string status = json.dump();
+    logging::Logger::get_instance().debug("Json status: " + status);
+
     const protocol::StatusResponse status_res(status);
-    // auto status_res_pck = protocol::createStatusResponse(status_res); // Why this is throwing undefined reference to `protocol::createStatusResponse(protocol::StatusResponse const&)' at link time ?
-    // cli->sendData(*status_res_pck);
-    std::cout << "Sent status response" << std::endl;
+    logging::Logger::get_instance().debug("Sent status response");
 }
 
 void Server::_onPingRequest(std::shared_ptr<Client> cli, const std::shared_ptr<protocol::PingRequest> &pck)
 {
-    std::cout << "Got a ping request" << std::endl;
+    logging::Logger::get_instance().debug("Got a ping request with payload: " + std::to_string(pck->payload));
+
     const protocol::PingResponse ping_res(pck->payload);
-    // auto ping_res_pck = protocol::createPingResponse(ping_res); // Why this is throwing undefined reference to `protocol::createPingResponse(protocol::PingResponse const&)' at link time ?
-    // cli->sendData(*ping_res_pck);
-    std::cout << "Sent a ping response" << std::endl;
+    logging::Logger::get_instance().debug("Sent a ping response");
 }
