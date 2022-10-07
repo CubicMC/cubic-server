@@ -92,10 +92,13 @@ namespace protocol
     constexpr int64_t popLong(uint8_t *&at, uint8_t *eof)
     {
         if (eof - at < 7)
-            throw PacketEOF("Not enough data in packet to parse a long");
+            throw PacketEOF("Not enough data in packet to parse a Long");
 
-        int64_t value = *((int64_t *)(at));
-        at += 8;
+        int64_t value = 0;
+
+        for (int i = 0; i < 8; i++)
+            value = (value << 8) + *at++;
+
         return value;
     }
 
