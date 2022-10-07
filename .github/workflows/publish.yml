@@ -2,10 +2,8 @@ name: Publish
 
 on:
   push:
-    tags:
-      - "**"
-  release:
-    types: [released]
+    tags: ["v*.*.*"]
+
   workflow_dispatch:
     inputs:
       release_tag_name:
