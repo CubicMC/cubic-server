@@ -101,15 +101,14 @@ namespace protocol
 
     constexpr void addLong(std::vector<uint8_t> &out, const int64_t &data)
     {
-        // TODO: Fix this, as this just cannot work
-        // Can look at https://github.com/cuberite/cuberite/blob/5ae924ec74bab199284c451552040bcc6f39bb3a/src/Endianness.h
-        // as the endianness looks like too much pain
-        const size_t current_size = out.size();
-        out.reserve(current_size + 4);
-        out.push_back(data & 0xF000);
-        out.push_back(data & 0x0F00);
-        out.push_back(data & 0x00F0);
-        out.push_back(data & 0x000F);
+        out.push_back((data >> 56) & 0xFF);
+        out.push_back((data >> 48) & 0xFF);
+        out.push_back((data >> 40) & 0xFF);
+        out.push_back((data >> 32) & 0xFF);
+        out.push_back((data >> 24) & 0xFF);
+        out.push_back((data >> 16) & 0xFF);
+        out.push_back((data >> 8) & 0xFF);
+        out.push_back(data & 0xFF);
     }
 }
 
