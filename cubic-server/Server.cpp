@@ -188,6 +188,7 @@ void Server::_handleParsedClientPacket(std::shared_ptr<Client> cli,
         switch (packetID) {
         case ServerPacketsID::StatusRequest:
             PCK_CALLBACK(_onStatusRequest, StatusRequest);
+        case ServerPacketsID::PingRequest:
             PCK_CALLBACK(_onPingRequest, PingRequest);
         }
         break;
