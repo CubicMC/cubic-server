@@ -28,7 +28,7 @@
 class Server
 {
 public:
-    Server(const std::string &host, uint16_t port);
+    Server();
     ~Server();
 
     void launch();
@@ -43,8 +43,8 @@ private:
                                    const std::shared_ptr<protocol::BaseServerPacket>& packet,
                                    protocol::ServerPacketsID packetID);
 
-    const std::string &_host;
-    const uint16_t _port;
+    std::string _host;
+    uint16_t _port;
 
     // Looks like it is thread-safe, if something breaks it is here
     std::vector<std::shared_ptr<Client>> _clients;

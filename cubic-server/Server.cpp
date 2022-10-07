@@ -19,10 +19,12 @@
 
 #include "Logger.hpp"
 
-Server::Server(const std::string &host, uint16_t port)
-    : _host(host), _port(port), _config("config.yml")
+Server::Server()
+    : _config("config.yml")
 {
-    logging::Logger::get_instance().debug("Server created with host: " + host + " and port: " + std::to_string(port));
+    _host = _config.getNode("ip").as<std::string>();
+    _port = _config.getNode("port").as<uint16_t>();
+    logging::Logger::get_instance().debug("Server created with host: " + _host + " and port: " + std::to_string(_port));
 }
 
 Server::~Server()

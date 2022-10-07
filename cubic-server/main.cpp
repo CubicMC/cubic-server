@@ -17,6 +17,6 @@ int main(int argc, char **argv)
         return 0;
     }
 
-    auto srv = Server("0.0.0.0", 25565);
+    auto srv = Server();
     srv.launch();
 }
