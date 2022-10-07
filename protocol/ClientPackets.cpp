@@ -3,7 +3,7 @@
 
 using namespace protocol;
 
-std::shared_ptr<std::vector<uint8_t>> createPingResponse(const PingResponse &in)
+std::shared_ptr<std::vector<uint8_t>> protocol::createPingResponse(const PingResponse &in)
 {
     std::vector<uint8_t> payload;
     serialize(payload, in.payload, addLong);
@@ -14,7 +14,7 @@ std::shared_ptr<std::vector<uint8_t>> createPingResponse(const PingResponse &in)
     return packet;
 }
 
-std::shared_ptr<std::vector<uint8_t>> createStatusResponse(const StatusResponse &in)
+std::shared_ptr<std::vector<uint8_t>> protocol::createStatusResponse(const StatusResponse &in)
 {
     std::vector<uint8_t> payload;
     serialize(payload, in.payload, addString);

@@ -233,6 +233,9 @@ void Server::_onStatusRequest(std::shared_ptr<Client> cli, const std::shared_ptr
     logging::Logger::get_instance().debug("Json status: " + status);
 
     const protocol::StatusResponse status_res(status);
+    auto status_res_pck = protocol::createStatusResponse(status_res);
+    cli->sendData(*status_res_pck);
+
     logging::Logger::get_instance().debug("Sent status response");
 }
 
@@ -241,5 +244,8 @@ void Server::_onPingRequest(std::shared_ptr<Client> cli, const std::shared_ptr<p
     logging::Logger::get_instance().debug("Got a ping request with payload: " + std::to_string(pck->payload));
 
     const protocol::PingResponse ping_res(pck->payload);
+    auto ping_res_pck = protocol::createPingResponse(ping_res);
+    cli->sendData(*ping_res_pck);
+
     logging::Logger::get_instance().debug("Sent a ping response");
 }
