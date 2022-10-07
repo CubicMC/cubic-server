@@ -10,6 +10,8 @@
 #include "Client.hpp"
 #include "ServerPackets.hpp"
 
+#include "ConfigHandler.hpp"
+
 #define PCK_CALLBACK(function, type) return this->function(cli, std::static_pointer_cast<type>(packet))
 
 #define PARSER_IT_DECLARE(state) \
@@ -55,6 +57,8 @@ private:
     void _onHandshake(std::shared_ptr<Client> cli, const std::shared_ptr<protocol::Handshake>& pck);
     void _onStatusRequest(std::shared_ptr<Client> cli, const std::shared_ptr<protocol::StatusRequest>& pck);
     void _onPingRequest(std::shared_ptr<Client> cli, const std::shared_ptr<protocol::PingRequest>& pck);
+
+    Configuration::ConfigHandler _config;
 };
 
 #endif /* F43D56DD_C750_470F_A7C9_27CE21D37FC3 */
