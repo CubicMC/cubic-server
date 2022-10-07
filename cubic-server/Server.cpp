@@ -221,12 +221,12 @@ void Server::_onStatusRequest(std::shared_ptr<Client> cli, const std::shared_ptr
     logging::Logger::get_instance().debug("Got a status request");
 
     nlohmann::json json;
-    json["version"]["name"] = "1.19"; // TODO: Change with the actual version
-    json["version"]["protocol"] = 759; // TODO: change with the protocol version we are using
+    json["version"]["name"] = "1.19"; // TODO: Change with a non hardcoded value
+    json["version"]["protocol"] = 759; // TODO: change with a non hardcoded value equal to the protocol version we are using
     json["players"]["max"] = _config.getNode("max_players").as<int>();
     json["players"]["online"] = std::count_if(_clients.begin(), _clients.end(), [](std::shared_ptr<Client> &each) { return each->getStatus() == protocol::ClientStatus::Play; });
     json["description"]["text"] = _config.getNode("motd").as<std::string>();
-    json["favicon"] = DEFAULT_FAVICON; // TODO: get it from the config ?
+    // json["favicon"] = DEFAULT_FAVICON; // TODO: get it from the config ? // this invalid the packet if present but idk why
     json["previewsChat"] = false; // TODO: check what we want to do with this
     json["enforcesSecureChat"] = false; // TODO: check what we want to do with this
     std::string status = json.dump();
