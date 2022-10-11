@@ -19,10 +19,10 @@ jobs:
     strategy:
       matrix:
         include:
-          - CCcompiler: "/bin/gcc-12"
-            CXXcompiler: "/bin/g++-12"
-          - CCcompiler: "/bin/clang"
-            CXXcompiler: "/bin/clang++"
+          - CCcompiler: "/usr/bin/gcc-12"
+            CXXcompiler: "/usr/bin/g++-12"
+          - CCcompiler: "/usr/bin/clang-15"
+            CXXcompiler: "/usr/bin/clang++-15"
 
     runs-on: self-hosted
 
