@@ -17,3 +17,17 @@ std::shared_ptr<Handshake> protocol::parseHandshake(std::vector<uint8_t> &buffer
           popVarInt, &Handshake::next_state);
     return h;
 }
+
+std::shared_ptr<StatusRequest> protocol::parseStatusRequest(std::vector<uint8_t> &buffer)
+{
+    return {};
+}
+
+std::shared_ptr<PingRequest> protocol::parsePingRequest(std::vector<uint8_t> &buffer)
+{
+    auto h = std::make_shared<PingRequest>();
+
+    parse(buffer.data(), buffer.data() + buffer.size() - 1, *h,
+          popLong, &PingRequest::payload);
+    return h;
+}

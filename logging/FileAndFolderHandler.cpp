@@ -71,7 +71,13 @@ namespace logging
     bool FileAndFolderHandler::file_exist(std::string filename)
     {
         struct stat info;
-        return (stat(filename.c_str(), &info) == 0);
+        int ret = stat(filename.c_str(), &info);
+        if (ret == 0)
+            return true;
+        else if (errno == ENOENT)
+            return false;
+        else
+            throw std::runtime_error(std::strerror(errno));
     }
 
     /**

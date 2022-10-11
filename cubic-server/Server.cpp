@@ -9,19 +9,27 @@
 #include <cstring>
 #include <algorithm>
 
+#include <nlohmann/json.hpp>
+
 #include "Server.hpp"
+
 #include "typeSerialization.hpp"
 #include "ServerPackets.hpp"
+#include "ClientPackets.hpp"
 
-Server::Server(const std::string &host, uint16_t port)
-    : _host(host), _port(port)
+#include "Logger.hpp"
+
+Server::Server()
+    : _config("config.yml")
 {
-    std::cout << "Server created" << std::endl;
+    _host = _config.getNode("ip").as<std::string>();
+    _port = _config.getNode("port").as<uint16_t>();
+    logging::Logger::get_instance().debug("Server created with host: " + _host + " and port: " + std::to_string(_port));
 }
 
 Server::~Server()
 {
-    std::cout << "Server destroyed" << std::endl;
+    logging::Logger::get_instance().debug("Server destroyed");
 }
 
 void Server::launch()
@@ -98,14 +106,27 @@ void Server::_handleClientPacket(std::shared_ptr<Client> cli)
         const uint8_t *start_payload = at;
         // Handle the packet if the length is there
         const auto packet_id = static_cast<protocol::ServerPacketsID>(protocol::popVarInt(at, eof));
-        auto parser_it = protocol::packetIDToParse.find(packet_id);
-        if (parser_it == protocol::packetIDToParse.end())
-            throw std::runtime_error("Unknown packet ID");
+        auto status = cli->getStatus();
+        std::function<std::shared_ptr<protocol::BaseServerPacket>(std::vector<uint8_t> &)> parser;
+        PARSER_IT_DECLARE(Initial);
+        PARSER_IT_DECLARE(Login);
+        PARSER_IT_DECLARE(Status);
+        PARSER_IT_DECLARE(Play);
+        switch (status) {
+        case protocol::ClientStatus::Initial:
+            GET_PARSER(Initial);
+        case protocol::ClientStatus::Login:
+            GET_PARSER(Login);
+        case protocol::ClientStatus::Status:
+            GET_PARSER(Status);
+        case protocol::ClientStatus::Play:
+            GET_PARSER(Play);
+        }
         std::vector<uint8_t> to_parse(data.begin() + (at - data.data()), data.end());
-        auto packet = (*parser_it).second(to_parse);
+        auto packet = parser(to_parse);
         // Callback to handle the packet
         _handleParsedClientPacket(cli, packet, packet_id);
-        data.erase(data.begin(), data.begin() + (start_payload - data.data()) + length + 1);
+        data.erase(data.begin(), data.begin() + (start_payload - data.data()) + length);
     }
 }
 
@@ -139,7 +160,7 @@ void Server::_acceptLoop()
             // never happen
             cli->setRunningThread(cli_thread);
 
-            std::cout << "Client added to the list" << std::endl;
+//            std::cout << "Client added to the list" << std::endl;
         }
 
         _clients.erase(std::remove_if(
@@ -156,19 +177,77 @@ void Server::_handleParsedClientPacket(std::shared_ptr<Client> cli,
 {
     using namespace protocol;
 
-    switch (packetID) {
-    case ServerPacketsID::Handshake:
-        return this->_onHandshake(cli, std::static_pointer_cast<protocol::Handshake>(packet));
-    default:
-        std::cout << "Unknown packet" << std::endl;
+    auto status = cli->getStatus();
+
+    switch (status) {
+    case ClientStatus::Initial:
+        switch (packetID) {
+        case ServerPacketsID::Handshake:
+            PCK_CALLBACK(_onHandshake, Handshake);
+        }
+        break;
+    case ClientStatus::Status:
+        switch (packetID) {
+        case ServerPacketsID::StatusRequest:
+            PCK_CALLBACK(_onStatusRequest, StatusRequest);
+        case ServerPacketsID::PingRequest:
+            PCK_CALLBACK(_onPingRequest, PingRequest);
+        }
+        break;
+    case ClientStatus::Login:
+        // Add packets here
+        break;
+    case ClientStatus::Play:
+        // Add packets here
+        break;
     }
+    logging::Logger::get_instance().error("Unhandled packet: " + std::to_string(static_cast<int>(packetID)) +
+        " in status " + std::to_string(static_cast<int>(status))); // TODO: Properly handle the unknown packet
 }
 
-void Server::_onHandshake(std::shared_ptr<Client> cli, const std::shared_ptr<protocol::Handshake>& packet)
+void Server::_onHandshake(std::shared_ptr<Client> cli, const std::shared_ptr<protocol::Handshake>& pck)
 {
-    std::cout << "Got an handshake !" << "\n"
-        << "Protocol version: " << packet->prot_version << "\n"
-        << "Address: " << packet->addr << "\n"
-        << "Port: " << packet->port << "\n"
-        << "Next state: " << packet->next_state << std::endl;
+    if (pck->next_state == 1)
+        cli->setStatus(protocol::ClientStatus::Status);
+    else if (pck->next_state == 2)
+        cli->setStatus(protocol::ClientStatus::Login);
+}
+
+void Server::_onStatusRequest(std::shared_ptr<Client> cli, const std::shared_ptr<protocol::StatusRequest> &pck)
+{
+    logging::Logger::get_instance().debug("Got a status request");
+
+    nlohmann::json json;
+    json["version"]["name"] = "1.19"; // TODO: Change with a non hardcoded value
+    json["version"]["protocol"] = 759; // TODO: change with a non hardcoded value equal to the protocol version we are using
+    json["players"]["max"] = _config.getNode("max_players").as<int>();
+    json["players"]["online"] = std::count_if(_clients.begin(), _clients.end(), [](std::shared_ptr<Client> &each) { return each->getStatus() == protocol::ClientStatus::Play; });
+    json["description"]["text"] = _config.getNode("motd").as<std::string>();
+    // json["favicon"] = DEFAULT_FAVICON; // TODO: get it from the config ? // this invalid the packet if present but idk why
+    json["previewsChat"] = false; // TODO: check what we want to do with this
+    json["enforcesSecureChat"] = false; // TODO: check what we want to do with this
+    std::string status = json.dump();
+    logging::Logger::get_instance().debug("Json status: " + status);
+
+    const protocol::StatusResponse status_res(status);
+    auto status_res_pck = protocol::createStatusResponse(status_res);
+    cli->sendData(*status_res_pck);
+
+    logging::Logger::get_instance().debug("Sent status response");
+}
+
+void Server::_onPingRequest(std::shared_ptr<Client> cli, const std::shared_ptr<protocol::PingRequest> &pck)
+{
+    logging::Logger::get_instance().debug("Got a ping request with payload: " + std::to_string(pck->payload));
+
+    const protocol::PingResponse ping_res(pck->payload);
+    auto ping_res_pck = protocol::createPingResponse(ping_res);
+    cli->sendData(*ping_res_pck);
+
+    logging::Logger::get_instance().debug("Sent a ping response");
+}
+
+void Server::_onPingRequest(std::shared_ptr<Client> cli, const std::shared_ptr<protocol::PingRequest> &pck)
+{
+    std::cout << "Got a ping request" << std::endl;
 }

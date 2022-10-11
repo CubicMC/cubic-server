@@ -63,6 +63,16 @@ namespace protocol
         return value;
     }
     // void addVarString(const std::string &data, std::vector<uint8_t> &buffer);
+    constexpr void addString(std::vector<uint8_t> &out, const std::string &data)
+    {
+        if (data.size() > 32767)
+            throw MaxLengthString("String is too long");
+
+        addVarInt(out, data.size());
+
+        for (char c : data)
+            out.push_back(c);
+    }
 
     constexpr uint16_t popUnsignedShort(uint8_t *&at, uint8_t *eof)
     {
@@ -79,14 +89,29 @@ namespace protocol
 
     // }
 
+    constexpr int64_t popLong(uint8_t *&at, uint8_t *eof)
+    {
+        if (eof - at < 7)
+            throw PacketEOF("Not enough data in packet to parse a Long");
+
+        int64_t value = 0;
+
+        for (int i = 0; i < 8; i++)
+            value = (value << 8) + *at++;
+
+        return value;
+    }
+
     constexpr void addLong(std::vector<uint8_t> &out, const int64_t &data)
     {
-        const size_t current_size = out.size();
-        out.reserve(current_size + 4);
-        out.push_back(data & 0xF000);
-        out.push_back(data & 0x0F00);
-        out.push_back(data & 0x00F0);
-        out.push_back(data & 0x000F);
+        out.push_back((data >> 56) & 0xFF);
+        out.push_back((data >> 48) & 0xFF);
+        out.push_back((data >> 40) & 0xFF);
+        out.push_back((data >> 32) & 0xFF);
+        out.push_back((data >> 24) & 0xFF);
+        out.push_back((data >> 16) & 0xFF);
+        out.push_back((data >> 8) & 0xFF);
+        out.push_back(data & 0xFF);
     }
 }
 

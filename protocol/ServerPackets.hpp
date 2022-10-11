@@ -14,12 +14,16 @@ namespace protocol
 {
 
     enum class ServerPacketsID : int32_t {
-        Handshake = 0x00
+        Handshake = 0x00,
+        StatusRequest = 0x00,
+        PingRequest = 0x01,
     };
 
     struct BaseServerPacket {
         virtual ~BaseServerPacket() = default;
     };
+
+    // Packets
 
     struct Handshake : BaseServerPacket
     {
@@ -31,8 +35,33 @@ namespace protocol
 
     std::shared_ptr<Handshake> parseHandshake(std::vector<uint8_t> &buffer);
 
-    static const std::unordered_map<ServerPacketsID, std::function<std::shared_ptr<BaseServerPacket>(std::vector<uint8_t> &)>> packetIDToParse = {
-            {ServerPacketsID::Handshake, parseHandshake}
+    struct StatusRequest : BaseServerPacket
+    {};
+
+    std::shared_ptr<StatusRequest> parseStatusRequest(std::vector<uint8_t> &buffer);
+
+    struct PingRequest : BaseServerPacket
+    {
+        int64_t payload;
+    };
+
+    std::shared_ptr<PingRequest> parsePingRequest(std::vector<uint8_t> &buffer);
+
+    // Maps
+
+    static const std::unordered_map<ServerPacketsID, std::function<std::shared_ptr<BaseServerPacket>(std::vector<uint8_t> &)>> packetIDToParseInitial = {
+            {ServerPacketsID::Handshake, parseHandshake},
+    };
+
+    static const std::unordered_map<ServerPacketsID, std::function<std::shared_ptr<BaseServerPacket>(std::vector<uint8_t> &)>> packetIDToParseStatus = {
+            {ServerPacketsID::StatusRequest, &parseStatusRequest},
+            {ServerPacketsID::PingRequest, &parsePingRequest},
+    };
+
+    static const std::unordered_map<ServerPacketsID, std::function<std::shared_ptr<BaseServerPacket>(std::vector<uint8_t> &)>> packetIDToParseLogin = {
+    };
+
+    static const std::unordered_map<ServerPacketsID, std::function<std::shared_ptr<BaseServerPacket>(std::vector<uint8_t> &)>> packetIDToParsePlay = {
     };
 }
 
