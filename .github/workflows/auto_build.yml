@@ -30,17 +30,12 @@ jobs:
     # Checkout the repository
     - uses: actions/checkout@v3
 
-    - name: Setup compiler
-      env:
-        CC: ${{ matrix.CCcompiler }}
-        CXX: ${{ matrix.CXXcompiler }}
-      run: |
-        echo "Setting CC to ${{ env.CC }}\n"
-        echo "Setting CXX to ${{ env.CXX }}\n"
-
       # Configure CMake in a 'build' subdirectory. `CMAKE_BUILD_TYPE` is only required if you are using a single-configuration generator such as make.
       # See https://cmake.org/cmake/help/latest/variable/CMAKE_BUILD_TYPE.html?highlight=cmake_build_type
     - name: Configure CMake
+      env:
+        CC: ${{ matrix.CCcompiler }}
+        CXX: ${{ matrix.CXXcompiler }}
       run: |
         cmake -S ${{github.workspace}} -B ${{github.workspace}}/build
 
