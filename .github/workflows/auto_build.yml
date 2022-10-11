@@ -21,8 +21,8 @@ jobs:
         include:
           - CCcompiler: "/usr/bin/gcc-12"
             CXXcompiler: "/usr/bin/g++-12"
-          - CCcompiler: "/usr/bin/clang-15"
-            CXXcompiler: "/usr/bin/clang++-15"
+          # - CCcompiler: "/usr/bin/clang-15"
+          #   CXXcompiler: "/usr/bin/clang++-15"
     runs-on: self-hosted
     env:
       CC: ${{ matrix.CCcompiler }}
