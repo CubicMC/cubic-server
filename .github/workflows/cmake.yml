@@ -48,9 +48,9 @@ env:
   # Customize the default CMake build type here (Release, Debug, RelWithDebInfo, etc.)
   BUILD_TYPE: Release
   # Customize the default CC compiler here (GNU 9.4.0, clang 12, etc.)
-  CC: /platform/bin/gcc
+  CC: gcc
   # Customize the default CXX compiler here (GNU 9.4.0, clang++ 12, etc.)
-  CXX: /platform/bin/g++
+  CXX: g++
 
 jobs:
   build:
