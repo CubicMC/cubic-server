@@ -10,10 +10,10 @@ namespace logging
      *
      * @return Logger& the instance of the Logger class as a reference
      */
-    Logger& Logger::get_instance()
+    Logger *Logger::get_instance()
     {
-        static Logger* instance = new Logger();
-        return *instance;
+        static auto* instance = new Logger();
+        return instance;
     }
 
     /**

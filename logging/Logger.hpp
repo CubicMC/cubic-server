@@ -32,7 +32,7 @@ namespace logging
     class Logger
     {
         public:
-            static Logger& get_instance();
+            static Logger *get_instance();
             ~Logger();
 
             void debug(std::string message);

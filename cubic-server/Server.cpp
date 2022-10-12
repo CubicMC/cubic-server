@@ -24,12 +24,13 @@ Server::Server()
 {
     _host = _config.getNode("ip").as<std::string>();
     _port = _config.getNode("port").as<uint16_t>();
-    logging::Logger::get_instance().debug("Server created with host: " + _host + " and port: " + std::to_string(_port));
+    _log = logging::Logger::get_instance();
+    _log->debug("Server created with host: " + _host + " and port: " + std::to_string(_port));
 }
 
 Server::~Server()
 {
-    logging::Logger::get_instance().debug("Server destroyed");
+    _log->debug("Server destroyed");
 }
 
 void Server::launch()
@@ -201,7 +202,7 @@ void Server::_handleParsedClientPacket(std::shared_ptr<Client> cli,
         // Add packets here
         break;
     }
-    logging::Logger::get_instance().error("Unhandled packet: " + std::to_string(static_cast<int>(packetID)) +
+    _log->error("Unhandled packet: " + std::to_string(static_cast<int>(packetID)) +
         " in status " + std::to_string(static_cast<int>(status))); // TODO: Properly handle the unknown packet
 }
 
@@ -215,7 +216,7 @@ void Server::_onHandshake(std::shared_ptr<Client> cli, const std::shared_ptr<pro
 
 void Server::_onStatusRequest(std::shared_ptr<Client> cli, const std::shared_ptr<protocol::StatusRequest> &pck)
 {
-    logging::Logger::get_instance().debug("Got a status request");
+    _log->debug("Got a status request");
 
     nlohmann::json json;
     json["version"]["name"] = "1.19"; // TODO: Change with a non hardcoded value
@@ -227,22 +228,22 @@ void Server::_onStatusRequest(std::shared_ptr<Client> cli, const std::shared_ptr
     json["previewsChat"] = false; // TODO: check what we want to do with this
     json["enforcesSecureChat"] = false; // TODO: check what we want to do with this
     std::string status = json.dump();
-    logging::Logger::get_instance().debug("Json status: " + status);
+    _log->debug("Json status: " + status);
 
     const protocol::StatusResponse status_res(status);
     auto status_res_pck = protocol::createStatusResponse(status_res);
     cli->sendData(*status_res_pck);
 
-    logging::Logger::get_instance().debug("Sent status response");
+    _log->debug("Sent status response");
 }
 
 void Server::_onPingRequest(std::shared_ptr<Client> cli, const std::shared_ptr<protocol::PingRequest> &pck)
 {
-    logging::Logger::get_instance().debug("Got a ping request with payload: " + std::to_string(pck->payload));
+    _log->debug("Got a ping request with payload: " + std::to_string(pck->payload));
 
     const protocol::PingResponse ping_res(pck->payload);
     auto ping_res_pck = protocol::createPingResponse(ping_res);
     cli->sendData(*ping_res_pck);
 
-    logging::Logger::get_instance().debug("Sent a ping response");
+    _log->debug("Sent a ping response");
 }
