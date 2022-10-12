@@ -16,6 +16,7 @@ namespace protocol
     enum class ServerPacketsID : int32_t {
         Handshake = 0x00,
         StatusRequest = 0x00,
+        ConfirmTeleportation = 0x00,
         PingRequest = 0x01,
     };
 
@@ -47,6 +48,13 @@ namespace protocol
 
     std::shared_ptr<PingRequest> parsePingRequest(std::vector<uint8_t> &buffer);
 
+    struct ConfirmTeleportation : BaseServerPacket
+    {
+        int32_t teleport_id;
+    };
+
+    std::shared_ptr<ConfirmTeleportation> parseConfirmTeleportation(std::vector<uint8_t> &buffer);
+
     // Maps
 
     static const std::unordered_map<ServerPacketsID, std::function<std::shared_ptr<BaseServerPacket>(std::vector<uint8_t> &)>> packetIDToParseInitial = {
@@ -62,6 +70,7 @@ namespace protocol
     };
 
     static const std::unordered_map<ServerPacketsID, std::function<std::shared_ptr<BaseServerPacket>(std::vector<uint8_t> &)>> packetIDToParsePlay = {
+            {ServerPacketsID::ConfirmTeleportation, &parseConfirmTeleportation},
     };
 }
 

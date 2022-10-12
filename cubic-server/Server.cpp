@@ -185,6 +185,8 @@ void Server::_handleParsedClientPacket(std::shared_ptr<Client> cli,
         switch (packetID) {
         case ServerPacketsID::Handshake:
             PCK_CALLBACK(_onHandshake, Handshake);
+        default:
+            break;
         }
         break;
     case ClientStatus::Status:
@@ -193,13 +195,20 @@ void Server::_handleParsedClientPacket(std::shared_ptr<Client> cli,
             PCK_CALLBACK(_onStatusRequest, StatusRequest);
         case ServerPacketsID::PingRequest:
             PCK_CALLBACK(_onPingRequest, PingRequest);
+        default:
+            break;
         }
         break;
     case ClientStatus::Login:
         // Add packets here
         break;
     case ClientStatus::Play:
-        // Add packets here
+        switch (packetID) {
+        case ServerPacketsID::ConfirmTeleportation:
+            PCK_CALLBACK(_onConfirmTeleportation, ConfirmTeleportation);
+        default:
+            break;
+        }
         break;
     }
     _log->error("Unhandled packet: " + std::to_string(static_cast<int>(packetID)) +
@@ -246,4 +255,10 @@ void Server::_onPingRequest(std::shared_ptr<Client> cli, const std::shared_ptr<p
     cli->sendData(*ping_res_pck);
 
     _log->debug("Sent a ping response");
+}
+
+void Server::_onConfirmTeleportation(std::shared_ptr<Client> cli,
+                                     const std::shared_ptr<protocol::ConfirmTeleportation> &pck)
+{
+    _log->debug("Got a Confirm Teleportation");
 }
