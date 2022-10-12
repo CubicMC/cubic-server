@@ -11,6 +11,7 @@
 #include "ServerPackets.hpp"
 
 #include "ConfigHandler.hpp"
+#include "Logger.hpp"
 
 #define PCK_CALLBACK(function, type) return this->function(cli, std::static_pointer_cast<type>(packet))
 
@@ -45,6 +46,7 @@ private:
 
     std::string _host;
     uint16_t _port;
+    logging::Logger *_log;
 
     // Looks like it is thread-safe, if something breaks it is here
     std::vector<std::shared_ptr<Client>> _clients;
