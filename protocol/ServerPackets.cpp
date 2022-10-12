@@ -31,3 +31,12 @@ std::shared_ptr<PingRequest> protocol::parsePingRequest(std::vector<uint8_t> &bu
           popLong, &PingRequest::payload);
     return h;
 }
+
+std::shared_ptr<ConfirmTeleportation> protocol::parseConfirmTeleportation(std::vector<uint8_t> &buffer)
+{
+    auto h = std::make_shared<ConfirmTeleportation>();
+
+    parse(buffer.data(), buffer.data() + buffer.size() - 1, *h,
+          popVarInt, &ConfirmTeleportation::teleport_id);
+    return h;
+}
