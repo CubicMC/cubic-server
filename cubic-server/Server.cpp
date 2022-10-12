@@ -208,6 +208,8 @@ void Server::_handleParsedClientPacket(std::shared_ptr<Client> cli,
             PCK_CALLBACK(_onConfirmTeleportation, ConfirmTeleportation);
         case ServerPacketsID::QueryBlockEntityTag:
             PCK_CALLBACK(_onQueryBlockEntityTag, QueryBlockEntityTag);
+        case ServerPacketsID::ChangeDifficulty:
+            PCK_CALLBACK(_onChangeDifficulty, ChangeDifficulty);
         default:
             break;
         }
@@ -269,4 +271,9 @@ void Server::_onQueryBlockEntityTag(std::shared_ptr<Client> cli,
                                     const std::shared_ptr<protocol::QueryBlockEntityTag> &pck)
 {
     _log->debug("Got a Query Block Entity Tag");
+}
+
+void Server::_onChangeDifficulty(std::shared_ptr<Client> cli, const std::shared_ptr<protocol::ChangeDifficulty> &pck)
+{
+    _log->debug("Got a Change difficulty");
 }

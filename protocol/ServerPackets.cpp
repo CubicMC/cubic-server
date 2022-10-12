@@ -50,3 +50,12 @@ std::shared_ptr<QueryBlockEntityTag> protocol::parseQueryBlockEntityTag(std::vec
           popPosition, &QueryBlockEntityTag::location);
     return h;
 }
+
+std::shared_ptr<ChangeDifficulty> protocol::parseChangeDifficulty(std::vector<uint8_t> &buffer)
+{
+    auto h = std::make_shared<ChangeDifficulty>();
+
+    parse(buffer.data(), buffer.data() + buffer.size() - 1, *h,
+          popByte, &ChangeDifficulty::new_difficulty);
+    return h;
+}
