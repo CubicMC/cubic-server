@@ -246,8 +246,3 @@ void Server::_onPingRequest(std::shared_ptr<Client> cli, const std::shared_ptr<p
 
     logging::Logger::get_instance().debug("Sent a ping response");
 }
-
-void Server::_onPingRequest(std::shared_ptr<Client> cli, const std::shared_ptr<protocol::PingRequest> &pck)
-{
-    std::cout << "Got a ping request" << std::endl;
-}
