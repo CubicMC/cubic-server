@@ -10,6 +10,8 @@
 #include <functional>
 #include <map>
 
+#include "typeSerialization.hpp"
+
 namespace protocol
 {
 
@@ -18,6 +20,7 @@ namespace protocol
         StatusRequest = 0x00,
         ConfirmTeleportation = 0x00,
         PingRequest = 0x01,
+        QueryBlockEntityTag = 0x01,
     };
 
     struct BaseServerPacket {
@@ -55,6 +58,14 @@ namespace protocol
 
     std::shared_ptr<ConfirmTeleportation> parseConfirmTeleportation(std::vector<uint8_t> &buffer);
 
+    struct QueryBlockEntityTag : BaseServerPacket
+    {
+        int32_t transaction_id;
+        Position location;
+    };
+
+    std::shared_ptr<QueryBlockEntityTag> parseQueryBlockEntityTag(std::vector<uint8_t> &buffer);
+
     // Maps
 
     static const std::unordered_map<ServerPacketsID, std::function<std::shared_ptr<BaseServerPacket>(std::vector<uint8_t> &)>> packetIDToParseInitial = {
@@ -71,6 +82,7 @@ namespace protocol
 
     static const std::unordered_map<ServerPacketsID, std::function<std::shared_ptr<BaseServerPacket>(std::vector<uint8_t> &)>> packetIDToParsePlay = {
             {ServerPacketsID::ConfirmTeleportation, &parseConfirmTeleportation},
+            {ServerPacketsID::QueryBlockEntityTag, &parseQueryBlockEntityTag},
     };
 }
 

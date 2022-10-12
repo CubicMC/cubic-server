@@ -40,3 +40,13 @@ std::shared_ptr<ConfirmTeleportation> protocol::parseConfirmTeleportation(std::v
           popVarInt, &ConfirmTeleportation::teleport_id);
     return h;
 }
+
+std::shared_ptr<QueryBlockEntityTag> protocol::parseQueryBlockEntityTag(std::vector<uint8_t> &buffer)
+{
+    auto h = std::make_shared<QueryBlockEntityTag>();
+
+    parse(buffer.data(), buffer.data() + buffer.size() - 1, *h,
+          popVarInt, &QueryBlockEntityTag::transaction_id,
+          popPosition, &QueryBlockEntityTag::location);
+    return h;
+}
