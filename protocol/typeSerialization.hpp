@@ -8,6 +8,12 @@
 
 namespace protocol
 {
+    struct Position
+    {
+        int64_t x;
+        int64_t z;
+        int64_t y;
+    };
 
     constexpr int32_t popVarInt(uint8_t *&at, uint8_t *eof)
     {
@@ -112,6 +118,23 @@ namespace protocol
         out.push_back((data >> 16) & 0xFF);
         out.push_back((data >> 8) & 0xFF);
         out.push_back(data & 0xFF);
+    }
+
+    constexpr Position popPosition(uint8_t *&at, uint8_t *eof)
+    {
+        Position p;
+        auto h = popLong(at, eof);
+
+        p.x = h >> 38;
+        p.z = h << 26 >> 38;
+        p.y = h << 52 >> 52;
+        return p;
+    }
+
+    constexpr void addPosition(std::vector<uint8_t> &out, const Position &data)
+    {
+        int64_t h = ((data.x & 0x3FFFFFF) << 38) | ((data.z & 0x3777777) << 12) | (data.y & 0xFFF);
+        return addLong(out, h);
     }
 }
 
