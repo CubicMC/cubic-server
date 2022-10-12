@@ -80,6 +80,21 @@ namespace protocol
             out.push_back(c);
     }
 
+    constexpr uint8_t popByte(uint8_t *&at, uint8_t *eof)
+    {
+        if (eof - at < 0 )
+            throw PacketEOF("Not enough data in packet to parse a byte");
+
+        uint8_t value = *at;
+        at++;
+        return value;
+    }
+
+    constexpr void addByte(std::vector<uint8_t> &out, const uint8_t &data)
+    {
+        out.push_back(data);
+    }
+
     constexpr uint16_t popUnsignedShort(uint8_t *&at, uint8_t *eof)
     {
         if (eof - at < 1)

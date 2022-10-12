@@ -21,6 +21,7 @@ namespace protocol
         ConfirmTeleportation = 0x00,
         PingRequest = 0x01,
         QueryBlockEntityTag = 0x01,
+        ChangeDifficulty = 0x02,
     };
 
     struct BaseServerPacket {
@@ -66,6 +67,13 @@ namespace protocol
 
     std::shared_ptr<QueryBlockEntityTag> parseQueryBlockEntityTag(std::vector<uint8_t> &buffer);
 
+    struct ChangeDifficulty : BaseServerPacket
+    {
+        uint8_t new_difficulty;
+    };
+
+    std::shared_ptr<ChangeDifficulty> parseChangeDifficulty(std::vector<uint8_t> &buffer);
+
     // Maps
 
     static const std::unordered_map<ServerPacketsID, std::function<std::shared_ptr<BaseServerPacket>(std::vector<uint8_t> &)>> packetIDToParseInitial = {
@@ -83,6 +91,7 @@ namespace protocol
     static const std::unordered_map<ServerPacketsID, std::function<std::shared_ptr<BaseServerPacket>(std::vector<uint8_t> &)>> packetIDToParsePlay = {
             {ServerPacketsID::ConfirmTeleportation, &parseConfirmTeleportation},
             {ServerPacketsID::QueryBlockEntityTag, &parseQueryBlockEntityTag},
+            {ServerPacketsID::ChangeDifficulty, &parseChangeDifficulty},
     };
 }
 
