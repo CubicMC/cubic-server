@@ -7,6 +7,5 @@ int main (int argc, char *argv[])
 
   ManagementInterface window;
 
-  //Shows the window and returns when it is closed.
   return app->run(window);
 }
