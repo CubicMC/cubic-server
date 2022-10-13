@@ -12,7 +12,7 @@ target_link_libraries(ManagementInterface PRIVATE ${GTKMM_LIBRARIES})
 # target_compile_definitions(ManagementInterface PRIVATE ${GTKMM_CFLAGS_OTHER})
 
 target_include_directories(ManagementInterface PRIVATE ${GTKMM_INCLUDE_DIRS})
-target_link_libraries(ManagementInterface PRIVATE ${GTKMM_LIBRARY_DIRS})
+target_link_libraries(ManagementInterface PRIVATE ${GTKMM_LIBRARY_DIRS} Logging)
 
 # Make sure the compiler can find include files for our Hello library
 # when other libraries or executables link to Hello
