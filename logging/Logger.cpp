@@ -220,6 +220,11 @@ namespace logging
         return this->_specification_level_in_file;
     }
 
+    std::string Logger::get_file_path() const
+    {
+        return this->_file_and_folder_handler.get_file_path();
+    }
+
     const char* level_to_string(LogLevel& level)
     {
         switch (level) {

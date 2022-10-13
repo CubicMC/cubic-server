@@ -58,6 +58,8 @@ namespace logging
             void unset_display_specification_level_in_console(LogLevel level);
             const std::unordered_map<LogLevel, std::string>& get_display_specification_level_in_console() const;
 
+            std::string get_file_path() const;
+
         private:
             Logger();                                                                   /// Private constructor to prevent multiple instances
             Logger(const Logger&) = delete;
