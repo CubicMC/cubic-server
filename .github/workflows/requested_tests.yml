@@ -1,13 +1,7 @@
 # Name the workflow
-name: CMake
+name: Requested tests
 
 on:
-  # Trigger the workflow on push on the master branch
-  push:
-    branches: [ "master" ]
-  # Trigger the workflow on pull request events
-  pull_request:
-    branches: [ "*" ]
   # Trigger the workflow manually
   workflow_dispatch:
     # Allow the user to enter custom parameters
@@ -53,44 +47,6 @@ env:
   CXX: g++-12
 
 jobs:
-  build:
-    # The CMake configure and build commands are platform agnostic and should work equally well on Windows or Mac.
-    # You can convert this to a matrix build if you need cross-platform coverage.
-    # See: https://docs.github.com/en/free-pro-team@latest/actions/learn-github-actions/managing-complex-workflows#using-a-build-matrix
-    runs-on: self-hosted
-
-    steps:
-    # Checkout the repository
-    - uses: actions/checkout@v3
-
-    # Test if there is a custom build type and if so set the coresponding environment variable to the custom build type
-    - name: Setup build type
-      if: inputs.is_build_type
-      env:
-        BUILD_TYPE: ${{ inputs.BUILD_TYPE }}
-      run: |
-        echo "Setting build type to ${{ env.BUILD_TYPE }}\n"
-
-    # Test if there is a custom compiler to use and if so set the coresponding environment variable to the custom compiler
-    - name: Setup CC and CXX compiler
-      if: inputs.use_custom_compiler
-      env:
-        CC: ${{ inputs.CC_COMPILER }}
-        CXX: ${{ inputs.CXX_COMPILER }}
-      run: |
-        echo "Setting CC compiler type to ${{ env.CC }}\n"
-        echo "Setting CXX compiler type to ${{ env.CXX }}\n"
-
-      # Configure CMake in a 'build' subdirectory. `CMAKE_BUILD_TYPE` is only required if you are using a single-configuration generator such as make.
-      # See https://cmake.org/cmake/help/latest/variable/CMAKE_BUILD_TYPE.html?highlight=cmake_build_type
-    - name: Configure CMake
-      run: |
-        cmake -S ${{github.workspace}} -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}}
-
-      # Build the program with the given configuration
-    - name: Build
-      run: cmake --build ${{github.workspace}}/build --config ${{env.BUILD_TYPE}}
-
   tests:
     runs-on: self-hosted
 
@@ -118,7 +74,7 @@ jobs:
         cmake -S ${{github.workspace}} -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -D GTEST=true
 
     - name: Build
-      run: cmake --build ${{github.workspace}}/build --config ${{env.BUILD_TYPE}}
+      run: cmake --build ${{github.workspace}}/build --config ${{env.BUILD_TYPE}} -j8
 
       # Execute tests defined by the CMake configuration.
       # See https://cmake.org/cmake/help/latest/manual/ctest.1.html for more detail

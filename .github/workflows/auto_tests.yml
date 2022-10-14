@@ -1,0 +1,48 @@
+# Name the workflow
+name: Auto tests
+
+on:
+  # Trigger the workflow on push on the master branch
+  push:
+    branches: [ "master" ]
+  # Trigger the workflow on pull request events
+  pull_request:
+    branches: [ "*" ]
+
+# Define some environment variables for the workflow
+env:
+  # Customize the default CMake build type here (Release, Debug, RelWithDebInfo, etc.)
+  BUILD_TYPE: Release
+
+jobs:
+  tests:
+    strategy:
+      matrix:
+        include:
+          - CCcompiler: "gcc-12"
+            CXXcompiler: "g++-12"
+          # - CCcompiler: "/usr/bin/clang-15"
+          #   CXXcompiler: "/usr/bin/clang++-15"
+    runs-on: self-hosted
+    env:
+      CC: ${{ matrix.CCcompiler }}
+      CXX: ${{ matrix.CXXcompiler }}
+
+    steps:
+    # Checkout the repository
+    - uses: actions/checkout@v3
+
+      # Configure CMake in a 'build' subdirectory. `CMAKE_BUILD_TYPE` is only required if you are using a single-configuration generator such as make.
+      # See https://cmake.org/cmake/help/latest/variable/CMAKE_BUILD_TYPE.html?highlight=cmake_build_type
+    - name: Configure CMake
+      run: cmake -S ${{github.workspace}} -B ${{github.workspace}}/build
+
+      # Build the program with the given configuration
+    - name: Build
+      run: cmake --build ${{github.workspace}}/build -j8
+
+      # Execute tests defined by the CMake configuration.
+      # See https://cmake.org/cmake/help/latest/manual/ctest.1.html for more detail
+    - name: Test
+      working-directory: ${{github.workspace}}/build
+      run: ctest -C ${{env.BUILD_TYPE}}

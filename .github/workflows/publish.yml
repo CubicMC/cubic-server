@@ -1,0 +1,100 @@
+name: Publish
+
+on:
+  push:
+    tags: ["v*.*.*"]
+
+  workflow_dispatch:
+    inputs:
+      release_tag_name:
+        description: the tag to put on the release
+        required: true
+        type: text
+
+env:
+  BUILD_TYPE: Release
+  CC: gcc-12
+  CXX: g++-12
+
+jobs:
+  build-ubuntu:
+    runs-on: self-hosted # Ubuntu 20.04
+
+    steps:
+    - uses: actions/checkout@v3
+
+    # - name: Install dependencies
+    #   run: |
+    #     sudo apt-get update
+    #     sudo apt-get install -y gcc-12 g++-12 cmake pkg-config gtkmm-3.0
+
+    - name: Configure CMake
+      run: cmake -S ${{github.workspace}} -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}}
+
+    - name: Build
+      run: cmake --build ${{github.workspace}}/build --config ${{env.BUILD_TYPE}} -j8
+
+    - name: Create temp folder
+      run: |
+        mkdir ${{github.workspace}}/temp
+        cp ${{github.workspace}}/build/cubic-server/cubic-server ${{github.workspace}}/temp
+
+    - name: Create release in case of tag
+      if: github.event_name != 'workflow_dispatch'
+      uses: actions/upload-artifact@v3
+      with:
+        name: cubic-server_${{ github.ref_name }}
+        path: ${{github.workspace}}/temp/cubic-server
+
+    - name: Create release in case of workflow_dispatch
+      if: github.event_name == 'workflow_dispatch'
+      uses: actions/upload-artifact@v3
+      with:
+        name: cubic-server_${{ inputs.release_tag_name }}_${{ env.BUILD_TYPE }}
+        path: ${{github.workspace}}/temp/cubic-server
+
+# build-windows:
+#     runs-on: windows-latest
+
+#     steps:
+#     - uses: actions/checkout@v3
+
+#     - name: Add MSBuild to PATH
+#       uses: microsoft/setup-msbuild@v1.0.2
+
+#     - name: Restore NuGet packages
+#       working-directory: ${{env.GITHUB_WORKSPACE}}
+#       run: nuget restore ${{env.SOLUTION_FILE_PATH}}
+
+#     - name: Build
+#       working-directory: ${{env.GITHUB_WORKSPACE}}
+#       Add additional options to the MSBuild command line here (like platform or verbosity level).
+#       See https://docs.microsoft.com/visualstudio/msbuild/msbuild-command-line-reference
+#       run: msbuild /m /p:Configuration=${{env.BUILD_TYPE}} ${{env.SOLUTION_FILE_PATH}}
+
+#     - name: Path to executable
+#       run: ls -l ${{env.GITHUB_WORKSPACE}}/build
+
+#   build-macos:
+#     runs-on: macos-latest
+
+#     steps:
+#     - uses: actions/checkout@v3
+
+#     - name: Install dependencies
+#       run: |
+#         brew install cmake
+#         brew install gcc@12
+#         brew install g++@12
+#       env:
+#         CC: /usr/local/bin/gcc-12
+#         CXX: /usr/local/bin/g++-12
+
+#     - name: Configure CMake
+#       run: cmake -S ${{github.workspace}} -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}}
+
+#     - name: Build
+#       run: cmake --build ${{github.workspace}}/build --config ${{env.BUILD_TYPE}} -j4
+
+#     - name: Path to executable
+#       run: ls -l ${{github.workspace}}/build
