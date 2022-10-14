@@ -22,6 +22,7 @@ namespace protocol
         PingRequest = 0x01,
         QueryBlockEntityTag = 0x01,
         ChangeDifficulty = 0x02,
+        ClientCommand = 0x06,
     };
 
     struct BaseServerPacket {
@@ -37,26 +38,22 @@ namespace protocol
         uint16_t port;
         int32_t next_state; // TODO: Use an enum here instead of an int32_t
     };
-
     std::shared_ptr<Handshake> parseHandshake(std::vector<uint8_t> &buffer);
 
     struct StatusRequest : BaseServerPacket
     {};
-
     std::shared_ptr<StatusRequest> parseStatusRequest(std::vector<uint8_t> &buffer);
 
     struct PingRequest : BaseServerPacket
     {
         int64_t payload;
     };
-
     std::shared_ptr<PingRequest> parsePingRequest(std::vector<uint8_t> &buffer);
 
     struct ConfirmTeleportation : BaseServerPacket
     {
         int32_t teleport_id;
     };
-
     std::shared_ptr<ConfirmTeleportation> parseConfirmTeleportation(std::vector<uint8_t> &buffer);
 
     struct QueryBlockEntityTag : BaseServerPacket
@@ -64,15 +61,19 @@ namespace protocol
         int32_t transaction_id;
         Position location;
     };
-
     std::shared_ptr<QueryBlockEntityTag> parseQueryBlockEntityTag(std::vector<uint8_t> &buffer);
 
     struct ChangeDifficulty : BaseServerPacket
     {
         uint8_t new_difficulty;
     };
-
     std::shared_ptr<ChangeDifficulty> parseChangeDifficulty(std::vector<uint8_t> &buffer);
+
+    struct ClientCommand : BaseServerPacket
+    {
+        ClientCommandActionID action_id;
+    };
+    std::shared_ptr<ClientCommand> parseClientCommand(std::vector<uint8_t> &buffer);
 
     // Maps
 
@@ -92,6 +93,7 @@ namespace protocol
             {ServerPacketsID::ConfirmTeleportation, &parseConfirmTeleportation},
             {ServerPacketsID::QueryBlockEntityTag, &parseQueryBlockEntityTag},
             {ServerPacketsID::ChangeDifficulty, &parseChangeDifficulty},
+            {ServerPacketsID::ClientCommand, &parseClientCommand},
     };
 }
 

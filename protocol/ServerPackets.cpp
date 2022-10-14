@@ -59,3 +59,12 @@ std::shared_ptr<ChangeDifficulty> protocol::parseChangeDifficulty(std::vector<ui
           popByte, &ChangeDifficulty::new_difficulty);
     return h;
 }
+
+std::shared_ptr<ClientCommand> protocol::parseClientCommand(std::vector<uint8_t> &buffer)
+{
+    auto h = std::make_shared<ClientCommand>();
+
+    parse(buffer.data(), buffer.data() + buffer.size() - 1, *h,
+          popClientCommandActionID, &ClientCommand::action_id);
+    return h;
+}

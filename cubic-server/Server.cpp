@@ -210,6 +210,8 @@ void Server::_handleParsedClientPacket(std::shared_ptr<Client> cli,
             PCK_CALLBACK(_onQueryBlockEntityTag, QueryBlockEntityTag);
         case ServerPacketsID::ChangeDifficulty:
             PCK_CALLBACK(_onChangeDifficulty, ChangeDifficulty);
+        case ServerPacketsID::ClientCommand:
+            PCK_CALLBACK(_onClientCommand, ClientCommand);
         default:
             break;
         }
@@ -221,6 +223,7 @@ void Server::_handleParsedClientPacket(std::shared_ptr<Client> cli,
 
 void Server::_onHandshake(std::shared_ptr<Client> cli, const std::shared_ptr<protocol::Handshake>& pck)
 {
+    _log->debug("Got an handshake");
     if (pck->next_state == 1)
         cli->setStatus(protocol::ClientStatus::Status);
     else if (pck->next_state == 2)
@@ -276,4 +279,9 @@ void Server::_onQueryBlockEntityTag(std::shared_ptr<Client> cli,
 void Server::_onChangeDifficulty(std::shared_ptr<Client> cli, const std::shared_ptr<protocol::ChangeDifficulty> &pck)
 {
     _log->debug("Got a Change difficulty");
+}
+
+void Server::_onClientCommand(std::shared_ptr<Client> cli, const std::shared_ptr<protocol::ClientCommand> &pck)
+{
+    _log->debug("Got a Client Command");
 }
