@@ -15,6 +15,12 @@ namespace protocol
         int64_t y;
     };
 
+    enum class ClientCommandActionID
+    {
+        perform_respawn = 0,
+        request_stats = 1,
+    };
+
     constexpr int32_t popVarInt(uint8_t *&at, uint8_t *eof)
     {
         int32_t value = 0;
@@ -150,6 +156,20 @@ namespace protocol
     {
         int64_t h = ((data.x & 0x3FFFFFF) << 38) | ((data.z & 0x3777777) << 12) | (data.y & 0xFFF);
         return addLong(out, h);
+    }
+
+    constexpr ClientCommandActionID popClientCommandActionID(uint8_t *&at, uint8_t *eof)
+    {
+        auto value = popVarInt(at, eof);
+
+        if (value != 0 && value != 1)
+            throw OutOfRangeEnum("Client Command Action ID is not within the range of the enum");
+        return static_cast<ClientCommandActionID>(value);
+    }
+
+    constexpr void addClientCommandActionID(std::vector<uint8_t> &out, const ClientCommandActionID &data)
+    {
+        return addVarInt(out, static_cast<int32_t>(data));
     }
 }
 
