@@ -33,6 +33,15 @@ namespace protocol
         }
     };
 
+    class MaxLengthString : public std::runtime_error
+    {
+    public:
+        MaxLengthString(char const *const message) throw()
+            : std::runtime_error(message)
+        {
+        }
+    };
+
 }
 
 #endif /* A6D3BC50_B45B_4A73_A788_6FF612B06A41 */

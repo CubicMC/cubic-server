@@ -5,6 +5,7 @@
 #include <thread>
 #include <deque>
 #include <vector>
+#include "common.hpp"
 
 class Client
 {
@@ -23,6 +24,14 @@ public:
 
     std::vector<uint8_t> &get_recv_buffer();
 
+    [[nodiscard]] protocol::ClientStatus getStatus() const {
+        return _status;
+    }
+
+    void setStatus(protocol::ClientStatus status) {
+        _status = status;
+    }
+
 private:
     void _sendData();
 
@@ -32,6 +41,7 @@ private:
     std::thread *_current_thread{};
     std::vector<uint8_t> _recv_buffer;
     std::vector<uint8_t> _send_buffer;
+    protocol::ClientStatus _status;
 
 protected:
 };

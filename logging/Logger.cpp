@@ -23,10 +23,10 @@ namespace logging
     {
         this->_file_and_folder_handler.create_folder("logs");
         std::string filename = TimeFormatter::get_time("YYYY-MM-DD-1.log");
-        for (int i = 1; this->_file_and_folder_handler.file_exist(filename); i++)
-        {
+
+        for (int i = 1; this->_file_and_folder_handler.file_exist("logs/" + filename); i++)
             filename = TimeFormatter::get_time("YYYY-MM-DD-" + std::to_string(i) + ".log");
-        }
+
         this->_file_and_folder_handler.create_file(filename);
         this->_file_stream.open(this->_file_and_folder_handler.get_file_path(), std::ios::app);
 
