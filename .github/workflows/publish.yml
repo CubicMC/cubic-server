@@ -7,7 +7,7 @@ on:
   workflow_dispatch:
     inputs:
       release_tag_name:
-        description: the tag to put on the release
+        description: The tag where to put the asset
         required: true
         type: text
 
@@ -18,15 +18,10 @@ env:
 
 jobs:
   build-ubuntu:
-    runs-on: self-hosted # Ubuntu 20.04
+    runs-on: self-hosted
 
     steps:
     - uses: actions/checkout@v3
-
-    # - name: Install dependencies
-    #   run: |
-    #     sudo apt-get update
-    #     sudo apt-get install -y gcc-12 g++-12 cmake pkg-config gtkmm-3.0
 
     - name: Configure CMake
       run: cmake -S ${{github.workspace}} -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}}
@@ -39,20 +34,39 @@ jobs:
         mkdir ${{github.workspace}}/temp
         cp ${{github.workspace}}/build/cubic-server/cubic-server ${{github.workspace}}/temp
 
-    - name: Create release in case of tag
+    - name: Upload artifact in case of tag
       if: github.event_name != 'workflow_dispatch'
       uses: actions/upload-artifact@v3
       with:
         name: cubic-server_${{ github.ref_name }}
         path: ${{github.workspace}}/temp/cubic-server
 
-    - name: Create release in case of workflow_dispatch
+    - name: Upload assets to release in case of tag
+      if: github.event_name != 'workflow_dispatch'
+      uses: svenstaro/upload-release-action@v2
+      with:
+        repo_token: ${{ secrets.GITHUB_TOKEN }}
+        file: ${{github.workspace}}/temp/cubic-server
+        tag: ${{ github.ref }}
+        asset_name: cubic-server_${{ inputs.release_tag_name }}
+        overwrite: true
+
+    - name: Upload artifact in case of workflow_dispatch
       if: github.event_name == 'workflow_dispatch'
       uses: actions/upload-artifact@v3
       with:
-        name: cubic-server_${{ inputs.release_tag_name }}_${{ env.BUILD_TYPE }}
+        name: cubic-server_${{ inputs.release_tag_name }}
         path: ${{github.workspace}}/temp/cubic-server
 
+    - name: Upload assets to release in case of workflow_dispatch
+      if: github.event_name == 'workflow_dispatch'
+      uses: svenstaro/upload-release-action@v2
+      with:
+        repo_token: ${{ secrets.GITHUB_TOKEN }}
+        file: ${{github.workspace}}/temp/cubic-server
+        tag: ${{ inputs.release_tag_name }}
+        asset_name: cubic-server_${{ inputs.release_tag_name }}
+        overwrite: true
 # build-windows:
 #     runs-on: windows-latest
 
