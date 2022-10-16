@@ -1,4 +1,3 @@
-#include <string>
 #include <iostream>
 #include <fstream>
 #include <unistd.h>
@@ -10,11 +9,11 @@ PlayersInterface::PlayersInterface()
 {
     set_shadow_type(Gtk::SHADOW_ETCHED_OUT);
     set_policy(Gtk::POLICY_AUTOMATIC, Gtk::POLICY_AUTOMATIC);
-    add(m_label);
+    add(this->m_label);
 
-    m_label.set_xalign(0);
-    m_label.set_yalign(0);
-    m_label.set_text("GUI initialisation...");
+    this->m_label.set_xalign(0);
+    this->m_label.set_yalign(0);
+    this->m_label.set_text("GUI initialisation...");
 
     int timeout_value = 100; //in ms
     sigc::slot<bool>my_slot = sigc::mem_fun(*this, &PlayersInterface::on_timeout);
@@ -34,10 +33,14 @@ bool PlayersInterface::on_timeout(){
         temp += players + "\n";
         nb_players = nb_players + 1;
     }
-    m_label.set_text(temp);
-    std::string window_title = "Players : " + std::to_string(nb_players);
+    this->m_label.set_text(temp);
+    this->m_nb_players = "Players : " + std::to_string(nb_players);
 
  return true;
+}
+
+std::string PlayersInterface::get_nb_players(){
+    return this->m_nb_players;
 }
 
 PlayersInterface::~PlayersInterface()
