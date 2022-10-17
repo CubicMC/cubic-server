@@ -38,4 +38,11 @@ bool ManagementInterface::on_timeout(){
  return true;
 }
 
+int ManagementInterface::launch(int argc, char **argv){
+    auto app = Gtk::Application::create(argc, argv, "org.cubicserver.example");
+    ManagementInterface window;
+
+    return app->run(window);
+}
+
 ManagementInterface::~ManagementInterface() {}

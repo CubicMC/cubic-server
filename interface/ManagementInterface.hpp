@@ -12,6 +12,7 @@ class ManagementInterface : public Gtk::Window {
         virtual ~ManagementInterface();
 
         bool on_timeout();
+        static int launch(int argc, char **argv);
     protected:
         Gtk::Paned m_content;
         Gtk::Paned m_sections;

@@ -20,10 +20,7 @@ int main(int argc, char **argv)
 
     auto srv = Server();
     /// 
-    auto app = Gtk::Application::create(argc, argv, "org.cubicserver.example");
-    ManagementInterface window;
-
-    auto InterfaceThread = std::thread({return app->run(window)}, app);
+    auto InterfaceThread = std::thread(&ManagementInterface::launch, argc, argv);
     ///
 
     srv.launch();
