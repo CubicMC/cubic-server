@@ -222,6 +222,8 @@ void Server::_handleParsedClientPacket(std::shared_ptr<Client> cli,
             PCK_CALLBACK(_onCloseContainerRequest, CloseContainerRequest);
         case ServerPacketsID::EditBook:
             PCK_CALLBACK(_onEditBook, EditBook);
+        case ServerPacketsID::QueryEntityTag:
+            PCK_CALLBACK(_onQueryEntityTag, QueryEntityTag);
         default:
             break;
         }
@@ -322,4 +324,9 @@ void Server::_onCloseContainerRequest(std::shared_ptr<Client> cli,
 void Server::_onEditBook(std::shared_ptr<Client> cli, const std::shared_ptr<protocol::EditBook> &pck)
 {
     _log->debug("Got a Edit Book");
+}
+
+void Server::_onQueryEntityTag(std::shared_ptr<Client> cli, const std::shared_ptr<protocol::QueryEntityTag> &pck)
+{
+    _log->debug("Got a Query Entity Tag");
 }

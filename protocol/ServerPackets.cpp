@@ -128,4 +128,15 @@ std::shared_ptr<EditBook> protocol::parseEditBook(std::vector<uint8_t> &buffer)
     if (h->has_title)
         parse(buffer.data(), buffer.data() + buffer.size() - 1, *h,
               popString, &EditBook::title);
+    return h;
+}
+
+std::shared_ptr<QueryEntityTag> protocol::parseQueryEntityTag(std::vector<uint8_t> &buffer)
+{
+    auto h = std::make_shared<QueryEntityTag>();
+
+    parse(buffer.data(), buffer.data() + buffer.size() - 1, *h,
+          popVarInt, &QueryEntityTag::transaction_id,
+          popVarInt, &QueryEntityTag::entity_id);
+    return h;
 }
