@@ -104,3 +104,12 @@ std::shared_ptr<ClickContainerButton> protocol::parseClickContainerButton(std::v
           popByte, &ClickContainerButton::button_id);
     return h;
 }
+
+std::shared_ptr<CloseContainerRequest> protocol::parseCloseContainerRequest(std::vector<uint8_t> &buffer)
+{
+    auto h = std::make_shared<CloseContainerRequest>();
+
+    parse(buffer.data(), buffer.data() + buffer.size() - 1, *h,
+          popByte, &CloseContainerRequest::window_id);
+    return h;
+}
