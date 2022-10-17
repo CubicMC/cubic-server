@@ -67,6 +67,30 @@ std::shared_ptr<ConfirmTeleportation> protocol::parseConfirmTeleportation(std::v
     return h;
 }
 
+std::shared_ptr<EncryptionResponse> protocol::parseEncryptionResponse(std::vector<uint8_t> &buffer)
+{
+    auto h = std::make_shared<EncryptionResponse>();
+
+    parse(buffer.data(), buffer.data() + buffer.size() - 1, *h,
+          popVarInt, &EncryptionResponse::shared_secret_length);
+    parseExtra(buffer.data(), buffer.data() + buffer.size() - 1, *h,
+               popByteArray, &EncryptionResponse::shared_secret, h->shared_secret_length);
+    parse(buffer.data(), buffer.data() + buffer.size() - 1, *h,
+          popBoolean, &EncryptionResponse::has_verify_token);
+    if (!h->has_verify_token)
+        return h;
+    parse(buffer.data(), buffer.data() + buffer.size() - 1, *h,
+          popVarInt, &EncryptionResponse::verify_token_length);
+    parseExtra(buffer.data(), buffer.data() + buffer.size() - 1, *h,
+               popByteArray, &EncryptionResponse::verify_token, h->verify_token_length);
+    parse(buffer.data(), buffer.data() + buffer.size() - 1, *h,
+          popLong, &EncryptionResponse::salt,
+          popVarInt, &EncryptionResponse::message_signature_length);
+    parseExtra(buffer.data(), buffer.data() + buffer.size() - 1, *h,
+               popByteArray, &EncryptionResponse::message_signature, h->message_signature_length);
+    return h;
+}
+
 std::shared_ptr<QueryBlockEntityTag> protocol::parseQueryBlockEntityTag(std::vector<uint8_t> &buffer)
 {
     auto h = std::make_shared<QueryBlockEntityTag>();

@@ -203,6 +203,8 @@ void Server::_handleParsedClientPacket(std::shared_ptr<Client> cli,
         switch (packetID) {
         case ServerPacketsID::LoginStart:
             PCK_CALLBACK(_onLoginStart, LoginStart);
+        case ServerPacketsID::EncryptionResponse:
+            PCK_CALLBACK(_onEncryptionResponse, EncryptionResponse);
         default:
             break;
         }
@@ -339,4 +341,9 @@ void Server::_onQueryEntityTag(std::shared_ptr<Client> cli, const std::shared_pt
 void Server::_onLoginStart(std::shared_ptr<Client> cli, const std::shared_ptr<protocol::LoginStart> &pck)
 {
     _log->debug("Got a Login Start");
+}
+
+void Server::_onEncryptionResponse(std::shared_ptr<Client> cli, const std::shared_ptr<protocol::EncryptionResponse> &pck)
+{
+    _log->debug("Got a Encryption Response");
 }

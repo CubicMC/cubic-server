@@ -61,6 +61,7 @@ private:
     void _onLoginStart(std::shared_ptr<Client> cli, const std::shared_ptr<protocol::LoginStart> &pck);
     void _onPingRequest(std::shared_ptr<Client> cli, const std::shared_ptr<protocol::PingRequest>& pck);
     void _onConfirmTeleportation(std::shared_ptr<Client> cli, const std::shared_ptr<protocol::ConfirmTeleportation>& pck);
+    void _onEncryptionResponse(std::shared_ptr<Client> cli, const std::shared_ptr<protocol::EncryptionResponse> &pck);
     void _onQueryBlockEntityTag(std::shared_ptr<Client> cli, const std::shared_ptr<protocol::QueryBlockEntityTag>& pck);
     void _onChangeDifficulty(std::shared_ptr<Client> cli, const std::shared_ptr<protocol::ChangeDifficulty> &pck);
     void _onClientCommand(std::shared_ptr<Client> cli, const std::shared_ptr<protocol::ClientCommand> &pck);
