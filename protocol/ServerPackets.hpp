@@ -31,6 +31,7 @@ namespace protocol
         CloseContainerRequest = 0x0b,
         EditBook = 0x0d,
         QueryEntityTag = 0x0e,
+        Interact = 0x0F,
     };
 
     struct BaseServerPacket {
@@ -160,6 +161,18 @@ namespace protocol
     };
     std::shared_ptr<QueryEntityTag> parseQueryEntityTag(std::vector<uint8_t> &buffer);
 
+    struct Interact : BaseServerPacket
+    {
+        int32_t entity_id;
+        int32_t type; // TODO: Use an enum
+        float target_x;
+        float target_y;
+        float target_z;
+        int32_t hand; // TODO: Use an enum
+        bool sneaking;
+    };
+    std::shared_ptr<Interact> parseInteract(std::vector<uint8_t> &buffer);
+
     // Maps
 
     static const std::unordered_map<ServerPacketsID, std::function<std::shared_ptr<BaseServerPacket>(std::vector<uint8_t> &)>> packetIDToParseInitial = {
@@ -187,6 +200,7 @@ namespace protocol
             {ServerPacketsID::CloseContainerRequest, &parseCloseContainerRequest},
             {ServerPacketsID::EditBook, &parseEditBook},
             {ServerPacketsID::QueryEntityTag, &parseQueryEntityTag},
+            {ServerPacketsID::Interact, &parseInteract},
     };
 }
 
