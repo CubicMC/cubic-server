@@ -23,6 +23,32 @@ std::shared_ptr<StatusRequest> protocol::parseStatusRequest(std::vector<uint8_t>
     return {};
 }
 
+std::shared_ptr<LoginStart> protocol::parseLoginStart(std::vector<uint8_t> &buffer)
+{
+    auto h = std::make_shared<LoginStart>();
+
+    parse(buffer.data(), buffer.data() + buffer.size() - 1, *h,
+          popString, &LoginStart::name,
+          popBoolean, &LoginStart::has_sig_data);
+    if (h->has_sig_data) {
+        parse(buffer.data(), buffer.data() + buffer.size() - 1, *h,
+              popLong, &LoginStart::timestamp,
+              popVarInt, &LoginStart::public_key_length);
+        parseExtra(buffer.data(), buffer.data() + buffer.size() - 1, *h,
+                   popByteArray, &LoginStart::public_key, h->public_key_length);
+        parse(buffer.data(), buffer.data() + buffer.size() - 1, *h,
+              popVarInt, &LoginStart::signature_length);
+        parseExtra(buffer.data(), buffer.data() + buffer.size() - 1, *h,
+                   popByteArray, &LoginStart::signature, h->signature_length);
+    }
+    parse(buffer.data(), buffer.data() + buffer.size() - 1, *h,
+          popBoolean, &LoginStart::has_player_uuid);
+    if (h->has_player_uuid)
+        parse(buffer.data(), buffer.data() + buffer.size() - 1, *h,
+              popUUID, &LoginStart::player_uuid);
+    return h;
+}
+
 std::shared_ptr<PingRequest> protocol::parsePingRequest(std::vector<uint8_t> &buffer)
 {
     auto h = std::make_shared<PingRequest>();
