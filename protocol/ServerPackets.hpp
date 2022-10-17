@@ -21,6 +21,7 @@ namespace protocol
         LoginStart = 0x00,
         ConfirmTeleportation = 0x00,
         PingRequest = 0x01,
+        EncryptionResponse = 0x01,
         QueryBlockEntityTag = 0x01,
         ChangeDifficulty = 0x02,
         ClientCommand = 0x06,
@@ -76,6 +77,19 @@ namespace protocol
         int32_t teleport_id;
     };
     std::shared_ptr<ConfirmTeleportation> parseConfirmTeleportation(std::vector<uint8_t> &buffer);
+
+    struct EncryptionResponse : BaseServerPacket
+    {
+        int32_t shared_secret_length;
+        std::vector<uint8_t> shared_secret;
+        bool has_verify_token;
+        int32_t verify_token_length;
+        std::vector<uint8_t> verify_token;
+        int64_t salt;
+        int32_t message_signature_length;
+        std::vector<uint8_t> message_signature;
+    };
+    std::shared_ptr<EncryptionResponse> parseEncryptionResponse(std::vector<uint8_t> &buffer);
 
     struct QueryBlockEntityTag : BaseServerPacket
     {
@@ -159,6 +173,7 @@ namespace protocol
 
     static const std::unordered_map<ServerPacketsID, std::function<std::shared_ptr<BaseServerPacket>(std::vector<uint8_t> &)>> packetIDToParseLogin = {
             {ServerPacketsID::LoginStart, &parseLoginStart},
+            {ServerPacketsID::EncryptionResponse, &parseEncryptionResponse},
     };
 
     static const std::unordered_map<ServerPacketsID, std::function<std::shared_ptr<BaseServerPacket>(std::vector<uint8_t> &)>> packetIDToParsePlay = {
