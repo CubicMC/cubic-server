@@ -21,6 +21,19 @@ namespace protocol
         request_stats = 1,
     };
 
+    enum class ClientInformationChatMode
+    {
+        enabled = 0,
+        commands_only = 1,
+        hidden = 2,
+    };
+
+    enum class ClientInformationMainHand
+    {
+        left = 0,
+        right = 1,
+    };
+
     constexpr int32_t popVarInt(uint8_t *&at, uint8_t *eof)
     {
         int32_t value = 0;
@@ -170,6 +183,51 @@ namespace protocol
     constexpr void addClientCommandActionID(std::vector<uint8_t> &out, const ClientCommandActionID &data)
     {
         return addVarInt(out, static_cast<int32_t>(data));
+    }
+
+    constexpr ClientInformationChatMode popClientInformationChatMode(uint8_t *&at, uint8_t *eof)
+    {
+        auto value = popVarInt(at, eof);
+
+        if (value != 0 && value != 1 && value != 2)
+            throw OutOfRangeEnum("Client Information Chat Mode is not within the range of the enum");
+        return static_cast<ClientInformationChatMode>(value);
+    }
+
+    constexpr void addClientInformationChatMode(std::vector<uint8_t> &out, const ClientInformationChatMode &data)
+    {
+        return addVarInt(out, static_cast<int32_t>(data));
+    }
+
+    constexpr ClientInformationMainHand popClientInformationMainHand(uint8_t *&at, uint8_t *eof)
+    {
+        auto value = popVarInt(at, eof);
+
+        if (value != 0 && value != 1)
+            throw OutOfRangeEnum("Client Information Main Hand is not within the range of the enum");
+        return static_cast<ClientInformationMainHand>(value);
+    }
+
+    constexpr void addClientInformationMainHand(std::vector<uint8_t> &out, const ClientInformationMainHand &data)
+    {
+        return addVarInt(out, static_cast<int32_t>(data));
+    }
+
+    constexpr bool popBoolean(uint8_t *&at, uint8_t *eof)
+    {
+        auto value = popByte(at, eof);
+
+        if (value != 0 && value != 1)
+            throw OutOfRangeBoolean("Given boolean is not 0 or 1");
+        return value == 1;
+    }
+
+    constexpr void addBoolean(std::vector<uint8_t> &out, const bool &data)
+    {
+        if (data)
+            addByte(out, 1);
+        else
+            addByte(out, 0);
     }
 }
 

@@ -23,6 +23,7 @@ namespace protocol
         QueryBlockEntityTag = 0x01,
         ChangeDifficulty = 0x02,
         ClientCommand = 0x06,
+        ClientInformation = 0x07,
     };
 
     struct BaseServerPacket {
@@ -75,6 +76,19 @@ namespace protocol
     };
     std::shared_ptr<ClientCommand> parseClientCommand(std::vector<uint8_t> &buffer);
 
+    struct ClientInformation : BaseServerPacket
+    {
+        std::string locale;
+        uint8_t view_distance;
+        ClientInformationChatMode chat_mode;
+        bool chat_colors;
+        uint8_t displayed_skin_parts;
+        ClientInformationMainHand main_hand;
+        bool enable_text_filtering;
+        bool allow_server_listings;
+    };
+    std::shared_ptr<ClientInformation> parseClientInformation(std::vector<uint8_t> &buffer);
+
     // Maps
 
     static const std::unordered_map<ServerPacketsID, std::function<std::shared_ptr<BaseServerPacket>(std::vector<uint8_t> &)>> packetIDToParseInitial = {
@@ -94,6 +108,7 @@ namespace protocol
             {ServerPacketsID::QueryBlockEntityTag, &parseQueryBlockEntityTag},
             {ServerPacketsID::ChangeDifficulty, &parseChangeDifficulty},
             {ServerPacketsID::ClientCommand, &parseClientCommand},
+            {ServerPacketsID::ClientInformation, &parseClientInformation},
     };
 }
 
