@@ -84,3 +84,13 @@ std::shared_ptr<ClientInformation> protocol::parseClientInformation(std::vector<
           popBoolean, &ClientInformation::allow_server_listings);
     return h;
 }
+
+std::shared_ptr<CommandSuggestionRequest> protocol::parseCommandSuggestionRequest(std::vector<uint8_t> &buffer)
+{
+    auto h = std::make_shared<CommandSuggestionRequest>();
+
+    parse(buffer.data(), buffer.data() + buffer.size() - 1, *h,
+          popVarInt, &CommandSuggestionRequest::transaction_id,
+          popString, &CommandSuggestionRequest::text);
+    return h;
+}

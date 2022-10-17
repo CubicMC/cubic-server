@@ -24,6 +24,7 @@ namespace protocol
         ChangeDifficulty = 0x02,
         ClientCommand = 0x06,
         ClientInformation = 0x07,
+        CommandSuggestionRequest = 0x08,
     };
 
     struct BaseServerPacket {
@@ -89,6 +90,13 @@ namespace protocol
     };
     std::shared_ptr<ClientInformation> parseClientInformation(std::vector<uint8_t> &buffer);
 
+    struct CommandSuggestionRequest : BaseServerPacket
+    {
+        int32_t transaction_id;
+        std::string text;
+    };
+    std::shared_ptr<CommandSuggestionRequest> parseCommandSuggestionRequest(std::vector<uint8_t> &buffer);
+
     // Maps
 
     static const std::unordered_map<ServerPacketsID, std::function<std::shared_ptr<BaseServerPacket>(std::vector<uint8_t> &)>> packetIDToParseInitial = {
@@ -109,6 +117,7 @@ namespace protocol
             {ServerPacketsID::ChangeDifficulty, &parseChangeDifficulty},
             {ServerPacketsID::ClientCommand, &parseClientCommand},
             {ServerPacketsID::ClientInformation, &parseClientInformation},
+            {ServerPacketsID::CommandSuggestionRequest, &parseCommandSuggestionRequest},
     };
 }
 

@@ -64,6 +64,7 @@ private:
     void _onChangeDifficulty(std::shared_ptr<Client> cli, const std::shared_ptr<protocol::ChangeDifficulty> &pck);
     void _onClientCommand(std::shared_ptr<Client> cli, const std::shared_ptr<protocol::ClientCommand> &pck);
     void _onClientInformation(std::shared_ptr<Client> cli, const std::shared_ptr<protocol::ClientInformation> &pck);
+    void _onCommandSuggestionRequest(std::shared_ptr<Client> cli, const std::shared_ptr<protocol::CommandSuggestionRequest> &pck);
 
     Configuration::ConfigHandler _config;
 };
