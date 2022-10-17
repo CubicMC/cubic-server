@@ -68,6 +68,7 @@ private:
     void _onClickContainerButton(std::shared_ptr<Client> cli, const std::shared_ptr<protocol::ClickContainerButton> &pck);
     void _onCloseContainerRequest(std::shared_ptr<Client> cli, const std::shared_ptr<protocol::CloseContainerRequest> &pck);
     void _onEditBook(std::shared_ptr<Client> cli, const std::shared_ptr<protocol::EditBook> &pck);
+    void _onQueryEntityTag(std::shared_ptr<Client> cli, const std::shared_ptr<protocol::QueryEntityTag> &pck);
 
     Configuration::ConfigHandler _config;
 };

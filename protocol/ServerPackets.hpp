@@ -28,6 +28,7 @@ namespace protocol
         ClickContainerButton = 0x09,
         CloseContainerRequest = 0x0b,
         EditBook = 0x0d,
+        QueryEntityTag = 0x0e,
     };
 
     struct BaseServerPacket {
@@ -123,6 +124,13 @@ namespace protocol
     };
     std::shared_ptr<EditBook> parseEditBook(std::vector<uint8_t> &buffer);
 
+    struct QueryEntityTag : BaseServerPacket
+    {
+        int32_t transaction_id;
+        int32_t entity_id;
+    };
+    std::shared_ptr<QueryEntityTag> parseQueryEntityTag(std::vector<uint8_t> &buffer);
+
     // Maps
 
     static const std::unordered_map<ServerPacketsID, std::function<std::shared_ptr<BaseServerPacket>(std::vector<uint8_t> &)>> packetIDToParseInitial = {
@@ -147,6 +155,7 @@ namespace protocol
             {ServerPacketsID::ClickContainerButton, &parseClickContainerButton},
             {ServerPacketsID::CloseContainerRequest, &parseCloseContainerRequest},
             {ServerPacketsID::EditBook, &parseEditBook},
+            {ServerPacketsID::QueryEntityTag, &parseQueryEntityTag},
     };
 }
 
