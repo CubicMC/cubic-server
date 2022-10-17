@@ -214,6 +214,8 @@ void Server::_handleParsedClientPacket(std::shared_ptr<Client> cli,
             PCK_CALLBACK(_onClientCommand, ClientCommand);
         case ServerPacketsID::ClientInformation:
             PCK_CALLBACK(_onClientInformation, ClientInformation);
+        case ServerPacketsID::CommandSuggestionRequest:
+            PCK_CALLBACK(_onCommandSuggestionRequest, CommandSuggestionRequest);
         default:
             break;
         }
@@ -292,3 +294,10 @@ void Server::_onClientInformation(std::shared_ptr<Client> cli, const std::shared
 {
     _log->debug("Got a Client Information");
 }
+
+void Server::_onCommandSuggestionRequest(std::shared_ptr<Client> cli,
+                                         const std::shared_ptr<protocol::CommandSuggestionRequest> &pck)
+{
+    _log->debug("Got a Command Suggestion Request");
+}
+
