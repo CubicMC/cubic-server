@@ -212,6 +212,8 @@ void Server::_handleParsedClientPacket(std::shared_ptr<Client> cli,
             PCK_CALLBACK(_onChangeDifficulty, ChangeDifficulty);
         case ServerPacketsID::ClientCommand:
             PCK_CALLBACK(_onClientCommand, ClientCommand);
+        case ServerPacketsID::ClientInformation:
+            PCK_CALLBACK(_onClientInformation, ClientInformation);
         default:
             break;
         }
@@ -284,4 +286,9 @@ void Server::_onChangeDifficulty(std::shared_ptr<Client> cli, const std::shared_
 void Server::_onClientCommand(std::shared_ptr<Client> cli, const std::shared_ptr<protocol::ClientCommand> &pck)
 {
     _log->debug("Got a Client Command");
+}
+
+void Server::_onClientInformation(std::shared_ptr<Client> cli, const std::shared_ptr<protocol::ClientInformation> &pck)
+{
+    _log->debug("Got a Client Information");
 }

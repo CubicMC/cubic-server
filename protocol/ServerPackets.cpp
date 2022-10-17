@@ -68,3 +68,19 @@ std::shared_ptr<ClientCommand> protocol::parseClientCommand(std::vector<uint8_t>
           popClientCommandActionID, &ClientCommand::action_id);
     return h;
 }
+
+std::shared_ptr<ClientInformation> protocol::parseClientInformation(std::vector<uint8_t> &buffer)
+{
+    auto h = std::make_shared<ClientInformation>();
+
+    parse(buffer.data(), buffer.data() + buffer.size() - 1, *h,
+          popString, &ClientInformation::locale,
+          popByte, &ClientInformation::view_distance,
+          popClientInformationChatMode, &ClientInformation::chat_mode,
+          popBoolean, &ClientInformation::chat_colors,
+          popByte, &ClientInformation::displayed_skin_parts,
+          popClientInformationMainHand, &ClientInformation::main_hand,
+          popBoolean, &ClientInformation::enable_text_filtering,
+          popBoolean, &ClientInformation::allow_server_listings);
+    return h;
+}
