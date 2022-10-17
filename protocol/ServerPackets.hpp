@@ -32,6 +32,7 @@ namespace protocol
         EditBook = 0x0d,
         QueryEntityTag = 0x0e,
         Interact = 0x0F,
+        JigsawGenerate = 0x10,
     };
 
     struct BaseServerPacket {
@@ -173,6 +174,14 @@ namespace protocol
     };
     std::shared_ptr<Interact> parseInteract(std::vector<uint8_t> &buffer);
 
+    struct JigsawGenerate : BaseServerPacket
+    {
+        Position location;
+        int32_t levels;
+        bool keep_jigsaws;
+    };
+    std::shared_ptr<JigsawGenerate> parseJigsawGenerate(std::vector<uint8_t> &buffer);
+
     // Maps
 
     static const std::unordered_map<ServerPacketsID, std::function<std::shared_ptr<BaseServerPacket>(std::vector<uint8_t> &)>> packetIDToParseInitial = {
@@ -201,6 +210,7 @@ namespace protocol
             {ServerPacketsID::EditBook, &parseEditBook},
             {ServerPacketsID::QueryEntityTag, &parseQueryEntityTag},
             {ServerPacketsID::Interact, &parseInteract},
+            {ServerPacketsID::JigsawGenerate, &parseJigsawGenerate},
     };
 }
 

@@ -210,3 +210,14 @@ std::shared_ptr<Interact> protocol::parseInteract(std::vector<uint8_t> &buffer)
           popBoolean, &Interact::sneaking);
     return h;
 }
+
+std::shared_ptr<JigsawGenerate> protocol::parseJigsawGenerate(std::vector<uint8_t> &buffer)
+{
+    auto h = std::make_shared<JigsawGenerate>();
+
+    parse(buffer.data(), buffer.data() + buffer.size() - 1, *h,
+          popPosition, &JigsawGenerate::location,
+          popVarInt, &JigsawGenerate::levels,
+          popBoolean, &JigsawGenerate::keep_jigsaws);
+    return h;
+}
