@@ -190,3 +190,23 @@ std::shared_ptr<QueryEntityTag> protocol::parseQueryEntityTag(std::vector<uint8_
           popVarInt, &QueryEntityTag::entity_id);
     return h;
 }
+
+std::shared_ptr<Interact> protocol::parseInteract(std::vector<uint8_t> &buffer)
+{
+    auto h = std::make_shared<Interact>();
+
+    parse(buffer.data(), buffer.data() + buffer.size() - 1, *h,
+          popVarInt, &Interact::entity_id,
+          popVarInt, &Interact::type);
+    if (h->type == 2)
+        parse(buffer.data(), buffer.data() + buffer.size() - 1, *h,
+              popFloat, &Interact::target_x,
+              popFloat, &Interact::target_y,
+              popFloat, &Interact::target_z);
+    if (h->type != 1)
+        parse(buffer.data(), buffer.data() + buffer.size() - 1, *h,
+              popVarInt, &Interact::hand);
+    parse(buffer.data(), buffer.data() + buffer.size() - 1, *h,
+          popBoolean, &Interact::sneaking);
+    return h;
+}

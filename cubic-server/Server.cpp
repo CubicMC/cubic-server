@@ -231,6 +231,8 @@ void Server::_handleParsedClientPacket(std::shared_ptr<Client> cli,
             PCK_CALLBACK(_onEditBook, EditBook);
         case ServerPacketsID::QueryEntityTag:
             PCK_CALLBACK(_onQueryEntityTag, QueryEntityTag);
+        case ServerPacketsID::Interact:
+            PCK_CALLBACK(_onInteract, Interact);
         default:
             break;
         }
@@ -346,4 +348,9 @@ void Server::_onLoginStart(std::shared_ptr<Client> cli, const std::shared_ptr<pr
 void Server::_onEncryptionResponse(std::shared_ptr<Client> cli, const std::shared_ptr<protocol::EncryptionResponse> &pck)
 {
     _log->debug("Got a Encryption Response");
+}
+
+void Server::_onInteract(std::shared_ptr<Client> cli, const std::shared_ptr<protocol::Interact> &pck)
+{
+    _log->debug("Got a Interact");
 }

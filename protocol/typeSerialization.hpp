@@ -255,6 +255,24 @@ namespace protocol
 
         return (a << 64) | b;
     }
+
+    constexpr int32_t popInt(uint8_t *&at, uint8_t *eof)
+    {
+        if (eof - at < 3)
+            throw PacketEOF("Not enough data in packet to parse an Int");
+
+        int32_t value = 0;
+
+        for (int i = 0; i < 4; i++)
+            value = (value << 8) + *at++;
+
+        return value;
+    }
+
+    constexpr float popFloat(uint8_t *&at, uint8_t *eof)
+    {
+        return (float) popInt(at, eof);
+    }
 }
 
 #endif /* D7286F40_D05F_4DC1_9A04_28C9F7417C4E */
