@@ -25,6 +25,7 @@ namespace protocol
         ClientCommand = 0x06,
         ClientInformation = 0x07,
         CommandSuggestionRequest = 0x08,
+        ClickContainerButton = 0x09,
     };
 
     struct BaseServerPacket {
@@ -97,6 +98,13 @@ namespace protocol
     };
     std::shared_ptr<CommandSuggestionRequest> parseCommandSuggestionRequest(std::vector<uint8_t> &buffer);
 
+    struct ClickContainerButton : BaseServerPacket
+    {
+        uint8_t window_id;
+        uint8_t button_id;
+    };
+    std::shared_ptr<ClickContainerButton> parseClickContainerButton(std::vector<uint8_t> &buffer);
+
     // Maps
 
     static const std::unordered_map<ServerPacketsID, std::function<std::shared_ptr<BaseServerPacket>(std::vector<uint8_t> &)>> packetIDToParseInitial = {
@@ -118,6 +126,7 @@ namespace protocol
             {ServerPacketsID::ClientCommand, &parseClientCommand},
             {ServerPacketsID::ClientInformation, &parseClientInformation},
             {ServerPacketsID::CommandSuggestionRequest, &parseCommandSuggestionRequest},
+            {ServerPacketsID::ClickContainerButton, &parseClickContainerButton},
     };
 }
 

@@ -216,6 +216,8 @@ void Server::_handleParsedClientPacket(std::shared_ptr<Client> cli,
             PCK_CALLBACK(_onClientInformation, ClientInformation);
         case ServerPacketsID::CommandSuggestionRequest:
             PCK_CALLBACK(_onCommandSuggestionRequest, CommandSuggestionRequest);
+        case ServerPacketsID::ClickContainerButton:
+            PCK_CALLBACK(_onClickContainerButton, ClickContainerButton);
         default:
             break;
         }
@@ -299,5 +301,11 @@ void Server::_onCommandSuggestionRequest(std::shared_ptr<Client> cli,
                                          const std::shared_ptr<protocol::CommandSuggestionRequest> &pck)
 {
     _log->debug("Got a Command Suggestion Request");
+}
+
+void Server::_onClickContainerButton(std::shared_ptr<Client> cli,
+                                     const std::shared_ptr<protocol::ClickContainerButton> &pck)
+{
+    _log->debug("Got a Click Container Button");
 }
 
