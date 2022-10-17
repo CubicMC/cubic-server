@@ -18,6 +18,7 @@ namespace protocol
     enum class ServerPacketsID : int32_t {
         Handshake = 0x00,
         StatusRequest = 0x00,
+        LoginStart = 0x00,
         ConfirmTeleportation = 0x00,
         PingRequest = 0x01,
         QueryBlockEntityTag = 0x01,
@@ -49,6 +50,20 @@ namespace protocol
     struct StatusRequest : BaseServerPacket
     {};
     std::shared_ptr<StatusRequest> parseStatusRequest(std::vector<uint8_t> &buffer);
+
+    struct LoginStart : BaseServerPacket
+    {
+        std::string name;
+        bool has_sig_data;
+        int64_t timestamp;
+        int32_t public_key_length;
+        std::vector<uint8_t> public_key;
+        int32_t signature_length;
+        std::vector<uint8_t> signature;
+        bool has_player_uuid;
+        __int128 player_uuid;
+    };
+    std::shared_ptr<LoginStart> parseLoginStart(std::vector<uint8_t> &buffer);
 
     struct PingRequest : BaseServerPacket
     {
@@ -143,6 +158,7 @@ namespace protocol
     };
 
     static const std::unordered_map<ServerPacketsID, std::function<std::shared_ptr<BaseServerPacket>(std::vector<uint8_t> &)>> packetIDToParseLogin = {
+            {ServerPacketsID::LoginStart, &parseLoginStart},
     };
 
     static const std::unordered_map<ServerPacketsID, std::function<std::shared_ptr<BaseServerPacket>(std::vector<uint8_t> &)>> packetIDToParsePlay = {

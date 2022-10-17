@@ -238,6 +238,23 @@ namespace protocol
             value.push_back(popString(at, eof));
         return value;
     }
+
+    constexpr std::vector<uint8_t> popByteArray(const int32_t &count, uint8_t *&at, uint8_t *eof)
+    {
+        std::vector<uint8_t> value;
+
+        for (auto i = 0; i < count; i++)
+            value.push_back(popByte(at, eof));
+        return value;
+    }
+
+    constexpr __int128 popUUID(uint8_t *&at, uint8_t *eof)
+    {
+        auto a = (__int128) popLong(at, eof);
+        auto b = (__int128) popLong(at, eof);
+
+        return (a << 64) | b;
+    }
 }
 
 #endif /* D7286F40_D05F_4DC1_9A04_28C9F7417C4E */

@@ -200,7 +200,12 @@ void Server::_handleParsedClientPacket(std::shared_ptr<Client> cli,
         }
         break;
     case ClientStatus::Login:
-        // Add packets here
+        switch (packetID) {
+        case ServerPacketsID::LoginStart:
+            PCK_CALLBACK(_onLoginStart, LoginStart);
+        default:
+            break;
+        }
         break;
     case ClientStatus::Play:
         switch (packetID) {
@@ -329,4 +334,9 @@ void Server::_onEditBook(std::shared_ptr<Client> cli, const std::shared_ptr<prot
 void Server::_onQueryEntityTag(std::shared_ptr<Client> cli, const std::shared_ptr<protocol::QueryEntityTag> &pck)
 {
     _log->debug("Got a Query Entity Tag");
+}
+
+void Server::_onLoginStart(std::shared_ptr<Client> cli, const std::shared_ptr<protocol::LoginStart> &pck)
+{
+    _log->debug("Got a Login Start");
 }

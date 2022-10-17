@@ -58,6 +58,7 @@ private:
 
     void _onHandshake(std::shared_ptr<Client> cli, const std::shared_ptr<protocol::Handshake>& pck);
     void _onStatusRequest(std::shared_ptr<Client> cli, const std::shared_ptr<protocol::StatusRequest>& pck);
+    void _onLoginStart(std::shared_ptr<Client> cli, const std::shared_ptr<protocol::LoginStart> &pck);
     void _onPingRequest(std::shared_ptr<Client> cli, const std::shared_ptr<protocol::PingRequest>& pck);
     void _onConfirmTeleportation(std::shared_ptr<Client> cli, const std::shared_ptr<protocol::ConfirmTeleportation>& pck);
     void _onQueryBlockEntityTag(std::shared_ptr<Client> cli, const std::shared_ptr<protocol::QueryBlockEntityTag>& pck);
