@@ -233,6 +233,8 @@ void Server::_handleParsedClientPacket(std::shared_ptr<Client> cli,
             PCK_CALLBACK(_onQueryEntityTag, QueryEntityTag);
         case ServerPacketsID::Interact:
             PCK_CALLBACK(_onInteract, Interact);
+        case ServerPacketsID::JigsawGenerate:
+            PCK_CALLBACK(_onJigsawGenerate, JigsawGenerate);
         default:
             break;
         }
@@ -353,4 +355,9 @@ void Server::_onEncryptionResponse(std::shared_ptr<Client> cli, const std::share
 void Server::_onInteract(std::shared_ptr<Client> cli, const std::shared_ptr<protocol::Interact> &pck)
 {
     _log->debug("Got a Interact");
+}
+
+void Server::_onJigsawGenerate(std::shared_ptr<Client> cli, const std::shared_ptr<protocol::JigsawGenerate> &pck)
+{
+    _log->debug("Got a Jigsaw Generate");
 }
