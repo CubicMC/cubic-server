@@ -1,6 +1,6 @@
 # Create a library called "Hello" which includes the source file "hello.cxx".
 # The extension is already found. Any number of sources could be listed here.
-add_library (ManagementInterface ManagementInterface.cpp)
+add_library (ManagementInterface ManagementInterface.cpp LogsInterface.cpp PlayersInterface.cpp)
 
 # Use the package PkgConfig to detect GTK+ headers/library files
 find_package(PkgConfig REQUIRED)

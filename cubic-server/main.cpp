@@ -3,6 +3,7 @@
 
 #include "Server.hpp"
 #include "ServerPackets.hpp"
+#include "ManagementInterface.hpp"
 
 static void print_usage(const char *caller)
 {
@@ -18,5 +19,12 @@ int main(int argc, char **argv)
     }
 
     auto srv = Server();
+    /// 
+    auto app = Gtk::Application::create(argc, argv, "org.cubicserver.example");
+    ManagementInterface window;
+
+    auto InterfaceThread = std::thread({return app->run(window)}, app);
+    ///
+
     srv.launch();
 }
