@@ -113,3 +113,19 @@ std::shared_ptr<CloseContainerRequest> protocol::parseCloseContainerRequest(std:
           popByte, &CloseContainerRequest::window_id);
     return h;
 }
+
+std::shared_ptr<EditBook> protocol::parseEditBook(std::vector<uint8_t> &buffer)
+{
+    auto h = std::make_shared<EditBook>();
+
+    parse(buffer.data(), buffer.data() + buffer.size() - 1, *h,
+          popVarInt, &EditBook::slot,
+          popVarInt, &EditBook::count);
+    parseExtra(buffer.data(), buffer.data() + buffer.size() - 1, *h,
+          popStringArray, &EditBook::entries, h->count);
+    parse(buffer.data(), buffer.data() + buffer.size() - 1, *h,
+          popBoolean, &EditBook::has_title);
+    if (h->has_title)
+        parse(buffer.data(), buffer.data() + buffer.size() - 1, *h,
+              popString, &EditBook::title);
+}

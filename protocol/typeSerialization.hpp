@@ -229,6 +229,15 @@ namespace protocol
         else
             addByte(out, 0);
     }
+
+    constexpr std::vector<std::string> popStringArray(const int32_t &count, uint8_t *&at, uint8_t *eof)
+    {
+        std::vector<std::string> value;
+
+        for (auto i = 0; i < count; i++)
+            value.push_back(popString(at, eof));
+        return value;
+    }
 }
 
 #endif /* D7286F40_D05F_4DC1_9A04_28C9F7417C4E */
