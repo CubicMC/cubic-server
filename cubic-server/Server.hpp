@@ -67,6 +67,7 @@ private:
     void _onCommandSuggestionRequest(std::shared_ptr<Client> cli, const std::shared_ptr<protocol::CommandSuggestionRequest> &pck);
     void _onClickContainerButton(std::shared_ptr<Client> cli, const std::shared_ptr<protocol::ClickContainerButton> &pck);
     void _onCloseContainerRequest(std::shared_ptr<Client> cli, const std::shared_ptr<protocol::CloseContainerRequest> &pck);
+    void _onEditBook(std::shared_ptr<Client> cli, const std::shared_ptr<protocol::EditBook> &pck);
 
     Configuration::ConfigHandler _config;
 };
