@@ -94,3 +94,13 @@ std::shared_ptr<CommandSuggestionRequest> protocol::parseCommandSuggestionReques
           popString, &CommandSuggestionRequest::text);
     return h;
 }
+
+std::shared_ptr<ClickContainerButton> protocol::parseClickContainerButton(std::vector<uint8_t> &buffer)
+{
+    auto h = std::make_shared<ClickContainerButton>();
+
+    parse(buffer.data(), buffer.data() + buffer.size() - 1, *h,
+          popByte, &ClickContainerButton::window_id,
+          popByte, &ClickContainerButton::button_id);
+    return h;
+}
