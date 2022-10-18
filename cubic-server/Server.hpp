@@ -75,6 +75,9 @@ private:
     void _onJigsawGenerate(std::shared_ptr<Client> cli, const std::shared_ptr<protocol::JigsawGenerate> &pck);
     void _onKeepAliveResponse(std::shared_ptr<Client> cli, const std::shared_ptr<protocol::KeepAliveResponse> &pck);
     void _onLockDifficulty(std::shared_ptr<Client> cli, const std::shared_ptr<protocol::LockDifficulty> &pck);
+    void _onSetPlayerPosition(std::shared_ptr<Client> cli, const std::shared_ptr<protocol::SetPlayerPosition> &pck);
+    void _onSetPlayerPositionAndRotation(std::shared_ptr<Client> cli, const std::shared_ptr<protocol::SetPlayerPositionAndRotation> &pck);
+    void _onSetPlayerRotation(std::shared_ptr<Client> cli, const std::shared_ptr<protocol::SetPlayerRotation> &pck);
 
     Configuration::ConfigHandler _config;
 };

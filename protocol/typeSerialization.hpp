@@ -273,6 +273,11 @@ namespace protocol
     {
         return (float) popInt(at, eof);
     }
+
+    constexpr double popDouble(uint8_t *&at, uint8_t *eof)
+    {
+        return (double) popLong(at, eof);
+    }
 }
 
 #endif /* D7286F40_D05F_4DC1_9A04_28C9F7417C4E */

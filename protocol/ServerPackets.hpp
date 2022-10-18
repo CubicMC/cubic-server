@@ -35,6 +35,9 @@ namespace protocol
         JigsawGenerate = 0x10,
         KeepAliveResponse = 0x11,
         LockDifficulty = 0x12,
+        SetPlayerPosition = 0x13,
+        SetPlayerPositionAndRotation = 0x14,
+        SetPlayerRotation = 0x15,
     };
 
     struct BaseServerPacket {
@@ -195,6 +198,34 @@ namespace protocol
         bool locked;
     };
     std::shared_ptr<LockDifficulty> parseLockDifficulty(std::vector<uint8_t> &buffer);
+
+    struct SetPlayerPosition : BaseServerPacket
+    {
+        double x;
+        double feet_y;
+        double z;
+        bool on_ground;
+    };
+    std::shared_ptr<SetPlayerPosition> parseSetPlayerPosition(std::vector<uint8_t> &buffer);
+
+    struct SetPlayerPositionAndRotation : BaseServerPacket
+    {
+        double x;
+        double feet_y;
+        double z;
+        float yaw;
+        float pitch;
+        bool on_ground;
+    };
+    std::shared_ptr<SetPlayerPositionAndRotation> parseSetPlayerPositionAndRotation(std::vector<uint8_t> &buffer);
+
+    struct SetPlayerRotation : BaseServerPacket
+    {
+        float yaw;
+        float pitch;
+        bool on_ground;
+    };
+    std::shared_ptr<SetPlayerRotation> parseSetPlayerRotation(std::vector<uint8_t> &buffer);
 
     // Maps
 

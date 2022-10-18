@@ -239,3 +239,39 @@ std::shared_ptr<LockDifficulty> protocol::parseLockDifficulty(std::vector<uint8_
           popBoolean, &LockDifficulty::locked);
     return h;
 }
+
+std::shared_ptr<SetPlayerPosition> protocol::parseSetPlayerPosition(std::vector<uint8_t> &buffer)
+{
+    auto h = std::make_shared<SetPlayerPosition>();
+
+    parse(buffer.data(), buffer.data() + buffer.size() - 1, *h,
+          popDouble, &SetPlayerPosition::x,
+          popDouble, &SetPlayerPosition::feet_y,
+          popDouble, &SetPlayerPosition::z,
+          popBoolean, &SetPlayerPosition::on_ground);
+    return h;
+}
+
+std::shared_ptr<SetPlayerPositionAndRotation> protocol::parseSetPlayerPositionAndRotation(std::vector<uint8_t> &buffer)
+{
+    auto h = std::make_shared<SetPlayerPositionAndRotation>();
+
+    parse(buffer.data(), buffer.data() + buffer.size() - 1, *h,
+          popDouble, &SetPlayerPositionAndRotation::x,
+          popDouble, &SetPlayerPositionAndRotation::feet_y,
+          popDouble, &SetPlayerPositionAndRotation::z,
+          popFloat, &SetPlayerPositionAndRotation::yaw,
+          popFloat, &SetPlayerPositionAndRotation::pitch,
+          popBoolean, &SetPlayerPositionAndRotation::on_ground);
+    return h;
+}
+
+std::shared_ptr<SetPlayerRotation> protocol::parseSetPlayerRotation(std::vector<uint8_t> &buffer)
+{
+    auto h = std::make_shared<SetPlayerRotation>();
+
+    parse(buffer.data(), buffer.data() + buffer.size() - 1, *h,
+          popFloat, &SetPlayerRotation::yaw,
+          popFloat, &SetPlayerRotation::pitch);
+    return h;
+}

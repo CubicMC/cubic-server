@@ -239,6 +239,12 @@ void Server::_handleParsedClientPacket(std::shared_ptr<Client> cli,
             PCK_CALLBACK(_onKeepAliveResponse, KeepAliveResponse);
         case ServerPacketsID::LockDifficulty:
             PCK_CALLBACK(_onLockDifficulty, LockDifficulty);
+        case ServerPacketsID::SetPlayerPosition:
+            PCK_CALLBACK(_onSetPlayerPosition, SetPlayerPosition);
+        case ServerPacketsID::SetPlayerPositionAndRotation:
+            PCK_CALLBACK(_onSetPlayerPositionAndRotation, SetPlayerPositionAndRotation);
+        case ServerPacketsID::SetPlayerRotation:
+            PCK_CALLBACK(_onSetPlayerRotation, SetPlayerRotation);
         default:
             break;
         }
@@ -374,4 +380,19 @@ void Server::_onKeepAliveResponse(std::shared_ptr<Client> cli, const std::shared
 void Server::_onLockDifficulty(std::shared_ptr<Client> cli, const std::shared_ptr<protocol::LockDifficulty> &pck)
 {
     _log->debug("Got a Lock Difficulty");
+}
+
+void Server::_onSetPlayerPosition(std::shared_ptr<Client> cli, const std::shared_ptr<protocol::SetPlayerPosition> &pck)
+{
+    _log->debug("Got a Set Player Position");
+}
+
+void Server::_onSetPlayerPositionAndRotation(std::shared_ptr<Client> cli, const std::shared_ptr<protocol::SetPlayerPositionAndRotation> &pck)
+{
+    _log->debug("Got a Set Player Position And Rotation");
+}
+
+void Server::_onSetPlayerRotation(std::shared_ptr<Client> cli, const std::shared_ptr<protocol::SetPlayerRotation> &pck)
+{
+    _log->debug("Got a Set Player Rotation");
 }
