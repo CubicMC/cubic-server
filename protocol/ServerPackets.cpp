@@ -272,6 +272,7 @@ std::shared_ptr<SetPlayerRotation> protocol::parseSetPlayerRotation(std::vector<
 
     parse(buffer.data(), buffer.data() + buffer.size() - 1, *h,
           popFloat, &SetPlayerRotation::yaw,
-          popFloat, &SetPlayerRotation::pitch);
+          popFloat, &SetPlayerRotation::pitch,
+          popBoolean, &SetPlayerRotation::on_ground);
     return h;
 }
