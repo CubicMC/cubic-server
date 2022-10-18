@@ -91,6 +91,7 @@ private:
     void _onChangeRecipeBookSettings(std::shared_ptr<Client> cli, const std::shared_ptr<protocol::ChangeRecipeBookSettings> &pck);
     void _onSetSeenRecipe(std::shared_ptr<Client> cli, const std::shared_ptr<protocol::SetSeenRecipe> &pck);
     void _onRenameItem(std::shared_ptr<Client> cli, const std::shared_ptr<protocol::RenameItem> &pck);
+    void _onResourcePack(std::shared_ptr<Client> cli, const std::shared_ptr<protocol::ResourcePack> &pck);
 
     Configuration::ConfigHandler _config;
 };

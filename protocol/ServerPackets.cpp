@@ -409,3 +409,12 @@ std::shared_ptr<RenameItem> protocol::parseRenameItem(std::vector<uint8_t> &buff
           popString, &RenameItem::item_name);
     return h;
 }
+
+std::shared_ptr<ResourcePack> protocol::parseResourcePack(std::vector<uint8_t> &buffer)
+{
+    auto h = std::make_shared<ResourcePack>();
+
+    parse(buffer.data(), buffer.data() + buffer.size() - 1, *h,
+          popVarInt, &ResourcePack::result);
+    return h;
+}

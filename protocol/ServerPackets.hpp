@@ -51,6 +51,7 @@ namespace protocol
         ChangeRecipeBookSettings = 0x20,
         SetSeenRecipe = 0x21,
         RenameItem = 0x22,
+        ResourcePack = 0x23,
     };
 
     struct BaseServerPacket {
@@ -334,6 +335,12 @@ namespace protocol
     };
     std::shared_ptr<RenameItem> parseRenameItem(std::vector<uint8_t> &buffer);
 
+    struct ResourcePack : BaseServerPacket
+    {
+        int32_t result; // TODO: Use an enum
+    };
+    std::shared_ptr<ResourcePack> parseResourcePack(std::vector<uint8_t> &buffer);
+
     // Maps
 
     static const std::unordered_map<ServerPacketsID, std::function<std::shared_ptr<BaseServerPacket>(std::vector<uint8_t> &)>> packetIDToParseInitial = {
@@ -381,6 +388,7 @@ namespace protocol
             {ServerPacketsID::ChangeRecipeBookSettings, &parseChangeRecipeBookSettings},
             {ServerPacketsID::SetSeenRecipe, &parseSetSeenRecipe},
             {ServerPacketsID::RenameItem, &parseRenameItem},
+            {ServerPacketsID::ResourcePack, &parseResourcePack},
     };
 }
 
