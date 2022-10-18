@@ -11,7 +11,7 @@ namespace protocol
 {
 
     template <typename H>
-    constexpr uint8_t *parse(uint8_t *begin, uint8_t *end, H &out)
+    constexpr uint8_t *parse(uint8_t *&begin, uint8_t *end, H &out)
     {
         return begin;
     }
@@ -19,7 +19,7 @@ namespace protocol
     // Thanks a lot to ralismark for helping me with the constexpr parser
     template <typename H, typename F, typename... Args>
     constexpr uint8_t *parse(
-        uint8_t *begin,
+        uint8_t *&begin,
         uint8_t *end,
         H &out,
         F (*parser)(uint8_t *&begin, uint8_t *end),
@@ -31,14 +31,14 @@ namespace protocol
     }
 
     template <typename H>
-    constexpr uint8_t *parseExtra(uint8_t *begin, uint8_t *end, H &out)
+    constexpr uint8_t *parseExtra(uint8_t *&begin, uint8_t *end, H &out)
     {
         return begin;
     }
 
     template <typename H, typename F, typename T, typename... Args>
     constexpr uint8_t *parseExtra(
-            uint8_t *begin,
+            uint8_t *&begin,
             uint8_t *end,
             H &out,
             F (*parser)(const T &data, uint8_t *&begin, uint8_t *end),

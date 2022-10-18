@@ -20,7 +20,7 @@
 
 #define GET_PARSER(state) __##state = protocol::packetIDToParse##state.find(packet_id); \
     if (__##state == protocol::packetIDToParse##state.end()) \
-        throw std::runtime_error("Unknown packet ID"); \
+        throw std::runtime_error("Unhandled packet: " + std::to_string(static_cast<int>(packet_id)) + " in status " + std::to_string(static_cast<int>(status))); \
     parser = __##state->second;                                                                  \
     break
 

@@ -91,7 +91,7 @@ void Server::_handleClientPacket(std::shared_ptr<Client> cli)
         if (buffer_length == 0)
             break;
         uint8_t *at = data.data();
-        uint8_t *eof = at + buffer_length - 1;
+        uint8_t *eof = at + buffer_length;
         int32_t length = 0;
         try {
             length = protocol::popVarInt(at, eof);
