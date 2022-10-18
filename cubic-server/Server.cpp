@@ -265,6 +265,8 @@ void Server::_handleParsedClientPacket(std::shared_ptr<Client> cli,
             PCK_CALLBACK(_onPlayerInput, PlayerInput);
         case ServerPacketsID::Pong:
             PCK_CALLBACK(_onPong, Pong);
+        case ServerPacketsID::ChangeRecipeBookSettings:
+            PCK_CALLBACK(_onChangeRecipeBookSettings, ChangeRecipeBookSettings);
         default:
             break;
         }
@@ -465,4 +467,10 @@ void Server::_onPlayerInput(std::shared_ptr<Client> cli, const std::shared_ptr<p
 void Server::_onPong(std::shared_ptr<Client> cli, const std::shared_ptr<protocol::Pong> &pck)
 {
     _log->debug("Got a Pong");
+}
+
+void Server::_onChangeRecipeBookSettings(std::shared_ptr<Client> cli,
+                                         const std::shared_ptr<protocol::ChangeRecipeBookSettings> &pck)
+{
+    _log->debug("Got a Change Recipe Book Settings");
 }

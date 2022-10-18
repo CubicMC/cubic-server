@@ -88,6 +88,7 @@ private:
     void _onPlayerCommand(std::shared_ptr<Client> cli, const std::shared_ptr<protocol::PlayerCommand> &pck);
     void _onPlayerInput(std::shared_ptr<Client> cli, const std::shared_ptr<protocol::PlayerInput> &pck);
     void _onPong(std::shared_ptr<Client> cli, const std::shared_ptr<protocol::Pong> &pck);
+    void _onChangeRecipeBookSettings(std::shared_ptr<Client> cli, const std::shared_ptr<protocol::ChangeRecipeBookSettings> &pck);
 
     Configuration::ConfigHandler _config;
 };

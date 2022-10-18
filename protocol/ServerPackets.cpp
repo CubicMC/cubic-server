@@ -380,3 +380,14 @@ std::shared_ptr<Pong> protocol::parsePong(std::vector<uint8_t> &buffer)
           popInt, &Pong::id);
     return h;
 }
+
+std::shared_ptr<ChangeRecipeBookSettings> protocol::parseChangeRecipeBookSettings(std::vector<uint8_t> &buffer)
+{
+    auto h = std::make_shared<ChangeRecipeBookSettings>();
+
+    parse(buffer.data(), buffer.data() + buffer.size() - 1, *h,
+          popVarInt, &ChangeRecipeBookSettings::book_id,
+          popBoolean, &ChangeRecipeBookSettings::book_open,
+          popBoolean, &ChangeRecipeBookSettings::filter_active);
+    return h;
+}
