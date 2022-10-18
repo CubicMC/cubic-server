@@ -221,3 +221,12 @@ std::shared_ptr<JigsawGenerate> protocol::parseJigsawGenerate(std::vector<uint8_
           popBoolean, &JigsawGenerate::keep_jigsaws);
     return h;
 }
+
+std::shared_ptr<KeepAliveResponse> protocol::parseKeepAliveResponse(std::vector<uint8_t> &buffer)
+{
+    auto h = std::make_shared<KeepAliveResponse>();
+
+    parse(buffer.data(), buffer.data() + buffer.size() - 1, *h,
+          popLong, &KeepAliveResponse::keep_alive_id);
+    return h;
+}

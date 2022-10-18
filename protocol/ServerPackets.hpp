@@ -33,6 +33,7 @@ namespace protocol
         QueryEntityTag = 0x0e,
         Interact = 0x0F,
         JigsawGenerate = 0x10,
+        KeepAliveResponse = 0x11,
     };
 
     struct BaseServerPacket {
@@ -182,6 +183,12 @@ namespace protocol
     };
     std::shared_ptr<JigsawGenerate> parseJigsawGenerate(std::vector<uint8_t> &buffer);
 
+    struct KeepAliveResponse : BaseServerPacket
+    {
+        int64_t keep_alive_id;
+    };
+    std::shared_ptr<KeepAliveResponse> parseKeepAliveResponse(std::vector<uint8_t> &buffer);
+
     // Maps
 
     static const std::unordered_map<ServerPacketsID, std::function<std::shared_ptr<BaseServerPacket>(std::vector<uint8_t> &)>> packetIDToParseInitial = {
@@ -211,6 +218,7 @@ namespace protocol
             {ServerPacketsID::QueryEntityTag, &parseQueryEntityTag},
             {ServerPacketsID::Interact, &parseInteract},
             {ServerPacketsID::JigsawGenerate, &parseJigsawGenerate},
+            {ServerPacketsID::KeepAliveResponse, &parseKeepAliveResponse},
     };
 }
 
