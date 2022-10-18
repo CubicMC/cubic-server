@@ -50,6 +50,7 @@ namespace protocol
         Pong = 0x1f,
         ChangeRecipeBookSettings = 0x20,
         SetSeenRecipe = 0x21,
+        RenameItem = 0x22,
     };
 
     struct BaseServerPacket {
@@ -327,6 +328,12 @@ namespace protocol
     };
     std::shared_ptr<SetSeenRecipe> parseSetSeenRecipe(std::vector<uint8_t> &buffer);
 
+    struct RenameItem : BaseServerPacket
+    {
+        std::string item_name;
+    };
+    std::shared_ptr<RenameItem> parseRenameItem(std::vector<uint8_t> &buffer);
+
     // Maps
 
     static const std::unordered_map<ServerPacketsID, std::function<std::shared_ptr<BaseServerPacket>(std::vector<uint8_t> &)>> packetIDToParseInitial = {
@@ -373,6 +380,7 @@ namespace protocol
             {ServerPacketsID::Pong, &parsePong},
             {ServerPacketsID::ChangeRecipeBookSettings, &parseChangeRecipeBookSettings},
             {ServerPacketsID::SetSeenRecipe, &parseSetSeenRecipe},
+            {ServerPacketsID::RenameItem, &parseRenameItem},
     };
 }
 

@@ -400,3 +400,12 @@ std::shared_ptr<SetSeenRecipe> protocol::parseSetSeenRecipe(std::vector<uint8_t>
           popString, &SetSeenRecipe::recipe_id);
     return h;
 }
+
+std::shared_ptr<RenameItem> protocol::parseRenameItem(std::vector<uint8_t> &buffer)
+{
+    auto h = std::make_shared<RenameItem>();
+
+    parse(buffer.data(), buffer.data() + buffer.size() - 1, *h,
+          popString, &RenameItem::item_name);
+    return h;
+}
