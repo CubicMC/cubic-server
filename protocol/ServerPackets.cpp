@@ -308,3 +308,12 @@ std::shared_ptr<PaddleBoat> protocol::parsePaddleBoat(std::vector<uint8_t> &buff
           popBoolean, &PaddleBoat::right_paddle_turning);
     return h;
 }
+
+std::shared_ptr<PickItem> protocol::parsePickItem(std::vector<uint8_t> &buffer)
+{
+    auto h = std::make_shared<PickItem>();
+
+    parse(buffer.data(), buffer.data() + buffer.size() - 1, *h,
+          popVarInt, &PickItem::slot_to_use);
+    return h;
+}

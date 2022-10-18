@@ -81,6 +81,7 @@ private:
     void _onSetPlayerOnGround(std::shared_ptr<Client> cli, const std::shared_ptr<protocol::SetPlayerOnGround> &pck);
     void _onMoveVehicle(std::shared_ptr<Client> cli, const std::shared_ptr<protocol::MoveVehicle> &pck);
     void _onPaddleBoat(std::shared_ptr<Client> cli, const std::shared_ptr<protocol::PaddleBoat> &pck);
+    void _onPickItem(std::shared_ptr<Client> cli, const std::shared_ptr<protocol::PickItem> &pck);
 
     Configuration::ConfigHandler _config;
 };
