@@ -281,6 +281,8 @@ void Server::_handleParsedClientPacket(std::shared_ptr<Client> cli,
             PCK_CALLBACK(_onSetBeaconEffect, SetBeaconEffect);
         case ServerPacketsID::SetHeldItem:
             PCK_CALLBACK(_onSetHeldItem, SetHeldItem);
+        case ServerPacketsID::ProgramCommandBlock:
+            PCK_CALLBACK(_onProgramCommandBlock, ProgramCommandBlock);
         default:
             break;
         }
@@ -522,4 +524,9 @@ void Server::_onSetBeaconEffect(std::shared_ptr<Client> cli, const std::shared_p
 void Server::_onSetHeldItem(std::shared_ptr<Client> cli, const std::shared_ptr<protocol::SetHeldItem> &pck)
 {
     _log->debug("Got a Set Held Item");
+}
+
+void Server::_onProgramCommandBlock(std::shared_ptr<Client> cli, const std::shared_ptr<protocol::ProgramCommandBlock> &pck)
+{
+    _log->debug("Got a Program Command Block");
 }

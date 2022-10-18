@@ -460,3 +460,15 @@ std::shared_ptr<SetHeldItem> protocol::parseSetHeldItem(std::vector<uint8_t> &bu
           popUnsignedShort, &SetHeldItem::slot);
     return h;
 }
+
+std::shared_ptr<ProgramCommandBlock> protocol::parseProgramCommandBlock(std::vector<uint8_t> &buffer)
+{
+    auto h = std::make_shared<ProgramCommandBlock>();
+
+    parse(buffer.data(), buffer.data() + buffer.size() - 1, *h,
+          popPosition, &ProgramCommandBlock::location,
+          popString, &ProgramCommandBlock::command,
+          popVarInt, &ProgramCommandBlock::mode,
+          popByte, &ProgramCommandBlock::flags);
+    return h;
+}

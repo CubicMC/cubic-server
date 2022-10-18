@@ -56,6 +56,7 @@ namespace protocol
         SelectTrade = 0x25,
         SetBeaconEffect = 0x26,
         SetHeldItem = 0x27,
+        ProgramCommandBlock = 0x28,
     };
 
     struct BaseServerPacket {
@@ -373,6 +374,15 @@ namespace protocol
     };
     std::shared_ptr<SetHeldItem> parseSetHeldItem(std::vector<uint8_t> &buffer);
 
+    struct ProgramCommandBlock : BaseServerPacket
+    {
+        Position location;
+        std::string command;
+        int32_t mode; // TODO: Use an enum
+        uint8_t flags;
+    };
+    std::shared_ptr<ProgramCommandBlock> parseProgramCommandBlock(std::vector<uint8_t> &buffer);
+
     // Maps
 
     static const std::unordered_map<ServerPacketsID, std::function<std::shared_ptr<BaseServerPacket>(std::vector<uint8_t> &)>> packetIDToParseInitial = {
@@ -425,6 +435,7 @@ namespace protocol
             {ServerPacketsID::SelectTrade, &parseSelectTrade},
             {ServerPacketsID::SetBeaconEffect, &parseSetBeaconEffect},
             {ServerPacketsID::SetHeldItem, &parseSetHeldItem},
+            {ServerPacketsID::ProgramCommandBlock, &parseProgramCommandBlock},
     };
 }
 
