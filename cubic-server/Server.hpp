@@ -78,6 +78,7 @@ private:
     void _onSetPlayerPosition(std::shared_ptr<Client> cli, const std::shared_ptr<protocol::SetPlayerPosition> &pck);
     void _onSetPlayerPositionAndRotation(std::shared_ptr<Client> cli, const std::shared_ptr<protocol::SetPlayerPositionAndRotation> &pck);
     void _onSetPlayerRotation(std::shared_ptr<Client> cli, const std::shared_ptr<protocol::SetPlayerRotation> &pck);
+    void _onSetPlayerOnGround(std::shared_ptr<Client> cli, const std::shared_ptr<protocol::SetPlayerOnGround> &pck);
 
     Configuration::ConfigHandler _config;
 };

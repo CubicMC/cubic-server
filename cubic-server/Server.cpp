@@ -245,6 +245,8 @@ void Server::_handleParsedClientPacket(std::shared_ptr<Client> cli,
             PCK_CALLBACK(_onSetPlayerPositionAndRotation, SetPlayerPositionAndRotation);
         case ServerPacketsID::SetPlayerRotation:
             PCK_CALLBACK(_onSetPlayerRotation, SetPlayerRotation);
+        case ServerPacketsID::SetPlayerOnGround:
+            PCK_CALLBACK(_onSetPlayerOnGround, SetPlayerOnGround);
         default:
             break;
         }
@@ -395,4 +397,9 @@ void Server::_onSetPlayerPositionAndRotation(std::shared_ptr<Client> cli, const 
 void Server::_onSetPlayerRotation(std::shared_ptr<Client> cli, const std::shared_ptr<protocol::SetPlayerRotation> &pck)
 {
     _log->debug("Got a Set Player Rotation");
+}
+
+void Server::_onSetPlayerOnGround(std::shared_ptr<Client> cli, const std::shared_ptr<protocol::SetPlayerOnGround> &pck)
+{
+    _log->debug("Got a Set Player On Ground");
 }

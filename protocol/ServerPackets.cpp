@@ -276,3 +276,12 @@ std::shared_ptr<SetPlayerRotation> protocol::parseSetPlayerRotation(std::vector<
           popBoolean, &SetPlayerRotation::on_ground);
     return h;
 }
+
+std::shared_ptr<SetPlayerOnGround> protocol::parseSetPlayerOnGround(std::vector<uint8_t> &buffer)
+{
+    auto h = std::make_shared<SetPlayerOnGround>();
+
+    parse(buffer.data(), buffer.data() + buffer.size() - 1, *h,
+          popBoolean, &SetPlayerOnGround::on_ground);
+    return h;
+}

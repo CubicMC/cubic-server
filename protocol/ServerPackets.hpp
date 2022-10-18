@@ -38,6 +38,7 @@ namespace protocol
         SetPlayerPosition = 0x13,
         SetPlayerPositionAndRotation = 0x14,
         SetPlayerRotation = 0x15,
+        SetPlayerOnGround = 0x16,
     };
 
     struct BaseServerPacket {
@@ -227,6 +228,12 @@ namespace protocol
     };
     std::shared_ptr<SetPlayerRotation> parseSetPlayerRotation(std::vector<uint8_t> &buffer);
 
+    struct SetPlayerOnGround : BaseServerPacket
+    {
+        bool on_ground;
+    };
+    std::shared_ptr<SetPlayerOnGround> parseSetPlayerOnGround(std::vector<uint8_t> &buffer);
+
     // Maps
 
     static const std::unordered_map<ServerPacketsID, std::function<std::shared_ptr<BaseServerPacket>(std::vector<uint8_t> &)>> packetIDToParseInitial = {
@@ -258,6 +265,10 @@ namespace protocol
             {ServerPacketsID::JigsawGenerate, &parseJigsawGenerate},
             {ServerPacketsID::KeepAliveResponse, &parseKeepAliveResponse},
             {ServerPacketsID::LockDifficulty, &parseLockDifficulty},
+            {ServerPacketsID::SetPlayerPosition, &parseSetPlayerPosition},
+            {ServerPacketsID::SetPlayerPositionAndRotation, &parseSetPlayerPositionAndRotation},
+            {ServerPacketsID::SetPlayerRotation, &parseSetPlayerRotation},
+            {ServerPacketsID::SetPlayerOnGround, &parseSetPlayerOnGround},
     };
 }
 
