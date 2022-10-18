@@ -430,3 +430,12 @@ std::shared_ptr<SeenAdvancements> protocol::parseSeenAdvancements(std::vector<ui
               popString, &SeenAdvancements::tab_id);
     return h;
 }
+
+std::shared_ptr<SelectTrade> protocol::parseSelectTrade(std::vector<uint8_t> &buffer)
+{
+    auto h = std::make_shared<SelectTrade>();
+
+    parse(buffer.data(), buffer.data() + buffer.size() - 1, *h,
+          popVarInt, &SelectTrade::selected_slot);
+    return h;
+}

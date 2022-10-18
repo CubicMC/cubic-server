@@ -53,6 +53,7 @@ namespace protocol
         RenameItem = 0x22,
         ResourcePack = 0x23,
         SeenAdvancements = 0x24,
+        SelectTrade = 0x25,
     };
 
     struct BaseServerPacket {
@@ -349,6 +350,12 @@ namespace protocol
     };
     std::shared_ptr<SeenAdvancements> parseSeenAdvancements(std::vector<uint8_t> &buffer);
 
+    struct SelectTrade : BaseServerPacket
+    {
+        int32_t selected_slot;
+    };
+    std::shared_ptr<SelectTrade> parseSelectTrade(std::vector<uint8_t> &buffer);
+
     // Maps
 
     static const std::unordered_map<ServerPacketsID, std::function<std::shared_ptr<BaseServerPacket>(std::vector<uint8_t> &)>> packetIDToParseInitial = {
@@ -398,6 +405,7 @@ namespace protocol
             {ServerPacketsID::RenameItem, &parseRenameItem},
             {ServerPacketsID::ResourcePack, &parseResourcePack},
             {ServerPacketsID::SeenAdvancements, &parseSeenAdvancements},
+            {ServerPacketsID::SelectTrade, &parseSelectTrade},
     };
 }
 

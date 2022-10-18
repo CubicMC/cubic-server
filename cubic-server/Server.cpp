@@ -275,6 +275,8 @@ void Server::_handleParsedClientPacket(std::shared_ptr<Client> cli,
             PCK_CALLBACK(_onResourcePack, ResourcePack);
         case ServerPacketsID::SeenAdvancements:
             PCK_CALLBACK(_onSeenAdvancements, SeenAdvancements);
+        case ServerPacketsID::SelectTrade:
+            PCK_CALLBACK(_onSelectTrade, SelectTrade);
         default:
             break;
         }
@@ -501,4 +503,9 @@ void Server::_onResourcePack(std::shared_ptr<Client> cli, const std::shared_ptr<
 void Server::_onSeenAdvancements(std::shared_ptr<Client> cli, const std::shared_ptr<protocol::SeenAdvancements> &pck)
 {
     _log->debug("Got a Seen Advancements");
+}
+
+void Server::_onSelectTrade(std::shared_ptr<Client> cli, const std::shared_ptr<protocol::SelectTrade> &pck)
+{
+    _log->debug("Got a Select Trade");
 }
