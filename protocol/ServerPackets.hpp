@@ -58,6 +58,7 @@ namespace protocol
         SetHeldItem = 0x27,
         ProgramCommandBlock = 0x28,
         ProgramCommandBlockMinecart = 0x29,
+        ProgramJigsawBlock = 0x2b,
     };
 
     struct BaseServerPacket {
@@ -392,6 +393,17 @@ namespace protocol
     };
     std::shared_ptr<ProgramCommandBlockMinecart> parseProgramCommandBlockMinecart(std::vector<uint8_t> &buffer);
 
+    struct ProgramJigsawBlock : BaseServerPacket
+    {
+        Position location;
+        std::string name;
+        std::string target;
+        std::string pool;
+        std::string final_state;
+        std::string joint_type;
+    };
+    std::shared_ptr<ProgramJigsawBlock> parseProgramJigsawBlock(std::vector<uint8_t> &buffer);
+
     // Maps
 
     static const std::unordered_map<ServerPacketsID, std::function<std::shared_ptr<BaseServerPacket>(std::vector<uint8_t> &)>> packetIDToParseInitial = {
@@ -446,6 +458,7 @@ namespace protocol
             {ServerPacketsID::SetHeldItem, &parseSetHeldItem},
             {ServerPacketsID::ProgramCommandBlock, &parseProgramCommandBlock},
             {ServerPacketsID::ProgramCommandBlockMinecart, &parseProgramCommandBlockMinecart},
+            {ServerPacketsID::ProgramJigsawBlock, &parseProgramJigsawBlock},
     };
 }
 

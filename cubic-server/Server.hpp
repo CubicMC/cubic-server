@@ -98,6 +98,7 @@ private:
     void _onSetHeldItem(std::shared_ptr<Client> cli, const std::shared_ptr<protocol::SetHeldItem> &pck);
     void _onProgramCommandBlock(std::shared_ptr<Client> cli, const std::shared_ptr<protocol::ProgramCommandBlock> &pck);
     void _onProgramCommandBlockMinecart(std::shared_ptr<Client> cli, const std::shared_ptr<protocol::ProgramCommandBlockMinecart> &pck);
+    void _onProgramJigsawBlock(std::shared_ptr<Client> cli, const std::shared_ptr<protocol::ProgramJigsawBlock> &pck);
 
     Configuration::ConfigHandler _config;
 };

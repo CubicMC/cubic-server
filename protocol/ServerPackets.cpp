@@ -483,3 +483,17 @@ std::shared_ptr<ProgramCommandBlockMinecart> protocol::parseProgramCommandBlockM
           popBoolean, &ProgramCommandBlockMinecart::track_output);
     return h;
 }
+
+std::shared_ptr<ProgramJigsawBlock> protocol::parseProgramJigsawBlock(std::vector<uint8_t> &buffer)
+{
+    auto h = std::make_shared<ProgramJigsawBlock>();
+
+    parse(buffer.data(), buffer.data() + buffer.size() - 1, *h,
+          popPosition, &ProgramJigsawBlock::location,
+          popString, &ProgramJigsawBlock::name,
+          popString, &ProgramJigsawBlock::target,
+          popString, &ProgramJigsawBlock::pool,
+          popString, &ProgramJigsawBlock::final_state,
+          popString, &ProgramJigsawBlock::joint_type);
+    return h;
+}
