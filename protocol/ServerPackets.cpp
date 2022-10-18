@@ -391,3 +391,12 @@ std::shared_ptr<ChangeRecipeBookSettings> protocol::parseChangeRecipeBookSetting
           popBoolean, &ChangeRecipeBookSettings::filter_active);
     return h;
 }
+
+std::shared_ptr<SetSeenRecipe> protocol::parseSetSeenRecipe(std::vector<uint8_t> &buffer)
+{
+    auto h = std::make_shared<SetSeenRecipe>();
+
+    parse(buffer.data(), buffer.data() + buffer.size() - 1, *h,
+          popString, &SetSeenRecipe::recipe_id);
+    return h;
+}

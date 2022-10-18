@@ -267,6 +267,8 @@ void Server::_handleParsedClientPacket(std::shared_ptr<Client> cli,
             PCK_CALLBACK(_onPong, Pong);
         case ServerPacketsID::ChangeRecipeBookSettings:
             PCK_CALLBACK(_onChangeRecipeBookSettings, ChangeRecipeBookSettings);
+        case ServerPacketsID::SetSeenRecipe:
+            PCK_CALLBACK(_onSetSeenRecipe, SetSeenRecipe);
         default:
             break;
         }
@@ -473,4 +475,9 @@ void Server::_onChangeRecipeBookSettings(std::shared_ptr<Client> cli,
                                          const std::shared_ptr<protocol::ChangeRecipeBookSettings> &pck)
 {
     _log->debug("Got a Change Recipe Book Settings");
+}
+
+void Server::_onSetSeenRecipe(std::shared_ptr<Client> cli, const std::shared_ptr<protocol::SetSeenRecipe> &pck)
+{
+    _log->debug("Got a Set Seen Recipe");
 }
