@@ -46,6 +46,7 @@ namespace protocol
         PlayerAbilities = 0x1b,
         PlayerAction = 0x1c,
         PlayerCommand = 0x1d,
+        PlayerInput = 0x1e,
     };
 
     struct BaseServerPacket {
@@ -295,6 +296,14 @@ namespace protocol
     };
     std::shared_ptr<PlayerCommand> parsePlayerCommand(std::vector<uint8_t> &buffer);
 
+    struct PlayerInput : BaseServerPacket
+    {
+        float sideways;
+        float forward;
+        uint8_t flags;
+    };
+    std::shared_ptr<PlayerInput> parsePlayerInput(std::vector<uint8_t> &buffer);
+
     // Maps
 
     static const std::unordered_map<ServerPacketsID, std::function<std::shared_ptr<BaseServerPacket>(std::vector<uint8_t> &)>> packetIDToParseInitial = {
@@ -337,6 +346,7 @@ namespace protocol
             {ServerPacketsID::PlayerAbilities, &parsePlayerAbilities},
             {ServerPacketsID::PlayerAction, &parsePlayerAction},
             {ServerPacketsID::PlayerCommand, &parsePlayerCommand},
+            {ServerPacketsID::PlayerInput, &parsePlayerInput},
     };
 }
 

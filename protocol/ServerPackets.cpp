@@ -360,3 +360,14 @@ std::shared_ptr<PlayerCommand> protocol::parsePlayerCommand(std::vector<uint8_t>
           popVarInt, &PlayerCommand::jump_boost);
     return h;
 }
+
+std::shared_ptr<PlayerInput> protocol::parsePlayerInput(std::vector<uint8_t> &buffer)
+{
+    auto h = std::make_shared<PlayerInput>();
+
+    parse(buffer.data(), buffer.data() + buffer.size() - 1, *h,
+          popFloat, &PlayerInput::sideways,
+          popFloat, &PlayerInput::forward,
+          popByte, &PlayerInput::flags);
+    return h;
+}
