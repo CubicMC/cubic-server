@@ -551,3 +551,29 @@ std::shared_ptr<TeleportToEntity> protocol::parseTeleportToEntity(std::vector<ui
           popUUID, &TeleportToEntity::target_player);
     return h;
 }
+
+std::shared_ptr<UseItemOn> protocol::parseUseItemOn(std::vector<uint8_t> &buffer)
+{
+    auto h = std::make_shared<UseItemOn>();
+
+    parse(buffer.data(), buffer.data() + buffer.size() - 1, *h,
+          popVarInt, &UseItemOn::hand,
+          popPosition, &UseItemOn::location,
+          popVarInt, &UseItemOn::face,
+          popFloat, &UseItemOn::cursor_position_x,
+          popFloat, &UseItemOn::cursor_position_y,
+          popFloat, &UseItemOn::cursor_position_z,
+          popBoolean, &UseItemOn::inside_block,
+          popVarInt, &UseItemOn::sequence);
+    return h;
+}
+
+std::shared_ptr<UseItem> protocol::parseUseItem(std::vector<uint8_t> &buffer)
+{
+    auto h = std::make_shared<UseItem>();
+
+    parse(buffer.data(), buffer.data() + buffer.size() - 1, *h,
+          popVarInt, &UseItem::hand,
+          popVarInt, &UseItem::sequence);
+    return h;
+}

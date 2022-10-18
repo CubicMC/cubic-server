@@ -63,6 +63,8 @@ namespace protocol
         UpdateSign = 0x2d,
         SwingArm = 0x2e,
         TeleportToEntity = 0x2f,
+        UseItemOn = 0x30,
+        UseItem = 0x31,
     };
 
     struct BaseServerPacket {
@@ -451,6 +453,26 @@ namespace protocol
     };
     std::shared_ptr<TeleportToEntity> parseTeleportToEntity(std::vector<uint8_t> &buffer);
 
+    struct UseItemOn : BaseServerPacket
+    {
+        int32_t hand; // TODO: Use an enum
+        Position location;
+        int32_t face; // TODO: Use an enum
+        float cursor_position_x;
+        float cursor_position_y;
+        float cursor_position_z;
+        bool inside_block;
+        int32_t sequence;
+    };
+    std::shared_ptr<UseItemOn> parseUseItemOn(std::vector<uint8_t> &buffer);
+
+    struct UseItem : BaseServerPacket
+    {
+        int32_t hand; // TODO: Use an enum
+        int32_t sequence;
+    };
+    std::shared_ptr<UseItem> parseUseItem(std::vector<uint8_t> &buffer);
+
     // Maps
 
     static const std::unordered_map<ServerPacketsID, std::function<std::shared_ptr<BaseServerPacket>(std::vector<uint8_t> &)>> packetIDToParseInitial = {
@@ -510,6 +532,8 @@ namespace protocol
             {ServerPacketsID::UpdateSign, &parseUpdateSign},
             {ServerPacketsID::SwingArm, &parseSwingArm},
             {ServerPacketsID::TeleportToEntity, &parseTeleportToEntity},
+            {ServerPacketsID::UseItemOn, &parseUseItemOn},
+            {ServerPacketsID::UseItem, &parseUseItem},
     };
 }
 

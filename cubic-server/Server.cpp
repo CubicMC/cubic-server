@@ -295,6 +295,10 @@ void Server::_handleParsedClientPacket(std::shared_ptr<Client> cli,
             PCK_CALLBACK(_onSwingArm, SwingArm);
         case ServerPacketsID::TeleportToEntity:
             PCK_CALLBACK(_onTeleportToEntity, TeleportToEntity);
+        case ServerPacketsID::UseItemOn:
+            PCK_CALLBACK(_onUseItemOn, UseItemOn);
+        case ServerPacketsID::UseItem:
+            PCK_CALLBACK(_onUseItem, UseItem);
         default:
             break;
         }
@@ -573,4 +577,14 @@ void Server::_onSwingArm(std::shared_ptr<Client> cli, const std::shared_ptr<prot
 void Server::_onTeleportToEntity(std::shared_ptr<Client> cli, const std::shared_ptr<protocol::TeleportToEntity> &pck)
 {
     _log->debug("Got a Teleport To Entity");
+}
+
+void Server::_onUseItemOn(std::shared_ptr<Client> cli, const std::shared_ptr<protocol::UseItemOn> &pck)
+{
+    _log->debug("Got a Use Item On");
+}
+
+void Server::_onUseItem(std::shared_ptr<Client> cli, const std::shared_ptr<protocol::UseItem> &pck)
+{
+    _log->debug("Got a Use Item");
 }
