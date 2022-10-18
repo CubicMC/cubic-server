@@ -439,3 +439,15 @@ std::shared_ptr<SelectTrade> protocol::parseSelectTrade(std::vector<uint8_t> &bu
           popVarInt, &SelectTrade::selected_slot);
     return h;
 }
+
+std::shared_ptr<SetBeaconEffect> protocol::parseSetBeaconEffect(std::vector<uint8_t> &buffer)
+{
+    auto h = std::make_shared<SetBeaconEffect>();
+
+    parse(buffer.data(), buffer.data() + buffer.size() - 1, *h,
+          popBoolean, &SetBeaconEffect::primary_effect_present,
+          popVarInt, &SetBeaconEffect::primary_effect,
+          popBoolean, &SetBeaconEffect::secondary_effect_present,
+          popVarInt, &SetBeaconEffect::secondary_effect);
+    return h;
+}

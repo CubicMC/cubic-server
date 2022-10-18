@@ -277,6 +277,8 @@ void Server::_handleParsedClientPacket(std::shared_ptr<Client> cli,
             PCK_CALLBACK(_onSeenAdvancements, SeenAdvancements);
         case ServerPacketsID::SelectTrade:
             PCK_CALLBACK(_onSelectTrade, SelectTrade);
+        case ServerPacketsID::SetBeaconEffect:
+            PCK_CALLBACK(_onSetBeaconEffect, SetBeaconEffect);
         default:
             break;
         }
@@ -508,4 +510,9 @@ void Server::_onSeenAdvancements(std::shared_ptr<Client> cli, const std::shared_
 void Server::_onSelectTrade(std::shared_ptr<Client> cli, const std::shared_ptr<protocol::SelectTrade> &pck)
 {
     _log->debug("Got a Select Trade");
+}
+
+void Server::_onSetBeaconEffect(std::shared_ptr<Client> cli, const std::shared_ptr<protocol::SetBeaconEffect> &pck)
+{
+    _log->debug("Got a Set Beacon Effect");
 }

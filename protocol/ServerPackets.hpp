@@ -54,6 +54,7 @@ namespace protocol
         ResourcePack = 0x23,
         SeenAdvancements = 0x24,
         SelectTrade = 0x25,
+        SetBeaconEffect = 0x26,
     };
 
     struct BaseServerPacket {
@@ -356,6 +357,15 @@ namespace protocol
     };
     std::shared_ptr<SelectTrade> parseSelectTrade(std::vector<uint8_t> &buffer);
 
+    struct SetBeaconEffect : BaseServerPacket
+    {
+        bool primary_effect_present;
+        int32_t primary_effect;
+        bool secondary_effect_present;
+        int32_t secondary_effect;
+    };
+    std::shared_ptr<SetBeaconEffect> parseSetBeaconEffect(std::vector<uint8_t> &buffer);
+
     // Maps
 
     static const std::unordered_map<ServerPacketsID, std::function<std::shared_ptr<BaseServerPacket>(std::vector<uint8_t> &)>> packetIDToParseInitial = {
@@ -406,6 +416,7 @@ namespace protocol
             {ServerPacketsID::ResourcePack, &parseResourcePack},
             {ServerPacketsID::SeenAdvancements, &parseSeenAdvancements},
             {ServerPacketsID::SelectTrade, &parseSelectTrade},
+            {ServerPacketsID::SetBeaconEffect, &parseSetBeaconEffect},
     };
 }
 
