@@ -92,6 +92,7 @@ private:
     void _onSetSeenRecipe(std::shared_ptr<Client> cli, const std::shared_ptr<protocol::SetSeenRecipe> &pck);
     void _onRenameItem(std::shared_ptr<Client> cli, const std::shared_ptr<protocol::RenameItem> &pck);
     void _onResourcePack(std::shared_ptr<Client> cli, const std::shared_ptr<protocol::ResourcePack> &pck);
+    void _onSeenAdvancements(std::shared_ptr<Client> cli, const std::shared_ptr<protocol::SeenAdvancements> &pck);
 
     Configuration::ConfigHandler _config;
 };

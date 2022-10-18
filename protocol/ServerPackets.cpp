@@ -418,3 +418,15 @@ std::shared_ptr<ResourcePack> protocol::parseResourcePack(std::vector<uint8_t> &
           popVarInt, &ResourcePack::result);
     return h;
 }
+
+std::shared_ptr<SeenAdvancements> protocol::parseSeenAdvancements(std::vector<uint8_t> &buffer)
+{
+    auto h = std::make_shared<SeenAdvancements>();
+
+    parse(buffer.data(), buffer.data() + buffer.size() - 1, *h,
+          popVarInt, &SeenAdvancements::action);
+    if (h->action == 0)
+        parse(buffer.data(), buffer.data() + buffer.size() - 1, *h,
+              popString, &SeenAdvancements::tab_id);
+    return h;
+}

@@ -273,6 +273,8 @@ void Server::_handleParsedClientPacket(std::shared_ptr<Client> cli,
             PCK_CALLBACK(_onRenameItem, RenameItem);
         case ServerPacketsID::ResourcePack:
             PCK_CALLBACK(_onResourcePack, ResourcePack);
+        case ServerPacketsID::SeenAdvancements:
+            PCK_CALLBACK(_onSeenAdvancements, SeenAdvancements);
         default:
             break;
         }
@@ -494,4 +496,9 @@ void Server::_onRenameItem(std::shared_ptr<Client> cli, const std::shared_ptr<pr
 void Server::_onResourcePack(std::shared_ptr<Client> cli, const std::shared_ptr<protocol::ResourcePack> &pck)
 {
     _log->debug("Got a Resource Pack");
+}
+
+void Server::_onSeenAdvancements(std::shared_ptr<Client> cli, const std::shared_ptr<protocol::SeenAdvancements> &pck)
+{
+    _log->debug("Got a Seen Advancements");
 }
