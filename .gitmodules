@@ -1,0 +1,3 @@
+[submodule "pyCraft"]
+	path = pyCraft
+	url = git@github.com:CubicMC/pyCraft.git
