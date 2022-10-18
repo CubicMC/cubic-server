@@ -230,3 +230,12 @@ std::shared_ptr<KeepAliveResponse> protocol::parseKeepAliveResponse(std::vector<
           popLong, &KeepAliveResponse::keep_alive_id);
     return h;
 }
+
+std::shared_ptr<LockDifficulty> protocol::parseLockDifficulty(std::vector<uint8_t> &buffer)
+{
+    auto h = std::make_shared<LockDifficulty>();
+
+    parse(buffer.data(), buffer.data() + buffer.size() - 1, *h,
+          popBoolean, &LockDifficulty::locked);
+    return h;
+}

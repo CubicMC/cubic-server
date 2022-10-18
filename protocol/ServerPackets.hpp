@@ -34,6 +34,7 @@ namespace protocol
         Interact = 0x0F,
         JigsawGenerate = 0x10,
         KeepAliveResponse = 0x11,
+        LockDifficulty = 0x12,
     };
 
     struct BaseServerPacket {
@@ -189,6 +190,12 @@ namespace protocol
     };
     std::shared_ptr<KeepAliveResponse> parseKeepAliveResponse(std::vector<uint8_t> &buffer);
 
+    struct LockDifficulty : BaseServerPacket
+    {
+        bool locked;
+    };
+    std::shared_ptr<LockDifficulty> parseLockDifficulty(std::vector<uint8_t> &buffer);
+
     // Maps
 
     static const std::unordered_map<ServerPacketsID, std::function<std::shared_ptr<BaseServerPacket>(std::vector<uint8_t> &)>> packetIDToParseInitial = {
@@ -219,6 +226,7 @@ namespace protocol
             {ServerPacketsID::Interact, &parseInteract},
             {ServerPacketsID::JigsawGenerate, &parseJigsawGenerate},
             {ServerPacketsID::KeepAliveResponse, &parseKeepAliveResponse},
+            {ServerPacketsID::LockDifficulty, &parseLockDifficulty},
     };
 }
 

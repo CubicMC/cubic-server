@@ -74,6 +74,7 @@ private:
     void _onInteract(std::shared_ptr<Client> cli, const std::shared_ptr<protocol::Interact> &pck);
     void _onJigsawGenerate(std::shared_ptr<Client> cli, const std::shared_ptr<protocol::JigsawGenerate> &pck);
     void _onKeepAliveResponse(std::shared_ptr<Client> cli, const std::shared_ptr<protocol::KeepAliveResponse> &pck);
+    void _onLockDifficulty(std::shared_ptr<Client> cli, const std::shared_ptr<protocol::LockDifficulty> &pck);
 
     Configuration::ConfigHandler _config;
 };
