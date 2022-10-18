@@ -472,3 +472,14 @@ std::shared_ptr<ProgramCommandBlock> protocol::parseProgramCommandBlock(std::vec
           popByte, &ProgramCommandBlock::flags);
     return h;
 }
+
+std::shared_ptr<ProgramCommandBlockMinecart> protocol::parseProgramCommandBlockMinecart(std::vector<uint8_t> &buffer)
+{
+    auto h = std::make_shared<ProgramCommandBlockMinecart>();
+
+    parse(buffer.data(), buffer.data() + buffer.size() - 1, *h,
+          popVarInt, &ProgramCommandBlockMinecart::entity_id,
+          popString, &ProgramCommandBlockMinecart::command,
+          popBoolean, &ProgramCommandBlockMinecart::track_output);
+    return h;
+}

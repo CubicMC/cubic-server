@@ -57,6 +57,7 @@ namespace protocol
         SetBeaconEffect = 0x26,
         SetHeldItem = 0x27,
         ProgramCommandBlock = 0x28,
+        ProgramCommandBlockMinecart = 0x29,
     };
 
     struct BaseServerPacket {
@@ -383,6 +384,14 @@ namespace protocol
     };
     std::shared_ptr<ProgramCommandBlock> parseProgramCommandBlock(std::vector<uint8_t> &buffer);
 
+    struct ProgramCommandBlockMinecart : BaseServerPacket
+    {
+        int32_t entity_id;
+        std::string command;
+        bool track_output;
+    };
+    std::shared_ptr<ProgramCommandBlockMinecart> parseProgramCommandBlockMinecart(std::vector<uint8_t> &buffer);
+
     // Maps
 
     static const std::unordered_map<ServerPacketsID, std::function<std::shared_ptr<BaseServerPacket>(std::vector<uint8_t> &)>> packetIDToParseInitial = {
@@ -436,6 +445,7 @@ namespace protocol
             {ServerPacketsID::SetBeaconEffect, &parseSetBeaconEffect},
             {ServerPacketsID::SetHeldItem, &parseSetHeldItem},
             {ServerPacketsID::ProgramCommandBlock, &parseProgramCommandBlock},
+            {ServerPacketsID::ProgramCommandBlockMinecart, &parseProgramCommandBlockMinecart},
     };
 }
 

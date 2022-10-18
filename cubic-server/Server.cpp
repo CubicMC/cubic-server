@@ -283,6 +283,8 @@ void Server::_handleParsedClientPacket(std::shared_ptr<Client> cli,
             PCK_CALLBACK(_onSetHeldItem, SetHeldItem);
         case ServerPacketsID::ProgramCommandBlock:
             PCK_CALLBACK(_onProgramCommandBlock, ProgramCommandBlock);
+        case ServerPacketsID::ProgramCommandBlockMinecart:
+            PCK_CALLBACK(_onProgramCommandBlockMinecart, ProgramCommandBlockMinecart);
         default:
             break;
         }
@@ -529,4 +531,10 @@ void Server::_onSetHeldItem(std::shared_ptr<Client> cli, const std::shared_ptr<p
 void Server::_onProgramCommandBlock(std::shared_ptr<Client> cli, const std::shared_ptr<protocol::ProgramCommandBlock> &pck)
 {
     _log->debug("Got a Program Command Block");
+}
+
+void Server::_onProgramCommandBlockMinecart(std::shared_ptr<Client> cli,
+                                             const std::shared_ptr<protocol::ProgramCommandBlockMinecart> &pck)
+{
+    _log->debug("Got a Program Command Block Minecart");
 }
