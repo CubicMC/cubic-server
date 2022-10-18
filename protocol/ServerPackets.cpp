@@ -298,3 +298,13 @@ std::shared_ptr<MoveVehicle> protocol::parseMoveVehicle(std::vector<uint8_t> &bu
           popFloat, &MoveVehicle::pitch);
     return h;
 }
+
+std::shared_ptr<PaddleBoat> protocol::parsePaddleBoat(std::vector<uint8_t> &buffer)
+{
+    auto h = std::make_shared<PaddleBoat>();
+
+    parse(buffer.data(), buffer.data() + buffer.size() - 1, *h,
+          popBoolean, &PaddleBoat::left_paddle_turning,
+          popBoolean, &PaddleBoat::right_paddle_turning);
+    return h;
+}
