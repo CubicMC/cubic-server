@@ -58,40 +58,40 @@ constexpr void Tag::deserialize(uint8_t *at, uint8_t *eof, TagType type) {
             *this = TagEnd();
             break;
         case TagType::TAG_BYTE:
-            *this = decode<TagByte>(protocol::popByte(at, eof));
+            *this = protocol::popByte(at, eof); // this have to be a signed byte
             break;
         case TagType::TAG_SHORT:
-            this->emplace<TagShort>(protocol::popUnsignedShort(at, eof));
+            *this = protocol::popUnsignedShort(at, eof); // this have to be a signed short
             break;
         case TagType::TAG_INT:
-            this->emplace<TagInt>(protocol::popInt(at, eof));
+            *this = protocol::popInt(at, eof);
             break;
         case TagType::TAG_LONG:
-            this->emplace<TagLong>(protocol::popLong(at, eof));
+            *this = protocol::popLong(at, eof);
             break;
         case TagType::TAG_FLOAT:
-            this->emplace<TagFloat>(protocol::popFloat(at, eof));
+            *this = protocol::popFloat(at, eof);
             break;
         case TagType::TAG_DOUBLE:
-            this->emplace<TagDouble>(protocol::popDouble(at, eof));
+            *this = 0; //protocol::popDouble(at, eof);
             break;
         case TagType::TAG_BYTE_ARRAY:
-            this->emplace<TagByteArray>(protocol::popByteArray(protocol::popInt(at, eof), at, eof));
+            *this = protocol::popByteArray(protocol::popInt(at, eof), at, eof); // this have to be a signed byte array
             break;
         case TagType::TAG_STRING:
-            this->emplace<TagString>(protocol::popString(at, eof));
+            *this = protocol::popString(at, eof);
             break;
         case TagType::TAG_LIST:
-            this->emplace<TagList>(readList(buffer));
+            *this = 0; //<TagList>(readList(buffer));
             break;
         case TagType::TAG_COMPOUND:
-            this->emplace<TagCompound>(readCompound(buffer));
+            *this = 0; //<TagCompound>(readCompound(buffer));
             break;
         case TagType::TAG_INT_ARRAY:
-            this->emplace<TagIntArray>(readIntArray(buffer));
+            *this = 0; //protocol::popIntArray(protocol::popInt(at, eof), at, eof);
             break;
         case TagType::TAG_LONG_ARRAY:
-            this->emplace<TagLongArray>(readLongArray(buffer));
+            *this = 0; //protocol::popLongArray(protocol::popInt(at, eof), at, eof);
             break;
         default:
             throw std::runtime_error("Invalid tag type");
