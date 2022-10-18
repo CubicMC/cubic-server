@@ -317,3 +317,14 @@ std::shared_ptr<PickItem> protocol::parsePickItem(std::vector<uint8_t> &buffer)
           popVarInt, &PickItem::slot_to_use);
     return h;
 }
+
+std::shared_ptr<PlaceRecipe> protocol::parsePlaceRecipe(std::vector<uint8_t> &buffer)
+{
+    auto h = std::make_shared<PlaceRecipe>();
+
+    parse(buffer.data(), buffer.data() + buffer.size() - 1, *h,
+          popByte, &PlaceRecipe::window_id,
+          popString, &PlaceRecipe::recipe,
+          popBoolean, &PlaceRecipe::make_all);
+    return h;
+}
