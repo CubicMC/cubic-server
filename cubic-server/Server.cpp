@@ -287,6 +287,8 @@ void Server::_handleParsedClientPacket(std::shared_ptr<Client> cli,
             PCK_CALLBACK(_onProgramCommandBlockMinecart, ProgramCommandBlockMinecart);
         case ServerPacketsID::ProgramJigsawBlock:
             PCK_CALLBACK(_onProgramJigsawBlock, ProgramJigsawBlock);
+        case ServerPacketsID::ProgramStructureBlock:
+            PCK_CALLBACK(_onProgramStructureBlock, ProgramStructureBlock);
         default:
             break;
         }
@@ -544,4 +546,10 @@ void Server::_onProgramCommandBlockMinecart(std::shared_ptr<Client> cli,
 void Server::_onProgramJigsawBlock(std::shared_ptr<Client> cli, const std::shared_ptr<protocol::ProgramJigsawBlock> &pck)
 {
     _log->debug("Got a Program Jigsaw Block");
+}
+
+void Server::_onProgramStructureBlock(std::shared_ptr<Client> cli,
+                                      const std::shared_ptr<protocol::ProgramStructureBlock> &pck)
+{
+    _log->debug("Got a Program Structure Block");
 }

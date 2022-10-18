@@ -59,6 +59,7 @@ namespace protocol
         ProgramCommandBlock = 0x28,
         ProgramCommandBlockMinecart = 0x29,
         ProgramJigsawBlock = 0x2b,
+        ProgramStructureBlock = 0x2c,
     };
 
     struct BaseServerPacket {
@@ -404,6 +405,27 @@ namespace protocol
     };
     std::shared_ptr<ProgramJigsawBlock> parseProgramJigsawBlock(std::vector<uint8_t> &buffer);
 
+    struct ProgramStructureBlock : BaseServerPacket
+    {
+        Position location;
+        int32_t action; // TODO: Use an enum
+        int32_t mode; // TODO: Use an enum
+        std::string name;
+        uint8_t offset_x;
+        uint8_t offset_y;
+        uint8_t offset_z;
+        uint8_t size_x;
+        uint8_t size_y;
+        uint8_t size_z;
+        int32_t mirror; // TODO: Use an enum
+        int32_t rotation; // TODO: Use an enum
+        std::string metadata;
+        float integrity;
+        int64_t seed;
+        uint8_t flags;
+    };
+    std::shared_ptr<ProgramStructureBlock> parseProgramStructureBlock(std::vector<uint8_t> &buffer);
+
     // Maps
 
     static const std::unordered_map<ServerPacketsID, std::function<std::shared_ptr<BaseServerPacket>(std::vector<uint8_t> &)>> packetIDToParseInitial = {
@@ -459,6 +481,7 @@ namespace protocol
             {ServerPacketsID::ProgramCommandBlock, &parseProgramCommandBlock},
             {ServerPacketsID::ProgramCommandBlockMinecart, &parseProgramCommandBlockMinecart},
             {ServerPacketsID::ProgramJigsawBlock, &parseProgramJigsawBlock},
+            {ServerPacketsID::ProgramStructureBlock, &parseProgramStructureBlock},
     };
 }
 

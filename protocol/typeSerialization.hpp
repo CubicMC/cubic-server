@@ -59,6 +59,31 @@ namespace protocol
         }
     }
 
+    constexpr int64_t popVarLong(uint8_t *&at, uint8_t *eof)
+    {
+        int64_t value = 0;
+        int position = 0;
+        uint8_t currentByte = 0;
+        constexpr uint8_t CONTINUE_BIT = 0x80;
+        constexpr uint8_t SEGMENT_BITS = 0x7f;
+
+        while (true)
+        {
+            if (at > eof)
+                throw PacketEOF("Not enough data in packet to parse a VarInt");
+            currentByte = *at++;
+            value |= (currentByte & SEGMENT_BITS) << position;
+
+            if ((currentByte & CONTINUE_BIT) == 0)
+                return value;
+
+            position += 7;
+
+            if (position >= 64)
+                throw VarIntOverflow("VarInt exceeds max length");
+        }
+    }
+
     constexpr void addVarInt(std::vector<uint8_t> &out, const int32_t &data)
     {
         constexpr uint8_t CONTINUE_BIT = 0x80;

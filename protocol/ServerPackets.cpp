@@ -497,3 +497,26 @@ std::shared_ptr<ProgramJigsawBlock> protocol::parseProgramJigsawBlock(std::vecto
           popString, &ProgramJigsawBlock::joint_type);
     return h;
 }
+
+std::shared_ptr<ProgramStructureBlock> protocol::parseProgramStructureBlock(std::vector<uint8_t> &buffer)
+{
+    auto h = std::make_shared<ProgramStructureBlock>();
+
+    parse(buffer.data(), buffer.data() + buffer.size() - 1, *h,
+          popPosition, &ProgramStructureBlock::location,
+          popVarInt, &ProgramStructureBlock::action,
+          popVarInt, &ProgramStructureBlock::mode,
+          popByte, &ProgramStructureBlock::offset_x,
+          popByte, &ProgramStructureBlock::offset_y,
+          popByte, &ProgramStructureBlock::offset_z,
+          popByte, &ProgramStructureBlock::size_x,
+          popByte, &ProgramStructureBlock::size_y,
+          popByte, &ProgramStructureBlock::size_z,
+          popVarInt, &ProgramStructureBlock::mirror,
+          popVarInt, &ProgramStructureBlock::rotation,
+          popString, &ProgramStructureBlock::metadata,
+          popFloat, &ProgramStructureBlock::integrity,
+          popVarLong, &ProgramStructureBlock::seed,
+          popByte, &ProgramStructureBlock::flags);
+    return h;
+}
