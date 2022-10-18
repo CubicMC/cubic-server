@@ -43,6 +43,7 @@ namespace protocol
         PaddleBoat = 0x18,
         PickItem = 0x19,
         PlaceRecipe = 0x1a,
+        PlayerAbilities = 0x1b,
     };
 
     struct BaseServerPacket {
@@ -269,6 +270,12 @@ namespace protocol
     };
     std::shared_ptr<PlaceRecipe> parsePlaceRecipe(std::vector<uint8_t> &buffer);
 
+    struct PlayerAbilities : BaseServerPacket
+    {
+        uint8_t flags;
+    };
+    std::shared_ptr<PlayerAbilities> parsePlayerAbilities(std::vector<uint8_t> &buffer);
+
     // Maps
 
     static const std::unordered_map<ServerPacketsID, std::function<std::shared_ptr<BaseServerPacket>(std::vector<uint8_t> &)>> packetIDToParseInitial = {
@@ -308,6 +315,7 @@ namespace protocol
             {ServerPacketsID::PaddleBoat, &parsePaddleBoat},
             {ServerPacketsID::PickItem, &parsePickItem},
             {ServerPacketsID::PlaceRecipe, &parsePlaceRecipe},
+            {ServerPacketsID::PlayerAbilities, &parsePlayerAbilities},
     };
 }
 

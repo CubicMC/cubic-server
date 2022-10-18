@@ -328,3 +328,12 @@ std::shared_ptr<PlaceRecipe> protocol::parsePlaceRecipe(std::vector<uint8_t> &bu
           popBoolean, &PlaceRecipe::make_all);
     return h;
 }
+
+std::shared_ptr<PlayerAbilities> protocol::parsePlayerAbilities(std::vector<uint8_t> &buffer)
+{
+    auto h = std::make_shared<PlayerAbilities>();
+
+    parse(buffer.data(), buffer.data() + buffer.size() - 1, *h,
+          popByte, &PlayerAbilities::flags);
+    return h;
+}
