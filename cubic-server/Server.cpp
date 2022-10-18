@@ -263,6 +263,8 @@ void Server::_handleParsedClientPacket(std::shared_ptr<Client> cli,
             PCK_CALLBACK(_onPlayerCommand, PlayerCommand);
         case ServerPacketsID::PlayerInput:
             PCK_CALLBACK(_onPlayerInput, PlayerInput);
+        case ServerPacketsID::Pong:
+            PCK_CALLBACK(_onPong, Pong);
         default:
             break;
         }
@@ -458,4 +460,9 @@ void Server::_onPlayerCommand(std::shared_ptr<Client> cli, const std::shared_ptr
 void Server::_onPlayerInput(std::shared_ptr<Client> cli, const std::shared_ptr<protocol::PlayerInput> &pck)
 {
     _log->debug("Got a Player Input");
+}
+
+void Server::_onPong(std::shared_ptr<Client> cli, const std::shared_ptr<protocol::Pong> &pck)
+{
+    _log->debug("Got a Pong");
 }

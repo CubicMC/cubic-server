@@ -371,3 +371,12 @@ std::shared_ptr<PlayerInput> protocol::parsePlayerInput(std::vector<uint8_t> &bu
           popByte, &PlayerInput::flags);
     return h;
 }
+
+std::shared_ptr<Pong> protocol::parsePong(std::vector<uint8_t> &buffer)
+{
+    auto h = std::make_shared<Pong>();
+
+    parse(buffer.data(), buffer.data() + buffer.size() - 1, *h,
+          popInt, &Pong::id);
+    return h;
+}

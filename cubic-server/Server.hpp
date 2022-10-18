@@ -87,6 +87,7 @@ private:
     void _onPlayerAction(std::shared_ptr<Client> cli, const std::shared_ptr<protocol::PlayerAction> &pck);
     void _onPlayerCommand(std::shared_ptr<Client> cli, const std::shared_ptr<protocol::PlayerCommand> &pck);
     void _onPlayerInput(std::shared_ptr<Client> cli, const std::shared_ptr<protocol::PlayerInput> &pck);
+    void _onPong(std::shared_ptr<Client> cli, const std::shared_ptr<protocol::Pong> &pck);
 
     Configuration::ConfigHandler _config;
 };
