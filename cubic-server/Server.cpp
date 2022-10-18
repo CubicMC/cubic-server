@@ -289,6 +289,8 @@ void Server::_handleParsedClientPacket(std::shared_ptr<Client> cli,
             PCK_CALLBACK(_onProgramJigsawBlock, ProgramJigsawBlock);
         case ServerPacketsID::ProgramStructureBlock:
             PCK_CALLBACK(_onProgramStructureBlock, ProgramStructureBlock);
+        case ServerPacketsID::UpdateSign:
+            PCK_CALLBACK(_onUpdateSign, UpdateSign);
         default:
             break;
         }
@@ -552,4 +554,9 @@ void Server::_onProgramStructureBlock(std::shared_ptr<Client> cli,
                                       const std::shared_ptr<protocol::ProgramStructureBlock> &pck)
 {
     _log->debug("Got a Program Structure Block");
+}
+
+void Server::_onUpdateSign(std::shared_ptr<Client> cli, const std::shared_ptr<protocol::UpdateSign> &pck)
+{
+    _log->debug("Got a Update Sign");
 }

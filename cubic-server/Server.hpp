@@ -100,6 +100,7 @@ private:
     void _onProgramCommandBlockMinecart(std::shared_ptr<Client> cli, const std::shared_ptr<protocol::ProgramCommandBlockMinecart> &pck);
     void _onProgramJigsawBlock(std::shared_ptr<Client> cli, const std::shared_ptr<protocol::ProgramJigsawBlock> &pck);
     void _onProgramStructureBlock(std::shared_ptr<Client> cli, const std::shared_ptr<protocol::ProgramStructureBlock> &pck);
+    void _onUpdateSign(std::shared_ptr<Client> cli, const std::shared_ptr<protocol::UpdateSign> &pck);
 
     Configuration::ConfigHandler _config;
 };

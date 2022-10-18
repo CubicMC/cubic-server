@@ -520,3 +520,16 @@ std::shared_ptr<ProgramStructureBlock> protocol::parseProgramStructureBlock(std:
           popByte, &ProgramStructureBlock::flags);
     return h;
 }
+
+std::shared_ptr<UpdateSign> protocol::parseUpdateSign(std::vector<uint8_t> &buffer)
+{
+    auto h = std::make_shared<UpdateSign>();
+
+    parse(buffer.data(), buffer.data() + buffer.size() - 1, *h,
+          popPosition, &UpdateSign::location,
+          popString, &UpdateSign::line_1,
+          popString, &UpdateSign::line_2,
+          popString, &UpdateSign::line_3,
+          popString, &UpdateSign::line_4);
+    return h;
+}

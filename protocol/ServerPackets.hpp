@@ -60,6 +60,7 @@ namespace protocol
         ProgramCommandBlockMinecart = 0x29,
         ProgramJigsawBlock = 0x2b,
         ProgramStructureBlock = 0x2c,
+        UpdateSign = 0x2d,
     };
 
     struct BaseServerPacket {
@@ -426,6 +427,16 @@ namespace protocol
     };
     std::shared_ptr<ProgramStructureBlock> parseProgramStructureBlock(std::vector<uint8_t> &buffer);
 
+    struct UpdateSign : BaseServerPacket
+    {
+        Position location;
+        std::string line_1;
+        std::string line_2;
+        std::string line_3;
+        std::string line_4;
+    };
+    std::shared_ptr<UpdateSign> parseUpdateSign(std::vector<uint8_t> &buffer);
+
     // Maps
 
     static const std::unordered_map<ServerPacketsID, std::function<std::shared_ptr<BaseServerPacket>(std::vector<uint8_t> &)>> packetIDToParseInitial = {
@@ -482,6 +493,7 @@ namespace protocol
             {ServerPacketsID::ProgramCommandBlockMinecart, &parseProgramCommandBlockMinecart},
             {ServerPacketsID::ProgramJigsawBlock, &parseProgramJigsawBlock},
             {ServerPacketsID::ProgramStructureBlock, &parseProgramStructureBlock},
+            {ServerPacketsID::UpdateSign, &parseUpdateSign},
     };
 }
 
