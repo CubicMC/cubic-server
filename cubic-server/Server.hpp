@@ -73,6 +73,7 @@ private:
     void _onQueryEntityTag(std::shared_ptr<Client> cli, const std::shared_ptr<protocol::QueryEntityTag> &pck);
     void _onInteract(std::shared_ptr<Client> cli, const std::shared_ptr<protocol::Interact> &pck);
     void _onJigsawGenerate(std::shared_ptr<Client> cli, const std::shared_ptr<protocol::JigsawGenerate> &pck);
+    void _onKeepAliveResponse(std::shared_ptr<Client> cli, const std::shared_ptr<protocol::KeepAliveResponse> &pck);
 
     Configuration::ConfigHandler _config;
 };
