@@ -257,6 +257,8 @@ void Server::_handleParsedClientPacket(std::shared_ptr<Client> cli,
             PCK_CALLBACK(_onPlaceRecipe, PlaceRecipe);
         case ServerPacketsID::PlayerAbilities:
             PCK_CALLBACK(_onPlayerAbilities, PlayerAbilities);
+        case ServerPacketsID::PlayerAction:
+            PCK_CALLBACK(_onPlayerAction, PlayerAction);
         default:
             break;
         }
@@ -437,4 +439,9 @@ void Server::_onPlaceRecipe(std::shared_ptr<Client> cli, const std::shared_ptr<p
 void Server::_onPlayerAbilities(std::shared_ptr<Client> cli, const std::shared_ptr<protocol::PlayerAbilities> &pck)
 {
     _log->debug("Got a Player Abilities");
+}
+
+void Server::_onPlayerAction(std::shared_ptr<Client> cli, const std::shared_ptr<protocol::PlayerAction> &pck)
+{
+    _log->debug("Got a Player Action");
 }

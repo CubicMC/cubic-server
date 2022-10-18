@@ -337,3 +337,15 @@ std::shared_ptr<PlayerAbilities> protocol::parsePlayerAbilities(std::vector<uint
           popByte, &PlayerAbilities::flags);
     return h;
 }
+
+std::shared_ptr<PlayerAction> protocol::parsePlayerAction(std::vector<uint8_t> &buffer)
+{
+    auto h = std::make_shared<PlayerAction>();
+
+    parse(buffer.data(), buffer.data() + buffer.size() - 1, *h,
+          popVarInt, &PlayerAction::status,
+          popPosition, &PlayerAction::location,
+          popByte, &PlayerAction::face,
+          popVarInt, &PlayerAction::sequence);
+    return h;
+}

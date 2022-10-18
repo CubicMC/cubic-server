@@ -44,6 +44,7 @@ namespace protocol
         PickItem = 0x19,
         PlaceRecipe = 0x1a,
         PlayerAbilities = 0x1b,
+        PlayerAction = 0x1c,
     };
 
     struct BaseServerPacket {
@@ -276,6 +277,15 @@ namespace protocol
     };
     std::shared_ptr<PlayerAbilities> parsePlayerAbilities(std::vector<uint8_t> &buffer);
 
+    struct PlayerAction : BaseServerPacket
+    {
+        int32_t status; // TODO: Use an enum
+        Position location;
+        uint8_t face; // TODO: Use an enum
+        int32_t sequence;
+    };
+    std::shared_ptr<PlayerAction> parsePlayerAction(std::vector<uint8_t> &buffer);
+
     // Maps
 
     static const std::unordered_map<ServerPacketsID, std::function<std::shared_ptr<BaseServerPacket>(std::vector<uint8_t> &)>> packetIDToParseInitial = {
@@ -316,6 +326,7 @@ namespace protocol
             {ServerPacketsID::PickItem, &parsePickItem},
             {ServerPacketsID::PlaceRecipe, &parsePlaceRecipe},
             {ServerPacketsID::PlayerAbilities, &parsePlayerAbilities},
+            {ServerPacketsID::PlayerAction, &parsePlayerAction},
     };
 }
 
