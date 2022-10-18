@@ -237,6 +237,8 @@ void Server::_handleParsedClientPacket(std::shared_ptr<Client> cli,
             PCK_CALLBACK(_onJigsawGenerate, JigsawGenerate);
         case ServerPacketsID::KeepAliveResponse:
             PCK_CALLBACK(_onKeepAliveResponse, KeepAliveResponse);
+        case ServerPacketsID::LockDifficulty:
+            PCK_CALLBACK(_onLockDifficulty, LockDifficulty);
         default:
             break;
         }
@@ -367,4 +369,9 @@ void Server::_onJigsawGenerate(std::shared_ptr<Client> cli, const std::shared_pt
 void Server::_onKeepAliveResponse(std::shared_ptr<Client> cli, const std::shared_ptr<protocol::KeepAliveResponse> &pck)
 {
     _log->debug("Got a Keep Alive Response");
+}
+
+void Server::_onLockDifficulty(std::shared_ptr<Client> cli, const std::shared_ptr<protocol::LockDifficulty> &pck)
+{
+    _log->debug("Got a Lock Difficulty");
 }
