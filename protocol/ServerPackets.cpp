@@ -349,3 +349,14 @@ std::shared_ptr<PlayerAction> protocol::parsePlayerAction(std::vector<uint8_t> &
           popVarInt, &PlayerAction::sequence);
     return h;
 }
+
+std::shared_ptr<PlayerCommand> protocol::parsePlayerCommand(std::vector<uint8_t> &buffer)
+{
+    auto h = std::make_shared<PlayerCommand>();
+
+    parse(buffer.data(), buffer.data() + buffer.size() - 1, *h,
+          popVarInt, &PlayerCommand::entity_id,
+          popVarInt, &PlayerCommand::action_id,
+          popVarInt, &PlayerCommand::jump_boost);
+    return h;
+}
