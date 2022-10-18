@@ -61,6 +61,7 @@ namespace protocol
         ProgramJigsawBlock = 0x2b,
         ProgramStructureBlock = 0x2c,
         UpdateSign = 0x2d,
+        SwingArm = 0x2e,
     };
 
     struct BaseServerPacket {
@@ -437,6 +438,12 @@ namespace protocol
     };
     std::shared_ptr<UpdateSign> parseUpdateSign(std::vector<uint8_t> &buffer);
 
+    struct SwingArm : BaseServerPacket
+    {
+        int32_t hand; // TODO: Use an enum
+    };
+    std::shared_ptr<SwingArm> parseSwingArm(std::vector<uint8_t> &buffer);
+
     // Maps
 
     static const std::unordered_map<ServerPacketsID, std::function<std::shared_ptr<BaseServerPacket>(std::vector<uint8_t> &)>> packetIDToParseInitial = {
@@ -494,6 +501,7 @@ namespace protocol
             {ServerPacketsID::ProgramJigsawBlock, &parseProgramJigsawBlock},
             {ServerPacketsID::ProgramStructureBlock, &parseProgramStructureBlock},
             {ServerPacketsID::UpdateSign, &parseUpdateSign},
+            {ServerPacketsID::SwingArm, &parseSwingArm},
     };
 }
 

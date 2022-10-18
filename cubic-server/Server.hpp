@@ -101,6 +101,7 @@ private:
     void _onProgramJigsawBlock(std::shared_ptr<Client> cli, const std::shared_ptr<protocol::ProgramJigsawBlock> &pck);
     void _onProgramStructureBlock(std::shared_ptr<Client> cli, const std::shared_ptr<protocol::ProgramStructureBlock> &pck);
     void _onUpdateSign(std::shared_ptr<Client> cli, const std::shared_ptr<protocol::UpdateSign> &pck);
+    void _onSwingArm(std::shared_ptr<Client> cli, const std::shared_ptr<protocol::SwingArm> &pck);
 
     Configuration::ConfigHandler _config;
 };

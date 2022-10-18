@@ -291,6 +291,8 @@ void Server::_handleParsedClientPacket(std::shared_ptr<Client> cli,
             PCK_CALLBACK(_onProgramStructureBlock, ProgramStructureBlock);
         case ServerPacketsID::UpdateSign:
             PCK_CALLBACK(_onUpdateSign, UpdateSign);
+        case ServerPacketsID::SwingArm:
+            PCK_CALLBACK(_onSwingArm, SwingArm);
         default:
             break;
         }
@@ -559,4 +561,9 @@ void Server::_onProgramStructureBlock(std::shared_ptr<Client> cli,
 void Server::_onUpdateSign(std::shared_ptr<Client> cli, const std::shared_ptr<protocol::UpdateSign> &pck)
 {
     _log->debug("Got a Update Sign");
+}
+
+void Server::_onSwingArm(std::shared_ptr<Client> cli, const std::shared_ptr<protocol::SwingArm> &pck)
+{
+    _log->debug("Got a Swing Arm");
 }

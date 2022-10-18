@@ -533,3 +533,12 @@ std::shared_ptr<UpdateSign> protocol::parseUpdateSign(std::vector<uint8_t> &buff
           popString, &UpdateSign::line_4);
     return h;
 }
+
+std::shared_ptr<SwingArm> protocol::parseSwingArm(std::vector<uint8_t> &buffer)
+{
+    auto h = std::make_shared<SwingArm>();
+
+    parse(buffer.data(), buffer.data() + buffer.size() - 1, *h,
+          popVarInt, &SwingArm::hand);
+    return h;
+}
