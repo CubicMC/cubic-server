@@ -95,6 +95,7 @@ private:
     void _onSeenAdvancements(std::shared_ptr<Client> cli, const std::shared_ptr<protocol::SeenAdvancements> &pck);
     void _onSelectTrade(std::shared_ptr<Client> cli, const std::shared_ptr<protocol::SelectTrade> &pck);
     void _onSetBeaconEffect(std::shared_ptr<Client> cli, const std::shared_ptr<protocol::SetBeaconEffect> &pck);
+    void _onSetHeldItem(std::shared_ptr<Client> cli, const std::shared_ptr<protocol::SetHeldItem> &pck);
 
     Configuration::ConfigHandler _config;
 };

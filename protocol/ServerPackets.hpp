@@ -55,6 +55,7 @@ namespace protocol
         SeenAdvancements = 0x24,
         SelectTrade = 0x25,
         SetBeaconEffect = 0x26,
+        SetHeldItem = 0x27,
     };
 
     struct BaseServerPacket {
@@ -366,6 +367,12 @@ namespace protocol
     };
     std::shared_ptr<SetBeaconEffect> parseSetBeaconEffect(std::vector<uint8_t> &buffer);
 
+    struct SetHeldItem : BaseServerPacket
+    {
+        uint16_t slot; // Why that a short Mojang ? A byte would have been way enough -_-
+    };
+    std::shared_ptr<SetHeldItem> parseSetHeldItem(std::vector<uint8_t> &buffer);
+
     // Maps
 
     static const std::unordered_map<ServerPacketsID, std::function<std::shared_ptr<BaseServerPacket>(std::vector<uint8_t> &)>> packetIDToParseInitial = {
@@ -417,6 +424,7 @@ namespace protocol
             {ServerPacketsID::SeenAdvancements, &parseSeenAdvancements},
             {ServerPacketsID::SelectTrade, &parseSelectTrade},
             {ServerPacketsID::SetBeaconEffect, &parseSetBeaconEffect},
+            {ServerPacketsID::SetHeldItem, &parseSetHeldItem},
     };
 }
 

@@ -451,3 +451,12 @@ std::shared_ptr<SetBeaconEffect> protocol::parseSetBeaconEffect(std::vector<uint
           popVarInt, &SetBeaconEffect::secondary_effect);
     return h;
 }
+
+std::shared_ptr<SetHeldItem> protocol::parseSetHeldItem(std::vector<uint8_t> &buffer)
+{
+    auto h = std::make_shared<SetHeldItem>();
+
+    parse(buffer.data(), buffer.data() + buffer.size() - 1, *h,
+          popUnsignedShort, &SetHeldItem::slot);
+    return h;
+}
