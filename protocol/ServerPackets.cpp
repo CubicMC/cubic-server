@@ -542,3 +542,12 @@ std::shared_ptr<SwingArm> protocol::parseSwingArm(std::vector<uint8_t> &buffer)
           popVarInt, &SwingArm::hand);
     return h;
 }
+
+std::shared_ptr<TeleportToEntity> protocol::parseTeleportToEntity(std::vector<uint8_t> &buffer)
+{
+    auto h = std::make_shared<TeleportToEntity>();
+
+    parse(buffer.data(), buffer.data() + buffer.size() - 1, *h,
+          popUUID, &TeleportToEntity::target_player);
+    return h;
+}

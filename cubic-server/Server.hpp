@@ -102,6 +102,7 @@ private:
     void _onProgramStructureBlock(std::shared_ptr<Client> cli, const std::shared_ptr<protocol::ProgramStructureBlock> &pck);
     void _onUpdateSign(std::shared_ptr<Client> cli, const std::shared_ptr<protocol::UpdateSign> &pck);
     void _onSwingArm(std::shared_ptr<Client> cli, const std::shared_ptr<protocol::SwingArm> &pck);
+    void _onTeleportToEntity(std::shared_ptr<Client> cli, const std::shared_ptr<protocol::TeleportToEntity> &pck);
 
     Configuration::ConfigHandler _config;
 };

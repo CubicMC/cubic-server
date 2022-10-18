@@ -62,6 +62,7 @@ namespace protocol
         ProgramStructureBlock = 0x2c,
         UpdateSign = 0x2d,
         SwingArm = 0x2e,
+        TeleportToEntity = 0x2f,
     };
 
     struct BaseServerPacket {
@@ -444,6 +445,12 @@ namespace protocol
     };
     std::shared_ptr<SwingArm> parseSwingArm(std::vector<uint8_t> &buffer);
 
+    struct TeleportToEntity : BaseServerPacket
+    {
+        __int128 target_player;
+    };
+    std::shared_ptr<TeleportToEntity> parseTeleportToEntity(std::vector<uint8_t> &buffer);
+
     // Maps
 
     static const std::unordered_map<ServerPacketsID, std::function<std::shared_ptr<BaseServerPacket>(std::vector<uint8_t> &)>> packetIDToParseInitial = {
@@ -502,6 +509,7 @@ namespace protocol
             {ServerPacketsID::ProgramStructureBlock, &parseProgramStructureBlock},
             {ServerPacketsID::UpdateSign, &parseUpdateSign},
             {ServerPacketsID::SwingArm, &parseSwingArm},
+            {ServerPacketsID::TeleportToEntity, &parseTeleportToEntity},
     };
 }
 
