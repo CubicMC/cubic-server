@@ -39,6 +39,7 @@ namespace protocol
         SetPlayerPositionAndRotation = 0x14,
         SetPlayerRotation = 0x15,
         SetPlayerOnGround = 0x16,
+        MoveVehicle = 0x17,
     };
 
     struct BaseServerPacket {
@@ -234,6 +235,16 @@ namespace protocol
     };
     std::shared_ptr<SetPlayerOnGround> parseSetPlayerOnGround(std::vector<uint8_t> &buffer);
 
+    struct MoveVehicle : BaseServerPacket
+    {
+        double x;
+        double y;
+        double z;
+        float yaw;
+        float pitch;
+    };
+    std::shared_ptr<MoveVehicle> parseMoveVehicle(std::vector<uint8_t> &buffer);
+
     // Maps
 
     static const std::unordered_map<ServerPacketsID, std::function<std::shared_ptr<BaseServerPacket>(std::vector<uint8_t> &)>> packetIDToParseInitial = {
@@ -269,6 +280,7 @@ namespace protocol
             {ServerPacketsID::SetPlayerPositionAndRotation, &parseSetPlayerPositionAndRotation},
             {ServerPacketsID::SetPlayerRotation, &parseSetPlayerRotation},
             {ServerPacketsID::SetPlayerOnGround, &parseSetPlayerOnGround},
+            {ServerPacketsID::MoveVehicle, &parseMoveVehicle},
     };
 }
 

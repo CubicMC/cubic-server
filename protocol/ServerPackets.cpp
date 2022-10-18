@@ -285,3 +285,16 @@ std::shared_ptr<SetPlayerOnGround> protocol::parseSetPlayerOnGround(std::vector<
           popBoolean, &SetPlayerOnGround::on_ground);
     return h;
 }
+
+std::shared_ptr<MoveVehicle> protocol::parseMoveVehicle(std::vector<uint8_t> &buffer)
+{
+    auto h = std::make_shared<MoveVehicle>();
+
+    parse(buffer.data(), buffer.data() + buffer.size() - 1, *h,
+          popDouble, &MoveVehicle::x,
+          popDouble, &MoveVehicle::y,
+          popDouble, &MoveVehicle::z,
+          popFloat, &MoveVehicle::yaw,
+          popFloat, &MoveVehicle::pitch);
+    return h;
+}

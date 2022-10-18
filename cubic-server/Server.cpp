@@ -247,6 +247,8 @@ void Server::_handleParsedClientPacket(std::shared_ptr<Client> cli,
             PCK_CALLBACK(_onSetPlayerRotation, SetPlayerRotation);
         case ServerPacketsID::SetPlayerOnGround:
             PCK_CALLBACK(_onSetPlayerOnGround, SetPlayerOnGround);
+        case ServerPacketsID::MoveVehicle:
+            PCK_CALLBACK(_onMoveVehicle, MoveVehicle);
         default:
             break;
         }
@@ -402,4 +404,9 @@ void Server::_onSetPlayerRotation(std::shared_ptr<Client> cli, const std::shared
 void Server::_onSetPlayerOnGround(std::shared_ptr<Client> cli, const std::shared_ptr<protocol::SetPlayerOnGround> &pck)
 {
     _log->debug("Got a Set Player On Ground");
+}
+
+void Server::_onMoveVehicle(std::shared_ptr<Client> cli, const std::shared_ptr<protocol::MoveVehicle> &pck)
+{
+    _log->debug("Got a Move Vehicle");
 }
