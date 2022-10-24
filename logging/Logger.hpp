@@ -4,6 +4,8 @@
 #include <fstream>
 #include <string>
 #include <unordered_map>
+#include <queue>
+#include <utility>
 #include "FileAndFolderHandler.hpp"
 
 namespace logging
@@ -60,6 +62,8 @@ namespace logging
 
             std::string get_file_path() const;
 
+            const std::queue<std::pair<LogLevel, std::string>>& get_logs() const;
+
         private:
             Logger();                                                                   /// Private constructor to prevent multiple instances
             Logger(const Logger&) = delete;
@@ -75,6 +79,8 @@ namespace logging
             std::unordered_map<LogLevel, std::string> _specification_level_in_console;  /// Map of LogLevel and his associated string to display in the console
 
             void _log(LogLevel level, std::string& message);
+
+            std::queue<std::pair<LogLevel, std::string>> _log_buffer;                 /// Buffer to store logs before the file is opened
     };
 }
 

@@ -53,6 +53,9 @@ namespace logging
      */
     void Logger::_log(LogLevel level, std::string& message)
     {
+        this->_log_buffer.push(std::make_pair(level, message));
+        if (this->_log_buffer.size() > 10000)
+            this->_log_buffer.pop();
         if (this->_specification_level_in_file.find(level) != this->_specification_level_in_file.end())
             this->_file_stream << TimeFormatter::get_time("[YYYY/MM/DD HH:mm:SS.sss] ") << this->_specification_level_in_file[level] << message << std::endl;
 
@@ -223,6 +226,11 @@ namespace logging
     std::string Logger::get_file_path() const
     {
         return this->_file_and_folder_handler.get_file_path();
+    }
+
+    const std::queue<std::pair<LogLevel, std::string>>& Logger::get_logs() const
+    {
+        return this->_log_buffer;
     }
 
     const char* level_to_string(LogLevel& level)
