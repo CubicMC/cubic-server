@@ -6,6 +6,8 @@
 #include <unordered_map>
 #include <queue>
 #include <utility>
+#include <chrono>
+
 #include "FileAndFolderHandler.hpp"
 
 namespace logging
@@ -18,6 +20,24 @@ namespace logging
         ERROR,
         FATAL
     };
+
+    class LogMessage
+    {
+    public:
+            LogMessage(LogLevel level, std::string message);
+
+            const LogLevel& get_level() const;
+            const std::string& get_message() const;
+            const std::time_t& get_time() const;
+            const int get_millis() const;
+
+    private:
+        const LogLevel _level;
+        const std::string _message;
+        const std::time_t _time;
+        const int _millis;
+    };
+    std::ostream& operator<<(std::ostream& os, const LogMessage& log);
 
     /**
      * @brief function to transform a LogLevel to a string
@@ -62,7 +82,9 @@ namespace logging
 
             std::string get_file_path() const;
 
-            const std::queue<std::pair<LogLevel, std::string>>& get_logs() const;
+            const std::queue<LogMessage>& get_logs() const;
+            const int get_log_buffer_size() const;
+            void set_log_buffer_size(int size);
 
         private:
             Logger();                                                                   /// Private constructor to prevent multiple instances
@@ -80,7 +102,8 @@ namespace logging
 
             void _log(LogLevel level, std::string& message);
 
-            std::queue<std::pair<LogLevel, std::string>> _log_buffer;                 /// Buffer to store logs before the file is opened
+            std::queue<LogMessage> _log_buffer;                                         /// Buffer to store logs before the file is opened
+            int _buffer_size;                                                           /// Size of the buffer
     };
 }
 
