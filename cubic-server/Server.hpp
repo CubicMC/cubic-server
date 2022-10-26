@@ -11,6 +11,7 @@
 #include "ServerPackets.hpp"
 
 #include "ConfigHandler.hpp"
+#include "Logger.hpp"
 
 #define PCK_CALLBACK(function, type) return this->function(cli, std::static_pointer_cast<type>(packet))
 
@@ -19,7 +20,7 @@
 
 #define GET_PARSER(state) __##state = protocol::packetIDToParse##state.find(packet_id); \
     if (__##state == protocol::packetIDToParse##state.end()) \
-        throw std::runtime_error("Unknown packet ID"); \
+        throw std::runtime_error("Unhandled packet: " + std::to_string(static_cast<int>(packet_id)) + " in status " + std::to_string(static_cast<int>(status))); \
     parser = __##state->second;                                                                  \
     break
 
@@ -45,6 +46,7 @@ private:
 
     std::string _host;
     uint16_t _port;
+    logging::Logger *_log;
 
     // Looks like it is thread-safe, if something breaks it is here
     std::vector<std::shared_ptr<Client>> _clients;
@@ -52,11 +54,57 @@ private:
     int _sockfd;
     struct sockaddr_in _addr;
 
-    // Packet handling (This will be moved somewhere later)
+    // Packet handling (This will be moved somewhere else later)
 
     void _onHandshake(std::shared_ptr<Client> cli, const std::shared_ptr<protocol::Handshake>& pck);
     void _onStatusRequest(std::shared_ptr<Client> cli, const std::shared_ptr<protocol::StatusRequest>& pck);
+    void _onLoginStart(std::shared_ptr<Client> cli, const std::shared_ptr<protocol::LoginStart> &pck);
     void _onPingRequest(std::shared_ptr<Client> cli, const std::shared_ptr<protocol::PingRequest>& pck);
+    void _onConfirmTeleportation(std::shared_ptr<Client> cli, const std::shared_ptr<protocol::ConfirmTeleportation>& pck);
+    void _onEncryptionResponse(std::shared_ptr<Client> cli, const std::shared_ptr<protocol::EncryptionResponse> &pck);
+    void _onQueryBlockEntityTag(std::shared_ptr<Client> cli, const std::shared_ptr<protocol::QueryBlockEntityTag>& pck);
+    void _onChangeDifficulty(std::shared_ptr<Client> cli, const std::shared_ptr<protocol::ChangeDifficulty> &pck);
+    void _onClientCommand(std::shared_ptr<Client> cli, const std::shared_ptr<protocol::ClientCommand> &pck);
+    void _onClientInformation(std::shared_ptr<Client> cli, const std::shared_ptr<protocol::ClientInformation> &pck);
+    void _onCommandSuggestionRequest(std::shared_ptr<Client> cli, const std::shared_ptr<protocol::CommandSuggestionRequest> &pck);
+    void _onClickContainerButton(std::shared_ptr<Client> cli, const std::shared_ptr<protocol::ClickContainerButton> &pck);
+    void _onCloseContainerRequest(std::shared_ptr<Client> cli, const std::shared_ptr<protocol::CloseContainerRequest> &pck);
+    void _onEditBook(std::shared_ptr<Client> cli, const std::shared_ptr<protocol::EditBook> &pck);
+    void _onQueryEntityTag(std::shared_ptr<Client> cli, const std::shared_ptr<protocol::QueryEntityTag> &pck);
+    void _onInteract(std::shared_ptr<Client> cli, const std::shared_ptr<protocol::Interact> &pck);
+    void _onJigsawGenerate(std::shared_ptr<Client> cli, const std::shared_ptr<protocol::JigsawGenerate> &pck);
+    void _onKeepAliveResponse(std::shared_ptr<Client> cli, const std::shared_ptr<protocol::KeepAliveResponse> &pck);
+    void _onLockDifficulty(std::shared_ptr<Client> cli, const std::shared_ptr<protocol::LockDifficulty> &pck);
+    void _onSetPlayerPosition(std::shared_ptr<Client> cli, const std::shared_ptr<protocol::SetPlayerPosition> &pck);
+    void _onSetPlayerPositionAndRotation(std::shared_ptr<Client> cli, const std::shared_ptr<protocol::SetPlayerPositionAndRotation> &pck);
+    void _onSetPlayerRotation(std::shared_ptr<Client> cli, const std::shared_ptr<protocol::SetPlayerRotation> &pck);
+    void _onSetPlayerOnGround(std::shared_ptr<Client> cli, const std::shared_ptr<protocol::SetPlayerOnGround> &pck);
+    void _onMoveVehicle(std::shared_ptr<Client> cli, const std::shared_ptr<protocol::MoveVehicle> &pck);
+    void _onPaddleBoat(std::shared_ptr<Client> cli, const std::shared_ptr<protocol::PaddleBoat> &pck);
+    void _onPickItem(std::shared_ptr<Client> cli, const std::shared_ptr<protocol::PickItem> &pck);
+    void _onPlaceRecipe(std::shared_ptr<Client> cli, const std::shared_ptr<protocol::PlaceRecipe> &pck);
+    void _onPlayerAbilities(std::shared_ptr<Client> cli, const std::shared_ptr<protocol::PlayerAbilities> &pck);
+    void _onPlayerAction(std::shared_ptr<Client> cli, const std::shared_ptr<protocol::PlayerAction> &pck);
+    void _onPlayerCommand(std::shared_ptr<Client> cli, const std::shared_ptr<protocol::PlayerCommand> &pck);
+    void _onPlayerInput(std::shared_ptr<Client> cli, const std::shared_ptr<protocol::PlayerInput> &pck);
+    void _onPong(std::shared_ptr<Client> cli, const std::shared_ptr<protocol::Pong> &pck);
+    void _onChangeRecipeBookSettings(std::shared_ptr<Client> cli, const std::shared_ptr<protocol::ChangeRecipeBookSettings> &pck);
+    void _onSetSeenRecipe(std::shared_ptr<Client> cli, const std::shared_ptr<protocol::SetSeenRecipe> &pck);
+    void _onRenameItem(std::shared_ptr<Client> cli, const std::shared_ptr<protocol::RenameItem> &pck);
+    void _onResourcePack(std::shared_ptr<Client> cli, const std::shared_ptr<protocol::ResourcePack> &pck);
+    void _onSeenAdvancements(std::shared_ptr<Client> cli, const std::shared_ptr<protocol::SeenAdvancements> &pck);
+    void _onSelectTrade(std::shared_ptr<Client> cli, const std::shared_ptr<protocol::SelectTrade> &pck);
+    void _onSetBeaconEffect(std::shared_ptr<Client> cli, const std::shared_ptr<protocol::SetBeaconEffect> &pck);
+    void _onSetHeldItem(std::shared_ptr<Client> cli, const std::shared_ptr<protocol::SetHeldItem> &pck);
+    void _onProgramCommandBlock(std::shared_ptr<Client> cli, const std::shared_ptr<protocol::ProgramCommandBlock> &pck);
+    void _onProgramCommandBlockMinecart(std::shared_ptr<Client> cli, const std::shared_ptr<protocol::ProgramCommandBlockMinecart> &pck);
+    void _onProgramJigsawBlock(std::shared_ptr<Client> cli, const std::shared_ptr<protocol::ProgramJigsawBlock> &pck);
+    void _onProgramStructureBlock(std::shared_ptr<Client> cli, const std::shared_ptr<protocol::ProgramStructureBlock> &pck);
+    void _onUpdateSign(std::shared_ptr<Client> cli, const std::shared_ptr<protocol::UpdateSign> &pck);
+    void _onSwingArm(std::shared_ptr<Client> cli, const std::shared_ptr<protocol::SwingArm> &pck);
+    void _onTeleportToEntity(std::shared_ptr<Client> cli, const std::shared_ptr<protocol::TeleportToEntity> &pck);
+    void _onUseItemOn(std::shared_ptr<Client> cli, const std::shared_ptr<protocol::UseItemOn> &pck);
+    void _onUseItem(std::shared_ptr<Client> cli, const std::shared_ptr<protocol::UseItem> &pck);
 
     Configuration::ConfigHandler _config;
 };

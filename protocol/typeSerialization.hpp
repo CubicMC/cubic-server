@@ -8,6 +8,31 @@
 
 namespace protocol
 {
+    struct Position
+    {
+        int64_t x;
+        int64_t z;
+        int64_t y;
+    };
+
+    enum class ClientCommandActionID
+    {
+        perform_respawn = 0,
+        request_stats = 1,
+    };
+
+    enum class ClientInformationChatMode
+    {
+        enabled = 0,
+        commands_only = 1,
+        hidden = 2,
+    };
+
+    enum class ClientInformationMainHand
+    {
+        left = 0,
+        right = 1,
+    };
 
     constexpr int32_t popVarInt(uint8_t *&at, uint8_t *eof)
     {
@@ -30,6 +55,31 @@ namespace protocol
             position += 7;
 
             if (position >= 32)
+                throw VarIntOverflow("VarInt exceeds max length");
+        }
+    }
+
+    constexpr int64_t popVarLong(uint8_t *&at, uint8_t *eof)
+    {
+        int64_t value = 0;
+        int position = 0;
+        uint8_t currentByte = 0;
+        constexpr uint8_t CONTINUE_BIT = 0x80;
+        constexpr uint8_t SEGMENT_BITS = 0x7f;
+
+        while (true)
+        {
+            if (at > eof)
+                throw PacketEOF("Not enough data in packet to parse a VarInt");
+            currentByte = *at++;
+            value |= (currentByte & SEGMENT_BITS) << position;
+
+            if ((currentByte & CONTINUE_BIT) == 0)
+                return value;
+
+            position += 7;
+
+            if (position >= 64)
                 throw VarIntOverflow("VarInt exceeds max length");
         }
     }
@@ -74,6 +124,21 @@ namespace protocol
             out.push_back(c);
     }
 
+    constexpr uint8_t popByte(uint8_t *&at, uint8_t *eof)
+    {
+        if (eof - at < 0 )
+            throw PacketEOF("Not enough data in packet to parse a byte");
+
+        uint8_t value = *at;
+        at++;
+        return value;
+    }
+
+    constexpr void addByte(std::vector<uint8_t> &out, const uint8_t &data)
+    {
+        out.push_back(data);
+    }
+
     constexpr uint16_t popUnsignedShort(uint8_t *&at, uint8_t *eof)
     {
         if (eof - at < 1)
@@ -112,6 +177,131 @@ namespace protocol
         out.push_back((data >> 16) & 0xFF);
         out.push_back((data >> 8) & 0xFF);
         out.push_back(data & 0xFF);
+    }
+
+    constexpr Position popPosition(uint8_t *&at, uint8_t *eof)
+    {
+        Position p;
+        auto h = popLong(at, eof);
+
+        p.x = h >> 38;
+        p.z = h << 26 >> 38;
+        p.y = h << 52 >> 52;
+        return p;
+    }
+
+    constexpr void addPosition(std::vector<uint8_t> &out, const Position &data)
+    {
+        int64_t h = ((data.x & 0x3FFFFFF) << 38) | ((data.z & 0x3777777) << 12) | (data.y & 0xFFF);
+        return addLong(out, h);
+    }
+
+    constexpr ClientCommandActionID popClientCommandActionID(uint8_t *&at, uint8_t *eof)
+    {
+        auto value = popVarInt(at, eof);
+
+        if (value != 0 && value != 1)
+            throw OutOfRangeEnum("Client Command Action ID is not within the range of the enum");
+        return static_cast<ClientCommandActionID>(value);
+    }
+
+    constexpr void addClientCommandActionID(std::vector<uint8_t> &out, const ClientCommandActionID &data)
+    {
+        return addVarInt(out, static_cast<int32_t>(data));
+    }
+
+    constexpr ClientInformationChatMode popClientInformationChatMode(uint8_t *&at, uint8_t *eof)
+    {
+        auto value = popVarInt(at, eof);
+
+        if (value != 0 && value != 1 && value != 2)
+            throw OutOfRangeEnum("Client Information Chat Mode is not within the range of the enum");
+        return static_cast<ClientInformationChatMode>(value);
+    }
+
+    constexpr void addClientInformationChatMode(std::vector<uint8_t> &out, const ClientInformationChatMode &data)
+    {
+        return addVarInt(out, static_cast<int32_t>(data));
+    }
+
+    constexpr ClientInformationMainHand popClientInformationMainHand(uint8_t *&at, uint8_t *eof)
+    {
+        auto value = popVarInt(at, eof);
+
+        if (value != 0 && value != 1)
+            throw OutOfRangeEnum("Client Information Main Hand is not within the range of the enum");
+        return static_cast<ClientInformationMainHand>(value);
+    }
+
+    constexpr void addClientInformationMainHand(std::vector<uint8_t> &out, const ClientInformationMainHand &data)
+    {
+        return addVarInt(out, static_cast<int32_t>(data));
+    }
+
+    constexpr bool popBoolean(uint8_t *&at, uint8_t *eof)
+    {
+        auto value = popByte(at, eof);
+
+        if (value != 0 && value != 1)
+            throw OutOfRangeBoolean("Given boolean is not 0 or 1");
+        return value == 1;
+    }
+
+    constexpr void addBoolean(std::vector<uint8_t> &out, const bool &data)
+    {
+        if (data)
+            addByte(out, 1);
+        else
+            addByte(out, 0);
+    }
+
+    constexpr std::vector<std::string> popStringArray(const int32_t &count, uint8_t *&at, uint8_t *eof)
+    {
+        std::vector<std::string> value;
+
+        for (auto i = 0; i < count; i++)
+            value.push_back(popString(at, eof));
+        return value;
+    }
+
+    constexpr std::vector<uint8_t> popByteArray(const int32_t &count, uint8_t *&at, uint8_t *eof)
+    {
+        std::vector<uint8_t> value;
+
+        for (auto i = 0; i < count; i++)
+            value.push_back(popByte(at, eof));
+        return value;
+    }
+
+    constexpr __int128 popUUID(uint8_t *&at, uint8_t *eof)
+    {
+        auto a = (__int128) popLong(at, eof);
+        auto b = (__int128) popLong(at, eof);
+
+        return (a << 64) | b;
+    }
+
+    constexpr int32_t popInt(uint8_t *&at, uint8_t *eof)
+    {
+        if (eof - at < 3)
+            throw PacketEOF("Not enough data in packet to parse an Int");
+
+        int32_t value = 0;
+
+        for (int i = 0; i < 4; i++)
+            value = (value << 8) + *at++;
+
+        return value;
+    }
+
+    constexpr float popFloat(uint8_t *&at, uint8_t *eof)
+    {
+        return (float) popInt(at, eof);
+    }
+
+    constexpr double popDouble(uint8_t *&at, uint8_t *eof)
+    {
+        return (double) popLong(at, eof);
     }
 }
 
