@@ -2,13 +2,18 @@
 #include <unistd.h>
 #include <poll.h>
 #include <cstring>
+#include <memory>
 
 #include "Client.hpp"
+#include "ServerPackets.hpp"
+#include "nlohmann/json.hpp"
+#include "ClientPackets.hpp"
 
 Client::Client(int sockfd, struct sockaddr_in addr)
     : _sockfd(sockfd), _addr(addr), _status(protocol::ClientStatus::Initial)
 {
     _is_running = true;
+    _log = logging::Logger::get_instance();
 }
 
 Client::~Client()
@@ -39,6 +44,7 @@ void Client::networkLoop()
                 // This is extremely inefficient but it will do for now
                 for (int i = 0; i < read_size; i++)
                     _recv_buffer.push_back(in_buffer[i]);
+                _handlePacket();
             }
         }
         if (poll_set[0].revents & POLLOUT)
@@ -90,4 +96,201 @@ void Client::_sendData()
 std::vector<uint8_t> &Client::get_recv_buffer()
 {
     return _recv_buffer;
+}
+
+void Client::switchToPlayState()
+{
+    this->setStatus(protocol::ClientStatus::Play);
+    this->_player = new Player(this);
+}
+
+void Client::handleParsedClientPacket(const std::shared_ptr<protocol::BaseServerPacket> &packet,
+                                      protocol::ServerPacketsID packetID)
+{
+    using namespace protocol;
+
+    switch (_status) {
+    case ClientStatus::Initial:
+        switch (packetID) {
+        case ServerPacketsID::Handshake:
+            PCK_CALLBACK(Handshake);
+        default:
+            break;
+        }
+        break;
+    case ClientStatus::Status:
+        switch (packetID) {
+        case ServerPacketsID::StatusRequest:
+            PCK_CALLBACK(StatusRequest);
+        case ServerPacketsID::PingRequest:
+            PCK_CALLBACK(PingRequest);
+        default:
+            break;
+        }
+        break;
+    case ClientStatus::Login:
+        switch (packetID) {
+        case ServerPacketsID::LoginStart:
+            PCK_CALLBACK(LoginStart);
+        case ServerPacketsID::EncryptionResponse:
+            PCK_CALLBACK(EncryptionResponse);
+        default:
+            break;
+        }
+        break;
+    case ClientStatus::Play:
+        switch (packetID) {
+            PCK_CALLBACK_PLAY(ConfirmTeleportation);
+            PCK_CALLBACK_PLAY(QueryBlockEntityTag);
+            PCK_CALLBACK_PLAY(ChangeDifficulty);
+            PCK_CALLBACK_PLAY(ClientCommand);
+            PCK_CALLBACK_PLAY(ClientInformation);
+            PCK_CALLBACK_PLAY(CommandSuggestionRequest);
+            PCK_CALLBACK_PLAY(ClickContainerButton);
+            PCK_CALLBACK_PLAY(CloseContainerRequest);
+            PCK_CALLBACK_PLAY(EditBook);
+            PCK_CALLBACK_PLAY(QueryEntityTag);
+            PCK_CALLBACK_PLAY(Interact);
+            PCK_CALLBACK_PLAY(JigsawGenerate);
+            PCK_CALLBACK_PLAY(KeepAliveResponse);
+            PCK_CALLBACK_PLAY(LockDifficulty);
+            PCK_CALLBACK_PLAY(SetPlayerPosition);
+            PCK_CALLBACK_PLAY(SetPlayerPositionAndRotation);
+            PCK_CALLBACK_PLAY(SetPlayerRotation);
+            PCK_CALLBACK_PLAY(SetPlayerOnGround);
+            PCK_CALLBACK_PLAY(MoveVehicle);
+            PCK_CALLBACK_PLAY(PaddleBoat);
+            PCK_CALLBACK_PLAY(PickItem);
+            PCK_CALLBACK_PLAY(PlaceRecipe);
+            PCK_CALLBACK_PLAY(PlayerAbilities);
+            PCK_CALLBACK_PLAY(PlayerAction);
+            PCK_CALLBACK_PLAY(PlayerCommand);
+            PCK_CALLBACK_PLAY(PlayerInput);
+            PCK_CALLBACK_PLAY(Pong);
+            PCK_CALLBACK_PLAY(ChangeRecipeBookSettings);
+            PCK_CALLBACK_PLAY(SetSeenRecipe);
+            PCK_CALLBACK_PLAY(RenameItem);
+            PCK_CALLBACK_PLAY(ResourcePack);
+            PCK_CALLBACK_PLAY(SeenAdvancements);
+            PCK_CALLBACK_PLAY(SelectTrade);
+            PCK_CALLBACK_PLAY(SetBeaconEffect);
+            PCK_CALLBACK_PLAY(SetHeldItem);
+            PCK_CALLBACK_PLAY(ProgramCommandBlock);
+            PCK_CALLBACK_PLAY(ProgramCommandBlockMinecart);
+            PCK_CALLBACK_PLAY(ProgramJigsawBlock);
+            PCK_CALLBACK_PLAY(ProgramStructureBlock);
+            PCK_CALLBACK_PLAY(UpdateSign);
+            PCK_CALLBACK_PLAY(SwingArm);
+            PCK_CALLBACK_PLAY(TeleportToEntity);
+            PCK_CALLBACK_PLAY(UseItemOn);
+            PCK_CALLBACK_PLAY(UseItem);
+        default:
+            break;
+        }
+        break;
+    }
+    _log->error("Unhandled packet: " + std::to_string(static_cast<int>(packetID)) +
+                " in status " + std::to_string(static_cast<int>(_status))); // TODO: Properly handle the unknown packet
+}
+
+void Client::_handlePacket()
+{
+    auto &data = _recv_buffer;
+    while (true) {
+        // Get the length of the packet stored
+        auto buffer_length = data.size();
+        if (buffer_length == 0)
+            break;
+        uint8_t *at = data.data();
+        uint8_t *eof = at + buffer_length;
+        int32_t length = 0;
+        try {
+            length = protocol::popVarInt(at, eof);
+            if (length > eof - at + 1)
+                break; // Not enough data in buffer to parse the packet
+            if (length == 0) {
+                data.erase(data.begin());
+                continue;
+            }
+        } catch (const protocol::PacketEOF &_) {
+            break; // Not enough data in buffer to parse the length of the packet
+        }
+        const uint8_t *start_payload = at;
+        // Handle the packet if the length is there
+        const auto packet_id = static_cast<protocol::ServerPacketsID>(protocol::popVarInt(at, eof));
+        std::function<std::shared_ptr<protocol::BaseServerPacket>(std::vector<uint8_t> &)> parser;
+        PARSER_IT_DECLARE(Initial);
+        PARSER_IT_DECLARE(Login);
+        PARSER_IT_DECLARE(Status);
+        PARSER_IT_DECLARE(Play);
+        switch (_status) {
+        case protocol::ClientStatus::Initial:
+            GET_PARSER(Initial);
+        case protocol::ClientStatus::Login:
+            GET_PARSER(Login);
+        case protocol::ClientStatus::Status:
+            GET_PARSER(Status);
+        case protocol::ClientStatus::Play:
+            GET_PARSER(Play);
+        }
+        std::vector<uint8_t> to_parse(data.begin() + (at - data.data()), data.end());
+        auto packet = parser(to_parse);
+        // Callback to handle the packet
+        handleParsedClientPacket(packet, packet_id);
+        data.erase(data.begin(), data.begin() + (start_payload - data.data()) + length);
+    }
+}
+
+void Client::_onHandshake(const std::shared_ptr<protocol::Handshake>& pck)
+{
+    _log->debug("Got an handshake");
+    if (pck->next_state == 1)
+        this->setStatus(protocol::ClientStatus::Status);
+    else if (pck->next_state == 2)
+        this->setStatus(protocol::ClientStatus::Login);
+}
+
+void Client::_onStatusRequest(const std::shared_ptr<protocol::StatusRequest> &pck)
+{
+    _log->debug("Got a status request");
+
+    // TODO: Fix this
+    nlohmann::json json;
+    json["version"]["name"] = "1.19"; // TODO: Change with a non hardcoded value
+    json["version"]["protocol"] = 759; // TODO: change with a non hardcoded value equal to the protocol version we are using
+    json["players"]["max"] = 20; // _config.getNode("max_players").as<int>();
+    json["players"]["online"] = 6; // std::count_if(_clients.begin(), _clients.end(), [](std::shared_ptr<Client> &each) { return each->getStatus() == protocol::ClientStatus::Play; });
+    json["description"]["text"] = "A Cubic Server"; // _config.getNode("motd").as<std::string>();
+    // json["favicon"] = DEFAULT_FAVICON; // TODO: get it from the config ? // this invalid the packet if present but idk why
+    json["previewsChat"] = false; // TODO: check what we want to do with this
+    json["enforcesSecureChat"] = false; // TODO: check what we want to do with this
+    std::string status = json.dump();
+    _log->debug("Json status: " + status);
+
+    const protocol::StatusResponse status_res(status);
+    auto status_res_pck = protocol::createStatusResponse(status_res);
+    sendData(*status_res_pck);
+
+    _log->debug("Sent status response");
+}
+
+void Client::_onPingRequest(const std::shared_ptr<protocol::PingRequest> &pck)
+{
+    _log->debug("Got a ping request with payload: " + std::to_string(pck->payload));
+
+    const protocol::PingResponse ping_res(pck->payload);
+    auto ping_res_pck = protocol::createPingResponse(ping_res);
+    this->sendData(*ping_res_pck);
+
+    _log->debug("Sent a ping response");
+}
+
+void Client::_onLoginStart(const std::shared_ptr<protocol::LoginStart> &pck)
+{
+    _log->debug("Got a Login Start");
+}
+
+void Client::_onEncryptionResponse(const std::shared_ptr<protocol::EncryptionResponse> &pck)
+{
+    _log->debug("Got a Encryption Response");
 }

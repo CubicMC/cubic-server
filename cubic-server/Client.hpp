@@ -5,7 +5,30 @@
 #include <thread>
 #include <deque>
 #include <vector>
+
+#include "Player.hpp"
 #include "common.hpp"
+#include "ServerPackets.hpp"
+#include "Logger.hpp"
+
+#define __PCK_CALLBACK_PRIM(type, object) return object->_on##type(std::static_pointer_cast<type>(packet))
+
+#define PCK_CALLBACK(type) __PCK_CALLBACK_PRIM(type, this)
+
+#define __PCK_CALLBACK_PLAY(type) __PCK_CALLBACK_PRIM(type, _player)
+
+#define PCK_CALLBACK_PLAY(type) case ServerPacketsID::type: __PCK_CALLBACK_PLAY(type)
+
+#define PARSER_IT_DECLARE(state) \
+    std::unordered_map<protocol::ServerPacketsID, std::function<std::shared_ptr<protocol::BaseServerPacket>(std::vector<uint8_t> &)>>::const_iterator __##state
+
+#define GET_PARSER(state) __##state = protocol::packetIDToParse##state.find(packet_id); \
+    if (__##state == protocol::packetIDToParse##state.end()) \
+        throw std::runtime_error("Unhandled packet: " + std::to_string(static_cast<int>(packet_id)) + " in status " + std::to_string(static_cast<int>(_status))); \
+    parser = __##state->second;                                                                  \
+    break
+
+class Player;
 
 class Client
 {
@@ -32,8 +55,19 @@ public:
         _status = status;
     }
 
+    void switchToPlayState();
+
+    void handleParsedClientPacket(const std::shared_ptr<protocol::BaseServerPacket>& packet,
+                                  protocol::ServerPacketsID packetID);
+
 private:
+    void _handlePacket();
     void _sendData();
+    void _onHandshake(const std::shared_ptr<protocol::Handshake>& pck);
+    void _onStatusRequest(const std::shared_ptr<protocol::StatusRequest>& pck);
+    void _onLoginStart(const std::shared_ptr<protocol::LoginStart> &pck);
+    void _onPingRequest(const std::shared_ptr<protocol::PingRequest>& pck);
+    void _onEncryptionResponse(const std::shared_ptr<protocol::EncryptionResponse> &pck);
 
     const int _sockfd;
     const struct sockaddr_in _addr;
@@ -42,8 +76,8 @@ private:
     std::vector<uint8_t> _recv_buffer;
     std::vector<uint8_t> _send_buffer;
     protocol::ClientStatus _status;
-
-protected:
+    Player *_player;
+    logging::Logger *_log;
 };
 
 #endif /* D23DD5CC_1F28_49BB_B77D_E244C60CC705 */
