@@ -20,11 +20,8 @@
 #include "Logger.hpp"
 
 Server::Server()
-    : _config("config.yml")
+    : _config()
 {
-    _host = _config.getNode("ip").as<std::string>();
-    _port = _config.getNode("port").as<uint16_t>();
-    logging::Logger::get_instance().debug("Server created with host: " + _host + " and port: " + std::to_string(_port));
 }
 
 Server::~Server()
@@ -34,6 +31,14 @@ Server::~Server()
 
 void Server::launch()
 {
+    _config.parse("./config.yml");
+    _host = _config.getIP();
+    _port = _config.getPort();
+    _maxPlayer = _config.getMaxPlayers();
+    _motd = _config.getMotd();
+
+    logging::Logger::get_instance().debug("Server launching on " + _host + ":" + std::to_string(_port));
+
     // Get the socket for the server
     _sockfd = socket(AF_INET, SOCK_STREAM, getprotobyname("TCP")->p_proto);
 
@@ -220,9 +225,9 @@ void Server::_onStatusRequest(std::shared_ptr<Client> cli, const std::shared_ptr
     nlohmann::json json;
     json["version"]["name"] = "1.19"; // TODO: Change with a non hardcoded value
     json["version"]["protocol"] = 759; // TODO: change with a non hardcoded value equal to the protocol version we are using
-    json["players"]["max"] = _config.getNode("max_players").as<int>();
+    json["players"]["max"] = _maxPlayer;
     json["players"]["online"] = std::count_if(_clients.begin(), _clients.end(), [](std::shared_ptr<Client> &each) { return each->getStatus() == protocol::ClientStatus::Play; });
-    json["description"]["text"] = _config.getNode("motd").as<std::string>();
+    json["description"]["text"] = _motd;
     // json["favicon"] = DEFAULT_FAVICON; // TODO: get it from the config ? // this invalid the packet if present but idk why
     json["previewsChat"] = false; // TODO: check what we want to do with this
     json["enforcesSecureChat"] = false; // TODO: check what we want to do with this

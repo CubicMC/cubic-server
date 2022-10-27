@@ -1,59 +1,69 @@
 #include "ConfigHandler.hpp"
 #include <iostream>
-#include <fstream>
 #include <yaml-cpp/yaml.h>
 
-Configuration::ConfigHandler::ConfigHandler(std::string filePath)
+namespace Configuration
 {
-    this->getConfigFile(filePath);
-}
+    ConfigHandler::ConfigHandler() {}
 
-void Configuration::ConfigHandler::parseFile(YAML::Node base_node)
-{
-    std::vector<YAML::Node> nodes_list;
-    int i = 0;
+    YAML::Node ConfigHandler::_seekNode(const std::initializer_list<std::string> &queries) const
+    {
+        auto current_node = _baseNode;
 
-    for (YAML::const_iterator it = base_node.begin(); it != base_node.end(); ++it, ++i) {
-        nodes_list.push_back(it->first);
-        const std::string buff = it->first.as<std::string>();
-        this->_configFile.insert(std::pair<std::string, YAML::Node>(buff, base_node[nodes_list[i]]));
-        if (base_node[nodes_list.back()].size() > 1) {
-            for (YAML::const_iterator itbis = base_node[nodes_list[i]].begin(); itbis != base_node[nodes_list[i]].end(); ++itbis) {
-                YAML::Node node = itbis->first;
-                const std::string temp = itbis->first.as<std::string>();
-                this->_configFile.insert(std::pair<std::string, YAML::Node>(temp, base_node[nodes_list[i]][node]));
-                parseFile(base_node[nodes_list[i]][node]);
+        for (auto const &query : queries) {
+//            if (!current_node.IsMap())
+//                throw YAML::BadFile("Queries could not resolve a yaml node, node is not map");
+            bool found_next_node = false;
+            printf("---------------\n");
+            printf("%s\n", query.c_str());
+            for (auto node : current_node) {
+                printf("%s\n", node.first.as<std::string>().c_str());
+                if (node.first.as<std::string>() == query) {
+                    current_node = node.second;
+                    found_next_node = true;
+                    break;
+                }
             }
-        } else {
-            const std::string temp = it->first.as<std::string>();
-            this->_configFile.insert(std::pair<std::string, YAML::Node>(temp, base_node[nodes_list[i]]));
+            if (!found_next_node)
+                throw YAML::BadFile("Queries could not resolve a yaml node");
+        }
+        printf("Returned\n");
+        return current_node;
+    }
+
+    void ConfigHandler::parse(const std::string &path) {
+        YAML::Node config;
+        try {
+            _baseNode = YAML::LoadFile(path);
+            _ip = _seekNode({"network", "ip"}).as<std::string>();
+            _port = _seekNode({"network", "port"}).as<uint16_t>();
+            _maxPlayers = _seekNode({"general", "max_players"}).as<uint32_t>();
+            _motd = _seekNode({"general", "motd"}).as<std::string>();
+        }
+        catch (const YAML::BadFile &e) {
+            std::cerr << "Config parsing failed, exiting now!" << std::endl; // TODO: Use the logger once the new version is ready
+            std::cerr << e.what() << std::endl;
+            exit(1); // TODO: Use an exception
         }
     }
-}
 
-void Configuration::ConfigHandler::getConfigFile(std::string configFile)
-{
-    try
+    const std::string &ConfigHandler::getIP() const
     {
-        YAML::Node config = YAML::LoadFile(configFile);
-        parseFile(config);
+        return _ip;
     }
-    catch(const YAML::BadFile& e)
+
+    uint16_t ConfigHandler::getPort() const
     {
-        std::cerr << e.what() << '\n';
+        return _port;
     }
-}
 
-YAML::Node Configuration::ConfigHandler::getNode(std::string node_name)
-{
-    YAML::Node null_node = YAML::Load("");
-
-    if (this->_configFile.count(node_name)) {
-        std::unordered_map<std::string, YAML::Node>::const_iterator got = this->_configFile.find(node_name);
-        if (got != this->_configFile.end())
-            return got->second;
-        else
-            return null_node;
+    uint32_t ConfigHandler::getMaxPlayers() const
+    {
+        return _maxPlayers;
     }
-    return null_node;
+
+    const std::string &ConfigHandler::getMotd() const
+    {
+        return _motd;
+    }
 }

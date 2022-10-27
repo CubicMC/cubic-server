@@ -45,6 +45,8 @@ private:
 
     std::string _host;
     uint16_t _port;
+    uint32_t _maxPlayer;
+    std::string _motd;
 
     // Looks like it is thread-safe, if something breaks it is here
     std::vector<std::shared_ptr<Client>> _clients;
