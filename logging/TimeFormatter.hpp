@@ -2,6 +2,7 @@
 #define TIMEFORMATTER_HPP_
 
 #include <string>
+#include <ctime>
 
 namespace logging
 {
@@ -13,6 +14,7 @@ namespace logging
         std::string get_time();
         std::string get_time(std::string format);
         std::string get_time(std::string& format);
+        std::string get_time(std::string format, std::time_t time, int millis);
     };
 }
 
