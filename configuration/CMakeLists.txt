@@ -17,6 +17,7 @@ endif()
 
 target_link_libraries(ConfigHandler PUBLIC yaml-cpp::yaml-cpp)
 
+target_link_libraries(ConfigHandler PRIVATE Logging)
 
 # Make sure the compiler can find include files for our Hello library
 # when other libraries or executables link to Hello

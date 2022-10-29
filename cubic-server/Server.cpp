@@ -20,10 +20,14 @@
 #include "Logger.hpp"
 
 Server::Server()
-    : _config("config.yml")
+    : _config()
 {
-    _host = _config.getNode("ip").as<std::string>();
-    _port = _config.getNode("port").as<uint16_t>();
+    _config.parse("./config.yml");
+    _host = _config.getIP();
+    _port = _config.getPort();
+    _maxPlayer = _config.getMaxPlayers();
+    _motd = _config.getMotd();
+
     _log = logging::Logger::get_instance();
     _log->debug("Server created with host: " + _host + " and port: " + std::to_string(_port));
 }

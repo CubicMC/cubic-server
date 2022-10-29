@@ -36,6 +36,9 @@ private:
 
     std::string _host;
     uint16_t _port;
+    uint32_t _maxPlayer;
+    std::string _motd;
+
     logging::Logger *_log;
 
     // Looks like it is thread-safe, if something breaks it is here
