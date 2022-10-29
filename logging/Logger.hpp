@@ -6,6 +6,12 @@
 #include <unordered_map>
 #include "FileAndFolderHandler.hpp"
 
+#define LDEBUG(msg) _log->debug(msg)
+#define LINFO(msg) _log->debug(msg)
+#define LWARNING(msg) _log->debug(msg)
+#define LERROR(msg) _log->debug(msg)
+#define LFATAL(msg) _log->debug(msg)
+
 namespace logging
 {
     enum class LogLevel
@@ -60,16 +66,12 @@ namespace logging
 
         std::string get_file_path() const;
 
+        Logger(const Logger &) = delete;
+        Logger(Logger &&) = delete;
+        Logger &operator=(const Logger &) = delete;
+        Logger &operator=(Logger &&) = delete;
     private:
         Logger();                                                                   /// Private constructor to prevent multiple instances
-        Logger(const Logger &) = delete;
-
-        Logger &operator=(const Logger &) = delete;
-
-        Logger(Logger &&) = delete;
-
-        Logger &operator=(Logger &&) = delete;
-
 
         std::fstream _file_stream;                                                  /// Stream to the current log file
         FileAndFolderHandler _file_and_folder_handler;                              /// Handler for files and folders

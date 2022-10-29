@@ -30,8 +30,20 @@ namespace logging
         this->_file_and_folder_handler.create_file(filename);
         this->_file_stream.open(this->_file_and_folder_handler.get_file_path(), std::ios::app);
 
-        this->_specification_level_in_file = { {LogLevel::DEBUG, "[DEBUG] "}, {LogLevel::INFO, "[INFO] "}, {LogLevel::WARNING, "[WARNING] "}, {LogLevel::ERROR, "[ERROR] "}, {LogLevel::FATAL, "[FATAL] "} };
-        this->_specification_level_in_console = { {LogLevel::DEBUG, "[DEBUG] "}, {LogLevel::INFO, "[INFO] "}, {LogLevel::WARNING, "[WARNING] "}, {LogLevel::ERROR, "[ERROR] "}, {LogLevel::FATAL, "[FATAL] "} };
+        this->_specification_level_in_file = {
+                {LogLevel::DEBUG, "[DEBUG] "},
+                {LogLevel::INFO, "[INFO] "},
+                {LogLevel::WARNING, "[WARNING] "},
+                {LogLevel::ERROR, "[ERROR] "},
+                {LogLevel::FATAL, "[FATAL] "}
+        };
+        this->_specification_level_in_console = {
+                {LogLevel::DEBUG, "[DEBUG] "},
+                {LogLevel::INFO, "[INFO] "},
+                {LogLevel::WARNING, "[WARNING] "},
+                {LogLevel::ERROR, "[ERROR] "},
+                {LogLevel::FATAL, "[FATAL] "}
+        };
     }
 
     /**

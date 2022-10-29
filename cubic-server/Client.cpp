@@ -287,7 +287,7 @@ void Client::_onPingRequest(const std::shared_ptr<protocol::PingRequest> &pck)
 
 void Client::_onLoginStart(const std::shared_ptr<protocol::LoginStart> &pck)
 {
-    _log->debug("Got a Login Start");
+    LDEBUG("Got a Login Start");
 }
 
 void Client::_onEncryptionResponse(const std::shared_ptr<protocol::EncryptionResponse> &pck)
