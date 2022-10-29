@@ -49,7 +49,7 @@ void Client::networkLoop()
         }
         if (poll_set[0].revents & POLLOUT)
         {
-            _sendData();
+            _flushSendData();
         }
     }
     _is_running = false;
@@ -261,12 +261,11 @@ void Client::_onStatusRequest(const std::shared_ptr<protocol::StatusRequest> &pc
     json["players"]["max"] = 20; // _config.getNode("max_players").as<int>();
     json["players"]["online"] = 6; // std::count_if(_clients.begin(), _clients.end(), [](std::shared_ptr<Client> &each) { return each->getStatus() == protocol::ClientStatus::Play; });
     json["description"]["text"] = "A Cubic Server"; // _config.getNode("motd").as<std::string>();
-    // json["favicon"] = DEFAULT_FAVICON; // TODO: get it from the config ? // this invalid the packet if present but idk why
+    json["favicon"] = DEFAULT_FAVICON; // TODO: get it from the config ? // this invalid the packet if present but idk why
     json["previewsChat"] = false; // TODO: check what we want to do with this
     json["enforcesSecureChat"] = false; // TODO: check what we want to do with this
-    std::string status = json.dump();
 
-    sendStatusResponse(json);
+    sendStatusResponse(json.dump());
 }
 
 void Client::_onPingRequest(const std::shared_ptr<protocol::PingRequest> &pck)
