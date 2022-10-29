@@ -37,15 +37,13 @@ public:
         return &srv;
     }
 
+    const std::vector<std::shared_ptr<Client>> &getClients() const {
+        return _clients;
+    }
+
 private:
     Server();
     void _acceptLoop();
-
-    [[noreturn]] void _networkLoop();
-//    void _handleClientPacket(std::shared_ptr<Client> cli);
-//    void _handleParsedClientPacket(std::shared_ptr<Client> cli,
-//                                   const std::shared_ptr<protocol::BaseServerPacket>& packet,
-//                                   protocol::ServerPacketsID packetID);
 
     std::string _host;
     uint16_t _port;
@@ -59,9 +57,6 @@ private:
 
     int _sockfd;
     struct sockaddr_in _addr;
-
-    // Packet handling (This will be moved somewhere else later)
-
 
     Configuration::ConfigHandler _config;
 };

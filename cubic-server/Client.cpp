@@ -94,11 +94,6 @@ void Client::_flushSendData()
     _send_buffer.erase(_send_buffer.begin(), _send_buffer.begin() + write_return);
 }
 
-std::vector<uint8_t> &Client::get_recv_buffer()
-{
-    return _recv_buffer;
-}
-
 void Client::switchToPlayState()
 {
     this->setStatus(protocol::ClientStatus::Play);
@@ -257,13 +252,20 @@ void Client::_onStatusRequest(const std::shared_ptr<protocol::StatusRequest> &pc
 
     auto srv = Server::getInstance();
     auto conf = srv->getConfig();
+    auto cli = srv->getClients();
 
     // TODO: Fix this
     nlohmann::json json;
     json["version"]["name"] = MC_VERSION;
     json["version"]["protocol"] = MC_PROTOCOL;
     json["players"]["max"] = conf.getMaxPlayers();
-    json["players"]["online"] = 0; // std::count_if(_clients.begin(), _clients.end(), [](std::shared_ptr<Client> &each) { return each->getStatus() == protocol::ClientStatus::Play; });
+    json["players"]["online"] = std::count_if(
+            cli.begin(),
+            cli.end(),
+            [](std::shared_ptr<Client> &each) {
+                return each->getStatus() == protocol::ClientStatus::Play;
+            }
+    );
     json["description"]["text"] = conf.getMotd();
     json["favicon"] = DEFAULT_FAVICON; // TODO: Understand how this works, cause right now it is witchcraft
     json["previewsChat"] = false;
