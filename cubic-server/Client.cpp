@@ -8,6 +8,7 @@
 #include "ServerPackets.hpp"
 #include "nlohmann/json.hpp"
 #include "ClientPackets.hpp"
+#include "Server.hpp"
 
 Client::Client(int sockfd, struct sockaddr_in addr)
     : _sockfd(sockfd), _addr(addr), _status(protocol::ClientStatus::Initial)
@@ -254,16 +255,19 @@ void Client::_onStatusRequest(const std::shared_ptr<protocol::StatusRequest> &pc
 {
     LDEBUG("Got a status request");
 
+    auto srv = Server::getInstance();
+    auto conf = srv->getConfig();
+
     // TODO: Fix this
     nlohmann::json json;
-    json["version"]["name"] = "1.19"; // TODO: Change with a non hardcoded value
-    json["version"]["protocol"] = 759; // TODO: change with a non hardcoded value equal to the protocol version we are using
-    json["players"]["max"] = 20; // _config.getNode("max_players").as<int>();
-    json["players"]["online"] = 6; // std::count_if(_clients.begin(), _clients.end(), [](std::shared_ptr<Client> &each) { return each->getStatus() == protocol::ClientStatus::Play; });
-    json["description"]["text"] = "A Cubic Server"; // _config.getNode("motd").as<std::string>();
-    json["favicon"] = DEFAULT_FAVICON; // TODO: get it from the config ? // this invalid the packet if present but idk why
-    json["previewsChat"] = false; // TODO: check what we want to do with this
-    json["enforcesSecureChat"] = false; // TODO: check what we want to do with this
+    json["version"]["name"] = MC_VERSION;
+    json["version"]["protocol"] = MC_PROTOCOL;
+    json["players"]["max"] = conf.getMaxPlayers();
+    json["players"]["online"] = 0; // std::count_if(_clients.begin(), _clients.end(), [](std::shared_ptr<Client> &each) { return each->getStatus() == protocol::ClientStatus::Play; });
+    json["description"]["text"] = conf.getMotd();
+    json["favicon"] = DEFAULT_FAVICON; // TODO: Understand how this works, cause right now it is witchcraft
+    json["previewsChat"] = false;
+    json["enforcesSecureChat"] = false;
 
     sendStatusResponse(json.dump());
 }

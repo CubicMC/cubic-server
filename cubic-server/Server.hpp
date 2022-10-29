@@ -13,19 +13,32 @@
 #include "ConfigHandler.hpp"
 #include "Logger.hpp"
 
+#ifndef MC_VERSION
+#define MC_VERSION "1.19"
+#endif
 
-
-
+#ifndef MC_PROTOCOL
+#define MC_PROTOCOL 759
+#endif
 
 class Server
 {
 public:
-    Server();
     ~Server();
 
     void launch();
 
+    const Configuration::ConfigHandler &getConfig() const {
+        return _config;
+    }
+
+    static Server *getInstance() {
+        static Server srv;
+        return &srv;
+    }
+
 private:
+    Server();
     void _acceptLoop();
 
     [[noreturn]] void _networkLoop();
