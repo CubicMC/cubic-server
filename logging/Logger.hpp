@@ -24,57 +24,60 @@ namespace logging
      *
      * @return std::string the string corresponding to the LogLevel
      */
-    const char* level_to_string(LogLevel& level);
+    const char *level_to_string(LogLevel &level);
 
     /**
      * @brief Handles logging in a file.
      */
     class Logger
     {
-        public:
-            static Logger *get_instance();
-            ~Logger();
+    public:
+        static Logger *get_instance();
 
-            void debug(std::string message);
-            void debug(std::string& message);
+        ~Logger();;
 
-            void info(std::string message);
-            void info(std::string& message);
+        void debug(const std::string &msg);
 
-            void warn(std::string message);
-            void warn(std::string& message);
+        void info(const std::string &msg);
 
-            void error(std::string message);
-            void error(std::string& message);
+        void warn(const std::string &msg);
 
-            void fatal(std::string message);
-            void fatal(std::string& message);
+        void error(const std::string &msg);
 
-            void set_display_specification_level_in_file(LogLevel level);
-            void unset_display_specification_level_in_file(LogLevel level);
-            const std::unordered_map<LogLevel, std::string>& get_display_specification_level_in_file() const;
+        void fatal(const std::string &msg);
 
-            void set_display_specification_level_in_console(LogLevel level);
-            void unset_display_specification_level_in_console(LogLevel level);
-            const std::unordered_map<LogLevel, std::string>& get_display_specification_level_in_console() const;
+        void set_display_specification_level_in_file(LogLevel level);
 
-            std::string get_file_path() const;
+        void unset_display_specification_level_in_file(LogLevel level);
 
-        private:
-            Logger();                                                                   /// Private constructor to prevent multiple instances
-            Logger(const Logger&) = delete;
-            Logger& operator=(const Logger&) = delete;
-            Logger(Logger&&) = delete;
-            Logger& operator=(Logger&&) = delete;
+        const std::unordered_map<LogLevel, std::string> &get_display_specification_level_in_file() const;
+
+        void set_display_specification_level_in_console(LogLevel level);
+
+        void unset_display_specification_level_in_console(LogLevel level);
+
+        const std::unordered_map<LogLevel, std::string> &get_display_specification_level_in_console() const;
+
+        std::string get_file_path() const;
+
+    private:
+        Logger();                                                                   /// Private constructor to prevent multiple instances
+        Logger(const Logger &) = delete;
+
+        Logger &operator=(const Logger &) = delete;
+
+        Logger(Logger &&) = delete;
+
+        Logger &operator=(Logger &&) = delete;
 
 
-            std::fstream _file_stream;                                                  /// Stream to the current log file
-            FileAndFolderHandler _file_and_folder_handler;                              /// Handler for files and folders
+        std::fstream _file_stream;                                                  /// Stream to the current log file
+        FileAndFolderHandler _file_and_folder_handler;                              /// Handler for files and folders
 
-            std::unordered_map<LogLevel, std::string> _specification_level_in_file;     /// Map of LogLevel and his associated string to display in the log file
-            std::unordered_map<LogLevel, std::string> _specification_level_in_console;  /// Map of LogLevel and his associated string to display in the console
+        std::unordered_map<LogLevel, std::string> _specification_level_in_file;     /// Map of LogLevel and his associated string to display in the log file
+        std::unordered_map<LogLevel, std::string> _specification_level_in_console;  /// Map of LogLevel and his associated string to display in the console
 
-            void _log(LogLevel level, std::string& message);
+        void _log(LogLevel level, const std::string &message);
     };
 }
 
