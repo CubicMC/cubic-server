@@ -43,7 +43,6 @@ public:
 
     [[nodiscard]] bool isDisconnected() const;
 
-    void sendData(const std::vector<uint8_t> &data);
 
     std::vector<uint8_t> &get_recv_buffer();
 
@@ -60,9 +59,14 @@ public:
     void handleParsedClientPacket(const std::shared_ptr<protocol::BaseServerPacket>& packet,
                                   protocol::ServerPacketsID packetID);
 
+    // All the send packets go here
+    void sendStatusResponse(const std::string &json);
+    void sendPingResponse(int64_t payload);
+
 private:
     void _handlePacket();
-    void _sendData();
+    void _flushSendData();
+    void _sendData(const std::vector<uint8_t> &data);
     void _onHandshake(const std::shared_ptr<protocol::Handshake>& pck);
     void _onStatusRequest(const std::shared_ptr<protocol::StatusRequest>& pck);
     void _onLoginStart(const std::shared_ptr<protocol::LoginStart> &pck);

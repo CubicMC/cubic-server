@@ -70,14 +70,14 @@ bool Client::isDisconnected() const
     return !_is_running;
 }
 
-void Client::sendData(const std::vector<uint8_t> &data)
+void Client::_sendData(const std::vector<uint8_t> &data)
 {
     // This is extremely inefficient but it will do for now
     for (const auto i : data)
         _send_buffer.push_back(i);
 }
 
-void Client::_sendData()
+void Client::_flushSendData()
 {
     char send_buffer[2048];
     size_t to_send = std::min(_send_buffer.size(), (size_t)2048);
@@ -252,7 +252,7 @@ void Client::_onHandshake(const std::shared_ptr<protocol::Handshake>& pck)
 
 void Client::_onStatusRequest(const std::shared_ptr<protocol::StatusRequest> &pck)
 {
-    _log->debug("Got a status request");
+    LDEBUG("Got a status request");
 
     // TODO: Fix this
     nlohmann::json json;
@@ -265,24 +265,15 @@ void Client::_onStatusRequest(const std::shared_ptr<protocol::StatusRequest> &pc
     json["previewsChat"] = false; // TODO: check what we want to do with this
     json["enforcesSecureChat"] = false; // TODO: check what we want to do with this
     std::string status = json.dump();
-    _log->debug("Json status: " + status);
 
-    const protocol::StatusResponse status_res(status);
-    auto status_res_pck = protocol::createStatusResponse(status_res);
-    sendData(*status_res_pck);
-
-    _log->debug("Sent status response");
+    sendStatusResponse(json);
 }
 
 void Client::_onPingRequest(const std::shared_ptr<protocol::PingRequest> &pck)
 {
-    _log->debug("Got a ping request with payload: " + std::to_string(pck->payload));
+    LDEBUG("Got a ping request");
 
-    const protocol::PingResponse ping_res(pck->payload);
-    auto ping_res_pck = protocol::createPingResponse(ping_res);
-    this->sendData(*ping_res_pck);
-
-    _log->debug("Sent a ping response");
+    sendPingResponse(pck->payload);
 }
 
 void Client::_onLoginStart(const std::shared_ptr<protocol::LoginStart> &pck)
@@ -293,4 +284,24 @@ void Client::_onLoginStart(const std::shared_ptr<protocol::LoginStart> &pck)
 void Client::_onEncryptionResponse(const std::shared_ptr<protocol::EncryptionResponse> &pck)
 {
     _log->debug("Got a Encryption Response");
+}
+
+void Client::sendStatusResponse(const std::string &json)
+{
+    auto pck = protocol::createStatusResponse({
+        json
+    });
+    _sendData(*pck);
+
+    LDEBUG("Sent status response");
+}
+
+void Client::sendPingResponse(int64_t payload)
+{
+    auto pck = protocol::createPingResponse({
+        payload
+    });
+    _sendData(*pck);
+
+    LDEBUG("Sent a ping response");
 }
