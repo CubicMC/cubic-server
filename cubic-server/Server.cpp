@@ -39,20 +39,24 @@ Server::~Server()
 
 void Server::launch()
 {
+    struct addrinfo *hints;
+    int yes = 1;
+    int no = 0;
+
     // Get the socket for the server
-    _sockfd = socket(AF_INET, SOCK_STREAM, getprotobyname("TCP")->p_proto);
+    _sockfd = socket(AF_INET6, SOCK_STREAM, getprotobyname("TCP")->p_proto);
 
     // Create the addr for the server
-    if (!inet_pton(AF_INET, _host.c_str(), &(_addr.sin_addr)))
+    if (!inet_pton(AF_INET, _host.c_str(), &(_addr.sin6_addr)))
     {
         throw std::runtime_error("Invalid host ip address");
     }
-    _addr.sin_family = AF_INET;
-    _addr.sin_port = htons(_port);
+    _addr.sin6_family = AF_INET6;
+    _addr.sin6_port = htons(_port);
 
     // Bind server socket
-    int optval = 1;
-    setsockopt(_sockfd, SOL_SOCKET, SO_REUSEADDR, &optval, sizeof(optval));
+    setsockopt(_sockfd, SOL_SOCKET, SO_REUSEADDR, &yes, sizeof(yes));
+    setsockopt(_sockfd, IPPROTO_IPV6, IPV6_V6ONLY, &no, sizeof(no));
     if (bind(_sockfd, reinterpret_cast<struct sockaddr *>(&_addr), sizeof(_addr)))
     {
         throw std::runtime_error(strerror(errno));

@@ -56,7 +56,7 @@ private:
     std::vector<std::shared_ptr<Client>> _clients;
 
     int _sockfd;
-    struct sockaddr_in _addr;
+    struct sockaddr_in6 _addr;
 
     Configuration::ConfigHandler _config;
 };
