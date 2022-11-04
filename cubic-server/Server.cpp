@@ -39,7 +39,6 @@ Server::~Server()
 
 void Server::launch()
 {
-    struct addrinfo *hints;
     int yes = 1;
     int no = 0;
 
