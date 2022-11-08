@@ -29,12 +29,12 @@ Server::Server()
     _motd = _config.getMotd();
 
     _log = logging::Logger::get_instance();
-    _log->debug("Server created with host: " + _host + " and port: " + std::to_string(_port));
+    LDEBUG("Server created with host: " + _host + " and port: " + std::to_string(_port));
 }
 
 Server::~Server()
 {
-    _log->debug("Server destroyed");
+    LDEBUG("Server destroyed");
 }
 
 void Server::launch()
