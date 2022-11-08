@@ -7,10 +7,10 @@
 #include "FileAndFolderHandler.hpp"
 
 #define LDEBUG(msg) _log->debug(msg)
-#define LINFO(msg) _log->debug(msg)
-#define LWARNING(msg) _log->debug(msg)
-#define LERROR(msg) _log->debug(msg)
-#define LFATAL(msg) _log->debug(msg)
+#define LINFO(msg) _log->info(msg)
+#define LWARNING(msg) _log->warning(msg)
+#define LERROR(msg) _log->error(msg)
+#define LFATAL(msg) _log->fatal(msg)
 
 namespace logging
 {
