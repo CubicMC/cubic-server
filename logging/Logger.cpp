@@ -5,6 +5,38 @@
 
 namespace logging
 {
+
+    LogMessage::LogMessage(LogLevel level, std::string message)
+        : _level(level), _message(message), _time(std::time(nullptr)), _millis(std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count() - (_time * 1000))
+    {
+    }
+
+    const LogLevel& LogMessage::get_level() const
+    {
+        return _level;
+    }
+
+    const std::string& LogMessage::get_message() const
+    {
+        return _message;
+    }
+
+    const std::time_t& LogMessage::get_time() const
+    {
+        return _time;
+    }
+
+    const int LogMessage::get_millis() const
+    {
+        return _millis;
+    }
+
+    std::ostream& operator<<(std::ostream& os, const LogMessage& log)
+    {
+        os << TimeFormatter::get_time("[YYYY/MM/DD HH:mm:SS:sss] ", log.get_time(), log.get_millis()) << level_to_string(log.get_level()) << log.get_message();
+        return os;
+    }
+
     /**
      * @brief create an instance of the Logger class if it doesn't exist and return it
      *
@@ -65,11 +97,16 @@ namespace logging
      */
     void Logger::_log(LogLevel level, const std::string& message)
     {
+        LogMessage log(level, message);
+        this->_log_buffer.push(log);
+        if (this->_log_buffer.size() > this->_buffer_size)
+            this->_log_buffer.pop();
+
         if (this->_specification_level_in_file.find(level) != this->_specification_level_in_file.end())
-            this->_file_stream << TimeFormatter::get_time("[YYYY/MM/DD HH:mm:SS.sss] ") << this->_specification_level_in_file[level] << message << std::endl;
+            this->_file_stream << log << std::endl;
 
         if (this->_specification_level_in_console.find(level) != this->_specification_level_in_console.end())
-            std::cout << TimeFormatter::get_time("[YYYY/MM/DD HH:mm:SS.sss] ") << this->_specification_level_in_console[level] << message << std::endl;
+            std::cout << log << std::endl;
     }
 
     /**
@@ -197,7 +234,22 @@ namespace logging
         return this->_file_and_folder_handler.get_file_path();
     }
 
-    const char* level_to_string(LogLevel& level)
+    const std::queue<LogMessage>& Logger::get_logs() const
+    {
+        return this->_log_buffer;
+    }
+
+    const int Logger::get_log_buffer_size() const
+    {
+        return this->_buffer_size;
+    }
+
+    void Logger::set_log_buffer_size(int size)
+    {
+        this->_buffer_size = size;
+    }
+
+    const char* level_to_string(const LogLevel& level)
     {
         switch (level) {
             case LogLevel::DEBUG:
