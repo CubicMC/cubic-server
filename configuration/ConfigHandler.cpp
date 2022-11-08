@@ -1,59 +1,47 @@
 #include "ConfigHandler.hpp"
 #include <iostream>
-#include <fstream>
 #include <yaml-cpp/yaml.h>
 
-Configuration::ConfigHandler::ConfigHandler(std::string filePath)
+namespace Configuration
 {
-    this->getConfigFile(filePath);
-}
+    ConfigHandler::ConfigHandler()
+    {
+        _log = logging::Logger::get_instance();
+    }
 
-void Configuration::ConfigHandler::parseFile(YAML::Node base_node)
-{
-    std::vector<YAML::Node> nodes_list;
-    int i = 0;
-
-    for (YAML::const_iterator it = base_node.begin(); it != base_node.end(); ++it, ++i) {
-        nodes_list.push_back(it->first);
-        const std::string buff = it->first.as<std::string>();
-        this->_configFile.insert(std::pair<std::string, YAML::Node>(buff, base_node[nodes_list[i]]));
-        if (base_node[nodes_list.back()].size() > 1) {
-            for (YAML::const_iterator itbis = base_node[nodes_list[i]].begin(); itbis != base_node[nodes_list[i]].end(); ++itbis) {
-                YAML::Node node = itbis->first;
-                const std::string temp = itbis->first.as<std::string>();
-                this->_configFile.insert(std::pair<std::string, YAML::Node>(temp, base_node[nodes_list[i]][node]));
-                parseFile(base_node[nodes_list[i]][node]);
-            }
-        } else {
-            const std::string temp = it->first.as<std::string>();
-            this->_configFile.insert(std::pair<std::string, YAML::Node>(temp, base_node[nodes_list[i]]));
+    void ConfigHandler::parse(const std::string &path) {
+        YAML::Node config;
+        try {
+            _baseNode = YAML::LoadFile(path);
+            _ip = _baseNode["network"]["ip"].as<std::string>();
+            _port = _baseNode["network"]["port"].as<uint16_t>();
+            _maxPlayers = _baseNode["general"]["max_players"].as<uint32_t>();
+            _motd = _baseNode["general"]["motd"].as<std::string>();
+        }
+        catch (const std::exception &e) {
+            LERROR("Config parsing failed, exiting now!");
+            LERROR(e.what());
+            exit(1); // TODO: Use an exception
         }
     }
-}
 
-void Configuration::ConfigHandler::getConfigFile(std::string configFile)
-{
-    try
+    const std::string &ConfigHandler::getIP() const
     {
-        YAML::Node config = YAML::LoadFile(configFile);
-        parseFile(config);
+        return _ip;
     }
-    catch(const YAML::BadFile& e)
+
+    uint16_t ConfigHandler::getPort() const
     {
-        std::cerr << e.what() << '\n';
+        return _port;
     }
-}
 
-YAML::Node Configuration::ConfigHandler::getNode(std::string node_name)
-{
-    YAML::Node null_node = YAML::Load("");
-
-    if (this->_configFile.count(node_name)) {
-        std::unordered_map<std::string, YAML::Node>::const_iterator got = this->_configFile.find(node_name);
-        if (got != this->_configFile.end())
-            return got->second;
-        else
-            return null_node;
+    uint32_t ConfigHandler::getMaxPlayers() const
+    {
+        return _maxPlayers;
     }
-    return null_node;
+
+    const std::string &ConfigHandler::getMotd() const
+    {
+        return _motd;
+    }
 }

@@ -62,8 +62,20 @@ namespace logging
         this->_file_and_folder_handler.create_file(filename);
         this->_file_stream.open(this->_file_and_folder_handler.get_file_path(), std::ios::app);
 
-        this->_specification_level_in_file = { {LogLevel::DEBUG, "[DEBUG] "}, {LogLevel::INFO, "[INFO] "}, {LogLevel::WARNING, "[WARNING] "}, {LogLevel::ERROR, "[ERROR] "}, {LogLevel::FATAL, "[FATAL] "} };
-        this->_specification_level_in_console = { {LogLevel::DEBUG, "[DEBUG] "}, {LogLevel::INFO, "[INFO] "}, {LogLevel::WARNING, "[WARNING] "}, {LogLevel::ERROR, "[ERROR] "}, {LogLevel::FATAL, "[FATAL] "} };
+        this->_specification_level_in_file = {
+                {LogLevel::DEBUG, "[DEBUG] "},
+                {LogLevel::INFO, "[INFO] "},
+                {LogLevel::WARNING, "[WARNING] "},
+                {LogLevel::ERROR, "[ERROR] "},
+                {LogLevel::FATAL, "[FATAL] "}
+        };
+        this->_specification_level_in_console = {
+                {LogLevel::DEBUG, "[DEBUG] "},
+                {LogLevel::INFO, "[INFO] "},
+                {LogLevel::WARNING, "[WARNING] "},
+                {LogLevel::ERROR, "[ERROR] "},
+                {LogLevel::FATAL, "[FATAL] "}
+        };
     }
 
     /**
@@ -83,7 +95,7 @@ namespace logging
      *
      * @note The message will be written in the log file with the current time
      */
-    void Logger::_log(LogLevel level, std::string& message)
+    void Logger::_log(LogLevel level, const std::string& message)
     {
         LogMessage log(level, message);
         this->_log_buffer.push(log);
@@ -104,15 +116,7 @@ namespace logging
      *
      * @note The message will be written with the current time
      */
-    void Logger::debug(std::string message)
-    {
-        this->_log(LogLevel::DEBUG, message);
-    }
-
-    /**
-     * @overload void Logger::debug(std::string message)
-     */
-    void Logger::debug(std::string& message)
+    void Logger::debug(const std::string &message)
     {
         this->_log(LogLevel::DEBUG, message);
     }
@@ -124,15 +128,7 @@ namespace logging
      *
      * @note The message will be written with the current time
      */
-    void Logger::info(std::string message)
-    {
-        this->_log(LogLevel::INFO, message);
-    }
-
-    /**
-     * @overload void Logger::info(std::string message)
-     */
-    void Logger::info(std::string& message)
+    void Logger::info(const std::string &message)
     {
         this->_log(LogLevel::INFO, message);
     }
@@ -144,15 +140,7 @@ namespace logging
      *
      * @note The message will be written with the current time
      */
-    void Logger::warn(std::string message)
-    {
-        this->_log(LogLevel::WARNING, message);
-    }
-
-    /**
-     * @overload void Logger::warning(std::string message)
-     */
-    void Logger::warn(std::string& message)
+    void Logger::warn(const std::string &message)
     {
         this->_log(LogLevel::WARNING, message);
     }
@@ -164,15 +152,7 @@ namespace logging
      *
      * @note The message will be written with the current time
      */
-    void Logger::error(std::string message)
-    {
-        this->_log(LogLevel::ERROR, message);
-    }
-
-    /**
-     * @overload void Logger::error(std::string message)
-     */
-    void Logger::error(std::string& message)
+    void Logger::error(const std::string &message)
     {
         this->_log(LogLevel::ERROR, message);
     }
@@ -184,15 +164,7 @@ namespace logging
      *
      * @note The message will be written with the current time
      */
-    void Logger::fatal(std::string message)
-    {
-        this->_log(LogLevel::FATAL, message);
-    }
-
-    /**
-     * @overload void Logger::fatal(std::string message)
-     */
-    void Logger::fatal(std::string& message)
+    void Logger::fatal(const std::string &message)
     {
         this->_log(LogLevel::FATAL, message);
     }

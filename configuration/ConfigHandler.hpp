@@ -4,6 +4,7 @@
 #include <string>
 #include <map>
 #include <yaml-cpp/yaml.h>
+#include "Logger.hpp"
 
 namespace Configuration
 {
@@ -15,13 +16,21 @@ namespace Configuration
     class ConfigHandler
     {
     public:
-        ConfigHandler(std::string);
+        ConfigHandler();
+        const std::string &getIP() const;
+        uint16_t getPort() const;
+        uint32_t getMaxPlayers() const;
+        const std::string &getMotd() const;
+        void parse(const std::string &path);
 
-        YAML::Node getNode(std::string);
     private:
-        std::unordered_map<std::string, YAML::Node> _configFile;
-        void getConfigFile(std::string);
-        void parseFile(YAML::Node);
+        YAML::Node _baseNode;
+        std::string _ip;
+        uint16_t _port;
+        uint32_t _maxPlayers;
+        std::string _motd;
+
+        logging::Logger *_log;
     };
 }
 

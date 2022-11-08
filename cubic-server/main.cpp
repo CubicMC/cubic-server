@@ -18,10 +18,11 @@ int main(int argc, char **argv)
         return 0;
     }
 
-    auto srv = Server();
-    /// 
-    auto InterfaceThread = std::thread(&ManagementInterface::launch, argc, argv);
+    auto srv = Server::getInstance();
+    ///
+    if (false) // Put that to true if you want the gui
+        auto InterfaceThread = std::thread(&ManagementInterface::launch, argc, argv);
     ///
 
-    srv.launch();
+    srv->launch();
 }

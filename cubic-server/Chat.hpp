@@ -1,0 +1,11 @@
+#ifndef CUBICSERVER_CHAT_HPP
+#define CUBICSERVER_CHAT_HPP
+
+
+class Chat
+{
+
+};
+
+
+#endif //CUBICSERVER_CHAT_HPP
