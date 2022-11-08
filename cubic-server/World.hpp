@@ -1,5 +1,5 @@
-#ifndef CUBICSERVER_INSTANCE_HPP
-#define CUBICSERVER_INSTANCE_HPP
+#ifndef CUBICSERVER_WORLD_HPP
+#define CUBICSERVER_WORLD_HPP
 
 #include <vector>
 #include <memory>
@@ -7,7 +7,7 @@
 #include "Entity.hpp"
 #include "Chat.hpp"
 
-class Instance
+class World
 {
 private:
     std::vector<Entity> _entities;
@@ -15,4 +15,4 @@ private:
 };
 
 
-#endif //CUBICSERVER_INSTANCE_HPP
+#endif //CUBICSERVER_WORLD_HPP

@@ -1,6 +1,6 @@
 # Add executable called "helloDemo" that is built from the source files
 # "demo.cxx" and "demo_b.cxx". The extensions are automatically found.
-add_executable (cubic-server main.cpp Server.cpp Client.cpp Player.cpp Player.hpp Entity.hpp Chat.cpp Chat.hpp InstanceGroup.cpp InstanceGroup.hpp Instance.cpp Instance.hpp)
+add_executable (cubic-server main.cpp Server.cpp Client.cpp Player.cpp Player.hpp Entity.hpp Chat.cpp Chat.hpp WorldGroup.cpp WorldGroup.hpp World.cpp World.hpp Dimension.cpp Dimension.hpp)
 
 find_package(Threads REQUIRED)
 # Use the package PkgConfig to detect GTK+ headers/library files
