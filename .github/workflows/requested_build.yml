@@ -51,11 +51,18 @@ jobs:
     # The CMake configure and build commands are platform agnostic and should work equally well on Windows or Mac.
     # You can convert this to a matrix build if you need cross-platform coverage.
     # See: https://docs.github.com/en/free-pro-team@latest/actions/learn-github-actions/managing-complex-workflows#using-a-build-matrix
-    runs-on: self-hosted
+    runs-on: ubuntu-22.04 #self-hosted
 
     steps:
     # Checkout the repository
     - uses: actions/checkout@v3
+
+    # install dependencies if needed
+    - name: install all if not self-hosted
+      if: ${{ !contains(github.repository, 'self-hosted') }}
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y gcc-12 g++-12 cmake pkg-config gtkmm-3.0
 
     # Test if there is a custom build type and if so set the coresponding environment variable to the custom build type
     - name: Setup build type
@@ -83,4 +90,4 @@ jobs:
 
       # Build the program with the given configuration
     - name: Build
-      run: cmake --build ${{github.workspace}}/build --config ${{env.BUILD_TYPE}} -j8
+      run: cmake --build ${{github.workspace}}/build --config ${{env.BUILD_TYPE}} -j `nproc`
