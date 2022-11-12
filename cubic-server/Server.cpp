@@ -81,7 +81,7 @@ void Server::_acceptLoop()
         poll(poll_set, 1, 50);
         if (poll_set[0].revents & POLLIN)
         {
-            struct sockaddr_in client_addr{};
+            struct sockaddr_in6 client_addr{};
             socklen_t client_addr_size = sizeof(client_addr);
             int client_fd = accept(
                 _sockfd,

@@ -10,7 +10,7 @@
 #include "ClientPackets.hpp"
 #include "Server.hpp"
 
-Client::Client(int sockfd, struct sockaddr_in addr)
+Client::Client(int sockfd, struct sockaddr_in6 addr)
     : _sockfd(sockfd), _addr(addr), _status(protocol::ClientStatus::Initial)
 {
     _is_running = true;
@@ -139,6 +139,7 @@ void Client::handleParsedClientPacket(const std::shared_ptr<protocol::BaseServer
             PCK_CALLBACK_PLAY(ConfirmTeleportation);
             PCK_CALLBACK_PLAY(QueryBlockEntityTag);
             PCK_CALLBACK_PLAY(ChangeDifficulty);
+            PCK_CALLBACK_PLAY(ChatMessage);
             PCK_CALLBACK_PLAY(ClientCommand);
             PCK_CALLBACK_PLAY(ClientInformation);
             PCK_CALLBACK_PLAY(CommandSuggestionRequest);

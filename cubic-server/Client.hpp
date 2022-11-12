@@ -35,7 +35,7 @@ class Player;
 class Client
 {
 public:
-    Client(int sockfd, struct sockaddr_in addr);
+    Client(int sockfd, struct sockaddr_in6 addr);
     ~Client();
 
     void networkLoop();
@@ -73,7 +73,7 @@ private:
     void _onEncryptionResponse(const std::shared_ptr<protocol::EncryptionResponse> &pck);
 
     const int _sockfd;
-    const struct sockaddr_in _addr;
+    const struct sockaddr_in6 _addr;
     bool _is_running;
     std::thread *_current_thread{};
     std::vector<uint8_t> _recv_buffer;

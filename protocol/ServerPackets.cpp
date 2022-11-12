@@ -117,6 +117,23 @@ std::shared_ptr<ChangeDifficulty> protocol::parseChangeDifficulty(std::vector<ui
     return h;
 }
 
+std::shared_ptr<ChatMessage> protocol::parseChatMessage(std::vector<uint8_t> &buffer)
+{
+    auto h = std::make_shared<ChatMessage>();
+    auto at = buffer.data();
+
+    parse(at, buffer.data() + buffer.size() - 1, *h,
+          popString, &ChatMessage::message,
+          popString, &ChatMessage::timestamp,
+          popLong, &ChatMessage::salt,
+          popVarInt, &ChatMessage::signature_length);
+    parseExtra(at, buffer.data() + buffer.size() - 1, *h,
+          popByteArray, &ChatMessage::signature, h->signature_length);
+    parse(at, buffer.data() + buffer.size() - 1, *h,
+          popBoolean, &ChatMessage::isSigned);
+    return h;
+}
+
 std::shared_ptr<ClientCommand> protocol::parseClientCommand(std::vector<uint8_t> &buffer)
 {
     auto h = std::make_shared<ClientCommand>();

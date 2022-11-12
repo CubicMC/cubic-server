@@ -24,6 +24,11 @@ void Player::_onChangeDifficulty(const std::shared_ptr<protocol::ChangeDifficult
     _log->debug("Got a Change difficulty");
 }
 
+void Player::_onChatMessage(const std::shared_ptr<protocol::ChatMessage> &pck)
+{
+    _log->debug("Got a Chat Message");
+}
+
 void Player::_onClientCommand(const std::shared_ptr<protocol::ClientCommand> &pck)
 {
     _log->debug("Got a Client Command");

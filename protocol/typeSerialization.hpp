@@ -281,6 +281,12 @@ namespace protocol
         return (a << 64) | b;
     }
 
+    constexpr void addUUID(std::vector<uint8_t> &out, const __int128 &data)
+    {
+        addLong(out, data >> 64);
+        addLong(out, data & 0xFFFFFFFFFFFFFFFF);
+    }
+
     constexpr int32_t popInt(uint8_t *&at, uint8_t *eof)
     {
         if (eof - at < 3)
