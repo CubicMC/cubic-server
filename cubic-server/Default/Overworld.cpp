@@ -10,7 +10,7 @@ void Overworld::tick()
 
     Dimension::tick();
     // Put the ticking code specific for this dimension here
-    LDEBUG("Tick - Overworld");
+//    LDEBUG("Tick - Overworld");
 
     auto endProcessing = std::chrono::system_clock::now();
     _processingMutex.unlock();

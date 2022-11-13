@@ -23,7 +23,7 @@
 #endif
 
 #ifndef MS_PER_TICK
-#define MS_PER_TICK 1000
+#define MS_PER_TICK 50
 #endif
 
 class Server

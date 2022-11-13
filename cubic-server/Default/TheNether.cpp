@@ -15,7 +15,7 @@ void TheNether::tick()
 
     Dimension::tick();
     // Put the ticking code specific for this dimension here
-    LDEBUG("Tick - TheNether");
+//    LDEBUG("Tick - TheNether");
 
     auto endProcessing = std::chrono::system_clock::now();
     _processingMutex.unlock();
