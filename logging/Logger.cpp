@@ -97,6 +97,7 @@ namespace logging
      */
     void Logger::_log(LogLevel level, const std::string& message)
     {
+        _loggerMutex.lock();
         LogMessage log(level, message);
         this->_log_buffer.push(log);
         if (this->_log_buffer.size() > this->_buffer_size)
@@ -107,6 +108,7 @@ namespace logging
 
         if (this->_specification_level_in_console.find(level) != this->_specification_level_in_console.end())
             std::cout << log << std::endl;
+        _loggerMutex.unlock();
     }
 
     /**
