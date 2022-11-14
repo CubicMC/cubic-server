@@ -6,7 +6,7 @@
 typedef struct _2d_pos {
     int x;
     int z;
-};
+} _2d_pos;
 
 class Level
 {

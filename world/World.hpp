@@ -10,5 +10,5 @@ public:
     ~World();
 private:
     LevelData _levelData;
-    std::unordered_map<int, Level> _levels;
+    std::unordered_map<std::string, Level> _levels;
 };

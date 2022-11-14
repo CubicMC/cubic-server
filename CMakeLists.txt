@@ -22,6 +22,18 @@ if(GTEST) # if the flag GTEST is true
   FetchContent_MakeAvailable(googletest)
 endif()
 
+# Recurse into the "Hello" and "Demo" subdirectories. This does not actually
+# cause another cmake executable to run. The same process will walk through
+# the project's entire directory structure.
+# add_subdirectory (tests)
+add_subdirectory (protocol)
+add_subdirectory (cubic-server)
+add_subdirectory (math)
+add_subdirectory (configuration)
+add_subdirectory (logging)
+add_subdirectory (interface)
+add_subdirectory (world)
+
 if(GTEST)
   enable_testing()
 endif()
