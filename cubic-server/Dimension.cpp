@@ -1,5 +1,13 @@
-//
-// Created by huntears on 08/11/22.
-//
+#include <algorithm>
 
 #include "Dimension.hpp"
+
+void Dimension::tick()
+{
+
+}
+
+void Dimension::initialize()
+{
+
+}
