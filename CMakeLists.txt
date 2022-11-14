@@ -49,6 +49,7 @@ add_subdirectory (math)
 add_subdirectory (configuration)
 add_subdirectory (logging)
 add_subdirectory (interface)
+add_subdirectory (world)
 
 if(GTEST)
   enable_testing()

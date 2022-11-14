@@ -1,22 +1,18 @@
 #include <cstdint>
+#include <array>
 #include <vector>
 #include <deque>
 
-#define bit_per_block 15
+#define CHUNK_2D_SIZE 16*16
+#define CHUNK_3D_SIZE CHUNK_2D_SIZE*16
+#define BIOME_3D_SIZE 4*4*4
+#define NB_OF_CHUNKS 20
 
-typedef struct blockType {
-    uint16_t data : bit_per_block;
-};
 
-/** A Nibble is a container with only for bits, like a half of a uint8_t */
-typedef struct nibbleType {
-    uint8_t data : 4;
-};
+typedef struct block_entity {
+} block_entity;
 
-typedef struct block_entity { // TODO: replace with nbt type
-};
-
-typedef struct entity { // TODO: replace with a nbt type
+typedef struct entity {
     // tag short air
     // tag string customName
     // tag byte customNameVisible
@@ -37,17 +33,8 @@ typedef struct entity { // TODO: replace with a nbt type
     // tag list tags
     // tag int ticksFrozen
     // tag int array uuid
-};
+} entity;
 
-
-typedef struct heightType {
-    uint8_t data : 9;
-};
-
-typedef struct height_map {
-    heightType motion_blocking[16*16];
-    heightType world_surface[16*16];
-};
 
 class ChunkColumn
 {
@@ -55,12 +42,15 @@ public:
     ChunkColumn();
     ~ChunkColumn();
 private:
-    blockType _blocks[16*16*16*20];
-    nibbleType _skylight[16*16*16*20]; // uint8_t _skylight[(16*320*16)/2];
-    nibbleType _blocklight[16*16*16*20]; // uint8_t _blocklight[(16*320*16)/2];
-    uint8_t _biomes[4*4*4*20]; // 6 bits per biome ? there is only 0-62 biome in minecraft
-    std::vector<block_entity> _blockEntities; // TODO : use tag compound
+    std::array<uint16_t, CHUNK_3D_SIZE*NB_OF_CHUNKS> _blocks;
+    std::array<uint8_t, CHUNK_3D_SIZE*NB_OF_CHUNKS> _skylight;
+    std::array<uint8_t, CHUNK_3D_SIZE*NB_OF_CHUNKS> _blocklight;
+    std::array<uint8_t, BIOME_3D_SIZE*NB_OF_CHUNKS> _biomes;
+    std::vector<block_entity> _blockEntities;
     int64_t _tick_data;
-    std::deque<entity> _entities; // TODO : use tag compound
-    height_map _height_map;
+    std::deque<entity> _entities;
+    struct height_map {
+        std::array<uint16_t, CHUNK_2D_SIZE> motion_blocking;
+        std::array<uint16_t, CHUNK_2D_SIZE> world_surface;
+    } _height_map;
 };
