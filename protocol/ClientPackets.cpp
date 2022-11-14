@@ -1,5 +1,6 @@
 #include "PacketUtils.hpp"
 #include "ClientPackets.hpp"
+#include "Chat.hpp"
 
 using namespace protocol;
 
@@ -20,5 +21,14 @@ std::shared_ptr<std::vector<uint8_t>> protocol::createStatusResponse(const Statu
     serialize(payload, in.payload, addString);
     auto packet = std::make_shared<std::vector<uint8_t>>();
     finalize(*packet.get(), payload, (int32_t)ClientPacketID::STATUS);
+    return packet;
+}
+
+std::shared_ptr<std::vector<uint8_t>> protocol::disconnectPlayer(const DisconnectPlayer &in)
+{
+    std::vector<uint8_t> reason;
+    //serialize(reason, in.reason, addString);
+    auto packet = std::make_shared<std::vector<uint8_t>>();
+    finalize(*packet.get(), reason, (int32_t)ClientPacketID::DISCONNECT);
     return packet;
 }

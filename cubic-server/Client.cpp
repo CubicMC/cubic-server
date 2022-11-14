@@ -310,3 +310,13 @@ void Client::sendPingResponse(int64_t payload)
 
     LDEBUG("Sent a ping response");
 }
+
+void Client::sendDisconnectPlayer(Chat reason)
+{
+    auto pck = protocol::disconnectPlayer({
+        reason
+    });
+    _sendData(*pck);
+
+    LDEBUG("Sent a disconnet reason for player");
+}

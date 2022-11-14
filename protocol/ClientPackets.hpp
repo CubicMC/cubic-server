@@ -12,7 +12,8 @@ namespace protocol
 
     enum class ClientPacketID : int32_t {
         STATUS = 0x00,
-        PING = 0x01
+        PING = 0x01,
+        DISCONNECT = 0x17
     };
 
     struct PingResponse
@@ -28,6 +29,13 @@ namespace protocol
     };
 
     std::shared_ptr<std::vector<uint8_t>> createStatusResponse(const StatusResponse &);
+
+    struct DisconnectPlayer
+    {
+        Chat reason;
+    };
+
+    std::shared_ptr<std::vector<uint8_t>> disconnectPlayer(const DisconnectPlayer &in);
 }
 
 #endif /* A7ADDD9E_6961_4A3D_AAB2_DF37DB6915F0 */
