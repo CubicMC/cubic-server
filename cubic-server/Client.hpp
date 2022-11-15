@@ -62,7 +62,20 @@ public:
     // All the send packets go here
     void sendStatusResponse(const std::string &json);
     void sendPingResponse(int64_t payload);
-    void sendChatMessageResponse(const std::string &json, const Player &sender, MsgType type);
+    // Should I just pass the packet directly?
+    void sendChatMessageResponse(
+        std::string signedContent,
+        bool hasUnsignedContent,
+        std::string unsignedContent,
+        int32_t type,
+        __int128 senderUUID,
+        std::string senderName,
+        bool hasTeamName,
+        std::string teamName,
+        long timestamp,
+        long salt,
+        int32_t signatureLength,
+        std::vector<uint8_t> signature);
 
 private:
     void _handlePacket();

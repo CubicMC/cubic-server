@@ -1,6 +1,8 @@
 #ifndef CUBICSERVER_PLAYER_HPP
 #define CUBICSERVER_PLAYER_HPP
 
+class Player;
+
 #include "Client.hpp"
 #include "Entity.hpp"
 #include "ServerPackets.hpp"
