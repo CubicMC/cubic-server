@@ -109,7 +109,6 @@ public:
 
 public:
     Chat();
-    ~Chat();
 
     void sendPlayerMessage(const Message &message, const Player *sender);
     void sendSystemMessage(const Message &message);
