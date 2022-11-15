@@ -1,4 +1,6 @@
 #include "Player.hpp"
+#include "Server.hpp"
+#include "nlohmann/json.hpp"
 
 Player::Player(Client *cli)
     : _cli(cli)
@@ -26,6 +28,17 @@ void Player::_onChangeDifficulty(const std::shared_ptr<protocol::ChangeDifficult
 
 void Player::_onChatMessage(const std::shared_ptr<protocol::ChatMessage> &pck)
 {
+    const auto clients = Server::getInstance()->getClients();
+    auto message = nlohmann::json::parse(pck->message);
+    nlohmann::json response;
+    response["translate"] = "chat.type.text";
+    response["with"] = nlohmann::json::array();
+    response["with"].push_back({"text", "PlayerName"});
+    response["with"].push_back({"text", message["text"]});
+
+    for (const auto &cli : clients)
+        cli->sendChatMessageResponse(response.dump(), *this, MsgType::Chat);
+
     _log->debug("Got a Chat Message");
 }
 

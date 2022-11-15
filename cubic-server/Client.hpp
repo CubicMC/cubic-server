@@ -10,6 +10,7 @@
 #include "common.hpp"
 #include "ServerPackets.hpp"
 #include "Logger.hpp"
+#include "Chat.hpp"
 
 #define __PCK_CALLBACK_PRIM(type, object) return object->_on##type(std::static_pointer_cast<type>(packet))
 
@@ -61,6 +62,7 @@ public:
     // All the send packets go here
     void sendStatusResponse(const std::string &json);
     void sendPingResponse(int64_t payload);
+    void sendChatMessageResponse(const std::string &json, const Player &sender, MsgType type);
 
 private:
     void _handlePacket();

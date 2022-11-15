@@ -32,9 +32,13 @@ std::shared_ptr<std::vector<uint8_t>> protocol::createPlayerChatMessage(const Pl
     serialize(payload, in.type, addVarInt);
     serialize(payload, in.senderUUID, addUUID);
     serialize(payload, in.senderName, addString);
+    serialize(payload, in.hasTeamName, addBoolean);
+    serialize(payload, in.teamName, addString);
     serialize(payload, in.timestamp, addLong);
     serialize(payload, in.salt, addLong);
+    serialize(payload, in.signatureLength, addVarInt);
+    serialize(payload, in.signature, addByteArray);
     auto packet = std::make_shared<std::vector<uint8_t>>();
-    finalize(*packet.get(), payload, (int32_t)ClientPacketID::PlayerChatMessage);
+    finalize(*packet.get(), payload, (int32_t) ClientPacketID::PlayerChatMessage);
     return packet;
 }

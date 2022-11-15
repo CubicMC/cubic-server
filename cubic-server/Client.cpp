@@ -311,3 +311,24 @@ void Client::sendPingResponse(int64_t payload)
 
     LDEBUG("Sent a ping response");
 }
+
+void Client::sendChatMessageResponse(const std::string &json, const Player &sender, MsgType type)
+{
+    // TODO: Verify client chat visibility options
+    auto pck = protocol::createPlayerChatMessage({
+        "",
+        true,
+        json,
+        (int32_t) type,
+        0, // sender.getUUID(),
+        "{\"text\": \"PlayerName\"}", // display name
+        false,
+        "",
+        std::time(nullptr),
+        0,
+        {}
+    });
+    _sendData(*pck);
+
+    LDEBUG("Sent a chat message response");
+}

@@ -35,10 +35,11 @@ namespace protocol
         std::string signedContent;
         bool hasUnsignedContent;
         std::string unsignedContent;
-        // TODO: use a enum
         int32_t type;
         __int128 senderUUID;
         std::string senderName;
+        bool hasTeamName;
+        std::string teamName;
         long timestamp;
         long salt;
         int32_t signatureLength;

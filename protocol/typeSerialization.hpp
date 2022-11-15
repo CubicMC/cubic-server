@@ -273,6 +273,12 @@ namespace protocol
         return value;
     }
 
+    constexpr void addByteArray(std::vector<uint8_t> &out, const std::vector<uint8_t> &data)
+    {
+        for (auto i : data)
+            addByte(out, i);
+    }
+
     constexpr __int128 popUUID(uint8_t *&at, uint8_t *eof)
     {
         auto a = (__int128) popLong(at, eof);
