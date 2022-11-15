@@ -29,6 +29,8 @@ namespace Configuration
         uint16_t _port;
         uint32_t _maxPlayers;
         std::string _motd;
+
+        logging::Logger *_log;
     };
 }
 

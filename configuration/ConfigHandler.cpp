@@ -4,7 +4,10 @@
 
 namespace Configuration
 {
-    ConfigHandler::ConfigHandler() = default;
+    ConfigHandler::ConfigHandler()
+    {
+        _log = logging::Logger::get_instance();
+    }
 
     void ConfigHandler::parse(const std::string &path) {
         YAML::Node config;
@@ -15,9 +18,9 @@ namespace Configuration
             _maxPlayers = _baseNode["general"]["max_players"].as<uint32_t>();
             _motd = _baseNode["general"]["motd"].as<std::string>();
         }
-        catch (const YAML::BadFile &e) {
-            std::cerr << "Config parsing failed, exiting now!" << std::endl; // TODO: Use the logger once the new version is ready
-            std::cerr << e.what() << std::endl;
+        catch (const std::exception &e) {
+            LERROR("Config parsing failed, exiting now!");
+            LERROR(e.what());
             exit(1); // TODO: Use an exception
         }
     }

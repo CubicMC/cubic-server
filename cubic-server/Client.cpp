@@ -37,7 +37,7 @@ void Client::networkLoop()
         {
             int read_size = read(_sockfd, in_buffer, 2048);
             if (read_size == -1)
-                std::cerr << "Read error: " << strerror(errno) << std::endl;
+                LERROR("Read error" + std::string(strerror(errno)));
             else if (read_size == 0)
                 break;
             else
@@ -86,7 +86,7 @@ void Client::_flushSendData()
 
     ssize_t write_return = write(_sockfd, send_buffer, to_send);
     if (write_return == -1)
-        std::cerr << "Write error: " << strerror(errno) << std::endl;
+        LERROR("Write error" + std::string(strerror(errno)));
 
     if (write_return <= 0)
         return;
@@ -186,8 +186,8 @@ void Client::handleParsedClientPacket(const std::shared_ptr<protocol::BaseServer
         }
         break;
     }
-    _log->error("Unhandled packet: " + std::to_string(static_cast<int>(packetID)) +
-                " in status " + std::to_string(static_cast<int>(_status))); // TODO: Properly handle the unknown packet
+    LERROR("Unhandled packet: " + std::to_string(static_cast<int>(packetID)) +
+        " in status " + std::to_string(static_cast<int>(_status))); // TODO: Properly handle the unknown packet
 }
 
 void Client::_handlePacket()
@@ -240,7 +240,7 @@ void Client::_handlePacket()
 
 void Client::_onHandshake(const std::shared_ptr<protocol::Handshake>& pck)
 {
-    _log->debug("Got an handshake");
+    LDEBUG("Got an handshake");
     if (pck->next_state == 1)
         this->setStatus(protocol::ClientStatus::Status);
     else if (pck->next_state == 2)

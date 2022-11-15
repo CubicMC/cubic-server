@@ -18,6 +18,8 @@
 #include "ClientPackets.hpp"
 
 #include "Logger.hpp"
+#include "WorldGroup.hpp"
+#include "Default/DefaultWorldGroup.hpp"
 
 Server::Server()
     : _config()
@@ -29,12 +31,12 @@ Server::Server()
     _motd = _config.getMotd();
 
     _log = logging::Logger::get_instance();
-    _log->debug("Server created with host: " + _host + " and port: " + std::to_string(_port));
+    LDEBUG("Server created with host: " + _host + " and port: " + std::to_string(_port));
 }
 
 Server::~Server()
 {
-    _log->debug("Server destroyed");
+    LDEBUG("Server destroyed");
 }
 
 void Server::launch()
@@ -63,6 +65,15 @@ void Server::launch()
 
     // Listen
     listen(_sockfd, SOMAXCONN);
+
+    // Initialize default world group
+    auto defaultChat = std::make_shared<Chat>();
+    _worldGroups.emplace("default", new DefaultWorldGroup(defaultChat));
+    _worldGroups.at("default")->initialize();
+
+    // Run the default world group
+    auto thread = new std::thread(&DefaultWorldGroup::run, _worldGroups.at("default"));
+    _worldGroupThreads.emplace("default", thread);
 
 //    auto acceptThread = std::thread(&Server::_acceptLoop, this);
     _acceptLoop();

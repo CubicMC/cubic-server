@@ -12,6 +12,7 @@
 
 #include "ConfigHandler.hpp"
 #include "Logger.hpp"
+#include "WorldGroup.hpp"
 
 #ifndef MC_VERSION
 #define MC_VERSION "1.19"
@@ -19,6 +20,10 @@
 
 #ifndef MC_PROTOCOL
 #define MC_PROTOCOL 759
+#endif
+
+#ifndef MS_PER_TICK
+#define MS_PER_TICK 50
 #endif
 
 class Server
@@ -59,6 +64,8 @@ private:
     struct sockaddr_in6 _addr;
 
     Configuration::ConfigHandler _config;
+    std::unordered_map<std::string, WorldGroup *> _worldGroups;
+    std::unordered_map<std::string, std::thread *> _worldGroupThreads;
 };
 
 #endif /* F43D56DD_C750_470F_A7C9_27CE21D37FC3 */
