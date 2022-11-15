@@ -84,6 +84,46 @@ void Chat::sendSayMessage(const Message &message, const Player *sender)
         );
 }
 
+void Chat::sendMsgMessage(const Message &message, Client *sender, Client *to)
+{
+    if (sender == nullptr) {
+        LERROR("sender is null");
+        return;
+    } else if (to == nullptr) {
+        LERROR("to is null");
+        return;
+    }
+
+    sender->sendChatMessageResponse(
+        "",
+        true,
+        message.serialize(),
+        (int32_t) MsgType::Whisper,
+        0, // sender->getUUID(),
+        "{\"text\": \"PlayerName\"}", // sender->getName();
+        false,
+        "",
+        std::time(nullptr),
+        0,
+        0,
+        std::vector<uint8_t>()
+    );
+    to->sendChatMessageResponse(
+        "",
+        true,
+        message.serialize(),
+        (int32_t) MsgType::Whisper,
+        0, // sender->getUUID(),
+        "{\"text\": \"PlayerName\"}", // sender->getName();
+        false,
+        "",
+        std::time(nullptr),
+        0,
+        0,
+        std::vector<uint8_t>()
+    );
+}
+
 Chat::Message::Message(
     const std::string &message,
     Chat::Message::Options options,

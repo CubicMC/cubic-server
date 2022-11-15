@@ -6,6 +6,9 @@
 #include "Logger.hpp"
 #include "nlohmann/json.hpp"
 
+class Player;
+class Client;
+
 enum class MsgType : int32_t {
     Chat = 0,
     System = 1,
@@ -16,8 +19,6 @@ enum class MsgType : int32_t {
     Emote = 6, // Don't ask me...
     Tellraw = 7,
 };
-
-#include "Player.hpp"
 
 class Chat
 {
@@ -113,7 +114,8 @@ public:
     void sendPlayerMessage(const Message &message, const Player *sender);
     void sendSystemMessage(const Message &message);
     void sendSayMessage(const Message &message, const Player *sender);
-    void sendMsgMessage(const Message &message, const Player *sender, const Player *to);
+    // Either keep client or change to Player but I need to get the client to send the message
+    void sendMsgMessage(const Message &message, Client *sender, Client *to);
     // void sendTeamMessage(const Message &message, const Player *sender, const std::string &team);
     // void sendEmoteMessage(const Message &message, const Player &sender);
     // TODO: Maybe more complicated than that, because of the selector.
