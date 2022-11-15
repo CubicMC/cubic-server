@@ -1,6 +1,6 @@
 #include "Chat.hpp"
 #include "Server.hpp"
-#include "Logger.hpp"
+#include "logging/Logger.hpp"
 #include "WorldGroup.hpp"
 #include "nlohmann/json.hpp"
 

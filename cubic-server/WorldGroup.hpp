@@ -7,7 +7,7 @@
 
 #include "Chat.hpp"
 #include "World.hpp"
-#include "Logger.hpp"
+#include "logging/Logger.hpp"
 
 class WorldGroup
 {

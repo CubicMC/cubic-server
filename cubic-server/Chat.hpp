@@ -3,7 +3,7 @@
 
 #include <stdint.h>
 #include <string>
-#include "Logger.hpp"
+#include "logging/Logger.hpp"
 #include "nlohmann/json.hpp"
 
 class Player;

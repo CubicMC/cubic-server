@@ -13,13 +13,13 @@
 
 #include "Server.hpp"
 
-#include "typeSerialization.hpp"
-#include "ServerPackets.hpp"
-#include "ClientPackets.hpp"
+#include "protocol/typeSerialization.hpp"
+#include "protocol/ServerPackets.hpp"
+#include "protocol/ClientPackets.hpp"
 
-#include "Logger.hpp"
+#include "logging/Logger.hpp"
 #include "WorldGroup.hpp"
-#include "Default/DefaultWorldGroup.hpp"
+#include "default/DefaultWorldGroup.hpp"
 
 Server::Server()
     : _config()

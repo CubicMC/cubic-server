@@ -7,11 +7,11 @@
 #include <vector>
 
 #include "Player.hpp"
-#include "common.hpp"
-#include "ServerPackets.hpp"
-#include "ClientPackets.hpp"
-#include "Logger.hpp"
+#include "protocol/ClientPackets.hpp"
 #include "Chat.hpp"
+#include "protocol/common.hpp"
+#include "protocol/ServerPackets.hpp"
+#include "logging/Logger.hpp"
 
 #define __PCK_CALLBACK_PRIM(type, object) return object->_on##type(std::static_pointer_cast<type>(packet))
 
