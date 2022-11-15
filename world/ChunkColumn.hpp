@@ -9,6 +9,12 @@
 #define NB_OF_CHUNKS 20
 
 
+typedef struct _3d_pos {
+    int x;
+    int y;
+    int z;
+} _3d_pos;
+
 typedef struct block_entity {
 } block_entity;
 
@@ -35,22 +41,61 @@ typedef struct entity {
     // tag int array uuid
 } entity;
 
+typedef struct height_map {
+        std::array<uint16_t, CHUNK_2D_SIZE> motionBlocking;
+        std::array<uint16_t, CHUNK_2D_SIZE> worldSurface;
+} height_map;
+
 
 class ChunkColumn
 {
 public:
     ChunkColumn();
     ~ChunkColumn();
+
+    void updateBlock(_3d_pos pos, uint16_t id);
+    uint16_t getBlock(_3d_pos pos);
+    const std::array<uint16_t, CHUNK_3D_SIZE*NB_OF_CHUNKS> &getBlocks();
+
+    void updateSkyLight(_3d_pos pos, uint8_t light);
+    uint8_t getSkyLight(_3d_pos pos);
+    const std::array<uint8_t, CHUNK_3D_SIZE*NB_OF_CHUNKS> &getSkyLights();
+
+    void updateBlockLight(_3d_pos pos, uint8_t light);
+    uint8_t getBlockLight(_3d_pos pos);
+    const std::array<uint8_t, CHUNK_3D_SIZE*NB_OF_CHUNKS> &getBlockLights();
+
+    void updateBiome(_3d_pos pos, uint8_t biome);
+    uint8_t getBiome(_3d_pos pos);
+    const std::array<uint8_t, BIOME_3D_SIZE*NB_OF_CHUNKS> &getBiomes();
+
+    void updateBlockEntity(_3d_pos pos, block_entity *block_entity);
+    void addBlockEntity(_3d_pos pos, block_entity *block_entity);
+    void removeBlockEntity(_3d_pos pos);
+    block_entity *getBlockEntity(_3d_pos pos);
+    const std::vector<block_entity *> &getBlockEntities();
+
+    int64_t getTick();
+    void setTick(int64_t tick);
+
+    void updateEntity(std::size_t id, entity *e);
+    void updateEntity(__int128 uuid, entity *e);
+    void addEntity(entity *e);
+    void removeEntity(std::size_t id);
+    void removeEntity(__int128 uuid);
+    entity *getEntity(std::size_t id);
+    entity *getEntity(__int128 uuid);
+    const std::deque<entity *> &getEntities();
+
+    void updateHeightMap(void);
+    const height_map &getHeightMap(void);
 private:
     std::array<uint16_t, CHUNK_3D_SIZE*NB_OF_CHUNKS> _blocks;
-    std::array<uint8_t, CHUNK_3D_SIZE*NB_OF_CHUNKS> _skylight;
-    std::array<uint8_t, CHUNK_3D_SIZE*NB_OF_CHUNKS> _blocklight;
+    std::array<uint8_t, CHUNK_3D_SIZE*NB_OF_CHUNKS> _skyLights;
+    std::array<uint8_t, CHUNK_3D_SIZE*NB_OF_CHUNKS> _blockLights;
     std::array<uint8_t, BIOME_3D_SIZE*NB_OF_CHUNKS> _biomes;
-    std::vector<block_entity> _blockEntities;
-    int64_t _tick_data;
-    std::deque<entity> _entities;
-    struct height_map {
-        std::array<uint16_t, CHUNK_2D_SIZE> motion_blocking;
-        std::array<uint16_t, CHUNK_2D_SIZE> world_surface;
-    } _height_map;
+    std::vector<block_entity *> _blockEntities;
+    int64_t _tickData;
+    std::deque<entity *> _entities;
+    height_map _heightMap;
 };
