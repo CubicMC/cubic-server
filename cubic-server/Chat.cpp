@@ -8,7 +8,7 @@ Chat::Chat()
     _log = logging::Logger::get_instance();
 }
 
-void Chat::sendPlayerMessage(const Message &message, const Player *sender)
+void Chat::sendPlayerMessage(const chat::Message &message, const Player *sender)
 {
     if (sender == nullptr) {
         LERROR("sender is null");
@@ -40,7 +40,7 @@ void Chat::sendPlayerMessage(const Message &message, const Player *sender)
         );
 }
 
-void Chat::sendSystemMessage(const Message &message)
+void Chat::sendSystemMessage(const chat::Message &message)
 {
     const auto clients = Server::getInstance()->getClients();
 
@@ -62,7 +62,7 @@ void Chat::sendSystemMessage(const Message &message)
         );
 }
 
-void Chat::sendSayMessage(const Message &message, const Player *sender)
+void Chat::sendSayMessage(const chat::Message &message, const Player *sender)
 {
     const auto clients = Server::getInstance()->getClients();
 
@@ -84,7 +84,7 @@ void Chat::sendSayMessage(const Message &message, const Player *sender)
         );
 }
 
-void Chat::sendMsgMessage(const Message &message, Client *sender, Client *to)
+void Chat::sendMsgMessage(const chat::Message &message, Client *sender, Client *to)
 {
     if (sender == nullptr) {
         LERROR("sender is null");
@@ -124,23 +124,23 @@ void Chat::sendMsgMessage(const Message &message, Client *sender, Client *to)
     );
 }
 
-Chat::Message::Message(
+chat::Message::Message(
     const std::string &message,
-    Chat::Message::Options options,
-    std::optional<Chat::Message::ClickEvent> clickEvent,
-    std::optional<Chat::Message::HoverEvent> hoverEvent)
+    chat::Message::Options options,
+    std::optional<chat::message::ClickEvent> clickEvent,
+    std::optional<chat::message::HoverEvent> hoverEvent)
     : _message(message),
     _options(options),
     _clickEvent(clickEvent),
     _hoverEvent(hoverEvent)
 {}
 
-std::string Chat::Message::serialize() const
+std::string chat::Message::serialize() const
 {
     return toJson().dump();
 }
 
-nlohmann::json Chat::Message::toJson() const
+nlohmann::json chat::Message::toJson() const
 {
     nlohmann::json response;
 
@@ -170,7 +170,7 @@ nlohmann::json Chat::Message::toJson() const
     return response;
 }
 
-nlohmann::json Chat::Message::ClickEvent::toJson() const
+nlohmann::json chat::message::ClickEvent::toJson() const
 {
     nlohmann::json response;
 
@@ -196,7 +196,7 @@ nlohmann::json Chat::Message::ClickEvent::toJson() const
     return response;
 }
 
-nlohmann::json Chat::Message::HoverEvent::toJson() const
+nlohmann::json chat::message::HoverEvent::toJson() const
 {
     nlohmann::json response;
 
@@ -216,52 +216,52 @@ nlohmann::json Chat::Message::HoverEvent::toJson() const
     return response;
 }
 
-std::string_view Chat::Message::getMessage() const
+std::string_view chat::Message::getMessage() const
 {
     return _message;
 }
 
-Chat::Message::Options Chat::Message::getOptions() const
+chat::Message::Options chat::Message::getOptions() const
 {
     return _options;
 }
 
-std::optional<Chat::Message::ClickEvent> Chat::Message::getClickEvent() const
+std::optional<chat::message::ClickEvent> chat::Message::getClickEvent() const
 {
     return _clickEvent;
 }
 
-std::optional<Chat::Message::HoverEvent> Chat::Message::getHoverEvent() const
+std::optional<chat::message::HoverEvent> chat::Message::getHoverEvent() const
 {
     return _hoverEvent;
 }
 
-std::vector<Chat::Message> Chat::Message::getExtra() const
+std::vector<chat::Message> chat::Message::getExtra() const
 {
     return _extra;
 }
 
-std::string &Chat::Message::message()
+std::string &chat::Message::message()
 {
     return _message;
 }
 
-Chat::Message::Options &Chat::Message::options()
+chat::Message::Options &chat::Message::options()
 {
     return _options;
 }
 
-std::optional<Chat::Message::ClickEvent> &Chat::Message::clickEvent()
+std::optional<chat::message::ClickEvent> &chat::Message::clickEvent()
 {
     return _clickEvent;
 }
 
-std::optional<Chat::Message::HoverEvent> &Chat::Message::hoverEvent()
+std::optional<chat::message::HoverEvent> &chat::Message::hoverEvent()
 {
     return _hoverEvent;
 }
 
-std::vector<Chat::Message> &Chat::Message::extra()
+std::vector<chat::Message> &chat::Message::extra()
 {
     return _extra;
 }
