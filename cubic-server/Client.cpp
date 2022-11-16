@@ -98,6 +98,7 @@ void Client::switchToPlayState()
 {
     this->setStatus(protocol::ClientStatus::Play);
     this->_player = new Player(this);
+    this->_player->setDimension(Server::getInstance()->getWorldGroup("default")->getWorld("default")->getDimension("overworld"));
 }
 
 void Client::handleParsedClientPacket(const std::shared_ptr<protocol::BaseServerPacket> &packet,

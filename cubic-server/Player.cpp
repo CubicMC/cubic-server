@@ -10,6 +10,16 @@ Player::Player(Client *cli)
 void Player::tick()
 {}
 
+void Player::setDimension(std::shared_ptr<Dimension> dim)
+{
+    _dim = dim;
+}
+
+std::shared_ptr<Dimension> Player::getDimension() const
+{
+    return _dim;
+}
+
 void Player::_onConfirmTeleportation(const std::shared_ptr<protocol::ConfirmTeleportation> &pck)
 {
     LDEBUG("Got a Confirm Teleportation");
@@ -29,31 +39,7 @@ void Player::_onChangeDifficulty(const std::shared_ptr<protocol::ChangeDifficult
 void Player::_onChatMessage(const std::shared_ptr<protocol::ChatMessage> &pck)
 {
     // TODO: verify that the message is valid (signature, etc.)
-    // pck->message
-    // const auto clients = Server::getInstance()->getClients();
-    // auto message = nlohmann::json::parse(pck->message);
-    // nlohmann::json response;
-    // response["translate"] = "chat.type.text";
-    // response["with"] = nlohmann::json::array();
-    // response["with"].push_back({"text", "PlayerName"});
-    // response["with"].push_back({"text", message["text"]});
-
-    // for (const auto &cli : clients)
-    //     cli->sendChatMessageResponse(
-    //         "",
-    //         true,
-    //         response.dump(),
-    //         (int32_t) MsgType::Chat,
-    //         0, // sender.getUUID(),
-    //         "{\"text\": \"PlayerName\"}", // display name
-    //         false,
-    //         "",
-    //         std::time(nullptr),
-    //         0,
-    //         0,
-    //         std::vector<uint8_t>()
-    //     );
-
+    _dim->getWorld()->getChat()->sendPlayerMessage(pck->message, this);
     _log->debug("Got a Chat Message");
 }
 

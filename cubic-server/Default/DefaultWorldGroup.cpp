@@ -11,6 +11,6 @@ DefaultWorldGroup::DefaultWorldGroup(std::shared_ptr<Chat> chat)
 
 void DefaultWorldGroup::initialize()
 {
-    _worlds.emplace("default", std::make_shared<DefaultWorld>());
+    _worlds.emplace("default", std::make_shared<DefaultWorld>(this));
     _worlds.at("default")->initialize();
 }

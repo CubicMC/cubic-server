@@ -118,7 +118,7 @@ public:
     void sendMsgMessage(const Message &message, Client *sender, Client *to);
     // void sendTeamMessage(const Message &message, const Player *sender, const std::string &team);
     // void sendEmoteMessage(const Message &message, const Player &sender);
-    // TODO: Maybe more complicated than that, because of the selector.
+    // TODO: Maybe more complicated than that, because of the selector (@a, @p, @r, @e, @s)
     // void sendTellrawMessage(const Message &message, const Player &sender);
 
 private:
