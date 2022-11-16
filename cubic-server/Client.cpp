@@ -341,19 +341,6 @@ void Client::sendChatMessageResponse(
         signatureLength,
         signature
     });
-    // auto pck = protocol::createPlayerChatMessage({
-    //     "",
-    //     true,
-    //     json,
-    //     (int32_t) type,
-    //     0, // sender.getUUID(),
-    //     "{\"text\": \"PlayerName\"}", // display name
-    //     false,
-    //     "",
-    //     std::time(nullptr),
-    //     0,
-    //     {}
-    // });
     _sendData(*pck);
 
     LDEBUG("Sent a chat message response");

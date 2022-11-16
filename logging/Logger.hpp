@@ -81,7 +81,7 @@ namespace logging
         void set_display_specification_level_in_console(LogLevel level);
         void unset_display_specification_level_in_console(LogLevel level);
         const std::unordered_map<LogLevel, std::string>& get_display_specification_level_in_console() const;
-        
+
         const std::queue<LogMessage>& get_logs() const;
         const int get_log_buffer_size() const;
         void set_log_buffer_size(int size);
