@@ -9,18 +9,17 @@
 class Player;
 class Client;
 
-enum class MsgType : int32_t {
-    Chat = 0,
-    System = 1,
-    GameInfo = 2,
-    Say = 3,
-    Whisper = 4,
-    Team = 5,
-    Emote = 6, // Don't ask me...
-    Tellraw = 7,
-};
-
 namespace chat::message {
+    enum class Type : int32_t {
+        Chat = 0,
+        System = 1,
+        GameInfo = 2,
+        Say = 3,
+        Whisper = 4,
+        Team = 5,
+        Emote = 6, // Don't ask me...
+        Tellraw = 7,
+    };
     class ClickEvent {
     public:
         enum class Action : int32_t {
@@ -126,7 +125,7 @@ public:
     // void sendTellrawMessage(const Message &message, const Player &sender);
 
 private:
-    std::unordered_map<MsgType, chat::Message> _messagesLog;
+    std::unordered_map<chat::message::Type, chat::Message> _messagesLog;
     logging::Logger *_log;
 };
 
