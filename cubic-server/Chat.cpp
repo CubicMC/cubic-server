@@ -188,7 +188,7 @@ nlohmann::json Chat::Message::ClickEvent::toJson() const
         case Action::CopyToClipboard:
             response["action"] = "copy_to_clipboard"; break;
         default:
-            LFATAL("Unknown click event action: " + std::to_string((int32_t) action));
+            LERROR("Unknown click event action: " + std::to_string((int32_t) action)); break;
     }
 
     response["value"] = value;
@@ -208,7 +208,7 @@ nlohmann::json Chat::Message::HoverEvent::toJson() const
         case Action::ShowEntity:
             response["action"] = "show_entity"; break;
         default:
-            LFATAL("Unknown hover event action: " + std::to_string((int32_t) action));
+            LERROR("Unknown hover event action: " + std::to_string((int32_t) action)); break;
     }
 
     response["value"] = value;
