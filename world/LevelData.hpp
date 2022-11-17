@@ -1,5 +1,9 @@
 #include <stdint.h>
 #include <string>
+
+#ifndef LEVEL_HPP
+#define LEVEL_HPP
+
 class LevelData
 {
 public:
@@ -78,3 +82,5 @@ private:
     std::string _generatorName;
     std::string _levelName;
 };
+
+#endif // LEVEL_HPP
