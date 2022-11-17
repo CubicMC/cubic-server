@@ -74,20 +74,18 @@ std::vector<DummyPlayer> createDummies()
 // should be called at every movement for better efficiency
 void Dimension::spawnPlayer()
 {
-    std::vector<DummyPlayer> dummies = createDummies();
     long distance;
-    long render_distance = 12;
     std::shared_ptr<std::vector<uint8_t>> data;
 
     // scan every player to each other if entering render distance
-    for (auto player = dummies.begin(); player < dummies.end(); player++) {
-        for (auto other = player; other < dummies.end(); other++) {
+    /*for (auto player = _players; player < _players.end(); player++) {
+        for (auto other = player; other < _players.end(); other++) {
 
             // calculate the distance between the two players
             distance = std::sqrt(std::pow(other->x - player->x, 2) + std::pow(other->z - player->z, 2));
 
             // send the packets to the client (no clients for now)
-            if (distance <= render_distance) {
+            if (distance <= _render_distance) {
                 data = protocol::createSpawnPlayer({
                     0,
                     0,
@@ -99,5 +97,5 @@ void Dimension::spawnPlayer()
                 });
             }
         }
-    }
+    }*/
 }
