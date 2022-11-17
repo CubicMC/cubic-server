@@ -10,16 +10,6 @@ Player::Player(Client *cli)
 void Player::tick()
 {}
 
-void Player::setDimension(std::shared_ptr<Dimension> dim)
-{
-    _dim = dim;
-}
-
-std::shared_ptr<Dimension> Player::getDimension() const
-{
-    return _dim;
-}
-
 Client *Player::getClient() const
 {
     return _cli;

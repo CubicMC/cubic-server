@@ -5,7 +5,6 @@
 #include "Entity.hpp"
 #include "ServerPackets.hpp"
 #include "Logger.hpp"
-#include "Dimension.hpp"
 
 class Client;
 
@@ -16,9 +15,6 @@ public:
     Player(Client *cli);
     void tick() override;
     Client *getClient() const;
-    // TODO: move this to entity
-    void setDimension(std::shared_ptr<Dimension> dim);
-    std::shared_ptr<Dimension> getDimension() const;
 
 private:
     void _onConfirmTeleportation(const std::shared_ptr<protocol::ConfirmTeleportation>& pck);
@@ -69,7 +65,6 @@ private:
 
     logging::Logger *_log;
     Client *_cli;
-    std::shared_ptr<Dimension> _dim;
 };
 
 
