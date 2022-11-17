@@ -9,6 +9,7 @@
 #include "Player.hpp"
 #include "common.hpp"
 #include "ServerPackets.hpp"
+#include "ClientPackets.hpp"
 #include "Logger.hpp"
 #include "Chat.hpp"
 
@@ -63,19 +64,7 @@ public:
     void sendStatusResponse(const std::string &json);
     void sendPingResponse(int64_t payload);
     // Should I just pass the packet directly?
-    void sendChatMessageResponse(
-        std::string signedContent,
-        bool hasUnsignedContent,
-        std::string unsignedContent,
-        int32_t type,
-        __int128 senderUUID,
-        std::string senderName,
-        bool hasTeamName,
-        std::string teamName,
-        long timestamp,
-        long salt,
-        int32_t signatureLength,
-        std::vector<uint8_t> signature);
+    void sendChatMessageResponse(const protocol::PlayerChatMessage &packet);
 
 private:
     void _handlePacket();

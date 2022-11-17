@@ -27,7 +27,7 @@ void Chat::sendPlayerMessage(const chat::Message &message, const Player *sender)
         for (auto &entity : world.second->getEntities()) {
             try {
                 auto player = dynamic_cast<Player*>(entity);
-                player->getClient()->sendChatMessageResponse(
+                player->getClient()->sendChatMessageResponse({
                     "",
                     true,
                     response.dump(),
@@ -40,7 +40,7 @@ void Chat::sendPlayerMessage(const chat::Message &message, const Player *sender)
                     0,
                     0,
                     std::vector<uint8_t>()
-                );
+            });
             } catch (std::bad_cast) {}
         }
     }
@@ -58,7 +58,7 @@ void Chat::sendSystemMessage(const chat::Message &message, const WorldGroup *wor
         for (auto &entity : world.second->getEntities()) {
             try {
                 auto player = dynamic_cast<Player*>(entity);
-                player->getClient()->sendChatMessageResponse(
+                player->getClient()->sendChatMessageResponse({
                     "",
                     true,
                     message.serialize(),
@@ -71,7 +71,7 @@ void Chat::sendSystemMessage(const chat::Message &message, const WorldGroup *wor
                     0,
                     0,
                     std::vector<uint8_t>()
-                );
+                });
             } catch (std::bad_cast) {}
         }
     }
@@ -89,7 +89,7 @@ void Chat::sendSayMessage(const chat::Message &message, const Player *sender)
         for (auto &entity : world.second->getEntities()) {
             try {
                 auto player = dynamic_cast<Player*>(entity);
-                player->getClient()->sendChatMessageResponse(
+                player->getClient()->sendChatMessageResponse({
                     "",
                     true,
                     message.serialize(),
@@ -102,7 +102,7 @@ void Chat::sendSayMessage(const chat::Message &message, const Player *sender)
                     0,
                     0,
                     std::vector<uint8_t>()
-                );
+                });
             } catch (std::bad_cast) {}
         }
     }
@@ -118,7 +118,7 @@ void Chat::sendMsgMessage(const chat::Message &message, Client *sender, Client *
         return;
     }
 
-    sender->sendChatMessageResponse(
+    sender->sendChatMessageResponse({
         "",
         true,
         message.serialize(),
@@ -131,8 +131,8 @@ void Chat::sendMsgMessage(const chat::Message &message, Client *sender, Client *
         0,
         0,
         std::vector<uint8_t>()
-    );
-    to->sendChatMessageResponse(
+    });
+    to->sendChatMessageResponse({
         "",
         true,
         message.serialize(),
@@ -145,7 +145,7 @@ void Chat::sendMsgMessage(const chat::Message &message, Client *sender, Client *
         0,
         0,
         std::vector<uint8_t>()
-    );
+    });
 }
 
 chat::Message::Message(

@@ -313,34 +313,9 @@ void Client::sendPingResponse(int64_t payload)
     LDEBUG("Sent a ping response");
 }
 
-void Client::sendChatMessageResponse(
-    std::string signedContent,
-    bool hasUnsignedContent,
-    std::string unsignedContent,
-    int32_t type,
-    __int128 senderUUID,
-    std::string senderName,
-    bool hasTeamName,
-    std::string teamName,
-    long timestamp,
-    long salt,
-    int32_t signatureLength,
-    std::vector<uint8_t> signature
-) {
-    auto pck = protocol::createPlayerChatMessage({
-        signedContent,
-        hasUnsignedContent,
-        unsignedContent,
-        type,
-        senderUUID,
-        senderName,
-        hasTeamName,
-        teamName,
-        timestamp,
-        salt,
-        signatureLength,
-        signature
-    });
+void Client::sendChatMessageResponse(const protocol::PlayerChatMessage &packet)
+{
+    auto pck = protocol::createPlayerChatMessage(packet);
     _sendData(*pck);
 
     LDEBUG("Sent a chat message response");
