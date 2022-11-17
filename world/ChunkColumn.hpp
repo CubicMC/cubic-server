@@ -3,6 +3,8 @@
 #include <vector>
 #include <deque>
 
+#include "../cubic-server/Entity.hpp"
+
 #ifndef CHUNKCOLUMN_HPP
 #define CHUNKCOLUMN_HPP
 
@@ -10,9 +12,6 @@
 #define CHUNK_3D_SIZE CHUNK_2D_SIZE*16
 #define BIOME_3D_SIZE 4*4*4
 #define NB_OF_CHUNKS 20
-
-
-class Entity;
 
 typedef struct _3d_pos {
     int x;
