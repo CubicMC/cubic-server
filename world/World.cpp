@@ -1,5 +1,13 @@
 #include "World.hpp"
 
+World::World()
+{
+}
+
+World::~World()
+{
+}
+
 const LevelData &World::getLevelData() const
 {
     return _levelData;

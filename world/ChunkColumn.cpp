@@ -1,6 +1,14 @@
 #include "ChunkColumn.hpp"
 #include <memory>
 
+ChunkColumn::ChunkColumn()
+{
+}
+
+ChunkColumn::~ChunkColumn()
+{
+}
+
 void ChunkColumn::updateBlock(_3d_pos pos, uint16_t id) {
     _blocks.at(pos.x + pos.y * 16 + pos.z * 16*16) = id;
 }

@@ -1,5 +1,13 @@
 #include "LevelData.hpp"
 
+LevelData::LevelData()
+{
+}
+
+LevelData::~LevelData()
+{
+}
+
 uint8_t LevelData::getHardcore() const
 {
     return _hardcore;
