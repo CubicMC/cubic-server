@@ -3,6 +3,9 @@
 #include "LevelData.hpp"
 #include "Level.hpp"
 
+#ifndef WORLD_HPP
+#define WORLD_HPP
+
 class World
 {
 public:
@@ -22,3 +25,5 @@ private:
     LevelData _levelData;
     std::unordered_map<std::string, Level &> _levels;
 };
+
+#endif // WORLD_HPP

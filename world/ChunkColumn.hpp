@@ -3,6 +3,9 @@
 #include <vector>
 #include <deque>
 
+#ifndef CHUNKCOLUMN_HPP
+#define CHUNKCOLUMN_HPP
+
 #define CHUNK_2D_SIZE 16*16
 #define CHUNK_3D_SIZE CHUNK_2D_SIZE*16
 #define BIOME_3D_SIZE 4*4*4
@@ -101,3 +104,5 @@ private:
     std::deque<Entity *> _entities;
     height_map _heightMap;
 };
+
+#endif // CHUNKCOLUMN_HPP

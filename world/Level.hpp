@@ -3,6 +3,9 @@
 
 #include "ChunkColumn.hpp"
 
+#ifndef LEVEL_HPP
+#define LEVEL_HPP
+
 struct _2d_pos {
     int x;
     int z;
@@ -40,3 +43,5 @@ public:
 private:
     std::unordered_map<_2d_pos, ChunkColumn &> _chunkColumns;
 };
+
+#endif // LEVEL_HPP
