@@ -124,7 +124,7 @@ std::shared_ptr<ChatMessage> protocol::parseChatMessage(std::vector<uint8_t> &bu
 
     parse(at, buffer.data() + buffer.size() - 1, *h,
           popString, &ChatMessage::message,
-          popString, &ChatMessage::timestamp,
+          popInstantJavaObject, &ChatMessage::timestamp,
           popLong, &ChatMessage::salt,
           popVarInt, &ChatMessage::signature_length);
     parseExtra(at, buffer.data() + buffer.size() - 1, *h,

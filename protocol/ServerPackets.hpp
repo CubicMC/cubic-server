@@ -144,7 +144,7 @@ namespace protocol
         std::string message;
         // I think this is a string, it is marked as an 'Instant' in the protocol
         // https://wiki.vg/index.php?title=Protocol&oldid=17753#Chat_Command
-        std::string timestamp;
+        Instant timestamp;
         long salt;
         int32_t signature_length;
         std::vector<uint8_t> signature;

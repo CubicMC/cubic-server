@@ -34,6 +34,12 @@ namespace protocol
         right = 1,
     };
 
+    struct Instant
+    {
+        long seconds;
+        int nanos;
+    };
+
     constexpr int32_t popVarInt(uint8_t *&at, uint8_t *eof)
     {
         int32_t value = 0;
@@ -177,6 +183,20 @@ namespace protocol
         out.push_back((data >> 16) & 0xFF);
         out.push_back((data >> 8) & 0xFF);
         out.push_back(data & 0xFF);
+    }
+
+    constexpr Instant popInstantJavaObject(uint8_t *&at, uint8_t *eof)
+    {
+        Instant instant;
+        // Java class thingy, don't ask...
+        for (int i = 0; i < 36; i++)
+            popByte(at, eof);
+        uint8_t objectIdentifier = popByte(at, eof);
+        if (objectIdentifier != 0x02)
+            throw WrongObjectType("Wrong object identifier for Instant");
+        instant.seconds = popVarLong(at, eof);
+        instant.nanos = popVarInt(at, eof);
+        return instant;
     }
 
     constexpr Position popPosition(uint8_t *&at, uint8_t *eof)
