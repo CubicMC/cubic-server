@@ -53,6 +53,17 @@ if (GTEST)
     GTest::gtest_main
   )
 
+  add_executable(
+    chunkColumn_test
+    ChunkColumn.cpp
+    tests/ChunkColumn_unittest.cpp
+  )
+
+  target_link_libraries(
+    chunkColumn_test
+    GTest::gtest_main
+  )
+
   # Enable CMake’s test runner to discover the tests included in the binary, using the GoogleTest CMake module.
   include(GoogleTest)
   gtest_discover_tests(world_test)
