@@ -1,6 +1,11 @@
 #include "Level.hpp"
 
-void Level::addChunkColumn(_2d_pos pos, ChunkColumn& chunkColumn) {
+void Level::addChunkColumn(_2d_pos pos, ChunkColumn &chunkColumn) {
+    _chunkColumns.insert({pos, chunkColumn});
+}
+
+void Level::addChunkColumn(_2d_pos pos) {
+    ChunkColumn chunkColumn;
     _chunkColumns.insert({pos, chunkColumn});
 }
 
