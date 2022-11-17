@@ -19,6 +19,7 @@ public:
     virtual void initialize();
     virtual void tick();
     virtual World *getWorld() const;
+    virtual void spawnPlayer();
 
 protected:
     logging::Logger *_log;
