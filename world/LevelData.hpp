@@ -1,8 +1,8 @@
 #include <stdint.h>
 #include <string>
 
-#ifndef LEVEL_HPP
-#define LEVEL_HPP
+#ifndef LEVELDATA_HPP
+#define LEVELDATA_HPP
 
 class LevelData
 {
@@ -83,4 +83,4 @@ private:
     std::string _levelName;
 };
 
-#endif // LEVEL_HPP
+#endif // LEVELDATA_HPP
