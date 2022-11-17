@@ -23,10 +23,11 @@ public:
     virtual void initialize() = 0;
     virtual WorldGroup *getWorldGroup() const;
     virtual std::shared_ptr<Chat> getChat() const;
+    virtual std::vector<Entity *> getEntities();
     virtual std::shared_ptr<Dimension> getDimension(const std::string_view &name) const;
 
 protected:
-    std::vector<Entity> _entities;
+    std::vector<Entity *> _entities;
     std::shared_ptr<Chat> _chat;
     WorldGroup *_worldGroup;
     logging::Logger *_log;

@@ -1,6 +1,7 @@
 #include "Chat.hpp"
 #include "Server.hpp"
 #include "Logger.hpp"
+#include "WorldGroup.hpp"
 #include "nlohmann/json.hpp"
 
 Chat::Chat()
@@ -14,7 +15,6 @@ void Chat::sendPlayerMessage(const chat::Message &message, const Player *sender)
         LERROR("sender is null");
         return;
     }
-    const auto clients = Server::getInstance()->getClients();
 
     nlohmann::json response;
     response["translate"] = "chat.type.text";
@@ -22,66 +22,90 @@ void Chat::sendPlayerMessage(const chat::Message &message, const Player *sender)
     response["with"].push_back({"text", "PlayerName"});
     response["with"].push_back(message.toJson());
 
-    // TODO: Filter clients by WorldGroup & chat visibility.
-    for (const auto &cli : clients)
-        cli->sendChatMessageResponse(
-            "",
-            true,
-            response.dump(),
-            (int32_t) chat::message::Type::Chat,
-            0, // sender->getUUID(),
-            "{\"text\": \"PlayerName\"}", // sender->getName();
-            false,
-            "",
-            std::time(nullptr),
-            0,
-            0,
-            std::vector<uint8_t>()
-        );
+    // TODO: Filter client by chat visibility
+    for (auto &world : sender->getDimension()->getWorld()->getWorldGroup()->getWorlds()) {
+        for (auto &entity : world.second->getEntities()) {
+            try {
+                auto player = dynamic_cast<Player*>(entity);
+                player->getClient()->sendChatMessageResponse(
+                    "",
+                    true,
+                    response.dump(),
+                    (int32_t) chat::message::Type::Chat,
+                    0, // sender->getUUID(),
+                    "{\"text\": \"PlayerName\"}", // sender->getName();
+                    false,
+                    "",
+                    std::time(nullptr),
+                    0,
+                    0,
+                    std::vector<uint8_t>()
+                );
+            } catch (std::bad_cast) {}
+        }
+    }
 }
 
-void Chat::sendSystemMessage(const chat::Message &message)
+void Chat::sendSystemMessage(const chat::Message &message, const WorldGroup *worldGroup)
 {
-    const auto clients = Server::getInstance()->getClients();
+    if (worldGroup == nullptr) {
+        LERROR("worldGroup is null");
+        return;
+    }
 
-    // TODO: Filter clients by WorldGroup & chat visibility.
-    for (const auto &cli : clients)
-        cli->sendChatMessageResponse(
-            "",
-            true,
-            message.serialize(),
-            (int32_t) chat::message::Type::System,
-            0,
-            "",
-            false,
-            "",
-            std::time(nullptr),
-            0,
-            0,
-            std::vector<uint8_t>()
-        );
+    // TODO: Filter client by chat visibility
+    for (const auto &world : worldGroup->getWorlds()) {
+        for (auto &entity : world.second->getEntities()) {
+            try {
+                auto player = dynamic_cast<Player*>(entity);
+                player->getClient()->sendChatMessageResponse(
+                    "",
+                    true,
+                    message.serialize(),
+                    (int32_t) chat::message::Type::System,
+                    0,
+                    "",
+                    false,
+                    "",
+                    std::time(nullptr),
+                    0,
+                    0,
+                    std::vector<uint8_t>()
+                );
+            } catch (std::bad_cast) {}
+        }
+    }
 }
 
 void Chat::sendSayMessage(const chat::Message &message, const Player *sender)
 {
-    const auto clients = Server::getInstance()->getClients();
+    if (sender == nullptr) {
+        LERROR("sender is null");
+        return;
+    }
 
-    // TODO: Filter clients by WorldGroup & chat visibility.
-    for (const auto &cli : clients)
-        cli->sendChatMessageResponse(
-            "",
-            true,
-            message.serialize(),
-            (int32_t) chat::message::Type::Say,
-            0,
-            "",
-            false,
-            "",
-            std::time(nullptr),
-            0,
-            0,
-            std::vector<uint8_t>()
-        );
+    // TODO: Filter client by chat visibility
+    for (auto &world : sender->getDimension()->getWorld()->getWorldGroup()->getWorlds()) {
+        for (auto &entity : world.second->getEntities()) {
+            try {
+                auto player = dynamic_cast<Player*>(entity);
+                player->getClient()->sendChatMessageResponse(
+                    "",
+                    true,
+                    message.serialize(),
+                    (int32_t) chat::message::Type::Say,
+                    0,
+                    "",
+                    false,
+                    "",
+                    std::time(nullptr),
+                    0,
+                    0,
+                    std::vector<uint8_t>()
+                );
+            } catch (std::bad_cast) {}
+        }
+    }
 }
 
 void Chat::sendMsgMessage(const chat::Message &message, Client *sender, Client *to)

@@ -8,6 +8,7 @@
 
 class Player;
 class Client;
+class WorldGroup;
 
 namespace chat::message {
     enum class Type : int32_t {
@@ -115,7 +116,7 @@ public:
     Chat();
 
     void sendPlayerMessage(const chat::Message &message, const Player *sender);
-    void sendSystemMessage(const chat::Message &message);
+    void sendSystemMessage(const chat::Message &message, const WorldGroup *worldGroup);
     void sendSayMessage(const chat::Message &message, const Player *sender);
     // Either keep client or change to Player but I need to get the client to send the message
     void sendMsgMessage(const chat::Message &message, Client *sender, Client *to);

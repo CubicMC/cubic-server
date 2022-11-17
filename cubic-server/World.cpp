@@ -29,3 +29,8 @@ std::shared_ptr<Dimension> World::getDimension(const std::string_view &name) con
 {
     return this->_dimensions.at(name);
 }
+
+std::vector<Entity *> World::getEntities()
+{
+    return _entities;
+}

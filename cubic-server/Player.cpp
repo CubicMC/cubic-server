@@ -20,6 +20,11 @@ std::shared_ptr<Dimension> Player::getDimension() const
     return _dim;
 }
 
+Client *Player::getClient() const
+{
+    return _cli;
+}
+
 void Player::_onConfirmTeleportation(const std::shared_ptr<protocol::ConfirmTeleportation> &pck)
 {
     LDEBUG("Got a Confirm Teleportation");
