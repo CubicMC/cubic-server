@@ -9,6 +9,8 @@
 #define NB_OF_CHUNKS 20
 
 
+class Entity;
+
 typedef struct _3d_pos {
     int x;
     int y;
@@ -18,7 +20,7 @@ typedef struct _3d_pos {
 typedef struct block_entity {
 } block_entity;
 
-typedef struct entity {
+// typedef struct entity {
     // tag short air
     // tag string customName
     // tag byte customNameVisible
@@ -39,7 +41,7 @@ typedef struct entity {
     // tag list tags
     // tag int ticksFrozen
     // tag int array uuid
-} entity;
+// } entity;
 
 typedef struct height_map {
         std::array<uint16_t, CHUNK_2D_SIZE> motionBlocking;
@@ -78,14 +80,14 @@ public:
     int64_t getTick();
     void setTick(int64_t tick);
 
-    void updateEntity(std::size_t id, entity *e);
-    void updateEntity(__int128 uuid, entity *e);
-    void addEntity(entity *e);
+    void updateEntity(std::size_t id, Entity *e);
+    void updateEntity(__int128 uuid, Entity *e);
+    void addEntity(Entity *e);
     void removeEntity(std::size_t id);
     void removeEntity(__int128 uuid);
-    entity *getEntity(std::size_t id);
-    entity *getEntity(__int128 uuid);
-    const std::deque<entity *> &getEntities();
+    Entity *getEntity(std::size_t id);
+    Entity *getEntity(__int128 uuid);
+    const std::deque<Entity *> &getEntities();
 
     void updateHeightMap(void);
     const height_map &getHeightMap(void);
@@ -96,6 +98,6 @@ private:
     std::array<uint8_t, BIOME_3D_SIZE*NB_OF_CHUNKS> _biomes;
     std::vector<block_entity *> _blockEntities;
     int64_t _tickData;
-    std::deque<entity *> _entities;
+    std::deque<Entity *> _entities;
     height_map _heightMap;
 };
