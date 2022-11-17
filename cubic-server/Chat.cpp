@@ -25,23 +25,23 @@ void Chat::sendPlayerMessage(const chat::Message &message, const Player *sender)
     // TODO: Filter client by chat visibility
     for (auto &world : sender->getDimension()->getWorld()->getWorldGroup()->getWorlds()) {
         for (auto &entity : world.second->getEntities()) {
-            try {
-                auto player = dynamic_cast<Player*>(entity);
-                player->getClient()->sendChatMessageResponse({
-                    "",
-                    true,
-                    response.dump(),
-                    (int32_t) chat::message::Type::Chat,
-                    0, // sender->getUUID(),
-                    "{\"text\": \"PlayerName\"}", // sender->getName();
-                    false,
-                    "",
-                    std::time(nullptr),
-                    0,
-                    0,
-                    std::vector<uint8_t>()
+            auto player = dynamic_cast<Player*>(entity);
+            if (player == nullptr)
+                continue;
+            player->getClient()->sendChatMessageResponse({
+                "",
+                true,
+                response.dump(),
+                (int32_t) chat::message::Type::Chat,
+                0, // sender->getUUID(),
+                "{\"text\": \"PlayerName\"}", // sender->getName();
+                false,
+                "",
+                std::time(nullptr),
+                0,
+                0,
+                std::vector<uint8_t>()
             });
-            } catch (std::bad_cast) {}
         }
     }
 }
@@ -56,23 +56,23 @@ void Chat::sendSystemMessage(const chat::Message &message, const WorldGroup *wor
     // TODO: Filter client by chat visibility
     for (const auto &world : worldGroup->getWorlds()) {
         for (auto &entity : world.second->getEntities()) {
-            try {
-                auto player = dynamic_cast<Player*>(entity);
-                player->getClient()->sendChatMessageResponse({
-                    "",
-                    true,
-                    message.serialize(),
-                    (int32_t) chat::message::Type::System,
-                    0,
-                    "",
-                    false,
-                    "",
-                    std::time(nullptr),
-                    0,
-                    0,
-                    std::vector<uint8_t>()
-                });
-            } catch (std::bad_cast) {}
+            auto player = dynamic_cast<Player*>(entity);
+            if (player == nullptr)
+                continue;
+            player->getClient()->sendChatMessageResponse({
+                "",
+                true,
+                message.serialize(),
+                (int32_t) chat::message::Type::System,
+                0,
+                "",
+                false,
+                "",
+                std::time(nullptr),
+                0,
+                0,
+                std::vector<uint8_t>()
+            });
         }
     }
 }
@@ -87,23 +87,23 @@ void Chat::sendSayMessage(const chat::Message &message, const Player *sender)
     // TODO: Filter client by chat visibility
     for (auto &world : sender->getDimension()->getWorld()->getWorldGroup()->getWorlds()) {
         for (auto &entity : world.second->getEntities()) {
-            try {
-                auto player = dynamic_cast<Player*>(entity);
-                player->getClient()->sendChatMessageResponse({
-                    "",
-                    true,
-                    message.serialize(),
-                    (int32_t) chat::message::Type::Say,
-                    0,
-                    "",
-                    false,
-                    "",
-                    std::time(nullptr),
-                    0,
-                    0,
-                    std::vector<uint8_t>()
-                });
-            } catch (std::bad_cast) {}
+            auto player = dynamic_cast<Player*>(entity);
+            if (player == nullptr)
+                continue;
+            player->getClient()->sendChatMessageResponse({
+                "",
+                true,
+                message.serialize(),
+                (int32_t) chat::message::Type::Say,
+                0,
+                "",
+                false,
+                "",
+                std::time(nullptr),
+                0,
+                0,
+                std::vector<uint8_t>()
+            });
         }
     }
 }
