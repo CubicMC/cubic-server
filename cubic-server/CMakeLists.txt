@@ -1,7 +1,9 @@
 target_sources (${CMAKE_PROJECT_NAME} PRIVATE
         main.cpp
         Server.cpp
+        Server.hpp
         Client.cpp
+        Client.hpp
         Player.cpp
         Player.hpp
         Entity.cpp
