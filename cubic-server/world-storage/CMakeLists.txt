@@ -14,20 +14,26 @@ if (GTEST)
   enable_testing()
 
   # Now simply add a new executable with the test file
-  add_executable(
-    world_test
-    WorldStorage.cpp
-    LevelData.cpp
-    Level.cpp
-    ChunkColumn.cpp
-    tests/WorldStorage_unittest.cpp
-  )
+  # add_executable(
+  #   world_test
+  #   ../Entity.hpp
+  #   ../Entity.cpp
+  #   # Dimension.cpp
+  #   # logging/Logger.cpp
+  #   # logging/FileAndFolderHandler.cpp
+  #   # logging/TimeFormatter.cpp
+  #   WorldStorage.cpp
+  #   LevelData.cpp
+  #   Level.cpp
+  #   ChunkColumn.cpp
+  #   tests/WorldStorage_unittest.cpp
+  # )
 
-  # Link the GoogleTest library to the executable
-  target_link_libraries(
-    world_test
-    GTest::gtest_main
-  )
+  # # Link the GoogleTest library to the executable
+  # target_link_libraries(
+  #   world_test
+  #   GTest::gtest_main
+  # )
 
   add_executable(
     levelData_test
@@ -40,32 +46,34 @@ if (GTEST)
     GTest::gtest_main
   )
 
-  add_executable(
-    level_test
-    Level.cpp
-    ChunkColumn.cpp
-    tests/Level_unittest.cpp
-  )
+  # add_executable(
+  #   level_test
+  #   Level.cpp
+  #   ChunkColumn.cpp
+  #   tests/Level_unittest.cpp
+  # )
 
-  target_link_libraries(
-    level_test
-    GTest::gtest_main
-  )
+  # target_link_libraries(
+  #   level_test
+  #   GTest::gtest_main
+  # )
 
-  add_executable(
-    chunkColumn_test
-    ChunkColumn.cpp
-    tests/ChunkColumn_unittest.cpp
-  )
+  # add_executable(
+  #   chunkColumn_test
+  #   ChunkColumn.cpp
+  #   tests/ChunkColumn_unittest.cpp
+  # )
 
-  target_link_libraries(
-    chunkColumn_test
-    GTest::gtest_main
-  )
+  # target_link_libraries(
+  #   chunkColumn_test
+  #   GTest::gtest_main
+  # )
 
   # Enable CMake’s test runner to discover the tests included in the binary, using the GoogleTest CMake module.
   include(GoogleTest)
-  gtest_discover_tests(world_test)
+  # gtest_discover_tests(world_test)
   gtest_discover_tests(levelData_test)
+  # gtest_discover_tests(level_test)
+  # gtest_discover_tests(chunkColumn_test)
 
 endif()
