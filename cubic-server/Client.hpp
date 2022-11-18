@@ -9,7 +9,9 @@
 #include "Player.hpp"
 #include "common.hpp"
 #include "ServerPackets.hpp"
+#include "ClientPackets.hpp"
 #include "Logger.hpp"
+#include "Chat.hpp"
 
 #define __PCK_CALLBACK_PRIM(type, object) return object->_on##type(std::static_pointer_cast<type>(packet))
 
@@ -35,7 +37,7 @@ class Player;
 class Client
 {
 public:
-    Client(int sockfd, struct sockaddr_in addr);
+    Client(int sockfd, struct sockaddr_in6 addr);
     ~Client();
 
     void networkLoop();
@@ -61,6 +63,8 @@ public:
     // All the send packets go here
     void sendStatusResponse(const std::string &json);
     void sendPingResponse(int64_t payload);
+    // Should I just pass the packet directly?
+    void sendChatMessageResponse(const protocol::PlayerChatMessage &packet);
 
 private:
     void _handlePacket();
@@ -73,7 +77,7 @@ private:
     void _onEncryptionResponse(const std::shared_ptr<protocol::EncryptionResponse> &pck);
 
     const int _sockfd;
-    const struct sockaddr_in _addr;
+    const struct sockaddr_in6 _addr;
     bool _is_running;
     std::thread *_current_thread{};
     std::vector<uint8_t> _recv_buffer;

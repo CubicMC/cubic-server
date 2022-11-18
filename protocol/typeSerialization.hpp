@@ -34,6 +34,12 @@ namespace protocol
         right = 1,
     };
 
+    struct Instant
+    {
+        long seconds;
+        int nanos;
+    };
+
     constexpr int32_t popVarInt(uint8_t *&at, uint8_t *eof)
     {
         int32_t value = 0;
@@ -179,6 +185,20 @@ namespace protocol
         out.push_back(data & 0xFF);
     }
 
+    constexpr Instant popInstantJavaObject(uint8_t *&at, uint8_t *eof)
+    {
+        Instant instant;
+        // Java class thingy, don't ask...
+        for (int i = 0; i < 36; i++)
+            popByte(at, eof);
+        uint8_t objectIdentifier = popByte(at, eof);
+        if (objectIdentifier != 0x02)
+            throw WrongObjectType("Wrong object identifier for Instant");
+        instant.seconds = popVarLong(at, eof);
+        instant.nanos = popVarInt(at, eof);
+        return instant;
+    }
+
     constexpr Position popPosition(uint8_t *&at, uint8_t *eof)
     {
         Position p;
@@ -273,12 +293,24 @@ namespace protocol
         return value;
     }
 
+    constexpr void addByteArray(std::vector<uint8_t> &out, const std::vector<uint8_t> &data)
+    {
+        for (auto i : data)
+            addByte(out, i);
+    }
+
     constexpr __int128 popUUID(uint8_t *&at, uint8_t *eof)
     {
         auto a = (__int128) popLong(at, eof);
         auto b = (__int128) popLong(at, eof);
 
         return (a << 64) | b;
+    }
+
+    constexpr void addUUID(std::vector<uint8_t> &out, const __int128 &data)
+    {
+        addLong(out, data >> 64);
+        addLong(out, data & 0xFFFFFFFFFFFFFFFF);
     }
 
     constexpr int32_t popInt(uint8_t *&at, uint8_t *eof)

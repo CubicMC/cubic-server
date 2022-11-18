@@ -1,10 +1,11 @@
 #include "World.hpp"
+#include "Dimension.hpp"
 
 void World::tick()
 {
     for (auto & _processingThread : _processingThreads)
         if (!_processingThread->joinable()) {
-            free(_processingThread);
+            delete _processingThread;
             _processingThread = nullptr;
         }
 
@@ -12,4 +13,24 @@ void World::tick()
                    _processingThreads.end(),
                    [](const std::thread *cli)
                    { return cli == nullptr; });
+}
+
+WorldGroup *World::getWorldGroup() const
+{
+    return _worldGroup;
+}
+
+std::shared_ptr<Chat> World::getChat() const
+{
+    return _chat;
+}
+
+std::shared_ptr<Dimension> World::getDimension(const std::string_view &name) const
+{
+    return this->_dimensions.at(name);
+}
+
+std::vector<Entity *> World::getEntities()
+{
+    return _entities;
 }

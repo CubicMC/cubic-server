@@ -6,6 +6,7 @@
 class TheNether : public Dimension
 {
 public:
+    TheNether(World *world): Dimension(world) {}
     void tick() override;
     void initialize() override;
 };

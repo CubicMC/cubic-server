@@ -1,6 +1,6 @@
 # Add executable called "helloDemo" that is built from the source files
 # "demo.cxx" and "demo_b.cxx". The extensions are automatically found.
-add_executable (cubic-server main.cpp Server.cpp Client.cpp Player.cpp Player.hpp Entity.hpp Chat.cpp Chat.hpp WorldGroup.cpp WorldGroup.hpp World.hpp Dimension.cpp Dimension.hpp Default/DefaultWorld.cpp Default/DefaultWorld.hpp Default/DefaultWorldGroup.cpp Default/DefaultWorldGroup.hpp Default/Overworld.cpp Default/Overworld.hpp Default/TheNether.cpp Default/TheNether.hpp Default/TheEnd.cpp Default/TheEnd.hpp World.cpp)
+add_executable (cubic-server main.cpp Server.cpp Client.cpp Player.cpp Player.hpp Entity.cpp Entity.hpp Chat.cpp Chat.hpp WorldGroup.cpp WorldGroup.hpp World.hpp Dimension.cpp Dimension.hpp Default/DefaultWorld.cpp Default/DefaultWorld.hpp Default/DefaultWorldGroup.cpp Default/DefaultWorldGroup.hpp Default/Overworld.cpp Default/Overworld.hpp Default/TheNether.cpp Default/TheNether.hpp Default/TheEnd.cpp Default/TheEnd.hpp World.cpp)
 
 find_package(Threads REQUIRED)
 # Use the package PkgConfig to detect GTK+ headers/library files

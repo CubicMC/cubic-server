@@ -11,3 +11,8 @@ void Dimension::initialize()
 {
 
 }
+
+World *Dimension::getWorld() const
+{
+    return _world;
+}

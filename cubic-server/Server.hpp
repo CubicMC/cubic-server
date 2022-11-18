@@ -46,6 +46,10 @@ public:
         return _clients;
     }
 
+    const WorldGroup *getWorldGroup(const std::string_view &name) const {
+        return this->_worldGroups.at(name);
+    }
+
 private:
     Server();
     void _acceptLoop();
@@ -64,8 +68,8 @@ private:
     struct sockaddr_in6 _addr;
 
     Configuration::ConfigHandler _config;
-    std::unordered_map<std::string, WorldGroup *> _worldGroups;
-    std::unordered_map<std::string, std::thread *> _worldGroupThreads;
+    std::unordered_map<std::string_view, WorldGroup *> _worldGroups;
+    std::unordered_map<std::string_view, std::thread *> _worldGroupThreads;
 };
 
 #endif /* F43D56DD_C750_470F_A7C9_27CE21D37FC3 */

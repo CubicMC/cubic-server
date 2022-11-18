@@ -26,6 +26,21 @@ void WorldGroup::run()
     }
 }
 
+std::shared_ptr<Chat> WorldGroup::getChat() const
+{
+    return _chat;
+}
+
+std::shared_ptr<World> WorldGroup::getWorld(const std::string_view &name) const
+{
+    return this->_worlds.at(name);
+}
+
+std::unordered_map<std::string_view, std::shared_ptr<World>> WorldGroup::getWorlds() const
+{
+    return this->_worlds;
+}
+
 //void WorldGroup::initialize()
 //{
 //    LWARN("Initialized empty world group");

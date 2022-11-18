@@ -6,6 +6,7 @@
 class TheEnd : public Dimension
 {
 public:
+    TheEnd(World *world): Dimension(world) {}
     void tick() override;
     void initialize() override;
 };

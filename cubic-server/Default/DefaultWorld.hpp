@@ -9,13 +9,9 @@
 class DefaultWorld : public World
 {
 public:
-    DefaultWorld();
+    DefaultWorld(WorldGroup *worldGroup);
     void tick() override;
     void initialize() override;
-private:
-    TheEnd *_theEnd;
-    TheNether *_theNether;
-    Overworld *_overworld;
 };
 
 

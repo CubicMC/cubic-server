@@ -1,4 +1,5 @@
 #include "Player.hpp"
+#include "Server.hpp"
 
 Player::Player(Client *cli)
     : _cli(cli)
@@ -8,6 +9,11 @@ Player::Player(Client *cli)
 
 void Player::tick()
 {}
+
+Client *Player::getClient() const
+{
+    return _cli;
+}
 
 void Player::_onConfirmTeleportation(const std::shared_ptr<protocol::ConfirmTeleportation> &pck)
 {
@@ -22,6 +28,14 @@ void Player::_onQueryBlockEntityTag(const std::shared_ptr<protocol::QueryBlockEn
 void Player::_onChangeDifficulty(const std::shared_ptr<protocol::ChangeDifficulty> &pck)
 {
     LDEBUG("Got a Change difficulty");
+}
+
+// Receive a chat message from the client, transmit it to the chat system.
+void Player::_onChatMessage(const std::shared_ptr<protocol::ChatMessage> &pck)
+{
+    // TODO: verify that the message is valid (signature, etc.)
+    _dim->getWorld()->getChat()->sendPlayerMessage(pck->message, this);
+    _log->debug("Got a Chat Message");
 }
 
 void Player::_onClientCommand(const std::shared_ptr<protocol::ClientCommand> &pck)

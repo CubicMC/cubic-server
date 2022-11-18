@@ -1,25 +1,23 @@
 #include "DefaultWorld.hpp"
 
-DefaultWorld::DefaultWorld()
-    : World()
+DefaultWorld::DefaultWorld(WorldGroup *worldGroup)
+    : World(worldGroup)
 {
-    _theEnd = new TheEnd();
-    _theNether = new TheNether();
-    _overworld = new Overworld();
+    this->_dimensions.emplace("end", std::make_shared<TheEnd>(reinterpret_cast<World *>(this)));
+    this->_dimensions.emplace("nether", std::make_shared<TheNether>(reinterpret_cast<World *>(this)));
+    this->_dimensions.emplace("overworld", std::make_shared<Overworld>(reinterpret_cast<World *>(this)));
 }
 
 void DefaultWorld::tick()
 {
     World::tick();
     // TODO: Launch threads for all the dimensions
-    _processingThreads.push_back(new std::thread(&Overworld::tick, _overworld));
-    _processingThreads.push_back(new std::thread(&TheNether::tick, _theNether));
-    _processingThreads.push_back(new std::thread(&TheEnd::tick, _theEnd));
+    for (auto &dim : this->_dimensions)
+        _processingThreads.push_back(new std::thread(&Dimension::tick, dim.second));
 }
 
 void DefaultWorld::initialize()
 {
-    _theEnd->initialize();
-    _theNether->initialize();
-    _overworld->initialize();
+    for (auto &dim : this->_dimensions)
+        dim.second->initialize();
 }

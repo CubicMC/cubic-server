@@ -10,7 +10,7 @@
 #include "ClientPackets.hpp"
 #include "Server.hpp"
 
-Client::Client(int sockfd, struct sockaddr_in addr)
+Client::Client(int sockfd, struct sockaddr_in6 addr)
     : _sockfd(sockfd), _addr(addr), _status(protocol::ClientStatus::Initial)
 {
     _is_running = true;
@@ -98,6 +98,7 @@ void Client::switchToPlayState()
 {
     this->setStatus(protocol::ClientStatus::Play);
     this->_player = new Player(this);
+    this->_player->setDimension(Server::getInstance()->getWorldGroup("default")->getWorld("default")->getDimension("overworld"));
 }
 
 void Client::handleParsedClientPacket(const std::shared_ptr<protocol::BaseServerPacket> &packet,
@@ -139,6 +140,7 @@ void Client::handleParsedClientPacket(const std::shared_ptr<protocol::BaseServer
             PCK_CALLBACK_PLAY(ConfirmTeleportation);
             PCK_CALLBACK_PLAY(QueryBlockEntityTag);
             PCK_CALLBACK_PLAY(ChangeDifficulty);
+            PCK_CALLBACK_PLAY(ChatMessage);
             PCK_CALLBACK_PLAY(ClientCommand);
             PCK_CALLBACK_PLAY(ClientInformation);
             PCK_CALLBACK_PLAY(CommandSuggestionRequest);
@@ -309,4 +311,12 @@ void Client::sendPingResponse(int64_t payload)
     _sendData(*pck);
 
     LDEBUG("Sent a ping response");
+}
+
+void Client::sendChatMessageResponse(const protocol::PlayerChatMessage &packet)
+{
+    auto pck = protocol::createPlayerChatMessage(packet);
+    _sendData(*pck);
+
+    LDEBUG("Sent a chat message response");
 }
