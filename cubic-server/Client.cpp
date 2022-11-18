@@ -320,3 +320,11 @@ void Client::sendChatMessageResponse(const protocol::PlayerChatMessage &packet)
 
     LDEBUG("Sent a chat message response");
 }
+
+void Client::sendDisconnectPlayerReason(const protocol::DisconnectReason &reason)
+{
+    auto pck = protocol::DisconnectPlayerReason(reason);
+    _sendData(*pck);
+
+    LDEBUG("Sent a disconnet reason for player");
+}

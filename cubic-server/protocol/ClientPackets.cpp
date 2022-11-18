@@ -42,3 +42,12 @@ std::shared_ptr<std::vector<uint8_t>> protocol::createPlayerChatMessage(const Pl
     finalize(*packet.get(), payload, (int32_t) ClientPacketID::PlayerChatMessage);
     return packet;
 }
+
+std::shared_ptr<std::vector<uint8_t>> protocol::DisconnectPlayerReason(const DisconnectReason &in)
+{
+    std::vector<uint8_t> payload;
+    serialize(payload, in.reason, addString);
+    auto packet = std::make_shared<std::vector<uint8_t>>();
+    finalize(*packet.get(), payload, (int32_t)ClientPacketID::DISCONNECT);
+    return packet;
+}

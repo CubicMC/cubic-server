@@ -65,6 +65,7 @@ public:
     void sendPingResponse(int64_t payload);
     // Should I just pass the packet directly?
     void sendChatMessageResponse(const protocol::PlayerChatMessage &packet);
+    void sendDisconnectPlayerReason(const protocol::DisconnectReason &reason);
 
 private:
     void _handlePacket();
