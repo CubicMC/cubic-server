@@ -25,6 +25,7 @@ public:
     virtual std::shared_ptr<Chat> getChat() const;
     virtual std::vector<Entity *> getEntities();
     virtual std::shared_ptr<Dimension> getDimension(const std::string_view &name) const;
+    virtual void updateTime();
 
 protected:
     std::vector<Entity *> _entities;
@@ -33,6 +34,8 @@ protected:
     logging::Logger *_log;
     std::vector<std::thread *> _processingThreads;
     std::unordered_map<std::string_view, std::shared_ptr<Dimension>> _dimensions;
+    long _age;
+    long _time;
 };
 
 

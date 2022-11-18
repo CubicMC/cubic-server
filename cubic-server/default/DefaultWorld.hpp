@@ -12,11 +12,6 @@ public:
     DefaultWorld(WorldGroup *worldGroup);
     void tick() override;
     void initialize() override;
-    void updateTime();
-
-private:
-    long _age;
-    long _time;
 };
 
 

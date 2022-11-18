@@ -19,7 +19,7 @@ public:
     virtual void initialize();
     virtual void tick();
     virtual World *getWorld() const;
-    virtual void spawnPlayer();
+    //virtual void spawnPlayer(std::vector<Player *>, long);
 
 protected:
     logging::Logger *_log;
