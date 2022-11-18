@@ -22,7 +22,7 @@ struct _3d_pos {
 struct block_entity {
 };
 
-// typedef struct entity {
+// struct entity {
     // tag short air
     // tag string customName
     // tag byte customNameVisible
@@ -43,7 +43,7 @@ struct block_entity {
     // tag list tags
     // tag int ticksFrozen
     // tag int array uuid
-// } entity;
+// };
 
 struct height_map {
         std::array<uint16_t, CHUNK_2D_SIZE> motionBlocking;
