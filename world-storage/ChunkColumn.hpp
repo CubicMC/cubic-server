@@ -3,7 +3,7 @@
 #include <vector>
 #include <deque>
 
-#include "../cubic-server/Entity.hpp"
+#include "Entity.hpp"
 
 #ifndef CHUNKCOLUMN_HPP
 #define CHUNKCOLUMN_HPP
@@ -13,14 +13,14 @@
 #define BIOME_3D_SIZE 4*4*4
 #define NB_OF_CHUNKS 20
 
-typedef struct _3d_pos {
+struct _3d_pos {
     int x;
     int y;
     int z;
-} _3d_pos;
+};
 
-typedef struct block_entity {
-} block_entity;
+struct block_entity {
+};
 
 // typedef struct entity {
     // tag short air
@@ -45,10 +45,10 @@ typedef struct block_entity {
     // tag int array uuid
 // } entity;
 
-typedef struct height_map {
+struct height_map {
         std::array<uint16_t, CHUNK_2D_SIZE> motionBlocking;
         std::array<uint16_t, CHUNK_2D_SIZE> worldSurface;
-} height_map;
+};
 
 
 class ChunkColumn
