@@ -1,6 +1,6 @@
 #include "PacketUtils.hpp"
 #include "ClientPackets.hpp"
-#include "Chat.hpp"
+#include "../cubic-server/Chat.hpp"
 
 using namespace protocol;
 

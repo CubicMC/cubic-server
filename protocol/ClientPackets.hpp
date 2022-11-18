@@ -6,6 +6,7 @@
 #include <memory>
 #include <vector>
 #include <optional>
+#include <../cubic-server/Chat.hpp>
 
 namespace protocol
 {
