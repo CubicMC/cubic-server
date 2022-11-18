@@ -328,3 +328,11 @@ void Client::sendWorldEvent(const protocol::WorldEvent &packet)
 
     LDEBUG("Sent a world event");
 }
+
+void Client::sendDisconnectPlayerReason(const protocol::DisconnectReason &reason)
+{
+    auto pck = protocol::DisconnectPlayerReason(reason);
+    _sendData(*pck);
+
+    LDEBUG("Sent a disconnet reason for player");
+}

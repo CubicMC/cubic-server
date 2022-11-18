@@ -67,6 +67,7 @@ public:
     void sendPingResponse(int64_t payload);
     void sendChatMessageResponse(const protocol::PlayerChatMessage &packet);
     void sendWorldEvent(const protocol::WorldEvent &packet);
+    void sendDisconnectPlayerReason(const protocol::DisconnectReason &reason);
 
 private:
     void _handlePacket();

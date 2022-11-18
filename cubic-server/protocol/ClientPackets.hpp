@@ -20,6 +20,7 @@ namespace protocol
         PlayerChatMessage = 0x30,
         EntitySoundEffect = 0x5c,
         SoundEffect = 0x5d,
+        Disconnect = 0x17,
         StopSound = 0x5e
     };
 
@@ -112,6 +113,12 @@ namespace protocol
 
     std::shared_ptr<std::vector<uint8_t>> createStopSound(const StopSound &);
 
+    struct DisconnectReason
+    {
+        std::string reason;
+    };
+
+    std::shared_ptr<std::vector<uint8_t>> DisconnectPlayerReason(const DisconnectReason &);
 }
 
 #endif /* A7ADDD9E_6961_4A3D_AAB2_DF37DB6915F0 */
