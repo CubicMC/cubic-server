@@ -87,4 +87,4 @@ jobs:
       # See https://cmake.org/cmake/help/latest/manual/ctest.1.html for more detail
     - name: Test
       working-directory: ${{github.workspace}}/build
-      run: cd build && ctest -C ${{env.BUILD_TYPE}}
+      run: ctest -C ${{env.BUILD_TYPE}}
