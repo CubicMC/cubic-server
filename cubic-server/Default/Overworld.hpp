@@ -6,6 +6,7 @@
 class Overworld : public Dimension
 {
 public:
+    Overworld(World *world): Dimension(world) {}
     void tick() override;
     void initialize() override;
 };

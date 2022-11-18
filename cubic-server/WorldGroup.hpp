@@ -15,12 +15,14 @@ public:
     WorldGroup(std::shared_ptr<Chat> chat);
 
     virtual void initialize() = 0;
-
     virtual void run();
+    virtual std::shared_ptr<Chat> getChat() const;
+    virtual std::shared_ptr<World> getWorld(const std::string_view &name) const;
+    virtual std::unordered_map<std::string_view, std::shared_ptr<World>> getWorlds() const;
 
 protected:
     std::shared_ptr<Chat> _chat;
-    std::unordered_map<std::string, std::shared_ptr<World>> _worlds;
+    std::unordered_map<std::string_view, std::shared_ptr<World>> _worlds;
     logging::Logger *_log;
 };
 

@@ -23,4 +23,3 @@ namespace logging
         EXPECT_EQ(TimeFormatter::get_time("The month is MM").size(), std::string("The month is MM").size());
     }
 }
-

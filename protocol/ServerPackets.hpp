@@ -24,6 +24,7 @@ namespace protocol
         EncryptionResponse = 0x01,
         QueryBlockEntityTag = 0x01,
         ChangeDifficulty = 0x02,
+        ChatMessage = 0x03,
         ClientCommand = 0x06,
         ClientInformation = 0x07,
         CommandSuggestionRequest = 0x08,
@@ -137,6 +138,19 @@ namespace protocol
         uint8_t new_difficulty;
     };
     std::shared_ptr<ChangeDifficulty> parseChangeDifficulty(std::vector<uint8_t> &buffer);
+
+    struct ChatMessage : BaseServerPacket
+    {
+        std::string message;
+        // I think this is a string, it is marked as an 'Instant' in the protocol
+        // https://wiki.vg/index.php?title=Protocol&oldid=17753#Chat_Command
+        Instant timestamp;
+        long salt;
+        int32_t signature_length;
+        std::vector<uint8_t> signature;
+        bool isSigned;
+    };
+    std::shared_ptr<ChatMessage> parseChatMessage(std::vector<uint8_t> &buffer);
 
     struct ClientCommand : BaseServerPacket
     {
@@ -493,6 +507,7 @@ namespace protocol
             {ServerPacketsID::ConfirmTeleportation, &parseConfirmTeleportation},
             {ServerPacketsID::QueryBlockEntityTag, &parseQueryBlockEntityTag},
             {ServerPacketsID::ChangeDifficulty, &parseChangeDifficulty},
+            {ServerPacketsID::ChatMessage, &parseChatMessage},
             {ServerPacketsID::ClientCommand, &parseClientCommand},
             {ServerPacketsID::ClientInformation, &parseClientInformation},
             {ServerPacketsID::CommandSuggestionRequest, &parseCommandSuggestionRequest},
