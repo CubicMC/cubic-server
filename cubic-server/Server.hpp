@@ -8,10 +8,10 @@
 #include <memory>
 
 #include "Client.hpp"
-#include "ServerPackets.hpp"
+#include "protocol/ServerPackets.hpp"
 
-#include "ConfigHandler.hpp"
-#include "Logger.hpp"
+#include "configuration/ConfigHandler.hpp"
+#include "logging/Logger.hpp"
 #include "WorldGroup.hpp"
 
 #ifndef MC_VERSION

@@ -4,7 +4,7 @@
 #include <string>
 #include <map>
 #include <yaml-cpp/yaml.h>
-#include "Logger.hpp"
+#include "logging/Logger.hpp"
 
 namespace Configuration
 {

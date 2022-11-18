@@ -6,7 +6,7 @@
 #include <thread>
 #include <vector>
 
-#include "Logger.hpp"
+#include "logging/Logger.hpp"
 
 class World;
 
