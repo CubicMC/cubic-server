@@ -2,8 +2,8 @@
 #include <cstring>
 
 #include "Server.hpp"
-#include "ServerPackets.hpp"
-#include "ManagementInterface.hpp"
+#include "protocol/ServerPackets.hpp"
+#include "interface/ManagementInterface.hpp"
 
 static void print_usage(const char *caller)
 {
