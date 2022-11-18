@@ -6,11 +6,11 @@
 #ifndef WORLD_HPP
 #define WORLD_HPP
 
-class World
+class WorldStorage
 {
 public:
-    World();
-    ~World();
+    WorldStorage();
+    ~WorldStorage();
 
     const LevelData &getLevelData() const;
     void setLevelData(const LevelData &value);

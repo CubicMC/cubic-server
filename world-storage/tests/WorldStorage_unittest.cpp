@@ -1,7 +1,7 @@
 #include <gtest/gtest.h>
-#include "../World.hpp"
+#include "../WorldStorage.hpp"
 
-World world;
+WorldStorage world;
 
 TEST(WorldTest, addLevel_and_getLevelNames)
 {

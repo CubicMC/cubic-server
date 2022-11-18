@@ -2,13 +2,13 @@
 # The extension is already found. Any number of sources could be listed here.
 # add_library (TimeFormatter TimeFormatter.cpp)
 # add_library (FileAndFolderHandler FileAndFolderHandler.cpp)
-add_library (World ChunkColumn.cpp Level.cpp LevelData.cpp World.cpp)
+add_library (WorldStorage ChunkColumn.cpp Level.cpp LevelData.cpp WorldStorage.cpp)
 
 # Make sure the compiler can find include files for our Hello library
 # when other libraries or executables link to Hello
 # target_include_directories (TimeFormatter PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
 # target_include_directories (FileAndFolderHandler PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
-target_include_directories (World PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
+target_include_directories (WorldStorage PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
 
 if (GTEST)
   # Do not forget to add enable_testing() if you want to test your library !
@@ -17,11 +17,11 @@ if (GTEST)
   # Now simply add a new executable with the test file
   add_executable(
     world_test
-    World.cpp
+    WorldStorage.cpp
     LevelData.cpp
     Level.cpp
     ChunkColumn.cpp
-    tests/World_unittest.cpp
+    tests/WorldStorage_unittest.cpp
   )
 
   # Link the GoogleTest library to the executable
