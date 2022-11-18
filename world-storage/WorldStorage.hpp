@@ -3,8 +3,8 @@
 #include "LevelData.hpp"
 #include "Level.hpp"
 
-#ifndef WORLD_HPP
-#define WORLD_HPP
+#ifndef WORLD_WORLD_HPP
+#define WORLD_WORLD_HPP
 
 class WorldStorage
 {
@@ -26,4 +26,4 @@ private:
     std::unordered_map<std::string, Level &> _levels;
 };
 
-#endif // WORLD_HPP
+#endif // WORLD_WORLD_HPP
