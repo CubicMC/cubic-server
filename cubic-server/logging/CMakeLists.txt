@@ -1,7 +1,10 @@
 target_sources (${CMAKE_PROJECT_NAME} PRIVATE
         TimeFormatter.cpp
+        TimeFormatter.hpp
         FileAndFolderHandler.cpp
+        FileAndFolderHandler.hpp
         Logger.cpp
+        Logger.hpp
 )
 
 if(GTEST)
