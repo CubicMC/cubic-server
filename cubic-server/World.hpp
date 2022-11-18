@@ -31,6 +31,7 @@ public:
 
     virtual const world_storage::LevelData &getLevelData() const;
     virtual void setLevelData(const world_storage::LevelData &value);
+    virtual void updateTime();
 
 protected:
     std::shared_ptr<Chat> _chat;
@@ -38,6 +39,8 @@ protected:
     logging::Logger *_log;
     std::vector<std::thread *> _processingThreads;
     std::unordered_map<std::string_view, std::shared_ptr<Dimension>> _dimensions;
+    long _age;
+    long _time;
     world_storage::LevelData _levelData;
 };
 

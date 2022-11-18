@@ -452,6 +452,23 @@ void Client::sendLoginPlay(const protocol::LoginPlay &packet)
     LDEBUG("Sent a login play");
 }
 
+/*void Client::sendSpawnPlayer(const protocol::SpawnPlayer &data)
+{
+    auto pck = protocol::createSpawnPlayer(data);
+    _sendData(*pck);
+
+    LDEBUG("Sent a Spawn Player packet");
+}
+
+void Client::sendUpdateTime(const protocol::UpdateTime &data)
+{
+    auto pck = protocol::createUpdateTime(data);
+    _sendData(*pck);
+
+    LDEBUG("Sent an Update Time packet");
+}*/
+
+
 void Client::sendChatMessageResponse(const protocol::PlayerChatMessage &packet)
 {
     auto pck = protocol::createPlayerChatMessage(packet);

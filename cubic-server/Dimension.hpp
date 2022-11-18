@@ -31,7 +31,7 @@ public:
     const world_storage::Level &getLevel() const;
     world_storage::Level &getEditableLevel();
     virtual void generateChunk(int x, int z);
-    virtual void spawnPlayer();
+    //virtual void spawnPlayer(std::vector<Player *>, long);
 
 protected:
     std::vector<Entity *> _entities;

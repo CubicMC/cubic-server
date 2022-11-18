@@ -1,5 +1,6 @@
 #include "World.hpp"
 #include "Dimension.hpp"
+#include "ClientPackets.hpp"
 
 void World::tick()
 {
@@ -13,6 +14,8 @@ void World::tick()
                    _processingThreads.end(),
                    [](const std::thread *cli)
                    { return cli == nullptr; });
+
+    updateTime();
 }
 
 WorldGroup *World::getWorldGroup() const
@@ -59,4 +62,16 @@ const world_storage::LevelData &World::getLevelData() const
 void World::setLevelData(const world_storage::LevelData &value)
 {
     _levelData = value;
+}
+
+void World::updateTime() {
+    std::shared_ptr<std::vector<uint8_t>> data;
+    // add tick to age of the world and time
+    _age += 1;
+    _time += 1;
+    if (_time > 24000)
+        _time = 0;
+
+    // send packets to clients (missing clients in architecture)
+    data = protocol::createUpdateTime({_age, _time});
 }
