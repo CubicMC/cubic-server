@@ -32,7 +32,7 @@ public:
     Level();
     ~Level();
 
-    ChunkColumn *addChunkColumn(_2d_pos pos, ChunkColumn *chunkColumn);
+    ChunkColumn *addChunkColumn(_2d_pos pos, ChunkColumn &chunkColumn);
     ChunkColumn *addChunkColumn(_2d_pos pos);
     /** Get the chunk from chunk coordinate */
     ChunkColumn *getChunkColumn(_2d_pos pos);
