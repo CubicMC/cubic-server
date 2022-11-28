@@ -25,6 +25,8 @@ public:
     virtual std::shared_ptr<Chat> getChat() const;
     virtual std::vector<Entity *> getEntities();
     virtual std::shared_ptr<Dimension> getDimension(const std::string_view &name) const;
+    virtual void forEachEntity(std::function<void(Entity *)> callback);
+    virtual void forEachEntityIf(std::function<bool(Entity *)> predicate, std::function<void(Entity *)> callback);
 
 protected:
     std::shared_ptr<Chat> _chat;

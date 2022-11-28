@@ -21,3 +21,16 @@ std::vector<Entity *> Dimension::getEntities()
 {
     return _entities;
 }
+
+void Dimension::forEachEntity(std::function<void(Entity *)> callback)
+{
+    for (auto & _entity : _entities)
+        callback(_entity);
+}
+
+void Dimension::forEachEntityIf(std::function<bool(Entity *)> predicate, std::function<void(Entity *)> callback)
+{
+    for (auto & _entity : _entities)
+        if (predicate(_entity))
+            callback(_entity);
+}

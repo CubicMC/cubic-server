@@ -38,3 +38,15 @@ std::vector<Entity *> World::getEntities()
             entities.push_back(_entity);
     return entities;
 }
+
+void World::forEachEntity(std::function<void(Entity *)> callback)
+{
+    for (auto & _dimension : _dimensions)
+        _dimension.second->forEachEntity(callback);
+}
+
+void World::forEachEntityIf(std::function<bool(Entity *)> predicate, std::function<void(Entity *)> callback)
+{
+    for (auto & _dimension : _dimensions)
+        _dimension.second->forEachEntityIf(predicate, callback);
+}

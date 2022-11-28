@@ -5,6 +5,7 @@
 #include <atomic>
 #include <thread>
 #include <vector>
+#include <functional>
 
 #include "logging/Logger.hpp"
 #include "Entity.hpp"
@@ -23,6 +24,8 @@ public:
     virtual void tick();
     virtual World *getWorld() const;
     virtual std::vector<Entity *> getEntities();
+    virtual void forEachEntity(std::function<void(Entity *)> callback);
+    virtual void forEachEntityIf(std::function<bool(Entity *)> predicate, std::function<void(Entity *)> callback);
 
 protected:
     std::vector<Entity *> _entities;
