@@ -10,11 +10,11 @@ ChunkColumn::~ChunkColumn()
 }
 
 void ChunkColumn::updateBlock(_3d_pos pos, uint16_t id) {
-    _blocks.at(pos.x + pos.y * 16 + pos.z * 16*16) = id;
+    _blocks.at(pos.x + pos.z * 16 + pos.y * 16*16) = id;
 }
 
 uint16_t ChunkColumn::getBlock(_3d_pos pos) {
-    return _blocks.at(pos.x + pos.y * 16 + pos.z * 16*16);
+    return _blocks.at(pos.x + pos.z * 16 + pos.y * 16*16);
 }
 
 const std::array<uint16_t, CHUNK_3D_SIZE*NB_OF_CHUNKS> &ChunkColumn::getBlocks() {
@@ -22,11 +22,11 @@ const std::array<uint16_t, CHUNK_3D_SIZE*NB_OF_CHUNKS> &ChunkColumn::getBlocks()
 }
 
 void ChunkColumn::updateSkyLight(_3d_pos pos, uint8_t light) {
-    _skyLights.at(pos.x + pos.y * 16 + pos.z * 16*16) = light;
+    _skyLights.at(pos.x + pos.z * 16 + pos.y * 16*16) = light;
 }
 
 uint8_t ChunkColumn::getSkyLight(_3d_pos pos) {
-    return _skyLights.at(pos.x + pos.y * 16 + pos.z * 16*16);
+    return _skyLights.at(pos.x + pos.z * 16 + pos.y * 16*16);
 }
 
 const std::array<uint8_t, CHUNK_3D_SIZE*NB_OF_CHUNKS> &ChunkColumn::getSkyLights() {
@@ -34,11 +34,11 @@ const std::array<uint8_t, CHUNK_3D_SIZE*NB_OF_CHUNKS> &ChunkColumn::getSkyLights
 }
 
 void ChunkColumn::updateBlockLight(_3d_pos pos, uint8_t light) {
-    _blockLights.at(pos.x + pos.y * 16 + pos.z * 16*16) = light;
+    _blockLights.at(pos.x + pos.z * 16 + pos.y * 16*16) = light;
 }
 
 uint8_t ChunkColumn::getBlockLight(_3d_pos pos) {
-    return _blockLights.at(pos.x + pos.y * 16 + pos.z * 16*16);
+    return _blockLights.at(pos.x + pos.z * 16 + pos.y * 16*16);
 }
 
 const std::array<uint8_t, CHUNK_3D_SIZE*NB_OF_CHUNKS> &ChunkColumn::getBlockLights() {
@@ -46,11 +46,11 @@ const std::array<uint8_t, CHUNK_3D_SIZE*NB_OF_CHUNKS> &ChunkColumn::getBlockLigh
 }
 
 void ChunkColumn::updateBiome(_3d_pos pos, uint8_t biome) {
-    _biomes.at(pos.x + pos.y * 4 + pos.z * 4*4) = biome;
+    _biomes.at(pos.x + pos.z * 4 + pos.y * 4*4) = biome;
 }
 
 uint8_t ChunkColumn::getBiome(_3d_pos pos) {
-    return _biomes.at(pos.x + pos.y * 4 + pos.z * 4*4);
+    return _biomes.at(pos.x + pos.z * 4 + pos.y * 4*4);
 }
 
 const std::array<uint8_t, BIOME_3D_SIZE*NB_OF_CHUNKS> &ChunkColumn::getBiomes() {
