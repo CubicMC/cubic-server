@@ -7,8 +7,11 @@
 #include <vector>
 
 #include "logging/Logger.hpp"
+#include "Entity.hpp"
 
 class World;
+
+class Entity;
 
 class Dimension
 {
@@ -19,8 +22,10 @@ public:
     virtual void initialize();
     virtual void tick();
     virtual World *getWorld() const;
+    virtual std::vector<Entity *> getEntities();
 
 protected:
+    std::vector<Entity *> _entities;
     logging::Logger *_log;
     World *_world;
     std::atomic<int> _numThreadsWaiting;
