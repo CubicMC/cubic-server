@@ -1,4 +1,5 @@
 #include "Overworld.hpp"
+#include "../world-storage/ChunkColumn.hpp"
 
 void Overworld::tick()
 {
@@ -19,4 +20,11 @@ void Overworld::tick()
 void Overworld::initialize()
 {
     Dimension::initialize();
+}
+
+void Overworld::generateChunk(int x, int z)
+{
+    // Put the generation code specific for this dimension here
+    LDEBUG("Generate - Overworld(%d, %d)", x, z);
+    this->_world->worldStorage.getLevel("overworld").addChunkColumn({x, z}).generate(WorldType::FLAT);
 }
