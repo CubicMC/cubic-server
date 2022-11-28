@@ -9,6 +9,7 @@
 #include "Entity.hpp"
 #include "Chat.hpp"
 #include "logging/Logger.hpp"
+#include "WorldStorage.hpp"
 
 class WorldGroup;
 class Dimension;
@@ -33,6 +34,7 @@ protected:
     logging::Logger *_log;
     std::vector<std::thread *> _processingThreads;
     std::unordered_map<std::string_view, std::shared_ptr<Dimension>> _dimensions;
+    WorldStorage _worldStorage;
 };
 
 
