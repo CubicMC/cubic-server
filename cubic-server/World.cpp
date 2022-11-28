@@ -32,5 +32,9 @@ std::shared_ptr<Dimension> World::getDimension(const std::string_view &name) con
 
 std::vector<Entity *> World::getEntities()
 {
-    return _entities;
+    std::vector<Entity *> entities;
+    for (auto & _dimension : _dimensions)
+        for (auto & _entity : _dimension.second->getEntities())
+            entities.push_back(_entity);
+    return entities;
 }

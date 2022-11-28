@@ -27,7 +27,6 @@ public:
     virtual std::shared_ptr<Dimension> getDimension(const std::string_view &name) const;
 
 protected:
-    std::vector<Entity *> _entities;
     std::shared_ptr<Chat> _chat;
     WorldGroup *_worldGroup;
     logging::Logger *_log;
