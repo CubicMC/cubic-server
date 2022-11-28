@@ -4,18 +4,53 @@
 #include <memory>
 #include "Dimension.hpp"
 
+class Dimension;
+
 class Entity
 {
+    enum class Pose
+    {
+        STANDING,
+        FALL_FLYING,
+        SLEEPING,
+        SWIMMING,
+        SPIN_ATTACK,
+        SNEAKING,
+        LONG_JUMPING,
+        DYING,
+        CROAKING,
+        USING_TONGUE,
+        ROARING,
+        SNIFFING,
+        EMERGING,
+        DIGGING
+    };
+
 public:
     // Subject to change
-    Entity() {};
-    virtual  ~Entity() {};
+    Entity();
+    virtual  ~Entity() = 0;
     virtual void tick() = 0;
     virtual void setDimension(std::shared_ptr<Dimension> dim);
     virtual std::shared_ptr<Dimension> getDimension() const;
 
 protected:
     std::shared_ptr<Dimension> _dim;
+    bool _onFire;
+    bool _crouching;
+    // bool _unused; (previously used for _riding)
+    bool _sprinting;
+    bool _swimming;
+    bool _invisible;
+    bool _glowing;
+    bool _flyingWithElytra;
+    int16_t _airTicks;
+    std::string _customName;
+    bool _customNameVisible;
+    bool _silent;
+    bool _noGravity;
+    Pose _pose;
+    int16_t _tickFrozenInPowderedSnow;
 };
 
 
