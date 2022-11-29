@@ -16,3 +16,8 @@ World *Dimension::getWorld() const
 {
     return _world;
 }
+
+void Dimension::generateChunk(int x, int z)
+{
+
+}

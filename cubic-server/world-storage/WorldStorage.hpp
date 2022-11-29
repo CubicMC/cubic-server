@@ -15,11 +15,11 @@ public:
     void setLevelData(const LevelData &value);
 
     const std::vector<std::string> getLevelNames() const;
-    const Level *getLevel(std::string levelName) const;
-    Level *getLevelM(std::string levelName);
-    void addLevel(std::string levelName, Level *level);
+    const Level &getLevel(std::string levelName) const;
+    Level &getLevelM(std::string levelName);
+    void addLevel(std::string levelName, Level &level);
     void addLevel(std::string levelName);
-    void removeLevel(std::string levelName);
+    void removeLevel(std::string &levelName);
 
 private:
     LevelData _levelData;

@@ -8,7 +8,7 @@
 
 #include "logging/Logger.hpp"
 
-class World;
+#include "World.hpp"
 
 class Dimension
 {
