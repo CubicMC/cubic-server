@@ -286,6 +286,14 @@ void Client::_onPingRequest(const std::shared_ptr<protocol::PingRequest> &pck)
 void Client::_onLoginStart(const std::shared_ptr<protocol::LoginStart> &pck)
 {
     LDEBUG("Got a Login Start");
+    protocol::LoginSuccess resPck;
+    resPck.uuid = pck->has_player_uuid ? pck->player_uuid : 0; // TODO: what to put if there isn't an uuid ?
+    resPck.username = pck->name;
+    resPck.numberOfProperties = 3;
+    resPck.name = ""; // TODO: figure out what to put there
+    resPck.value = ""; // TODO: figure out what to put there
+    resPck.isSigned = false;
+    sendLoginSuccess(resPck);
 }
 
 void Client::_onEncryptionResponse(const std::shared_ptr<protocol::EncryptionResponse> &pck)
@@ -321,6 +329,31 @@ void Client::sendLoginSuccess(const protocol::LoginSuccess &packet)
 
     switchToPlayState();
     LDEBUG("Switched to play state");
+
+    protocol::LoginPlay resPck;
+    resPck.entityID = 0; // TODO: figure out what is this
+    resPck.isHardcore = false; // TODO: something like this this->_player->_dim->getWorld()->getDifficulty();
+    resPck.gamemode = 0; // TODO: something like this this->_player->getGamemode()
+    resPck.previousGamemode = 0; // TODO: something like this this->_player->getPreviousGamemode().has_value() ? this->_player->getPreviousGamemode() : -1;
+    resPck.dimensionCount = 3; // TODO: something like this this->_player->_dim->getWorld()->getDimensions().size();
+    resPck.dimensionNames = std::vector<std::string>({"overworld", "nether", "end"}); // TODO: something like this this->_player->_dim->getWorld()->getDimensions();
+    // resPck.registryCodec
+    resPck.dimensionType = "minecraft:overworld"; // TODO: something like this this->_player->_dim->getDimensionType();
+    resPck.dimensionName = "overworld"; // TODO: something like this this->_player->getDimension()->name;
+    resPck.hashedSeed = 0; // TODO: something like this this->_player->_dim->getWorld()->getHashedSeed();
+    resPck.maxPlayers = 20; // TODO: something like this this->_player->_dim->getWorld()->maxPlayers;
+    resPck.viewDistance = 16; // TODO: something like this->_player->_dim->getWorld()->getViewDistance();
+    resPck.simulationDistance = 16; // TODO: something like this->_player->_dim->getWorld()->getSimulationDistance();
+    resPck.reducedDebugInfo = false; // false for developpment only
+    resPck.enableRespawnScreen = true; // TODO: implement gamerules !this->_player->_dim->getWorld()->getGamerules()["doImmediateRespawn"];
+    resPck.isDebug = false; // TODO: something like this->_player->_dim->getWorld()->isDebugModeWorld;
+    resPck.isFlat = true; // TODO: something like this->_player->_dim->isFlat;
+    resPck.hasDeathLocation = false; // TODO: something like this->_player->hasDeathLocation;
+    if (resPck.hasDeathLocation) {
+        resPck.deathDimensionName = ""; // TODO: something like this->_player->deathDimensionName;
+        resPck.deathLocation = {0, 0, 0}; // TODO: something like this->_player->deathLocation;
+    }
+    sendLoginPlay(resPck);
 }
 
 void Client::sendLoginPlay(const protocol::LoginPlay &packet)
