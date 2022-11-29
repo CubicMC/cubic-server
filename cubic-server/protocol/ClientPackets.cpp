@@ -26,23 +26,14 @@ std::shared_ptr<std::vector<uint8_t>> protocol::createStatusResponse(const Statu
 std::shared_ptr<std::vector<uint8_t>> protocol::createLoginSuccess(const LoginSuccess &in)
 {
     std::vector<uint8_t> payload;
-    in.isSigned ?
-    serialize(payload,
-        in.uuid, addUUID,
-        in.username, addString,
-        in.numberOfProperties, addVarInt,
-        in.name, addString,
-        in.value, addString,
-        in.isSigned, addBoolean,
-        in.signature.value(), addString)
-    :
-    serialize(payload,
-        in.uuid, addUUID,
+    serialize(payload, in.uuid, addUUID,
         in.username, addString,
         in.numberOfProperties, addVarInt,
         in.name, addString,
         in.value, addString,
         in.isSigned, addBoolean);
+    if (in.isSigned)
+        serialize(payload, in.signature.value(), addString);
     auto packet = std::make_shared<std::vector<uint8_t>>();
     finalize(*packet.get(), payload, (int32_t)ClientPacketID::LoginSuccess);
     return packet;
@@ -51,46 +42,29 @@ std::shared_ptr<std::vector<uint8_t>> protocol::createLoginSuccess(const LoginSu
 std::shared_ptr<std::vector<uint8_t>> protocol::createLoginPlay(const LoginPlay &in)
 {
     std::vector<uint8_t> payload;
-    in.hasDeathLocation ?
+    serialize(payload,
+        in.entityID, addVarInt,
+        in.isHardcore, addBoolean,
+        in.gamemode, addByte,
+        in.previousGamemode, addByte,
+        in.dimensionCount, addVarInt,
+        in.dimensionNames, addStringArray,
+        // in.registryCodec, addNBTCompound,
+        in.dimensionType, addString,
+        in.dimensionName, addString,
+        in.hashedSeed, addLong,
+        in.maxPlayers, addVarInt,
+        in.viewDistance, addVarInt,
+        in.simulationDistance, addVarInt,
+        in.reducedDebugInfo, addBoolean,
+        in.enableRespawnScreen, addBoolean,
+        in.isDebug, addBoolean,
+        in.isFlat, addBoolean,
+        in.hasDeathLocation, addBoolean);
+    if (in.hasDeathLocation)
         serialize(payload,
-            in.entityID, addVarInt,
-            in.isHardcore, addBoolean,
-            in.gamemode, addByte,
-            in.previousGamemode, addByte,
-            in.dimensionCount, addVarInt,
-            in.dimensionNames, addStringArray,
-            in.dimensionType, addString,
-            in.dimensionName, addString,
-            in.hashedSeed, addLong,
-            in.maxPlayers, addVarInt,
-            in.viewDistance, addVarInt,
-            in.simulationDistance, addVarInt,
-            in.reducedDebugInfo, addBoolean,
-            in.enableRespawnScreen, addBoolean,
-            in.isDebug, addBoolean,
-            in.isFlat, addBoolean,
-            in.hasDeathLocation, addBoolean,
             in.deathDimensionName.value(), addString,
-            in.deathLocation.value(), addPosition)
-    :
-        serialize(payload,
-            in.entityID, addVarInt,
-            in.isHardcore, addBoolean,
-            in.gamemode, addByte,
-            in.previousGamemode, addByte,
-            in.dimensionCount, addVarInt,
-            in.dimensionNames, addStringArray,
-            in.dimensionType, addString,
-            in.dimensionName, addString,
-            in.hashedSeed, addLong,
-            in.maxPlayers, addVarInt,
-            in.viewDistance, addVarInt,
-            in.simulationDistance, addVarInt,
-            in.reducedDebugInfo, addBoolean,
-            in.enableRespawnScreen, addBoolean,
-            in.isDebug, addBoolean,
-            in.isFlat, addBoolean,
-            in.hasDeathLocation, addBoolean);
+            in.deathLocation.value(), addPosition);
     auto packet = std::make_shared<std::vector<uint8_t>>();
     finalize(*packet.get(), payload, (int32_t)ClientPacketID::LoginPlay);
     return packet;
