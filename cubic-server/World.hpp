@@ -9,7 +9,7 @@
 #include "Entity.hpp"
 #include "Chat.hpp"
 #include "logging/Logger.hpp"
-#include "WorldStorage.hpp"
+#include "world-storage/WorldStorage.hpp"
 
 class WorldGroup;
 class Dimension;
@@ -26,6 +26,7 @@ public:
     virtual std::shared_ptr<Chat> getChat() const;
     virtual std::vector<Entity *> getEntities();
     virtual std::shared_ptr<Dimension> getDimension(const std::string_view &name) const;
+    virtual WorldStorage &getWorldStorage();
 
 protected:
     std::vector<Entity *> _entities;

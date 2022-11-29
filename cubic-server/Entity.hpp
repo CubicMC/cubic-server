@@ -2,7 +2,7 @@
 #define CUBICSERVER_ENTITY_HPP
 
 #include <memory>
-#include "Dimension.hpp"
+class Dimension;
 
 class Entity
 {

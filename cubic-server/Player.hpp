@@ -5,6 +5,7 @@
 #include "Entity.hpp"
 #include "protocol/ServerPackets.hpp"
 #include "logging/Logger.hpp"
+#include "Dimension.hpp"
 
 class Client;
 
