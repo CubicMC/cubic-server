@@ -81,3 +81,20 @@ std::shared_ptr<std::vector<uint8_t>> protocol::createWorldEvent(const WorldEven
     finalize(*packet.get(), payload, (int32_t) ClientPacketID::WorldEvent);
     return packet;
 }
+
+std::shared_ptr<SynchronizePlayerPosition> protocol::parseSynchronizePlayerPosition(std::vector<uint8_t> &buffer)
+{
+    auto h = std::make_shared<SynchronizePlayerPosition>();
+    auto at = buffer.data();
+
+    parse(at, buffer.data() + buffer.size() - 1, *h,
+        popDouble, &SynchronizePlayerPosition::x,
+        popDouble, &SynchronizePlayerPosition::y,
+        popDouble, &SynchronizePlayerPosition::z,
+        popFloat, &SynchronizePlayerPosition::yaw,
+        popFloat, &SynchronizePlayerPosition::pitch,
+        popByte, &SynchronizePlayerPosition::flags,
+        popVarInt, &SynchronizePlayerPosition::teleportId,
+        popBoolean, &SynchronizePlayerPosition::dismountVehicle);
+    return h;
+}

@@ -18,7 +18,12 @@ namespace protocol
         Ping = 0x01,
         LoginSuccess = 0x02,
         WorldEvent = 0x20,
-        PlayerChatMessage = 0x30
+        PlayerChatMessage = 0x30,
+        SynchronizePlayerPosition = 0x36
+    };
+
+    struct BaseClientPacket {
+        virtual ~BaseClientPacket() = default;
     };
 
     struct PingResponse
@@ -77,6 +82,19 @@ namespace protocol
 
     std::shared_ptr<std::vector<uint8_t>> createWorldEvent(const WorldEvent &);
 
+    struct SynchronizePlayerPosition : BaseClientPacket
+    {
+        double x;
+        double y;
+        double z;
+        float yaw;
+        float pitch;
+        int8_t flags;
+        int32_t teleportId;
+        bool dismountVehicle;
+    };
+
+    std::shared_ptr<SynchronizePlayerPosition> parseSynchronizePlayerPosition(std::vector<uint8_t> &buffer);
 }
 
 #endif /* A7ADDD9E_6961_4A3D_AAB2_DF37DB6915F0 */
