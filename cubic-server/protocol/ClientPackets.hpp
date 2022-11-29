@@ -89,7 +89,7 @@ namespace protocol
         double z;
         float yaw;
         float pitch;
-        int8_t flags;
+        uint8_t flags; // must be a signed byte
         int32_t teleportId;
         bool dismountVehicle;
     };
