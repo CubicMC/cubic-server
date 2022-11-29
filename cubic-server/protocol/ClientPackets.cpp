@@ -23,6 +23,31 @@ std::shared_ptr<std::vector<uint8_t>> protocol::createStatusResponse(const Statu
     return packet;
 }
 
+std::shared_ptr<std::vector<uint8_t>> protocol::createLoginSuccess(const LoginSuccess &in)
+{
+    std::vector<uint8_t> payload;
+    in.isSigned ?
+    serialize(payload,
+        in.uuid, addUUID,
+        in.username, addString,
+        in.numberOfProperties, addVarInt,
+        in.name, addString,
+        in.value, addString,
+        in.isSigned, addBoolean,
+        in.signature.value(), addString)
+    :
+    serialize(payload,
+        in.uuid, addUUID,
+        in.username, addString,
+        in.numberOfProperties, addVarInt,
+        in.name, addString,
+        in.value, addString,
+        in.isSigned, addBoolean);
+    auto packet = std::make_shared<std::vector<uint8_t>>();
+    finalize(*packet.get(), payload, (int32_t)ClientPacketID::LoginSuccess);
+    return packet;
+}
+
 std::shared_ptr<std::vector<uint8_t>> protocol::createPlayerChatMessage(const PlayerChatMessage &in)
 {
     std::vector<uint8_t> payload;

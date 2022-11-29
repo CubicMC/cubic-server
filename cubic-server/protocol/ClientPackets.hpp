@@ -6,6 +6,7 @@
 #include <memory>
 #include <vector>
 #include <optional>
+#include <variant>
 
 #include "Structures.hpp"
 
@@ -15,6 +16,7 @@ namespace protocol
     enum class ClientPacketID : int32_t {
         Status = 0x00,
         Ping = 0x01,
+        LoginSuccess = 0x02,
         WorldEvent = 0x20,
         PlayerChatMessage = 0x30
     };
@@ -32,6 +34,21 @@ namespace protocol
     };
 
     std::shared_ptr<std::vector<uint8_t>> createStatusResponse(const StatusResponse &);
+
+    struct LoginSuccess
+    {
+        __int128 uuid;
+        std::string username;
+        int32_t numberOfProperties;
+        // Don't know how to build a Property thing that is an array of strings and bools
+        // std::array<std::variant<std::string, bool>, 4> properties;
+        std::string name;
+        std::string value;
+        bool isSigned;
+        std::optional<std::string> signature;
+    };
+
+    std::shared_ptr<std::vector<uint8_t>> createLoginSuccess(const LoginSuccess &);
 
     struct PlayerChatMessage
     {
