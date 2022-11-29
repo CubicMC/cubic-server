@@ -20,8 +20,10 @@ void WorldGroup::run()
         }
         auto end_time = std::chrono::system_clock::now();
         auto compute_time = end_time - start_time;
-        if (compute_time > std::chrono::milliseconds(MS_PER_TICK)) // If this happens there is a serious problem
+        if (compute_time > std::chrono::milliseconds(MS_PER_TICK)) {// If this happens there is a serious problem
+            LWARN("Can't keep up! Did the system time change, or is the server overloaded? Running %dms behind, skipping %d tick(s)", std::to_string(compute_time.count()), std::to_string(int(compute_time.count()/std::chrono::milliseconds(MS_PER_TICK))));
             continue;
+        }
         std::this_thread::sleep_for(std::chrono::milliseconds(MS_PER_TICK) - compute_time);
     }
 }
