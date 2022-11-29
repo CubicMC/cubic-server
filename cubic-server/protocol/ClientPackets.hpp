@@ -9,6 +9,7 @@
 #include <variant>
 
 #include "Structures.hpp"
+#include "typeSerialization.hpp"
 
 namespace protocol
 {
@@ -18,6 +19,7 @@ namespace protocol
         Ping = 0x01,
         LoginSuccess = 0x02,
         WorldEvent = 0x20,
+        LoginPlay = 0x23,
         PlayerChatMessage = 0x30,
         SynchronizePlayerPosition = 0x36
     };
@@ -54,6 +56,32 @@ namespace protocol
     };
 
     std::shared_ptr<std::vector<uint8_t>> createLoginSuccess(const LoginSuccess &);
+
+    struct LoginPlay
+    {
+        int32_t entityID;
+        bool isHardcore;
+        uint8_t gamemode;
+        uint8_t previousGamemode; // must be a signed byte
+        int32_t dimensionCount;
+        std::vector<std::string> dimensionNames;
+        // NBT Tag Compound registryCodec;
+        std::string dimensionType;
+        std::string dimensionName;
+        long hashedSeed;
+        int32_t maxPlayers;
+        int32_t viewDistance;
+        int32_t simulationDistance;
+        bool reducedDebugInfo;
+        bool enableRespawnScreen;
+        bool isDebug;
+        bool isFlat;
+        bool hasDeathLocation;
+        std::optional<std::string> deathDimensionName;
+        std::optional<Position> deathLocation;
+    };
+
+    std::shared_ptr<std::vector<uint8_t>> createLoginPlay(const LoginPlay &);
 
     struct PlayerChatMessage
     {

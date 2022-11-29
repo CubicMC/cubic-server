@@ -323,6 +323,13 @@ void Client::sendLoginSuccess(const protocol::LoginSuccess &packet)
     LDEBUG("Switched to play state");
 }
 
+void Client::sendLoginPlay(const protocol::LoginPlay &packet)
+{
+    auto pck = protocol::createLoginPlay(packet);
+    _sendData(*pck);
+    LDEBUG("Sent a login play");
+}
+
 void Client::sendChatMessageResponse(const protocol::PlayerChatMessage &packet)
 {
     auto pck = protocol::createPlayerChatMessage(packet);

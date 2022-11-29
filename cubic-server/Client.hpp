@@ -64,6 +64,7 @@ public:
     void sendStatusResponse(const std::string &json);
     void sendPingResponse(int64_t payload);
     void sendLoginSuccess(const protocol::LoginSuccess &packet);
+    void sendLoginPlay(const protocol::LoginPlay &packet);
     void sendChatMessageResponse(const protocol::PlayerChatMessage &packet);
     void sendWorldEvent(const protocol::WorldEvent &packet);
 
