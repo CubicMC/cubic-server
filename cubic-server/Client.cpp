@@ -313,6 +313,16 @@ void Client::sendPingResponse(int64_t payload)
     LDEBUG("Sent a ping response");
 }
 
+void Client::sendLoginSuccess(const protocol::LoginSuccess &packet)
+{
+    auto pck = protocol::createLoginSuccess(packet);
+    _sendData(*pck);
+    LDEBUG("Sent a login success");
+
+    switchToPlayState();
+    LDEBUG("Switched to play state");
+}
+
 void Client::sendChatMessageResponse(const protocol::PlayerChatMessage &packet)
 {
     auto pck = protocol::createPlayerChatMessage(packet);

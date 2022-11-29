@@ -63,7 +63,7 @@ public:
     // All the send packets go here
     void sendStatusResponse(const std::string &json);
     void sendPingResponse(int64_t payload);
-    // Should I just pass the packet directly?
+    void sendLoginSuccess(const protocol::LoginSuccess &packet);
     void sendChatMessageResponse(const protocol::PlayerChatMessage &packet);
     void sendWorldEvent(const protocol::WorldEvent &packet);
 
