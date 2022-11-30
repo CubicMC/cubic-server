@@ -15,14 +15,15 @@ public:
     void setLevelData(const LevelData &value);
 
     const std::vector<std::string> getLevelNames() const;
-    const Level &getLevel(std::string &levelName) const;
-    void addLevel(std::string &levelName, Level &level);
-    void addLevel(std::string &levelName);
-    void removeLevel(std::string &levelName);
+    const Level *getLevel(std::string levelName) const;
+    Level *getLevelM(std::string levelName);
+    void addLevel(std::string levelName, Level *level);
+    void addLevel(std::string levelName);
+    void removeLevel(std::string levelName);
 
 private:
     LevelData _levelData;
-    std::unordered_map<std::string, Level &> _levels;
+    std::unordered_map<std::string, Level *> _levels;
 };
 
 #endif // WORLD_STORAGE_HPP
