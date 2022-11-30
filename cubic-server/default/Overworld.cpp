@@ -21,6 +21,13 @@ void Overworld::tick()
 void Overworld::initialize()
 {
     Dimension::initialize();
+    for (int x = -1, z = -1; x != 1 && z != 1; x++) {
+        generateChunk(x, z);
+        if (x == 1) {
+            x = -1;
+            z++;
+        }
+    }
 }
 
 void Overworld::generateChunk(int x, int z)
