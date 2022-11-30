@@ -27,23 +27,29 @@ const std::vector<std::string> WorldStorage::getLevelNames() const
     return levelNames;
 }
 
-const Level &WorldStorage::getLevel(std::string &levelName) const
+const Level *WorldStorage::getLevel(std::string levelName) const
 {
     return _levels.at(levelName);
 }
 
-void WorldStorage::addLevel(std::string &levelName, Level &level)
+Level *WorldStorage::getLevelM(std::string levelName)
+{
+    return _levels.at(levelName);
+}
+
+void WorldStorage::addLevel(std::string levelName, Level *level)
 {
     _levels.insert({levelName, level});
 }
 
-void WorldStorage::addLevel(std::string &levelName)
+void WorldStorage::addLevel(std::string levelName)
 {
-    Level level;
+    Level *level;
     _levels.insert({levelName, level});
 }
 
-void WorldStorage::removeLevel(std::string &levelName)
+void WorldStorage::removeLevel(std::string levelName)
 {
+    free(_levels.at(levelName));
     _levels.erase(levelName);
 }

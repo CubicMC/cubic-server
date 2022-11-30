@@ -32,16 +32,16 @@ public:
     Level();
     ~Level();
 
-    void addChunkColumn(_2d_pos pos, ChunkColumn &chunkColumn);
-    void addChunkColumn(_2d_pos pos);
+    ChunkColumn *addChunkColumn(_2d_pos pos, ChunkColumn *chunkColumn);
+    ChunkColumn *addChunkColumn(_2d_pos pos);
     /** Get the chunk from chunk coordinate */
-    ChunkColumn &getChunkColumn(_2d_pos pos);
+    ChunkColumn *getChunkColumn(_2d_pos pos);
     /** Get the chunk from raw coordinate */
-    ChunkColumn &getChunkColumn(int x, int z);
+    ChunkColumn *getChunkColumn(int x, int z);
     void removeChunkColumn(_2d_pos pos);
 
 private:
-    std::unordered_map<_2d_pos, ChunkColumn &> _chunkColumns;
+    std::unordered_map<_2d_pos, ChunkColumn *> _chunkColumns;
 };
 
 #endif // LEVEL_HPP
