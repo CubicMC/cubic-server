@@ -8,13 +8,13 @@ Level::~Level()
 {
 }
 
-ChunkColumn &Level::addChunkColumn(_2d_pos pos, ChunkColumn &chunkColumn) {
+ChunkColumn *Level::addChunkColumn(_2d_pos pos, ChunkColumn *chunkColumn) {
     _chunkColumns.insert({pos, chunkColumn});
     return _chunkColumns.at(pos);
 }
 
-ChunkColumn &Level::addChunkColumn(_2d_pos pos) {
-    ChunkColumn chunkColumn;
+ChunkColumn *Level::addChunkColumn(_2d_pos pos) {
+    ChunkColumn *chunkColumn;
     _chunkColumns.insert({pos, chunkColumn});
     return _chunkColumns.at(pos);
 }

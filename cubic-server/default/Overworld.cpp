@@ -34,5 +34,5 @@ void Overworld::generateChunk(int x, int z)
 {
     LDEBUG("Generate - Overworld(" + std::to_string(x) + ", " + std::to_string(x) + ")");
     _2d_pos pos{x, z};
-    _world->getWorldStorage().getLevelM("overworld").addChunkColumn(pos).generate(WorldType::FLAT);
+    _world->getWorldStorage().getLevelM("overworld")->addChunkColumn(pos)->generate(WorldType::FLAT);
 }
