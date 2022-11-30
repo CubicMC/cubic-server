@@ -22,29 +22,6 @@ struct _3d_pos {
 struct block_entity {
 };
 
-// struct entity {
-    // tag short air
-    // tag string customName
-    // tag byte customNameVisible
-    // tag float fallDistance
-    // tag short fire
-    // tag byte glowing
-    // tag byte hasVisualFire
-    // tag string id
-    // tag byte invulnerable
-    // tag list motion
-    // tag byte noGravity
-    // tag byte onGround
-    // tag list passengers
-    // tag int portalCooldown
-    // tag list pos
-    // tag list rotation
-    // tag byte silent
-    // tag list tags
-    // tag int ticksFrozen
-    // tag int array uuid
-// };
-
 struct height_map {
         std::array<uint16_t, CHUNK_2D_SIZE> motionBlocking;
         std::array<uint16_t, CHUNK_2D_SIZE> worldSurface;
