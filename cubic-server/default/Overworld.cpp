@@ -21,18 +21,21 @@ void Overworld::tick()
 void Overworld::initialize()
 {
     Dimension::initialize();
-    for (int x = -1, z = -1; x != 1 && z != 1; x++) {
+    int x = -1, z = -1;
+    while (x < 1 || z < 1) {
         generateChunk(x, z);
         if (x == 1) {
             x = -1;
             z++;
-        }
+        } else
+            x++;
     }
+    generateChunk(x, z);
 }
 
 void Overworld::generateChunk(int x, int z)
 {
-    LDEBUG("Generate - Overworld(" + std::to_string(x) + ", " + std::to_string(x) + ")");
+    LDEBUG("Generate - Overworld(" + std::to_string(x) + ", " + std::to_string(z) + ")");
     _2d_pos pos{x, z};
     _world->getWorldStorage().getLevelM("overworld")->addChunkColumn(pos)->generate(WorldType::FLAT);
 }
