@@ -44,12 +44,11 @@ void WorldStorage::addLevel(std::string levelName, Level *level)
 
 void WorldStorage::addLevel(std::string levelName)
 {
-    Level *level;
-    _levels.insert({levelName, level});
+    _levels.insert({levelName, new Level()});
 }
 
 void WorldStorage::removeLevel(std::string levelName)
 {
-    free(_levels.at(levelName));
+    delete _levels.at(levelName);
     _levels.erase(levelName);
 }

@@ -14,8 +14,7 @@ ChunkColumn *Level::addChunkColumn(_2d_pos pos, ChunkColumn *chunkColumn) {
 }
 
 ChunkColumn *Level::addChunkColumn(_2d_pos pos) {
-    ChunkColumn *chunkColumn;
-    _chunkColumns.insert({pos, chunkColumn});
+    _chunkColumns.insert({pos, new ChunkColumn()});
     return _chunkColumns.at(pos);
 }
 
@@ -29,6 +28,6 @@ ChunkColumn *Level::getChunkColumn(int x, int z) {
 }
 
 void Level::removeChunkColumn(_2d_pos pos) {
-    free(_chunkColumns.at(pos));
+    delete _chunkColumns.at(pos);
     _chunkColumns.erase(pos);
 }
