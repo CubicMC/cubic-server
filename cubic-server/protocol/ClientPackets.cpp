@@ -49,7 +49,7 @@ std::shared_ptr<std::vector<uint8_t>> protocol::createLoginPlay(const LoginPlay 
         in.previousGamemode, addByte,
         in.dimensionCount, addVarInt,
         in.dimensionNames, addStringArray,
-        // in.registryCodec, addNBTCompound,
+        in.registryCodec, addNBTCompound,
         in.dimensionType, addString,
         in.dimensionName, addString,
         in.hashedSeed, addLong,
