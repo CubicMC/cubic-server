@@ -6,40 +6,10 @@
 #include <ParseExceptions.hpp>
 #include <iostream>
 
+#include "Structures.hpp"
+
 namespace protocol
 {
-    struct Position
-    {
-        int64_t x;
-        int64_t z;
-        int64_t y;
-    };
-
-    enum class ClientCommandActionID
-    {
-        perform_respawn = 0,
-        request_stats = 1,
-    };
-
-    enum class ClientInformationChatMode
-    {
-        enabled = 0,
-        commands_only = 1,
-        hidden = 2,
-    };
-
-    enum class ClientInformationMainHand
-    {
-        left = 0,
-        right = 1,
-    };
-
-    struct Instant
-    {
-        long seconds;
-        int nanos;
-    };
-
     constexpr int32_t popVarInt(uint8_t *&at, uint8_t *eof)
     {
         int32_t value = 0;
@@ -88,6 +58,12 @@ namespace protocol
             if (position >= 64)
                 throw VarIntOverflow("VarInt exceeds max length");
         }
+    }
+
+    constexpr void addInt(std::vector<uint8_t> &out, const int32_t &data)
+    {
+        for (int i = 0; i < 4; i++)
+            out.push_back((data >> (8 * i)) & 0xFF);
     }
 
     constexpr void addVarInt(std::vector<uint8_t> &out, const int32_t &data)
@@ -143,6 +119,12 @@ namespace protocol
     constexpr void addByte(std::vector<uint8_t> &out, const uint8_t &data)
     {
         out.push_back(data);
+    }
+
+    constexpr void addShort(std::vector<uint8_t> &out, const uint16_t &data)
+    {
+        out.push_back((data >> 8) & 0xFF);
+        out.push_back(data & 0xFF);
     }
 
     constexpr uint16_t popUnsignedShort(uint8_t *&at, uint8_t *eof)
@@ -334,6 +316,38 @@ namespace protocol
     constexpr double popDouble(uint8_t *&at, uint8_t *eof)
     {
         return (double) popLong(at, eof);
+    }
+
+    constexpr void addBlockEntity(std::vector<uint8_t> &out, const BlockEntity &data)
+    {
+        addByte(out, data.sectionCoordinate);
+        addShort(out, data.height);
+        addVarInt(out, data.type);
+        // addNBT(out, data.nbt);
+    }
+
+    constexpr void addBlockEntities(std::vector<uint8_t> &out, const std::vector<BlockEntity> &data)
+    {
+        addVarInt(out, data.size());
+        for (auto i : data)
+            addBlockEntity(out, i);
+    }
+
+    constexpr void addBitSet(std::vector<uint8_t> &out, const std::vector<int64_t> &data)
+    {
+        addVarInt(out, data.size());
+        for (auto i : data)
+            addLong(out, i);
+    }
+
+    constexpr void addLightArray(std::vector<uint8_t> &out, const std::vector<std::array<uint8_t, 2048>> &data)
+    {
+        addVarInt(out, data.size());
+        for (auto &lightArray : data) {
+            addVarInt(out, lightArray.size());
+            for (auto light : lightArray)
+                addByte(out, light);
+        }
     }
 }
 

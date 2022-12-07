@@ -63,8 +63,8 @@ public:
     // All the send packets go here
     void sendStatusResponse(const std::string &json);
     void sendPingResponse(int64_t payload);
-    // Should I just pass the packet directly?
     void sendChatMessageResponse(const protocol::PlayerChatMessage &packet);
+    void sendChunkDataAndLightUpdate(const protocol::ChunkDataAndLightUpdate &packet);
 
 private:
     void _handlePacket();
