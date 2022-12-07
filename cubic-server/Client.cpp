@@ -323,7 +323,6 @@ void Client::sendChatMessageResponse(const protocol::PlayerChatMessage &packet)
 
 void Client::sendChunkDataAndLightUpdate(const protocol::ChunkDataAndLightUpdate &packet)
 {
-    // this->_player->getDimension()->
     auto pck = protocol::createChunkDataAndLightUpdate(packet);
     _sendData(*pck);
 
