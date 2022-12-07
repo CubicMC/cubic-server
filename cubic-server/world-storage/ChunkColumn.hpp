@@ -22,34 +22,17 @@ struct _3d_pos {
 struct block_entity {
 };
 
-// struct entity {
-    // tag short air
-    // tag string customName
-    // tag byte customNameVisible
-    // tag float fallDistance
-    // tag short fire
-    // tag byte glowing
-    // tag byte hasVisualFire
-    // tag string id
-    // tag byte invulnerable
-    // tag list motion
-    // tag byte noGravity
-    // tag byte onGround
-    // tag list passengers
-    // tag int portalCooldown
-    // tag list pos
-    // tag list rotation
-    // tag byte silent
-    // tag list tags
-    // tag int ticksFrozen
-    // tag int array uuid
-// };
-
 struct height_map {
         std::array<uint16_t, CHUNK_2D_SIZE> motionBlocking;
         std::array<uint16_t, CHUNK_2D_SIZE> worldSurface;
 };
 
+enum class WorldType {
+    OVERWORLD,
+    NETHER,
+    END,
+    FLAT
+};
 
 class ChunkColumn
 {
@@ -93,6 +76,8 @@ public:
 
     void updateHeightMap(void);
     const height_map &getHeightMap(void);
+
+    void generate(WorldType worldType);
 private:
     std::array<uint16_t, CHUNK_3D_SIZE*NB_OF_CHUNKS> _blocks;
     std::array<uint8_t, CHUNK_3D_SIZE*NB_OF_CHUNKS> _skyLights;
@@ -102,6 +87,11 @@ private:
     int64_t _tickData;
     std::deque<Entity *> _entities;
     height_map _heightMap;
+
+    void _generateOverworld();
+    void _generateNether();
+    void _generateEnd();
+    void _generateFlat();
 };
 
 #endif // CHUNKCOLUMN_HPP

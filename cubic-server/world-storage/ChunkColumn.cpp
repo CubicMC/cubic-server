@@ -121,3 +121,48 @@ void ChunkColumn::updateHeightMap(void){
 const height_map &ChunkColumn::getHeightMap() {
     return _heightMap;
 }
+
+void ChunkColumn::generate(WorldType worldType) {
+    switch (worldType)
+    {
+    case WorldType::OVERWORLD:
+        _generateOverworld();
+        break;
+    case WorldType::NETHER:
+        _generateNether();
+        break;
+    case WorldType::END:
+        _generateEnd();
+        break;
+    case WorldType::FLAT:
+        _generateFlat();
+        break;
+    default:
+        break;
+    }
+}
+
+void ChunkColumn::_generateOverworld() {
+}
+
+void ChunkColumn::_generateNether() {
+}
+
+void ChunkColumn::_generateEnd() {
+}
+
+void ChunkColumn::_generateFlat() {
+    for (int x = 0; x < 16; x++) {
+        for (int z = 0; z < 16; z++) {
+            for (int y = 0; y < 4; y++) {
+                if (y == 0) {
+                    updateBlock({x, y, z}, 7);
+                } else if (y == 1 || y == 2) {
+                    updateBlock({x, y, z}, 3);
+                } else {
+                    updateBlock({x, y, z}, 2);
+                }
+            }
+        }
+    }
+}
