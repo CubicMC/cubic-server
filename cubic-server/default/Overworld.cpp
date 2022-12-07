@@ -2,6 +2,8 @@
 #include "../world-storage/WorldStorage.hpp"
 #include "../world-storage/ChunkColumn.hpp"
 
+#define NB_SPAWN_CHUNKS 19
+
 void Overworld::tick()
 {
     _numThreadsWaiting++;
@@ -21,11 +23,11 @@ void Overworld::tick()
 void Overworld::initialize()
 {
     Dimension::initialize();
-    int x = -1, z = -1;
-    while (x < 1 || z < 1) {
+    int x = -NB_SPAWN_CHUNKS/2, z = -NB_SPAWN_CHUNKS/2;
+    while (x < NB_SPAWN_CHUNKS/2 || z < NB_SPAWN_CHUNKS/2) {
         generateChunk(x, z);
-        if (x == 1) {
-            x = -1;
+        if (x == NB_SPAWN_CHUNKS/2) {
+            x = -NB_SPAWN_CHUNKS/2;
             z++;
         } else
             x++;
