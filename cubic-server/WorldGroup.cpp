@@ -1,5 +1,5 @@
 #include "WorldGroup.hpp"
-#include "Logger.hpp"
+#include "logging/Logger.hpp"
 #include "Server.hpp"
 
 #include <utility>

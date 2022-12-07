@@ -1,6 +1,8 @@
 # Create a library called "Hello" which includes the source file "hello.cxx".
 # The extension is already found. Any number of sources could be listed here.
-add_library (ConfigHandler ConfigHandler.cpp)
+target_sources (${CMAKE_PROJECT_NAME} PRIVATE
+        ConfigHandler.cpp
+        ConfigHandler.hpp)
 
 include(FetchContent)
 
@@ -15,10 +17,4 @@ if(NOT yaml-cpp_POPULATED)
   add_subdirectory(${yaml-cpp_SOURCE_DIR} ${yaml-cpp_BINARY_DIR})
 endif()
 
-target_link_libraries(ConfigHandler PUBLIC yaml-cpp::yaml-cpp)
-
-target_link_libraries(ConfigHandler PRIVATE Logging)
-
-# Make sure the compiler can find include files for our Hello library
-# when other libraries or executables link to Hello
-target_include_directories (ConfigHandler PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
+target_link_libraries(${CMAKE_PROJECT_NAME} PUBLIC yaml-cpp::yaml-cpp)

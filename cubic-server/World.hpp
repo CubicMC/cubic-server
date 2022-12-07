@@ -8,7 +8,7 @@
 
 #include "Entity.hpp"
 #include "Chat.hpp"
-#include "Logger.hpp"
+#include "logging/Logger.hpp"
 
 class WorldGroup;
 class Dimension;

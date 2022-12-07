@@ -2,11 +2,11 @@
 #define D7286F40_D05F_4DC1_9A04_28C9F7417C4E
 
 #include <string>
-#include <stdint.h>
-#include <ParseExceptions.hpp>
+#include <cstdint>
 #include <iostream>
 
 #include "Structures.hpp"
+#include "ParseExceptions.hpp"
 
 namespace protocol
 {

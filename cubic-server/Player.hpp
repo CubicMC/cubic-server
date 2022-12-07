@@ -3,8 +3,8 @@
 
 #include "Client.hpp"
 #include "Entity.hpp"
-#include "ServerPackets.hpp"
-#include "Logger.hpp"
+#include "protocol/ServerPackets.hpp"
+#include "logging/Logger.hpp"
 
 class Client;
 

@@ -5,9 +5,9 @@
 #include <memory>
 
 #include "Client.hpp"
-#include "ServerPackets.hpp"
+#include "protocol/ServerPackets.hpp"
 #include "nlohmann/json.hpp"
-#include "ClientPackets.hpp"
+#include "protocol/ClientPackets.hpp"
 #include "Server.hpp"
 
 Client::Client(int sockfd, struct sockaddr_in6 addr)

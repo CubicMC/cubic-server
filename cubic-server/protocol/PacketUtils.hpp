@@ -5,7 +5,7 @@
 #include <memory>
 #include <vector>
 #include <functional>
-#include <typeSerialization.hpp>
+#include "typeSerialization.hpp"
 
 namespace protocol
 {
