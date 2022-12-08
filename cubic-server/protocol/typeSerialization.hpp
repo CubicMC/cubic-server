@@ -91,6 +91,12 @@ namespace protocol
         }
     }
 
+    constexpr void addInt(std::vector<uint8_t> &out, const int32_t &data)
+    {
+        for (int i = 0; i < 4; i++)
+            out.push_back((data >> (i * 8)) & 0xFF);
+    }
+
     constexpr void addVarInt(std::vector<uint8_t> &out, const int32_t &data)
     {
         constexpr uint8_t CONTINUE_BIT = 0x80;
