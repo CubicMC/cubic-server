@@ -148,15 +148,6 @@ namespace protocol
             out.push_back((data >> (120 - i * 8)) & 0xFF);
     }
 
-    // add vector of long
-    constexpr void addBitSet(std::vector<uint8_t> &out, const std::vector<long> &data)
-    {
-        addVarInt(out, data.size());
-
-        for (long i : data)
-            addLong(out, i);
-    }
-
     template<typename T, void(*add)(std::vector<uint8_t> &, const T&)>
     constexpr void addArray(std::vector<uint8_t> &out, const std::vector<T> &data)
     {
