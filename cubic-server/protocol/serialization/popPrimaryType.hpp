@@ -1,7 +1,7 @@
 /*
-    All pop functions from the basic types specified in the protocol
-    Some of them have a specific name in the protocol, but they are sent a primitive type
-    https://wiki.vg/index.php?title=Protocol&oldid=17753
+** All pop functions from the basic types specified in the protocol
+** Some of them have a specific name in the protocol, but they are sent as a primitive type
+** https://wiki.vg/index.php?title=Protocol&oldid=17753
 */
 
 #pragma once
@@ -149,6 +149,28 @@ namespace protocol
         return popString(at, eof);
     }
 
+    // TODO: Fucking hell, this is a mess, why is this not an nbt ?
+    // constexpr EntityMetadata popEntityMetadata(uint8_t *&at, uint8_t *eof)
+    // {
+    // }
+
+    constexpr Slot popSlot(uint8_t *&at, uint8_t *eof)
+    {
+        Slot slot;
+        slot.present = popBoolean(at, eof);
+        if (slot.present) {
+            slot.itemID = popVarInt(at, eof);
+            slot.itemCount = popByte(at, eof);
+            // slot.nbt = popNbt(at, eof);
+        }
+        return slot;
+    }
+
+    // TODO: Nbt, nothing to see here. I could but why should I ?
+    // constexpr NBT popNBT(uint8_t *&at, uint8_t *eof)
+    // {
+    // }
+
     constexpr __int128 popUUID(uint8_t *&at, uint8_t *eof)
     {
         if (eof - at < 15)
@@ -160,17 +182,6 @@ namespace protocol
             value = (value << 8) + *at++;
 
         return value;
-    }
-
-    constexpr std::vector<long> popBitSet(uint8_t *&at, uint8_t *eof)
-    {
-        std::vector<long> set;
-        int32_t size = popVarInt(at, eof);
-
-        for (int i = 0; i < size; i++)
-            set.push_back(popLong(at, eof));
-
-        return set;
     }
 
     template<typename T, T(*pop)(uint8_t *&begin, uint8_t *end)>

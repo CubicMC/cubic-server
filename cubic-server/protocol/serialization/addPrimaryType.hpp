@@ -1,7 +1,7 @@
 /*
-    All add functions from the basic types specified in the protocol
-    Some of them have a specific name in the protocol, but they are sent a primitive type
-    https://wiki.vg/index.php?title=Protocol&oldid=17753
+** All add functions from the basic types specified in the protocol
+** Some of them have a specific name in the protocol, but they are sent as a primitive type
+** https://wiki.vg/index.php?title=Protocol&oldid=17753
 */
 
 #pragma once
@@ -116,6 +116,26 @@ namespace protocol
     {
         _addString(out, data, 262144);
     }
+
+    // TODO: gl :>
+    // constexpr void addEntityMetadata(std::vector<uint8_t>, const EntityMetadata &data)
+    // {
+    // }
+
+    constexpr void addSlot(std::vector<uint8_t> &out, const Slot &data)
+    {
+        addBoolean(out, data.present);
+        if (data.present) {
+            addVarInt(out, data.itemID);
+            addByte(out, data.itemCount);
+            // addNBT(out, data.nbt);
+        }
+    }
+
+    // TODO: NBT stuff
+    // constexpr void addNBT(std::vector<uint8_t>, const NBT &data)
+    // {
+    // }
 
     constexpr void addIdentifier(std::vector<uint8_t> &out, const std::string &data)
     {

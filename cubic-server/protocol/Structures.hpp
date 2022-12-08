@@ -13,6 +13,14 @@ namespace protocol
         int64_t y;
     };
 
+    struct Slot
+    {
+        bool present;
+        int32_t itemID;
+        int8_t itemCount;
+        // NBT nbt;
+    };
+
     enum class ClientCommandActionID
     {
         perform_respawn = 0,
