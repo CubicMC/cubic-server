@@ -32,10 +32,17 @@ namespace chat::message {
             CopyToClipboard = 5,
         };
 
+    private:
+        ClickEvent() = default;
+
+    public:
         ClickEvent(Action action, std::string_view value)
             : action(action), value(value), _log(logging::Logger::get_instance())
         {}
         nlohmann::json toJson() const;
+
+        static ClickEvent deserialize(const std::string &json);
+        static ClickEvent fromJson(const nlohmann::json &json);
 
     private:
         Action action;
@@ -51,10 +58,17 @@ namespace chat::message {
             ShowEntity = 2,
         };
 
+    private:
+        HoverEvent() = default;
+
+    public:
         HoverEvent(Action action, std::string_view value)
             : action(action), value(value), _log(logging::Logger::get_instance())
         {};
         nlohmann::json toJson() const;
+
+        static HoverEvent deserialize(const std::string &json);
+        static HoverEvent fromJson(const nlohmann::json &json);
 
     private:
         Action action;
@@ -78,6 +92,9 @@ namespace chat {
             std::optional<std::string_view> insertion;
         };
 
+    private:
+        Message() = default;
+
     public:
         Message(
             const std::string &message,
@@ -99,6 +116,9 @@ namespace chat {
 
         std::string serialize() const;
         nlohmann::json toJson() const;
+
+        static Message deserialize(const std::string &message);
+        static Message fromJson(const nlohmann::json &json);
 
     private:
         std::string _message;

@@ -14,7 +14,7 @@ std::shared_ptr<Handshake> protocol::parseHandshake(std::vector<uint8_t> &buffer
     parse(at, buffer.data() + buffer.size() - 1, *h,
           popVarInt, &Handshake::prot_version,
           popString, &Handshake::addr,
-          popUnsignedShort, &Handshake::port,
+          popShort, &Handshake::port,
           popVarInt, &Handshake::next_state);
     return h;
 }
@@ -35,13 +35,8 @@ std::shared_ptr<LoginStart> protocol::parseLoginStart(std::vector<uint8_t> &buff
     if (h->has_sig_data) {
         parse(at, buffer.data() + buffer.size() - 1, *h,
               popLong, &LoginStart::timestamp,
-              popVarInt, &LoginStart::public_key_length);
-        parseExtra(at, buffer.data() + buffer.size() - 1, *h,
-                   popByteArray, &LoginStart::public_key, h->public_key_length);
-        parse(at, buffer.data() + buffer.size() - 1, *h,
-              popVarInt, &LoginStart::signature_length);
-        parseExtra(at, buffer.data() + buffer.size() - 1, *h,
-                   popByteArray, &LoginStart::signature, h->signature_length);
+              popArray<uint8_t, popByte>, &LoginStart::public_key,
+              popArray<uint8_t, popByte>, &LoginStart::signature);
     }
 //    parse(at, buffer.data() + buffer.size() - 1, *h,
 //          popBoolean, &LoginStart::has_player_uuid);
@@ -77,22 +72,14 @@ std::shared_ptr<EncryptionResponse> protocol::parseEncryptionResponse(std::vecto
     auto at = buffer.data();
 
     parse(at, buffer.data() + buffer.size() - 1, *h,
-          popVarInt, &EncryptionResponse::shared_secret_length);
-    parseExtra(at, buffer.data() + buffer.size() - 1, *h,
-               popByteArray, &EncryptionResponse::shared_secret, h->shared_secret_length);
-    parse(at, buffer.data() + buffer.size() - 1, *h,
+          popArray<uint8_t, popByte>, &EncryptionResponse::shared_secret,
           popBoolean, &EncryptionResponse::has_verify_token);
     if (!h->has_verify_token)
         return h;
     parse(at, buffer.data() + buffer.size() - 1, *h,
-          popVarInt, &EncryptionResponse::verify_token_length);
-    parseExtra(at, buffer.data() + buffer.size() - 1, *h,
-               popByteArray, &EncryptionResponse::verify_token, h->verify_token_length);
-    parse(at, buffer.data() + buffer.size() - 1, *h,
+          popArray<uint8_t, popByte>, &EncryptionResponse::verify_token,
           popLong, &EncryptionResponse::salt,
-          popVarInt, &EncryptionResponse::message_signature_length);
-    parseExtra(at, buffer.data() + buffer.size() - 1, *h,
-               popByteArray, &EncryptionResponse::message_signature, h->message_signature_length);
+          popArray<uint8_t, popByte>, &EncryptionResponse::message_signature);
     return h;
 }
 
@@ -126,10 +113,7 @@ std::shared_ptr<ChatMessage> protocol::parseChatMessage(std::vector<uint8_t> &bu
           popString, &ChatMessage::message,
           popInstantJavaObject, &ChatMessage::timestamp,
           popLong, &ChatMessage::salt,
-          popVarInt, &ChatMessage::signature_length);
-    parseExtra(at, buffer.data() + buffer.size() - 1, *h,
-          popByteArray, &ChatMessage::signature, h->signature_length);
-    parse(at, buffer.data() + buffer.size() - 1, *h,
+          popArray<uint8_t, popByte>, &ChatMessage::signature,
           popBoolean, &ChatMessage::isSigned);
     return h;
 }
@@ -200,10 +184,7 @@ std::shared_ptr<EditBook> protocol::parseEditBook(std::vector<uint8_t> &buffer)
 
     parse(at, buffer.data() + buffer.size() - 1, *h,
           popVarInt, &EditBook::slot,
-          popVarInt, &EditBook::count);
-    parseExtra(at, buffer.data() + buffer.size() - 1, *h,
-          popStringArray, &EditBook::entries, h->count);
-    parse(at, buffer.data() + buffer.size() - 1, *h,
+          popArray<std::string, popString>, &EditBook::entries,
           popBoolean, &EditBook::has_title);
     if (h->has_title)
         parse(at, buffer.data() + buffer.size() - 1, *h,
@@ -513,7 +494,7 @@ std::shared_ptr<SetHeldItem> protocol::parseSetHeldItem(std::vector<uint8_t> &bu
     auto at = buffer.data();
 
     parse(at, buffer.data() + buffer.size() - 1, *h,
-          popUnsignedShort, &SetHeldItem::slot);
+          popShort, &SetHeldItem::slot);
     return h;
 }
 
