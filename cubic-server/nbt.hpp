@@ -242,6 +242,20 @@ public:
     }
 };
 
+class List : public Base
+{
+private:
+    std::vector<Base> _value;
+public:
+    explicit List(std::string name, std::vector<Base> value = std::vector<Base>())
+            : Base(std::move(name), TagType::ByteArray), _value(std::move(value)) {};
+    ~List() override = default;
+
+    [[nodiscard]] constexpr std::vector<Base> &get_values() {
+        return _value;
+    }
+};
+
 }
 
 #endif //CUBICSERVER_NBT_HPP
