@@ -146,6 +146,23 @@ public:
     }
 };
 
+class Float : public Base
+{
+private:
+    float _value;
+public:
+    explicit Float(std::string name, int8_t value = 0) : Base(std::move(name), TagType::Float), _value(value) {};
+    ~Float() override = default;;
+
+    [[nodiscard]] constexpr float get_value() const {
+        return _value;
+    }
+
+    void set_value(float value) {
+        _value = value;
+    }
+};
+
 }
 
 #endif //CUBICSERVER_NBT_HPP
