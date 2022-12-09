@@ -134,7 +134,7 @@ class Double : public Base
 private:
     double _value;
 public:
-    explicit Double(std::string name, int8_t value = 0) : Base(std::move(name), TagType::Double), _value(value) {};
+    explicit Double(std::string name, double value = 0) : Base(std::move(name), TagType::Double), _value(value) {};
     ~Double() override = default;;
 
     [[nodiscard]] constexpr double get_value() const {
@@ -151,7 +151,7 @@ class Float : public Base
 private:
     float _value;
 public:
-    explicit Float(std::string name, int8_t value = 0) : Base(std::move(name), TagType::Float), _value(value) {};
+    explicit Float(std::string name, float value = 0) : Base(std::move(name), TagType::Float), _value(value) {};
     ~Float() override = default;;
 
     [[nodiscard]] constexpr float get_value() const {
@@ -159,6 +159,23 @@ public:
     }
 
     void set_value(float value) {
+        _value = value;
+    }
+};
+
+class Long : public Base
+{
+private:
+    int64_t _value;
+public:
+    explicit Long(std::string name, int64_t value = 0) : Base(std::move(name), TagType::Long), _value(value) {};
+    ~Long() override = default;;
+
+    [[nodiscard]] constexpr int64_t get_value() const {
+        return _value;
+    }
+
+    void set_value(int64_t value) {
         _value = value;
     }
 };
