@@ -228,6 +228,20 @@ public:
     }
 };
 
+class LongArray : public Base
+{
+private:
+    std::vector<int64_t> _value;
+public:
+    explicit LongArray(std::string name, std::vector<int64_t> value = std::vector<int64_t>())
+            : Base(std::move(name), TagType::LongArray), _value(std::move(value)) {};
+    ~LongArray() override = default;
+
+    [[nodiscard]] constexpr std::vector<int64_t> &get_values() {
+        return _value;
+    }
+};
+
 }
 
 #endif //CUBICSERVER_NBT_HPP
