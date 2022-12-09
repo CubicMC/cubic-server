@@ -129,6 +129,23 @@ public:
     }
 };
 
+class Double : public Base
+{
+private:
+    double _value;
+public:
+    explicit Double(std::string name, int8_t value = 0) : Base(std::move(name), TagType::Double), _value(value) {};
+    ~Double() override = default;;
+
+    [[nodiscard]] constexpr double get_value() const {
+        return _value;
+    }
+
+    void set_value(double value) {
+        _value = value;
+    }
+};
+
 }
 
 #endif //CUBICSERVER_NBT_HPP
