@@ -180,6 +180,23 @@ public:
     }
 };
 
+class Short : public Base
+{
+private:
+    int16_t _value;
+public:
+    explicit Short(std::string name, int16_t value = 0) : Base(std::move(name), TagType::Short), _value(value) {};
+    ~Short() override = default;
+
+    [[nodiscard]] constexpr int16_t get_value() const {
+        return _value;
+    }
+
+    void set_value(int16_t value) {
+        _value = value;
+    }
+};
+
 }
 
 #endif //CUBICSERVER_NBT_HPP
