@@ -197,6 +197,23 @@ public:
     }
 };
 
+class String : public Base
+{
+private:
+    std::string _value;
+public:
+    explicit String(std::string name, std::string value = "") : Base(std::move(name), TagType::String), _value(std::move(value)) {};
+    ~String() override = default;;
+
+    [[nodiscard]] constexpr const std::string &get_value() const {
+        return _value;
+    }
+
+    void set_value(std::string value) {
+        _value = value;
+    }
+};
+
 }
 
 #endif //CUBICSERVER_NBT_HPP
