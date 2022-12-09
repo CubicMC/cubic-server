@@ -30,6 +30,10 @@ struct FastMap
             throw std::range_error("Not Found");
         }
     }
+
+    constexpr FastMap(FastMap<Key, Value> &&val) noexcept {
+        data = std::move(val.data);
+    }
 };
 
 // Some stuff here is from cpp-nbt (Only the types nothing else)
@@ -57,7 +61,7 @@ protected:
     const TagType _type;
 public:
     Base(std::string name, TagType type) : _name(std::move(name)), _type(type) {};
-    virtual ~Base() = 0;
+    virtual ~Base() = default;
 
     [[nodiscard]] const std::string &get_name() const {
         return _name;
@@ -108,6 +112,19 @@ public:
     ~ByteArray() override = default;
 
     [[nodiscard]] constexpr std::vector<int8_t> &get_values() {
+        return _value;
+    }
+};
+
+class Compound : public Base
+{
+private:
+    FastMap<std::string, Base> _value;
+public:
+    Compound(std::string name, FastMap<std::string, Base> value) : Base(std::move(name), TagType::Compound), _value(std::move(value)) {};
+    ~Compound() override = default;
+
+    constexpr FastMap<std::string, Base> &get_values() {
         return _value;
     }
 };

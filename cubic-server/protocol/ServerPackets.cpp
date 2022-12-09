@@ -1,6 +1,7 @@
 #include <optional>
 
 #include "ServerPackets.hpp"
+#include "nbt.hpp"
 #include "PacketUtils.hpp"
 #include "typeSerialization.hpp"
 
