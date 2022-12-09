@@ -214,6 +214,20 @@ public:
     }
 };
 
+class IntArray : public Base
+{
+private:
+    std::vector<int32_t> _value;
+public:
+    explicit IntArray(std::string name, std::vector<int32_t> value = std::vector<int32_t>())
+            : Base(std::move(name), TagType::IntArray), _value(std::move(value)) {};
+    ~IntArray() override = default;
+
+    [[nodiscard]] constexpr std::vector<int32_t> &get_values() {
+        return _value;
+    }
+};
+
 }
 
 #endif //CUBICSERVER_NBT_HPP
