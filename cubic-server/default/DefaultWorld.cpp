@@ -6,6 +6,9 @@ DefaultWorld::DefaultWorld(WorldGroup *worldGroup)
     this->_dimensions.emplace("end", std::make_shared<TheEnd>(reinterpret_cast<World *>(this)));
     this->_dimensions.emplace("nether", std::make_shared<TheNether>(reinterpret_cast<World *>(this)));
     this->_dimensions.emplace("overworld", std::make_shared<Overworld>(reinterpret_cast<World *>(this)));
+    this->_worldStorage.addLevel("end");
+    this->_worldStorage.addLevel("nether");
+    this->_worldStorage.addLevel("overworld");
 }
 
 void DefaultWorld::tick()

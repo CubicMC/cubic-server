@@ -320,3 +320,11 @@ void Client::sendChatMessageResponse(const protocol::PlayerChatMessage &packet)
 
     LDEBUG("Sent a chat message response");
 }
+
+void Client::sendChunkDataAndLightUpdate(const protocol::ChunkDataAndLightUpdate &packet)
+{
+    auto pck = protocol::createChunkDataAndLightUpdate(packet);
+    _sendData(*pck);
+
+    LDEBUG("Sent a chunk data and light update");
+}

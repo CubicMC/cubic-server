@@ -3,6 +3,8 @@
 
 #include <cstdint>
 
+#define LIGHT_ARRAY_SIZE 2048
+
 namespace protocol {
     enum class ClientStatus : int32_t {
         Initial = 0x00,
