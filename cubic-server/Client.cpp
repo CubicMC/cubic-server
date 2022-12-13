@@ -293,7 +293,7 @@ void Client::_onEncryptionResponse(const std::shared_ptr<protocol::EncryptionRes
     _log->debug("Got a Encryption Response");
 }
 
-void Client::_onDisconnectRequest(const std::shared_ptr<protocol::DisconnectReason> &pck, chat::Message &message)
+void Client::DisconnectClient(chat::Message &message)
 {
     nlohmann::json json;
     
