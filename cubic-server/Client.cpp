@@ -293,6 +293,18 @@ void Client::_onEncryptionResponse(const std::shared_ptr<protocol::EncryptionRes
     _log->debug("Got a Encryption Response");
 }
 
+void Client::_onDisconnectRequest(const std::shared_ptr<protocol::DisconnectReason> &pck, chat::Message &message)
+{
+    nlohmann::json json;
+    
+    json["translate"] = "chat.type.text";
+    json["with"] = nlohmann::json::array();
+    json["with"].push_back({"text", "PlayerName"});
+    json["with"].push_back({message.toJson()});
+
+    sendDisconnectPlayerReason(json.dump());
+}
+
 void Client::sendStatusResponse(const std::string &json)
 {
     auto pck = protocol::createStatusResponse({
@@ -321,9 +333,11 @@ void Client::sendChatMessageResponse(const protocol::PlayerChatMessage &packet)
     LDEBUG("Sent a chat message response");
 }
 
-void Client::sendDisconnectPlayerReason(const protocol::DisconnectReason &reason)
+void Client::sendDisconnectPlayerReason(const std::string &json)
 {
-    auto pck = protocol::DisconnectPlayerReason(reason);
+    auto pck = protocol::DisconnectPlayerReason({
+        json
+    });
     _sendData(*pck);
 
     LDEBUG("Sent a disconnet reason for player");
