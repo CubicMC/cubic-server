@@ -10,7 +10,8 @@ static void print_usage(const char *caller)
     std::cout << "Usage:\n\t" << caller << std::endl;
 }
 
-#define INTERFACE
+// Uncomment that to launch the interface
+// #define INTERFACE
 
 int main(int argc, char **argv)
 {
