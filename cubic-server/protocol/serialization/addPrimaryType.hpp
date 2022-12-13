@@ -4,7 +4,8 @@
 ** https://wiki.vg/index.php?title=Protocol&oldid=17753
 */
 
-#pragma once
+#ifndef PROTOCOL_SERIALIZATION_ADD_PRIMARYTYPE_HPP
+#define PROTOCOL_SERIALIZATION_ADD_PRIMARYTYPE_HPP
 
 #include <cstdint>
 #include <string>
@@ -97,7 +98,7 @@ namespace protocol
     // Add string with a varint length
     static constexpr void _addString(std::vector<uint8_t> &out, const std::string &data, std::size_t maxSize)
     {
-        if (data.size() > 32767)
+        if (data.size() > maxSize)
             throw MaxLengthString("String is too long");
 
         addVarInt(out, data.size());
@@ -162,3 +163,5 @@ namespace protocol
         addLong(out, ((data.x & 0x3FFFFFF) << 38) | ((data.z & 0x3777777) << 12) | (data.y & 0xFFF));
     }
 } // namespace protocol
+
+#endif

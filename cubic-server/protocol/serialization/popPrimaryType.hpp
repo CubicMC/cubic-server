@@ -4,7 +4,8 @@
 ** https://wiki.vg/index.php?title=Protocol&oldid=17753
 */
 
-#pragma once
+#ifndef PROTOCOL_SERIALIZATION_POP_PRIMARYTYPE_HPP
+#define PROTOCOL_SERIALIZATION_POP_PRIMARYTYPE_HPP
 
 #include <cstdint>
 #include <string>
@@ -205,3 +206,5 @@ namespace protocol
         return p;
     }
 } // namespace protocol
+
+#endif

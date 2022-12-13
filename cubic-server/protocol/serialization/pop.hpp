@@ -1,4 +1,5 @@
-#pragma once
+#ifndef PROTOCOL_SERIALIZATION_POP_HPP
+#define PROTOCOL_SERIALIZATION_POP_HPP
 
 #include <cstdint>
 #include <string>
@@ -55,3 +56,5 @@ namespace protocol
         return static_cast<ClientInformationMainHand>(value);
     }
 } // namespace protocol
+
+#endif

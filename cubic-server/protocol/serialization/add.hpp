@@ -1,4 +1,5 @@
-#pragma once
+#ifndef PROTOCOL_SERIALIZATION_ADD_HPP
+#define PROTOCOL_SERIALIZATION_ADD_HPP
 
 #include <cstdint>
 #include <string>
@@ -21,3 +22,5 @@ namespace protocol
         return addVarInt(out, static_cast<int32_t>(data));
     }
 } // namespace protocol
+
+#endif
