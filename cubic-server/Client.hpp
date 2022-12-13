@@ -78,7 +78,7 @@ private:
     void _onLoginStart(const std::shared_ptr<protocol::LoginStart> &pck);
     void _onPingRequest(const std::shared_ptr<protocol::PingRequest>& pck);
     void _onEncryptionResponse(const std::shared_ptr<protocol::EncryptionResponse> &pck);
-    void DisconnectClient(chat::Message &message);
+    void disconnectClient(chat::Message &message);
 
     const int _sockfd;
     const struct sockaddr_in6 _addr;
