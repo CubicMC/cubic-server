@@ -39,7 +39,6 @@ void Chat::sendPlayerMessage(const chat::Message &message, const Player *sender)
                 "",
                 std::time(nullptr),
                 0,
-                0,
                 std::vector<uint8_t>()
             });
         }
@@ -69,7 +68,6 @@ void Chat::sendSystemMessage(const chat::Message &message, const WorldGroup *wor
                 false,
                 "",
                 std::time(nullptr),
-                0,
                 0,
                 std::vector<uint8_t>()
             });
@@ -101,7 +99,6 @@ void Chat::sendSayMessage(const chat::Message &message, const Player *sender)
                 "",
                 std::time(nullptr),
                 0,
-                0,
                 std::vector<uint8_t>()
             });
         }
@@ -129,7 +126,6 @@ void Chat::sendMsgMessage(const chat::Message &message, Client *sender, Client *
         "",
         std::time(nullptr),
         0,
-        0,
         std::vector<uint8_t>()
     });
     to->sendChatMessageResponse({
@@ -142,7 +138,6 @@ void Chat::sendMsgMessage(const chat::Message &message, Client *sender, Client *
         false,
         "",
         std::time(nullptr),
-        0,
         0,
         std::vector<uint8_t>()
     });
@@ -238,6 +233,87 @@ nlohmann::json chat::message::HoverEvent::toJson() const
     response["value"] = value;
 
     return response;
+}
+
+chat::Message chat::Message::deserialize(const std::string &message)
+{
+    nlohmann::json json = nlohmann::json::parse(message);
+    return fromJson(json);
+}
+
+chat::message::ClickEvent chat::message::ClickEvent::deserialize(const std::string &message)
+{
+    nlohmann::json json = nlohmann::json::parse(message);
+    return fromJson(json);
+}
+
+chat::message::HoverEvent chat::message::HoverEvent::deserialize(const std::string &message)
+{
+    nlohmann::json json = nlohmann::json::parse(message);
+    return fromJson(json);
+}
+
+chat::Message chat::Message::fromJson(const nlohmann::json &json)
+{
+    Message msg;
+    msg._message = json["text"].get<std::string>();
+    if (json.contains("bold"))
+        msg._options.bold = json["bold"].get<bool>();
+    if (json.contains("italic"))
+        msg._options.italic = json["italic"].get<bool>();
+    if (json.contains("underlined"))
+        msg._options.underlined = json["underlined"].get<bool>();
+    if (json.contains("strikethrough"))
+        msg._options.strikethrough = json["strikethrough"].get<bool>();
+    if (json.contains("obfuscated"))
+        msg._options.obfuscated = json["obfuscated"].get<bool>();
+    if (json.contains("clickEvent"))
+        msg._clickEvent = message::ClickEvent::fromJson(json["clickEvent"]);
+    if (json.contains("hoverEvent"))
+        msg._hoverEvent = message::HoverEvent::fromJson(json["hoverEvent"]);
+    if (json.contains("extra")) {
+        for (const auto &extra : json["extra"])
+            msg._extra.push_back(fromJson(extra));
+    }
+    return msg;
+}
+
+chat::message::ClickEvent chat::message::ClickEvent::fromJson(const nlohmann::json &json)
+{
+    ClickEvent event;
+    std::string action = json["action"].get<std::string>();
+    if (action == "open_url")
+        event.action = Action::OpenURL;
+    else if (action == "open_file")
+        event.action = Action::OpenFile;
+    else if (action == "run_command")
+        event.action = Action::RunCommand;
+    else if (action == "suggest_command")
+        event.action = Action::SuggestCommand;
+    else if (action == "change_page")
+        event.action = Action::ChangePage;
+    else if (action == "copy_to_clipboard")
+        event.action = Action::CopyToClipboard;
+    else
+        throw std::runtime_error("Unknown click event action: " + action);
+    event.value = json["value"].get<std::string>();
+    return event;
+}
+
+chat::message::HoverEvent chat::message::HoverEvent::fromJson(const nlohmann::json &json)
+{
+    HoverEvent event;
+    std::string action = json["action"].get<std::string>();
+    if (action == "show_text")
+        event.action = Action::ShowText;
+    else if (action == "show_item")
+        event.action = Action::ShowItem;
+    else if (action == "show_entity")
+        event.action = Action::ShowEntity;
+    else
+        throw std::runtime_error("Unknown hover event action: " + action);
+    event.value = json["value"].get<std::string>();
+    return event;
 }
 
 std::string_view chat::Message::getMessage() const
