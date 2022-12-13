@@ -333,7 +333,7 @@ void Client::sendChatMessageResponse(const protocol::PlayerChatMessage &packet)
 
 void Client::sendDisconnectPlayerReason(const std::string &json)
 {
-    auto pck = protocol::DisconnectPlayerReason({
+    auto pck = protocol::createDisconnectPlayerReason({
         json
     });
     _sendData(*pck);

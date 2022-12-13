@@ -122,7 +122,7 @@ std::shared_ptr<std::vector<uint8_t>> protocol::createStopSound(const StopSound 
     return packet;
 }
 
-std::shared_ptr<std::vector<uint8_t>> protocol::DisconnectPlayerReason(const DisconnectReason &in)
+std::shared_ptr<std::vector<uint8_t>> protocol::createDisconnectPlayerReason(const DisconnectReason &in)
 {
     std::vector<uint8_t> payload;
     serialize(payload, in.reason, addString);
