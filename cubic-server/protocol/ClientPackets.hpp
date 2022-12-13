@@ -54,7 +54,7 @@ namespace protocol
         std::string reason;
     };
 
-    std::shared_ptr<std::vector<uint8_t>> DisconnectPlayerReason(const DisconnectReason &);
+    std::shared_ptr<std::vector<uint8_t>> createDisconnectPlayerReason(const DisconnectReason &);
 }
 
 #endif /* A7ADDD9E_6961_4A3D_AAB2_DF37DB6915F0 */
