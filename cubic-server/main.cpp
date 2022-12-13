@@ -10,6 +10,8 @@ static void print_usage(const char *caller)
     std::cout << "Usage:\n\t" << caller << std::endl;
 }
 
+#define INTERFACE
+
 int main(int argc, char **argv)
 {
     if (argc >= 2 && !strcmp(argv[1], "-h"))
@@ -20,8 +22,9 @@ int main(int argc, char **argv)
 
     auto srv = Server::getInstance();
     ///
-    if (false) // Put that to true if you want the gui
-        auto InterfaceThread = std::thread(&ManagementInterface::launch, argc, argv);
+#ifdef INTERFACE
+    auto InterfaceThread = std::thread(&ManagementInterface::launch, argc, argv);
+#endif
     ///
 
     srv->launch();
