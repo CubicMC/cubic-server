@@ -65,6 +65,7 @@ public:
     void sendPingResponse(int64_t payload);
     // Should I just pass the packet directly?
     void sendChatMessageResponse(const protocol::PlayerChatMessage &packet);
+    void disconnectClient(chat::Message &message);
     void sendDisconnectPlayerReason(const std::string &reason);
 
 private:
@@ -76,7 +77,6 @@ private:
     void _onLoginStart(const std::shared_ptr<protocol::LoginStart> &pck);
     void _onPingRequest(const std::shared_ptr<protocol::PingRequest>& pck);
     void _onEncryptionResponse(const std::shared_ptr<protocol::EncryptionResponse> &pck);
-    void disconnectClient(chat::Message &message);
 
     const int _sockfd;
     const struct sockaddr_in6 _addr;
