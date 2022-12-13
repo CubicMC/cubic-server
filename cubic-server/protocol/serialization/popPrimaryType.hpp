@@ -11,9 +11,9 @@
 #include <string>
 #include <vector>
 
-#include "ParseExceptions.hpp"
-#include "common.hpp"
-#include "Structures.hpp"
+#include "protocol/ParseExceptions.hpp"
+#include "protocol/common.hpp"
+#include "protocol/Structures.hpp"
 
 namespace protocol
 {
