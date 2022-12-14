@@ -8,7 +8,6 @@
 #include <optional>
 
 #include "Structures.hpp"
-#include "WorldEvent.hpp"
 
 namespace protocol
 {
