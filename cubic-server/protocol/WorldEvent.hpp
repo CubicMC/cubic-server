@@ -1,4 +1,5 @@
-#pragma once
+#ifndef WORLD_EVENT_HPP
+#define WORLD_EVENT_HPP
 
 #include <cstdint>
 
@@ -109,3 +110,5 @@ namespace protocol
         ward = 1067
     };
 } // namespace protocol
+
+#endif /* WORLD_EVENT_HPP */
