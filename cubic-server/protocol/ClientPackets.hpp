@@ -7,14 +7,15 @@
 #include <vector>
 #include <optional>
 
+#include "Structures.hpp"
 #include "WorldEvent.hpp"
 
 namespace protocol
 {
 
     enum class ClientPacketID : int32_t {
-        STATUS = 0x00,
-        PING = 0x01,
+        Status = 0x00,
+        Ping = 0x01,
         WorldEvent = 0x20,
         PlayerChatMessage = 0x30
     };
@@ -45,7 +46,6 @@ namespace protocol
         std::string teamName;
         long timestamp;
         long salt;
-        int32_t signatureLength;
         std::vector<uint8_t> signature;
     };
 

@@ -92,9 +92,7 @@ namespace protocol
         std::string name;
         bool has_sig_data;
         int64_t timestamp;
-        int32_t public_key_length;
         std::vector<uint8_t> public_key;
-        int32_t signature_length;
         std::vector<uint8_t> signature;
         bool has_player_uuid;
         __int128 player_uuid;
@@ -115,13 +113,10 @@ namespace protocol
 
     struct EncryptionResponse : BaseServerPacket
     {
-        int32_t shared_secret_length;
         std::vector<uint8_t> shared_secret;
         bool has_verify_token;
-        int32_t verify_token_length;
         std::vector<uint8_t> verify_token;
         int64_t salt;
-        int32_t message_signature_length;
         std::vector<uint8_t> message_signature;
     };
     std::shared_ptr<EncryptionResponse> parseEncryptionResponse(std::vector<uint8_t> &buffer);
@@ -146,7 +141,6 @@ namespace protocol
         // https://wiki.vg/index.php?title=Protocol&oldid=17753#Chat_Command
         Instant timestamp;
         long salt;
-        int32_t signature_length;
         std::vector<uint8_t> signature;
         bool isSigned;
     };
@@ -194,7 +188,6 @@ namespace protocol
     struct EditBook : BaseServerPacket
     {
         int32_t slot;
-        int32_t count;
         std::vector<std::string> entries;
         bool has_title;
         std::string title;
