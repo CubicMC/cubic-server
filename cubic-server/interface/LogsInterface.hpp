@@ -16,7 +16,6 @@ class LogsInterface : public Gtk::ScrolledWindow {
     Gtk::Label m_label;
     Gtk::Entry m_Entry;
     Gtk::Box m_VBox;
-    Gtk::Adjustment m_Adjustment;
 };
 
 #endif /* !LOGSINTERFACE_HPP */

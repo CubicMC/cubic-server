@@ -11,7 +11,7 @@ static void print_usage(const char *caller)
 }
 
 // Uncomment that to launch the interface
-#define INTERFACE
+// #define INTERFACE
 
 int main(int argc, char **argv)
 {
