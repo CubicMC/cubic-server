@@ -1,6 +1,8 @@
 #include "ConfigHandler.hpp"
 #include <iostream>
 #include <yaml-cpp/yaml.h>
+#include <filesystem>
+#include <fstream>
 
 namespace Configuration
 {
@@ -11,6 +13,11 @@ namespace Configuration
 
     void ConfigHandler::parse(const std::string &path) {
         YAML::Node config;
+        if (!std::filesystem::exists(path)) {
+            std::ofstream configFile(path);
+            configFile << "network:\n  ip: 0.0.0.0\n  port: 25565\n\ngeneral:\n  max_players: 20\n  motd: A Cubic Server" << std::endl;
+            configFile.close();
+        }
         try {
             _baseNode = YAML::LoadFile(path);
             _ip = _baseNode["network"]["ip"].as<std::string>();
