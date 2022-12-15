@@ -13,8 +13,8 @@ namespace protocol
     enum class ClientPacketID : int32_t {
         Status = 0x00,
         Ping = 0x01,
-        Disconnect = 0x17,
-        PlayerChatMessage = 0x30
+        PlayerChatMessage = 0x30,
+        Disconnect = 0x17
     };
 
     struct PingResponse
