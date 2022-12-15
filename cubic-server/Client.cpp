@@ -298,7 +298,10 @@ void Client::disconnectClient(chat::Message &message)
     nlohmann::json json;
 
     json["translate"] = "chat.type.text";
-    json["with"] = nlohmann::json::array({{"text", "PlayerName"}, {message.toJson()}});
+    json["with"] = nlohmann::json::array({
+        {"text", "PlayerName"},
+        {message.toJson()}
+    });
 
     sendDisconnectPlayerReason(json.dump());
 }
