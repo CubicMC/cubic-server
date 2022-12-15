@@ -11,9 +11,9 @@ namespace protocol
 {
 
     enum class ClientPacketID : int32_t {
-        status = 0x00,
-        ping = 0x01,
-        disconnect = 0x17,
+        Status = 0x00,
+        Ping = 0x01,
+        Disconnect = 0x17,
         PlayerChatMessage = 0x30
     };
 
