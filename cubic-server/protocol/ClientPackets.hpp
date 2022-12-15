@@ -43,7 +43,6 @@ namespace protocol
         std::string teamName;
         long timestamp;
         long salt;
-        int32_t signatureLength;
         std::vector<uint8_t> signature;
     };
 

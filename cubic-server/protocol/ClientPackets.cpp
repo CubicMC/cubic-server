@@ -26,7 +26,8 @@ std::shared_ptr<std::vector<uint8_t>> protocol::createStatusResponse(const Statu
 std::shared_ptr<std::vector<uint8_t>> protocol::createPlayerChatMessage(const PlayerChatMessage &in)
 {
     std::vector<uint8_t> payload;
-    serialize(payload, in.signedContent, addString,
+    serialize(payload,
+        in.signedContent, addString,
         in.hasUnsignedContent, addBoolean,
         in.unsignedContent, addString,
         in.type, addVarInt,
@@ -36,10 +37,9 @@ std::shared_ptr<std::vector<uint8_t>> protocol::createPlayerChatMessage(const Pl
         in.teamName, addString,
         in.timestamp, addLong,
         in.salt, addLong,
-        in.signatureLength, addVarInt,
-        in.signature, addByteArray);
+        in.signature, addArray<uint8_t, addByte>);
     auto packet = std::make_shared<std::vector<uint8_t>>();
-    finalize(*packet.get(), payload, (int32_t) ClientPacketID::PlayerChatMessage);
+    finalize(*packet, payload, (int32_t) ClientPacketID::PlayerChatMessage);
     return packet;
 }
 

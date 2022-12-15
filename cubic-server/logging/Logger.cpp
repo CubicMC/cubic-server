@@ -7,7 +7,11 @@ namespace logging
 {
 
     LogMessage::LogMessage(LogLevel level, std::string message)
-        : _level(level), _message(message), _time(std::time(nullptr)), _millis(std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count() - (_time * 1000))
+        :
+        _level(level),
+        _message(message),
+        _time(std::time(nullptr)),
+        _millis(std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count() - (_time * 1000))
     {
     }
 
@@ -76,6 +80,8 @@ namespace logging
                 {LogLevel::ERROR, "[ERROR] "},
                 {LogLevel::FATAL, "[FATAL] "}
         };
+
+        this->_buffer_size = 1000;
     }
 
     /**
