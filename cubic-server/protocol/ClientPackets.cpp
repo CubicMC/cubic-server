@@ -10,7 +10,7 @@ std::shared_ptr<std::vector<uint8_t>> protocol::createPingResponse(const PingRes
     auto packet = std::make_shared<std::vector<uint8_t>>();
     // TODO: Use an enum instead of hard-coding the packet ID
     // TODO: Undestand why I have to use a cast here
-    finalize(*packet.get(), payload, (int32_t)ClientPacketID::PING);
+    finalize(*packet.get(), payload, (int32_t)ClientPacketID::ping);
     return packet;
 }
 
@@ -19,7 +19,7 @@ std::shared_ptr<std::vector<uint8_t>> protocol::createStatusResponse(const Statu
     std::vector<uint8_t> payload;
     serialize(payload, in.payload, addString);
     auto packet = std::make_shared<std::vector<uint8_t>>();
-    finalize(*packet.get(), payload, (int32_t)ClientPacketID::STATUS);
+    finalize(*packet.get(), payload, (int32_t)ClientPacketID::status);
     return packet;
 }
 
@@ -48,6 +48,6 @@ std::shared_ptr<std::vector<uint8_t>> protocol::createDisconnectPlayerReason(con
     std::vector<uint8_t> payload;
     serialize(payload, in.reason, addString);
     auto packet = std::make_shared<std::vector<uint8_t>>();
-    finalize(*packet.get(), payload, (int32_t)ClientPacketID::DISCONNECT);
+    finalize(*packet.get(), payload, (int32_t)ClientPacketID::disconnect);
     return packet;
 }
