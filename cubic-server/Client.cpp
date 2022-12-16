@@ -320,3 +320,11 @@ void Client::sendChatMessageResponse(const protocol::PlayerChatMessage &packet)
 
     LDEBUG("Sent a chat message response");
 }
+
+void Client::sendWorldEvent(const protocol::WorldEvent &packet)
+{
+    auto pck = protocol::createWorldEvent(packet);
+    _sendData(*pck);
+
+    LDEBUG("Sent a world event");
+}

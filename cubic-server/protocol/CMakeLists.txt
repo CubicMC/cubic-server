@@ -6,6 +6,7 @@ target_sources (${CMAKE_PROJECT_NAME} PRIVATE
         common.hpp
         ParseExceptions.hpp
         typeSerialization.hpp
+        WorldEvent.hpp
 )
 
 add_subdirectory(serialization)
