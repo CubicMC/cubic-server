@@ -7,14 +7,17 @@
 #include <vector>
 #include <optional>
 
+#include "Structures.hpp"
+
 namespace protocol
 {
 
     enum class ClientPacketID : int32_t {
         Status = 0x00,
         Ping = 0x01,
-        PlayerChatMessage = 0x30,
-        Disconnect = 0x17
+        Disconnect = 0x17,
+        WorldEvent = 0x20,
+        PlayerChatMessage = 0x30
     };
 
     struct PingResponse
@@ -54,6 +57,16 @@ namespace protocol
     };
 
     std::shared_ptr<std::vector<uint8_t>> createDisconnectPlayerReason(const DisconnectReason &);
+    struct WorldEvent
+    {
+        int32_t event;
+        Position position;
+        int32_t data;
+        bool disableRelativeVolume;
+    };
+
+    std::shared_ptr<std::vector<uint8_t>> createWorldEvent(const WorldEvent &);
+
 }
 
 #endif /* A7ADDD9E_6961_4A3D_AAB2_DF37DB6915F0 */

@@ -293,7 +293,7 @@ void Client::_onEncryptionResponse(const std::shared_ptr<protocol::EncryptionRes
     _log->debug("Got a Encryption Response");
 }
 
-void Client::disconnectClient(chat::Message &message)
+void Client::disconnectClient(const chat::Message &message)
 {
     nlohmann::json json;
     
@@ -342,4 +342,11 @@ void Client::sendDisconnectPlayerReason(const std::string &json)
     _sendData(*pck);
 
     LDEBUG("Sent a disconnect player reason");
+}
+void Client::sendWorldEvent(const protocol::WorldEvent &packet)
+{
+    auto pck = protocol::createWorldEvent(packet);
+    _sendData(*pck);
+
+    LDEBUG("Sent a world event");
 }
