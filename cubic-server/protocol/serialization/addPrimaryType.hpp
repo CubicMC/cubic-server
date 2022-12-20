@@ -14,6 +14,7 @@
 #include "protocol/ParseExceptions.hpp"
 #include "protocol/common.hpp"
 #include "protocol/Structures.hpp"
+#include "nbt.hpp"
 
 namespace protocol
 {
@@ -133,10 +134,10 @@ namespace protocol
         }
     }
 
-    // TODO: NBT stuff
-    // constexpr void addNBT(std::vector<uint8_t>, const NBT &data)
-    // {
-    // }
+    constexpr void addNBT(std::vector<uint8_t> &out, const nbt::Base &data)
+    {
+        data.serialize(out);
+    }
 
     constexpr void addIdentifier(std::vector<uint8_t> &out, const std::string &data)
     {
