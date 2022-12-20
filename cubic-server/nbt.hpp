@@ -79,7 +79,9 @@ public:
         return data;
     }
 
-    constexpr virtual void serialize(std::vector<uint8_t> &data, bool include_name = true) const {
+    constexpr virtual void serialize(std::vector<uint8_t> &data, bool include_name = true) const = 0;
+
+    constexpr virtual void pre_serialize(std::vector<uint8_t> &data, bool include_name) const {
         // Serialize the type
         data.push_back((uint8_t)_type);
         if (!include_name)
@@ -116,7 +118,7 @@ public:
     }
 
     constexpr void serialize(std::vector<uint8_t> &data, bool include_name = true) const override {
-        Base::serialize(data, include_name);
+        Base::pre_serialize(data, include_name);
         for (int i = 0; i < 4; i++)
             data.push_back((_value >> (24 - i * 8)) & 0xFF);
     }
@@ -145,7 +147,7 @@ public:
     }
 
     constexpr void serialize(std::vector<uint8_t> &data, bool include_name = true) const override {
-        Base::serialize(data, include_name);
+        Base::pre_serialize(data, include_name);
         data.push_back(_value);
     }
 };
@@ -170,7 +172,7 @@ public:
     }
 
     constexpr void serialize(std::vector<uint8_t> &data, bool include_name = true) const override {
-        Base::serialize(data, include_name);
+        Base::pre_serialize(data, include_name);
         // Serialize the length
         for (int i = 0; i < 4; i++)
             data.push_back((_value.size() >> (24 - i * 8)) & 0xFF);
@@ -183,13 +185,16 @@ public:
 class Compound : public Base
 {
 private:
-    FastMap<std::string, Base> _value;
+    FastMap<std::string, Base *> _value;
 public:
-    Compound(std::string name, FastMap<std::string, Base> value) : Base(std::move(name), TagType::Compound), _value(std::move(value)) {};
-    Compound(std::string name, std::initializer_list<std::pair<std::string, Base>> value) : Base(std::move(name), TagType::Compound), _value(value) {};
-    ~Compound() override = default;
+    Compound(std::string name, FastMap<std::string, Base *> value) : Base(std::move(name), TagType::Compound), _value(std::move(value)) {};
+    Compound(std::string name, std::initializer_list<std::pair<std::string, Base *>> value) : Base(std::move(name), TagType::Compound), _value(value) {};
+    ~Compound() override {
+        for (auto i : _value.data)
+            delete i.second;
+    }
 
-    constexpr FastMap<std::string, Base> &get_values() {
+    constexpr FastMap<std::string, Base *> &get_values() {
         return _value;
     }
 
@@ -200,9 +205,9 @@ public:
     }
 
     constexpr void serialize(std::vector<uint8_t> &data, bool include_name = true) const override {
-        Base::serialize(data, include_name);
+        Base::pre_serialize(data, include_name);
         for (const auto &i : _value.data) {
-            i.second.serialize(data);
+            i.second->serialize(data);
         }
         // Ends the TAG_Compound with a TAG_End
         data.push_back(0);
@@ -232,7 +237,7 @@ public:
     }
 
     constexpr void serialize(std::vector<uint8_t> &data, bool include_name = true) const override {
-        Base::serialize(data, include_name);
+        Base::pre_serialize(data, include_name);
         auto d = static_cast<int64_t>(_value);
         for (int i = 0; i < 8; i++)
             data.push_back((d >> (56 - i * 8)) & 0xFF);
@@ -262,7 +267,7 @@ public:
     }
 
     constexpr void serialize(std::vector<uint8_t> &data, bool include_name = true) const override {
-        Base::serialize(data, include_name);
+        Base::pre_serialize(data, include_name);
         auto d = static_cast<int32_t>(_value);
         for (int i = 0; i < 4; i++)
             data.push_back((d >> (24 - i * 8)) & 0xFF);
@@ -292,7 +297,7 @@ public:
     }
 
     constexpr void serialize(std::vector<uint8_t> &data, bool include_name = true) const override {
-        Base::serialize(data, include_name);
+        Base::pre_serialize(data, include_name);
         for (int i = 0; i < 8; i++)
             data.push_back((_value >> (56 - i * 8)) & 0xFF);
     }
@@ -321,7 +326,7 @@ public:
     }
 
     constexpr void serialize(std::vector<uint8_t> &data, bool include_name = true) const override {
-        Base::serialize(data, include_name);
+        Base::pre_serialize(data, include_name);
         data.push_back(_value >> 8);
         data.push_back(_value & 0xFF);
     }
@@ -350,7 +355,7 @@ public:
     }
 
     constexpr void serialize(std::vector<uint8_t> &data, bool include_name = true) const override {
-        Base::serialize(data, include_name);
+        Base::pre_serialize(data, include_name);
         // Serialize the length of the string
         data.push_back(_value.length() >> 8);
         data.push_back(_value.length() & 0xFF);
@@ -381,7 +386,7 @@ public:
     }
 
     constexpr void serialize(std::vector<uint8_t> &data, bool include_name = true) const override {
-        Base::serialize(data, include_name);
+        Base::pre_serialize(data, include_name);
         // Serialize the length of the data
         data.push_back(_value.size() >> 8);
         data.push_back(_value.size() & 0xFF);
@@ -413,7 +418,7 @@ public:
     }
 
     constexpr void serialize(std::vector<uint8_t> &data, bool include_name = true) const override {
-        Base::serialize(data, include_name);
+        Base::pre_serialize(data, include_name);
         // Serialize the length of the data
         data.push_back(_value.size() >> 8);
         data.push_back(_value.size() & 0xFF);
@@ -445,7 +450,7 @@ public:
     }
 
     constexpr void serialize(std::vector<uint8_t> &data, bool include_name = true) const override {
-        Base::serialize(data, include_name);
+        Base::pre_serialize(data, include_name);
         TagType current = TagType::End;
         // Serialize the nbt
         for (const auto &i : _value) {
