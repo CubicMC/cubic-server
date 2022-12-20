@@ -248,6 +248,19 @@ public:
     void set_value(float value) {
         _value = value;
     }
+
+    [[nodiscard]] constexpr std::vector<uint8_t> serialize() const override {
+        std::vector<uint8_t> data;
+        serialize(data);
+        return data;
+    }
+
+    constexpr void serialize(std::vector<uint8_t> &data) const override {
+        Base::serialize(data);
+        auto d = static_cast<int32_t>(_value);
+        for (int i = 0; i < 4; i++)
+            data.push_back((d >> (24 - i * 8)) & 0xFF);
+    }
 };
 
 class Long : public Base
