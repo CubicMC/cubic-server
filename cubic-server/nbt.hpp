@@ -70,6 +70,12 @@ public:
     [[nodiscard]] const std::string &get_name() const {
         return _name;
     };
+
+    [[nodiscard]] virtual std::vector<uint8_t> serialize() {
+        return {};
+    }
+
+    virtual void serialize(std::vector<uint8_t> &data) {}
 };
 
 class Int : public Base
@@ -103,6 +109,14 @@ public:
 
     void set_value(int8_t value) {
         _value = value;
+    }
+
+    [[nodiscard]] std::vector<uint8_t> serialize() override {
+        return {static_cast<uint8_t>(_value)};
+    }
+
+    void serialize(std::vector<uint8_t> &data) override {
+        data.push_back(_value);
     }
 };
 
