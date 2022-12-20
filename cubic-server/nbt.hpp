@@ -40,8 +40,6 @@ struct FastMap
     }
 };
 
-// Some stuff here is from cpp-nbt (Only the types nothing else)
-// https://github.com/SpockBotMC/cpp-nbt
 enum class TagType {
     End,
     Byte,
@@ -72,10 +70,21 @@ public:
     };
 
     [[nodiscard]] virtual std::vector<uint8_t> serialize() {
-        return {};
+        std::vector<uint8_t> data;
+        serialize(data);
+        return data;
     }
 
-    virtual void serialize(std::vector<uint8_t> &data) {}
+    virtual void serialize(std::vector<uint8_t> &data) {
+        // Serialize the type
+        data.push_back((uint8_t)_type);
+        // Serialize the name length
+        data.push_back(_name.length() >> 8);
+        data.push_back(_name.length() & 0xFF);
+        // Serialize the name
+        for (const auto &i : _name)
+            data.push_back(i);
+    }
 };
 
 class Int : public Base
@@ -92,6 +101,18 @@ public:
 
     void set_value(int32_t value) {
         _value = value;
+    }
+
+    [[nodiscard]] std::vector<uint8_t> serialize() override {
+        std::vector<uint8_t> data;
+        serialize(data);
+        return data;
+    }
+
+    void serialize(std::vector<uint8_t> &data) override {
+        Base::serialize(data);
+        for (int i = 0; i < 4; i++)
+            data.push_back((_value >> (24 - i * 8)) & 0xFF);
     }
 };
 
@@ -112,10 +133,13 @@ public:
     }
 
     [[nodiscard]] std::vector<uint8_t> serialize() override {
-        return {static_cast<uint8_t>(_value)};
+        std::vector<uint8_t> data;
+        serialize(data);
+        return data;
     }
 
     void serialize(std::vector<uint8_t> &data) override {
+        Base::serialize(data);
         data.push_back(_value);
     }
 };
