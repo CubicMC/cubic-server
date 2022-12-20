@@ -65,9 +65,13 @@ public:
     Base(std::string name, TagType type) : _name(std::move(name)), _type(type) {};
     virtual ~Base() = default;
 
-    [[nodiscard]] const std::string &get_name() const {
+    [[nodiscard]] constexpr const std::string &get_name() const {
         return _name;
     };
+
+    [[nodiscard]] constexpr TagType get_type() const {
+        return _type;
+    }
 
     [[nodiscard]] constexpr virtual std::vector<uint8_t> serialize() const {
         std::vector<uint8_t> data;
@@ -75,9 +79,11 @@ public:
         return data;
     }
 
-    constexpr virtual void serialize(std::vector<uint8_t> &data) const {
+    constexpr virtual void serialize(std::vector<uint8_t> &data, bool include_name = true) const {
         // Serialize the type
         data.push_back((uint8_t)_type);
+        if (!include_name)
+            return;
         // Serialize the name length
         data.push_back(_name.length() >> 8);
         data.push_back(_name.length() & 0xFF);
@@ -109,8 +115,8 @@ public:
         return data;
     }
 
-    constexpr void serialize(std::vector<uint8_t> &data) const override {
-        Base::serialize(data);
+    constexpr void serialize(std::vector<uint8_t> &data, bool include_name = true) const override {
+        Base::serialize(data, include_name);
         for (int i = 0; i < 4; i++)
             data.push_back((_value >> (24 - i * 8)) & 0xFF);
     }
@@ -138,8 +144,8 @@ public:
         return data;
     }
 
-    constexpr void serialize(std::vector<uint8_t> &data) const override {
-        Base::serialize(data);
+    constexpr void serialize(std::vector<uint8_t> &data, bool include_name = true) const override {
+        Base::serialize(data, include_name);
         data.push_back(_value);
     }
 };
@@ -163,8 +169,8 @@ public:
         return data;
     }
 
-    constexpr void serialize(std::vector<uint8_t> &data) const override {
-        Base::serialize(data);
+    constexpr void serialize(std::vector<uint8_t> &data, bool include_name = true) const override {
+        Base::serialize(data, include_name);
         // Serialize the length
         for (int i = 0; i < 4; i++)
             data.push_back((_value.size() >> (24 - i * 8)) & 0xFF);
@@ -193,8 +199,8 @@ public:
         return data;
     }
 
-    constexpr void serialize(std::vector<uint8_t> &data) const override {
-        Base::serialize(data);
+    constexpr void serialize(std::vector<uint8_t> &data, bool include_name = true) const override {
+        Base::serialize(data, include_name);
         for (const auto &i : _value.data) {
             i.second.serialize(data);
         }
@@ -225,8 +231,8 @@ public:
         return data;
     }
 
-    constexpr void serialize(std::vector<uint8_t> &data) const override {
-        Base::serialize(data);
+    constexpr void serialize(std::vector<uint8_t> &data, bool include_name = true) const override {
+        Base::serialize(data, include_name);
         auto d = static_cast<int64_t>(_value);
         for (int i = 0; i < 8; i++)
             data.push_back((d >> (56 - i * 8)) & 0xFF);
@@ -255,8 +261,8 @@ public:
         return data;
     }
 
-    constexpr void serialize(std::vector<uint8_t> &data) const override {
-        Base::serialize(data);
+    constexpr void serialize(std::vector<uint8_t> &data, bool include_name = true) const override {
+        Base::serialize(data, include_name);
         auto d = static_cast<int32_t>(_value);
         for (int i = 0; i < 4; i++)
             data.push_back((d >> (24 - i * 8)) & 0xFF);
@@ -285,8 +291,8 @@ public:
         return data;
     }
 
-    constexpr void serialize(std::vector<uint8_t> &data) const override {
-        Base::serialize(data);
+    constexpr void serialize(std::vector<uint8_t> &data, bool include_name = true) const override {
+        Base::serialize(data, include_name);
         for (int i = 0; i < 8; i++)
             data.push_back((_value >> (56 - i * 8)) & 0xFF);
     }
@@ -314,8 +320,8 @@ public:
         return data;
     }
 
-    constexpr void serialize(std::vector<uint8_t> &data) const override {
-        Base::serialize(data);
+    constexpr void serialize(std::vector<uint8_t> &data, bool include_name = true) const override {
+        Base::serialize(data, include_name);
         data.push_back(_value >> 8);
         data.push_back(_value & 0xFF);
     }
@@ -343,8 +349,8 @@ public:
         return data;
     }
 
-    constexpr void serialize(std::vector<uint8_t> &data) const override {
-        Base::serialize(data);
+    constexpr void serialize(std::vector<uint8_t> &data, bool include_name = true) const override {
+        Base::serialize(data, include_name);
         // Serialize the length of the string
         data.push_back(_value.length() >> 8);
         data.push_back(_value.length() & 0xFF);
@@ -374,8 +380,8 @@ public:
         return data;
     }
 
-    constexpr void serialize(std::vector<uint8_t> &data) const override {
-        Base::serialize(data);
+    constexpr void serialize(std::vector<uint8_t> &data, bool include_name = true) const override {
+        Base::serialize(data, include_name);
         // Serialize the length of the data
         data.push_back(_value.size() >> 8);
         data.push_back(_value.size() & 0xFF);
@@ -406,8 +412,8 @@ public:
         return data;
     }
 
-    constexpr void serialize(std::vector<uint8_t> &data) const override {
-        Base::serialize(data);
+    constexpr void serialize(std::vector<uint8_t> &data, bool include_name = true) const override {
+        Base::serialize(data, include_name);
         // Serialize the length of the data
         data.push_back(_value.size() >> 8);
         data.push_back(_value.size() & 0xFF);
@@ -430,6 +436,25 @@ public:
 
     [[nodiscard]] constexpr std::vector<Base> &get_values() {
         return _value;
+    }
+
+    [[nodiscard]] constexpr std::vector<uint8_t> serialize() const override {
+        std::vector<uint8_t> data;
+        serialize(data);
+        return data;
+    }
+
+    constexpr void serialize(std::vector<uint8_t> &data, bool include_name = true) const override {
+        Base::serialize(data, include_name);
+        TagType current = TagType::End;
+        // Serialize the nbt
+        for (const auto &i : _value) {
+            if (current == TagType::End)
+                current = i.get_type();
+            if (current != i.get_type())
+                throw new std::runtime_error("nbt::List contains more than one type");
+            i.serialize(data, false);
+        }
     }
 };
 
