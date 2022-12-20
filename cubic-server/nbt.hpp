@@ -218,6 +218,19 @@ public:
     void set_value(double value) {
         _value = value;
     }
+
+    [[nodiscard]] constexpr std::vector<uint8_t> serialize() const override {
+        std::vector<uint8_t> data;
+        serialize(data);
+        return data;
+    }
+
+    constexpr void serialize(std::vector<uint8_t> &data) const override {
+        Base::serialize(data);
+        auto d = static_cast<int64_t>(_value);
+        for (int i = 0; i < 8; i++)
+            data.push_back((d >> (56 - i * 8)) & 0xFF);
+    }
 };
 
 class Float : public Base
