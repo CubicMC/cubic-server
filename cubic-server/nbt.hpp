@@ -11,35 +11,6 @@
 namespace nbt
 {
 
-// https://xuhuisun.com/post/c++-weekly-2-constexpr-map/
-// This is used to have a constexpr map for TAG_Compound
-template<typename Key, typename Value>
-struct FastMap
-{
-    std::vector<std::pair<Key, Value>> data;
-
-    [[nodiscard]] constexpr Value at(const Key &key) const
-    {
-        const auto itr =
-                std::find_if(begin(data), end(data),
-                             [&key](const auto &v) { return v.first == key; });
-        if (itr != end(data)) {
-            return itr->second;
-        }
-        else {
-            throw std::range_error("Not Found");
-        }
-    }
-
-    constexpr FastMap(FastMap<Key, Value> &&val) noexcept {
-        data = std::move(val.data);
-    }
-
-    constexpr FastMap(const std::initializer_list<std::pair<Key, Value>> &val) {
-        data = std::vector<std::pair<Key, Value>>(val);
-    }
-};
-
 enum class TagType {
     End,
     Byte,
@@ -185,16 +156,16 @@ public:
 class Compound : public Base
 {
 private:
-    FastMap<std::string, Base *> _value;
+    std::vector<Base *> _value;
 public:
-    Compound(std::string name, FastMap<std::string, Base *> value) : Base(std::move(name), TagType::Compound), _value(std::move(value)) {};
-    Compound(std::string name, std::initializer_list<std::pair<std::string, Base *>> value) : Base(std::move(name), TagType::Compound), _value(value) {};
+    Compound(std::string name, std::vector<Base *> value) : Base(std::move(name), TagType::Compound), _value(std::move(value)) {};
+    Compound(std::string name, std::initializer_list<Base *> value) : Base(std::move(name), TagType::Compound), _value(value) {};
     ~Compound() override {
-        for (auto i : _value.data)
-            delete i.second;
+        for (auto i : _value)
+            delete i;
     }
 
-    constexpr FastMap<std::string, Base *> &get_values() {
+    constexpr std::vector<Base *> &get_values() {
         return _value;
     }
 
@@ -206,8 +177,8 @@ public:
 
     constexpr void serialize(std::vector<uint8_t> &data, bool include_name = true) const override {
         Base::pre_serialize(data, include_name);
-        for (const auto &i : _value.data) {
-            i.second->serialize(data);
+        for (const auto &i : _value) {
+            i->serialize(data);
         }
         // Ends the TAG_Compound with a TAG_End
         data.push_back(0);
@@ -433,13 +404,13 @@ public:
 class List : public Base
 {
 private:
-    std::vector<Base> _value;
+    std::vector<Base *> _value;
 public:
-    explicit List(std::string name, std::vector<Base> value = std::vector<Base>())
+    explicit List(std::string name, std::vector<Base *> value = std::vector<Base *>())
             : Base(std::move(name), TagType::List), _value(std::move(value)) {};
     ~List() override = default;
 
-    [[nodiscard]] constexpr std::vector<Base> &get_values() {
+    [[nodiscard]] constexpr std::vector<Base *> &get_values() {
         return _value;
     }
 
@@ -455,10 +426,10 @@ public:
         // Serialize the nbt
         for (const auto &i : _value) {
             if (current == TagType::End)
-                current = i.get_type();
-            if (current != i.get_type())
-                throw new std::runtime_error("nbt::List contains more than one type");
-            i.serialize(data, false);
+                current = i->get_type();
+            if (current != i->get_type())
+                throw std::runtime_error("nbt::List contains more than one type");
+            i->serialize(data, false);
         }
     }
 };
