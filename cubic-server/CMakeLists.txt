@@ -19,6 +19,24 @@ target_sources (${CMAKE_PROJECT_NAME} PRIVATE
         nbt.hpp
 )
 
+if (GTEST)
+    enable_testing()
+
+    add_executable(
+            nbt_test
+            nbt.hpp
+            nbt_unittest.cpp
+    )
+
+    target_link_libraries(
+            nbt_test
+            GTest::gtest_main
+    )
+
+    include(GoogleTest)
+    gtest_discover_tests(nbt_test)
+endif()
+
 add_subdirectory (protocol)
 add_subdirectory (default)
 add_subdirectory (math)
