@@ -6,13 +6,8 @@
 
 namespace Configuration
 {
-    ConfigHandler::ConfigHandler()
-    {
-        _log = logging::Logger::get_instance();
-    }
 
-    void ConfigHandler::parse(const std::string &path) {
-        YAML::Node config;
+    void defaultConfigContent(const std::string &path) {
         if (!std::filesystem::exists(path)) {
             std::ofstream configFile(path);
             constexpr std::string_view fileContent =
@@ -27,6 +22,16 @@ general:\n\
             configFile << fileContent << std::endl;
             configFile.close();
         }
+    }
+
+    ConfigHandler::ConfigHandler()
+    {
+        _log = logging::Logger::get_instance();
+    }
+
+    void ConfigHandler::parse(const std::string &path) {
+        YAML::Node config;
+        defaultConfigContent(path);
         try {
             _baseNode = YAML::LoadFile(path);
             _ip = _baseNode["network"]["ip"].as<std::string>();
