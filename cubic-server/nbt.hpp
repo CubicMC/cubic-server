@@ -34,6 +34,10 @@ struct FastMap
     constexpr FastMap(FastMap<Key, Value> &&val) noexcept {
         data = std::move(val.data);
     }
+
+    constexpr FastMap(const std::initializer_list<std::pair<Key, Value>> &val) {
+        data = std::vector<std::pair<Key, Value>>(val);
+    }
 };
 
 // Some stuff here is from cpp-nbt (Only the types nothing else)
@@ -122,6 +126,7 @@ private:
     FastMap<std::string, Base> _value;
 public:
     Compound(std::string name, FastMap<std::string, Base> value) : Base(std::move(name), TagType::Compound), _value(std::move(value)) {};
+    Compound(std::string name, std::initializer_list<std::pair<std::string, Base>> value) : Base(std::move(name), TagType::Compound), _value(value) {};
     ~Compound() override = default;
 
     constexpr FastMap<std::string, Base> &get_values() {
