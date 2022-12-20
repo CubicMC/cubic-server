@@ -36,11 +36,11 @@ public:
     Base(std::string name, TagType type) : _name(std::move(name)), _type(type) {};
     virtual ~Base() = default;
 
-    [[nodiscard]] constexpr const std::string &get_name() const {
+    [[nodiscard]] constexpr const std::string &getName() const {
         return _name;
     };
 
-    [[nodiscard]] constexpr TagType get_type() const {
+    [[nodiscard]] constexpr TagType getType() const {
         return _type;
     }
 
@@ -78,7 +78,7 @@ public:
         return _value;
     }
 
-    void set_value(int32_t value) {
+    void setValue(int32_t value) {
         _value = value;
     }
 
@@ -107,7 +107,7 @@ public:
         return _value;
     }
 
-    void set_value(int8_t value) {
+    void setValue(int8_t value) {
         _value = value;
     }
 
@@ -132,7 +132,7 @@ public:
         : Base(std::move(name), TagType::ByteArray), _value(std::move(value)) {};
     ~ByteArray() override = default;
 
-    [[nodiscard]] constexpr std::vector<int8_t> &get_values() {
+    [[nodiscard]] constexpr std::vector<int8_t> &getValues() {
         return _value;
     }
 
@@ -165,7 +165,7 @@ public:
             delete i;
     }
 
-    constexpr std::vector<Base *> &get_values() {
+    constexpr std::vector<Base *> &getValues() {
         return _value;
     }
 
@@ -197,7 +197,7 @@ public:
         return _value;
     }
 
-    void set_value(double value) {
+    void setValue(double value) {
         _value = value;
     }
 
@@ -227,7 +227,7 @@ public:
         return _value;
     }
 
-    void set_value(float value) {
+    void setValue(float value) {
         _value = value;
     }
 
@@ -257,7 +257,7 @@ public:
         return _value;
     }
 
-    void set_value(int64_t value) {
+    void setValue(int64_t value) {
         _value = value;
     }
 
@@ -286,7 +286,7 @@ public:
         return _value;
     }
 
-    void set_value(int16_t value) {
+    void setValue(int16_t value) {
         _value = value;
     }
 
@@ -315,7 +315,7 @@ public:
         return _value;
     }
 
-    void set_value(std::string value) {
+    void setValue(std::string value) {
         _value = std::move(value);
     }
 
@@ -346,7 +346,7 @@ public:
             : Base(std::move(name), TagType::IntArray), _value(std::move(value)) {};
     ~IntArray() override = default;
 
-    [[nodiscard]] constexpr std::vector<int32_t> &get_values() {
+    [[nodiscard]] constexpr std::vector<int32_t> &getValues() {
         return _value;
     }
 
@@ -378,7 +378,7 @@ public:
             : Base(std::move(name), TagType::LongArray), _value(std::move(value)) {};
     ~LongArray() override = default;
 
-    [[nodiscard]] constexpr std::vector<int64_t> &get_values() {
+    [[nodiscard]] constexpr std::vector<int64_t> &getValues() {
         return _value;
     }
 
@@ -410,7 +410,7 @@ public:
             : Base(std::move(name), TagType::List), _value(std::move(value)) {};
     ~List() override = default;
 
-    [[nodiscard]] constexpr std::vector<Base *> &get_values() {
+    [[nodiscard]] constexpr std::vector<Base *> &getValues() {
         return _value;
     }
 
@@ -426,8 +426,8 @@ public:
         // Serialize the nbt
         for (const auto &i : _value) {
             if (current == TagType::End)
-                current = i->get_type();
-            if (current != i->get_type())
+                current = i->getType();
+            if (current != i->getType())
                 throw std::runtime_error("nbt::List contains more than one type");
             i->serialize(data, false);
         }
