@@ -334,7 +334,24 @@ public:
     }
 
     void set_value(std::string value) {
-        _value = value;
+        _value = std::move(value);
+    }
+
+    [[nodiscard]] constexpr std::vector<uint8_t> serialize() const override {
+        std::vector<uint8_t> data;
+        serialize(data);
+        return data;
+    }
+
+    constexpr void serialize(std::vector<uint8_t> &data) const override {
+        Base::serialize(data);
+        // Serialize the length of the string
+        data.push_back(_value.length() >> 8);
+        data.push_back(_value.length() & 0xFF);
+        // Serialize the string
+        for (auto i : _value) {
+            data.push_back(i);
+        }
     }
 };
 
