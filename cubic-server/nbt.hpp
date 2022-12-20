@@ -307,6 +307,18 @@ public:
     void set_value(int16_t value) {
         _value = value;
     }
+
+    [[nodiscard]] constexpr std::vector<uint8_t> serialize() const override {
+        std::vector<uint8_t> data;
+        serialize(data);
+        return data;
+    }
+
+    constexpr void serialize(std::vector<uint8_t> &data) const override {
+        Base::serialize(data);
+        data.push_back(_value >> 8);
+        data.push_back(_value & 0xFF);
+    }
 };
 
 class String : public Base
