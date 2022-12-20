@@ -101,7 +101,7 @@ private:
     int8_t _value;
 public:
     explicit Byte(std::string name, int8_t value = 0) : Base(std::move(name), TagType::Byte), _value(value) {};
-    ~Byte() override = default;;
+    ~Byte() override = default;
 
     [[nodiscard]] constexpr int8_t get_value() const {
         return _value;
@@ -191,7 +191,7 @@ private:
     double _value;
 public:
     explicit Double(std::string name, double value = 0) : Base(std::move(name), TagType::Double), _value(value) {};
-    ~Double() override = default;;
+    ~Double() override = default;
 
     [[nodiscard]] constexpr double get_value() const {
         return _value;
@@ -221,7 +221,7 @@ private:
     float _value;
 public:
     explicit Float(std::string name, float value = 0) : Base(std::move(name), TagType::Float), _value(value) {};
-    ~Float() override = default;;
+    ~Float() override = default;
 
     [[nodiscard]] constexpr float get_value() const {
         return _value;
@@ -251,7 +251,7 @@ private:
     int64_t _value;
 public:
     explicit Long(std::string name, int64_t value = 0) : Base(std::move(name), TagType::Long), _value(value) {};
-    ~Long() override = default;;
+    ~Long() override = default;
 
     [[nodiscard]] constexpr int64_t get_value() const {
         return _value;
@@ -309,7 +309,7 @@ private:
     std::string _value;
 public:
     explicit String(std::string name, std::string value = "") : Base(std::move(name), TagType::String), _value(std::move(value)) {};
-    ~String() override = default;;
+    ~String() override = default;
 
     [[nodiscard]] constexpr const std::string &get_value() const {
         return _value;
