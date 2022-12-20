@@ -69,13 +69,13 @@ public:
         return _name;
     };
 
-    [[nodiscard]] constexpr virtual std::vector<uint8_t> serialize() {
+    [[nodiscard]] constexpr virtual std::vector<uint8_t> serialize() const {
         std::vector<uint8_t> data;
         serialize(data);
         return data;
     }
 
-    constexpr virtual void serialize(std::vector<uint8_t> &data) {
+    constexpr virtual void serialize(std::vector<uint8_t> &data) const {
         // Serialize the type
         data.push_back((uint8_t)_type);
         // Serialize the name length
@@ -103,13 +103,13 @@ public:
         _value = value;
     }
 
-    [[nodiscard]] constexpr std::vector<uint8_t> serialize() override {
+    [[nodiscard]] constexpr std::vector<uint8_t> serialize() const override  {
         std::vector<uint8_t> data;
         serialize(data);
         return data;
     }
 
-    constexpr void serialize(std::vector<uint8_t> &data) override {
+    constexpr void serialize(std::vector<uint8_t> &data) const override {
         Base::serialize(data);
         for (int i = 0; i < 4; i++)
             data.push_back((_value >> (24 - i * 8)) & 0xFF);
@@ -132,13 +132,13 @@ public:
         _value = value;
     }
 
-    [[nodiscard]] constexpr std::vector<uint8_t> serialize() override {
+    [[nodiscard]] constexpr std::vector<uint8_t> serialize() const override {
         std::vector<uint8_t> data;
         serialize(data);
         return data;
     }
 
-    constexpr void serialize(std::vector<uint8_t> &data) override {
+    constexpr void serialize(std::vector<uint8_t> &data) const override {
         Base::serialize(data);
         data.push_back(_value);
     }
@@ -157,13 +157,13 @@ public:
         return _value;
     }
 
-    [[nodiscard]] constexpr std::vector<uint8_t> serialize() override {
+    [[nodiscard]] constexpr std::vector<uint8_t> serialize() const override {
         std::vector<uint8_t> data;
         serialize(data);
         return data;
     }
 
-    constexpr void serialize(std::vector<uint8_t> &data) override {
+    constexpr void serialize(std::vector<uint8_t> &data) const override {
         Base::serialize(data);
         // Serialize the length
         for (int i = 0; i < 4; i++)
@@ -185,6 +185,21 @@ public:
 
     constexpr FastMap<std::string, Base> &get_values() {
         return _value;
+    }
+
+    [[nodiscard]] constexpr std::vector<uint8_t> serialize() const override {
+        std::vector<uint8_t> data;
+        serialize(data);
+        return data;
+    }
+
+    constexpr void serialize(std::vector<uint8_t> &data) const override {
+        Base::serialize(data);
+        for (const auto &i : _value.data) {
+            i.second.serialize(data);
+        }
+        // Ends the TAG_Compound with a TAG_End
+        data.push_back(0);
     }
 };
 
