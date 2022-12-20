@@ -44,21 +44,22 @@ LogsInterface::LogsInterface() :
 
 bool LogsInterface::on_key_press_event(GdkEventKey* event)
 {
-  if (event->keyval == GDK_KEY_KP_Enter)
-  {
-    // Supposed to add the input to the logs (interface side only) when 'ENTER'
-    // is pressed. /!\ To do when handling command parsing.
-    m_label.set_text(m_label.get_text() + "\n" + m_Entry.get_text());
-    m_Entry.set_text("");
-    return true;
-  }
-  else if(event->keyval == GDK_KEY_Escape)
-  {
-    // Add the input to the logs (interface side only) when 'ESC' pressed
-    m_label.set_text(m_label.get_text() + "\n" + m_Entry.get_text());
-    m_Entry.set_text("");
-    return true;
-  }
+    if (event->keyval == GDK_KEY_KP_Enter)
+    {
+        // Supposed to add the input to the logs (interface side only) when 'ENTER'
+        // is pressed. /!\ To do when handling command parsing.
+        m_label.set_text(m_label.get_text() + "\n" + m_Entry.get_text());
+        m_Entry.set_text("");
+        return true;
+    }
+
+    if(event->keyval == GDK_KEY_Escape)
+    {
+        // Add the input to the logs (interface side only) when 'ESC' pressed
+        m_label.set_text(m_label.get_text() + "\n" + m_Entry.get_text());
+        m_Entry.set_text("");
+        return true;
+    }
 
     return false;
 }
