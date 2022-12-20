@@ -399,6 +399,24 @@ public:
     [[nodiscard]] constexpr std::vector<int64_t> &get_values() {
         return _value;
     }
+
+    [[nodiscard]] constexpr std::vector<uint8_t> serialize() const override {
+        std::vector<uint8_t> data;
+        serialize(data);
+        return data;
+    }
+
+    constexpr void serialize(std::vector<uint8_t> &data) const override {
+        Base::serialize(data);
+        // Serialize the length of the data
+        data.push_back(_value.size() >> 8);
+        data.push_back(_value.size() & 0xFF);
+        // Serialize the longs
+        for (auto d : _value) {
+            for (int i = 0; i < 8; i++)
+                data.push_back((d >> (56 - i * 8)) & 0xFF);
+        }
+    }
 };
 
 class List : public Base
