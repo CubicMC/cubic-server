@@ -4,7 +4,7 @@
 #include <queue>
 #include <unistd.h>
 
-#include "../logging/Logger.hpp"
+#include "logging/Logger.hpp"
 #include "LogsInterface.hpp"
 
 LogsInterface::LogsInterface()
