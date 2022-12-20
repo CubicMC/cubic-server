@@ -134,7 +134,8 @@ namespace protocol
         }
     }
 
-    constexpr void addNBT(std::vector<uint8_t> &out, const nbt::Base &data)
+    template<typename T>
+    constexpr void addNBT(std::vector<uint8_t> &out, const T &data)
     {
         data.serialize(out);
     }
