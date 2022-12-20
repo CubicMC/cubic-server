@@ -64,8 +64,8 @@ namespace protocol
         uint8_t gamemode;
         uint8_t previousGamemode; // must be a signed byte
         int32_t dimensionCount;
-        std::vector<std::string> dimensionNames;
-        Nbt_TAG_Compound registryCodec;
+        // std::vector<std::string> dimensionNames;
+        // nbt compound registryCodec;
         std::string dimensionType;
         std::string dimensionName;
         long hashedSeed;

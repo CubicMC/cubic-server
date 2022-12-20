@@ -330,95 +330,14 @@ void Client::sendLoginSuccess(const protocol::LoginSuccess &packet)
     switchToPlayState();
     LDEBUG("Switched to play state");
 
-    Nbt_TAG_Compound monster_spawn_light_level_value("value");
-    monster_spawn_light_level_value.add_value(Nbt_TAG_Int("min_inclusive", 0));
-    monster_spawn_light_level_value.add_value(Nbt_TAG_Int("max_inclusive", 7));
-
-    Nbt_TAG_Compound monster_spawn_light_level("monster_spawn_light_level");
-    monster_spawn_light_level.add_value(Nbt_TAG_String("type", "minecraft:uniform"));
-    monster_spawn_light_level.add_value(monster_spawn_light_level_value);
-
-    Nbt_TAG_Compound element_dim("element");
-    element_dim.add_value(Nbt_TAG_Byte("ultrawarm", 0));
-    element_dim.add_value(Nbt_TAG_Int("logical_height", 384));
-    element_dim.add_value(Nbt_TAG_String("infiniburn", "#minecraft:infiniburn_overworld"));
-    element_dim.add_value(Nbt_TAG_Byte("piglin_safe", 0));
-    element_dim.add_value(Nbt_TAG_Float("ambient_light", 0.0));
-    element_dim.add_value(Nbt_TAG_Byte("has_skylight", 1));
-    element_dim.add_value(Nbt_TAG_String("effects", "minecraft:overworld"));
-    element_dim.add_value(Nbt_TAG_Byte("has_raids", 1));
-    element_dim.add_value(Nbt_TAG_Int("monster_spawn_block_light_limit", 0));
-    element_dim.add_value(Nbt_TAG_Byte("respawn_anchor_works", 0));
-    element_dim.add_value(Nbt_TAG_Int("height", 384));
-    element_dim.add_value(Nbt_TAG_Byte("has_ceiling", 0));
-    element_dim.add_value(monster_spawn_light_level);
-    element_dim.add_value(Nbt_TAG_Byte("natural", 1));
-    element_dim.add_value(Nbt_TAG_Int("min_y", -64));
-    element_dim.add_value(Nbt_TAG_Float("coordinate_scale", 1.0));
-    element_dim.add_value(Nbt_TAG_Byte("bed_works", 1));
-
-    Nbt_TAG_Compound dimension_type_registry_entry("");
-    dimension_type_registry_entry.add_value(Nbt_TAG_String("name", "minecraft:overworld"));
-    dimension_type_registry_entry.add_value(Nbt_TAG_Int("id", 0));
-    dimension_type_registry_entry.add_value(element_dim);
-
-    Nbt_TAG_List dimension_type_registry("value");
-    dimension_type_registry.add_value(dimension_type_registry_entry);
-
-    Nbt_TAG_Compound dimention_type("minecraft:dimension_type");
-    dimention_type.add_value(Nbt_TAG_String("type", "minecraft:dimension_type"));
-    dimention_type.add_value(dimension_type_registry);
-
-    Nbt_TAG_Compound effects_biome("effects");
-    effects_biome.add_value(Nbt_TAG_Int("sky_color", 7907327));
-    effects_biome.add_value(Nbt_TAG_Int("water_fog_color", 329011));
-    effects_biome.add_value(Nbt_TAG_Int("fog_color", 12638463));
-    effects_biome.add_value(Nbt_TAG_Int("water_color", 4159204));
-
-    Nbt_TAG_Compound element_biome("element");
-    element_biome.add_value(Nbt_TAG_String("precipitation", "none"));
-    element_biome.add_value(Nbt_TAG_Float("temperature", 0.8));
-    element_biome.add_value(Nbt_TAG_Float("downfall", 0.4));
-    element_biome.add_value(effects_biome);
-
-    Nbt_TAG_Compound biome_registry_entry("");
-    biome_registry_entry.add_value(Nbt_TAG_String("name", "minecraft:plains"));
-    biome_registry_entry.add_value(Nbt_TAG_Int("id", 0));
-    biome_registry_entry.add_value(element_biome);
-
-    Nbt_TAG_List biome_registry("value");
-    biome_registry.add_value(biome_registry_entry);
-
-    Nbt_TAG_Compound worldgen("minecraft:worldgen/biome");
-    worldgen.add_value(Nbt_TAG_String("type", "minecraft:worldgen/biome"));
-    worldgen.add_value(biome_registry);
-
-    Nbt_TAG_Compound element_chat("element");
-    element_chat.add_value(Nbt_TAG_Compound("overlay"));
-
-    Nbt_TAG_Compound chat_registry_entry("");
-    chat_registry_entry.add_value(Nbt_TAG_String("name", "minecraft:game_info"));
-    chat_registry_entry.add_value(Nbt_TAG_Int("id", 0));
-    chat_registry_entry.add_value(element_chat);
-
-    Nbt_TAG_List chat_registry("value");
-    chat_registry.add_value(chat_registry_entry);
-
-    Nbt_TAG_Compound chat_type("minecraft:chat_type");
-    chat_type.add_value(Nbt_TAG_String("type", "minecraft:chat_type"));
-    chat_type.add_value(chat_registry);
-
     protocol::LoginPlay resPck;
     resPck.entityID = 0; // TODO: figure out what is this
     resPck.isHardcore = false; // TODO: something like this this->_player->_dim->getWorld()->getDifficulty();
     resPck.gamemode = 0; // TODO: something like this this->_player->getGamemode()
     resPck.previousGamemode = 0; // TODO: something like this this->_player->getPreviousGamemode().has_value() ? this->_player->getPreviousGamemode() : -1;
     resPck.dimensionCount = 3; // TODO: something like this this->_player->_dim->getWorld()->getDimensions().size();
-    resPck.dimensionNames = std::vector<std::string>({"overworld", "nether", "end"}); // TODO: something like this this->_player->_dim->getWorld()->getDimensions();
-    resPck.registryCodec = Nbt_TAG_Compound("registry-codec");
-    resPck.registryCodec.add_value(dimention_type);
-    resPck.registryCodec.add_value(worldgen);
-    resPck.registryCodec.add_value(chat_type);
+    // resPck.dimensionNames = std::vector<std::string>({"overworld", "nether", "end"}); // TODO: something like this this->_player->_dim->getWorld()->getDimensions();
+    // resPck.registryCodec = NBT;
     resPck.dimensionType = "minecraft:overworld"; // TODO: something like this this->_player->_dim->getDimensionType();
     resPck.dimensionName = "overworld"; // TODO: something like this this->_player->getDimension()->name;
     resPck.hashedSeed = 0; // TODO: something like this this->_player->_dim->getWorld()->getHashedSeed();
