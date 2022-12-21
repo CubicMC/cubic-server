@@ -9,6 +9,7 @@
 #include "Entity.hpp"
 #include "Chat.hpp"
 #include "logging/Logger.hpp"
+#include "world-storage/LevelData.hpp"
 
 class WorldGroup;
 class Dimension;
@@ -26,6 +27,9 @@ public:
     virtual std::vector<Entity *> getEntities();
     virtual std::shared_ptr<Dimension> getDimension(const std::string_view &name) const;
 
+    virtual const world_storage::LevelData &getLevelData() const;
+    virtual void setLevelData(const world_storage::LevelData &value);
+
 protected:
     std::vector<Entity *> _entities;
     std::shared_ptr<Chat> _chat;
@@ -33,6 +37,7 @@ protected:
     logging::Logger *_log;
     std::vector<std::thread *> _processingThreads;
     std::unordered_map<std::string_view, std::shared_ptr<Dimension>> _dimensions;
+    world_storage::LevelData _levelData;
 };
 
 
