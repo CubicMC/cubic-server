@@ -45,8 +45,8 @@ void World::forEachEntity(std::function<void(Entity *)> callback)
         _dimension.second->forEachEntity(callback);
 }
 
-void World::forEachEntityIf(std::function<bool(Entity *)> predicate, std::function<void(Entity *)> callback)
+void World::forEachEntityIf(std::function<void(Entity *)> callback, std::function<bool(Entity *)> predicate)
 {
     for (auto & _dimension : _dimensions)
-        _dimension.second->forEachEntityIf(predicate, callback);
+        _dimension.second->forEachEntityIf(callback, predicate);
 }
