@@ -8,16 +8,10 @@
 #ifndef CHUNKCOLUMN_HPP
 #define CHUNKCOLUMN_HPP
 
-#define CHUNK_2D_SIZE 16*16
-#define CHUNK_3D_SIZE CHUNK_2D_SIZE*16
-#define BIOME_3D_SIZE 4*4*4
-#define NB_OF_CHUNKS 20
-
-struct _3d_pos {
-    int x;
-    int y;
-    int z;
-};
+constexpr int CHUNK_2D_SIZE = 16*16;
+constexpr int CHUNK_3D_SIZE = CHUNK_2D_SIZE*16;
+constexpr int BIOME_3D_SIZE = 4*4*4;
+constexpr int NB_OF_CHUNKS = 20;
 
 struct block_entity {
 };
