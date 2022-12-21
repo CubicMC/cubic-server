@@ -1,6 +1,7 @@
 #include "ChunkColumn.hpp"
 #include <memory>
 
+namespace world_storage{
 ChunkColumn::ChunkColumn()
 {
 }
@@ -120,4 +121,5 @@ void ChunkColumn::updateHeightMap(void){
 
 const height_map &ChunkColumn::getHeightMap() {
     return _heightMap;
+}
 }

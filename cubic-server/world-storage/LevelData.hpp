@@ -4,6 +4,8 @@
 #ifndef LEVELDATA_HPP
 #define LEVELDATA_HPP
 
+namespace world_storage
+{
 class LevelData
 {
 public:
@@ -82,5 +84,6 @@ private:
     std::string _generatorName;
     std::string _levelName;
 };
+}
 
 #endif // LEVELDATA_HPP

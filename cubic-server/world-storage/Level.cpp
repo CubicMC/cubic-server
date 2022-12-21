@@ -1,5 +1,6 @@
 #include "Level.hpp"
 
+namespace world_storage{
 Level::Level()
 {
 }
@@ -30,4 +31,5 @@ ChunkColumn *Level::getChunkColumn(int x, int z) {
 void Level::removeChunkColumn(_2d_pos pos) {
     delete _chunkColumns.at(pos);
     _chunkColumns.erase(pos);
+}
 }

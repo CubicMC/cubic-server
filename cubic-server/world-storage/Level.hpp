@@ -26,6 +26,7 @@ struct std::hash<_2d_pos>
     }
 };
 
+namespace world_storage {
 class Level
 {
 public:
@@ -43,5 +44,6 @@ public:
 private:
     std::unordered_map<_2d_pos, ChunkColumn *> _chunkColumns;
 };
+}
 
 #endif // LEVEL_HPP

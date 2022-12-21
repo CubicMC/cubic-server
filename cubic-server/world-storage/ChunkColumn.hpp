@@ -50,7 +50,7 @@ struct height_map {
         std::array<uint16_t, CHUNK_2D_SIZE> worldSurface;
 };
 
-
+namespace world_storage {
 class ChunkColumn
 {
 public:
@@ -103,5 +103,6 @@ private:
     std::deque<Entity *> _entities;
     height_map _heightMap;
 };
+}
 
 #endif // CHUNKCOLUMN_HPP

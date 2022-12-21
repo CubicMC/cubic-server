@@ -1,5 +1,7 @@
 #include "LevelData.hpp"
 
+namespace world_storage
+{
 LevelData::LevelData()
 {
 }
@@ -186,4 +188,5 @@ const std::string& LevelData::getLevelName() const
 void LevelData::setLevelName(const std::string &value)
 {
     _levelName = value;
+}
 }
