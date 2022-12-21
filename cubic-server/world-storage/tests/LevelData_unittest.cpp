@@ -1,7 +1,7 @@
 #include <gtest/gtest.h>
 #include "../LevelData.hpp"
 
-LevelData levelData;
+world_storage::LevelData levelData;
 
 TEST(LevelDataTest, setHardcore_and_getHardcore)
 {

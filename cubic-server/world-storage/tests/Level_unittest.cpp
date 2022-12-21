@@ -1,7 +1,7 @@
 #include <gtest/gtest.h>
 #include "../Level.hpp"
 
-Level level;
+world_storage::Level level;
 
 TEST(LevelTest, addChunkColumn_and_getChunkColumn)
 {
