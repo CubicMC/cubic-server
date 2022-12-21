@@ -25,7 +25,7 @@ public:
     virtual World *getWorld() const;
     virtual std::vector<Entity *> getEntities();
     virtual void forEachEntity(std::function<void(Entity *)> callback);
-    virtual void forEachEntityIf(std::function<bool(Entity *)> predicate, std::function<void(Entity *)> callback);
+    virtual void forEachEntityIf(std::function<void(Entity *)> callback, std::function<bool(Entity *)> predicate);
 
 protected:
     std::vector<Entity *> _entities;

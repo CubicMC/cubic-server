@@ -28,7 +28,7 @@ void Dimension::forEachEntity(std::function<void(Entity *)> callback)
         callback(_entity);
 }
 
-void Dimension::forEachEntityIf(std::function<bool(Entity *)> predicate, std::function<void(Entity *)> callback)
+void Dimension::forEachEntityIf(std::function<void(Entity *)> callback, std::function<bool(Entity *)> predicate)
 {
     for (auto & _entity : _entities)
         if (predicate(_entity))
