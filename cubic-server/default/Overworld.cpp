@@ -1,8 +1,8 @@
 #include "Overworld.hpp"
-#include "../world-storage/WorldStorage.hpp"
-#include "../world-storage/ChunkColumn.hpp"
+#include "world-storage/WorldStorage.hpp"
+#include "world-storage/ChunkColumn.hpp"
 
-#define NB_SPAWN_CHUNKS 19
+constexpr int NB_SPAWN_CHUNKS = 19;
 
 void Overworld::tick()
 {
