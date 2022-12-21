@@ -1,8 +1,8 @@
 #include "Player.hpp"
 #include "Server.hpp"
 
-Player::Player(Client *cli)
-    : _cli(cli)
+Player::Player(Client *cli, __int128 playerUuid, const std::string &username)
+    : _cli(cli), _uuid(playerUuid), _username(username)
 {
     _log = logging::Logger::get_instance();
 }
@@ -13,6 +13,16 @@ void Player::tick()
 Client *Player::getClient() const
 {
     return _cli;
+}
+
+const std::string &Player::getUsername() const
+{
+    return _username;
+}
+
+const __int128 &Player::getUuid() const
+{
+    return _uuid;
 }
 
 void Player::_onConfirmTeleportation(const std::shared_ptr<protocol::ConfirmTeleportation> &pck)

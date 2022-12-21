@@ -94,10 +94,10 @@ void Client::_flushSendData()
     _send_buffer.erase(_send_buffer.begin(), _send_buffer.begin() + write_return);
 }
 
-void Client::switchToPlayState()
+void Client::switchToPlayState(__int128 playerUuid, const std::string &username)
 {
     this->setStatus(protocol::ClientStatus::Play);
-    this->_player = new Player(this);
+    this->_player = new Player(this, playerUuid, username);
     this->_player->setDimension(Server::getInstance()->getWorldGroup("default")->getWorld("default")->getDimension("overworld"));
 }
 
@@ -327,7 +327,7 @@ void Client::sendLoginSuccess(const protocol::LoginSuccess &packet)
     _sendData(*pck);
     LDEBUG("Sent a login success");
 
-    switchToPlayState();
+    switchToPlayState(packet.uuid, packet.username);
     LDEBUG("Switched to play state");
 
     protocol::LoginPlay resPck = {

@@ -55,7 +55,7 @@ public:
         _status = status;
     }
 
-    void switchToPlayState();
+    void switchToPlayState(__int128 playerUuid, const std::string &username);
 
     void handleParsedClientPacket(const std::shared_ptr<protocol::BaseServerPacket>& packet,
                                   protocol::ServerPacketsID packetID);

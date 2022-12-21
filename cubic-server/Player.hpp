@@ -12,9 +12,11 @@ class Player : public Entity
 {
     friend class Client;
 public:
-    Player(Client *cli);
+    Player(Client *cli, __int128 playerUuid, const std::string &username);
     void tick() override;
     Client *getClient() const;
+    const std::string &getUsername() const;
+    const __int128 &getUuid() const;
 
 private:
     void _onConfirmTeleportation(const std::shared_ptr<protocol::ConfirmTeleportation>& pck);
@@ -65,6 +67,8 @@ private:
 
     logging::Logger *_log;
     Client *_cli;
+    std::string _username;
+    __int128 _uuid;
 };
 
 
