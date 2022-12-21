@@ -10,20 +10,20 @@ class Entity
 {
     enum class Pose
     {
-        STANDING,
-        FALL_FLYING,
-        SLEEPING,
-        SWIMMING,
-        SPIN_ATTACK,
-        SNEAKING,
-        LONG_JUMPING,
-        DYING,
-        CROAKING,
-        USING_TONGUE,
-        ROARING,
-        SNIFFING,
-        EMERGING,
-        DIGGING
+        Standing,
+        FallFlying,
+        Sleeping,
+        Swimming,
+        SpinAttack,
+        Sneaking,
+        LongJumping,
+        Dying,
+        Croaking,
+        UsingTongue,
+        Roaring,
+        Sniffing,
+        Emerging,
+        Digging
     };
 
 public:

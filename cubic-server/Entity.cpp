@@ -14,7 +14,7 @@ Entity::Entity()
     _customNameVisible = false;
     _silent = false;
     _noGravity = false;
-    _pose = Pose::STANDING;
+    _pose = Pose::Standing;
     _tickFrozenInPowderedSnow = 0;
 }
 
