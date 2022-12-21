@@ -5,35 +5,11 @@ target_sources (${CMAKE_PROJECT_NAME} PRIVATE
         Level.hpp
         LevelData.cpp
         LevelData.hpp
-        # WorldStorage.cpp
-        # WorldStorage.hpp
 )
 
 if (GTEST)
   # Do not forget to add enable_testing() if you want to test your library !
   enable_testing()
-
-  # Now simply add a new executable with the test file
-  # add_executable(
-  #   world_test
-  #   ../Entity.hpp
-  #   ../Entity.cpp
-  #   # Dimension.cpp
-  #   # logging/Logger.cpp
-  #   # logging/FileAndFolderHandler.cpp
-  #   # logging/TimeFormatter.cpp
-  #   WorldStorage.cpp
-  #   LevelData.cpp
-  #   Level.cpp
-  #   ChunkColumn.cpp
-  #   tests/WorldStorage_unittest.cpp
-  # )
-
-  # # Link the GoogleTest library to the executable
-  # target_link_libraries(
-  #   world_test
-  #   GTest::gtest_main
-  # )
 
   add_executable(
     levelData_test
