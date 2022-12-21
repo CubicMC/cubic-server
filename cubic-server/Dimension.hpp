@@ -7,6 +7,7 @@
 #include <vector>
 
 #include "logging/Logger.hpp"
+#include "world-storage/Level.hpp"
 
 class World;
 
@@ -20,11 +21,15 @@ public:
     virtual void tick();
     virtual World *getWorld() const;
 
+    const world_storage::Level &getLevel() const;
+    world_storage::Level &getEditableLevel();
+
 protected:
     logging::Logger *_log;
     World *_world;
     std::atomic<int> _numThreadsWaiting;
     std::mutex _processingMutex;
+    world_storage::Level _level;
 };
 
 
