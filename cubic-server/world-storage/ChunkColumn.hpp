@@ -3,7 +3,7 @@
 #include <vector>
 #include <deque>
 
-#include "Entity.hpp"
+// #include "Entity.hpp"
 
 #ifndef CHUNKCOLUMN_HPP
 #define CHUNKCOLUMN_HPP
@@ -15,29 +15,6 @@ constexpr int NB_OF_CHUNKS = 20;
 
 struct block_entity {
 };
-
-// struct entity {
-    // tag short air
-    // tag string customName
-    // tag byte customNameVisible
-    // tag float fallDistance
-    // tag short fire
-    // tag byte glowing
-    // tag byte hasVisualFire
-    // tag string id
-    // tag byte invulnerable
-    // tag list motion
-    // tag byte noGravity
-    // tag byte onGround
-    // tag list passengers
-    // tag int portalCooldown
-    // tag list pos
-    // tag list rotation
-    // tag byte silent
-    // tag list tags
-    // tag int ticksFrozen
-    // tag int array uuid
-// };
 
 struct height_map {
         std::array<uint16_t, CHUNK_2D_SIZE> motionBlocking;
@@ -76,14 +53,14 @@ public:
     int64_t getTick();
     void setTick(int64_t tick);
 
-    void updateEntity(std::size_t id, Entity *e);
-    void updateEntity(__int128 uuid, Entity *e);
-    void addEntity(Entity *e);
-    void removeEntity(std::size_t id);
-    void removeEntity(__int128 uuid);
-    Entity *getEntity(std::size_t id);
-    Entity *getEntity(__int128 uuid);
-    const std::deque<Entity *> &getEntities();
+    // void updateEntity(std::size_t id, Entity *e);
+    // void updateEntity(__int128 uuid, Entity *e);
+    // void addEntity(Entity *e);
+    // void removeEntity(std::size_t id);
+    // void removeEntity(__int128 uuid);
+    // Entity *getEntity(std::size_t id);
+    // Entity *getEntity(__int128 uuid);
+    // const std::deque<Entity *> &getEntities();
 
     void updateHeightMap(void);
     const height_map &getHeightMap(void);
@@ -94,7 +71,7 @@ private:
     std::array<uint8_t, BIOME_3D_SIZE*NB_OF_CHUNKS> _biomes;
     std::vector<block_entity *> _blockEntities;
     int64_t _tickData;
-    std::deque<Entity *> _entities;
+    // std::deque<Entity *> _entities;
     height_map _heightMap;
 };
 }

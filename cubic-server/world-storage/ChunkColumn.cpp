@@ -85,36 +85,36 @@ void ChunkColumn::setTick(int64_t tick) {
     _tickData = tick;
 }
 
-void ChunkColumn::updateEntity(std::size_t id, Entity *e) {
-    _entities.at(id) = e;
-}
+// void ChunkColumn::updateEntity(std::size_t id, Entity *e) {
+//     _entities.at(id) = e;
+// }
 
-void ChunkColumn::updateEntity(__int128 uuid, Entity *e) {
-}
+// void ChunkColumn::updateEntity(__int128 uuid, Entity *e) {
+// }
 
-void ChunkColumn::addEntity(Entity *e) { // TODO: entity must be a pointer or a reference ?
-    _entities.push_back(e); // TODO: see which of emplace_back of emplace_front is better or push_back or push_front
-    // _entities.emplace_back(std::make_shared<entity>(e));
-}
+// void ChunkColumn::addEntity(Entity *e) { // TODO: entity must be a pointer or a reference ?
+//     _entities.push_back(e); // TODO: see which of emplace_back of emplace_front is better or push_back or push_front
+//     // _entities.emplace_back(std::make_shared<entity>(e));
+// }
 
-void ChunkColumn::removeEntity(std::size_t id) {
-    _entities.erase(_entities.begin() + id);
-}
+// void ChunkColumn::removeEntity(std::size_t id) {
+//     _entities.erase(_entities.begin() + id);
+// }
 
-void ChunkColumn::removeEntity(__int128 uuid) {
-}
+// void ChunkColumn::removeEntity(__int128 uuid) {
+// }
 
-Entity *ChunkColumn::getEntity(std::size_t id) {
-    return _entities.at(id);
-}
+// Entity *ChunkColumn::getEntity(std::size_t id) {
+//     return _entities.at(id);
+// }
 
-Entity *ChunkColumn::getEntity(__int128 uuid) {
-    return _entities.at(0);
-}
+// Entity *ChunkColumn::getEntity(__int128 uuid) {
+//     return _entities.at(0);
+// }
 
-const std::deque<Entity *> &ChunkColumn::getEntities() {
-    return _entities;
-}
+// const std::deque<Entity *> &ChunkColumn::getEntities() {
+//     return _entities;
+// }
 
 void ChunkColumn::updateHeightMap(void){
 }
