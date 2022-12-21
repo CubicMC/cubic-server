@@ -4,6 +4,7 @@
 #include <deque>
 
 // #include "Entity.hpp"
+#include "protocol/Structures.hpp"
 
 #ifndef CHUNKCOLUMN_HPP
 #define CHUNKCOLUMN_HPP
@@ -28,26 +29,26 @@ public:
     ChunkColumn();
     ~ChunkColumn();
 
-    void updateBlock(_3d_pos pos, uint16_t id);
-    uint16_t getBlock(_3d_pos pos);
+    void updateBlock(protocol::Position pos, uint16_t id);
+    uint16_t getBlock(protocol::Position pos);
     const std::array<uint16_t, CHUNK_3D_SIZE*NB_OF_CHUNKS> &getBlocks();
 
-    void updateSkyLight(_3d_pos pos, uint8_t light);
-    uint8_t getSkyLight(_3d_pos pos);
+    void updateSkyLight(protocol::Position pos, uint8_t light);
+    uint8_t getSkyLight(protocol::Position pos);
     const std::array<uint8_t, CHUNK_3D_SIZE*NB_OF_CHUNKS> &getSkyLights();
 
-    void updateBlockLight(_3d_pos pos, uint8_t light);
-    uint8_t getBlockLight(_3d_pos pos);
+    void updateBlockLight(protocol::Position pos, uint8_t light);
+    uint8_t getBlockLight(protocol::Position pos);
     const std::array<uint8_t, CHUNK_3D_SIZE*NB_OF_CHUNKS> &getBlockLights();
 
-    void updateBiome(_3d_pos pos, uint8_t biome);
-    uint8_t getBiome(_3d_pos pos);
+    void updateBiome(protocol::Position pos, uint8_t biome);
+    uint8_t getBiome(protocol::Position pos);
     const std::array<uint8_t, BIOME_3D_SIZE*NB_OF_CHUNKS> &getBiomes();
 
-    void updateBlockEntity(_3d_pos pos, block_entity *block_entity);
-    void addBlockEntity(_3d_pos pos, block_entity *block_entity);
-    void removeBlockEntity(_3d_pos pos);
-    block_entity *getBlockEntity(_3d_pos pos);
+    void updateBlockEntity(protocol::Position pos, block_entity *block_entity);
+    void addBlockEntity(protocol::Position pos, block_entity *block_entity);
+    void removeBlockEntity(protocol::Position pos);
+    block_entity *getBlockEntity(protocol::Position pos);
     const std::vector<block_entity *> &getBlockEntities();
 
     int64_t getTick();

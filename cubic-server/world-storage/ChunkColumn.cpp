@@ -10,11 +10,11 @@ ChunkColumn::~ChunkColumn()
 {
 }
 
-void ChunkColumn::updateBlock(_3d_pos pos, uint16_t id) {
+void ChunkColumn::updateBlock(protocol::Position pos, uint16_t id) {
     _blocks.at(pos.x + pos.z * 16 + pos.y * 16*16) = id;
 }
 
-uint16_t ChunkColumn::getBlock(_3d_pos pos) {
+uint16_t ChunkColumn::getBlock(protocol::Position pos) {
     return _blocks.at(pos.x + pos.z * 16 + pos.y * 16*16);
 }
 
@@ -22,11 +22,11 @@ const std::array<uint16_t, CHUNK_3D_SIZE*NB_OF_CHUNKS> &ChunkColumn::getBlocks()
     return _blocks;
 }
 
-void ChunkColumn::updateSkyLight(_3d_pos pos, uint8_t light) {
+void ChunkColumn::updateSkyLight(protocol::Position pos, uint8_t light) {
     _skyLights.at(pos.x + pos.z * 16 + pos.y * 16*16) = light;
 }
 
-uint8_t ChunkColumn::getSkyLight(_3d_pos pos) {
+uint8_t ChunkColumn::getSkyLight(protocol::Position pos) {
     return _skyLights.at(pos.x + pos.z * 16 + pos.y * 16*16);
 }
 
@@ -34,11 +34,11 @@ const std::array<uint8_t, CHUNK_3D_SIZE*NB_OF_CHUNKS> &ChunkColumn::getSkyLights
     return _skyLights;
 }
 
-void ChunkColumn::updateBlockLight(_3d_pos pos, uint8_t light) {
+void ChunkColumn::updateBlockLight(protocol::Position pos, uint8_t light) {
     _blockLights.at(pos.x + pos.z * 16 + pos.y * 16*16) = light;
 }
 
-uint8_t ChunkColumn::getBlockLight(_3d_pos pos) {
+uint8_t ChunkColumn::getBlockLight(protocol::Position pos) {
     return _blockLights.at(pos.x + pos.z * 16 + pos.y * 16*16);
 }
 
@@ -46,11 +46,11 @@ const std::array<uint8_t, CHUNK_3D_SIZE*NB_OF_CHUNKS> &ChunkColumn::getBlockLigh
     return _blockLights;
 }
 
-void ChunkColumn::updateBiome(_3d_pos pos, uint8_t biome) {
+void ChunkColumn::updateBiome(protocol::Position pos, uint8_t biome) {
     _biomes.at(pos.x + pos.z * 4 + pos.y * 4*4) = biome;
 }
 
-uint8_t ChunkColumn::getBiome(_3d_pos pos) {
+uint8_t ChunkColumn::getBiome(protocol::Position pos) {
     return _biomes.at(pos.x + pos.z * 4 + pos.y * 4*4);
 }
 
@@ -58,18 +58,18 @@ const std::array<uint8_t, BIOME_3D_SIZE*NB_OF_CHUNKS> &ChunkColumn::getBiomes() 
     return _biomes;
 }
 
-void ChunkColumn::updateBlockEntity(_3d_pos pos, block_entity *block_entity) {
+void ChunkColumn::updateBlockEntity(protocol::Position pos, block_entity *block_entity) {
 }
 
-void ChunkColumn::addBlockEntity(_3d_pos pos, block_entity *block_entity) {// entity must be a pointer or a reference ?
+void ChunkColumn::addBlockEntity(protocol::Position pos, block_entity *block_entity) {// entity must be a pointer or a reference ?
     _blockEntities.push_back(block_entity);// TODO: see which of emplace_back of emplace_front is better or push_back or push_front
     // _blockEntities.emplace_back(std::make_shared<block_entity>(block_entity));
 }
 
-void ChunkColumn::removeBlockEntity(_3d_pos pos) {
+void ChunkColumn::removeBlockEntity(protocol::Position pos) {
 }
 
-block_entity *ChunkColumn::getBlockEntity(_3d_pos pos) {
+block_entity *ChunkColumn::getBlockEntity(protocol::Position pos) {
     return _blockEntities.at(0);
 }
 
