@@ -1,10 +1,6 @@
 #include "Level.hpp"
 
 namespace world_storage{
-Level::Level()
-{
-}
-
 Level::~Level()
 {
 }

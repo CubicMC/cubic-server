@@ -30,7 +30,7 @@ namespace world_storage {
 class Level
 {
 public:
-    Level();
+    Level() = default;
     ~Level();
 
     ChunkColumn *addChunkColumn(_2d_pos pos, ChunkColumn *chunkColumn);
