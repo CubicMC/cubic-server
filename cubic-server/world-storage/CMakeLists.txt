@@ -22,34 +22,35 @@ if (GTEST)
     GTest::gtest_main
   )
 
-  # add_executable(
-  #   level_test
-  #   Level.cpp
-  #   ChunkColumn.cpp
-  #   tests/Level_unittest.cpp
-  # )
+#   add_executable(
+#     level_test
+#     ../protocol/Structures.hpp
+#     Level.cpp
+#     ChunkColumn.cpp
+#     tests/Level_unittest.cpp
+#   )
 
-  # target_link_libraries(
-  #   level_test
-  #   GTest::gtest_main
-  # )
+#   target_link_libraries(
+#     level_test
+#     GTest::gtest_main
+#   )
 
-  # add_executable(
-  #   chunkColumn_test
-  #   ChunkColumn.cpp
-  #   tests/ChunkColumn_unittest.cpp
-  # )
+#   add_executable(
+#     chunkColumn_test
+#     ../protocol/Structures.hpp
+#     ChunkColumn.cpp
+#     tests/ChunkColumn_unittest.cpp
+#   )
 
-  # target_link_libraries(
-  #   chunkColumn_test
-  #   GTest::gtest_main
-  # )
+#   target_link_libraries(
+#     chunkColumn_test
+#     GTest::gtest_main
+#   )
 
   # Enable CMake’s test runner to discover the tests included in the binary, using the GoogleTest CMake module.
   include(GoogleTest)
-  # gtest_discover_tests(world_test)
   gtest_discover_tests(levelData_test)
-  # gtest_discover_tests(level_test)
-  # gtest_discover_tests(chunkColumn_test)
+#   gtest_discover_tests(level_test)
+#   gtest_discover_tests(chunkColumn_test)
 
 endif()
