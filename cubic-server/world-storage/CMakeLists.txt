@@ -5,8 +5,8 @@ target_sources (${CMAKE_PROJECT_NAME} PRIVATE
         Level.hpp
         LevelData.cpp
         LevelData.hpp
-        WorldStorage.cpp
-        WorldStorage.hpp
+        # WorldStorage.cpp
+        # WorldStorage.hpp
 )
 
 if (GTEST)
