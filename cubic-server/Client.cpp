@@ -335,7 +335,6 @@ void Client::sendLoginSuccess(const protocol::LoginSuccess &packet)
         .isHardcore = false, // TODO: something like this this->_player->_dim->getWorld()->getDifficulty();
         .gamemode = 0, // TODO: something like this this->_player->getGamemode()
         .previousGamemode = 0, // TODO: something like this this->_player->getPreviousGamemode().has_value() ? this->_player->getPreviousGamemode() : -1;
-        .dimensionCount = 3, // TODO: something like this this->_player->_dim->getWorld()->getDimensions().size();
         .dimensionNames = std::vector<std::string>({"overworld", "nether", "end"}), // TODO: something like this this->_player->_dim->getWorld()->getDimensions();
         .registryCodec = std::move(nbt::Compound("registry-codec", {
             new nbt::Compound("minecraft:dimension_type", {

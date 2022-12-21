@@ -63,7 +63,6 @@ namespace protocol
         bool isHardcore;
         uint8_t gamemode;
         uint8_t previousGamemode; // must be a signed byte
-        int32_t dimensionCount;
         std::vector<std::string> dimensionNames;
         nbt::Compound registryCodec;
         std::string dimensionType;

@@ -47,7 +47,6 @@ std::shared_ptr<std::vector<uint8_t>> protocol::createLoginPlay(const LoginPlay 
         in.isHardcore, addBoolean,
         in.gamemode, addByte,
         in.previousGamemode, addByte,
-        in.dimensionCount, addVarInt,
         in.dimensionNames, addArray<std::string, addString>,
         in.registryCodec, addNBT<nbt::Compound>,
         in.dimensionType, addString,
