@@ -23,7 +23,7 @@ public:
     virtual void initialize();
     virtual void tick();
     virtual World *getWorld() const;
-    virtual std::vector<Entity *> getEntities();
+    virtual std::vector<Entity *> &getEntities();
     virtual void forEachEntity(std::function<void(Entity *)> callback);
     virtual void forEachEntityIf(std::function<void(Entity *)> callback, std::function<bool(Entity *)> predicate);
 

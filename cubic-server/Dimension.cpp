@@ -17,7 +17,7 @@ World *Dimension::getWorld() const
     return _world;
 }
 
-std::vector<Entity *> Dimension::getEntities()
+std::vector<Entity *> &Dimension::getEntities()
 {
     return _entities;
 }
