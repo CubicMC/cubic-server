@@ -2,23 +2,19 @@
 #include <memory>
 
 namespace world_storage{
-ChunkColumn::ChunkColumn()
-{
-}
-
 ChunkColumn::~ChunkColumn()
 {
 }
 
-void ChunkColumn::updateBlock(protocol::Position pos, uint16_t id) {
+void ChunkColumn::updateBlock(protocol::Position pos, block id) {
     _blocks.at(pos.x + pos.z * 16 + pos.y * 16*16) = id;
 }
 
-uint16_t ChunkColumn::getBlock(protocol::Position pos) {
+block ChunkColumn::getBlock(protocol::Position pos) {
     return _blocks.at(pos.x + pos.z * 16 + pos.y * 16*16);
 }
 
-const std::array<uint16_t, CHUNK_3D_SIZE*NB_OF_CHUNKS> &ChunkColumn::getBlocks() {
+const std::array<block, CHUNK_3D_SIZE*NB_OF_CHUNKS> &ChunkColumn::getBlocks() const {
     return _blocks;
 }
 
@@ -30,7 +26,7 @@ uint8_t ChunkColumn::getSkyLight(protocol::Position pos) {
     return _skyLights.at(pos.x + pos.z * 16 + pos.y * 16*16);
 }
 
-const std::array<uint8_t, CHUNK_3D_SIZE*NB_OF_CHUNKS> &ChunkColumn::getSkyLights() {
+const std::array<uint8_t, CHUNK_3D_SIZE*NB_OF_CHUNKS> &ChunkColumn::getSkyLights() const {
     return _skyLights;
 }
 
@@ -42,7 +38,7 @@ uint8_t ChunkColumn::getBlockLight(protocol::Position pos) {
     return _blockLights.at(pos.x + pos.z * 16 + pos.y * 16*16);
 }
 
-const std::array<uint8_t, CHUNK_3D_SIZE*NB_OF_CHUNKS> &ChunkColumn::getBlockLights() {
+const std::array<uint8_t, CHUNK_3D_SIZE*NB_OF_CHUNKS> &ChunkColumn::getBlockLights() const {
     return _blockLights;
 }
 
@@ -54,7 +50,7 @@ uint8_t ChunkColumn::getBiome(protocol::Position pos) {
     return _biomes.at(pos.x + pos.z * 4 + pos.y * 4*4);
 }
 
-const std::array<uint8_t, BIOME_3D_SIZE*NB_OF_CHUNKS> &ChunkColumn::getBiomes() {
+const std::array<uint8_t, BIOME_3D_SIZE*NB_OF_CHUNKS> &ChunkColumn::getBiomes() const {
     return _biomes;
 }
 
@@ -73,7 +69,7 @@ block_entity *ChunkColumn::getBlockEntity(protocol::Position pos) {
     return _blockEntities.at(0);
 }
 
-const std::vector<block_entity *> &ChunkColumn::getBlockEntities() {
+const std::vector<block_entity *> &ChunkColumn::getBlockEntities() const {
     return _blockEntities;
 }
 
