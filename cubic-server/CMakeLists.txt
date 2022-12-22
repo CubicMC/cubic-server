@@ -16,6 +16,7 @@ target_sources (${CMAKE_PROJECT_NAME} PRIVATE
         World.hpp
         Dimension.cpp
         Dimension.hpp
+        SoundList.hpp
         nbt.hpp
 )
 

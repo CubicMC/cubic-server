@@ -6,6 +6,18 @@
 
 namespace protocol
 {
+
+    // https://wiki.vg/Data_types#Fixed-point_numbers
+    // https://wiki.vg/index.php?title=Protocol&oldid=17753#Custom_Sound_Effect
+    // https://wiki.vg/index.php?title=Protocol&oldid=17753#Sound_Effect
+    // I think I should move this outside the protocol, but where ? '-'
+    struct FloatingPosition
+    {
+        double x;
+        double z;
+        double y;
+    };
+
     struct Position
     {
         int64_t x;
