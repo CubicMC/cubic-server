@@ -6,11 +6,7 @@
 
 namespace Configuration
 {
-
-    void defaultConfigContent(const std::string &path) {
-        if (!std::filesystem::exists(path)) {
-            std::ofstream configFile(path);
-            constexpr std::string_view fileContent =
+    constexpr std::string_view fileContent =
 "network:\n\
   ip: 0.0.0.0\n\
   port: 25565\n\
@@ -19,6 +15,10 @@ general:\n\
   max_players: 20\n\
   motd: A Cubic Server\
 ";
+
+    static void defaultConfigContent(const std::string &path) {
+        if (!std::filesystem::exists(path)) {
+            std::ofstream configFile(path);
             configFile << fileContent << std::endl;
             configFile.close();
         }
