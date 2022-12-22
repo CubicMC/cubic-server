@@ -6,6 +6,10 @@
 #include <thread>
 #include <vector>
 
+#include "Entity.hpp"
+#include "Chat.hpp"
+#include "logging/Logger.hpp"
+#include "world_storage/LevelData.hpp"
 #include "TickClock.hpp"
 #include "options.hpp"
 #include "thread_pool/PriorityThreadPool.hpp"
@@ -29,6 +33,7 @@ public:
     virtual void tick();
     virtual void initialize();
     virtual void stop();
+    virtual void save();
 
     NODISCARD virtual bool isInitialized() const;
     NODISCARD virtual const std::shared_ptr<WorldGroup> getWorldGroup() const;
@@ -69,6 +74,7 @@ public:
 
 protected:
     std::shared_ptr<Chat> _chat;
+    std::shared_ptr<nbt::Compound> _data;
     std::shared_ptr<WorldGroup> _worldGroup;
     std::unordered_map<std::string_view, std::shared_ptr<Dimension>> _dimensions;
     long _age;
