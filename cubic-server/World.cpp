@@ -34,3 +34,8 @@ std::vector<Entity *> World::getEntities()
 {
     return _entities;
 }
+
+WorldStorage &World::getWorldStorage()
+{
+    return _worldStorage;
+}
