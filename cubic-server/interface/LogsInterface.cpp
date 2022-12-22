@@ -1,9 +1,10 @@
 #include <string>
 #include <iostream>
 #include <fstream>
+#include <queue>
 #include <unistd.h>
 
-//#include "Logger.hpp"
+#include "logging/Logger.hpp"
 #include "LogsInterface.hpp"
 
 LogsInterface::LogsInterface() :
@@ -16,7 +17,7 @@ LogsInterface::LogsInterface() :
     m_VBox.pack_start(m_label);
     m_label.set_xalign(0);
     m_label.set_yalign(0);
-    m_label.set_line_wrap();
+    m_label.set_line_wrap(true);
     m_label.set_text("GUI initialisation...");
 
     m_Entry.set_max_length(50);
@@ -66,12 +67,15 @@ bool LogsInterface::on_key_press_event(GdkEventKey* event)
 
 bool LogsInterface::on_timeout(){
     std::string temp = "";
-    std::string logs;
-    std::ifstream file_stream;
-    file_stream.open(/*logging::Logger::get_instance().get_file_path()*/"logs.txt", std::ios::out);
+    std::stringstream ss;
+    std::queue<logging::LogMessage> q_copy = logging::Logger::get_instance()->get_logs();
 
-    while (std::getline(file_stream, logs)) {
-        temp += logs + "\n";
+    while (!q_copy.empty())
+    {
+        logging::LogMessage front = q_copy.front();
+        ss << front << std::endl;
+        temp = ss.str();
+        q_copy.pop();
     }
     m_label.set_text(temp);
 
