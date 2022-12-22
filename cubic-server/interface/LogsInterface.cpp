@@ -15,6 +15,7 @@ LogsInterface::LogsInterface()
 
     m_label.set_xalign(0);
     m_label.set_yalign(0);
+    m_label.set_line_wrap(true);
     m_label.set_text("GUI initialisation...");
 
     int timeout_value = 100; //in ms
