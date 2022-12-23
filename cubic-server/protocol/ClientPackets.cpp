@@ -43,6 +43,14 @@ std::shared_ptr<std::vector<uint8_t>> protocol::createPlayerChatMessage(const Pl
     return packet;
 }
 
+std::shared_ptr<std::vector<uint8_t>> protocol::createDisconnectPlayerReason(const DisconnectReason &in)
+{
+    std::vector<uint8_t> payload;
+    serialize(payload, in.reason, addString);
+    auto packet = std::make_shared<std::vector<uint8_t>>();
+    finalize(*packet.get(), payload, (int32_t)ClientPacketID::Disconnect);
+    return packet;
+}
 std::shared_ptr<std::vector<uint8_t>> protocol::createWorldEvent(const WorldEvent &in)
 {
     std::vector<uint8_t> payload;
