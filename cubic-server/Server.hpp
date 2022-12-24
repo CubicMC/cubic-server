@@ -6,6 +6,7 @@
 #include <vector>
 #include <arpa/inet.h>
 #include <memory>
+#include <netinet/in.h>
 
 #include "Client.hpp"
 #include "protocol/ServerPackets.hpp"
