@@ -77,7 +77,7 @@ bool LogsInterface::on_timeout(){
         temp = ss.str();
         q_copy.pop();
     }
-    m_label.set_text(temp);
+    m_label.set_text(temp.c_str());
 
  return true;
 }

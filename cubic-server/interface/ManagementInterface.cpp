@@ -33,7 +33,7 @@ ManagementInterface::ManagementInterface()
 bool ManagementInterface::on_timeout(){
     std::string title = this->m_players_section.get_nb_players();
 
-    this->m_players_title.set_text(title);
+    this->m_players_title.set_text(title.c_str());
 
  return true;
 }

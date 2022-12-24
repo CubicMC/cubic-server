@@ -5,6 +5,7 @@
 #include <thread>
 #include <deque>
 #include <vector>
+#include <netinet/in.h>
 
 #include "Player.hpp"
 #include "protocol/ClientPackets.hpp"
