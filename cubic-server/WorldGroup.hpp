@@ -8,7 +8,9 @@
 #include "Chat.hpp"
 #include "World.hpp"
 #include "logging/Logger.hpp"
+#include "SoundSystem.hpp"
 
+class SoundSystem;
 class WorldGroup
 {
 public:
@@ -24,6 +26,7 @@ protected:
     std::shared_ptr<Chat> _chat;
     std::unordered_map<std::string_view, std::shared_ptr<World>> _worlds;
     logging::Logger *_log;
+    SoundSystem *_soundSystem;
 };
 
 

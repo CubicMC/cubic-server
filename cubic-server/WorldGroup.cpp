@@ -1,12 +1,13 @@
 #include "WorldGroup.hpp"
 #include "logging/Logger.hpp"
 #include "Server.hpp"
+#include "SoundSystem.hpp"
 
 #include <utility>
 #include <thread>
 
 WorldGroup::WorldGroup(std::shared_ptr<Chat> chat)
-    : _chat(std::move(chat))
+    : _chat(std::move(chat)), _soundSystem(new SoundSystem(this))
 {
     _log = logging::Logger::get_instance();
 }
@@ -18,6 +19,7 @@ void WorldGroup::run()
         for (auto &world : _worlds) {
             world.second->tick();
         }
+        _soundSystem->tick();
         auto end_time = std::chrono::system_clock::now();
         auto compute_time = end_time - start_time;
         if (compute_time > std::chrono::milliseconds(MS_PER_TICK)) // If this happens there is a serious problem
