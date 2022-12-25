@@ -20,7 +20,7 @@ void SoundSystem::tick()
             if (!player)
                 continue;
 
-            player->playSoundEffect(SoundsList::ambient_cave, player);
+            player->playSoundEffect(SoundsList::ambient_cave, player, SoundCategory::Ambient);
         }
     }
 }
