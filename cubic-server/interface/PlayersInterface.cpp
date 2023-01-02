@@ -39,7 +39,7 @@ bool PlayersInterface::on_timeout(){
         temp += players + "\n";
         nb_players = nb_players + 1;
     }
-    this->m_label.set_text(temp);
+    this->m_label.set_text(temp.c_str());
     this->m_nb_players = "Players : " + std::to_string(nb_players);
 
  return true;

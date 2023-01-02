@@ -31,14 +31,9 @@ LogsInterface::LogsInterface() :
 
     m_VBox.pack_end(m_Entry);
 
-    ///////////////////////////////////////
-    // Not working anymore, for some reason
-
-    // int timeout_value = 100; //in ms
-    // sigc::slot<bool>my_slot = sigc::mem_fun(*this, &LogsInterface::on_timeout);
-    // Glib::signal_timeout().connect(my_slot, timeout_value);
-
-    ///////////////////////////////////////
+    int timeout_value = 100; //in ms
+    sigc::slot<bool>my_slot = sigc::mem_fun(*this, &LogsInterface::on_timeout);
+    Glib::signal_timeout().connect(my_slot, timeout_value);
 
     show_all_children();
 }
@@ -77,7 +72,7 @@ bool LogsInterface::on_timeout(){
         temp = ss.str();
         q_copy.pop();
     }
-    m_label.set_text(temp);
+    m_label.set_text(temp.c_str());
 
  return true;
 }
