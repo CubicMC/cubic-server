@@ -1,32 +1,59 @@
 #include <iostream>
 #include <cstring>
+#include <unordered_map>
+#include <functional>
 
 #include "Server.hpp"
 #include "protocol/ServerPackets.hpp"
 #include "interface/ManagementInterface.hpp"
 
-static void print_usage(const char *caller)
+bool gui = true;
+
+int print_usage(const char *caller)
 {
-    std::cout << "Usage:\n\t" << caller << std::endl;
+    std::cout << "Usage:\n\t" << caller << " [FLAGS]"<< std::endl;
+    std::cout << "\t\t-h:\t\tDisplays this help." << std::endl;
+    std::cout << "\t\t--help:\t\tDisplays this help." << std::endl;
+    std::cout << "\t\t--nogui:\tPrevents the GUI from displaying." << std::endl;
+    return 1;
 }
 
-// Uncomment that to launch the interface
-// #define INTERFACE
+int hide_gui(const char *no) {
+    gui = false;
+    return 2;
+}
+
+int arg_parser(int argc, char **argv) {
+    std::unordered_map<std::string, std::function<int(const char *)>> args;
+    int res = 0;
+
+    args["-h"] = std::function<int(const char *)>(print_usage);
+    args["--help"] = std::function<int(const char *)>(print_usage);
+    args["--nogui"] = std::function<int(const char *)>(hide_gui);
+
+    for(int i = 1; i < argc; i++) {
+        std::string flag = argv[i];
+        res = std::any_cast<std::function<int(const char *)>>(args[flag])(argv[0]);
+        if (res == 1) {
+            return res;
+        }
+    }
+    return res;
+}
 
 int main(int argc, char **argv)
 {
-    if (argc >= 2 && !strcmp(argv[1], "-h"))
-    {
-        print_usage(argv[0]);
+    int check_args = arg_parser(argc, argv);
+    std::thread InterfaceThread;
+
+    if (check_args == 1) {
         return 0;
     }
 
-    auto srv = Server::getInstance();
-    ///
-#ifdef INTERFACE
-    auto InterfaceThread = std::thread(&ManagementInterface::launch, argc, argv);
-#endif
-    ///
+    if (gui) {
+        InterfaceThread = std::thread(&ManagementInterface::launch, argc, argv);
+    }
 
+    auto srv = Server::getInstance();
     srv->launch();
 }
