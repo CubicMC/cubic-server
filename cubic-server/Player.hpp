@@ -5,6 +5,7 @@
 #include "Entity.hpp"
 #include "protocol/ServerPackets.hpp"
 #include "logging/Logger.hpp"
+#include "SoundList.hpp"
 
 class Client;
 
@@ -12,13 +13,17 @@ class Player : public Entity
 {
     friend class Client;
 public:
-    Player(Client *cli);
+    Player(Client *cli, std::shared_ptr<Dimension> dim);
     void tick() override;
     Client *getClient() const;
+    void playSoundEffect(SoundsList sound, protocol::FloatingPosition position, SoundCategory category = SoundCategory::Master);
+    void playSoundEffect(SoundsList sound, const Entity *entity, SoundCategory category = SoundCategory::Master);
+    void playCustomSound(std::string sound, protocol::FloatingPosition position, SoundCategory category = SoundCategory::Master);
+    void stopSound(uint8_t flags = 0, SoundCategory category = SoundCategory::Ambient, std::string sound = "");
 
 private:
-    void _onConfirmTeleportation(const std::shared_ptr<protocol::ConfirmTeleportation>& pck);
-    void _onQueryBlockEntityTag(const std::shared_ptr<protocol::QueryBlockEntityTag>& pck);
+    void _onConfirmTeleportation(const std::shared_ptr<protocol::ConfirmTeleportation> &pck);
+    void _onQueryBlockEntityTag(const std::shared_ptr<protocol::QueryBlockEntityTag> &pck);
     void _onChangeDifficulty(const std::shared_ptr<protocol::ChangeDifficulty> &pck);
     void _onChatMessage(const std::shared_ptr<protocol::ChatMessage> &pck);
     void _onClientCommand(const std::shared_ptr<protocol::ClientCommand> &pck);

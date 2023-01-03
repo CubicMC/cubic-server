@@ -9,3 +9,8 @@ std::shared_ptr<Dimension> Entity::getDimension() const
 {
     return _dim;
 }
+
+int32_t Entity::getId() const
+{
+    return _id;
+}

@@ -1,9 +1,29 @@
 #include "ConfigHandler.hpp"
 #include <iostream>
 #include <yaml-cpp/yaml.h>
+#include <filesystem>
+#include <fstream>
 
 namespace Configuration
 {
+    constexpr std::string_view fileContent =
+"network:\n\
+  ip: 0.0.0.0\n\
+  port: 25565\n\
+\n\
+general:\n\
+  max_players: 20\n\
+  motd: A Cubic Server\
+";
+
+    static void defaultConfigContent(const std::string &path) {
+        if (!std::filesystem::exists(path)) {
+            std::ofstream configFile(path);
+            configFile << fileContent << std::endl;
+            configFile.close();
+        }
+    }
+
     ConfigHandler::ConfigHandler()
     {
         _log = logging::Logger::get_instance();
@@ -11,6 +31,7 @@ namespace Configuration
 
     void ConfigHandler::parse(const std::string &path) {
         YAML::Node config;
+        defaultConfigContent(path);
         try {
             _baseNode = YAML::LoadFile(path);
             _ip = _baseNode["network"]["ip"].as<std::string>();

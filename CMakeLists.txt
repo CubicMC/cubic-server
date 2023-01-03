@@ -26,12 +26,16 @@ if(GTEST)
   enable_testing()
 endif()
 
+set(CMAKE_BUILD_RPATH /usr/local/lib/gcc12)
+
 find_package(Threads REQUIRED)
 find_package(PkgConfig REQUIRED)
 pkg_check_modules(GTKMM REQUIRED gtkmm-3.0)
 
 add_executable(${CMAKE_PROJECT_NAME})
 add_subdirectory(cubic-server)
+
+set(CMAKE_EXE_LINKER_FLAGS "-static-libgcc -static-libstdc++")
 
 target_include_directories(${CMAKE_PROJECT_NAME} PRIVATE ${GTKMM_INCLUDE_DIRS})
 target_include_directories(${CMAKE_PROJECT_NAME} PUBLIC cubic-server)
