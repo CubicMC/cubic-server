@@ -6,7 +6,7 @@
 #include "protocol/ServerPackets.hpp"
 #include "interface/ManagementInterface.hpp"
 
-argparse::ArgumentParser arg_parser(int argc, char **argv) {
+argparse::ArgumentParser argParser(int argc, char **argv) {
     argparse::ArgumentParser program("cubic_server");
 
     program.add_argument("--nogui")
@@ -26,7 +26,7 @@ argparse::ArgumentParser arg_parser(int argc, char **argv) {
 
 int main(int argc, char **argv)
 {
-    argparse::ArgumentParser program = arg_parser(argc, argv);
+    argparse::ArgumentParser program = argParser(argc, argv);
     std::thread InterfaceThread;
 
     if (program["--nogui"] == false) {
