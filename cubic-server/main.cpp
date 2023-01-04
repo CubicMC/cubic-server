@@ -1,20 +1,18 @@
 #include <iostream>
 #include <cstring>
-#include <unordered_map>
-#include <functional>
 
 #include <argparse/argparse.hpp>
 #include "Server.hpp"
 #include "protocol/ServerPackets.hpp"
 #include "interface/ManagementInterface.hpp"
 
-bool arg_parser(int argc, char **argv) {
+argparse::ArgumentParser arg_parser(int argc, char **argv) {
     argparse::ArgumentParser program("cubic_server");
 
     program.add_argument("--nogui")
         .help("prevents the GUI from displaying")
-        .default_value(true)
-        .implicit_value(false);
+        .default_value(false)
+        .implicit_value(true);
     try {
         program.parse_args(argc, argv);
     }
@@ -23,20 +21,15 @@ bool arg_parser(int argc, char **argv) {
         std::cerr << program;
         std::exit(1);
     }
-
-    if (program["--nogui"] == false) {
-        return false;
-    }
-    return true;
-
+    return program;
 }
 
 int main(int argc, char **argv)
 {
-    bool gui = arg_parser(argc, argv);
+    argparse::ArgumentParser program = arg_parser(argc, argv);
     std::thread InterfaceThread;
 
-    if (gui) {
+    if (program["--nogui"] == false) {
         InterfaceThread = std::thread(&ManagementInterface::launch, argc, argv);
     }
 
