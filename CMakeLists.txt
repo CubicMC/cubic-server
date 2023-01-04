@@ -11,6 +11,12 @@ FetchContent_Declare(
 )
 FetchContent_MakeAvailable(json)
 
+FetchContent_Declare(
+    argparse
+    GIT_REPOSITORY https://github.com/p-ranav/argparse.git
+)
+FetchContent_MakeAvailable(argparse)
+
 if(GTEST) # if the flag GTEST is true
   FetchContent_Declare(
     googletest
@@ -43,4 +49,5 @@ target_link_libraries (${CMAKE_PROJECT_NAME} PRIVATE
         Threads::Threads
         nlohmann_json::nlohmann_json
         ${GTKMM_LIBRARIES}
+        argparse
 )
