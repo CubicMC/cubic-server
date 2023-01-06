@@ -319,7 +319,7 @@ void Client::sendPingResponse(int64_t payload)
     _sendData(*pck);
 
     LDEBUG("Sent a Spawn Player packet");
-}
+}*/
 
 void Client::sendUpdateTime(const protocol::UpdateTime &data)
 {
@@ -327,7 +327,7 @@ void Client::sendUpdateTime(const protocol::UpdateTime &data)
     _sendData(*pck);
 
     LDEBUG("Sent an Update Time packet");
-}*/
+}
 
 
 void Client::sendChatMessageResponse(const protocol::PlayerChatMessage &packet)
