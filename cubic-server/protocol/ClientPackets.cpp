@@ -204,3 +204,38 @@ std::shared_ptr<std::vector<uint8_t>> protocol::createPlayDisconnect(const Disco
     finalize(*packet.get(), payload, (int32_t)ClientPacketID::DisconnectPlay);
     return packet;
 }
+
+std::shared_ptr<std::vector<uint8_t>> protocol::createSpawnPlayer(const SpawnPlayer &in)
+{
+    std::vector<uint8_t> payload;
+
+    serialize(payload,
+              in.entity_id, addVarInt,
+              in.player_uuid, addUUID,
+              (long) in.x, addLong,
+              (long) in.y, addLong,
+              (long) in.z, addLong,
+              in.yaw, addByte,
+              in.pitch, addByte
+    );
+
+    auto packet = std::make_shared<std::vector<uint8_t>>();
+    finalize(*packet.get(), payload, (int32_t)ClientPacketID::SpawnPlayer);
+
+    return packet;
+}
+
+std::shared_ptr<std::vector<uint8_t>> protocol::createUpdateTime(const UpdateTime &in)
+{
+    std::vector<uint8_t> payload;
+
+    serialize(payload,
+              in.world_age, addLong,
+              in.time_of_day, addLong
+    );
+
+    auto packet = std::make_shared<std::vector<uint8_t>>();
+    finalize(*packet.get(), payload, (int32_t)ClientPacketID::UpdateTime);
+
+    return packet;
+}

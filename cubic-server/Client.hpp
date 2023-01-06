@@ -71,7 +71,7 @@ public:
     void sendLoginSuccess(const protocol::LoginSuccess &packet);
     void sendLoginPlay(const protocol::LoginPlay &packet);
     //void sendSpawnPlayer(const protocol::SpawnPlayer &data);
-    //void sendUpdateTime(const protocol::UpdateTime &data);
+    void sendUpdateTime(const protocol::UpdateTime &data);
     void sendChatMessageResponse(const protocol::PlayerChatMessage &packet);
     void sendWorldEvent(const protocol::WorldEvent &packet);
     void disconnect(const chat::Message &reason = chat::Message("Disconnected"));

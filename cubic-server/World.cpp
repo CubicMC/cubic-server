@@ -1,6 +1,8 @@
 #include "World.hpp"
 #include "Dimension.hpp"
-#include "ClientPackets.hpp"
+#include "protocol/ClientPackets.hpp"
+#include "Player.hpp"
+#include <chrono>
 
 void World::tick()
 {
@@ -65,13 +67,29 @@ void World::setLevelData(const world_storage::LevelData &value)
 }
 
 void World::updateTime() {
+    static auto clock = std::chrono::steady_clock::now();
+    int64_t time_elapsed;
     std::shared_ptr<std::vector<uint8_t>> data;
-    // add tick to age of the world and time
-    _age += 1;
-    _time += 1;
-    if (_time > 24000)
-        _time = 0;
 
-    // send packets to clients (missing clients in architecture)
-    data = protocol::createUpdateTime({_age, _time});
+    //compute elapsed time
+
+    time_elapsed = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now() - clock).count();
+
+    //add 20 ticks once every second (default minecraft SMP norm)
+    if (time_elapsed > 1000) {
+        _age += 20;
+        _time += 20;
+        if (_time > 24000)
+            _time = 0;
+
+        // send packets to clients (missing clients in architecture)
+        for (auto &entity : _entities) {
+            auto player = dynamic_cast<Player *>(entity);
+
+            if (player) {
+                player->getClient()->sendUpdateTime({ _age,_time });
+            }
+        }
+        clock = std::chrono::steady_clock::now();
+    }
 }
