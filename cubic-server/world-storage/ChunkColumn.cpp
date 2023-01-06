@@ -6,15 +6,15 @@ ChunkColumn::~ChunkColumn()
 {
 }
 
-void ChunkColumn::updateBlock(protocol::Position pos, block id) {
+void ChunkColumn::updateBlock(protocol::Position pos, Block id) {
     _blocks.at(pos.x + pos.z * 16 + pos.y * 16*16) = id;
 }
 
-block ChunkColumn::getBlock(protocol::Position pos) {
+Block ChunkColumn::getBlock(protocol::Position pos) {
     return _blocks.at(pos.x + pos.z * 16 + pos.y * 16*16);
 }
 
-const std::array<block, CHUNK_3D_SIZE*NB_OF_CHUNKS> &ChunkColumn::getBlocks() const {
+const std::array<Block, CHUNK_3D_SIZE*NB_OF_CHUNKS> &ChunkColumn::getBlocks() const {
     return _blocks;
 }
 
@@ -54,22 +54,22 @@ const std::array<uint8_t, BIOME_3D_SIZE*NB_OF_CHUNKS> &ChunkColumn::getBiomes() 
     return _biomes;
 }
 
-void ChunkColumn::updateBlockEntity(protocol::Position pos, block_entity *block_entity) {
+void ChunkColumn::updateBlockEntity(protocol::Position pos, BlockEntity *BlockEntity) {
 }
 
-void ChunkColumn::addBlockEntity(protocol::Position pos, block_entity *block_entity) {// entity must be a pointer or a reference ?
-    _blockEntities.push_back(block_entity);// TODO: see which of emplace_back of emplace_front is better or push_back or push_front
-    // _blockEntities.emplace_back(std::make_shared<block_entity>(block_entity));
+void ChunkColumn::addBlockEntity(protocol::Position pos, BlockEntity *BlockEntity) {// entity must be a pointer or a reference ?
+    _blockEntities.push_back(BlockEntity);// TODO: see which of emplace_back of emplace_front is better or push_back or push_front
+    // _blockEntities.emplace_back(std::make_shared<BlockEntity>(BlockEntity));
 }
 
 void ChunkColumn::removeBlockEntity(protocol::Position pos) {
 }
 
-block_entity *ChunkColumn::getBlockEntity(protocol::Position pos) {
+BlockEntity *ChunkColumn::getBlockEntity(protocol::Position pos) {
     return _blockEntities.at(0);
 }
 
-const std::vector<block_entity *> &ChunkColumn::getBlockEntities() const {
+const std::vector<BlockEntity *> &ChunkColumn::getBlockEntities() const {
     return _blockEntities;
 }
 
@@ -115,7 +115,7 @@ void ChunkColumn::setTick(int64_t tick) {
 void ChunkColumn::updateHeightMap(void){
 }
 
-const height_map &ChunkColumn::getHeightMap() {
+const HeightMap &ChunkColumn::getHeightMap() {
     return _heightMap;
 }
 }
