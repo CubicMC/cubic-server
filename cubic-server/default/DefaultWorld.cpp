@@ -1,6 +1,7 @@
 #include "DefaultWorld.hpp"
 #include <stdio.h>
 #include <zlib.h>
+#include <iostream>
 
 #define CHUNK 0x4000
 
@@ -98,7 +99,10 @@ void DefaultWorld::save() {
 
     FILE *file_buf = fopen("level.dat", "w");
     unsigned char *in = buffer.data();
-    unsigned char out[CHUNK];
+    unsigned long in_len = buffer.size();
+    unsigned char out[CHUNK + 1];
+    unsigned long out_len = CHUNK;
+    int res;
 
     z_stream strm;
 
@@ -106,17 +110,23 @@ void DefaultWorld::save() {
     strm.zfree = Z_NULL;
     strm.opaque = Z_NULL;
 
-    deflateInit2(&strm, Z_DEFAULT_COMPRESSION, Z_DEFLATED, 15 | 16, 8, Z_DEFAULT_STRATEGY);
+    deflateInit(&strm, Z_DEFAULT_COMPRESSION);
 
     strm.next_in = in;
-    strm.avail_in = buffer.size();
-    strm.next_out = out;
-    strm.avail_out = CHUNK;
+    strm.avail_in = in_len;
+    strm.next_out = 0;
+    strm.avail_out = 0;
 
-    deflate(&strm, Z_FINISH);
-    fwrite(out, sizeof(char), CHUNK - strm.avail_out, file_buf);
+    do {
+        if (strm.avail_out == 0) {
+            strm.next_out = out;
+            strm.avail_out = CHUNK;
+        }
+        res = deflate(&strm, in_len - strm.total_out > CHUNK ? Z_NO_FLUSH : Z_FINISH);
+    } while (res == Z_OK);
+
+    fwrite(out, sizeof(char), out_len, file_buf);
     fclose(file_buf);
-    deflateEnd(&strm);
 }
 
 void DefaultWorld::stop() { World::stop(); }
