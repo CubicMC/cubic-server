@@ -1,7 +1,7 @@
 #ifndef CUBICSERVER_COMMANDPARSER_COMMANDS_HELP_HPP
 #define CUBICSERVER_COMMANDPARSER_COMMANDS_HELP_HPP
 
-#include "logging/logger.hpp"
+#include "logging/Logger.hpp"
 
 #include <vector>
 #include <unordered_map>
