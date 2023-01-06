@@ -14,6 +14,8 @@ void DefaultWorld::tick()
     // TODO: Launch threads for all the dimensions
     for (auto &dim : this->_dimensions)
         _processingThreads.push_back(new std::thread(&Dimension::tick, dim.second));
+
+    updateTime();
 }
 
 void DefaultWorld::initialize()

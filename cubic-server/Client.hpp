@@ -65,6 +65,8 @@ public:
     // All the send packets go here
     void sendStatusResponse(const std::string &json);
     void sendPingResponse(int64_t payload);
+    //void sendSpawnPlayer(const protocol::SpawnPlayer &data);
+    void sendUpdateTime(const protocol::UpdateTime &data);
     void sendChatMessageResponse(const protocol::PlayerChatMessage &packet);
     void sendWorldEvent(const protocol::WorldEvent &packet);
 

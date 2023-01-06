@@ -8,6 +8,7 @@
 #include "SoundList.hpp"
 
 class Client;
+class Entity;
 
 class Player : public Entity
 {

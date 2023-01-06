@@ -15,9 +15,11 @@ namespace protocol
     enum class ClientPacketID : int32_t {
         Status = 0x00,
         Ping = 0x01,
+        SpawnPlayer = 0x02,
         CustomSoundEffect = 0x16,
         WorldEvent = 0x20,
         PlayerChatMessage = 0x30,
+        UpdateTime = 0x59,
         EntitySoundEffect = 0x5c,
         SoundEffect = 0x5d,
         StopSound = 0x5e
@@ -112,6 +114,27 @@ namespace protocol
 
     std::shared_ptr<std::vector<uint8_t>> createStopSound(const StopSound &);
 
+    struct SpawnPlayer
+    {
+        int32_t entity_id;
+        __int128 player_uuid;
+        double x;
+        double y;
+        double z;
+        uint8_t yaw;
+        uint8_t pitch;
+    };
+
+    std::shared_ptr<std::vector<uint8_t>> createSpawnPlayer(const SpawnPlayer &);
+
+
+    struct UpdateTime
+    {
+        long world_age;
+        long time_of_day;
+    };
+
+    std::shared_ptr<std::vector<uint8_t>> createUpdateTime(const UpdateTime &);
 }
 
 #endif /* A7ADDD9E_6961_4A3D_AAB2_DF37DB6915F0 */
