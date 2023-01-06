@@ -19,7 +19,7 @@ namespace protocol
         CustomSoundEffect = 0x16,
         WorldEvent = 0x20,
         PlayerChatMessage = 0x30,
-        UpdateTime = 0x5a,
+        UpdateTime = 0x59,
         EntitySoundEffect = 0x5c,
         SoundEffect = 0x5d,
         StopSound = 0x5e
