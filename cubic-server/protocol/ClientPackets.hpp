@@ -24,7 +24,7 @@ namespace protocol
         WorldEvent = 0x20,
         LoginPlay = 0x23,
         PlayerChatMessage = 0x30,
-        UpdateTime = 0x5a,
+        UpdateTime = 0x59,
         SynchronizePlayerPosition = 0x36,
         EntitySoundEffect = 0x5c,
         SoundEffect = 0x5d,
