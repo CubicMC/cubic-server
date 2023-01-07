@@ -1,7 +1,8 @@
 #include "ChunkColumn.hpp"
 #include <memory>
 
-namespace world_storage{
+namespace world_storage {
+
 ChunkColumn::~ChunkColumn()
 {
 }

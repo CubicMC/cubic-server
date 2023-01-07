@@ -9,6 +9,9 @@
 #ifndef CHUNKCOLUMN_HPP
 #define CHUNKCOLUMN_HPP
 
+
+namespace world_storage {
+
 constexpr int CHUNK_2D_SIZE = 16*16;
 constexpr int CHUNK_3D_SIZE = CHUNK_2D_SIZE*16;
 constexpr int BIOME_3D_SIZE = 4*4*4;
@@ -25,7 +28,6 @@ struct HeightMap {
         std::array<uint16_t, CHUNK_2D_SIZE> worldSurface;
 };
 
-namespace world_storage {
 class ChunkColumn
 {
 public:
@@ -78,6 +80,7 @@ private:
     // std::deque<Entity *> _entities;
     HeightMap _heightMap;
 };
+
 }
 
 #endif // CHUNKCOLUMN_HPP

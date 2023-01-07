@@ -1,6 +1,10 @@
 #include <gtest/gtest.h>
 #include "../ChunkColumn.hpp"
 
+using world_storage::BIOME_3D_SIZE;
+using world_storage::CHUNK_2D_SIZE;
+using world_storage::CHUNK_3D_SIZE;
+using world_storage::NB_OF_CHUNKS;
 world_storage::ChunkColumn chunkColumn;
 
 // TEST(ChunkColumnTest, Blocks) {
