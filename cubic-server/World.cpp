@@ -34,3 +34,13 @@ std::vector<Entity *> World::getEntities()
 {
     return _entities;
 }
+
+const world_storage::LevelData &World::getLevelData() const
+{
+    return _levelData;
+}
+
+void World::setLevelData(const world_storage::LevelData &value)
+{
+    _levelData = value;
+}
