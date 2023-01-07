@@ -5,11 +5,15 @@
 #include <atomic>
 #include <thread>
 #include <vector>
+#include <functional>
 
 #include "logging/Logger.hpp"
+#include "Entity.hpp"
 #include "world_storage/Level.hpp"
 
 class World;
+
+class Entity;
 
 class Dimension
 {
@@ -20,11 +24,15 @@ public:
     virtual void initialize();
     virtual void tick();
     virtual World *getWorld() const;
+    virtual std::vector<Entity *> &getEntities();
+    virtual void forEachEntity(std::function<void(Entity *)> callback);
+    virtual void forEachEntityIf(std::function<void(Entity *)> callback, std::function<bool(const Entity *)> predicate);
 
     const world_storage::Level &getLevel() const;
     world_storage::Level &getEditableLevel();
 
 protected:
+    std::vector<Entity *> _entities;
     logging::Logger *_log;
     World *_world;
     std::atomic<int> _numThreadsWaiting;
