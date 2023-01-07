@@ -7,7 +7,7 @@
 #include <vector>
 
 #include "logging/Logger.hpp"
-#include "world-storage/Level.hpp"
+#include "world_storage/Level.hpp"
 
 class World;
 

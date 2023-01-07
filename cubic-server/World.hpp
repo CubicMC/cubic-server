@@ -9,7 +9,7 @@
 #include "Entity.hpp"
 #include "Chat.hpp"
 #include "logging/Logger.hpp"
-#include "world-storage/LevelData.hpp"
+#include "world_storage/LevelData.hpp"
 
 class WorldGroup;
 class Dimension;
