@@ -24,13 +24,13 @@ std::vector<Entity *> &Dimension::getEntities()
 
 void Dimension::forEachEntity(std::function<void(Entity *)> callback)
 {
-    for (auto & _entity : _entities)
+    for (auto _entity : _entities)
         callback(_entity);
 }
 
 void Dimension::forEachEntityIf(std::function<void(Entity *)> callback, std::function<bool(const Entity *)> predicate)
 {
-    for (auto & _entity : _entities)
+    for (auto _entity : _entities)
         if (predicate(_entity))
             callback(_entity);
 }
