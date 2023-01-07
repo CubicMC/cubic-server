@@ -119,3 +119,68 @@ std::shared_ptr<SynchronizePlayerPosition> protocol::parseSynchronizePlayerPosit
         popBoolean, &SynchronizePlayerPosition::dismountVehicle);
     return h;
 }
+
+std::shared_ptr<std::vector<uint8_t>> protocol::createCustomSoundEffect(const CustomSoundEffect &in)
+{
+    std::vector<uint8_t> payload;
+    serialize(payload,
+        in.name, addIdentifier,
+        in.category, addVarInt,
+        in.x, addInt,
+        in.y, addInt,
+        in.z, addInt,
+        in.volume, addFloat,
+        in.pitch, addFloat,
+        in.seed, addLong
+    );
+    auto packet = std::make_shared<std::vector<uint8_t>>();
+    finalize(*packet, payload, (int32_t) ClientPacketID::CustomSoundEffect);
+    return packet;
+}
+
+std::shared_ptr<std::vector<uint8_t>> protocol::createEntitySoundEffect(const EntitySoundEffect &in)
+{
+    std::vector<uint8_t> payload;
+    serialize(payload,
+        in.soundId, addVarInt,
+        in.category, addVarInt,
+        in.entityId, addVarInt,
+        in.volume, addFloat,
+        in.pitch, addFloat
+    );
+    auto packet = std::make_shared<std::vector<uint8_t>>();
+    finalize(*packet, payload, (int32_t) ClientPacketID::EntitySoundEffect);
+    return packet;
+}
+
+std::shared_ptr<std::vector<uint8_t>> protocol::createSoundEffect(const SoundEffect &in)
+{
+    std::vector<uint8_t> payload;
+    serialize(payload,
+        in.soundId, addVarInt,
+        in.category, addVarInt,
+        in.x, addInt,
+        in.y, addInt,
+        in.z, addInt,
+        in.volume, addFloat,
+        in.pitch, addFloat,
+        in.seed, addLong
+    );
+    auto packet = std::make_shared<std::vector<uint8_t>>();
+    finalize(*packet, payload, (int32_t) ClientPacketID::SoundEffect);
+    return packet;
+}
+
+std::shared_ptr<std::vector<uint8_t>> protocol::createStopSound(const StopSound &in)
+{
+    std::vector<uint8_t> payload;
+    serialize(payload, in.flags, addByte);
+    if (in.flags == 3 || in.flags == 1)
+        serialize(payload, in.source, addVarInt);
+    if (in.flags == 2 || in.flags == 3)
+        serialize(payload, in.sound, addIdentifier);
+
+    auto packet = std::make_shared<std::vector<uint8_t>>();
+    finalize(*packet, payload, (int32_t) ClientPacketID::StopSound);
+    return packet;
+}

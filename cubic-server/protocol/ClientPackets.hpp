@@ -18,10 +18,14 @@ namespace protocol
         Status = 0x00,
         Ping = 0x01,
         LoginSuccess = 0x02,
+        CustomSoundEffect = 0x16,
         WorldEvent = 0x20,
         LoginPlay = 0x23,
         PlayerChatMessage = 0x30,
-        SynchronizePlayerPosition = 0x36
+        SynchronizePlayerPosition = 0x36,
+        EntitySoundEffect = 0x5c,
+        SoundEffect = 0x5d,
+        StopSound = 0x5e
     };
 
     struct BaseClientPacket {
@@ -122,6 +126,55 @@ namespace protocol
     };
 
     std::shared_ptr<SynchronizePlayerPosition> parseSynchronizePlayerPosition(std::vector<uint8_t> &buffer);
+
+    struct CustomSoundEffect
+    {
+        std::string name;
+        int32_t category;
+        int32_t x;
+        int32_t y;
+        int32_t z;
+        float volume;
+        float pitch;
+        long seed;
+    };
+
+    std::shared_ptr<std::vector<uint8_t>> createCustomSoundEffect(const CustomSoundEffect &);
+
+    struct EntitySoundEffect
+    {
+        int32_t soundId;
+        int32_t category;
+        int32_t entityId;
+        float volume;
+        float pitch;
+    };
+
+    std::shared_ptr<std::vector<uint8_t>> createEntitySoundEffect(const EntitySoundEffect &);
+
+    struct SoundEffect
+    {
+        int32_t soundId;
+        int32_t category;
+        int32_t x;
+        int32_t y;
+        int32_t z;
+        float volume;
+        float pitch;
+        long seed;
+    };
+
+    std::shared_ptr<std::vector<uint8_t>> createSoundEffect(const SoundEffect &);
+
+    struct StopSound
+    {
+        uint8_t flags;
+        int32_t source;
+        std::string sound;
+    };
+
+    std::shared_ptr<std::vector<uint8_t>> createStopSound(const StopSound &);
+
 }
 
 #endif /* A7ADDD9E_6961_4A3D_AAB2_DF37DB6915F0 */

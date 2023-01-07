@@ -16,7 +16,10 @@ target_sources (${CMAKE_PROJECT_NAME} PRIVATE
         World.hpp
         Dimension.cpp
         Dimension.hpp
+        SoundList.hpp
         nbt.hpp
+        SoundSystem.hpp
+        SoundSystem.cpp
 )
 
 if (GTEST)
@@ -43,3 +46,4 @@ add_subdirectory (math)
 add_subdirectory (configuration)
 add_subdirectory (logging)
 add_subdirectory (interface)
+add_subdirectory (world_storage)

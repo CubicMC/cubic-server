@@ -97,8 +97,13 @@ void Client::_flushSendData()
 void Client::switchToPlayState(__int128 playerUuid, const std::string &username)
 {
     this->setStatus(protocol::ClientStatus::Play);
-    this->_player = new Player(this, playerUuid, username);
-    this->_player->setDimension(Server::getInstance()->getWorldGroup("default")->getWorld("default")->getDimension("overworld"));
+    // TODO: get the player dimension from the world by his uuid
+    this->_player = new Player(
+        this,
+        Server::getInstance()->getWorldGroup("default")->getWorld("default")->getDimension("overworld"),
+        playerUuid,
+        username
+    );
 }
 
 void Client::handleParsedClientPacket(const std::shared_ptr<protocol::BaseServerPacket> &packet,
@@ -431,6 +436,7 @@ void Client::sendLoginSuccess(const protocol::LoginSuccess &packet)
         resPck.deathLocation = {0, 0, 0}; // TODO: something like this->_player->deathLocation;
     }
     sendLoginPlay(resPck);
+    resPck.registryCodec.destroy();
 }
 
 void Client::sendLoginPlay(const protocol::LoginPlay &packet)

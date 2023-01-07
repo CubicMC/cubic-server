@@ -1,8 +1,13 @@
 #include "Player.hpp"
 #include "Server.hpp"
+#include "protocol/ClientPackets.hpp"
 
-Player::Player(Client *cli, __int128 playerUuid, const std::string &username)
-    : _cli(cli), _uuid(playerUuid), _username(username)
+Player::Player(
+    Client *cli,
+    std::shared_ptr<Dimension> dim,
+    __int128 uuid,
+    const std::string &username)
+    : _cli(cli), Entity(dim), _uuid(uuid), _username(username)
 {
     _log = logging::Logger::get_instance();
 }
@@ -24,6 +29,68 @@ const __int128 &Player::getUuid() const
 {
     return _uuid;
 }
+
+// ****************
+// * CLIENT BOUND *
+// ****************
+
+void Player::playSoundEffect(SoundsList sound, protocol::FloatingPosition position, SoundCategory category)
+{
+    auto pck = protocol::createSoundEffect({
+        (int32_t) sound,
+        (int32_t) category,
+        // https://wiki.vg/Data_types#Fixed-point_numbers
+        static_cast<int32_t>(position.x * 32.0),
+        static_cast<int32_t>(position.y * 32.0),
+        static_cast<int32_t>(position.z * 32.0),
+        0.5, // TODO: get the right volume
+        1.0, // TODO: get the right pitch
+        0 // TODO: get the right seed
+    });
+    this->_cli->_sendData(*pck);
+}
+
+void Player::playSoundEffect(SoundsList sound, const Entity *entity, SoundCategory category)
+{
+    auto pck = protocol::createEntitySoundEffect({
+        (int32_t) sound,
+        (int32_t) category,
+        entity->getId(),
+        0.5, // TODO: get the right volume
+        1.0 // TODO: get the right pitch
+    });
+    this->_cli->_sendData(*pck);
+}
+
+void Player::playCustomSound(std::string sound, protocol::FloatingPosition position, SoundCategory category)
+{
+    auto pck = protocol::createCustomSoundEffect({
+        sound,
+        (int32_t) category,
+        // https://wiki.vg/Data_types#Fixed-point_numbers
+        static_cast<int32_t>(position.x * 32.0),
+        static_cast<int32_t>(position.y * 32.0),
+        static_cast<int32_t>(position.z * 32.0),
+        0.5, // TODO: get the right volume
+        1.0, // TODO: get the right pitch
+        0 // TODO: get the right seed
+    });
+    this->_cli->_sendData(*pck);
+}
+
+void Player::stopSound(uint8_t flags, SoundCategory category, std::string sound)
+{
+    auto pck = protocol::createStopSound({
+        flags,
+        (int32_t) category,
+        sound
+    });
+    this->_cli->_sendData(*pck);
+}
+
+// ****************
+// * SERVER BOUND *
+// ****************
 
 void Player::_onConfirmTeleportation(const std::shared_ptr<protocol::ConfirmTeleportation> &pck)
 {

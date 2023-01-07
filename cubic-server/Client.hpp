@@ -5,6 +5,7 @@
 #include <thread>
 #include <deque>
 #include <vector>
+#include <netinet/in.h>
 
 #include "Player.hpp"
 #include "protocol/ClientPackets.hpp"
@@ -36,6 +37,7 @@ class Player;
 
 class Client
 {
+    friend class Player;
 public:
     Client(int sockfd, struct sockaddr_in6 addr);
     ~Client();

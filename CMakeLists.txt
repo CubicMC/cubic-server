@@ -11,6 +11,12 @@ FetchContent_Declare(
 )
 FetchContent_MakeAvailable(json)
 
+FetchContent_Declare(
+    argparse
+    GIT_REPOSITORY https://github.com/p-ranav/argparse.git
+)
+FetchContent_MakeAvailable(argparse)
+
 if(GTEST) # if the flag GTEST is true
   FetchContent_Declare(
     googletest
@@ -26,6 +32,8 @@ if(GTEST)
   enable_testing()
 endif()
 
+set(CMAKE_BUILD_RPATH /usr/local/lib/gcc12)
+
 find_package(Threads REQUIRED)
 find_package(PkgConfig REQUIRED)
 pkg_check_modules(GTKMM REQUIRED gtkmm-3.0)
@@ -33,10 +41,13 @@ pkg_check_modules(GTKMM REQUIRED gtkmm-3.0)
 add_executable(${CMAKE_PROJECT_NAME})
 add_subdirectory(cubic-server)
 
+set(CMAKE_EXE_LINKER_FLAGS "-static-libgcc -static-libstdc++")
+
 target_include_directories(${CMAKE_PROJECT_NAME} PRIVATE ${GTKMM_INCLUDE_DIRS})
 target_include_directories(${CMAKE_PROJECT_NAME} PUBLIC cubic-server)
 target_link_libraries (${CMAKE_PROJECT_NAME} PRIVATE
         Threads::Threads
         nlohmann_json::nlohmann_json
         ${GTKMM_LIBRARIES}
+        argparse
 )

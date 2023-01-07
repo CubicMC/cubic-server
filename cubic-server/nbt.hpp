@@ -64,6 +64,8 @@ public:
         for (const auto &i : _name)
             data.push_back(i);
     }
+
+    constexpr virtual void destroy() {};
 };
 
 constexpr void serialize(std::vector<uint8_t> &data, const Base *nbt, bool include_name = true);
@@ -162,10 +164,7 @@ private:
 public:
     Compound(std::string name, std::vector<Base *> value) : Base(std::move(name), TagType::Compound), _value(std::move(value)) {};
     Compound(std::string name, std::initializer_list<Base *> value) : Base(std::move(name), TagType::Compound), _value(value) {};
-    ~Compound() override {
-        for (auto i : _value)
-            delete i;
-    }
+    ~Compound() override = default;
 
     constexpr std::vector<Base *> &getValues() {
         return _value;
@@ -185,6 +184,13 @@ public:
         }
         // Ends the TAG_Compound with a TAG_End
         data.push_back(0);
+    }
+
+    constexpr void destroy() override {
+        for (auto i : _value) {
+            i->destroy();
+            delete i;
+        }
     }
 };
 
@@ -434,6 +440,13 @@ public:
                 throw std::runtime_error("nbt::List contains more than one type");
             // i->serialize(data, false);
             nbt::serialize(data, i, false);
+        }
+    }
+
+    constexpr void destroy() override {
+        for (auto i : _value) {
+            i->destroy();
+            delete i;
         }
     }
 };
