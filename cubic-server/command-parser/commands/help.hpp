@@ -9,16 +9,16 @@
 #include <string>
 
 namespace help {
-    void help(std::vector<std::string>& args) {
-        logging::Logger::get_instance()->info("/help [<command>]");
-    }
+
+    void help(std::vector<std::string>& args);
+    void execute(std::vector<std::string>& args);
 
     //TODO: Move this code
-    const std::unordered_map<std::string, std::function<void(std::vector<std::string>&)>> helps {
+    static const std::unordered_map<std::string, std::function<void(std::vector<std::string>&)>> helps {
             {"help", help::help}
     };
 
-    const std::vector<std::string> allCommands = {
+    static const std::vector<std::string> allCommands = {
         "/advancement (grant|revoke)",
         "/attribute <target> <attribute> (get|base|modifier)",
         "/execute (run|if|unless|as|at|store|positioned|rotated|facing|align|anchored|in)",
@@ -95,21 +95,6 @@ namespace help {
         "/stop",
         "/whitelist (on|off|list|add|remove|reload)"
     };
-
-    void execute(std::vector<std::string>& args) {
-        if (args.empty()) {
-            for (auto &command : allCommands) {
-                logging::Logger::get_instance()->info(command);
-            }
-        }
-        else {
-            if (helps.find(args[0]) != helps.end()) {
-                helps.at(args[0])(args);
-            } else {
-                logging::Logger::get_instance()->info("Unknown command or insufficient permissions");
-            }
-        }
-    }
 }
 
 #endif //CUBICSERVER_COMMANDPARSER_COMMANDS_HELP_HPP
