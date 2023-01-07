@@ -94,7 +94,7 @@ void Client::_flushSendData()
     _send_buffer.erase(_send_buffer.begin(), _send_buffer.begin() + write_return);
 }
 
-void Client::switchToPlayState(__int128 playerUuid, const std::string &username)
+void Client::switchToPlayState(u128 playerUuid, const std::string &username)
 {
     this->setStatus(protocol::ClientStatus::Play);
     // TODO: get the player dimension from the world by his uuid
@@ -288,11 +288,22 @@ void Client::_onPingRequest(const std::shared_ptr<protocol::PingRequest> &pck)
     sendPingResponse(pck->payload);
 }
 
+static constexpr u128 _placeholderUUID = {
+    .most = -4722959589929037885,
+    .least = -5318711484676709479
+};
+
+static constexpr u128 _placeholderUUID2 = {
+    .most = 0,
+    .least = 0
+};
+
 void Client::_onLoginStart(const std::shared_ptr<protocol::LoginStart> &pck)
 {
     LDEBUG("Got a Login Start");
     protocol::LoginSuccess resPck;
-    resPck.uuid = pck->has_player_uuid ? pck->player_uuid : 0; // TODO: what to put if there isn't an uuid ?
+    resPck.uuid = pck->has_player_uuid ? pck->player_uuid : _placeholderUUID; // TODO: what to put if there isn't an uuid ?
+    // resPck.uuid = pck->has_player_uuid ? pck->player_uuid : _placeholderUUID2; // TODO: what to put if there isn't an uuid ?
     resPck.username = pck->name;
     resPck.numberOfProperties = 3;
     resPck.name = ""; // TODO: figure out what to put there
@@ -329,6 +340,9 @@ void Client::sendPingResponse(int64_t payload)
 void Client::sendLoginSuccess(const protocol::LoginSuccess &packet)
 {
     auto pck = protocol::createLoginSuccess(packet);
+    for (auto i = 0; i < pck->size(); i++)
+        printf("%.2X", *(pck->data() + i));
+    printf("\n");
     _sendData(*pck);
     LDEBUG("Sent a login success");
 
@@ -340,85 +354,86 @@ void Client::sendLoginSuccess(const protocol::LoginSuccess &packet)
         .isHardcore = false, // TODO: something like this this->_player->_dim->getWorld()->getDifficulty();
         .gamemode = 0, // TODO: something like this this->_player->getGamemode()
         .previousGamemode = 0, // TODO: something like this this->_player->getPreviousGamemode().has_value() ? this->_player->getPreviousGamemode() : -1;
-        .dimensionNames = std::vector<std::string>({"overworld", "nether", "end"}), // TODO: something like this this->_player->_dim->getWorld()->getDimensions();
-        .registryCodec = std::move(nbt::Compound("registry-codec", {
-            new nbt::Compound("minecraft:dimension_type", {
-                new nbt::String("type", "minecraft:dimension_type"),
-                new nbt::List("value", {
-                    new nbt::Compound("", {
-                        new nbt::String("name", "minecraft:overworld"),
-                        new nbt::Int("id", 0),
-                        new nbt::Compound("element", {
-                            new nbt::Byte("ultrawarm", 0),
-                            new nbt::Int("logical_height", 256),
-                            new nbt::String("infiniburn", "#minecraft:infiniburn_overworld"),
-                            new nbt::Byte("piglin_safe", 0),
-                            new nbt::Float("ambient_light", 0.0),
-                            new nbt::Byte("has_skylight", 1),
-                            new nbt::String("effects", "minecraft:overworld"),
-                            new nbt::Byte("has_raids", 1),
-                            new nbt::Int("monster_spawn_block_light_limit", 0),
-                            new nbt::Byte("respawn_anchor_works", 0),
-                            new nbt::Int("height", 384),
-                            new nbt::Byte("has_ceiling", 0),
-                            new nbt::Compound("monster_spawn_light_level", {
-                                new nbt::String("type", "minecraft:uniform"),
-                                new nbt::Compound("value", {
-                                    new nbt::Int("max_inclusive", 7),
-                                    new nbt::Int("min_inclusive", 0),
-                                })
-                            }),
-                            new nbt::Byte("natural", 1),
-                            new nbt::Int("min_y", -64),
-                            new nbt::Float("coordinate_scale", 1.0),
-                            new nbt::Byte("bed_works", 1),
-                        }),
-                    }),
-                })
-            }),
-            new nbt::Compound("minecraft:worldgen/biome", {
-                new nbt::String("type", "minecraft:worldgen/biome"),
-                new nbt::List("value", {
-                    new nbt::Compound("", {
-                        new nbt::String("name", "minecraft:plains"),
-                        new nbt::Int("id", 0),
-                        new nbt::Compound("element", {
-                            new nbt::String("precipitation", "none"),
-                            new nbt::Float("temperature", 0.8),
-                            new nbt::Float("downfall", 0.4),
-                            new nbt::Compound("effects", {
-                                new nbt::Int("sky_color", 7907327),
-                                new nbt::Int("water_fog_color", 329011),
-                                new nbt::Int("fog_color", 12638463),
-                                new nbt::Int("water_color", 4159204),
-                            })
-                        }),
-                    })
-                })
-            }),
-            new nbt::Compound("minecraft:chat_type", {
-                new nbt::String("type", "minecraft:chat_type"),
-                new nbt::List("value", {
-                    new nbt::Compound("", {
-                        new nbt::String("name", "minecraft:chat"),
-                        new nbt::Int("id", 0),
-                        new nbt::Compound("element", {
-                            new nbt::Compound("chat", {
-                                new nbt::Compound("decoration", {
-                                    new nbt::List("parameters", {
-                                        new nbt::String("", "sender"),
-                                        new nbt::String("", "content")
-                                    }),
-                                    new nbt::String("translation_key", "chat.type.text.narrate"),
-                                    new nbt::Compound("style", {})
-                                }),
-                                new nbt::String("priority", "chat")
-                            })
-                        })
-                    })
-                })
-            })
-        })),
+        .dimensionNames = std::vector<std::string>({"minecraft:overworld"}), // TODO: something like this this->_player->_dim->getWorld()->getDimensions();
+        .registryCodec = nbt::Compound("registry-codec", {}),
+//        .registryCodec = nbt::Compound("registry-codec", {
+//            new nbt::Compound("minecraft:dimension_type", {
+//                new nbt::String("type", "minecraft:dimension_type"),
+//                new nbt::List("value", {
+//                    new nbt::Compound("", {
+//                        new nbt::String("name", "minecraft:overworld"),
+//                        new nbt::Int("id", 0),
+//                        new nbt::Compound("element", {
+//                            new nbt::Byte("ultrawarm", 0),
+//                            new nbt::Int("logical_height", 256),
+//                            new nbt::String("infiniburn", "#minecraft:infiniburn_overworld"),
+//                            new nbt::Byte("piglin_safe", 0),
+//                            new nbt::Float("ambient_light", 0.0),
+//                            new nbt::Byte("has_skylight", 1),
+//                            new nbt::String("effects", "minecraft:overworld"),
+//                            new nbt::Byte("has_raids", 1),
+//                            new nbt::Int("monster_spawn_block_light_limit", 0),
+//                            new nbt::Byte("respawn_anchor_works", 0),
+//                            new nbt::Int("height", 384),
+//                            new nbt::Byte("has_ceiling", 0),
+//                            new nbt::Compound("monster_spawn_light_level", {
+//                                new nbt::String("type", "minecraft:uniform"),
+//                                new nbt::Compound("value", {
+//                                    new nbt::Int("max_inclusive", 7),
+//                                    new nbt::Int("min_inclusive", 0),
+//                                })
+//                            }),
+//                            new nbt::Byte("natural", 1),
+//                            new nbt::Int("min_y", -64),
+//                            new nbt::Float("coordinate_scale", 1.0),
+//                            new nbt::Byte("bed_works", 1),
+//                        }),
+//                    }),
+//                })
+//            }),
+//            new nbt::Compound("minecraft:worldgen/biome", {
+//                new nbt::String("type", "minecraft:worldgen/biome"),
+//                new nbt::List("value", {
+//                    new nbt::Compound("", {
+//                        new nbt::String("name", "minecraft:plains"),
+//                        new nbt::Int("id", 0),
+//                        new nbt::Compound("element", {
+//                            new nbt::String("precipitation", "none"),
+//                            new nbt::Float("temperature", 0.8),
+//                            new nbt::Float("downfall", 0.4),
+//                            new nbt::Compound("effects", {
+//                                new nbt::Int("sky_color", 7907327),
+//                                new nbt::Int("water_fog_color", 329011),
+//                                new nbt::Int("fog_color", 12638463),
+//                                new nbt::Int("water_color", 4159204),
+//                            })
+//                        }),
+//                    })
+//                })
+//            }),
+//            new nbt::Compound("minecraft:chat_type", {
+//                new nbt::String("type", "minecraft:chat_type"),
+//                new nbt::List("value", {
+//                    new nbt::Compound("", {
+//                        new nbt::String("name", "minecraft:chat"),
+//                        new nbt::Int("id", 0),
+//                        new nbt::Compound("element", {
+//                            new nbt::Compound("chat", {
+//                                new nbt::Compound("decoration", {
+//                                    new nbt::List("parameters", {
+//                                        new nbt::String("", "sender"),
+//                                        new nbt::String("", "content")
+//                                    }),
+//                                    new nbt::String("translation_key", "chat.type.text.narrate"),
+//                                    new nbt::Compound("style", {})
+//                                }),
+//                                new nbt::String("priority", "chat")
+//                            })
+//                        })
+//                    })
+//                })
+//            })
+//        }),
         .dimensionType = "minecraft:overworld", // TODO: something like this this->_player->_dim->getDimensionType();
         .dimensionName = "overworld", // TODO: something like this this->_player->getDimension()->name;
         .hashedSeed = 0, // TODO: something like this this->_player->_dim->getWorld()->getHashedSeed();

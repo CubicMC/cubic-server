@@ -13,6 +13,7 @@
 #include "protocol/common.hpp"
 #include "protocol/ServerPackets.hpp"
 #include "logging/Logger.hpp"
+#include "types.hpp"
 
 #define __PCK_CALLBACK_PRIM(type, object) return object->_on##type(std::static_pointer_cast<type>(packet))
 
@@ -57,7 +58,7 @@ public:
         _status = status;
     }
 
-    void switchToPlayState(__int128 playerUuid, const std::string &username);
+    void switchToPlayState(u128 playerUuid, const std::string &username);
 
     void handleParsedClientPacket(const std::shared_ptr<protocol::BaseServerPacket>& packet,
                                   protocol::ServerPacketsID packetID);

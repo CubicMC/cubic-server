@@ -5,7 +5,7 @@
 Player::Player(
     Client *cli,
     std::shared_ptr<Dimension> dim,
-    __int128 uuid,
+    u128 uuid,
     const std::string &username)
     : _cli(cli), Entity(dim), _uuid(uuid), _username(username)
 {
@@ -25,7 +25,7 @@ const std::string &Player::getUsername() const
     return _username;
 }
 
-const __int128 &Player::getUuid() const
+const u128 &Player::getUuid() const
 {
     return _uuid;
 }

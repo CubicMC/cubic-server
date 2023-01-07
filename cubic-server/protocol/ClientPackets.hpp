@@ -48,7 +48,7 @@ namespace protocol
 
     struct LoginSuccess
     {
-        __int128 uuid;
+        u128 uuid;
         std::string username;
         int32_t numberOfProperties;
         // Don't know how to build a Property thing that is an array of strings and bools
@@ -92,7 +92,7 @@ namespace protocol
         bool hasUnsignedContent;
         std::string unsignedContent;
         int32_t type;
-        __int128 senderUUID;
+        u128 senderUUID;
         std::string senderName;
         bool hasTeamName;
         std::string teamName;

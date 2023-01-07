@@ -15,6 +15,7 @@
 #include "protocol/common.hpp"
 #include "protocol/Structures.hpp"
 #include "nbt.hpp"
+#include "types.hpp"
 
 namespace protocol
 {
@@ -145,10 +146,11 @@ namespace protocol
         addString(out, data);
     }
 
-    constexpr void addUUID(std::vector<uint8_t> &out, const __int128 &data)
+    constexpr void addUUID(std::vector<uint8_t> &out, const u128 &data)
     {
-        for (int i = 0; i < 16; i++)
-            out.push_back((data >> (120 - i * 8)) & 0xFF);
+        // addLong(out, (data & AUGH) >> 64);
+        addLong(out, data.most);
+        addLong(out, data.least);
     }
 
     template<typename T, void(*add)(std::vector<uint8_t> &, const T&)>
