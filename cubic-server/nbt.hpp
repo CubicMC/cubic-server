@@ -185,6 +185,7 @@ public:
 
     constexpr void destroy() override {
         for (auto i : _value) {
+            i->destroy();
             delete i;
         }
     }
@@ -440,6 +441,7 @@ public:
 
     constexpr void destroy() override {
         for (auto i : _value) {
+            i->destroy();
             delete i;
         }
     }
