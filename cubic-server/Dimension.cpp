@@ -28,9 +28,19 @@ void Dimension::forEachEntity(std::function<void(Entity *)> callback)
         callback(_entity);
 }
 
-void Dimension::forEachEntityIf(std::function<void(Entity *)> callback, std::function<bool(Entity *)> predicate)
+void Dimension::forEachEntityIf(std::function<void(Entity *)> callback, std::function<bool(const Entity *)> predicate)
 {
     for (auto & _entity : _entities)
         if (predicate(_entity))
             callback(_entity);
+}
+
+const world_storage::Level &Dimension::getLevel() const
+{
+    return _level;
+}
+
+world_storage::Level &Dimension::getEditableLevel()
+{
+    return _level;
 }

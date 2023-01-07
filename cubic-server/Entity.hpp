@@ -28,11 +28,12 @@ class Entity
 
 public:
     // Subject to change
-    Entity();
-    virtual  ~Entity() = 0;
+    Entity(std::shared_ptr<Dimension> dim);
+    virtual ~Entity() {};
     virtual void tick() = 0;
     virtual void setDimension(std::shared_ptr<Dimension> dim);
     virtual std::shared_ptr<Dimension> getDimension() const;
+    virtual int32_t getId() const;
 
 protected:
     std::shared_ptr<Dimension> _dim;
@@ -51,6 +52,7 @@ protected:
     bool _noGravity;
     Pose _pose;
     int16_t _tickFrozenInPowderedSnow;
+    int32_t _id;
 };
 
 

@@ -9,6 +9,7 @@
 
 #include "logging/Logger.hpp"
 #include "Entity.hpp"
+#include "world_storage/Level.hpp"
 
 class World;
 
@@ -25,7 +26,10 @@ public:
     virtual World *getWorld() const;
     virtual std::vector<Entity *> &getEntities();
     virtual void forEachEntity(std::function<void(Entity *)> callback);
-    virtual void forEachEntityIf(std::function<void(Entity *)> callback, std::function<bool(Entity *)> predicate);
+    virtual void forEachEntityIf(std::function<void(Entity *)> callback, std::function<bool(const Entity *)> predicate);
+
+    const world_storage::Level &getLevel() const;
+    world_storage::Level &getEditableLevel();
 
 protected:
     std::vector<Entity *> _entities;
@@ -33,6 +37,7 @@ protected:
     World *_world;
     std::atomic<int> _numThreadsWaiting;
     std::mutex _processingMutex;
+    world_storage::Level _level;
 };
 
 
