@@ -1,32 +1,38 @@
 #include <iostream>
 #include <cstring>
 
+#include <argparse/argparse.hpp>
 #include "Server.hpp"
 #include "protocol/ServerPackets.hpp"
 #include "interface/ManagementInterface.hpp"
 
-static void print_usage(const char *caller)
-{
-    std::cout << "Usage:\n\t" << caller << std::endl;
-}
+argparse::ArgumentParser argParser(int argc, char **argv) {
+    argparse::ArgumentParser program("cubic_server");
 
-// Uncomment that to launch the interface
-// #define INTERFACE
+    program.add_argument("--nogui")
+        .help("prevents the GUI from displaying")
+        .default_value(false)
+        .implicit_value(true);
+    try {
+        program.parse_args(argc, argv);
+    }
+    catch (const std::runtime_error& err) {
+        std::cerr << err.what() << std::endl;
+        std::cerr << program;
+        std::exit(1);
+    }
+    return program;
+}
 
 int main(int argc, char **argv)
 {
-    if (argc >= 2 && !strcmp(argv[1], "-h"))
-    {
-        print_usage(argv[0]);
-        return 0;
+    argparse::ArgumentParser program = argParser(argc, argv);
+    std::thread InterfaceThread;
+
+    if (program["--nogui"] == false) {
+        InterfaceThread = std::thread(&ManagementInterface::launch, argc, argv);
     }
 
     auto srv = Server::getInstance();
-    ///
-#ifdef INTERFACE
-    auto InterfaceThread = std::thread(&ManagementInterface::launch, argc, argv);
-#endif
-    ///
-
     srv->launch();
 }
