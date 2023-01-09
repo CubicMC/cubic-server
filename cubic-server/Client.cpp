@@ -289,13 +289,8 @@ void Client::_onPingRequest(const std::shared_ptr<protocol::PingRequest> &pck)
 }
 
 static constexpr u128 _placeholderUUID = {
-    .most = -4722959589929037885,
-    .least = -5318711484676709479
-};
-
-static constexpr u128 _placeholderUUID2 = {
-    .most = 0,
-    .least = 0
+    .most = 0x60a9f37ff25630e8,
+    .least = 0x8139a118a845a9e2
 };
 
 void Client::_onLoginStart(const std::shared_ptr<protocol::LoginStart> &pck)

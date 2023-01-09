@@ -4,8 +4,8 @@
 #include <cstdint>
 
 struct u128 {
-    int64_t most;
-    int64_t least;
+    uint64_t most;
+    uint64_t least;
 };
 
 #endif /* A00E5759_8505_49C7_A2FA_F904C5D1B881 */
