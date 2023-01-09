@@ -36,7 +36,12 @@ std::shared_ptr<std::vector<uint8_t>> protocol::createLoginSuccess(const LoginSu
     if (in.isSigned)
         serialize(payload, in.signature.value(), addString);
     auto packet = std::make_shared<std::vector<uint8_t>>();
-    finalize(*packet.get(), payload, (int32_t)ClientPacketID::LoginSuccess);
+    std::vector<uint8_t> encoded_packet_id;
+    addVarInt(encoded_packet_id, (int32_t)ClientPacketID::LoginSuccess);
+    addByte(*packet.get(), (uint8_t)encoded_packet_id.size() + payload.size());
+    packet->insert(packet->end(), encoded_packet_id.begin(), encoded_packet_id.end());
+    packet->insert(packet->end(), payload.begin(), payload.end());
+    //finalize(*packet.get(), payload, (int32_t)ClientPacketID::LoginSuccess);
     return packet;
 }
 
