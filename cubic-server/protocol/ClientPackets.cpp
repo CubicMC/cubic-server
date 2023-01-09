@@ -28,10 +28,11 @@ std::shared_ptr<std::vector<uint8_t>> protocol::createLoginSuccess(const LoginSu
     std::vector<uint8_t> payload;
     serialize(payload, in.uuid, addUUID,
         in.username, addString,
-        in.numberOfProperties, addVarInt,
-        in.name, addString,
-        in.value, addString,
-        in.isSigned, addBoolean);
+        in.numberOfProperties, addVarInt//,
+        // in.name, addString,
+        // in.value, addString,
+        // in.isSigned, addBoolean
+        );
     if (in.isSigned)
         serialize(payload, in.signature.value(), addString);
     auto packet = std::make_shared<std::vector<uint8_t>>();

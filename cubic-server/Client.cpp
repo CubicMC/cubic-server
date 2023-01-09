@@ -300,7 +300,7 @@ void Client::_onLoginStart(const std::shared_ptr<protocol::LoginStart> &pck)
     resPck.uuid = pck->has_player_uuid ? pck->player_uuid : _placeholderUUID; // TODO: what to put if there isn't an uuid ?
     // resPck.uuid = pck->has_player_uuid ? pck->player_uuid : _placeholderUUID2; // TODO: what to put if there isn't an uuid ?
     resPck.username = pck->name;
-    resPck.numberOfProperties = 3;
+    resPck.numberOfProperties = 0;
     resPck.name = ""; // TODO: figure out what to put there
     resPck.value = ""; // TODO: figure out what to put there
     resPck.isSigned = false;
