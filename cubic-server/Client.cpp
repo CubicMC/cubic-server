@@ -445,7 +445,7 @@ void Client::sendLoginSuccess(const protocol::LoginSuccess &packet)
         resPck.deathDimensionName = ""; // TODO: something like this->_player->deathDimensionName;
         resPck.deathLocation = {0, 0, 0}; // TODO: something like this->_player->deathLocation;
     }
-    //sendLoginPlay(resPck);
+    sendLoginPlay(resPck);
     resPck.registryCodec.destroy();
 }
 
