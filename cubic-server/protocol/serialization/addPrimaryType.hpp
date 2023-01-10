@@ -54,7 +54,7 @@ namespace protocol
 
         while (true) {
             if ((value & ~SEGMENT_BITS) == 0) {
-                out.push_back(value & 0xF);
+                out.push_back(value);
                 return;
             }
             out.push_back((value & SEGMENT_BITS) | CONTINUE_BIT);
