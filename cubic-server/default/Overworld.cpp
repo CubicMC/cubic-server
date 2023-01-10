@@ -1,5 +1,7 @@
 #include "Overworld.hpp"
 
+constexpr int NB_SPAWN_CHUNKS = 19;
+
 void Overworld::tick()
 {
     _numThreadsWaiting++;
@@ -19,4 +21,21 @@ void Overworld::tick()
 void Overworld::initialize()
 {
     Dimension::initialize();
+    int x = -NB_SPAWN_CHUNKS/2, z = -NB_SPAWN_CHUNKS/2;
+    while (x < NB_SPAWN_CHUNKS/2 || z < NB_SPAWN_CHUNKS/2) {
+        generateChunk(x, z);
+        if (x == NB_SPAWN_CHUNKS/2) {
+            x = -NB_SPAWN_CHUNKS/2;
+            z++;
+        } else
+            x++;
+    }
+    generateChunk(x, z);
+}
+
+void Overworld::generateChunk(int x, int z)
+{
+    LDEBUG("Generate - Overworld (" + std::to_string(x) + ", " + std::to_string(z) + ")");
+    _2d_pos pos{x, z};
+    _level.addChunkColumn(pos)->generate(world_storage::WorldType::FLAT);
 }

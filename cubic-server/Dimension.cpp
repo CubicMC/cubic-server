@@ -44,3 +44,8 @@ world_storage::Level &Dimension::getEditableLevel()
 {
     return _level;
 }
+
+void Dimension::generateChunk(int x, int z)
+{
+
+}
