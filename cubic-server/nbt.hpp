@@ -178,6 +178,11 @@ public:
 
     constexpr void serialize(std::vector<uint8_t> &data, bool include_name = true) const override {
         Base::pre_serialize(data, include_name);
+        if (!include_name) {
+            // Serialize the length of the list in 4 bytes
+            for (int i = 0; i < 4; i++)
+                data.push_back(((_value.size() + 1) >> (24 - i * 8)) & 0xFF);
+        }
         for (const auto &i : _value) {
             // i->serialize(data);
             nbt::serialize(data, i);
