@@ -11,6 +11,7 @@
 #include <map>
 
 #include "typeSerialization.hpp"
+#include "types.hpp"
 
 namespace protocol
 {
@@ -95,7 +96,7 @@ namespace protocol
         std::vector<uint8_t> public_key;
         std::vector<uint8_t> signature;
         bool has_player_uuid;
-        __int128 player_uuid;
+        u128 player_uuid;
     };
     std::shared_ptr<LoginStart> parseLoginStart(std::vector<uint8_t> &buffer);
 
@@ -456,7 +457,7 @@ namespace protocol
 
     struct TeleportToEntity : BaseServerPacket
     {
-        __int128 target_player;
+        u128 target_player;
     };
     std::shared_ptr<TeleportToEntity> parseTeleportToEntity(std::vector<uint8_t> &buffer);
 

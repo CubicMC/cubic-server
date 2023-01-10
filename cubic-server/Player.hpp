@@ -6,6 +6,7 @@
 #include "protocol/ServerPackets.hpp"
 #include "logging/Logger.hpp"
 #include "SoundList.hpp"
+#include "types.hpp"
 
 class Client;
 
@@ -13,9 +14,11 @@ class Player : public Entity
 {
     friend class Client;
 public:
-    Player(Client *cli, std::shared_ptr<Dimension> dim);
+    Player(Client *cli, std::shared_ptr<Dimension> dim, u128 uuid, const std::string &username);
     void tick() override;
     Client *getClient() const;
+    const std::string &getUsername() const;
+    const u128 &getUuid() const;
     void playSoundEffect(SoundsList sound, protocol::FloatingPosition position, SoundCategory category = SoundCategory::Master);
     void playSoundEffect(SoundsList sound, const Entity *entity, SoundCategory category = SoundCategory::Master);
     void playCustomSound(std::string sound, protocol::FloatingPosition position, SoundCategory category = SoundCategory::Master);
@@ -70,6 +73,8 @@ private:
 
     logging::Logger *_log;
     Client *_cli;
+    std::string _username;
+    u128 _uuid;
 };
 
 
