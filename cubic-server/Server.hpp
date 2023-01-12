@@ -68,6 +68,7 @@ private:
     uint16_t _port;
     uint32_t _maxPlayer;
     std::string _motd;
+    bool _enforceWhitelist;
 
     logging::Logger *_log;
 
