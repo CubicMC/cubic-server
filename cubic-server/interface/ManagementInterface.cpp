@@ -6,8 +6,8 @@
 ManagementInterface::ManagementInterface()
 {
     set_title("Cubic Server Interface");
-    set_default_size(800, 500);
-    set_border_width(10);
+    set_default_size(900, 700);
+    set_border_width(5);
     this->m_players_title.set_xalign(0);
     this->m_players_title.set_yalign(0);
 
@@ -16,7 +16,7 @@ ManagementInterface::ManagementInterface()
     this->m_sections.set_orientation(Gtk::ORIENTATION_HORIZONTAL);
     this->m_sections.add1(this->m_players_section);
     this->m_sections.add2(this->m_logs_section);
-    this->m_sections.set_position(380);
+    this->m_sections.set_position(280);
 
     this->m_content.set_orientation(Gtk::ORIENTATION_VERTICAL);
     this->m_content.add1(this->m_players_title);
