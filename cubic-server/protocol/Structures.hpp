@@ -3,6 +3,7 @@
 #include <cstdint>
 
 #include "common.hpp"
+#include "nbt.hpp"
 
 namespace protocol
 {
@@ -64,7 +65,7 @@ namespace protocol
         int8_t sectionCoordinate;
         int16_t height;
         int32_t type;
-        // NBT data;
+        nbt::Compound data;
     };
 
     struct Rotation

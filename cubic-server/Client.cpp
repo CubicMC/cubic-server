@@ -38,16 +38,17 @@ Client::~Client()
         close(_sockfd);
     }
 
-    // Send a disconnect message
+    // Remove the player from the world
     if (!_player)
         return;
+    _player->_dim->removeEntity(_player);
+
+    // Send a disconnect message
     _player->_dim->getWorld()->getChat()->sendSystemMessage(
         _player->getUsername() + " left the game",
         _player->_dim->getWorld()->getWorldGroup()
     );
 
-    // Remove the player from the world
-    _player->_dim->removeEntity(_player);
     delete _player;
 }
 
@@ -555,4 +556,12 @@ void Client::disconnect(const chat::Message &reason)
     _sendData(*pck);
     _is_running = false;
     LDEBUG("Sent a disconnect login packet");
+}
+
+void Client::sendChunkDataAndLightUpdate(const protocol::ChunkDataAndLightUpdate &packet)
+{
+    // this->_player->getDimension()->
+    auto pck = protocol::createChunkDataAndLightUpdate(packet);
+    _sendData(*pck);
+    LDEBUG("Sent a chunk data and light update");
 }

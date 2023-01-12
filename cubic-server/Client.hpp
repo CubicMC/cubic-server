@@ -75,6 +75,7 @@ public:
     void sendChatMessageResponse(const protocol::PlayerChatMessage &packet);
     void sendWorldEvent(const protocol::WorldEvent &packet);
     void disconnect(const chat::Message &reason = "Disconnected");
+    void sendChunkDataAndLightUpdate(const protocol::ChunkDataAndLightUpdate &packet);
 
 private:
     void _handlePacket();

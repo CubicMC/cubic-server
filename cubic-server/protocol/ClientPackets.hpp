@@ -36,6 +36,7 @@ namespace protocol
         SoundEffect = 0x5d,
         DisconnectPlay = 0x17,
         KeepAlive = 0x1e,
+        ChunkDataAndLightUpdate = 0x1F,
         StopSound = 0x5e
     };
     struct PingResponse
@@ -223,6 +224,24 @@ namespace protocol
 
     std::shared_ptr<std::vector<uint8_t>> createLoginDisconnect(const Disconnect &);
     std::shared_ptr<std::vector<uint8_t>> createPlayDisconnect(const Disconnect &);
+    // Only for chunk data and light update packet
+    struct ChunkDataAndLightUpdate
+    {
+        int32_t chunkX;
+        int32_t chunkZ;
+        nbt::List heightmaps;
+        int32_t size;
+        std::vector<uint8_t> data;
+        std::vector<BlockEntity> blockEntities;
+        bool trustEdges;
+        std::vector<long> skyLightMask;
+        std::vector<long> blockLightMask;
+        std::vector<long> emptySkyLightMask;
+        std::vector<long> emptyBlockLightMask;
+        std::vector<std::array<uint8_t, LIGHT_ARRAY_SIZE>> skyLight;
+        std::vector<std::array<uint8_t, LIGHT_ARRAY_SIZE>> blockLight;
+    };
+    std::shared_ptr<std::vector<uint8_t>> createChunkDataAndLightUpdate(const ChunkDataAndLightUpdate &);
 
     struct SpawnPlayer
     {
