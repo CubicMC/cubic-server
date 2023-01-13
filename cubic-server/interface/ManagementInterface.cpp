@@ -6,7 +6,7 @@
 ManagementInterface::ManagementInterface()
 {
     set_title("Cubic Server Interface");
-    set_default_size(900, 700);
+    set_default_size(900, 550);
     set_border_width(5);
     this->m_players_title.set_xalign(0);
     this->m_players_title.set_yalign(0);
