@@ -5,7 +5,6 @@
 #include "Server.hpp"
 #include "protocol/ServerPackets.hpp"
 #include "interface/ManagementInterface.hpp"
-#include "command-parser/CommandParser.hpp"
 
 argparse::ArgumentParser argParser(int argc, char **argv) {
     argparse::ArgumentParser program("cubic_server");
