@@ -7,7 +7,7 @@
 
 #include "commands/help.hpp"
 
-namespace CommandParser {
+namespace command_parser {
     const std::unordered_map<std::string, std::function<void(std::vector<std::string>&)>> commands {
         {"/help", help::execute},
         {"/?", help::execute}

@@ -1,6 +1,6 @@
 #include "CommandParser.hpp"
 
-void CommandParser::parseCommand(std::string &command) {
+void command_parser::parseCommand(std::string &command) {
     std::vector<std::string> args;
     size_t pos = command.find(' ');
 
