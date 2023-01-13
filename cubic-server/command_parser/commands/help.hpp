@@ -15,7 +15,8 @@ namespace help {
 
     //TODO: Move this code
     static const std::unordered_map<std::string, std::function<void(std::vector<std::string>&)>> helps {
-            {"help", help::help}
+            {"help", help::help},
+            {"?", help::help}
     };
 
     static const std::vector<std::string> allCommands = {
