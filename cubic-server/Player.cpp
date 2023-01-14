@@ -3,7 +3,7 @@
 #include "protocol/ClientPackets.hpp"
 
 Player::Player(Client *cli, std::shared_ptr<Dimension> dim)
-    : Entity(dim), _cli(cli), _keepAliveId(0)
+    : Entity(dim), _cli(cli), _keepAliveId(0), _keepAliveIgnored(0)
 {
     _log = logging::Logger::get_instance();
 }
@@ -19,6 +19,16 @@ Client *Player::getClient() const
 long Player::keepAliveId() const
 {
     return _keepAliveId;
+}
+
+uint8_t Player::keepAliveIgnored() const
+{
+    return _keepAliveIgnored;
+}
+
+void Player::setKeepAliveIgnored(uint8_t ign)
+{
+    _keepAliveIgnored = ign;
 }
 
 void Player::disconnect(const chat::Message &message)

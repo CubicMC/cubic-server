@@ -18,6 +18,8 @@ public:
     void tick() override;
     Client *getClient() const;
     long keepAliveId() const;
+    uint8_t keepAliveIgnored() const;
+    void setKeepAliveIgnored(uint8_t ign);
     void disconnect(const chat::Message &message = chat::Message("Disconnected"));
 
 public:
@@ -77,6 +79,7 @@ private:
     logging::Logger *_log;
     Client *_cli;
     long _keepAliveId;
+    uint8_t  _keepAliveIgnored;
 };
 
 

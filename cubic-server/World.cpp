@@ -66,12 +66,14 @@ void World::setLevelData(const world_storage::LevelData &value)
 
 void World::processKeepAlive()
 {
-    long id = 0;
+    long id = std::chrono::system_clock::now().time_since_epoch().count();
     forEachEntityIf(
-        [id](Entity *entity) {
+        [this, id](Entity *entity) {
             Player *player = dynamic_cast<Player *>(entity);
             if (player->keepAliveId() != 0) {
-                player->disconnect();
+                player->setKeepAliveIgnored(player->keepAliveIgnored() + 1);
+                if (this->_keepAliveClock.tickRate() * player->keepAliveIgnored() >= 600)
+                    player->disconnect();
                 return;
             }
             player->sendKeepAlive(id);
