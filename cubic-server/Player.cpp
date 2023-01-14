@@ -7,7 +7,7 @@ Player::Player(
     std::shared_ptr<Dimension> dim,
     u128 uuid,
     const std::string &username)
-    : _cli(cli), Entity(dim), _uuid(uuid), _username(username), _keepAliveId(0)
+    : _cli(cli), Entity(dim), _uuid(uuid), _username(username), _keepAliveId(0), _keepAliveIgnored(0)
 {
     _log = logging::Logger::get_instance();
 }
@@ -52,6 +52,16 @@ void Player::disconnect(const chat::Message &reason)
 long Player::keepAliveId() const
 {
     return _keepAliveId;
+}
+
+uint8_t Player::keepAliveIgnored() const
+{
+    return _keepAliveIgnored;
+}
+
+void Player::setKeepAliveIgnored(uint8_t ign)
+{
+    _keepAliveIgnored = ign;
 }
 
 void Player::playSoundEffect(SoundsList sound, protocol::FloatingPosition position, SoundCategory category)

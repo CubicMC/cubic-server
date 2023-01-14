@@ -9,7 +9,7 @@ class TickClock
 {
 public:
     TickClock() = default;
-    ~TickClock();
+    ~TickClock() = default;
     TickClock(uint16_t tickRate);
     TickClock(uint16_t tickRate, std::function<void()> callback);
 
@@ -22,9 +22,6 @@ public:
 
     void setCallback(std::function<void()> callback);
     const std::function<void()> &callback() const;
-
-private:
-    static std::vector<TickClock *> _tickClocks;
 
 private:
     bool _started;

@@ -1,22 +1,13 @@
 #include "TickClock.hpp"
 
-std::vector<TickClock *> TickClock::_tickClocks;
-
 TickClock::TickClock(uint16_t tickRate)
     : _tickRate(tickRate), _started(false), _tick(0)
 {
-    _tickClocks.push_back(this);
 }
 
 TickClock::TickClock(uint16_t tickRate, std::function<void()> callback)
     : _tickRate(tickRate), _callback(callback), _tick(0)
 {
-    _tickClocks.push_back(this);
-}
-
-TickClock::~TickClock()
-{
-    _tickClocks.erase(std::remove(_tickClocks.begin(), _tickClocks.end(), this), _tickClocks.end());
 }
 
 void TickClock::start()

@@ -20,8 +20,12 @@ public:
     Client *getClient() const;
     const std::string &getUsername() const;
     const u128 &getUuid() const;
-    void disconnect(const chat::Message &reason = "Disconnected");
     long keepAliveId() const;
+    uint8_t keepAliveIgnored() const;
+    void setKeepAliveIgnored(uint8_t ign);
+
+public:
+    void disconnect(const chat::Message &reason = "Disconnected");
     void playSoundEffect(SoundsList sound, protocol::FloatingPosition position, SoundCategory category = SoundCategory::Master);
     void playSoundEffect(SoundsList sound, const Entity *entity, SoundCategory category = SoundCategory::Master);
     void playCustomSound(std::string sound, protocol::FloatingPosition position, SoundCategory category = SoundCategory::Master);
@@ -81,6 +85,7 @@ private:
     std::string _username;
     u128 _uuid;
     long _keepAliveId;
+    uint8_t  _keepAliveIgnored;
 };
 
 
