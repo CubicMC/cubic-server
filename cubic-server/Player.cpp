@@ -140,6 +140,11 @@ void Player::_onCloseContainerRequest(const std::shared_ptr<protocol::CloseConta
     LDEBUG("Got a Close Container Request");
 }
 
+void Player::_onPluginMessage(const std::shared_ptr<protocol::PluginMessage> &pck)
+{
+    LDEBUG("Got a Plugin Message");
+}
+
 void Player::_onEditBook(const std::shared_ptr<protocol::EditBook> &pck)
 {
     LDEBUG("Got a Edit Book");

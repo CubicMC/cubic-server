@@ -31,6 +31,7 @@ namespace protocol
         CommandSuggestionRequest = 0x08,
         ClickContainerButton = 0x09,
         CloseContainerRequest = 0x0b,
+        PluginMessage = 0x0c,
         EditBook = 0x0d,
         QueryEntityTag = 0x0e,
         Interact = 0x0F,
@@ -185,6 +186,13 @@ namespace protocol
         uint8_t window_id;
     };
     std::shared_ptr<CloseContainerRequest> parseCloseContainerRequest(std::vector<uint8_t> &buffer);
+
+    struct PluginMessage : BaseServerPacket
+    {
+        std::string channel;
+        std::vector<uint8_t> data;
+    };
+    std::shared_ptr<PluginMessage> parsePluginMessage(std::vector<uint8_t> &buffer);
 
     struct EditBook : BaseServerPacket
     {
@@ -507,6 +515,7 @@ namespace protocol
             {ServerPacketsID::CommandSuggestionRequest, &parseCommandSuggestionRequest},
             {ServerPacketsID::ClickContainerButton, &parseClickContainerButton},
             {ServerPacketsID::CloseContainerRequest, &parseCloseContainerRequest},
+            {ServerPacketsID::PluginMessage, &parsePluginMessage},
             {ServerPacketsID::EditBook, &parseEditBook},
             {ServerPacketsID::QueryEntityTag, &parseQueryEntityTag},
             {ServerPacketsID::Interact, &parseInteract},

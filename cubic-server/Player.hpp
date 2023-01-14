@@ -34,6 +34,7 @@ private:
     void _onCommandSuggestionRequest(const std::shared_ptr<protocol::CommandSuggestionRequest> &pck);
     void _onClickContainerButton(const std::shared_ptr<protocol::ClickContainerButton> &pck);
     void _onCloseContainerRequest(const std::shared_ptr<protocol::CloseContainerRequest> &pck);
+    void _onPluginMessage(const std::shared_ptr<protocol::PluginMessage> &pck);
     void _onEditBook(const std::shared_ptr<protocol::EditBook> &pck);
     void _onQueryEntityTag(const std::shared_ptr<protocol::QueryEntityTag> &pck);
     void _onInteract(const std::shared_ptr<protocol::Interact> &pck);

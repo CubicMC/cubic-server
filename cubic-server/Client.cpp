@@ -187,6 +187,7 @@ void Client::handleParsedClientPacket(const std::shared_ptr<protocol::BaseServer
             PCK_CALLBACK_PLAY(TeleportToEntity);
             PCK_CALLBACK_PLAY(UseItemOn);
             PCK_CALLBACK_PLAY(UseItem);
+            PCK_CALLBACK_PLAY(PluginMessage);
         default:
             break;
         }
