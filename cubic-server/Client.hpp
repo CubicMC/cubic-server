@@ -13,6 +13,7 @@
 #include "protocol/common.hpp"
 #include "protocol/ServerPackets.hpp"
 #include "logging/Logger.hpp"
+#include "Chat.hpp"
 
 #define __PCK_CALLBACK_PRIM(type, object) return object->_on##type(std::static_pointer_cast<type>(packet))
 
@@ -67,6 +68,7 @@ public:
     void sendPingResponse(int64_t payload);
     void sendChatMessageResponse(const protocol::PlayerChatMessage &packet);
     void sendWorldEvent(const protocol::WorldEvent &packet);
+    void disconnect(const chat::Message &reason = chat::Message("Disconnected"));
 
 private:
     void _handlePacket();

@@ -16,6 +16,23 @@ Client *Player::getClient() const
     return _cli;
 }
 
+void Player::disconnect(const chat::Message &reason)
+{
+    nlohmann::json json;
+
+    // TODO: test this, cause I don't know if the translate key is the correct one
+    json["translate"] = "chat.type.text";
+    json["with"] = nlohmann::json::array({
+        {"text", "PlayerName"},
+        {reason.toJson()}
+    });
+
+    auto pck = protocol::createPlayDisconnect({
+        json.dump()
+    });
+    this->_cli->_sendData(*pck);
+}
+
 // ****************
 // * CLIENT BOUND *
 // ****************
