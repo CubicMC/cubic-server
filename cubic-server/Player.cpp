@@ -74,6 +74,23 @@ void Player::stopSound(uint8_t flags, SoundCategory category, std::string sound)
     this->_cli->_sendData(*pck);
 }
 
+void Player::disconnect(const chat::Message &message)
+{
+    nlohmann::json json;
+
+    // TODO: test this, cause I don't know if the translate key is the correct one
+    json["translate"] = "chat.type.text";
+    json["with"] = nlohmann::json::array({
+        {"text", "PlayerName"},
+        {message.toJson()}
+    });
+
+    auto pck = protocol::createLoginDisconnect({
+        json.dump()
+    });
+    this->_cli->_sendData(*pck);
+}
+
 // ****************
 // * SERVER BOUND *
 // ****************
