@@ -185,7 +185,7 @@ public:
         }
         for (const auto &i : _value) {
             // i->serialize(data);
-            nbt::serialize(data, i);
+            i->serialize(data);
         }
         // Ends the TAG_Compound with a TAG_End
         data.push_back(0);
@@ -444,7 +444,7 @@ public:
             if (current != i->getType())
                 throw std::runtime_error("nbt::List contains more than one type");
             // i->serialize(data, false);
-            nbt::serialize(data, i, false);
+            i->serialize(data, false);
         }
     }
 
@@ -455,39 +455,6 @@ public:
         }
     }
 };
-
-constexpr void serialize(std::vector<uint8_t> &data, const Base *nbt, bool include_name)
-{
-    switch (nbt->getType())
-    {
-    case TagType::Byte:
-        return ((const Byte *)nbt)->serialize(data, include_name);
-    case TagType::Short:
-        return ((const Short *)nbt)->serialize(data, include_name);
-    case TagType::Int:
-        return ((const Int *)nbt)->serialize(data, include_name);
-    case TagType::Long:
-        return ((const Long *)nbt)->serialize(data, include_name);
-    case TagType::Float:
-        return ((const Float *)nbt)->serialize(data, include_name);
-    case TagType::Double:
-        return ((const Double *)nbt)->serialize(data, include_name);
-    case TagType::ByteArray:
-        return ((const ByteArray *)nbt)->serialize(data, include_name);
-    case TagType::String:
-        return ((const String *)nbt)->serialize(data, include_name);
-    case TagType::List:
-        return ((const List *)nbt)->serialize(data, include_name);
-    case TagType::Compound:
-        return ((const Compound *)nbt)->serialize(data, include_name);
-    case TagType::IntArray:
-        return ((const IntArray *)nbt)->serialize(data, include_name);
-    case TagType::LongArray:
-        return ((const LongArray *)nbt)->serialize(data, include_name);
-    default:
-        throw std::runtime_error("unknown nbt type during serialize");
-    }
-}
 
 }
 

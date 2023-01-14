@@ -27,11 +27,6 @@ namespace protocol
         SoundEffect = 0x5d,
         StopSound = 0x5e
     };
-
-    struct BaseClientPacket {
-        virtual ~BaseClientPacket() = default;
-    };
-
     struct PingResponse
     {
         int64_t payload;
@@ -113,7 +108,7 @@ namespace protocol
 
     std::shared_ptr<std::vector<uint8_t>> createWorldEvent(const WorldEvent &);
 
-    struct SynchronizePlayerPosition : BaseClientPacket
+    struct SynchronizePlayerPosition
     {
         double x;
         double y;
