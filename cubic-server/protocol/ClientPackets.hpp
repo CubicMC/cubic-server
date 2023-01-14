@@ -56,6 +56,12 @@ namespace protocol
 
     std::shared_ptr<std::vector<uint8_t>> createPlayerChatMessage(const PlayerChatMessage &);
 
+    struct DisconnectReason
+    {
+        std::string reason;
+    };
+
+    std::shared_ptr<std::vector<uint8_t>> createDisconnectPlayerReason(const DisconnectReason &);
     struct WorldEvent
     {
         int32_t event;
