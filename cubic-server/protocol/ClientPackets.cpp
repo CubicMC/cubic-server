@@ -204,3 +204,12 @@ std::shared_ptr<std::vector<uint8_t>> protocol::createPlayDisconnect(const Disco
     finalize(*packet.get(), payload, (int32_t)ClientPacketID::DisconnectPlay);
     return packet;
 }
+
+std::shared_ptr<std::vector<uint8_t>> protocol::createKeepAlive(long id)
+{
+    std::vector<uint8_t> payload;
+    serialize(payload, id, addLong);
+    auto packet = std::make_shared<std::vector<uint8_t>>();
+    finalize(*packet, payload, (int32_t) ClientPacketID::KeepAlive);
+    return packet;
+}

@@ -154,6 +154,17 @@ chat::Message::Message(
     _hoverEvent(hoverEvent)
 {}
 
+chat::Message::Message(
+    const char message[],
+    chat::Message::Options options,
+    std::optional<chat::message::ClickEvent> clickEvent,
+    std::optional<chat::message::HoverEvent> hoverEvent)
+    : _message(message),
+    _options(options),
+    _clickEvent(clickEvent),
+    _hoverEvent(hoverEvent)
+{}
+
 std::string chat::Message::serialize() const
 {
     return toJson().dump();

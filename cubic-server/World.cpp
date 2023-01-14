@@ -1,5 +1,6 @@
 #include "World.hpp"
 #include "Dimension.hpp"
+#include "Player.hpp"
 
 void World::tick()
 {
@@ -13,6 +14,8 @@ void World::tick()
                    _processingThreads.end(),
                    [](const std::thread *cli)
                    { return cli == nullptr; });
+
+    _keepAliveClock.tick();
 }
 
 WorldGroup *World::getWorldGroup() const
@@ -59,4 +62,25 @@ const world_storage::LevelData &World::getLevelData() const
 void World::setLevelData(const world_storage::LevelData &value)
 {
     _levelData = value;
+}
+
+void World::processKeepAlive()
+{
+    long id = 0;
+    forEachEntityIf(
+        [id](Entity *entity) {
+            Player *player = dynamic_cast<Player *>(entity);
+            if (player->keepAliveId() != 0) {
+                player->disconnect();
+                return;
+            }
+            player->sendKeepAlive(id);
+        },
+        [](const Entity *entity) {
+            const Player *player = dynamic_cast<const Player *>(entity);
+            if (player == nullptr)
+                return false;
+            return true;
+        }
+    );
 }

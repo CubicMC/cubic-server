@@ -20,11 +20,13 @@ public:
     Client *getClient() const;
     const std::string &getUsername() const;
     const u128 &getUuid() const;
-    void disconnect(const chat::Message &reason = chat::Message("Disconnected"));
+    void disconnect(const chat::Message &reason = "Disconnected");
+    long keepAliveId() const;
     void playSoundEffect(SoundsList sound, protocol::FloatingPosition position, SoundCategory category = SoundCategory::Master);
     void playSoundEffect(SoundsList sound, const Entity *entity, SoundCategory category = SoundCategory::Master);
     void playCustomSound(std::string sound, protocol::FloatingPosition position, SoundCategory category = SoundCategory::Master);
     void stopSound(uint8_t flags = 0, SoundCategory category = SoundCategory::Ambient, std::string sound = "");
+    void sendKeepAlive(long id);
 
 private:
     void _onConfirmTeleportation(const std::shared_ptr<protocol::ConfirmTeleportation> &pck);
@@ -78,6 +80,7 @@ private:
     Client *_cli;
     std::string _username;
     u128 _uuid;
+    long _keepAliveId;
 };
 
 

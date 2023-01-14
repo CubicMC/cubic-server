@@ -7,7 +7,7 @@ Player::Player(
     std::shared_ptr<Dimension> dim,
     u128 uuid,
     const std::string &username)
-    : _cli(cli), Entity(dim), _uuid(uuid), _username(username)
+    : _cli(cli), Entity(dim), _uuid(uuid), _username(username), _keepAliveId(0)
 {
     _log = logging::Logger::get_instance();
 }
@@ -37,7 +37,7 @@ void Player::disconnect(const chat::Message &reason)
     // TODO: test this, cause I don't know if the translate key is the correct one
     json["translate"] = "chat.type.text";
     json["with"] = nlohmann::json::array({
-        {"text", "PlayerName"},
+        {"text", this->_username},
         {reason.toJson()}
     });
 
@@ -47,9 +47,12 @@ void Player::disconnect(const chat::Message &reason)
     this->_cli->_sendData(*pck);
 }
 
-// ****************
-// * CLIENT BOUND *
-// ****************
+#pragma region ClientBound
+
+long Player::keepAliveId() const
+{
+    return _keepAliveId;
+}
 
 void Player::playSoundEffect(SoundsList sound, protocol::FloatingPosition position, SoundCategory category)
 {
@@ -105,9 +108,14 @@ void Player::stopSound(uint8_t flags, SoundCategory category, std::string sound)
     this->_cli->_sendData(*pck);
 }
 
-// ****************
-// * SERVER BOUND *
-// ****************
+void Player::sendKeepAlive(long id)
+{
+    auto pck = protocol::createKeepAlive(id);
+    this->_cli->_sendData(*pck);
+}
+
+#pragma endregion
+#pragma region ServerBound
 
 void Player::_onConfirmTeleportation(const std::shared_ptr<protocol::ConfirmTeleportation> &pck)
 {
@@ -184,6 +192,13 @@ void Player::_onJigsawGenerate(const std::shared_ptr<protocol::JigsawGenerate> &
 
 void Player::_onKeepAliveResponse(const std::shared_ptr<protocol::KeepAliveResponse> &pck)
 {
+    if (pck->keep_alive_id != _keepAliveId) {
+        LERROR("Got a Keep Alive Response with a wrong ID");
+        this->disconnect("Wrong Keep Alive ID");
+        return;
+    }
+
+    _keepAliveId = 0;
     LDEBUG("Got a Keep Alive Response");
 }
 
@@ -341,3 +356,5 @@ void Player::_onUseItem(const std::shared_ptr<protocol::UseItem> &pck)
 {
     LDEBUG("Got a Use Item");
 }
+
+#pragma endregion Serverbound
