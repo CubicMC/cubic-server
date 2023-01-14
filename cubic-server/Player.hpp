@@ -6,6 +6,7 @@
 #include "protocol/ServerPackets.hpp"
 #include "logging/Logger.hpp"
 #include "SoundList.hpp"
+#include "Chat.hpp"
 
 class Client;
 
@@ -16,6 +17,7 @@ public:
     Player(Client *cli, std::shared_ptr<Dimension> dim);
     void tick() override;
     Client *getClient() const;
+    void disconnect(const chat::Message &reason = chat::Message("Disconected"));
     void playSoundEffect(SoundsList sound, protocol::FloatingPosition position, SoundCategory category = SoundCategory::Master);
     void playSoundEffect(SoundsList sound, const Entity *entity, SoundCategory category = SoundCategory::Master);
     void playCustomSound(std::string sound, protocol::FloatingPosition position, SoundCategory category = SoundCategory::Master);

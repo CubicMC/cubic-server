@@ -121,3 +121,21 @@ std::shared_ptr<std::vector<uint8_t>> protocol::createStopSound(const StopSound 
     finalize(*packet, payload, (int32_t) ClientPacketID::StopSound);
     return packet;
 }
+
+std::shared_ptr<std::vector<uint8_t>> protocol::createLoginDisconnect(const Disconnect &in)
+{
+    std::vector<uint8_t> payload;
+    serialize(payload, in.reason, addString);
+    auto packet = std::make_shared<std::vector<uint8_t>>();
+    finalize(*packet.get(), payload, (int32_t)ClientPacketID::DisconnectLogin);
+    return packet;
+}
+
+std::shared_ptr<std::vector<uint8_t>> protocol::createPlayDisconnect(const Disconnect &in)
+{
+    std::vector<uint8_t> payload;
+    serialize(payload, in.reason, addString);
+    auto packet = std::make_shared<std::vector<uint8_t>>();
+    finalize(*packet.get(), payload, (int32_t)ClientPacketID::DisconnectPlay);
+    return packet;
+}

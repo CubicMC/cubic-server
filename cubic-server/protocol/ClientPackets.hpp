@@ -14,12 +14,14 @@ namespace protocol
 
     enum class ClientPacketID : int32_t {
         Status = 0x00,
+        DisconnectLogin = 0x00,
         Ping = 0x01,
         CustomSoundEffect = 0x16,
         WorldEvent = 0x20,
         PlayerChatMessage = 0x30,
         EntitySoundEffect = 0x5c,
         SoundEffect = 0x5d,
+        DisconnectPlay = 0x17,
         StopSound = 0x5e
     };
 
@@ -111,6 +113,14 @@ namespace protocol
     };
 
     std::shared_ptr<std::vector<uint8_t>> createStopSound(const StopSound &);
+
+    struct Disconnect
+    {
+        std::string reason;
+    };
+
+    std::shared_ptr<std::vector<uint8_t>> createLoginDisconnect(const Disconnect &);
+    std::shared_ptr<std::vector<uint8_t>> createPlayDisconnect(const Disconnect &);
 
 }
 
