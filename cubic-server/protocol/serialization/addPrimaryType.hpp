@@ -15,6 +15,7 @@
 #include "protocol/common.hpp"
 #include "protocol/Structures.hpp"
 #include "nbt.hpp"
+#include "concept.hpp"
 
 namespace protocol
 {
@@ -134,7 +135,8 @@ namespace protocol
         }
     }
 
-    constexpr void addNBT(std::vector<uint8_t> &out, const nbt::Base &data)
+    template<is_nbt T>
+    constexpr void addNBT(std::vector<uint8_t> &out, const T &data)
     {
         data.serialize(out);
     }
