@@ -3,7 +3,7 @@
 #include "protocol/ClientPackets.hpp"
 
 Player::Player(Client *cli, std::shared_ptr<Dimension> dim)
-    : _cli(cli), Entity(dim)
+    : Entity(dim), _cli(cli), _keepAliveId(0)
 {
     _log = logging::Logger::get_instance();
 }
@@ -16,9 +16,17 @@ Client *Player::getClient() const
     return _cli;
 }
 
-// ****************
-// * CLIENT BOUND *
-// ****************
+long Player::keepAliveId() const
+{
+    return _keepAliveId;
+}
+
+void Player::disconnect(const chat::Message &message)
+{
+    // TODO: send disconnect packet
+}
+
+#pragma region ClientBound
 
 void Player::playSoundEffect(SoundsList sound, protocol::FloatingPosition position, SoundCategory category)
 {
@@ -74,9 +82,14 @@ void Player::stopSound(uint8_t flags, SoundCategory category, std::string sound)
     this->_cli->_sendData(*pck);
 }
 
-// ****************
-// * SERVER BOUND *
-// ****************
+void Player::sendKeepAlive(long id)
+{
+    auto pck = protocol::createKeepAlive(id);
+    this->_cli->_sendData(*pck);
+}
+
+#pragma endregion
+#pragma region ServerBound
 
 void Player::_onConfirmTeleportation(const std::shared_ptr<protocol::ConfirmTeleportation> &pck)
 {
@@ -148,6 +161,13 @@ void Player::_onJigsawGenerate(const std::shared_ptr<protocol::JigsawGenerate> &
 
 void Player::_onKeepAliveResponse(const std::shared_ptr<protocol::KeepAliveResponse> &pck)
 {
+    if (pck->keep_alive_id != _keepAliveId) {
+        LERROR("Got a Keep Alive Response with a wrong ID");
+        this->disconnect("Wrong Keep Alive ID");
+        return;
+    }
+
+    _keepAliveId = 0;
     LDEBUG("Got a Keep Alive Response");
 }
 
@@ -305,3 +325,5 @@ void Player::_onUseItem(const std::shared_ptr<protocol::UseItem> &pck)
 {
     LDEBUG("Got a Use Item");
 }
+
+#pragma endregion Serverbound

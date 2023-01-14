@@ -121,3 +121,12 @@ std::shared_ptr<std::vector<uint8_t>> protocol::createStopSound(const StopSound 
     finalize(*packet, payload, (int32_t) ClientPacketID::StopSound);
     return packet;
 }
+
+std::shared_ptr<std::vector<uint8_t>> protocol::createKeepAlive(long id)
+{
+    std::vector<uint8_t> payload;
+    serialize(payload, id, addLong);
+    auto packet = std::make_shared<std::vector<uint8_t>>();
+    finalize(*packet, payload, (int32_t) ClientPacketID::KeepAlive);
+    return packet;
+}

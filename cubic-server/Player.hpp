@@ -6,6 +6,7 @@
 #include "protocol/ServerPackets.hpp"
 #include "logging/Logger.hpp"
 #include "SoundList.hpp"
+#include "Chat.hpp"
 
 class Client;
 
@@ -16,10 +17,15 @@ public:
     Player(Client *cli, std::shared_ptr<Dimension> dim);
     void tick() override;
     Client *getClient() const;
+    long keepAliveId() const;
+    void disconnect(const chat::Message &message = chat::Message("Disconnected"));
+
+public:
     void playSoundEffect(SoundsList sound, protocol::FloatingPosition position, SoundCategory category = SoundCategory::Master);
     void playSoundEffect(SoundsList sound, const Entity *entity, SoundCategory category = SoundCategory::Master);
     void playCustomSound(std::string sound, protocol::FloatingPosition position, SoundCategory category = SoundCategory::Master);
     void stopSound(uint8_t flags = 0, SoundCategory category = SoundCategory::Ambient, std::string sound = "");
+    void sendKeepAlive(long id);
 
 private:
     void _onConfirmTeleportation(const std::shared_ptr<protocol::ConfirmTeleportation> &pck);
@@ -70,6 +76,7 @@ private:
 
     logging::Logger *_log;
     Client *_cli;
+    long _keepAliveId;
 };
 
 

@@ -102,6 +102,12 @@ namespace chat {
             std::optional<chat::message::ClickEvent> clickEvent = std::nullopt,
             std::optional<chat::message::HoverEvent> hoverEvent = std::nullopt);
 
+        Message(
+            const char message[],
+            Options options = {},
+            std::optional<chat::message::ClickEvent> clickEvent = std::nullopt,
+            std::optional<chat::message::HoverEvent> hoverEvent = std::nullopt);
+
         std::string_view getMessage() const;
         Options getOptions() const;
         std::optional<chat::message::ClickEvent> getClickEvent() const;

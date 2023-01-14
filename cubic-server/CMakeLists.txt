@@ -20,6 +20,8 @@ target_sources (${CMAKE_PROJECT_NAME} PRIVATE
         nbt.hpp
         SoundSystem.hpp
         SoundSystem.cpp
+        TickClock.hpp
+        TickClock.cpp
 )
 
 if (GTEST)
