@@ -288,16 +288,11 @@ void Client::_onPingRequest(const std::shared_ptr<protocol::PingRequest> &pck)
     sendPingResponse(pck->payload);
 }
 
-static constexpr u128 _placeholderUUID = {
-    .most = 0x60a9f37ff25630e8,
-    .least = 0x8139a118a845a9e2
-};
-
 void Client::_onLoginStart(const std::shared_ptr<protocol::LoginStart> &pck)
 {
     LDEBUG("Got a Login Start");
     protocol::LoginSuccess resPck;
-    resPck.uuid = pck->has_player_uuid ? pck->player_uuid : _placeholderUUID; // TODO: what to put if there isn't an uuid ?
+    resPck.uuid = pck->has_player_uuid ? pck->player_uuid : u128{std::hash<std::string>{}("OfflinePlayer:"), std::hash<std::string>{}(pck->name)};
     resPck.username = pck->name;
     resPck.numberOfProperties = 0;
     resPck.name = ""; // TODO: figure out what to put there
