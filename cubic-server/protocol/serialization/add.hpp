@@ -37,7 +37,7 @@ namespace protocol
             addBlockEntity(out, i);
     }
 
-    constexpr void addLightArray(std::vector<uint8_t> &out, const std::vector<std::array<uint8_t, 2048>> &data)
+    constexpr void addLightArray(std::vector<uint8_t> &out, const std::vector<std::array<uint8_t, LIGHT_ARRAY_SIZE>> &data)
     {
         addVarInt(out, data.size());
         for (auto &lightArray : data) {
