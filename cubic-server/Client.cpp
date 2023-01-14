@@ -329,9 +329,6 @@ void Client::sendPingResponse(int64_t payload)
 void Client::sendLoginSuccess(const protocol::LoginSuccess &packet)
 {
     auto pck = protocol::createLoginSuccess(packet);
-    for (auto i = 0; i < pck->size(); i++)
-        printf("%.2X", *(pck->data() + i));
-    printf("\n");
     _sendData(*pck);
     LDEBUG("Sent a login success");
 
