@@ -298,7 +298,6 @@ void Client::_onLoginStart(const std::shared_ptr<protocol::LoginStart> &pck)
     LDEBUG("Got a Login Start");
     protocol::LoginSuccess resPck;
     resPck.uuid = pck->has_player_uuid ? pck->player_uuid : _placeholderUUID; // TODO: what to put if there isn't an uuid ?
-    // resPck.uuid = pck->has_player_uuid ? pck->player_uuid : _placeholderUUID2; // TODO: what to put if there isn't an uuid ?
     resPck.username = pck->name;
     resPck.numberOfProperties = 0;
     resPck.name = ""; // TODO: figure out what to put there
@@ -350,8 +349,7 @@ void Client::sendLoginSuccess(const protocol::LoginSuccess &packet)
         .gamemode = 0, // TODO: something like this this->_player->getGamemode()
         .previousGamemode = 0, // TODO: something like this this->_player->getPreviousGamemode().has_value() ? this->_player->getPreviousGamemode() : -1;
         .dimensionNames = std::vector<std::string>({"minecraft:overworld"}), // TODO: something like this this->_player->_dim->getWorld()->getDimensions();
-        .registryCodec = nbt::Compound("", {}),
-        /*.registryCodec = nbt::Compound("", {
+        .registryCodec = nbt::Compound("", {
             new nbt::Compound("minecraft:dimension_type", {
                 new nbt::String("type", "minecraft:dimension_type"),
                 new nbt::List("value", {
@@ -428,7 +426,7 @@ void Client::sendLoginSuccess(const protocol::LoginSuccess &packet)
                     })
                 })
             })
-        }),*/
+        }),
         .dimensionType = "minecraft:overworld", // TODO: something like this this->_player->_dim->getDimensionType();
         .dimensionName = "overworld", // TODO: something like this this->_player->getDimension()->name;
         .hashedSeed = 0, // TODO: something like this this->_player->_dim->getWorld()->getHashedSeed();
