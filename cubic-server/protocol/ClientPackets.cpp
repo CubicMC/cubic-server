@@ -44,7 +44,7 @@ std::shared_ptr<std::vector<uint8_t>> protocol::createLoginPlay(const LoginPlay 
 {
     std::vector<uint8_t> payload;
     serialize(payload,
-        in.entityID, addVarInt,
+        in.entityID, addInt,
         in.isHardcore, addBoolean,
         in.gamemode, addByte,
         in.previousGamemode, addByte,
