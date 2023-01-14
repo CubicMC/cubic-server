@@ -350,8 +350,8 @@ void Client::sendLoginSuccess(const protocol::LoginSuccess &packet)
         .gamemode = 0, // TODO: something like this this->_player->getGamemode()
         .previousGamemode = 0, // TODO: something like this this->_player->getPreviousGamemode().has_value() ? this->_player->getPreviousGamemode() : -1;
         .dimensionNames = std::vector<std::string>({"minecraft:overworld"}), // TODO: something like this this->_player->_dim->getWorld()->getDimensions();
-        // .registryCodec = nbt::Compound("registry-codec", {}),
-        .registryCodec = nbt::Compound("registry-codec", {
+        .registryCodec = nbt::Compound("", {}),
+        /*.registryCodec = nbt::Compound("", {
             new nbt::Compound("minecraft:dimension_type", {
                 new nbt::String("type", "minecraft:dimension_type"),
                 new nbt::List("value", {
@@ -428,7 +428,7 @@ void Client::sendLoginSuccess(const protocol::LoginSuccess &packet)
                     })
                 })
             })
-        }),
+        }),*/
         .dimensionType = "minecraft:overworld", // TODO: something like this this->_player->_dim->getDimensionType();
         .dimensionName = "overworld", // TODO: something like this this->_player->getDimension()->name;
         .hashedSeed = 0, // TODO: something like this this->_player->_dim->getWorld()->getHashedSeed();
