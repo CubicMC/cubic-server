@@ -7,6 +7,7 @@
 #include "logging/Logger.hpp"
 #include "SoundList.hpp"
 #include "types.hpp"
+#include "Chat.hpp"
 
 class Client;
 
@@ -19,6 +20,7 @@ public:
     Client *getClient() const;
     const std::string &getUsername() const;
     const u128 &getUuid() const;
+    void disconnect(const chat::Message &reason = chat::Message("Disconnected"));
     void playSoundEffect(SoundsList sound, protocol::FloatingPosition position, SoundCategory category = SoundCategory::Master);
     void playSoundEffect(SoundsList sound, const Entity *entity, SoundCategory category = SoundCategory::Master);
     void playCustomSound(std::string sound, protocol::FloatingPosition position, SoundCategory category = SoundCategory::Master);
