@@ -73,7 +73,7 @@ void World::processKeepAlive()
             if (player->keepAliveId() != 0) {
                 player->setKeepAliveIgnored(player->keepAliveIgnored() + 1);
                 if (this->_keepAliveClock.tickRate() * player->keepAliveIgnored() >= 600)
-                    player->disconnect();
+                    player->disconnect("Timed out");
                 return;
             }
             player->sendKeepAlive(id);
