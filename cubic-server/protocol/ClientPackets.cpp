@@ -148,7 +148,8 @@ std::shared_ptr<std::vector<uint8_t>> protocol::createEntitySoundEffect(const En
         in.category, addVarInt,
         in.entityId, addVarInt,
         in.volume, addFloat,
-        in.pitch, addFloat
+        in.pitch, addFloat,
+        in.seed, addLong
     );
     auto packet = std::make_shared<std::vector<uint8_t>>();
     finalize(*packet, payload, (int32_t) ClientPacketID::EntitySoundEffect);

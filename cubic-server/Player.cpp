@@ -97,7 +97,8 @@ void Player::playSoundEffect(SoundsList sound, const Entity *entity, SoundCatego
         (int32_t) category,
         entity->getId(),
         0.5, // TODO: get the right volume
-        1.0 // TODO: get the right pitch
+        1.0, // TODO: get the right pitch
+        1 // TODO: get the right seed
     });
     this->_cli->_sendData(*pck);
     LDEBUG("Sent a sound effect packet");

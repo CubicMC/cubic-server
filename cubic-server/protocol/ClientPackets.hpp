@@ -146,6 +146,7 @@ namespace protocol
         int32_t entityId;
         float volume;
         float pitch;
+        long seed;
     };
 
     std::shared_ptr<std::vector<uint8_t>> createEntitySoundEffect(const EntitySoundEffect &);
