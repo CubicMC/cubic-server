@@ -543,6 +543,14 @@ void Client::sendWorldEvent(const protocol::WorldEvent &packet)
     LDEBUG("Sent a world event");
 }
 
+void Client::sendBlockUpdate(const protocol::BlockUpdate &packet)
+{
+    auto pck = protocol::createBlockUpdate(packet);
+    _sendData(*pck);
+
+    LDEBUG("Sent a block update");
+}
+
 void Client::disconnect(const chat::Message &reason)
 {
     if (_status == protocol::ClientStatus::Play) {

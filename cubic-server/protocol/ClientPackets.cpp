@@ -309,6 +309,19 @@ std::shared_ptr<std::vector<uint8_t>> protocol::createPluginMessageResponse(cons
     return packet;
 }
 
+std::shared_ptr<std::vector<uint8_t>> protocol::createBlockUpdate(const BlockUpdate &in)
+{
+    std::vector<uint8_t> payload;
+    serialize(payload,
+              in.location,
+              addPosition,
+              in.block_id,
+              addVarInt);
+    auto packet = std::make_shared<std::vector<uint8_t>>();
+    finalize(*packet.get(), payload, (int32_t)ClientPacketID::DisconnectPlay);
+    return packet;
+
+}
 std::shared_ptr<std::vector<uint8_t>> protocol::createEntityAnimationClient(EntityAnimationID animId, int32_t entityID)
 {
     std::vector<uint8_t> payload;
