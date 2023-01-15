@@ -86,7 +86,7 @@ void ChunkColumn::setTick(int64_t tick) {
 //     _entities.at(id) = e;
 // }
 
-// void ChunkColumn::updateEntity(__int128 uuid, Entity *e) {
+// void ChunkColumn::updateEntity(u128 uuid, Entity *e) {
 // }
 
 // void ChunkColumn::addEntity(Entity *e) { // TODO: entity must be a pointer or a reference ?
@@ -98,14 +98,14 @@ void ChunkColumn::setTick(int64_t tick) {
 //     _entities.erase(_entities.begin() + id);
 // }
 
-// void ChunkColumn::removeEntity(__int128 uuid) {
+// void ChunkColumn::removeEntity(u128 uuid) {
 // }
 
 // Entity *ChunkColumn::getEntity(std::size_t id) {
 //     return _entities.at(id);
 // }
 
-// Entity *ChunkColumn::getEntity(__int128 uuid) {
+// Entity *ChunkColumn::getEntity(u128 uuid) {
 //     return _entities.at(0);
 // }
 

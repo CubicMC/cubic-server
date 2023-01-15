@@ -23,6 +23,54 @@ std::shared_ptr<std::vector<uint8_t>> protocol::createStatusResponse(const Statu
     return packet;
 }
 
+std::shared_ptr<std::vector<uint8_t>> protocol::createLoginSuccess(const LoginSuccess &in)
+{
+    std::vector<uint8_t> payload;
+    serialize(payload, in.uuid, addUUID,
+        in.username, addString,
+        in.numberOfProperties, addVarInt
+    );
+
+    // in.name, addString,
+    // in.value, addString,
+    // in.isSigned, addBoolean
+    if (in.isSigned)
+        serialize(payload, in.signature.value(), addString);
+    auto packet = std::make_shared<std::vector<uint8_t>>();
+    finalize(*packet.get(), payload, (int32_t)ClientPacketID::LoginSuccess);
+    return packet;
+}
+
+std::shared_ptr<std::vector<uint8_t>> protocol::createLoginPlay(const LoginPlay &in)
+{
+    std::vector<uint8_t> payload;
+    serialize(payload,
+        in.entityID, addInt,
+        in.isHardcore, addBoolean,
+        in.gamemode, addByte,
+        in.previousGamemode, addByte,
+        in.dimensionNames, addArray<std::string, addString>,
+        in.registryCodec, addNBT<nbt::Compound>,
+        in.dimensionType, addString,
+        in.dimensionName, addString,
+        in.hashedSeed, addLong,
+        in.maxPlayers, addVarInt,
+        in.viewDistance, addVarInt,
+        in.simulationDistance, addVarInt,
+        in.reducedDebugInfo, addBoolean,
+        in.enableRespawnScreen, addBoolean,
+        in.isDebug, addBoolean,
+        in.isFlat, addBoolean,
+        in.hasDeathLocation, addBoolean);
+    if (in.hasDeathLocation)
+        serialize(payload,
+            in.deathDimensionName.value(), addString,
+            in.deathLocation.value(), addPosition);
+    auto packet = std::make_shared<std::vector<uint8_t>>();
+    finalize(*packet.get(), payload, (int32_t)ClientPacketID::LoginPlay);
+    return packet;
+}
+
 std::shared_ptr<std::vector<uint8_t>> protocol::createPlayerChatMessage(const PlayerChatMessage &in)
 {
     std::vector<uint8_t> payload;
@@ -55,6 +103,23 @@ std::shared_ptr<std::vector<uint8_t>> protocol::createWorldEvent(const WorldEven
     auto packet = std::make_shared<std::vector<uint8_t>>();
     finalize(*packet.get(), payload, (int32_t) ClientPacketID::WorldEvent);
     return packet;
+}
+
+std::shared_ptr<SynchronizePlayerPosition> protocol::parseSynchronizePlayerPosition(std::vector<uint8_t> &buffer)
+{
+    auto h = std::make_shared<SynchronizePlayerPosition>();
+    auto at = buffer.data();
+
+    parse(at, buffer.data() + buffer.size() - 1, *h,
+        popDouble, &SynchronizePlayerPosition::x,
+        popDouble, &SynchronizePlayerPosition::y,
+        popDouble, &SynchronizePlayerPosition::z,
+        popFloat, &SynchronizePlayerPosition::yaw,
+        popFloat, &SynchronizePlayerPosition::pitch,
+        popByte, &SynchronizePlayerPosition::flags,
+        popVarInt, &SynchronizePlayerPosition::teleportId,
+        popBoolean, &SynchronizePlayerPosition::dismountVehicle);
+    return h;
 }
 
 std::shared_ptr<std::vector<uint8_t>> protocol::createCustomSoundEffect(const CustomSoundEffect &in)

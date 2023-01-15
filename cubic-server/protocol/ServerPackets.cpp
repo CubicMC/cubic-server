@@ -178,6 +178,17 @@ std::shared_ptr<CloseContainerRequest> protocol::parseCloseContainerRequest(std:
     return h;
 }
 
+std::shared_ptr<PluginMessage> protocol::parsePluginMessage(std::vector<uint8_t> &buffer)
+{
+    auto h = std::make_shared<PluginMessage>();
+    auto at = buffer.data();
+
+    parse(at, buffer.data() + buffer.size() - 1, *h,
+          popString, &PluginMessage::channel,
+          popArray<uint8_t, popByte>, &PluginMessage::data);
+    return h;
+}
+
 std::shared_ptr<EditBook> protocol::parseEditBook(std::vector<uint8_t> &buffer)
 {
     auto h = std::make_shared<EditBook>();

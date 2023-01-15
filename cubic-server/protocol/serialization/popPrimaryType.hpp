@@ -172,16 +172,15 @@ namespace protocol
     // {
     // }
 
-    constexpr __int128 popUUID(uint8_t *&at, uint8_t *eof)
+    constexpr u128 popUUID(uint8_t *&at, uint8_t *eof)
     {
         if (eof - at < 15)
             throw PacketEOF("Not enough data in packet to parse a Long");
 
-        int64_t value = 0;
+        u128 value;
 
-        for (int i = 0; i < 16; i++)
-            value = (value << 8) + *at++;
-
+        value.most = popLong(at, eof);
+        value.least = popLong(at, eof);
         return value;
     }
 

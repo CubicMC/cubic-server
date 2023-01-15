@@ -53,10 +53,10 @@ public:
     constexpr virtual void serialize(std::vector<uint8_t> &data, bool include_name = true) const = 0;
 
     constexpr virtual void pre_serialize(std::vector<uint8_t> &data, bool include_name) const {
-        // Serialize the type
-        data.push_back((uint8_t)_type);
         if (!include_name)
             return;
+        // Serialize the type
+        data.push_back((uint8_t)_type);
         // Serialize the name length
         data.push_back(_name.length() >> 8);
         data.push_back(_name.length() & 0xFF);
@@ -67,6 +67,8 @@ public:
 
     constexpr virtual void destroy() {};
 };
+
+constexpr void serialize(std::vector<uint8_t> &data, const Base *nbt, bool include_name = true);
 
 class Int : public Base
 {
@@ -176,7 +178,13 @@ public:
 
     constexpr void serialize(std::vector<uint8_t> &data, bool include_name = true) const override {
         Base::pre_serialize(data, include_name);
+        // if (!include_name) {
+        //     // Serialize the length of the list in 4 bytes
+        //     for (int i = 0; i < 4; i++)
+        //         data.push_back(((_value.size() + 1) >> (24 - i * 8)) & 0xFF);
+        // }
         for (const auto &i : _value) {
+            // i->serialize(data);
             i->serialize(data);
         }
         // Ends the TAG_Compound with a TAG_End
@@ -215,9 +223,9 @@ public:
 
     constexpr void serialize(std::vector<uint8_t> &data, bool include_name = true) const override {
         Base::pre_serialize(data, include_name);
-        auto d = static_cast<int64_t>(_value);
-        for (int i = 0; i < 8; i++)
-            data.push_back((d >> (56 - i * 8)) & 0xFF);
+        uint8_t const *p = reinterpret_cast<uint8_t const *>(&_value);
+        for (int i = 7; i >= 0; i--)
+            data.push_back(p[i]);
     }
 };
 
@@ -245,9 +253,9 @@ public:
 
     constexpr void serialize(std::vector<uint8_t> &data, bool include_name = true) const override {
         Base::pre_serialize(data, include_name);
-        auto d = static_cast<int32_t>(_value);
-        for (int i = 0; i < 4; i++)
-            data.push_back((d >> (24 - i * 8)) & 0xFF);
+        uint8_t const *p = reinterpret_cast<uint8_t const *>(&_value);
+        for (int i = 3; i >= 0; i--)
+            data.push_back(p[i]);
     }
 };
 
@@ -429,12 +437,18 @@ public:
     constexpr void serialize(std::vector<uint8_t> &data, bool include_name = true) const override {
         Base::pre_serialize(data, include_name);
         TagType current = TagType::End;
+        // serialize the type of the first componant of the list
+        data.push_back((uint8_t)_value[0]->getType());
+        // Serialize the length of the data as int32
+        for (int i = 0; i < 4; i++)
+            data.push_back((_value.size() >> (24 - i * 8)) & 0xFF);
         // Serialize the nbt
         for (const auto &i : _value) {
             if (current == TagType::End)
                 current = i->getType();
             if (current != i->getType())
                 throw std::runtime_error("nbt::List contains more than one type");
+            // i->serialize(data, false);
             i->serialize(data, false);
         }
     }

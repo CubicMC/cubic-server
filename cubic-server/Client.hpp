@@ -13,6 +13,7 @@
 #include "protocol/common.hpp"
 #include "protocol/ServerPackets.hpp"
 #include "logging/Logger.hpp"
+#include "types.hpp"
 #include "Chat.hpp"
 
 #define __PCK_CALLBACK_PRIM(type, object) return object->_on##type(std::static_pointer_cast<type>(packet))
@@ -58,7 +59,7 @@ public:
         _status = status;
     }
 
-    void switchToPlayState();
+    void switchToPlayState(u128 playerUuid, const std::string &username);
 
     void handleParsedClientPacket(const std::shared_ptr<protocol::BaseServerPacket>& packet,
                                   protocol::ServerPacketsID packetID);
@@ -66,6 +67,8 @@ public:
     // All the send packets go here
     void sendStatusResponse(const std::string &json);
     void sendPingResponse(int64_t payload);
+    void sendLoginSuccess(const protocol::LoginSuccess &packet);
+    void sendLoginPlay(const protocol::LoginPlay &packet);
     void sendChatMessageResponse(const protocol::PlayerChatMessage &packet);
     void sendWorldEvent(const protocol::WorldEvent &packet);
     void disconnect(const chat::Message &reason = chat::Message("Disconnected"));

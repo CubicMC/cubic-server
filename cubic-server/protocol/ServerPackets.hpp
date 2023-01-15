@@ -11,6 +11,7 @@
 #include <map>
 
 #include "typeSerialization.hpp"
+#include "types.hpp"
 
 namespace protocol
 {
@@ -30,6 +31,7 @@ namespace protocol
         CommandSuggestionRequest = 0x08,
         ClickContainerButton = 0x09,
         CloseContainerRequest = 0x0b,
+        PluginMessage = 0x0c,
         EditBook = 0x0d,
         QueryEntityTag = 0x0e,
         Interact = 0x0F,
@@ -95,7 +97,7 @@ namespace protocol
         std::vector<uint8_t> public_key;
         std::vector<uint8_t> signature;
         bool has_player_uuid;
-        __int128 player_uuid;
+        u128 player_uuid;
     };
     std::shared_ptr<LoginStart> parseLoginStart(std::vector<uint8_t> &buffer);
 
@@ -184,6 +186,13 @@ namespace protocol
         uint8_t window_id;
     };
     std::shared_ptr<CloseContainerRequest> parseCloseContainerRequest(std::vector<uint8_t> &buffer);
+
+    struct PluginMessage : BaseServerPacket
+    {
+        std::string channel;
+        std::vector<uint8_t> data;
+    };
+    std::shared_ptr<PluginMessage> parsePluginMessage(std::vector<uint8_t> &buffer);
 
     struct EditBook : BaseServerPacket
     {
@@ -456,7 +465,7 @@ namespace protocol
 
     struct TeleportToEntity : BaseServerPacket
     {
-        __int128 target_player;
+        u128 target_player;
     };
     std::shared_ptr<TeleportToEntity> parseTeleportToEntity(std::vector<uint8_t> &buffer);
 
@@ -506,6 +515,7 @@ namespace protocol
             {ServerPacketsID::CommandSuggestionRequest, &parseCommandSuggestionRequest},
             {ServerPacketsID::ClickContainerButton, &parseClickContainerButton},
             {ServerPacketsID::CloseContainerRequest, &parseCloseContainerRequest},
+            {ServerPacketsID::PluginMessage, &parsePluginMessage},
             {ServerPacketsID::EditBook, &parseEditBook},
             {ServerPacketsID::QueryEntityTag, &parseQueryEntityTag},
             {ServerPacketsID::Interact, &parseInteract},

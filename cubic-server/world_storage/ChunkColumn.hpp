@@ -60,12 +60,12 @@ public:
     void setTick(int64_t tick);
 
     // void updateEntity(std::size_t id, Entity *e);
-    // void updateEntity(__int128 uuid, Entity *e);
+    // void updateEntity(u128 uuid, Entity *e);
     // void addEntity(Entity *e);
     // void removeEntity(std::size_t id);
-    // void removeEntity(__int128 uuid);
+    // void removeEntity(u128 uuid);
     // Entity *getEntity(std::size_t id);
-    // Entity *getEntity(__int128 uuid);
+    // Entity *getEntity(u128 uuid);
     // const std::deque<Entity *> &getEntities();
 
     void updateHeightMap(void);

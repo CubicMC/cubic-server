@@ -6,8 +6,10 @@
 #include <memory>
 #include <vector>
 #include <optional>
+#include <variant>
 
 #include "Structures.hpp"
+#include "typeSerialization.hpp"
 
 namespace protocol
 {
@@ -16,15 +18,17 @@ namespace protocol
         Status = 0x00,
         DisconnectLogin = 0x00,
         Ping = 0x01,
+        LoginSuccess = 0x02,
         CustomSoundEffect = 0x16,
         WorldEvent = 0x20,
+        LoginPlay = 0x23,
         PlayerChatMessage = 0x30,
+        SynchronizePlayerPosition = 0x36,
         EntitySoundEffect = 0x5c,
         SoundEffect = 0x5d,
         DisconnectPlay = 0x17,
         StopSound = 0x5e
     };
-
     struct PingResponse
     {
         int64_t payload;
@@ -39,13 +43,53 @@ namespace protocol
 
     std::shared_ptr<std::vector<uint8_t>> createStatusResponse(const StatusResponse &);
 
+    struct LoginSuccess
+    {
+        u128 uuid;
+        std::string username;
+        int32_t numberOfProperties;
+        // Don't know how to build a Property thing that is an array of strings and bools
+        // std::array<std::variant<std::string, bool>, 4> properties;
+        std::string name;
+        std::string value;
+        bool isSigned;
+        std::optional<std::string> signature;
+    };
+
+    std::shared_ptr<std::vector<uint8_t>> createLoginSuccess(const LoginSuccess &);
+
+    struct LoginPlay
+    {
+        int32_t entityID;
+        bool isHardcore;
+        uint8_t gamemode;
+        uint8_t previousGamemode; // must be a signed byte
+        std::vector<std::string> dimensionNames;
+        nbt::Compound registryCodec;
+        std::string dimensionType;
+        std::string dimensionName;
+        long hashedSeed;
+        int32_t maxPlayers;
+        int32_t viewDistance;
+        int32_t simulationDistance;
+        bool reducedDebugInfo;
+        bool enableRespawnScreen;
+        bool isDebug;
+        bool isFlat;
+        bool hasDeathLocation;
+        std::optional<std::string> deathDimensionName;
+        std::optional<Position> deathLocation;
+    };
+
+    std::shared_ptr<std::vector<uint8_t>> createLoginPlay(const LoginPlay &);
+
     struct PlayerChatMessage
     {
         std::string signedContent;
         bool hasUnsignedContent;
         std::string unsignedContent;
         int32_t type;
-        __int128 senderUUID;
+        u128 senderUUID;
         std::string senderName;
         bool hasTeamName;
         std::string teamName;
@@ -65,6 +109,20 @@ namespace protocol
     };
 
     std::shared_ptr<std::vector<uint8_t>> createWorldEvent(const WorldEvent &);
+
+    struct SynchronizePlayerPosition
+    {
+        double x;
+        double y;
+        double z;
+        float yaw;
+        float pitch;
+        uint8_t flags; // must be a signed byte
+        int32_t teleportId;
+        bool dismountVehicle;
+    };
+
+    std::shared_ptr<SynchronizePlayerPosition> parseSynchronizePlayerPosition(std::vector<uint8_t> &buffer);
 
     struct CustomSoundEffect
     {

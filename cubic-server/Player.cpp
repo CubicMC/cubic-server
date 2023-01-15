@@ -2,8 +2,12 @@
 #include "Server.hpp"
 #include "protocol/ClientPackets.hpp"
 
-Player::Player(Client *cli, std::shared_ptr<Dimension> dim)
-    : _cli(cli), Entity(dim)
+Player::Player(
+    Client *cli,
+    std::shared_ptr<Dimension> dim,
+    u128 uuid,
+    const std::string &username)
+    : _cli(cli), Entity(dim), _uuid(uuid), _username(username)
 {
     _log = logging::Logger::get_instance();
 }
@@ -14,6 +18,16 @@ void Player::tick()
 Client *Player::getClient() const
 {
     return _cli;
+}
+
+const std::string &Player::getUsername() const
+{
+    return _username;
+}
+
+const u128 &Player::getUuid() const
+{
+    return _uuid;
 }
 
 void Player::disconnect(const chat::Message &reason)
@@ -141,6 +155,11 @@ void Player::_onClickContainerButton(const std::shared_ptr<protocol::ClickContai
 void Player::_onCloseContainerRequest(const std::shared_ptr<protocol::CloseContainerRequest> &pck)
 {
     LDEBUG("Got a Close Container Request");
+}
+
+void Player::_onPluginMessage(const std::shared_ptr<protocol::PluginMessage> &pck)
+{
+    LDEBUG("Got a Plugin Message");
 }
 
 void Player::_onEditBook(const std::shared_ptr<protocol::EditBook> &pck)
