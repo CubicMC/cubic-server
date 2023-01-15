@@ -31,7 +31,7 @@ Server::Server()
     _motd = _config.getMotd();
 
     _log = logging::Logger::get_instance();
-    LDEBUG("Server created with host: " + _host + " and port: " + std::to_string(_port));
+    LINFO("Server created with host: " + _host + " and port: " + std::to_string(_port));
 }
 
 Server::~Server()
