@@ -1,7 +1,6 @@
-#include <algorithm>
-#include <cmath>
-
 #include "Dimension.hpp"
+#include "Player.hpp"
+#include "World.hpp"
 
 void Dimension::tick()
 {
@@ -51,60 +50,45 @@ void Dimension::generateChunk(int x, int z)
 
 }
 
-// fake player for testing
-struct DummyPlayer {
-    double x;
-    double y;
-    double z;
-};
-
-std::vector<DummyPlayer> createDummies()
+std::vector<Player *> Dimension::getPlayerList() const
 {
-    std::vector<DummyPlayer> dummies;
+    std::vector<Player *> player_list;
 
-    DummyPlayer dummy1 = {0, 0, 0};
-    DummyPlayer dummy2 = {15, 30, 10};
+    for (auto &entity : this->_world->getEntities()) {
+        auto player = dynamic_cast<Player *>(entity);
 
-    dummies.push_back(dummy1);
-    dummies.push_back(dummy2);
-    return dummies;
-}
-
-// should be called at every movement for better efficiency
-/*
-void Dimension::spawnPlayer(std::vector<Player *> players, long render_distance)
-{
-    long distance;
-    std::shared_ptr<std::vector<uint8_t>> data;
-
-    // scan every player to each other if entering render distance (to be optimized with incoming features)
-    for (auto player = players.begin(); player <= players.end(); player++) {
-        for (auto other = player; other < players.end(); other++) {
-
-            // calculate the distance between the two players
-            //distance = std::sqrt(std::pow(other->x - player->x, 2) + std::pow(other->z - player->z, 2));
-
-            // send the packets to the client (no clients for now)
-            if (distance <= render_distance) {
-                (*player.base())->getClient()->sendSpawnPlayer({
-                    0,
-                    0,
-                    0,
-                    0,
-                    0,
-                    0,
-                    0
-                });
-                (*other.base())->getClient()->sendSpawnPlayer({
-                    0,
-                    0,
-                    0,
-                    0,
-                    0,
-                    0,
-                    0
-                });
-            }
+        if (player != nullptr && player->getDimension().get() == this) {
+            player_list.push_back(player);
         }
     }
-}*/
+    return player_list;
+}
+
+void Dimension::spawnPlayer(const Player *current)
+{
+    const std::vector<Player *> player_list = this->getPlayerList();
+
+    for (auto &player : player_list) {
+
+        if (current->getPos().distance(player->getPos()) <= 12) {
+            player->getClient()->sendSpawnPlayer({
+                current->getId(),
+                0,
+                current->getPos().x,
+                current->getPos().y,
+                current->getPos().z,
+                0,
+                0
+            });
+            current->getClient()->sendSpawnPlayer({
+                player->getId(),
+                0,
+                player->getPos().x,
+                player->getPos().y,
+                player->getPos().z,
+                0,
+                0
+            });
+        }
+    }
+}

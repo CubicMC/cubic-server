@@ -32,3 +32,13 @@ int32_t Entity::getId() const
 {
     return _id;
 }
+
+Vector3<double> &Entity::getPos() {
+    return _pos;
+}
+
+Vector3<double> Entity::getPos() const {
+    return _pos;
+}
+
+

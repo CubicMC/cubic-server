@@ -13,6 +13,8 @@
 
 class World;
 
+class Player;
+
 class Entity;
 
 class Dimension
@@ -23,7 +25,8 @@ public:
     }
     virtual void initialize();
     virtual void tick();
-    virtual World *getWorld() const;
+    [[nodiscard]] virtual World *getWorld() const;
+    [[nodiscard]] virtual std::vector<Player *> getPlayerList() const;
     virtual std::vector<Entity *> &getEntities();
     virtual void forEachEntity(std::function<void(Entity *)> callback);
     virtual void forEachEntityIf(std::function<void(Entity *)> callback, std::function<bool(const Entity *)> predicate);
@@ -31,7 +34,7 @@ public:
     const world_storage::Level &getLevel() const;
     world_storage::Level &getEditableLevel();
     virtual void generateChunk(int x, int z);
-    //virtual void spawnPlayer(std::vector<Player *>, long);
+    virtual void spawnPlayer(const Player *);
 
 protected:
     std::vector<Entity *> _entities;
