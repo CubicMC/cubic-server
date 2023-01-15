@@ -9,6 +9,7 @@ public:
     Overworld(World *world): Dimension(world) {}
     void tick() override;
     void initialize() override;
+    void generateChunk(int x, int z) override;
 };
 
 

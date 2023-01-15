@@ -1,7 +1,6 @@
 #include <cstdint>
 #include <array>
 #include <vector>
-#include <deque>
 
 // #include "Entity.hpp"
 #include "protocol/Structures.hpp"
@@ -18,6 +17,7 @@ constexpr int BIOME_3D_SIZE = 4*4*4;
 constexpr int NB_OF_CHUNKS = 20;
 
 struct Block { // TODO: PTDR
+    long long id;
 };
 
 struct BlockEntity {
@@ -26,6 +26,13 @@ struct BlockEntity {
 struct HeightMap {
         std::array<uint16_t, CHUNK_2D_SIZE> motionBlocking;
         std::array<uint16_t, CHUNK_2D_SIZE> worldSurface;
+};
+
+enum class WorldType {
+    OVERWORLD,
+    NETHER,
+    END,
+    FLAT
 };
 
 class ChunkColumn
@@ -70,6 +77,8 @@ public:
 
     void updateHeightMap(void);
     const HeightMap &getHeightMap(void);
+
+    void generate(WorldType worldType);
 private:
     std::array<Block, CHUNK_3D_SIZE*NB_OF_CHUNKS> _blocks;
     std::array<uint8_t, CHUNK_3D_SIZE*NB_OF_CHUNKS> _skyLights;
@@ -79,6 +88,11 @@ private:
     int64_t _tickData;
     // std::deque<Entity *> _entities;
     HeightMap _heightMap;
+
+    void _generateOverworld();
+    void _generateNether();
+    void _generateEnd();
+    void _generateFlat();
 };
 
 }

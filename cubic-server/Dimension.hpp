@@ -30,6 +30,7 @@ public:
 
     const world_storage::Level &getLevel() const;
     world_storage::Level &getEditableLevel();
+    virtual void generateChunk(int x, int z);
 
 protected:
     std::vector<Entity *> _entities;
