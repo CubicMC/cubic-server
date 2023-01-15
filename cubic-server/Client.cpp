@@ -15,6 +15,7 @@ Client::Client(int sockfd, struct sockaddr_in6 addr)
 {
     _is_running = true;
     _log = logging::Logger::get_instance();
+    _player = nullptr;
 }
 
 Client::~Client()
