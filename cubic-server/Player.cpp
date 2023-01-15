@@ -208,6 +208,7 @@ void Player::_onSetPlayerPositionAndRotation(const std::shared_ptr<protocol::Set
 void Player::_onSetPlayerRotation(const std::shared_ptr<protocol::SetPlayerRotation> &pck)
 {
     LDEBUG("Got a Set Player Rotation");
+    this->setRotation(pck->yaw, pck->pitch);
 }
 
 void Player::_onSetPlayerOnGround(const std::shared_ptr<protocol::SetPlayerOnGround> &pck)
