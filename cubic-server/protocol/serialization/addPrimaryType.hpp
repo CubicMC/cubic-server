@@ -33,8 +33,13 @@ namespace protocol
             addByte(out, 0);
     }
 
-    // add short (int16_t)
-    constexpr void addShort(std::vector<uint8_t> &out, const uint16_t &data)
+    constexpr void addShort(std::vector<uint8_t> &out, const int16_t &data)
+    {
+        out.push_back(data >> 8);
+        out.push_back(data & 0xFF);
+    }
+
+    constexpr void addUShort(std::vector<uint8_t> &out, const uint16_t &data)
     {
         out.push_back(data >> 8);
         out.push_back(data & 0xFF);
