@@ -1,6 +1,7 @@
 #include "Player.hpp"
 #include "Server.hpp"
 #include "protocol/ClientPackets.hpp"
+#include <cstdint>
 
 Player::Player(
     Client *cli,
@@ -193,6 +194,15 @@ void Player::_onCloseContainerRequest(const std::shared_ptr<protocol::CloseConta
 void Player::_onPluginMessage(const std::shared_ptr<protocol::PluginMessage> &pck)
 {
     LDEBUG("Got a Plugin Message");
+    if (pck->channel == "minecraft:brand") {
+        LDEBUG("Got a branding request");
+        auto pck = protocol::createPluginMessageResponse({
+            "minecraft:brand",
+            std::vector<uint8_t>({0x05, 0x43, 0x75, 0x62, 0x69, 0x63}) // 43 75 62 69 63 | "Cubic" in hex
+        });
+        _cli->_sendData(*pck);
+        return;
+    }
 }
 
 void Player::_onEditBook(const std::shared_ptr<protocol::EditBook> &pck)

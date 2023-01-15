@@ -1,6 +1,7 @@
 #ifndef A7ADDD9E_6961_4A3D_AAB2_DF37DB6915F0
 #define A7ADDD9E_6961_4A3D_AAB2_DF37DB6915F0
 
+#include <cstdint>
 #include <stdint.h>
 #include <string>
 #include <memory>
@@ -19,6 +20,7 @@ namespace protocol
         DisconnectLogin = 0x00,
         Ping = 0x01,
         LoginSuccess = 0x02,
+        PluginMessage = 0x15,
         CustomSoundEffect = 0x16,
         WorldEvent = 0x20,
         LoginPlay = 0x23,
@@ -181,6 +183,14 @@ namespace protocol
 
     std::shared_ptr<std::vector<uint8_t>> createLoginDisconnect(const Disconnect &);
     std::shared_ptr<std::vector<uint8_t>> createPlayDisconnect(const Disconnect &);
+
+    struct PluginMessageResponse
+    {
+        std::string channel;
+        std::vector<uint8_t> data;
+    };
+
+    std::shared_ptr<std::vector<uint8_t>> createPluginMessageResponse(const PluginMessageResponse &);
 
     std::shared_ptr<std::vector<uint8_t>> createKeepAlive(long id);
 
