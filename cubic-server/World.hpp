@@ -5,11 +5,13 @@
 #include <algorithm>
 #include <thread>
 #include <memory>
+#include <functional>
 
 #include "Entity.hpp"
 #include "Chat.hpp"
 #include "logging/Logger.hpp"
 #include "world_storage/LevelData.hpp"
+#include "TickClock.hpp"
 
 class WorldGroup;
 class Dimension;
@@ -17,8 +19,10 @@ class Dimension;
 class World
 {
 public:
-    World(WorldGroup *worldGroup): _worldGroup(worldGroup) {
+    World(WorldGroup *worldGroup): _worldGroup(worldGroup), _keepAliveClock(20, std::bind(&World::processKeepAlive, this))
+    {
         _log = logging::Logger::get_instance();
+        _keepAliveClock.start();
     }
     virtual void tick();
     virtual void initialize() = 0;
@@ -32,6 +36,8 @@ public:
     virtual const world_storage::LevelData &getLevelData() const;
     virtual void setLevelData(const world_storage::LevelData &value);
 
+    virtual void processKeepAlive();
+
 protected:
     std::shared_ptr<Chat> _chat;
     WorldGroup *_worldGroup;
@@ -39,6 +45,7 @@ protected:
     std::vector<std::thread *> _processingThreads;
     std::unordered_map<std::string_view, std::shared_ptr<Dimension>> _dimensions;
     world_storage::LevelData _levelData;
+    TickClock _keepAliveClock;
 };
 
 

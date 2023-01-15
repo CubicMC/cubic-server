@@ -27,6 +27,7 @@ namespace protocol
         EntitySoundEffect = 0x5c,
         SoundEffect = 0x5d,
         DisconnectPlay = 0x17,
+        KeepAlive = 0x1e,
         StopSound = 0x5e
     };
     struct PingResponse
@@ -145,6 +146,7 @@ namespace protocol
         int32_t entityId;
         float volume;
         float pitch;
+        long seed;
     };
 
     std::shared_ptr<std::vector<uint8_t>> createEntitySoundEffect(const EntitySoundEffect &);
@@ -179,6 +181,8 @@ namespace protocol
 
     std::shared_ptr<std::vector<uint8_t>> createLoginDisconnect(const Disconnect &);
     std::shared_ptr<std::vector<uint8_t>> createPlayDisconnect(const Disconnect &);
+
+    std::shared_ptr<std::vector<uint8_t>> createKeepAlive(long id);
 
 }
 

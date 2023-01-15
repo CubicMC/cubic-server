@@ -36,6 +36,14 @@ Server::Server()
 
 Server::~Server()
 {
+    for (auto &worldGroup : _worldGroups)
+    {
+        worldGroup.second->stop();
+        if (_worldGroupThreads[worldGroup.first]->joinable())
+            _worldGroupThreads[worldGroup.first]->join();
+        delete worldGroup.second;
+        delete _worldGroupThreads[worldGroup.first];
+    }
     LDEBUG("Server destroyed");
 }
 

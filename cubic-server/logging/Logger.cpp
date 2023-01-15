@@ -48,8 +48,8 @@ namespace logging
      */
     Logger *Logger::get_instance()
     {
-        static auto* instance = new Logger();
-        return instance;
+        static auto instance = Logger();
+        return &instance;
     }
 
     /**
