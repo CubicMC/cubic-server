@@ -1,6 +1,8 @@
 target_sources (${CMAKE_PROJECT_NAME} PRIVATE
         Math.cpp
         Math.hpp
+        Vector2.hpp
+        Vector3.hpp
 )
 
 if (GTEST)
