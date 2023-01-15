@@ -2,7 +2,6 @@
 #include "Dimension.hpp"
 #include "protocol/ClientPackets.hpp"
 #include "Player.hpp"
-#include <chrono>
 #include "Player.hpp"
 
 void World::tick()
