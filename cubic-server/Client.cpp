@@ -1,4 +1,5 @@
 #include <iostream>
+#include <stdexcept>
 #include <unistd.h>
 #include <poll.h>
 #include <cstring>
@@ -272,7 +273,15 @@ void Client::_handlePacket()
             LWARN("Unhandled packet: " + std::to_string(static_cast<int>(packet_id)) + " in status " + std::to_string(static_cast<int>(_status)));
             return;
         }
-        auto packet = parser(to_parse);
+        std::shared_ptr<protocol::BaseServerPacket> packet;
+        try {
+            packet = parser(to_parse);
+        }
+        catch (std::runtime_error &error) {
+            LERROR("Error during packet parsing :");
+            LERROR(error.what());
+            return;
+        }
         // Callback to handle the packet
         handleParsedClientPacket(packet, packet_id);
     }
