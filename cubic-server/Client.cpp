@@ -220,6 +220,7 @@ void Client::_handlePacket()
             break; // Not enough data in buffer to parse the length of the packet
         }
         const uint8_t *start_payload = at;
+        bool error = false;
         // Handle the packet if the length is there
         const auto packet_id = static_cast<protocol::ServerPacketsID>(protocol::popVarInt(at, eof));
         std::function<std::shared_ptr<protocol::BaseServerPacket>(std::vector<uint8_t> &)> parser;
@@ -238,10 +239,14 @@ void Client::_handlePacket()
             GET_PARSER(Play);
         }
         std::vector<uint8_t> to_parse(data.begin() + (at - data.data()), data.end());
+        data.erase(data.begin(), data.begin() + (start_payload - data.data()) + length);
+        if (error) {
+            LWARN("Unhandled packet: " + std::to_string(static_cast<int>(packet_id)) + " in status " + std::to_string(static_cast<int>(_status)));
+            return;
+        }
         auto packet = parser(to_parse);
         // Callback to handle the packet
         handleParsedClientPacket(packet, packet_id);
-        data.erase(data.begin(), data.begin() + (start_payload - data.data()) + length);
     }
 }
 

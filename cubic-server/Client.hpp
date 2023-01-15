@@ -28,8 +28,9 @@
     std::unordered_map<protocol::ServerPacketsID, std::function<std::shared_ptr<protocol::BaseServerPacket>(std::vector<uint8_t> &)>>::const_iterator __##state
 
 #define GET_PARSER(state) __##state = protocol::packetIDToParse##state.find(packet_id); \
-    if (__##state == protocol::packetIDToParse##state.end()) \
-        throw std::runtime_error("Unhandled packet: " + std::to_string(static_cast<int>(packet_id)) + " in status " + std::to_string(static_cast<int>(_status))); \
+    if (__##state == protocol::packetIDToParse##state.end()) { \
+        error = true; \
+        break;} \
     parser = __##state->second;                                                                  \
     break
 
