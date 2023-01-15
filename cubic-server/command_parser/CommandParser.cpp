@@ -11,7 +11,9 @@ void command_parser::parseCommand(std::string &command) {
     }
     args.push_back(command);
 
-    std::string commandName = args[0].erase(0, 1);
+    std::string commandName = args[0];
+    if (args[0][0] == '/')
+        commandName = commandName.erase(0, 1);
     args.erase(args.begin());
 
     auto result = std::find_if(

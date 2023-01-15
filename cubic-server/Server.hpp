@@ -81,7 +81,7 @@ private:
     std::unordered_map<std::string_view, std::thread *> _worldGroupThreads;
     std::vector<CommandBase *> _commands = {
         new command_parser::Help,
-        new command_parser::QuestionMark
+        new command_parser::QuestionMark,
     };
 };
 
