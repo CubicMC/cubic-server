@@ -342,7 +342,7 @@ IntArray *nbt::parseIntArray(uint8_t *&at, const uint8_t *end, bool include_name
 
     std::vector<int32_t> data;
     for (int i = 0; i < size; i++) {
-        int8_t val = 0;
+        int32_t val = 0;
         for (int y = 0; y < 4; y++)
             val = (val << 8) | *at++;
         data.push_back(val);
@@ -376,7 +376,7 @@ LongArray *nbt::parseLongArray(uint8_t *&at, const uint8_t *end, bool include_na
 
     std::vector<int64_t> data;
     for (int i = 0; i < size; i++) {
-        int8_t val = 0;
+        int64_t val = 0;
         for (int y = 0; y < 8; y++)
             val = (val << 8) | *at++;
         data.push_back(val);
