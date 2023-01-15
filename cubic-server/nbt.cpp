@@ -130,7 +130,7 @@ Float *nbt::parseFloat(uint8_t *&at, const uint8_t *end, bool include_name)
     
     int32_t value = 0;
     for (int i = 0; i < 4; i++)
-        value = (value << 8) | *at++;
+        value |= (*at++) << (i * 8);
 
     return new Float(name, *((float *)(&value)));
 }
@@ -151,7 +151,7 @@ Double *nbt::parseDouble(uint8_t *&at, const uint8_t *end, bool include_name)
     
     int64_t value = 0;
     for (int i = 0; i < 8; i++)
-        value = (value << 8) | *at++;
+        value |= (*at++) << (i * 8);
 
     return new Double(name, *((double *)(&value)));
 }
