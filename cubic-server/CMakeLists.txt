@@ -18,6 +18,7 @@ target_sources (${CMAKE_PROJECT_NAME} PRIVATE
         Dimension.hpp
         SoundList.hpp
         nbt.hpp
+        nbt.cpp
         SoundSystem.hpp
         SoundSystem.cpp
         concept.hpp
