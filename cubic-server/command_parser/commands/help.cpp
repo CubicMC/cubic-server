@@ -1,23 +1,33 @@
-#include "help.hpp"
+#include "Help.hpp"
+#include "Server.hpp"
 
-namespace help {
+using namespace command_parser;
 
-    void help(std::vector<std::string>& args) {
-        logging::Logger::get_instance()->info("/help [<command>]");
-    }
+void Help::autocomplete(std::vector<std::string>& args) const {
+    logging::Logger::get_instance()->info("autocomplete help");
+}
 
-    void execute(std::vector<std::string>& args) {
-        if (args.empty()) {
-            for (auto &command : allCommands) {
-                logging::Logger::get_instance()->info(command);
-            }
-        }
-        else {
-            if (helps.find(args[0]) != helps.end()) {
-                helps.at(args[0])(args);
-            } else {
-                logging::Logger::get_instance()->info("Unknown command or insufficient permissions");
-            }
+void Help::execute(std::vector<std::string>& args) const {
+    if (args.empty()) {
+        for (auto command : Server::getInstance()->getCommands()) {
+            logging::Logger::get_instance()->info(command->_help);
         }
     }
+    else {
+        auto result = std::find_if(
+            Server::getInstance()->getCommands().begin(),
+            Server::getInstance()->getCommands().end(),
+            [args] (CommandBase *command) {
+                return command->_name == args[0];
+            }
+        );
+        if (result != Server::getInstance()->getCommands().end())
+            (*result)->help(args);
+        else
+            logging::Logger::get_instance()->info("Unknown command or insufficient permissions");
+    }
+}
+
+void Help::help(std::vector<std::string>& args) const {
+    logging::Logger::get_instance()->info("/help [<command>]");
 }

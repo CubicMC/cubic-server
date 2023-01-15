@@ -11,12 +11,19 @@ void command_parser::parseCommand(std::string &command) {
     }
     args.push_back(command);
 
-    std::string commandName = args[0];
+    std::string commandName = args[0].erase(0, 1);
     args.erase(args.begin());
 
-    if (commands.find(commandName) != commands.end()) {
-        commands.at(commandName)(args);
-    } else {
+    auto result = std::find_if(
+        Server::getInstance()->getCommands().begin(),
+        Server::getInstance()->getCommands().end(),
+        [commandName] (CommandBase *command) {
+            return command->_name == commandName;
+        }
+    );
+    if (result != Server::getInstance()->getCommands().end())
+        (*result)->execute(args);
+    else {
         logging::Logger::get_instance()->info("Unknown or incomplete command, see below for error");
         logging::Logger::get_instance()->info(commandName.erase(commandName.find_last_not_of(' ') + 1) + "<--[HERE]");
     }
