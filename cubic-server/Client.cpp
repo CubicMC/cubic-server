@@ -305,6 +305,7 @@ void Client::_onLoginStart(const std::shared_ptr<protocol::LoginStart> &pck)
     resPck.value = ""; // TODO: figure out what to put there
     resPck.isSigned = false;
     sendLoginSuccess(resPck);
+    this->_player->getDimension()->spawnPlayer(this->_player);
 }
 
 void Client::_onEncryptionResponse(const std::shared_ptr<protocol::EncryptionResponse> &pck)
