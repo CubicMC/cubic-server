@@ -19,10 +19,14 @@ class Dimension;
 class World
 {
 public:
-    World(WorldGroup *worldGroup): _worldGroup(worldGroup), _keepAliveClock(20, std::bind(&World::processKeepAlive, this))
+    World(WorldGroup *worldGroup):
+        _worldGroup(worldGroup),
+        _keepAliveClock(100, std::bind(&World::processKeepAlive, this)), // 5 seconds for keep-alives
+        _timeUpdateClock(20, std::bind(&World::updateTime, this)) // 1 second for time updates
     {
         _log = logging::Logger::get_instance();
         _keepAliveClock.start();
+        _timeUpdateClock.start();
     }
     virtual void tick();
     virtual void initialize() = 0;
@@ -49,6 +53,7 @@ protected:
     long _time;
     world_storage::LevelData _levelData;
     TickClock _keepAliveClock;
+    TickClock _timeUpdateClock;
 };
 
 

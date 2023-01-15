@@ -18,7 +18,7 @@ void World::tick()
                    [](const std::thread *cli)
                    { return cli == nullptr; });
 
-    updateTime();
+    _timeUpdateClock.tick();
     _keepAliveClock.tick();
 }
 
@@ -69,30 +69,20 @@ void World::setLevelData(const world_storage::LevelData &value)
 }
 
 void World::updateTime() {
-    static auto clock = std::chrono::steady_clock::now();
-    int64_t time_elapsed;
     std::shared_ptr<std::vector<uint8_t>> data;
 
-    //compute elapsed time
+    _age += 20;
+    _time += 200;
+    if (_time > 24000)
+        _time = 0;
 
-    time_elapsed = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now() - clock).count();
+    // send packets to clients (missing clients in architecture)
+    for (auto &entity : this->getEntities()) {
+        auto player = dynamic_cast<Player *>(entity);
 
-    //add 20 ticks once every second (default minecraft SMP norm)
-    if (time_elapsed > 1000) {
-        _age += 20;
-        _time += 20;
-        if (_time > 24000)
-            _time = 0;
-
-        // send packets to clients (missing clients in architecture)
-        for (auto &entity : this->getEntities()) {
-            auto player = dynamic_cast<Player *>(entity);
-
-            if (player) {
-                player->getClient()->sendUpdateTime({ _age,_time });
-            }
+        if (player) {
+            player->getClient()->sendUpdateTime({ _age,_time });
         }
-        clock = std::chrono::steady_clock::now();
     }
 }
 void World::processKeepAlive()

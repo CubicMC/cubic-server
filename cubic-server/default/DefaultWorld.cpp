@@ -18,7 +18,6 @@ DefaultWorld::DefaultWorld(WorldGroup *worldGroup)
 void DefaultWorld::tick()
 {
     World::tick();
-    updateTime();
     for (auto [_, dim] : this->_dimensions)
         dim->dimensionLock.release();
 }
