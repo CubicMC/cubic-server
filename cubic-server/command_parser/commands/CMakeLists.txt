@@ -4,4 +4,6 @@ target_sources (${CMAKE_PROJECT_NAME} PRIVATE
     Help.cpp
     QuestionMark.hpp
     QuestionMark.cpp
+    Stop.hpp
+    Stop.cpp
 )

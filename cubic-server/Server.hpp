@@ -16,8 +16,7 @@
 #include "WorldGroup.hpp"
 
 #include "command_parser/commands/CommandBase.hpp"
-#include "command_parser/commands/Help.hpp"
-#include "command_parser/commands/QuestionMark.hpp"
+#include "allCommands.hpp"
 
 #ifndef MC_VERSION
 #define MC_VERSION "1.19"
@@ -37,6 +36,8 @@ public:
     ~Server();
 
     void launch();
+
+    void stop();
 
     const Configuration::ConfigHandler &getConfig() const {
         return _config;
@@ -82,6 +83,7 @@ private:
     std::vector<CommandBase *> _commands = {
         new command_parser::Help,
         new command_parser::QuestionMark,
+        new command_parser::Stop,
     };
 };
 
