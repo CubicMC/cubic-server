@@ -18,7 +18,6 @@ DefaultWorld::DefaultWorld(WorldGroup *worldGroup)
 void DefaultWorld::tick()
 {
     World::tick();
-    // TODO: Launch threads for all the dimensions
     for (auto [_, dim] : this->_dimensions)
         dim->dimensionLock.release();
 }

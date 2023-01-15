@@ -14,6 +14,8 @@
 
 class World;
 
+class Player;
+
 class Entity;
 
 class Dimension
@@ -24,7 +26,8 @@ public:
     }
     virtual void initialize();
     virtual void tick();
-    virtual World *getWorld() const;
+    [[nodiscard]] virtual World *getWorld() const;
+    [[nodiscard]] virtual std::vector<Player *> getPlayerList() const;
     virtual std::vector<Entity *> &getEntities();
     virtual void removeEntity(Entity *entity);
     virtual void addEntity(Entity *entity);
@@ -34,6 +37,7 @@ public:
     const world_storage::Level &getLevel() const;
     world_storage::Level &getEditableLevel();
     virtual void generateChunk(int x, int z);
+    virtual void spawnPlayer(const Player *);
     std::counting_semaphore<1000> dimensionLock;
 
 protected:

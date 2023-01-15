@@ -1,6 +1,6 @@
-#include <algorithm>
-
 #include "Dimension.hpp"
+#include "Player.hpp"
+#include "World.hpp"
 
 void Dimension::tick()
 {
@@ -58,4 +58,47 @@ world_storage::Level &Dimension::getEditableLevel()
 void Dimension::generateChunk(int x, int z)
 {
 
+}
+
+std::vector<Player *> Dimension::getPlayerList() const
+{
+    std::vector<Player *> player_list;
+
+    for (auto &entity : this->_world->getEntities()) {
+        auto player = dynamic_cast<Player *>(entity);
+
+        if (player != nullptr && player->getDimension().get() == this) {
+            player_list.push_back(player);
+        }
+    }
+    return player_list;
+}
+
+void Dimension::spawnPlayer(const Player *current)
+{
+    const std::vector<Player *> player_list = this->getPlayerList();
+
+    for (auto &player : player_list) {
+
+        //if (current->getPos().distance(player->getPos()) <= 12) {
+            player->getClient()->sendSpawnPlayer({
+                current->getId(),
+                current->getUuid(),
+                current->getPosition().x,
+                current->getPosition().y,
+                current->getPosition().z,
+                current->getRotation().x,
+                current->getRotation().y
+            });
+            current->getClient()->sendSpawnPlayer({
+                player->getId(),
+                player->getUuid(),
+                player->getPosition().x,
+                player->getPosition().y,
+                player->getPosition().z,
+                player->getRotation().x,
+                player->getRotation().y
+            });
+        //}
+    }
 }

@@ -1,5 +1,7 @@
 #include "World.hpp"
 #include "Dimension.hpp"
+#include "protocol/ClientPackets.hpp"
+#include "Player.hpp"
 #include "Player.hpp"
 
 void World::tick()
@@ -15,6 +17,7 @@ void World::tick()
                    [](const std::thread *cli)
                    { return cli == nullptr; });
 
+    _timeUpdateClock.tick();
     _keepAliveClock.tick();
 }
 
@@ -64,6 +67,23 @@ void World::setLevelData(const world_storage::LevelData &value)
     _levelData = value;
 }
 
+void World::updateTime() {
+    std::shared_ptr<std::vector<uint8_t>> data;
+
+    _age += 20;
+    _time += 200;
+    if (_time > 24000)
+        _time = 0;
+
+    // send packets to clients (missing clients in architecture)
+    for (auto &entity : this->getEntities()) {
+        auto player = dynamic_cast<Player *>(entity);
+
+        if (player) {
+            player->getClient()->sendUpdateTime({ _age,_time });
+        }
+    }
+}
 void World::processKeepAlive()
 {
     long id = std::chrono::system_clock::now().time_since_epoch().count();

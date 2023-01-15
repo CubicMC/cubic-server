@@ -245,16 +245,20 @@ void Player::_onLockDifficulty(const std::shared_ptr<protocol::LockDifficulty> &
 void Player::_onSetPlayerPosition(const std::shared_ptr<protocol::SetPlayerPosition> &pck)
 {
     LDEBUG("Got a Set Player Position");
+    this->setPosition(pck->x, pck->feet_y, pck->z);
 }
 
 void Player::_onSetPlayerPositionAndRotation(const std::shared_ptr<protocol::SetPlayerPositionAndRotation> &pck)
 {
     LDEBUG("Got a Set Player Position And Rotation");
+    this->setPosition(pck->x, pck->feet_y, pck->z);
+    this->setRotation(pck->yaw, pck->pitch);
 }
 
 void Player::_onSetPlayerRotation(const std::shared_ptr<protocol::SetPlayerRotation> &pck)
 {
     LDEBUG("Got a Set Player Rotation");
+    this->setRotation(pck->yaw, pck->pitch);
 }
 
 void Player::_onSetPlayerOnGround(const std::shared_ptr<protocol::SetPlayerOnGround> &pck)
