@@ -207,6 +207,41 @@ void Player::sendUpdateEntityRotation(std::shared_ptr<std::vector<uint8_t>> pck)
     LDEBUG("Sent an entity rotation packet");
 }
 
+void Player::sendChunkAndLightUpdate()
+{
+    auto level = this->_dim->getEditableLevel();
+    auto chunk = level.getChunkColumn({0, 0});
+    auto heightMap = chunk->getHeightMap();
+    std::vector<nbt::Base *> motionBlocking;
+    std::vector<nbt::Base *> worldSurface;
+
+    for (auto &i : heightMap.motionBlocking)
+        motionBlocking.push_back(new nbt::Long("", i));
+
+    for (auto &i : heightMap.worldSurface)
+        worldSurface.push_back(new nbt::Long("", i));
+
+    auto packet = protocol::createChunkDataAndLightUpdate({
+        // TODO: change this to the right chunk
+        0,
+        0,
+        nbt::Compound("", {
+            new nbt::List("MOTION_BLOCKING", motionBlocking),
+            new nbt::List("WORLD_SURFACE", worldSurface)
+        }),
+        {},// TODO: DATA
+        {}, // TODO: BlockEntities
+        true,
+        {}, // TODO: Sky light mask
+        {}, // TODO: Block light mask
+        {}, // TODO: empty sky light mask
+        {}, // TODO: empty block light mask
+        {}, // TODO: sky light
+        {}  // TODO: block light
+    });
+    this->_cli->_sendData(*packet);
+}
+
 #pragma endregion
 #pragma region ServerBound
 

@@ -229,8 +229,7 @@ namespace protocol
     {
         int32_t chunkX;
         int32_t chunkZ;
-        nbt::List heightmaps;
-        int32_t size;
+        nbt::Compound heightmaps;
         std::vector<uint8_t> data;
         std::vector<BlockEntity> blockEntities;
         bool trustEdges;

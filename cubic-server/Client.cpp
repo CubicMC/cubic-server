@@ -497,6 +497,7 @@ void Client::sendLoginPlay(const protocol::LoginPlay &packet)
     _sendData(*pck);
     // this->_player->getDimension()->spawnPlayer(this->_player); // Spawn Player isn't working
     this->_player->_dim->addEntity(this->_player);
+    this->_player->sendChunkAndLightUpdate();
     LDEBUG("Sent a login play");
 }
 

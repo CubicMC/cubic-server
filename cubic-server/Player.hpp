@@ -37,6 +37,7 @@ public:
     void sendUpdateEntityPosition(std::shared_ptr<std::vector<uint8_t>> pck);
     void sendUpdateEntityPositionAndRotation(std::shared_ptr<std::vector<uint8_t>> pck);
     void sendUpdateEntityRotation(std::shared_ptr<std::vector<uint8_t>> pck);
+    void sendChunkAndLightUpdate();
 
 private:
     void _onConfirmTeleportation(const std::shared_ptr<protocol::ConfirmTeleportation> &pck);
