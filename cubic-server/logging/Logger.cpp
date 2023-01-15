@@ -74,7 +74,7 @@ namespace logging
                 {LogLevel::FATAL, "[FATAL] "}
         };
         this->_specification_level_in_console = {
-                {LogLevel::DEBUG, "[DEBUG] "},
+                // {LogLevel::DEBUG, "[DEBUG] "},
                 {LogLevel::INFO, "[INFO] "},
                 {LogLevel::WARNING, "[WARNING] "},
                 {LogLevel::ERROR, "[ERROR] "},
