@@ -82,8 +82,11 @@ private:
 
     logging::Logger *_log;
     Client *_cli;
+<<<<<<< HEAD
     std::string _username;
     u128 _uuid;
+=======
+>>>>>>> d7cc2ecd88d61355d21e0a984f44241933d596e7
     long _keepAliveId;
     uint8_t  _keepAliveIgnored;
 };
