@@ -71,7 +71,6 @@ namespace protocol
     };
 
     struct BaseServerPacket {
-        virtual ~BaseServerPacket() = default;
     };
 
     // Packets
