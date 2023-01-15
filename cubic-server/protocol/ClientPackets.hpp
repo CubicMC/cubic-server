@@ -26,6 +26,9 @@ namespace protocol
         CustomSoundEffect = 0x16,
         WorldEvent = 0x20,
         LoginPlay = 0x23,
+        UpdateEntityPosition = 0x27,
+        UpdateEntityPositionRotation = 0x28,
+        UpdateEntityRotation = 0x29,
         PlayerChatMessage = 0x30,
         UpdateTime = 0x59,
         SynchronizePlayerPosition = 0x36,
@@ -88,6 +91,40 @@ namespace protocol
     };
 
     std::shared_ptr<std::vector<uint8_t>> createLoginPlay(const LoginPlay &);
+
+    struct UpdateEntityPosition
+    {
+        int32_t entityId;
+        int16_t deltaX;
+        int16_t deltaY;
+        int16_t deltaZ;
+        bool onGround;
+    };
+
+    std::shared_ptr<std::vector<uint8_t>> createUpdateEntityPosition(const UpdateEntityPosition &);
+
+    struct UpdateEntityPositionRotation
+    {
+        int32_t entityId;
+        int16_t deltaX;
+        int16_t deltaY;
+        int16_t deltaZ;
+        uint8_t yaw;
+        uint8_t pitch;
+        bool onGround;
+    };
+
+    std::shared_ptr<std::vector<uint8_t>> createUpdateEntityPositionRotation(const UpdateEntityPositionRotation &);
+
+    struct UpdateEntityRotation
+    {
+        int32_t entityId;
+        uint8_t yaw;
+        uint8_t pitch;
+        bool onGround;
+    };
+
+    std::shared_ptr<std::vector<uint8_t>> createUpdateEntityRotation(const UpdateEntityRotation &);
 
     struct PlayerChatMessage
     {
