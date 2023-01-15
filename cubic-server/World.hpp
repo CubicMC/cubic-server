@@ -22,6 +22,7 @@ public:
     World(WorldGroup *worldGroup): _worldGroup(worldGroup), _keepAliveClock(20, std::bind(&World::processKeepAlive, this))
     {
         _log = logging::Logger::get_instance();
+        _keepAliveClock.start();
     }
     virtual void tick();
     virtual void initialize() = 0;

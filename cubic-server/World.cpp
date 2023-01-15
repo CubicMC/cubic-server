@@ -73,9 +73,10 @@ void World::processKeepAlive()
             if (player->keepAliveId() != 0) {
                 player->setKeepAliveIgnored(player->keepAliveIgnored() + 1);
                 if (this->_keepAliveClock.tickRate() * player->keepAliveIgnored() >= 600)
-                    player->disconnect("Timed out");
+                    player->disconnect("Timed out from keep alive LOL");
                 return;
             }
+            player->setKeepAliveId(id);
             player->sendKeepAlive(id);
         },
         [](const Entity *entity) {

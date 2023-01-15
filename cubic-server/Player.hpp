@@ -21,6 +21,7 @@ public:
     const std::string &getUsername() const;
     const u128 &getUuid() const;
     long keepAliveId() const;
+    void setKeepAliveId(long id);
     uint8_t keepAliveIgnored() const;
     void setKeepAliveIgnored(uint8_t ign);
 

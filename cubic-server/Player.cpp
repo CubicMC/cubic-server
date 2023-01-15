@@ -13,7 +13,9 @@ Player::Player(
 }
 
 void Player::tick()
-{}
+{
+    // TODO: MOVE KEEP ALIVE HERE LOL
+}
 
 Client *Player::getClient() const
 {
@@ -45,6 +47,8 @@ void Player::disconnect(const chat::Message &reason)
         json.dump()
     });
     this->_cli->_sendData(*pck);
+    this->_cli->_is_running = false;
+    LDEBUG("Sent a disconnect play packet");
 }
 
 #pragma region ClientBound
@@ -52,6 +56,11 @@ void Player::disconnect(const chat::Message &reason)
 long Player::keepAliveId() const
 {
     return _keepAliveId;
+}
+
+void Player::setKeepAliveId(long id)
+{
+    _keepAliveId = id;
 }
 
 uint8_t Player::keepAliveIgnored() const
@@ -78,6 +87,7 @@ void Player::playSoundEffect(SoundsList sound, protocol::FloatingPosition positi
         0 // TODO: get the right seed
     });
     this->_cli->_sendData(*pck);
+    LDEBUG("Sent a sound effect packet");
 }
 
 void Player::playSoundEffect(SoundsList sound, const Entity *entity, SoundCategory category)
@@ -90,6 +100,7 @@ void Player::playSoundEffect(SoundsList sound, const Entity *entity, SoundCatego
         1.0 // TODO: get the right pitch
     });
     this->_cli->_sendData(*pck);
+    LDEBUG("Sent a sound effect packet");
 }
 
 void Player::playCustomSound(std::string sound, protocol::FloatingPosition position, SoundCategory category)
@@ -106,6 +117,7 @@ void Player::playCustomSound(std::string sound, protocol::FloatingPosition posit
         0 // TODO: get the right seed
     });
     this->_cli->_sendData(*pck);
+    LDEBUG("Sent a custom sound effect packet");
 }
 
 void Player::stopSound(uint8_t flags, SoundCategory category, std::string sound)
@@ -116,12 +128,14 @@ void Player::stopSound(uint8_t flags, SoundCategory category, std::string sound)
         sound
     });
     this->_cli->_sendData(*pck);
+    LDEBUG("Sent a stop sound packet");
 }
 
 void Player::sendKeepAlive(long id)
 {
     auto pck = protocol::createKeepAlive(id);
     this->_cli->_sendData(*pck);
+    LDEBUG("Sent a keep alive packet");
 }
 
 #pragma endregion
@@ -203,7 +217,7 @@ void Player::_onJigsawGenerate(const std::shared_ptr<protocol::JigsawGenerate> &
 void Player::_onKeepAliveResponse(const std::shared_ptr<protocol::KeepAliveResponse> &pck)
 {
     if (pck->keep_alive_id != _keepAliveId) {
-        LERROR("Got a Keep Alive Response with a wrong ID");
+        LERROR("Got a Keep Alive Response with a wrong ID: " + std::to_string(pck->keep_alive_id) + " (expected " + std::to_string(_keepAliveId) + ")");
         this->disconnect("Wrong Keep Alive ID");
         return;
     }
