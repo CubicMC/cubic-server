@@ -22,6 +22,16 @@ std::vector<Entity *> &Dimension::getEntities()
     return _entities;
 }
 
+void Dimension::removeEntity(Entity *entity)
+{
+    _entities.erase(std::remove(_entities.begin(), _entities.end(), entity), _entities.end());
+}
+
+void Dimension::addEntity(Entity *entity)
+{
+    _entities.push_back(entity);
+}
+
 void Dimension::forEachEntity(std::function<void(Entity *)> callback)
 {
     for (auto _entity : _entities)

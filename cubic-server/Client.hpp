@@ -74,7 +74,7 @@ public:
     void sendUpdateTime(const protocol::UpdateTime &data);
     void sendChatMessageResponse(const protocol::PlayerChatMessage &packet);
     void sendWorldEvent(const protocol::WorldEvent &packet);
-    void disconnect(const chat::Message &reason = chat::Message("Disconnected"));
+    void disconnect(const chat::Message &reason = "Disconnected");
 
 private:
     void _handlePacket();

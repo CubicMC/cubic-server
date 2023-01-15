@@ -15,6 +15,10 @@
 #include "logging/Logger.hpp"
 #include "WorldGroup.hpp"
 
+#include "command_parser/commands/CommandBase.hpp"
+#include "command_parser/commands/Help.hpp"
+#include "command_parser/commands/QuestionMark.hpp"
+
 #ifndef MC_VERSION
 #define MC_VERSION "1.19"
 #endif
@@ -51,6 +55,10 @@ public:
         return this->_worldGroups.at(name);
     }
 
+    const std::vector<CommandBase *> &getCommands() const {
+        return _commands;
+    }
+
 private:
     Server();
     void _acceptLoop();
@@ -71,6 +79,10 @@ private:
     Configuration::ConfigHandler _config;
     std::unordered_map<std::string_view, WorldGroup *> _worldGroups;
     std::unordered_map<std::string_view, std::thread *> _worldGroupThreads;
+    std::vector<CommandBase *> _commands = {
+        new command_parser::Help,
+        new command_parser::QuestionMark,
+    };
 };
 
 #endif /* F43D56DD_C750_470F_A7C9_27CE21D37FC3 */

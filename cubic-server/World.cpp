@@ -3,6 +3,7 @@
 #include "protocol/ClientPackets.hpp"
 #include "Player.hpp"
 #include <chrono>
+#include "Player.hpp"
 
 void World::tick()
 {
@@ -18,6 +19,7 @@ void World::tick()
                    { return cli == nullptr; });
 
     updateTime();
+    _keepAliveClock.tick();
 }
 
 WorldGroup *World::getWorldGroup() const
@@ -92,4 +94,27 @@ void World::updateTime() {
         }
         clock = std::chrono::steady_clock::now();
     }
+}
+void World::processKeepAlive()
+{
+    long id = std::chrono::system_clock::now().time_since_epoch().count();
+    forEachEntityIf(
+        [this, id](Entity *entity) {
+            Player *player = dynamic_cast<Player *>(entity);
+            if (player->keepAliveId() != 0) {
+                player->setKeepAliveIgnored(player->keepAliveIgnored() + 1);
+                if (this->_keepAliveClock.tickRate() * player->keepAliveIgnored() >= 600)
+                    player->disconnect("Timed out from keep alive LOL");
+                return;
+            }
+            player->setKeepAliveId(id);
+            player->sendKeepAlive(id);
+        },
+        [](const Entity *entity) {
+            const Player *player = dynamic_cast<const Player *>(entity);
+            if (player == nullptr)
+                return false;
+            return true;
+        }
+    );
 }

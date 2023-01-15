@@ -1,4 +1,5 @@
 #include <iostream>
+#include <stdexcept>
 #include <unistd.h>
 #include <poll.h>
 #include <cstring>
@@ -15,10 +16,38 @@ Client::Client(int sockfd, struct sockaddr_in6 addr)
 {
     _is_running = true;
     _log = logging::Logger::get_instance();
+    _player = nullptr;
 }
 
 Client::~Client()
 {
+    // Stop the thread
+    if (_is_running)
+        _is_running = false;
+    if (_current_thread->joinable())
+        _current_thread->join();
+    delete _current_thread;
+
+    // Close the socket
+    int error_code;
+    uint32_t error_code_size = sizeof(error_code);
+    getsockopt(_sockfd, SOL_SOCKET, SO_ERROR, &error_code, &error_code_size);
+    if (error_code == 0) {
+        _flushSendData();
+        close(_sockfd);
+    }
+
+    // Send a disconnect message
+    if (!_player)
+        return;
+    _player->_dim->getWorld()->getChat()->sendSystemMessage(
+        _player->getUsername() + " left the game",
+        _player->_dim->getWorld()->getWorldGroup()
+    );
+
+    // Remove the player from the world
+    _player->_dim->removeEntity(_player);
+    delete _player;
 }
 
 void Client::networkLoop()
@@ -27,7 +56,7 @@ void Client::networkLoop()
     uint8_t in_buffer[2048];
 
     poll_set[0].fd = _sockfd;
-    while (1)
+    while (_is_running)
     {
         poll_set[0].events = POLLIN;
         if (!_send_buffer.empty())
@@ -244,7 +273,15 @@ void Client::_handlePacket()
             LWARN("Unhandled packet: " + std::to_string(static_cast<int>(packet_id)) + " in status " + std::to_string(static_cast<int>(_status)));
             return;
         }
-        auto packet = parser(to_parse);
+        std::shared_ptr<protocol::BaseServerPacket> packet;
+        try {
+            packet = parser(to_parse);
+        }
+        catch (std::runtime_error &error) {
+            LERROR("Error during packet parsing :");
+            LERROR(error.what());
+            return;
+        }
         // Callback to handle the packet
         handleParsedClientPacket(packet, packet_id);
     }
@@ -450,6 +487,7 @@ void Client::sendLoginPlay(const protocol::LoginPlay &packet)
     auto pck = protocol::createLoginPlay(packet);
     _sendData(*pck);
     this->_player->getDimension()->spawnPlayer(this->_player);
+    this->_player->_dim->addEntity(this->_player);
     LDEBUG("Sent a login play");
 }
 
@@ -501,4 +539,6 @@ void Client::disconnect(const chat::Message &reason)
         json.dump()
     });
     _sendData(*pck);
+    _is_running = false;
+    LDEBUG("Sent a disconnect login packet");
 }

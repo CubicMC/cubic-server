@@ -223,7 +223,7 @@ public:
 
     constexpr void serialize(std::vector<uint8_t> &data, bool include_name = true) const override {
         Base::pre_serialize(data, include_name);
-        uint8_t const *p = reinterpret_cast<uint8_t const *>(&_value);
+        uint8_t const *p = (uint8_t const *)&_value;
         for (int i = 7; i >= 0; i--)
             data.push_back(p[i]);
     }
@@ -253,7 +253,7 @@ public:
 
     constexpr void serialize(std::vector<uint8_t> &data, bool include_name = true) const override {
         Base::pre_serialize(data, include_name);
-        uint8_t const *p = reinterpret_cast<uint8_t const *>(&_value);
+        uint8_t const *p = (uint8_t const *)&_value;
         for (int i = 3; i >= 0; i--)
             data.push_back(p[i]);
     }

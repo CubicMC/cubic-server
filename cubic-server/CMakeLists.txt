@@ -21,6 +21,8 @@ target_sources (${CMAKE_PROJECT_NAME} PRIVATE
         SoundSystem.hpp
         SoundSystem.cpp
         concept.hpp
+        TickClock.hpp
+        TickClock.cpp
 )
 
 if (GTEST)
@@ -48,3 +50,4 @@ add_subdirectory (configuration)
 add_subdirectory (logging)
 add_subdirectory (interface)
 add_subdirectory (world_storage)
+add_subdirectory (command_parser)

@@ -15,9 +15,11 @@ class WorldGroup
 {
 public:
     WorldGroup(std::shared_ptr<Chat> chat);
+    ~WorldGroup();
 
     virtual void initialize() = 0;
     virtual void run();
+    virtual void stop();
     virtual std::shared_ptr<Chat> getChat() const;
     virtual std::shared_ptr<World> getWorld(const std::string_view &name) const;
     virtual std::unordered_map<std::string_view, std::shared_ptr<World>> getWorlds() const;
@@ -27,6 +29,7 @@ protected:
     std::unordered_map<std::string_view, std::shared_ptr<World>> _worlds;
     logging::Logger *_log;
     SoundSystem *_soundSystem;
+    bool _running;
 };
 
 

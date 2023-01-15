@@ -1,5 +1,9 @@
 #include "PacketUtils.hpp"
 #include "ClientPackets.hpp"
+#include "protocol/serialization/addPrimaryType.hpp"
+#include <cstdint>
+#include <memory>
+#include <vector>
 
 using namespace protocol;
 
@@ -148,7 +152,8 @@ std::shared_ptr<std::vector<uint8_t>> protocol::createEntitySoundEffect(const En
         in.category, addVarInt,
         in.entityId, addVarInt,
         in.volume, addFloat,
-        in.pitch, addFloat
+        in.pitch, addFloat,
+        in.seed, addLong
     );
     auto packet = std::make_shared<std::vector<uint8_t>>();
     finalize(*packet, payload, (int32_t) ClientPacketID::EntitySoundEffect);
@@ -237,5 +242,26 @@ std::shared_ptr<std::vector<uint8_t>> protocol::createUpdateTime(const UpdateTim
     auto packet = std::make_shared<std::vector<uint8_t>>();
     finalize(*packet.get(), payload, (int32_t)ClientPacketID::UpdateTime);
 
+    return packet;
+}
+std::shared_ptr<std::vector<uint8_t>> protocol::createKeepAlive(long id)
+{
+    std::vector<uint8_t> payload;
+    serialize(payload, id, addLong);
+    auto packet = std::make_shared<std::vector<uint8_t>>();
+    finalize(*packet, payload, (int32_t) ClientPacketID::KeepAlive);
+    return packet;
+}
+
+std::shared_ptr<std::vector<uint8_t>> protocol::createPluginMessageResponse(const PluginMessageResponse &in)
+{
+    std::vector<uint8_t> payload;
+    serialize(payload, in.channel, addIdentifier);
+    // TODO: Just look at it
+    for (auto i : in.data)
+        payload.push_back(i);
+    
+    auto packet = std::make_shared<std::vector<uint8_t>>();
+    finalize(*packet, payload, (int32_t) ClientPacketID::PluginMessage);
     return packet;
 }
