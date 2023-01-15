@@ -6,6 +6,7 @@
 #include <thread>
 #include <vector>
 #include <functional>
+#include <semaphore>
 
 #include "logging/Logger.hpp"
 #include "Entity.hpp"
@@ -18,7 +19,7 @@ class Entity;
 class Dimension
 {
 public:
-    Dimension(World *world): _world(world) {
+    Dimension(World *world): _world(world), dimensionLock(std::counting_semaphore<1000>(0)) {
         _log = logging::Logger::get_instance();
     }
     virtual void initialize();
@@ -31,6 +32,7 @@ public:
     const world_storage::Level &getLevel() const;
     world_storage::Level &getEditableLevel();
     virtual void generateChunk(int x, int z);
+    std::counting_semaphore<1000> dimensionLock;
 
 protected:
     std::vector<Entity *> _entities;
