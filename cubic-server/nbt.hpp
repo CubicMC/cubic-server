@@ -3,6 +3,7 @@
 
 #include <array>
 #include <algorithm>
+#include <cstdint>
 #include <stdexcept>
 #include <utility>
 #include <vector>
@@ -460,6 +461,39 @@ public:
         }
     }
 };
+
+class BufferEOF : public std::runtime_error
+{
+public:
+    BufferEOF(char const *const message) throw()
+        : std::runtime_error(message)
+    {
+    }
+};
+
+class UnknownType : public std::runtime_error
+{
+public:
+    UnknownType(char const *const message) throw()
+        : std::runtime_error(message)
+    {
+    }
+};
+
+Byte *parseByte(uint8_t *&at, const uint8_t *end, bool include_name = true);
+Short *parseShort(uint8_t *&at, const uint8_t *end, bool include_name = true);
+Int *parseInt(uint8_t *&at, const uint8_t *end, bool include_name = true);
+Long *parseLong(uint8_t *&at, const uint8_t *end, bool include_name = true);
+Float *parseFloat(uint8_t *&at, const uint8_t *end, bool include_name = true);
+Double *parseDouble(uint8_t *&at, const uint8_t *end, bool include_name = true);
+ByteArray *parseByteArray(uint8_t *&at, const uint8_t *end, bool include_name = true);
+String *parseString(uint8_t *&at, const uint8_t *end, bool include_name = true);
+List *parseList(uint8_t *&at, const uint8_t *end, bool include_name = true);
+Compound *parseCompound(uint8_t *&at, const uint8_t *end, bool include_name = true);
+IntArray *parseIntArray(uint8_t *&at, const uint8_t *end, bool include_name = true);
+LongArray *parseLongArray(uint8_t *&at, const uint8_t *end, bool include_name = true);
+
+Base *parse(uint8_t *&at, const uint8_t *end);
 
 }
 
