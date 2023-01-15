@@ -94,8 +94,12 @@ void Server::stop()
     // Flush worlds to disk
 
     //Disconect all clients
-    for (auto &client : _clients)
-        client->disconnect();
+    for (auto &client : _clients) {
+        if (client->getStatus() == protocol::ClientStatus::Login)
+            client->disconnect();
+        if (client->getStatus() == protocol::ClientCommand::Play)
+            client->_player->disconnect();
+    }
     std::this_thread::sleep_for(std::chrono::milliseconds(2000)); // Temporary
 
     exit(0);
