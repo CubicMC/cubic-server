@@ -185,7 +185,7 @@ namespace protocol
     struct SpawnPlayer
     {
         int32_t entity_id;
-        __int128 player_uuid;
+        u128 player_uuid;
         double x;
         double y;
         double z;

@@ -73,7 +73,7 @@ void Dimension::spawnPlayer(const Player *current)
         if (current->getPos().distance(player->getPos()) <= 12) {
             player->getClient()->sendSpawnPlayer({
                 current->getId(),
-                0,
+                current->getUuid(),
                 current->getPos().x,
                 current->getPos().y,
                 current->getPos().z,
@@ -82,7 +82,7 @@ void Dimension::spawnPlayer(const Player *current)
             });
             current->getClient()->sendSpawnPlayer({
                 player->getId(),
-                0,
+                player->getUuid(),
                 player->getPos().x,
                 player->getPos().y,
                 player->getPos().z,

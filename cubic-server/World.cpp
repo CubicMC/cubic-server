@@ -83,7 +83,7 @@ void World::updateTime() {
             _time = 0;
 
         // send packets to clients (missing clients in architecture)
-        for (auto &entity : _entities) {
+        for (auto &entity : this->getEntities()) {
             auto player = dynamic_cast<Player *>(entity);
 
             if (player) {
