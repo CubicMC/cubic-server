@@ -1,4 +1,5 @@
 #include <optional>
+#include <vector>
 
 #include "ServerPackets.hpp"
 #include "nbt.hpp"
@@ -184,8 +185,11 @@ std::shared_ptr<PluginMessage> protocol::parsePluginMessage(std::vector<uint8_t>
     auto at = buffer.data();
 
     parse(at, buffer.data() + buffer.size() - 1, *h,
-          popString, &PluginMessage::channel,
-          popArray<uint8_t, popByte>, &PluginMessage::data);
+          popString, &PluginMessage::channel);
+        //   popArray<uint8_t, popByte>, &PluginMessage::data);
+        // That line cannot work since this is not a normal byte array
+        // I will let it empty for now
+    h->data = std::vector<uint8_t>();
     return h;
 }
 
