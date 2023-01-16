@@ -5,6 +5,11 @@ target_sources (${CMAKE_PROJECT_NAME} PRIVATE
         Level.hpp
         LevelData.cpp
         LevelData.hpp
+        Block.hpp
+        Block.cpp
+        Palette.hpp
+        Palette.cpp
+        globalPalette_TEMP.hpp
 )
 
 if (GTEST)

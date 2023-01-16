@@ -215,21 +215,34 @@ void Player::sendChunkAndLightUpdate()
     std::vector<nbt::Base *> motionBlocking;
     std::vector<nbt::Base *> worldSurface;
 
-    for (auto &i : heightMap.motionBlocking)
-        motionBlocking.push_back(new nbt::Long("", i));
+    // HeightMap preparation
+    for (auto it = heightMap.motionBlocking.begin(); it != heightMap.motionBlocking.end(); it += 4) {
+        long value = *it;
+        for (int i = 0; i < 4; i++)
+            value = ((value << 16) | *(it + i));
 
-    for (auto &i : heightMap.worldSurface)
-        worldSurface.push_back(new nbt::Long("", i));
+        motionBlocking.push_back(new nbt::Long("", value));
+    }
+    for (auto it = heightMap.worldSurface.begin(); it != heightMap.worldSurface.end(); it += 4) {
+        long value = *it;
+        for (int i = 0; i < 4; i++)
+            value = ((value << 16) | *(it + i));
+
+        worldSurface.push_back(new nbt::Long("", value));
+    }
+
+    auto motionBlockingList = new nbt::List("MOTION_BLOCKING", motionBlocking);
+    auto worldSurfaceList = new nbt::List("WORLD_SURFACE", worldSurface);
 
     auto packet = protocol::createChunkDataAndLightUpdate({
         // TODO: change this to the right chunk
         0,
         0,
         nbt::Compound("", {
-            new nbt::List("MOTION_BLOCKING", motionBlocking),
-            new nbt::List("WORLD_SURFACE", worldSurface)
+            motionBlockingList,
+            worldSurfaceList
         }),
-        {},// TODO: DATA
+        this->_dim->getEditableLevel().getChunkColumn({0, 0})->serialize(),
         {}, // TODO: BlockEntities
         true,
         {}, // TODO: Sky light mask
@@ -240,6 +253,11 @@ void Player::sendChunkAndLightUpdate()
         {}  // TODO: block light
     });
     this->_cli->_sendData(*packet);
+    LDEBUG("Sent a chunk data and light update packet");
+    motionBlockingList->destroy();
+    worldSurfaceList->destroy();
+    delete motionBlockingList;
+    delete worldSurfaceList;
 }
 
 #pragma endregion

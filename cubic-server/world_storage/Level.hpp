@@ -1,10 +1,10 @@
+#ifndef LEVEL_HPP
+#define LEVEL_HPP
+
 #include <unordered_map>
 #include <functional>
 
 #include "ChunkColumn.hpp"
-
-#ifndef LEVEL_HPP
-#define LEVEL_HPP
 
 struct _2d_pos {
     int x;
