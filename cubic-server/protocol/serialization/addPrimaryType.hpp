@@ -90,12 +90,18 @@ namespace protocol
 
     constexpr void addFloat(std::vector<uint8_t> &out, const float &data)
     {
-        addInt(out, static_cast<int32_t>(data));
+        //addInt(out, static_cast<int32_t>(data));
+        uint8_t const *p = (uint8_t const *)&data;
+        for (int i = 3; i >= 0; i--)
+            out.push_back(p[i]);
     }
 
     constexpr void addDouble(std::vector<uint8_t> &out, const double &data)
     {
-        addLong(out, static_cast<int64_t>(data));
+        //addLong(out, static_cast<int64_t>(data));
+        uint8_t const *p = (uint8_t const *)&data;
+        for (int i = 7; i >= 0; i--)
+            out.push_back(p[i]);
     }
 
     // Add string with a varint length
