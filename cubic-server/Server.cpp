@@ -95,10 +95,7 @@ void Server::stop()
 
     //Disconect all clients
     for (auto &client : _clients) {
-        if (client->getStatus() == protocol::ClientStatus::Login)
-            client->disconnect();
-        if (client->getStatus() == protocol::ClientCommand::Play)
-            client->_player->disconnect();
+        client->disconnect();
     }
     std::this_thread::sleep_for(std::chrono::milliseconds(2000)); // Temporary
 

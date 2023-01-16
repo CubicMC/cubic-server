@@ -526,6 +526,11 @@ void Client::sendWorldEvent(const protocol::WorldEvent &packet)
 
 void Client::disconnect(const chat::Message &reason)
 {
+    if (_status == protocol::ClientStatus::Play) {
+        _player->disconnect(reason);
+    }
+    std::this_thread::sleep_for(std::chrono::milliseconds(100));
+
     nlohmann::json json;
 
     // TODO: test this, cause I don't know if the translate key is the correct one
