@@ -44,6 +44,8 @@ public:
     [[nodiscard]] virtual const Vector3<double> &getPosition() const;
     [[nodiscard]] virtual Vector2<uint8_t> &getRotation();
     [[nodiscard]] virtual const Vector2<uint8_t> &getRotation() const;
+    [[nodiscard]] virtual Vector3<double> &getLastPosition();
+    [[nodiscard]] virtual Vector2<uint8_t> &getLastRotation();
 
 
 
@@ -67,6 +69,8 @@ protected:
     int32_t _id;
     Vector3<double> _pos;
     Vector2<uint8_t> _rot;
+    Vector3<double> _lastPos;
+    Vector2<uint8_t> _lastRot;
 };
 
 
