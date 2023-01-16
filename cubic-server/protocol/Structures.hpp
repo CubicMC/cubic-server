@@ -66,5 +66,11 @@ namespace protocol
         int32_t type;
         // NBT data;
     };
+
+    struct Rotation
+    {
+        float yaw;
+        float pitch;
+    };
 } // namespace protocol
 
