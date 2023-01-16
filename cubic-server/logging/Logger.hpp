@@ -25,7 +25,8 @@ namespace logging
         INFO,
         WARNING,
         ERROR,
-        FATAL
+        FATAL,
+        NONE
     };
 
     class LogMessage

@@ -270,6 +270,8 @@ namespace logging
                 return "[ERROR] ";
             case LogLevel::FATAL:
                 return "[FATAL] ";
+            case LogLevel::NONE:
+                return "";
             default:
                 return "[UNDEFINED] ";
         }
