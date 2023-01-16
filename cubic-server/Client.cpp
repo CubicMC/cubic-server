@@ -512,6 +512,15 @@ void Client::sendLoginPlay(const protocol::LoginPlay &packet)
     LDEBUG("Sent a login play");
 }
 
+void Client::sendPlayerInfo(const protocol::PlayerInfo &data)
+{
+    LDEBUG("Sending PlayerInfo. Currently there is: " + data.numberOfPlayers + " players");
+    auto pck = protocol::createPlayerInfo(data);
+    _sendData(*pck);
+
+    LDEBUG("Sent a Player Info packet");
+}
+
 void Client::sendSpawnPlayer(const protocol::SpawnPlayer &data)
 {
     auto pck = protocol::createSpawnPlayer(data);

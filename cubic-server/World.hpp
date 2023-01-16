@@ -32,7 +32,8 @@ public:
     virtual void initialize() = 0;
     virtual WorldGroup *getWorldGroup() const;
     virtual std::shared_ptr<Chat> getChat() const;
-    virtual std::vector<Entity *> getEntities();
+    virtual std::vector<Entity *> getEntities() const;
+    [[nodiscard]] virtual std::vector<Player *> getPlayers() const;
     virtual std::shared_ptr<Dimension> getDimension(const std::string_view &name) const;
     virtual void forEachEntity(std::function<void(Entity *)> callback);
     virtual void forEachEntityIf(std::function<void(Entity *)> callback, std::function<bool(const Entity *)> predicate);
@@ -40,6 +41,7 @@ public:
     virtual const world_storage::LevelData &getLevelData() const;
     virtual void setLevelData(const world_storage::LevelData &value);
     virtual void updateTime();
+    virtual void addPlayerInfo(Player *);
 
     virtual void processKeepAlive();
 

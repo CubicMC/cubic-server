@@ -30,8 +30,9 @@ namespace protocol
         UpdateEntityPositionRotation = 0x27,
         UpdateEntityRotation = 0x28,
         PlayerChatMessage = 0x30,
-        UpdateTime = 0x59,
+        PlayerInfo = 0x34,
         SynchronizePlayerPosition = 0x36,
+        UpdateTime = 0x59,
         EntitySoundEffect = 0x5c,
         SoundEffect = 0x5d,
         DisconnectPlay = 0x17,
@@ -143,6 +144,51 @@ namespace protocol
     };
 
     std::shared_ptr<std::vector<uint8_t>> createPlayerChatMessage(const PlayerChatMessage &);
+
+    struct _AddPlayer {
+        std::string name;
+        int32_t numberOfProperties;
+        // properties lol
+        int32_t gamemode;
+        int32_t ping;
+        bool hasDisplayName;
+    };
+
+    struct _UpdateGamemode {
+        int32_t gamemode;
+    };
+
+    struct _UpdateLatency {
+        int32_t latency;
+    };
+
+    struct _UpdateDisplayName {
+        bool hasDisplayName;
+        std::string displayName;
+    };
+
+    struct _Player {
+        u128 uuid;
+        // AddPlayer
+        _AddPlayer addPlayer;
+
+        // UpdateGamemode
+        _UpdateGamemode updateGamemode;
+
+        // UpdateLatency
+        _UpdateLatency updateLatency;
+
+        // UpdateDisplayName
+        _UpdateDisplayName updateDisplayName;
+    };
+
+    struct PlayerInfo
+    {
+        int32_t action;
+        int32_t numberOfPlayers;
+        std::vector<_Player> players;
+    };
+    std::shared_ptr<std::vector<uint8_t>> createPlayerInfo(const PlayerInfo &);
 
     struct WorldEvent
     {

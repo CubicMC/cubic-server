@@ -25,13 +25,27 @@ std::shared_ptr<Dimension> World::getDimension(const std::string_view &name) con
     return this->_dimensions.at(name);
 }
 
-std::vector<Entity *> World::getEntities()
+std::vector<Entity *> World::getEntities() const
 {
     std::vector<Entity *> entities;
     for (auto _dimension : _dimensions)
         for (auto _entity : _dimension.second->getEntities())
             entities.push_back(_entity);
     return entities;
+}
+
+std::vector<Player *> World::getPlayers() const
+{
+    std::vector<Player *> players;
+
+    for (auto &entity : this->getEntities()) {
+        auto player = dynamic_cast<Player *>(entity);
+
+        if (player != nullptr) {
+            players.push_back(player);
+        }
+    }
+    return players;
 }
 
 void World::forEachEntity(std::function<void(Entity *)> callback)
@@ -73,6 +87,57 @@ void World::updateTime() {
         }
     }
 }
+
+void World::addPlayerInfo(Player *current) {
+    // get list of players
+    std::vector<Player *> players = this->getPlayers();
+    std::vector<protocol::_Player> players_info;
+
+    // iterate through the list of players
+    for (auto &player : players) {
+
+        // send to each player the info of the current added player
+        if (player != current) {
+            player->getClient()->sendPlayerInfo({
+                .action = 0,
+                .numberOfPlayers = 1,
+                .players = {
+                    {
+                        .uuid = current->getUuid(),
+                        .addPlayer = {
+                            .name = current->getUsername(),
+                            .numberOfProperties = 0,
+                            .gamemode = current->getGamemode(),
+                            .ping = 0,
+                            .hasDisplayName = false
+                        }
+                    }
+                }
+            });
+        }
+
+        // save the content of the iterated player for after
+        players_info.push_back({
+            .uuid = player->getUuid(),
+            .addPlayer = {
+                .name = player->getUsername(),
+                .numberOfProperties = 0,
+                .gamemode = player->getGamemode(),
+                .ping = 0,
+                .hasDisplayName = false
+            }
+        });
+    }
+
+    // send the infos of all players to the current added player
+    current->getClient()->sendPlayerInfo({
+        .action = 0,
+        .numberOfPlayers = (int32_t) players.size(),
+        .players = players_info
+    });
+    LDEBUG("Sent player info to " + current->getUsername());
+}
+
 void World::processKeepAlive()
 {
     long id = std::chrono::system_clock::now().time_since_epoch().count();

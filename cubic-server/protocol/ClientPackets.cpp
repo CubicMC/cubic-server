@@ -322,6 +322,61 @@ std::shared_ptr<std::vector<uint8_t>> protocol::createSystemChatMessage(const Sy
 }
 
 
+std::shared_ptr<std::vector<uint8_t>> protocol::createPlayerInfo(const PlayerInfo &in)
+{
+    std::vector<uint8_t> payload;
+    serialize(payload,
+        in.action, addVarInt,
+        (int32_t) in.players.size(), addVarInt
+    );
+
+    for (auto &player : in.players) {
+        serialize(payload, player.uuid, addUUID);
+
+        switch (in.action) {
+            case 0:
+                serialize(payload,
+                    player.addPlayer.name, addString,
+                    0, addVarInt,
+                    player.addPlayer.gamemode, addVarInt,
+                    player.addPlayer.ping, addVarInt,
+                    false, addBoolean, // Has display name
+                    false, addBoolean // Has signature data
+                );
+                break;
+
+            case 1:
+                serialize(payload, player.updateGamemode.gamemode, addVarInt);
+                break;
+
+            case 2:
+                serialize(payload, player.updateLatency.latency, addVarInt);
+                break;
+
+            case 3:
+                serialize(payload, player.updateDisplayName.hasDisplayName, addBoolean);
+                if (player.updateDisplayName.hasDisplayName)
+                    serialize(payload, player.updateDisplayName.displayName, addChat);
+                break;
+
+            default:
+                break;
+        }
+    }
+
+    auto packet = std::make_shared<std::vector<uint8_t>>();
+    finalize(*packet, payload, (int32_t) ClientPacketID::PlayerInfo);
+    // std::cout << "Players action lol: " << in.action << std::endl;
+    // std::cout << "Players size lol: " << in.players.size() << std::endl;
+    // std::cout << "PlayerInfo packet size: " << packet->size() << std::endl;
+    // std::cout << "PlayerInfo packet id: " << (int32_t) ClientPacketID::PlayerInfo << std::endl;
+    // std::cout << "PlayerInfo packet: ";
+    // for (auto value : *packet)
+    //     std::cout << std::hex << (int)value;
+    // std::cout << std::endl;
+    return packet;
+}
+
 std::shared_ptr<std::vector<uint8_t>> protocol::createEntityAnimationClient(EntityAnimationID animId, int32_t entityID)
 {
     std::vector<uint8_t> payload;

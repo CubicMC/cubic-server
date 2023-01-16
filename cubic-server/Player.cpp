@@ -82,6 +82,11 @@ const u128 &Player::getUuid() const
     return _uuid;
 }
 
+const int32_t Player::getGamemode() const
+{
+    return _gamemode;
+}
+
 void Player::disconnect(const chat::Message &reason)
 {
     nlohmann::json json;

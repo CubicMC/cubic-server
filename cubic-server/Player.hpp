@@ -21,6 +21,7 @@ public:
     Client *getClient() const;
     const std::string &getUsername() const;
     const u128 &getUuid() const;
+    const int32_t getGamemode() const;
     long keepAliveId() const;
     void setKeepAliveId(long id);
     uint8_t keepAliveIgnored() const;
@@ -92,6 +93,7 @@ private:
     u128 _uuid;
     long _keepAliveId;
     uint8_t  _keepAliveIgnored;
+    int32_t _gamemode;
 };
 
 
