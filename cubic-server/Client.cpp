@@ -528,6 +528,7 @@ void Client::disconnect(const chat::Message &reason)
 {
     if (_status == protocol::ClientStatus::Play) {
         _player->disconnect(reason);
+        return;
     }
     std::this_thread::sleep_for(std::chrono::milliseconds(100));
 
