@@ -505,16 +505,21 @@ void Client::sendLoginSuccess(const protocol::LoginSuccess &packet)
 
 void Client::sendLoginPlay(const protocol::LoginPlay &packet)
 {
+    static int32_t i = 0;
     auto pck = protocol::createLoginPlay(packet);
     _sendData(*pck);
-    // this->_player->getDimension()->spawnPlayer(this->_player); // Spawn Player isn't working
-    this->_player->_dim->addEntity(this->_player);
     LDEBUG("Sent a login play");
+    this->_player->_id = i;
+    i += 1;
+    this->_player->_dim->addEntity(this->_player);
+    LDEBUG("Added entity player to dimension");
+    // this->_player->getDimension()->getWorld()->addPlayerInfo(this->_player);
+    this->_player->getDimension()->spawnPlayer(this->_player);
 }
 
 void Client::sendPlayerInfo(const protocol::PlayerInfo &data)
 {
-    LDEBUG("Sending PlayerInfo. Currently there is: " + data.numberOfPlayers + " players");
+    LDEBUG("Sending PlayerInfo. Currently there is: " + std::to_string(data.numberOfPlayers) + " players");
     auto pck = protocol::createPlayerInfo(data);
     _sendData(*pck);
 

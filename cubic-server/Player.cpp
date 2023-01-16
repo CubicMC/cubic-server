@@ -8,7 +8,7 @@ Player::Player(
     std::shared_ptr<Dimension> dim,
     u128 uuid,
     const std::string &username)
-    : _cli(cli), Entity(dim), _uuid(uuid), _username(username), _keepAliveId(0), _keepAliveIgnored(0)
+    : _cli(cli), Entity(dim), _uuid(uuid), _username(username), _keepAliveId(0), _keepAliveIgnored(0), _gamemode(0)
 {
     _log = logging::Logger::get_instance();
 }
@@ -230,7 +230,7 @@ void Player::sendSynchronizePosition()
         true,
     });
     this->_cli->_sendData(*pck);
-    LDEBUG("Synchronized player position");
+    // LDEBUG("Synchronized player position");
 }
 
 #pragma endregion
@@ -337,13 +337,13 @@ void Player::_onLockDifficulty(const std::shared_ptr<protocol::LockDifficulty> &
 
 void Player::_onSetPlayerPosition(const std::shared_ptr<protocol::SetPlayerPosition> &pck)
 {
-    //LDEBUG("Got a Set Player Position: " + std::to_string(pck->x) + ", " + std::to_string(pck->feet_y) + ", " + std::to_string(pck->z));
+    // LDEBUG("Got a Set Player Position");
     this->setPosition(pck->x, pck->feet_y, pck->z);
 }
 
 void Player::_onSetPlayerPositionAndRotation(const std::shared_ptr<protocol::SetPlayerPositionAndRotation> &pck)
 {
-    LDEBUG("Got a Set Player Position And Rotation: x= " + std::to_string(pck->x) + "\ty= " + std::to_string(pck->feet_y) + "\tz= " + std::to_string(pck->z) + "\tyaw= " + std::to_string(pck->yaw) + "\tpitch= " + std::to_string(pck->pitch));
+    // LDEBUG("Got a Set Player Position And Rotation");
     this->setPosition(pck->x, pck->feet_y, pck->z);
     float yaw_tmp = pck->yaw;
     while (yaw_tmp < 0)

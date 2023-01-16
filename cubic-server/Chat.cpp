@@ -159,7 +159,7 @@ chat::Message::Message(
 
 std::string chat::Message::serialize() const
 {
-    LDEBUG("in serialize: " + toJson().dump())
+    std::cout << "in serialize: " + toJson().dump() << std::endl;
     return toJson().dump();
 }
 
