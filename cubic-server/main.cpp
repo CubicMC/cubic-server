@@ -6,6 +6,7 @@
 #include "logging/Logger.hpp"
 #include "protocol/ServerPackets.hpp"
 #include "interface/ManagementInterface.hpp"
+#include "CommandLine.hpp"
 
 argparse::ArgumentParser argParser(int argc, char **argv) {
     argparse::ArgumentParser program("cubic_server");
@@ -36,6 +37,8 @@ int main(int argc, char **argv)
     if (program["--nogui"] == false) {
         InterfaceThread = std::thread(&ManagementInterface::launch, argc, argv);
     }
+
+    std::thread commandLine = std::thread(&CommandLine::launch);
 
     auto srv = Server::getInstance();
     srv->launch();

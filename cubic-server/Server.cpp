@@ -89,6 +89,19 @@ void Server::launch()
 //    _networkLoop();
 }
 
+void Server::stop()
+{
+    // Flush worlds to disk
+
+    //Disconect all clients
+    for (auto &client : _clients) {
+        client->disconnect();
+    }
+    std::this_thread::sleep_for(std::chrono::milliseconds(2000)); // Temporary
+
+    exit(0);
+}
+
 void Server::_acceptLoop()
 {
     struct pollfd poll_set[1];

@@ -24,6 +24,9 @@ target_sources (${CMAKE_PROJECT_NAME} PRIVATE
         concept.hpp
         TickClock.hpp
         TickClock.cpp
+        CommandLine.hpp
+        CommandLine.cpp
+        allCommands.hpp
 )
 
 if (GTEST)
