@@ -84,6 +84,11 @@ const u128 &Player::getUuid() const
     return _uuid;
 }
 
+const uint16_t &Player::getHeldItem() const
+{
+    return this->_heldItem;
+}
+
 void Player::disconnect(const chat::Message &reason)
 {
     nlohmann::json json;
@@ -409,6 +414,9 @@ void Player::_onPlayerAbilities(const std::shared_ptr<protocol::PlayerAbilities>
 void Player::_onPlayerAction(const std::shared_ptr<protocol::PlayerAction> &pck)
 {
     LDEBUG("Got a Player Action");
+    if (pck->status == 2) {
+        this->getDimension()->blockUpdate(pck->location, 0);
+    }
 }
 
 void Player::_onPlayerCommand(const std::shared_ptr<protocol::PlayerCommand> &pck)
@@ -463,6 +471,7 @@ void Player::_onSetBeaconEffect(const std::shared_ptr<protocol::SetBeaconEffect>
 
 void Player::_onSetHeldItem(const std::shared_ptr<protocol::SetHeldItem> &pck)
 {
+    this->_heldItem = pck->slot;
     LDEBUG("Got a Set Held Item");
 }
 
@@ -517,6 +526,17 @@ void Player::_onTeleportToEntity(const std::shared_ptr<protocol::TeleportToEntit
 
 void Player::_onUseItemOn(const std::shared_ptr<protocol::UseItemOn> &pck)
 {
+    switch (this->_heldItem) {
+        case 0: this->getDimension()->blockUpdate(pck->location, 1);
+        case 1: this->getDimension()->blockUpdate(pck->location, 2);
+        case 2: this->getDimension()->blockUpdate(pck->location, 3);
+        case 3: this->getDimension()->blockUpdate(pck->location, 4);
+        case 4: this->getDimension()->blockUpdate(pck->location, 5);
+        case 5: this->getDimension()->blockUpdate(pck->location, 7);
+        case 6: this->getDimension()->blockUpdate(pck->location, 17);
+        case 7: this->getDimension()->blockUpdate(pck->location, 18);
+        case 8: this->getDimension()->blockUpdate(pck->location, 56);
+    }
     LDEBUG("Got a Use Item On");
 }
 

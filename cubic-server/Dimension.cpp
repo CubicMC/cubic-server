@@ -47,6 +47,23 @@ void Dimension::forEachEntityIf(std::function<void(Entity *)> callback, std::fun
             callback(_entity);
 }
 
+void Dimension::forEachPlayer(std::function<void(Player *)> callback)
+{
+    std::vector<Player *> _players = this->getPlayerList();
+
+    for (auto _player : _players)
+        callback(_player);
+}
+
+void Dimension::forEachPlayerIf(std::function<void(Player *)> callback, std::function<bool(const Entity *)> predicate)
+{
+    std::vector<Player *> _players = this->getPlayerList();
+
+    for (auto _player : _players)
+        if (predicate(_player))
+            callback(_player);
+}
+
 const world_storage::Level &Dimension::getLevel() const
 {
     return _level;
@@ -103,4 +120,13 @@ void Dimension::spawnPlayer(const Player *current)
             });
         //}
     }
+}
+
+void Dimension::blockUpdate(protocol::Position position, int32_t id)
+{
+    this->forEachPlayer([&position, &id](Player *player)
+        {
+            player->getClient()->sendBlockUpdate({position, id});
+        }
+    );
 }
