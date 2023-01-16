@@ -65,6 +65,11 @@ void Player::tick()
             }));
         }
     }
+    static int tmp_mdr = 0;
+    if (tmp_mdr++ >= 200) {
+        sendSynchronizePosition();
+        tmp_mdr = 180;
+    }
 }
 
 Client *Player::getClient() const
@@ -210,6 +215,22 @@ void Player::sendUpdateEntityRotation(std::shared_ptr<std::vector<uint8_t>> pck)
 {
     this->_cli->_sendData(*pck);
     LDEBUG("Sent an entity rotation packet");
+}
+
+void Player::sendSynchronizePosition()
+{
+    auto pck = protocol::createSynchronizePlayerPosition({
+        0,
+        0,
+        0,
+        0,
+        0,
+        0x08 | 0x10,
+        0,
+        true,
+    });
+    this->_cli->_sendData(*pck);
+    LDEBUG("Synchronized player position");
 }
 
 #pragma endregion

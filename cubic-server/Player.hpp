@@ -34,6 +34,7 @@ public:
     void playCustomSound(std::string sound, protocol::FloatingPosition position, SoundCategory category = SoundCategory::Master);
     void stopSound(uint8_t flags = 0, SoundCategory category = SoundCategory::Ambient, std::string sound = "");
     void sendKeepAlive(long id);
+    void sendSynchronizePosition();
     void sendSwingArm(bool main_hand, int32_t swinger_id);
     void sendUpdateEntityPosition(std::shared_ptr<std::vector<uint8_t>> pck);
     void sendUpdateEntityPositionAndRotation(std::shared_ptr<std::vector<uint8_t>> pck);

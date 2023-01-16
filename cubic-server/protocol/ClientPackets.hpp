@@ -212,7 +212,7 @@ namespace protocol
         bool dismountVehicle;
     };
 
-    std::shared_ptr<SynchronizePlayerPosition> parseSynchronizePlayerPosition(std::vector<uint8_t> &buffer);
+    std::shared_ptr<std::vector<uint8_t>> createSynchronizePlayerPosition(const SynchronizePlayerPosition &);
 
     struct CustomSoundEffect
     {

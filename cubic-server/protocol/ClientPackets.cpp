@@ -152,21 +152,22 @@ std::shared_ptr<std::vector<uint8_t>> protocol::createWorldEvent(const WorldEven
     return packet;
 }
 
-std::shared_ptr<SynchronizePlayerPosition> protocol::parseSynchronizePlayerPosition(std::vector<uint8_t> &buffer)
+std::shared_ptr<std::vector<uint8_t>> protocol::createSynchronizePlayerPosition(const SynchronizePlayerPosition &in)
 {
-    auto h = std::make_shared<SynchronizePlayerPosition>();
-    auto at = buffer.data();
-
-    parse(at, buffer.data() + buffer.size() - 1, *h,
-        popDouble, &SynchronizePlayerPosition::x,
-        popDouble, &SynchronizePlayerPosition::y,
-        popDouble, &SynchronizePlayerPosition::z,
-        popFloat, &SynchronizePlayerPosition::yaw,
-        popFloat, &SynchronizePlayerPosition::pitch,
-        popByte, &SynchronizePlayerPosition::flags,
-        popVarInt, &SynchronizePlayerPosition::teleportId,
-        popBoolean, &SynchronizePlayerPosition::dismountVehicle);
-    return h;
+    std::vector<uint8_t> payload;
+    serialize(payload,
+        in.x, addDouble,
+        in.y, addDouble,
+        in.z, addDouble,
+        in.yaw, addFloat,
+        in.pitch, addFloat,
+        in.flags, addByte,
+        in.teleportId, addVarInt,
+        in.dismountVehicle, addBoolean
+    );
+    auto packet = std::make_shared<std::vector<uint8_t>>();
+    finalize(*packet.get(), payload, (int32_t) ClientPacketID::SynchronizePlayerPosition);
+    return packet;
 }
 
 std::shared_ptr<std::vector<uint8_t>> protocol::createCustomSoundEffect(const CustomSoundEffect &in)
