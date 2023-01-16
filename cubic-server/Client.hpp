@@ -73,6 +73,7 @@ public:
     void sendSpawnPlayer(const protocol::SpawnPlayer &data);
     void sendUpdateTime(const protocol::UpdateTime &data);
     void sendChatMessageResponse(const protocol::PlayerChatMessage &packet);
+    void sendSystemChatMessage(const protocol::SystemChatMessage &packet);
     void sendWorldEvent(const protocol::WorldEvent &packet);
     void disconnect(const chat::Message &reason = "Disconnected");
 

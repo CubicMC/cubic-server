@@ -303,11 +303,24 @@ std::shared_ptr<std::vector<uint8_t>> protocol::createPluginMessageResponse(cons
     // TODO: Just look at it
     for (auto i : in.data)
         payload.push_back(i);
-    
+
     auto packet = std::make_shared<std::vector<uint8_t>>();
     finalize(*packet, payload, (int32_t) ClientPacketID::PluginMessage);
     return packet;
 }
+
+std::shared_ptr<std::vector<uint8_t>> protocol::createSystemChatMessage(const SystemChatMessage &in)
+{
+    std::vector<uint8_t> payload;
+    serialize(payload,
+        in.JSONData, addChat,
+        in.overlay, addBoolean
+    );
+    auto packet = std::make_shared<std::vector<uint8_t>>();
+    finalize(*packet, payload, (int32_t) ClientPacketID::SystemChatMessage);
+    return packet;
+}
+
 
 std::shared_ptr<std::vector<uint8_t>> protocol::createEntityAnimationClient(EntityAnimationID animId, int32_t entityID)
 {

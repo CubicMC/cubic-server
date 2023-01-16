@@ -36,7 +36,8 @@ namespace protocol
         SoundEffect = 0x5d,
         DisconnectPlay = 0x17,
         KeepAlive = 0x1e,
-        StopSound = 0x5e
+        StopSound = 0x5e,
+        SystemChatMessage = 0x5f
     };
     struct PingResponse
     {
@@ -254,6 +255,13 @@ namespace protocol
     std::shared_ptr<std::vector<uint8_t>> createPluginMessageResponse(const PluginMessageResponse &);
 
     std::shared_ptr<std::vector<uint8_t>> createKeepAlive(long id);
+
+    struct SystemChatMessage
+    {
+        std::string JSONData;
+        bool overlay;
+    };
+    std::shared_ptr<std::vector<uint8_t>> createSystemChatMessage(const SystemChatMessage &);
 
     enum class EntityAnimationID : int32_t {
         SwingMainArm = 0x00,

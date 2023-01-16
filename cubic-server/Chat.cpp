@@ -45,12 +45,13 @@ void Chat::sendPlayerMessage(const chat::Message &message, const Player *sender)
     }
 }
 
-void Chat::sendSystemMessage(const chat::Message &message, const WorldGroup *worldGroup)
+void Chat::sendSystemMessage(const chat::Message &message, bool overlay, const WorldGroup *worldGroup)
 {
     if (worldGroup == nullptr) {
         LERROR("worldGroup is null");
         return;
     }
+    LDEBUG("send System Message: " + message.getMessage());
 
     // TODO: Filter client by chat visibility
     for (const auto &world : worldGroup->getWorlds()) {
@@ -58,18 +59,9 @@ void Chat::sendSystemMessage(const chat::Message &message, const WorldGroup *wor
             auto player = dynamic_cast<Player*>(entity);
             if (player == nullptr)
                 continue;
-            player->getClient()->sendChatMessageResponse({
-                "",
-                true,
+            player->getClient()->sendSystemChatMessage({
                 message.serialize(),
-                (int32_t) chat::message::Type::System,
-                {0, 0},
-                "",
-                false,
-                "",
-                std::time(nullptr),
-                0,
-                std::vector<uint8_t>()
+                overlay
             });
         }
     }
@@ -167,12 +159,16 @@ chat::Message::Message(
 
 std::string chat::Message::serialize() const
 {
+    LDEBUG("in serialize: " + toJson().dump())
     return toJson().dump();
 }
 
 nlohmann::json chat::Message::toJson() const
 {
     nlohmann::json response;
+
+    if (_message.size() > 0)
+        response["text"] = _message;
 
     if (_options.bold.has_value())
         response["bold"] = _options.bold.value();
@@ -184,12 +180,25 @@ nlohmann::json chat::Message::toJson() const
         response["strikethrough"] = _options.strikethrough.value();
     if (_options.obfuscated.has_value())
         response["obfuscated"] = _options.obfuscated.value();
+    if (_options.font.has_value())
+        response["font"] = _options.font.value();
+    if (_options.color.has_value())
+        response["color"] = _options.color.value();
+    if (_options.insertion.has_value())
+        response["insertion"] = _options.insertion.value();
+    if (_options.translate.has_value())
+        response["translate"] = _options.translate.value();
+    if (_options.with.has_value()) {
+        response["with"] = nlohmann::json::array();
+        for (auto &withMsg : _options.with.value())
+            response["with"].push_back(withMsg.toJson());
+    };
 
     if (_clickEvent.has_value())
-        response["clickEvent"] = _clickEvent->toJson();
+        response["clickEvent"] = _clickEvent.value().toJson();
 
     if (_hoverEvent.has_value())
-        response["hoverEvent"] = _hoverEvent->toJson();
+        response["hoverEvent"] = _hoverEvent.value().toJson();
 
     if (_extra.size() > 0) {
         response["extra"] = nlohmann::json::array();
@@ -327,7 +336,7 @@ chat::message::HoverEvent chat::message::HoverEvent::fromJson(const nlohmann::js
     return event;
 }
 
-std::string_view chat::Message::getMessage() const
+std::string chat::Message::getMessage() const
 {
     return _message;
 }

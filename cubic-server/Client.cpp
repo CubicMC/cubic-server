@@ -40,8 +40,29 @@ Client::~Client()
     // Send a disconnect message
     if (!_player)
         return;
+    chat::Message disconnectMsg = chat::Message("", {
+        .color = "yellow",
+        .translate = "multiplayer.player.left",
+        .with = std::vector<chat::Message>({
+            chat::Message(
+                _player->getUsername(),
+                {
+                    .insertion = _player->getUsername(),
+                },
+                chat::message::ClickEvent(
+                    chat::message::ClickEvent::Action::SuggestCommand,
+                    "/tell " + _player->getUsername() + " "
+                ),
+                chat::message::HoverEvent(
+                    chat::message::HoverEvent::Action::ShowEntity,
+                    "{\"type\": \"minecraft:player\", \"id\": \"e02c083d-1c61-3b49-b7ea-4d47e2b9698a\", \"name\": \"" + _player->getUsername() + "\"}"
+                )
+            )
+        })
+    });
     _player->_dim->getWorld()->getChat()->sendSystemMessage(
-        _player->getUsername() + " left the game",
+        disconnectMsg,
+        true,
         _player->_dim->getWorld()->getWorldGroup()
     );
 
@@ -507,13 +528,20 @@ void Client::sendUpdateTime(const protocol::UpdateTime &data)
     LDEBUG("Sent an Update Time packet");
 }
 
-
 void Client::sendChatMessageResponse(const protocol::PlayerChatMessage &packet)
 {
     // auto pck = protocol::createPlayerChatMessage(packet);
     // _sendData(*pck);
 
     // LDEBUG("Sent a chat message response");
+}
+
+void Client::sendSystemChatMessage(const protocol::SystemChatMessage &packet)
+{
+    auto pck = protocol::createSystemChatMessage(packet);
+    _sendData(*pck);
+
+    LDEBUG("Sent a system chat message to " + _player->getUsername());
 }
 
 void Client::sendWorldEvent(const protocol::WorldEvent &packet)
