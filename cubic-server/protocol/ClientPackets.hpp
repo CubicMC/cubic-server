@@ -20,6 +20,7 @@ namespace protocol
         DisconnectLogin = 0x00,
         Ping = 0x01,
         SpawnPlayer = 0x02,
+        EntityAnimationClient = 0x03,
         LoginSuccess = 0x02,
         PluginMessage = 0x15,
         CustomSoundEffect = 0x16,
@@ -216,6 +217,17 @@ namespace protocol
     std::shared_ptr<std::vector<uint8_t>> createPluginMessageResponse(const PluginMessageResponse &);
 
     std::shared_ptr<std::vector<uint8_t>> createKeepAlive(long id);
+
+    enum class EntityAnimationID : int32_t {
+        SwingMainArm = 0x00,
+        TakeDamage = 0x01,
+        LeaveBed = 0x02,
+        SwingOffHand = 0x03,
+        CriticalEffect = 0x04,
+        MagicCriticalEffect = 0x05,
+    };
+
+    std::shared_ptr<std::vector<uint8_t>> createEntityAnimationClient(EntityAnimationID animId, int32_t entityID);
 
 }
 
