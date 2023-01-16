@@ -8,6 +8,7 @@
 #define PROTOCOL_SERIALIZATION_POP_PRIMARYTYPE_HPP
 
 #include <cstdint>
+#include <cstring>
 #include <string>
 #include <vector>
 
@@ -122,14 +123,65 @@ namespace protocol
                 throw VarIntOverflow("VarInt exceeds max length");
         }
     }
+
+    constexpr uint32_t ntoh32(const uint32_t *input)
+    {
+        uint32_t rval;
+        uint8_t *data = (uint8_t *)&rval;
+
+        data[0] = *input >> 24;
+        data[1] = *input >> 16;
+        data[2] = *input >> 8;
+        data[3] = *input >> 0;
+
+        return rval;
+    }
+
     constexpr float popFloat(uint8_t *&at, uint8_t *eof)
     {
-        return static_cast<float>(popInt(at, eof));
+        if (eof - at < 3)
+            throw PacketEOF("Not enough data in packet to parse a Float");
+
+        float result = 0;
+        std::memcpy(&result, at, sizeof(float));
+        at += sizeof(float);
+
+        uint32_t *buf = (uint32_t *)&result;
+        *buf = ntoh32(buf);
+
+        return result;
+    }
+
+    constexpr uint64_t ntoh64(const uint64_t *input)
+    {
+        uint64_t rval;
+        uint8_t *data = (uint8_t *)&rval;
+
+        data[0] = *input >> 56;
+        data[1] = *input >> 48;
+        data[2] = *input >> 40;
+        data[3] = *input >> 32;
+        data[4] = *input >> 24;
+        data[5] = *input >> 16;
+        data[6] = *input >> 8;
+        data[7] = *input >> 0;
+
+        return rval;
     }
 
     constexpr double popDouble(uint8_t *&at, uint8_t *eof)
     {
-        return static_cast<double>(popLong(at, eof));
+        if (eof - at < 7)
+            throw PacketEOF("Not enough data in packet to parse a Double");
+
+        double result = 0;
+        std::memcpy(&result, at, sizeof(double));
+        at += sizeof(double);
+
+        uint64_t *buf = (uint64_t*)&result;
+        *buf = ntoh64(buf);
+
+        return result;
     }
 
     constexpr std::string popString(uint8_t *&at, uint8_t *eof)
