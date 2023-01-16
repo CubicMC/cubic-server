@@ -376,9 +376,23 @@ void Player::_onUpdateSign(const std::shared_ptr<protocol::UpdateSign> &pck)
     LDEBUG("Got a Update Sign");
 }
 
+void Player::sendSwingArm(bool main_hand, int32_t swinger_id)
+{
+    auto pck = protocol::createEntityAnimationClient(
+        main_hand ? protocol::EntityAnimationID::SwingMainArm : protocol::EntityAnimationID::SwingOffHand,
+        swinger_id
+    );
+    _cli->_sendData(*pck);
+}
+
 void Player::_onSwingArm(const std::shared_ptr<protocol::SwingArm> &pck)
 {
     LDEBUG("Got a Swing Arm");
+    for (auto i : this->getDimension()->getPlayerList()) {
+        if (i->getId() == this->getId())
+            continue;
+        i->sendSwingArm(pck->hand == 0, this->getId());
+    }
 }
 
 void Player::_onTeleportToEntity(const std::shared_ptr<protocol::TeleportToEntity> &pck)

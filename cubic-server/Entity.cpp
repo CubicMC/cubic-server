@@ -2,6 +2,8 @@
 
 Entity::Entity(std::shared_ptr<Dimension> dim) : _dim(dim)
 {
+    static int32_t currentID = 0;
+
     _onFire = false;
     _crouching = false;
     _sprinting = false;
@@ -16,6 +18,7 @@ Entity::Entity(std::shared_ptr<Dimension> dim) : _dim(dim)
     _noGravity = false;
     _pose = Pose::Standing;
     _tickFrozenInPowderedSnow = 0;
+    _id = currentID++;
 }
 
 void Entity::setDimension(std::shared_ptr<Dimension> dim)

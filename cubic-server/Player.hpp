@@ -33,6 +33,7 @@ public:
     void playCustomSound(std::string sound, protocol::FloatingPosition position, SoundCategory category = SoundCategory::Master);
     void stopSound(uint8_t flags = 0, SoundCategory category = SoundCategory::Ambient, std::string sound = "");
     void sendKeepAlive(long id);
+    void sendSwingArm(bool main_hand, int32_t swinger_id);
 
 private:
     void _onConfirmTeleportation(const std::shared_ptr<protocol::ConfirmTeleportation> &pck);
