@@ -23,6 +23,8 @@ class World
 public:
     World(WorldGroup *worldGroup):
         _worldGroup(worldGroup),
+        _age(0),
+        _time(0),
         _keepAliveClock(100, std::bind(&World::processKeepAlive, this)), // 5 seconds for keep-alives
         _timeUpdateClock(20, std::bind(&World::updateTime, this)) // 1 second for time updates
     {
