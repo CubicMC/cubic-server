@@ -22,8 +22,8 @@ namespace protocol
     struct Position
     {
         int64_t x;
-        int64_t z;
         int64_t y;
+        int64_t z;
     };
 
     struct Slot

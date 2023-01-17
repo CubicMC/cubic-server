@@ -1,7 +1,9 @@
+#include <cstdint>
+
 #include "Player.hpp"
 #include "Server.hpp"
 #include "protocol/ClientPackets.hpp"
-#include <cstdint>
+#include "World.hpp"
 
 Player::Player(
     Client *cli,
@@ -207,11 +209,12 @@ void Player::sendUpdateEntityRotation(std::shared_ptr<std::vector<uint8_t>> pck)
     LDEBUG("Sent an entity rotation packet");
 }
 
-void Player::sendChunkAndLightUpdate()
+void Player::sendChunkAndLightUpdate(int32_t x, int32_t z)
 {
     auto level = this->_dim->getEditableLevel();
-    auto chunk = level.getChunkColumn({0, 0});
-    auto heightMap = chunk->getHeightMap();
+
+    auto chunk = level.getChunkColumn({x, z});
+    auto heightMap = chunk.getHeightMap();
     std::vector<nbt::Base *> motionBlocking;
     std::vector<nbt::Base *> worldSurface;
 
@@ -233,16 +236,14 @@ void Player::sendChunkAndLightUpdate()
 
     auto motionBlockingList = new nbt::List("MOTION_BLOCKING", motionBlocking);
     auto worldSurfaceList = new nbt::List("WORLD_SURFACE", worldSurface);
-
     auto packet = protocol::createChunkDataAndLightUpdate({
-        // TODO: change this to the right chunk
-        0,
-        0,
+        x,
+        z,
         nbt::Compound("", {
             motionBlockingList,
             worldSurfaceList
         }),
-        this->_dim->getEditableLevel().getChunkColumn({0, 0})->serialize(),
+        this->_dim->getLevel().getChunkColumn({x, z}),
         {}, // TODO: BlockEntities
         true,
         {}, // TODO: Sky light mask
@@ -253,7 +254,7 @@ void Player::sendChunkAndLightUpdate()
         {}  // TODO: block light
     });
     this->_cli->_sendData(*packet);
-    LDEBUG("Sent a chunk data and light update packet");
+    LDEBUG("Sent a chunk data and light update packet (" + std::to_string(x) + ", " + std::to_string(z) + ")");
     motionBlockingList->destroy();
     worldSurfaceList->destroy();
     delete motionBlockingList;

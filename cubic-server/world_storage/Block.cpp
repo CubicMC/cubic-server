@@ -1,4 +1,5 @@
 #include "Block.hpp"
+#include <regex>
 
 world_storage::Block::Block()
     : name("minecraft:air")

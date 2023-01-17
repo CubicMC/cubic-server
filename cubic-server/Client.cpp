@@ -497,8 +497,17 @@ void Client::sendLoginPlay(const protocol::LoginPlay &packet)
     _sendData(*pck);
     // this->_player->getDimension()->spawnPlayer(this->_player); // Spawn Player isn't working
     this->_player->_dim->addEntity(this->_player);
-    this->_player->sendChunkAndLightUpdate();
+
     LDEBUG("Sent a login play");
+
+    // Send all chunks around the player
+    // TODO: send chunk closer to the player first
+    for (int32_t x = 0; x < 8; x++) {
+        for (int32_t z = 0; z < 8; z++) {
+            this->_player->sendChunkAndLightUpdate(x, z);
+        }
+    }
+    // this->_player->sendChunkAndLightUpdate(0, 0);
 }
 
 void Client::sendSpawnPlayer(const protocol::SpawnPlayer &data)

@@ -10,6 +10,7 @@ target_sources (${CMAKE_PROJECT_NAME} PRIVATE
         Palette.hpp
         Palette.cpp
         globalPalette_TEMP.hpp
+        globalPalette_TEMP.cpp
 )
 
 if (GTEST)

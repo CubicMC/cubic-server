@@ -327,7 +327,7 @@ std::shared_ptr<std::vector<uint8_t>> protocol::createChunkDataAndLightUpdate(co
         in.chunkX, addInt,
         in.chunkZ, addInt,
         in.heightmaps, addNBT<nbt::Compound>,
-        in.data, addArray<uint8_t, addByte>,
+        in.data, addChunkColumn,
         in.blockEntities, addBlockEntities,
         in.trustEdges, addBoolean,
         in.skyLightMask, addArray<int64_t, addLong>,

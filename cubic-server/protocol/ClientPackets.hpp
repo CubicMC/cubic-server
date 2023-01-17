@@ -11,6 +11,7 @@
 
 #include "Structures.hpp"
 #include "typeSerialization.hpp"
+#include "world_storage/ChunkColumn.hpp"
 
 namespace protocol
 {
@@ -230,7 +231,7 @@ namespace protocol
         int32_t chunkX;
         int32_t chunkZ;
         nbt::Compound heightmaps;
-        std::vector<uint8_t> data;
+        const world_storage::ChunkColumn &data;
         std::vector<BlockEntity> blockEntities;
         bool trustEdges;
         std::vector<long> skyLightMask;
