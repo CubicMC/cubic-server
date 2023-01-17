@@ -35,7 +35,7 @@ Client::~Client()
     uint32_t error_code_size = sizeof(error_code);
     getsockopt(_sockfd, SOL_SOCKET, SO_ERROR, &error_code, &error_code_size);
     if (error_code == 0) {
-        _flushSendData();
+        //_flushSendData();
         close(_sockfd);
     }
 
@@ -512,6 +512,19 @@ void Client::sendLoginSuccess(const protocol::LoginSuccess &packet)
     }
     sendLoginPlay(resPck);
     resPck.registryCodec.destroy();
+    // this->_player->getDimension()->spawnPlayer(this->_player); // Spawn Player isn't working
+    this->_player->_dim->addEntity(this->_player);
+
+    LDEBUG("Sent a login play");
+
+    // Send all chunks around the player
+    // TODO: send chunk closer to the player first
+    for (int32_t x = -8; x < 8; x++) {
+        for (int32_t z = -8; z < 8; z++) {
+            this->_player->sendChunkAndLightUpdate(x, z);
+        }
+    }
+    // this->_player->sendChunkAndLightUpdate(0, 0);
 }
 
 void Client::sendLoginPlay(const protocol::LoginPlay &packet)
@@ -535,19 +548,6 @@ void Client::sendPlayerInfo(const protocol::PlayerInfo &data)
     _sendData(*pck);
 
     LDEBUG("Sent a Player Info packet");
-    // this->_player->getDimension()->spawnPlayer(this->_player); // Spawn Player isn't working
-    this->_player->_dim->addEntity(this->_player);
-
-    LDEBUG("Sent a login play");
-
-    // Send all chunks around the player
-    // TODO: send chunk closer to the player first
-    for (int32_t x = -8; x < 8; x++) {
-        for (int32_t z = -8; z < 8; z++) {
-            this->_player->sendChunkAndLightUpdate(x, z);
-        }
-    }
-    // this->_player->sendChunkAndLightUpdate(0, 0);
 }
 
 void Client::sendSpawnPlayer(const protocol::SpawnPlayer &data)

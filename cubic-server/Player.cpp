@@ -68,11 +68,6 @@ void Player::tick()
             }));
         }
     }
-    static int tmp_mdr = 0;
-    if (tmp_mdr++ >= 200) {
-        sendSynchronizePosition();
-        tmp_mdr = 180;
-    }
 }
 
 Client *Player::getClient() const

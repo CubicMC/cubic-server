@@ -7,7 +7,7 @@
 
 World::World(WorldGroup *worldGroup):
     _worldGroup(worldGroup),
-    _keepAliveClock(100, std::bind(&World::processKeepAlive, this)), // 5 seconds for keep-alives
+    _keepAliveClock(200, std::bind(&World::processKeepAlive, this)), // 5 seconds for keep-alives
     _timeUpdateClock(20, std::bind(&World::updateTime, this)) // 1 second for time updates
 {
     _log = logging::Logger::get_instance();
@@ -158,7 +158,7 @@ void World::processKeepAlive()
             Player *player = dynamic_cast<Player *>(entity);
             if (player->keepAliveId() != 0) {
                 player->setKeepAliveIgnored(player->keepAliveIgnored() + 1);
-                if (this->_keepAliveClock.tickRate() * player->keepAliveIgnored() >= 600)
+                if (this->_keepAliveClock.tickRate() * player->keepAliveIgnored() >= 6000)
                     player->disconnect("Timed out from keep alive LOL");
                 return;
             }
