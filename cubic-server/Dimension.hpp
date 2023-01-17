@@ -23,6 +23,10 @@ class Dimension
 public:
     Dimension(World *world): _world(world), dimensionLock(std::counting_semaphore<1000>(0)) {
         _log = logging::Logger::get_instance();
+        _seed = -721274728;
+    }
+    const int32_t &getSeed() const {
+        return _seed;
     }
     virtual void initialize();
     virtual void tick();
@@ -47,6 +51,7 @@ protected:
     std::atomic<int> _numThreadsWaiting;
     std::mutex _processingMutex;
     world_storage::Level _level;
+    int32_t _seed;
 };
 
 

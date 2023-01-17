@@ -8,7 +8,7 @@ void Seed::autocomplete(std::vector<std::string>& args) const {
 }
 
 void Seed::execute(std::vector<std::string>& args) const {
-    std::string msg = "Seed: [" + std::to_string(Server::getInstance()->getWorldGroup("default")->getWorld("default")->getSeed()) + "]";
+    std::string msg = "Seed: [" + std::to_string(Server::getInstance()->getWorldGroup("default")->getWorld("default")->getDimension("overworld")->getSeed()) + "]";
     logging::Logger::get_instance()->info(msg);
 }
 
