@@ -211,31 +211,21 @@ void Player::sendUpdateEntityRotation(std::shared_ptr<std::vector<uint8_t>> pck)
 
 void Player::sendChunkAndLightUpdate(int32_t x, int32_t z)
 {
-    auto level = this->_dim->getEditableLevel();
-
-    auto chunk = level.getChunkColumn({x, z});
+    auto chunk = this->_dim->getLevel().getChunkColumn({x, z});
     auto heightMap = chunk.getHeightMap();
+
     std::vector<nbt::Base *> motionBlocking;
     std::vector<nbt::Base *> worldSurface;
 
     // HeightMap preparation
-    for (auto it = heightMap.motionBlocking.begin(); it != heightMap.motionBlocking.end(); it += 4) {
-        long value = *it;
-        for (int i = 0; i < 4; i++)
-            value = ((value << 16) | *(it + i));
-
-        motionBlocking.push_back(new nbt::Long("", value));
-    }
-    for (auto it = heightMap.worldSurface.begin(); it != heightMap.worldSurface.end(); it += 4) {
-        long value = *it;
-        for (int i = 0; i < 4; i++)
-            value = ((value << 16) | *(it + i));
-
-        worldSurface.push_back(new nbt::Long("", value));
-    }
+    for (auto &it : heightMap.motionBlocking)
+        motionBlocking.push_back(&it);
+    for (auto &it : heightMap.worldSurface)
+        worldSurface.push_back(&it);
 
     auto motionBlockingList = new nbt::List("MOTION_BLOCKING", motionBlocking);
     auto worldSurfaceList = new nbt::List("WORLD_SURFACE", worldSurface);
+
     auto packet = protocol::createChunkDataAndLightUpdate({
         x,
         z,
@@ -243,7 +233,7 @@ void Player::sendChunkAndLightUpdate(int32_t x, int32_t z)
             motionBlockingList,
             worldSurfaceList
         }),
-        this->_dim->getLevel().getChunkColumn({x, z}),
+        chunk,
         {}, // TODO: BlockEntities
         true,
         {}, // TODO: Sky light mask
@@ -254,9 +244,8 @@ void Player::sendChunkAndLightUpdate(int32_t x, int32_t z)
         {}  // TODO: block light
     });
     this->_cli->_sendData(*packet);
+
     LDEBUG("Sent a chunk data and light update packet (" + std::to_string(x) + ", " + std::to_string(z) + ")");
-    motionBlockingList->destroy();
-    worldSurfaceList->destroy();
     delete motionBlockingList;
     delete worldSurfaceList;
 }

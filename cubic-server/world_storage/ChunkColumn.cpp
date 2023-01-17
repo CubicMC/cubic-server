@@ -14,11 +14,13 @@ ChunkColumn::~ChunkColumn()
 
 void ChunkColumn::updateBlock(protocol::Position pos, Block block)
 {
-    _blocks.at(calculateBlockIdx(pos)) = getGlobalPaletteIdFromBlock(block);
+    this->updateBlock(pos, getGlobalPaletteIdFromBlock(block));
 }
 
 void ChunkColumn::updateBlock(protocol::Position pos, GlobalBlockId id)
-{
+{;
+    if (pos.y > _heightMap.motionBlocking.at(pos.x + pos.z * SECTION_WIDTH).get_value())
+        _heightMap.motionBlocking.at(pos.x + pos.z * SECTION_WIDTH).setValue(pos.y);
     _blocks.at(calculateBlockIdx(pos)) = id;
 }
 

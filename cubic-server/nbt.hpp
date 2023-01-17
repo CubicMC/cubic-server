@@ -265,6 +265,7 @@ class Long : public Base
 private:
     int64_t _value;
 public:
+    explicit Long(): Base("", TagType::Long), _value(0) {};
     explicit Long(std::string name, int64_t value = 0) : Base(std::move(name), TagType::Long), _value(value) {};
     ~Long() override = default;
 
@@ -274,6 +275,16 @@ public:
 
     void setValue(int64_t value) {
         _value = value;
+    }
+
+    int64_t operator|(int64_t value) const
+    {
+        return _value | value;
+    }
+
+    void operator|=(int64_t value)
+    {
+        _value |= value;
     }
 
     [[nodiscard]] constexpr std::vector<uint8_t> serialize() const override {

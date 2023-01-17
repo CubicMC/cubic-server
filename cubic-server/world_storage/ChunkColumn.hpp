@@ -5,6 +5,7 @@
 #include <array>
 #include <vector>
 #include <unordered_map>
+#include <cmath>
 
 // #include "Entity.hpp"
 #include "protocol/Structures.hpp"
@@ -36,8 +37,9 @@ struct BlockEntity {
 };
 
 struct HeightMap {
-    std::array<uint16_t, SECTION_2D_SIZE> motionBlocking;
-    std::array<uint16_t, SECTION_2D_SIZE> worldSurface;
+    // https://wiki.vg/index.php?title=Protocol&oldid=17753#Chunk_Data_and_Update_Light
+    std::array<nbt::Long, SECTION_2D_SIZE> motionBlocking;
+    std::array<nbt::Long, SECTION_2D_SIZE> worldSurface;
 };
 
 enum class WorldType {
