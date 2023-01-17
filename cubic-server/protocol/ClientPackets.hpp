@@ -11,6 +11,7 @@
 
 #include "Structures.hpp"
 #include "typeSerialization.hpp"
+#include "world_storage/ChunkColumn.hpp"
 
 namespace protocol
 {
@@ -26,6 +27,9 @@ namespace protocol
         CustomSoundEffect = 0x16,
         WorldEvent = 0x20,
         LoginPlay = 0x23,
+        UpdateEntityPosition = 0x26,
+        UpdateEntityPositionRotation = 0x27,
+        UpdateEntityRotation = 0x28,
         PlayerChatMessage = 0x30,
         UpdateTime = 0x59,
         SynchronizePlayerPosition = 0x36,
@@ -33,6 +37,7 @@ namespace protocol
         SoundEffect = 0x5d,
         DisconnectPlay = 0x17,
         KeepAlive = 0x1e,
+        ChunkDataAndLightUpdate = 0x1F,
         StopSound = 0x5e
     };
     struct PingResponse
@@ -88,6 +93,40 @@ namespace protocol
     };
 
     std::shared_ptr<std::vector<uint8_t>> createLoginPlay(const LoginPlay &);
+
+    struct UpdateEntityPosition
+    {
+        int32_t entityId;
+        int16_t deltaX;
+        int16_t deltaY;
+        int16_t deltaZ;
+        bool onGround;
+    };
+
+    std::shared_ptr<std::vector<uint8_t>> createUpdateEntityPosition(const UpdateEntityPosition &);
+
+    struct UpdateEntityPositionRotation
+    {
+        int32_t entityId;
+        int16_t deltaX;
+        int16_t deltaY;
+        int16_t deltaZ;
+        uint8_t yaw;
+        uint8_t pitch;
+        bool onGround;
+    };
+
+    std::shared_ptr<std::vector<uint8_t>> createUpdateEntityPositionRotation(const UpdateEntityPositionRotation &);
+
+    struct UpdateEntityRotation
+    {
+        int32_t entityId;
+        uint8_t yaw;
+        uint8_t pitch;
+        bool onGround;
+    };
+
+    std::shared_ptr<std::vector<uint8_t>> createUpdateEntityRotation(const UpdateEntityRotation &);
 
     struct PlayerChatMessage
     {
@@ -186,6 +225,23 @@ namespace protocol
 
     std::shared_ptr<std::vector<uint8_t>> createLoginDisconnect(const Disconnect &);
     std::shared_ptr<std::vector<uint8_t>> createPlayDisconnect(const Disconnect &);
+    // Only for chunk data and light update packet
+    struct ChunkDataAndLightUpdate
+    {
+        int32_t chunkX;
+        int32_t chunkZ;
+        nbt::Compound heightmaps;
+        const world_storage::ChunkColumn &data;
+        std::vector<BlockEntity> blockEntities;
+        bool trustEdges;
+        std::vector<long> skyLightMask;
+        std::vector<long> blockLightMask;
+        std::vector<long> emptySkyLightMask;
+        std::vector<long> emptyBlockLightMask;
+        std::vector<std::array<uint8_t, LIGHT_ARRAY_SIZE>> skyLight;
+        std::vector<std::array<uint8_t, LIGHT_ARRAY_SIZE>> blockLight;
+    };
+    std::shared_ptr<std::vector<uint8_t>> createChunkDataAndLightUpdate(const ChunkDataAndLightUpdate &);
 
     struct SpawnPlayer
     {

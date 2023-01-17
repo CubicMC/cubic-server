@@ -13,7 +13,8 @@ namespace Configuration
 \n\
 general:\n\
   max_players: 20\n\
-  motd: A Cubic Server\
+  motd: A Cubic Server\n\
+  enforce-whitelist: false\
 ";
 
     static void defaultConfigContent(const std::string &path) {
@@ -38,6 +39,7 @@ general:\n\
             _port = _baseNode["network"]["port"].as<uint16_t>();
             _maxPlayers = _baseNode["general"]["max_players"].as<uint32_t>();
             _motd = _baseNode["general"]["motd"].as<std::string>();
+            _enforceWhitelist = _baseNode["general"]["enforce-whitelist"].as<bool>();
         }
         catch (const std::exception &e) {
             LERROR("Config parsing failed, exiting now!");
@@ -64,5 +66,10 @@ general:\n\
     const std::string &ConfigHandler::getMotd() const
     {
         return _motd;
+    }
+
+    bool ConfigHandler::getEnforceWhitelist() const
+    {
+        return _enforceWhitelist;
     }
 }

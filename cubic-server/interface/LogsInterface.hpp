@@ -16,6 +16,7 @@ class LogsInterface : public Gtk::Box {
         void on_filter_selected(logging::LogLevel logLevel);
         void on_reset_filters();
         void scroll_to_end();
+        void on_button_clicked();
 
     protected:
         Gtk::ScrolledWindow m_Logs_container;

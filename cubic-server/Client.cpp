@@ -10,6 +10,7 @@
 #include "nlohmann/json.hpp"
 #include "protocol/ClientPackets.hpp"
 #include "Server.hpp"
+#include "whitelist/Whitelist.hpp"
 
 Client::Client(int sockfd, struct sockaddr_in6 addr)
     : _sockfd(sockfd), _addr(addr), _status(protocol::ClientStatus::Initial)
@@ -37,16 +38,17 @@ Client::~Client()
         close(_sockfd);
     }
 
-    // Send a disconnect message
+    // Remove the player from the world
     if (!_player)
         return;
+    _player->_dim->removeEntity(_player);
+
+    // Send a disconnect message
     _player->_dim->getWorld()->getChat()->sendSystemMessage(
         _player->getUsername() + " left the game",
         _player->_dim->getWorld()->getWorldGroup()
     );
 
-    // Remove the player from the world
-    _player->_dim->removeEntity(_player);
     delete _player;
 }
 
@@ -335,13 +337,20 @@ void Client::_onLoginStart(const std::shared_ptr<protocol::LoginStart> &pck)
 {
     LDEBUG("Got a Login Start");
     protocol::LoginSuccess resPck;
+    WhitelistHandling::Whitelist whitelist;
+    nlohmann::json whitelistData = whitelist.parseWhitelist(whitelist.getFilename());
+
     resPck.uuid = pck->has_player_uuid ? pck->player_uuid : u128{std::hash<std::string>{}("OfflinePlayer:"), std::hash<std::string>{}(pck->name)};
     resPck.username = pck->name;
     resPck.numberOfProperties = 0;
     resPck.name = ""; // TODO: figure out what to put there
     resPck.value = ""; // TODO: figure out what to put there
     resPck.isSigned = false;
-    sendLoginSuccess(resPck);
+
+    if (Server::getInstance()->getEnforceWhitelist() == false || whitelist.isPlayer(resPck.uuid, resPck.username, whitelistData).first == true)
+        sendLoginSuccess(resPck);
+    else
+        this->disconnect("You are not whitelisted on this server.");
 }
 
 void Client::_onEncryptionResponse(const std::shared_ptr<protocol::EncryptionResponse> &pck)
@@ -486,9 +495,19 @@ void Client::sendLoginPlay(const protocol::LoginPlay &packet)
 {
     auto pck = protocol::createLoginPlay(packet);
     _sendData(*pck);
-    this->_player->getDimension()->spawnPlayer(this->_player);
+    // this->_player->getDimension()->spawnPlayer(this->_player); // Spawn Player isn't working
     this->_player->_dim->addEntity(this->_player);
+
     LDEBUG("Sent a login play");
+
+    // Send all chunks around the player
+    // TODO: send chunk closer to the player first
+    for (int32_t x = -8; x < 8; x++) {
+        for (int32_t z = -8; z < 8; z++) {
+            this->_player->sendChunkAndLightUpdate(x, z);
+        }
+    }
+    // this->_player->sendChunkAndLightUpdate(0, 0);
 }
 
 void Client::sendSpawnPlayer(const protocol::SpawnPlayer &data)
@@ -510,10 +529,10 @@ void Client::sendUpdateTime(const protocol::UpdateTime &data)
 
 void Client::sendChatMessageResponse(const protocol::PlayerChatMessage &packet)
 {
-    auto pck = protocol::createPlayerChatMessage(packet);
-    _sendData(*pck);
+    // auto pck = protocol::createPlayerChatMessage(packet);
+    // _sendData(*pck);
 
-    LDEBUG("Sent a chat message response");
+    // LDEBUG("Sent a chat message response");
 }
 
 void Client::sendWorldEvent(const protocol::WorldEvent &packet)
@@ -547,4 +566,12 @@ void Client::disconnect(const chat::Message &reason)
     _sendData(*pck);
     _is_running = false;
     LDEBUG("Sent a disconnect login packet");
+}
+
+void Client::sendChunkDataAndLightUpdate(const protocol::ChunkDataAndLightUpdate &packet)
+{
+    // this->_player->getDimension()->
+    auto pck = protocol::createChunkDataAndLightUpdate(packet);
+    _sendData(*pck);
+    LDEBUG("Sent a chunk data and light update");
 }

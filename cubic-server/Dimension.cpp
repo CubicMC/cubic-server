@@ -4,7 +4,9 @@
 
 void Dimension::tick()
 {
-
+    forEachEntity([](Entity *ent){
+        ent->tick();
+    });
 }
 
 void Dimension::initialize()

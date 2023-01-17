@@ -29,6 +29,7 @@ Server::Server()
     _port = _config.getPort();
     _maxPlayer = _config.getMaxPlayers();
     _motd = _config.getMotd();
+    _enforceWhitelist = _config.getEnforceWhitelist();
 
     _log = logging::Logger::get_instance();
     LINFO("Server created with host: " + _host + " and port: " + std::to_string(_port));

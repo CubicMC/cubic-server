@@ -3,6 +3,7 @@
 #include <cstdint>
 
 #include "common.hpp"
+#include "nbt.hpp"
 
 namespace protocol
 {
@@ -21,8 +22,8 @@ namespace protocol
     struct Position
     {
         int64_t x;
-        int64_t z;
         int64_t y;
+        int64_t z;
     };
 
     struct Slot
@@ -64,7 +65,13 @@ namespace protocol
         int8_t sectionCoordinate;
         int16_t height;
         int32_t type;
-        // NBT data;
+        nbt::Compound data;
+    };
+
+    struct Rotation
+    {
+        float yaw;
+        float pitch;
     };
 } // namespace protocol
 

@@ -33,8 +33,13 @@ namespace protocol
             addByte(out, 0);
     }
 
-    // add short (int16_t)
-    constexpr void addShort(std::vector<uint8_t> &out, const uint16_t &data)
+    constexpr void addShort(std::vector<uint8_t> &out, const int16_t &data)
+    {
+        out.push_back(data >> 8);
+        out.push_back(data & 0xFF);
+    }
+
+    constexpr void addUShort(std::vector<uint8_t> &out, const uint16_t &data)
     {
         out.push_back(data >> 8);
         out.push_back(data & 0xFF);
@@ -70,6 +75,11 @@ namespace protocol
             out.push_back((data >> (56 - i * 8)) & 0xFF);
     }
 
+    constexpr void addUnsignedLong(std::vector<uint8_t> &out, const uint64_t &data)
+    {
+        for (int i = 0; i < 8; i++)
+            out.push_back((data >> (56 - i * 8)) & 0xFF);
+    }
 
     // Variable length integer
     constexpr void addVarLong(std::vector<uint8_t> &out, const int64_t &data)

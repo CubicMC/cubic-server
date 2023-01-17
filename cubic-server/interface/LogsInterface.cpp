@@ -138,7 +138,6 @@ bool LogsInterface::on_log_to_display()
         sigc::slot<void>slot = sigc::mem_fun(*this, &LogsInterface::scroll_to_end);
         Glib::signal_timeout().connect_once(slot, timeout_value);
     }
-
     return true;
 }
 

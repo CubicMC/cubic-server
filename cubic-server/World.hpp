@@ -16,6 +16,8 @@
 class WorldGroup;
 class Dimension;
 
+constexpr int NB_SPAWN_CHUNKS = 19;
+
 class World
 {
 public:
@@ -32,7 +34,8 @@ public:
     virtual void initialize() = 0;
     virtual WorldGroup *getWorldGroup() const;
     virtual std::shared_ptr<Chat> getChat() const;
-    virtual std::vector<Entity *> getEntities();
+    virtual std::vector<Entity *> getEntities() const;
+    [[nodiscard]] virtual std::vector<Player *> getPlayers() const;
     virtual std::shared_ptr<Dimension> getDimension(const std::string_view &name) const;
     virtual void forEachEntity(std::function<void(Entity *)> callback);
     virtual void forEachEntityIf(std::function<void(Entity *)> callback, std::function<bool(const Entity *)> predicate);

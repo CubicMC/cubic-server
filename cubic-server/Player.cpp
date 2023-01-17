@@ -1,7 +1,9 @@
+#include <cstdint>
+
 #include "Player.hpp"
 #include "Server.hpp"
 #include "protocol/ClientPackets.hpp"
-#include <cstdint>
+#include "World.hpp"
 
 Player::Player(
     Client *cli,
@@ -16,6 +18,55 @@ Player::Player(
 void Player::tick()
 {
     // TODO: MOVE KEEP ALIVE HERE LOL
+    bool updatePos = false;
+    bool updateRot = false;
+
+    if (_pos != _lastPos) {
+        updatePos = true;
+        _lastPos = _pos;
+    }
+    if (_rot != _lastRot) {
+        updateRot = true;
+        _lastRot = _rot;
+    }
+    if (updatePos && updateRot) {
+        for (auto i : this->getDimension()->getPlayerList()) {
+            if (i->getId() == this->getId())
+                continue;
+            i->sendUpdateEntityPositionAndRotation(protocol::createUpdateEntityPositionRotation({
+                this->getId(),
+                static_cast<int16_t>((this->_pos.x * 32.0 - this->_lastPos.x * 32) * 128),
+                static_cast<int16_t>((this->_pos.y * 32.0 - this->_lastPos.y * 32) * 128),
+                static_cast<int16_t>((this->_pos.z * 32.0 - this->_lastPos.z * 32) * 128),
+                (uint8_t) (this->_rot.x),
+                (uint8_t) (this->_rot.y),
+                true
+            }));
+        }
+    } else if (updatePos && !updateRot) {
+        for (auto i : this->getDimension()->getPlayerList()) {
+            if (i->getId() == this->getId())
+                continue;
+            i->sendUpdateEntityPosition(protocol::createUpdateEntityPosition({
+                this->getId(),
+                static_cast<int16_t>((this->_pos.x * 32.0 - this->_lastPos.x * 32) * 128),
+                static_cast<int16_t>((this->_pos.y * 32.0 - this->_lastPos.y * 32) * 128),
+                static_cast<int16_t>((this->_pos.z * 32.0 - this->_lastPos.z * 32) * 128),
+                true
+            }));
+        }
+    } else if (!updatePos && updateRot) {
+        for (auto i : this->getDimension()->getPlayerList()) {
+            if (i->getId() == this->getId())
+                continue;
+            i->sendUpdateEntityRotation(protocol::createUpdateEntityRotation({
+                this->getId(),
+                (uint8_t) (this->_rot.x),
+                (uint8_t) (this->_rot.y),
+                true
+            }));
+        }
+    }
 }
 
 Client *Player::getClient() const
@@ -140,6 +191,65 @@ void Player::sendKeepAlive(long id)
     LDEBUG("Sent a keep alive packet");
 }
 
+void Player::sendUpdateEntityPosition(std::shared_ptr<std::vector<uint8_t>> pck)
+{
+    this->_cli->_sendData(*pck);
+    LDEBUG("Sent an entity position packet");
+}
+
+void Player::sendUpdateEntityPositionAndRotation(std::shared_ptr<std::vector<uint8_t>> pck)
+{
+    this->_cli->_sendData(*pck);
+    LDEBUG("Sent an entity position and rotation packet");
+}
+
+void Player::sendUpdateEntityRotation(std::shared_ptr<std::vector<uint8_t>> pck)
+{
+    this->_cli->_sendData(*pck);
+    LDEBUG("Sent an entity rotation packet");
+}
+
+void Player::sendChunkAndLightUpdate(int32_t x, int32_t z)
+{
+    auto chunk = this->_dim->getLevel().getChunkColumn({x, z});
+    auto heightMap = chunk.getHeightMap();
+
+    std::vector<nbt::Base *> motionBlocking;
+    std::vector<nbt::Base *> worldSurface;
+
+    // HeightMap preparation
+    for (auto &it : heightMap.motionBlocking)
+        motionBlocking.push_back(&it);
+    for (auto &it : heightMap.worldSurface)
+        worldSurface.push_back(&it);
+
+    auto motionBlockingList = new nbt::List("MOTION_BLOCKING", motionBlocking);
+    auto worldSurfaceList = new nbt::List("WORLD_SURFACE", worldSurface);
+
+    auto packet = protocol::createChunkDataAndLightUpdate({
+        x,
+        z,
+        nbt::Compound("", {
+            motionBlockingList,
+            worldSurfaceList
+        }),
+        chunk,
+        {}, // TODO: BlockEntities
+        true,
+        {}, // TODO: Sky light mask
+        {}, // TODO: Block light mask
+        {}, // TODO: empty sky light mask
+        {}, // TODO: empty block light mask
+        {}, // TODO: sky light
+        {}  // TODO: block light
+    });
+    this->_cli->_sendData(*packet);
+
+    LDEBUG("Sent a chunk data and light update packet (" + std::to_string(x) + ", " + std::to_string(z) + ")");
+    delete motionBlockingList;
+    delete worldSurfaceList;
+}
+
 #pragma endregion
 #pragma region ServerBound
 
@@ -244,15 +354,20 @@ void Player::_onLockDifficulty(const std::shared_ptr<protocol::LockDifficulty> &
 
 void Player::_onSetPlayerPosition(const std::shared_ptr<protocol::SetPlayerPosition> &pck)
 {
-    LDEBUG("Got a Set Player Position");
+    //LDEBUG("Got a Set Player Position: " + std::to_string(pck->x) + ", " + std::to_string(pck->feet_y) + ", " + std::to_string(pck->z));
     this->setPosition(pck->x, pck->feet_y, pck->z);
 }
 
 void Player::_onSetPlayerPositionAndRotation(const std::shared_ptr<protocol::SetPlayerPositionAndRotation> &pck)
 {
-    LDEBUG("Got a Set Player Position And Rotation");
+    LDEBUG("Got a Set Player Position And Rotation: x= " + std::to_string(pck->x) + "\ty= " + std::to_string(pck->feet_y) + "\tz= " + std::to_string(pck->z) + "\tyaw= " + std::to_string(pck->yaw) + "\tpitch= " + std::to_string(pck->pitch));
     this->setPosition(pck->x, pck->feet_y, pck->z);
-    this->setRotation(pck->yaw, pck->pitch);
+    float yaw_tmp = pck->yaw;
+    while (yaw_tmp < 0)
+        yaw_tmp += 360;
+    while (yaw_tmp > 360)
+        yaw_tmp -= 360;
+    this->setRotation(yaw_tmp, pck->pitch);
 }
 
 void Player::_onSetPlayerRotation(const std::shared_ptr<protocol::SetPlayerRotation> &pck)
