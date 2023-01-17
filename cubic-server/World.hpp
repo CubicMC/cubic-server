@@ -31,7 +31,7 @@ public:
         _keepAliveClock.start();
         _timeUpdateClock.start();
     }
-    int32_t getSeed() const {
+    int64_t getSeed() const {
         return _seed;
     }
     virtual void tick();
@@ -61,7 +61,7 @@ protected:
     world_storage::LevelData _levelData;
     TickClock _keepAliveClock;
     TickClock _timeUpdateClock;
-    int32_t _seed;
+    int64_t _seed;
 };
 
 
