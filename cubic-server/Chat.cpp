@@ -3,6 +3,7 @@
 #include "logging/Logger.hpp"
 #include "WorldGroup.hpp"
 #include "nlohmann/json.hpp"
+#include "World.hpp"
 
 Chat::Chat()
 {
@@ -51,7 +52,7 @@ void Chat::sendSystemMessage(const chat::Message &message, bool overlay, const W
         LERROR("worldGroup is null");
         return;
     }
-    // LDEBUG("send System Message: " );// + message.getMessage()); // FUCKING CRASHES THE SERVER BECAUSE I DON'T FUCKING KNOW
+    LDEBUG("send System Message: " + message.getMessage()); // FUCKING CRASHES THE SERVER BECAUSE I DON'T FUCKING KNOW
 
     // TODO: Filter client by chat visibility
     for (const auto &world : worldGroup->getWorlds()) {

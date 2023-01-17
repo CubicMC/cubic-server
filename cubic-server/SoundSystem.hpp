@@ -3,7 +3,6 @@
 
 #include <cstdint>
 
-// class WorldGroup;
 #include "WorldGroup.hpp"
 
 class SoundSystem

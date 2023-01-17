@@ -6,9 +6,10 @@
 #include <unordered_map>
 
 #include "Chat.hpp"
-#include "World.hpp"
 #include "logging/Logger.hpp"
 #include "SoundSystem.hpp"
+
+class World;
 
 class SoundSystem;
 class WorldGroup

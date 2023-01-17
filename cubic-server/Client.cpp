@@ -10,6 +10,7 @@
 #include "nlohmann/json.hpp"
 #include "protocol/ClientPackets.hpp"
 #include "Server.hpp"
+#include "World.hpp"
 
 Client::Client(int sockfd, struct sockaddr_in6 addr)
     : _sockfd(sockfd), _addr(addr), _status(protocol::ClientStatus::Initial)
@@ -55,11 +56,12 @@ Client::~Client()
                 ),
                 chat::message::HoverEvent(
                     chat::message::HoverEvent::Action::ShowEntity,
-                    "{\"type\": \"minecraft:player\", \"id\": \"e02c083d-1c61-3b49-b7ea-4d47e2b9698a\", \"name\": \"" + _player->getUsername() + "\"}"
+                    "{\"type\": \"minecraft:player\", \"id\": \"6fa26f17-3468-82b8-6ee5-8e8fbfb9b756\", \"name\": \"" + _player->getUsername() + "\"}"
                 )
             )
         })
     });
+    //std::cout << "Player disconnected was with id : " << std::hex << _player->getUuid().most << '-' << _player->getUuid().least << std::endl;
     _player->_dim->getWorld()->getChat()->sendSystemMessage(
         disconnectMsg,
         true,

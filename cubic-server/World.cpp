@@ -3,6 +3,18 @@
 #include "protocol/ClientPackets.hpp"
 #include "Player.hpp"
 #include "Player.hpp"
+#include "WorldGroup.hpp"
+
+World::World(WorldGroup *worldGroup):
+    _worldGroup(worldGroup),
+    _keepAliveClock(100, std::bind(&World::processKeepAlive, this)), // 5 seconds for keep-alives
+    _timeUpdateClock(20, std::bind(&World::updateTime, this)) // 1 second for time updates
+{
+    _log = logging::Logger::get_instance();
+    _keepAliveClock.start();
+    _timeUpdateClock.start();
+    _chat = worldGroup->getChat();
+}
 
 void World::tick()
 {

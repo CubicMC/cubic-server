@@ -2,6 +2,7 @@
 #include "Server.hpp"
 #include "protocol/ClientPackets.hpp"
 #include <cstdint>
+#include "World.hpp"
 
 Player::Player(
     Client *cli,
