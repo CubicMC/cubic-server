@@ -72,7 +72,7 @@ LogsInterface::LogsInterface() :
 
     m_VBox_main.pack_end(m_Entry);
 
-    int timeout_value = 100; //in ms
+    int timeout_value = 400; //in ms
     sigc::slot<bool>my_slot = sigc::mem_fun(*this, &LogsInterface::on_log_to_display);
     Glib::signal_timeout().connect(my_slot, timeout_value);
 }
@@ -134,11 +134,18 @@ bool LogsInterface::on_log_to_display()
 
     if (m_Logs->get_text().raw() != temp) {
         m_Logs->set_text(temp.c_str());
+        int timeout_value = 200; //in ms
+        sigc::slot<void>slot = sigc::mem_fun(*this, &LogsInterface::scroll_to_end);
+        Glib::signal_timeout().connect_once(slot, timeout_value);
     }
-    m_endMark = m_Logs->create_mark(m_Logs->end());
-    m_Logs_view.scroll_to(m_endMark);
 
     return true;
+}
+
+void LogsInterface::scroll_to_end()
+{
+    m_endMark = m_Logs->create_mark(m_Logs->end());
+    m_Logs_view.scroll_to(m_endMark);
 }
 
 void LogsInterface::on_filter_selected(logging::LogLevel logLevel)

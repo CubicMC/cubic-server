@@ -15,6 +15,7 @@ class LogsInterface : public Gtk::Box {
         bool on_key_press_event(GdkEventKey* event) override;
         void on_filter_selected(logging::LogLevel logLevel);
         void on_reset_filters();
+        void scroll_to_end();
 
     protected:
         Gtk::ScrolledWindow m_Logs_container;

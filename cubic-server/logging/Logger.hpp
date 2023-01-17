@@ -21,12 +21,12 @@ namespace logging
 {
     enum class LogLevel
     {
+        NONE,
         DEBUG,
         INFO,
         WARNING,
         ERROR,
-        FATAL,
-        NONE
+        FATAL
     };
 
     class LogMessage

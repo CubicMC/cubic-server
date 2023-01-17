@@ -260,6 +260,8 @@ namespace logging
     const char* level_to_string(const LogLevel& level)
     {
         switch (level) {
+            case LogLevel::NONE:
+                return "[NONE] ";
             case LogLevel::DEBUG:
                 return "[DEBUG] ";
             case LogLevel::INFO:
@@ -270,8 +272,6 @@ namespace logging
                 return "[ERROR] ";
             case LogLevel::FATAL:
                 return "[FATAL] ";
-            case LogLevel::NONE:
-                return "";
             default:
                 return "[UNDEFINED] ";
         }
