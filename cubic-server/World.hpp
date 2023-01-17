@@ -16,6 +16,8 @@
 class WorldGroup;
 class Dimension;
 
+constexpr int NB_SPAWN_CHUNKS = 19;
+
 class World
 {
 public:

@@ -1,8 +1,8 @@
-#include <stdint.h>
-#include <string>
-
 #ifndef LEVELDATA_HPP
 #define LEVELDATA_HPP
+
+#include <stdint.h>
+#include <string>
 
 namespace world_storage {
 

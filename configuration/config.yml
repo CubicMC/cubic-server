@@ -5,3 +5,4 @@ network:
 general:
   max_players: 20
   motd: A Cubic Server
+  enforce-whitelist: false

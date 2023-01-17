@@ -1,3 +1,5 @@
+#include <cstdint>
+
 #include "Player.hpp"
 #include "Server.hpp"
 #include "protocol/ClientPackets.hpp"
@@ -124,14 +126,13 @@ void Player::setKeepAliveId(long id)
     _keepAliveId = id;
 }
 
-uint8_t Player::keepAliveIgnored() const
-{
-    return _keepAliveIgnored;
-}
-
 void Player::setKeepAliveIgnored(uint8_t ign)
 {
     _keepAliveIgnored = ign;
+}
+
+uint8_t Player::keepAliveIgnored() const {
+    return _keepAliveIgnored;
 }
 
 void Player::playSoundEffect(SoundsList sound, protocol::FloatingPosition position, SoundCategory category)
@@ -232,6 +233,48 @@ void Player::sendSynchronizePosition()
     });
     this->_cli->_sendData(*pck);
     // LDEBUG("Synchronized player position");
+
+}
+
+void Player::sendChunkAndLightUpdate(int32_t x, int32_t z)
+{
+    auto chunk = this->_dim->getLevel().getChunkColumn({x, z});
+    auto heightMap = chunk.getHeightMap();
+
+    std::vector<nbt::Base *> motionBlocking;
+    std::vector<nbt::Base *> worldSurface;
+
+    // HeightMap preparation
+    for (auto &it : heightMap.motionBlocking)
+        motionBlocking.push_back(&it);
+    for (auto &it : heightMap.worldSurface)
+        worldSurface.push_back(&it);
+
+    auto motionBlockingList = new nbt::List("MOTION_BLOCKING", motionBlocking);
+    auto worldSurfaceList = new nbt::List("WORLD_SURFACE", worldSurface);
+
+    auto packet = protocol::createChunkDataAndLightUpdate({
+        x,
+        z,
+        nbt::Compound("", {
+            motionBlockingList,
+            worldSurfaceList
+        }),
+        chunk,
+        {}, // TODO: BlockEntities
+        true,
+        {}, // TODO: Sky light mask
+        {}, // TODO: Block light mask
+        {}, // TODO: empty sky light mask
+        {}, // TODO: empty block light mask
+        {}, // TODO: sky light
+        {}  // TODO: block light
+    });
+    this->_cli->_sendData(*packet);
+
+    LDEBUG("Sent a chunk data and light update packet (" + std::to_string(x) + ", " + std::to_string(z) + ")");
+    delete motionBlockingList;
+    delete worldSurfaceList;
 }
 
 #pragma endregion

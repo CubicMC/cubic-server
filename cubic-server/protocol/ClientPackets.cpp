@@ -387,3 +387,25 @@ std::shared_ptr<std::vector<uint8_t>> protocol::createEntityAnimationClient(Enti
     finalize(*packet, payload, (int32_t) ClientPacketID::EntityAnimationClient);
     return packet;
 }
+
+std::shared_ptr<std::vector<uint8_t>> protocol::createChunkDataAndLightUpdate(const ChunkDataAndLightUpdate &in)
+{
+    std::vector<uint8_t> payload;
+
+    serialize(payload,
+        in.chunkX, addInt,
+        in.chunkZ, addInt,
+        in.heightmaps, addNBT<nbt::Compound>,
+        in.data, addChunkColumn,
+        in.blockEntities, addBlockEntities,
+        in.trustEdges, addBoolean,
+        in.skyLightMask, addArray<int64_t, addLong>,
+        in.blockLightMask, addArray<int64_t, addLong>,
+        in.emptySkyLightMask, addArray<int64_t, addLong>,
+        in.emptyBlockLightMask, addArray<int64_t, addLong>,
+        in.skyLight, addLightArray,
+        in.blockLight, addLightArray);
+    auto packet = std::make_shared<std::vector<uint8_t>>();
+    finalize(*packet.get(), payload, (int32_t) ClientPacketID::ChunkDataAndLightUpdate);
+    return packet;
+}
