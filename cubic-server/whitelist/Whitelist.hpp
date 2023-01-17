@@ -3,6 +3,9 @@
 
 #include <string>
 
+#include "types.hpp"
+#include "nlohmann/json.hpp"
+
 namespace WhitelistHandling
 {
 
@@ -16,8 +19,14 @@ namespace WhitelistHandling
             Whitelist();
             ~Whitelist();
 
-            void addPlayer(__int128_t uuid, std::string playerName);
-            void removePlayer(__int128_t uuid, std::string playerName);
+            void addPlayer(u128 uuid, std::string playerName);
+            void removePlayer(u128 uuid, std::string playerName);
+            std::pair<bool, int> isPlayer(u128 uuid, std::string playerName, nlohmann::json whitelistData);
+            nlohmann::json parseWhitelist(const std::string &path);
+
+            const std::string &getFilename() const {
+                return _filename;
+            }
 
         protected:
         private:

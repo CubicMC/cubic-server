@@ -43,6 +43,10 @@ public:
         return _config;
     }
 
+    const bool getEnforceWhitelist() const {
+        return _enforceWhitelist;
+    }
+
     static Server *getInstance() {
         static Server srv;
         return &srv;
