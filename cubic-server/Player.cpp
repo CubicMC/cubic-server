@@ -6,19 +6,24 @@
 #include <cstdint>
 #include "World.hpp"
 
-Player::Player(
-    Client *cli,
-    std::shared_ptr<Dimension> dim,
-    u128 uuid,
-    const std::string &username)
-    : _cli(cli), Entity(dim), _uuid(uuid), _username(username), _keepAliveId(0), _keepAliveIgnored(0), _gamemode(0)
+Player::Player(Client *cli, std::shared_ptr<Dimension> dim, u128 uuid, const std::string &username):
+    _cli(cli),
+    Entity(dim),
+    _uuid(uuid),
+    _username(username),
+    _keepAliveId(0),
+    _keepAliveIgnored(0),
+    _gamemode(0),
+    _keepAliveClock(200, std::bind(&Player::_processKeepAlive, this)) // 5 seconds for keep-alives
 {
     _log = logging::Logger::get_instance();
+    _keepAliveClock.start();
 }
 
 void Player::tick()
 {
-    // TODO: MOVE KEEP ALIVE HERE LOL
+    _keepAliveClock.tick();
+
     bool updatePos = false;
     bool updateRot = false;
 
@@ -548,3 +553,16 @@ void Player::_onUseItem(const std::shared_ptr<protocol::UseItem> &pck)
 }
 
 #pragma endregion Serverbound
+
+void Player::_processKeepAlive()
+{
+    long id = std::chrono::system_clock::now().time_since_epoch().count();
+    if (this->keepAliveId() != 0) {
+        this->setKeepAliveIgnored(this->keepAliveIgnored() + 1);
+        if (this->_keepAliveClock.tickRate() * this->keepAliveIgnored() >= 6000)
+            this->disconnect("Timed out from keep alive LOL");
+        return;
+    }
+    this->setKeepAliveId(id);
+    this->sendKeepAlive(id);
+}

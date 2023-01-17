@@ -7,11 +7,9 @@
 
 World::World(WorldGroup *worldGroup):
     _worldGroup(worldGroup),
-    _keepAliveClock(200, std::bind(&World::processKeepAlive, this)), // 5 seconds for keep-alives
     _timeUpdateClock(20, std::bind(&World::updateTime, this)) // 1 second for time updates
 {
     _log = logging::Logger::get_instance();
-    _keepAliveClock.start();
     _timeUpdateClock.start();
     _chat = worldGroup->getChat();
 }
@@ -19,7 +17,6 @@ World::World(WorldGroup *worldGroup):
 void World::tick()
 {
     _timeUpdateClock.tick();
-    _keepAliveClock.tick();
 }
 
 WorldGroup *World::getWorldGroup() const
@@ -148,28 +145,4 @@ void World::addPlayerInfo(Player *current) {
         .players = players_info
     });
     LDEBUG("Sent player info to " + current->getUsername());
-}
-
-void World::processKeepAlive()
-{
-    long id = std::chrono::system_clock::now().time_since_epoch().count();
-    forEachEntityIf(
-        [this, id](Entity *entity) {
-            Player *player = dynamic_cast<Player *>(entity);
-            if (player->keepAliveId() != 0) {
-                player->setKeepAliveIgnored(player->keepAliveIgnored() + 1);
-                if (this->_keepAliveClock.tickRate() * player->keepAliveIgnored() >= 6000)
-                    player->disconnect("Timed out from keep alive LOL");
-                return;
-            }
-            player->setKeepAliveId(id);
-            player->sendKeepAlive(id);
-        },
-        [](const Entity *entity) {
-            const Player *player = dynamic_cast<const Player *>(entity);
-            if (player == nullptr)
-                return false;
-            return true;
-        }
-    );
 }

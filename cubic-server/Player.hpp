@@ -8,6 +8,7 @@
 #include "SoundList.hpp"
 #include "types.hpp"
 #include "Chat.hpp"
+#include "TickClock.hpp"
 
 class Client;
 class Entity;
@@ -89,6 +90,8 @@ private:
     void _onUseItemOn(const std::shared_ptr<protocol::UseItemOn> &pck);
     void _onUseItem(const std::shared_ptr<protocol::UseItem> &pck);
 
+    void _processKeepAlive();
+
     logging::Logger *_log;
     Client *_cli;
     std::string _username;
@@ -96,6 +99,7 @@ private:
     long _keepAliveId;
     uint8_t  _keepAliveIgnored;
     int32_t _gamemode;
+    TickClock _keepAliveClock;
 };
 
 

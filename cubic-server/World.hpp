@@ -37,8 +37,6 @@ public:
     virtual void updateTime();
     virtual void addPlayerInfo(Player *);
 
-    virtual void processKeepAlive();
-
 protected:
     std::shared_ptr<Chat> _chat;
     WorldGroup *_worldGroup;
@@ -48,7 +46,6 @@ protected:
     long _age;
     long _time;
     world_storage::LevelData _levelData;
-    TickClock _keepAliveClock;
     TickClock _timeUpdateClock;
 };
 
