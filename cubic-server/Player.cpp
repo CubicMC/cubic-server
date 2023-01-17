@@ -16,6 +16,55 @@ Player::Player(
 void Player::tick()
 {
     // TODO: MOVE KEEP ALIVE HERE LOL
+    bool updatePos = false;
+    bool updateRot = false;
+
+    if (_pos != _lastPos) {
+        updatePos = true;
+        _lastPos = _pos;
+    }
+    if (_rot != _lastRot) {
+        updateRot = true;
+        _lastRot = _rot;
+    }
+    if (updatePos && updateRot) {
+        for (auto i : this->getDimension()->getPlayerList()) {
+            if (i->getId() == this->getId())
+                continue;
+            i->sendUpdateEntityPositionAndRotation(protocol::createUpdateEntityPositionRotation({
+                this->getId(),
+                static_cast<int16_t>((this->_pos.x * 32.0 - this->_lastPos.x * 32) * 128),
+                static_cast<int16_t>((this->_pos.y * 32.0 - this->_lastPos.y * 32) * 128),
+                static_cast<int16_t>((this->_pos.z * 32.0 - this->_lastPos.z * 32) * 128),
+                (uint8_t) (this->_rot.x),
+                (uint8_t) (this->_rot.y),
+                true
+            }));
+        }
+    } else if (updatePos && !updateRot) {
+        for (auto i : this->getDimension()->getPlayerList()) {
+            if (i->getId() == this->getId())
+                continue;
+            i->sendUpdateEntityPosition(protocol::createUpdateEntityPosition({
+                this->getId(),
+                static_cast<int16_t>((this->_pos.x * 32.0 - this->_lastPos.x * 32) * 128),
+                static_cast<int16_t>((this->_pos.y * 32.0 - this->_lastPos.y * 32) * 128),
+                static_cast<int16_t>((this->_pos.z * 32.0 - this->_lastPos.z * 32) * 128),
+                true
+            }));
+        }
+    } else if (!updatePos && updateRot) {
+        for (auto i : this->getDimension()->getPlayerList()) {
+            if (i->getId() == this->getId())
+                continue;
+            i->sendUpdateEntityRotation(protocol::createUpdateEntityRotation({
+                this->getId(),
+                (uint8_t) (this->_rot.x),
+                (uint8_t) (this->_rot.y),
+                true
+            }));
+        }
+    }
 }
 
 Client *Player::getClient() const
@@ -140,6 +189,24 @@ void Player::sendKeepAlive(long id)
     LDEBUG("Sent a keep alive packet");
 }
 
+void Player::sendUpdateEntityPosition(std::shared_ptr<std::vector<uint8_t>> pck)
+{
+    this->_cli->_sendData(*pck);
+    LDEBUG("Sent an entity position packet");
+}
+
+void Player::sendUpdateEntityPositionAndRotation(std::shared_ptr<std::vector<uint8_t>> pck)
+{
+    this->_cli->_sendData(*pck);
+    LDEBUG("Sent an entity position and rotation packet");
+}
+
+void Player::sendUpdateEntityRotation(std::shared_ptr<std::vector<uint8_t>> pck)
+{
+    this->_cli->_sendData(*pck);
+    LDEBUG("Sent an entity rotation packet");
+}
+
 #pragma endregion
 #pragma region ServerBound
 
@@ -252,7 +319,12 @@ void Player::_onSetPlayerPositionAndRotation(const std::shared_ptr<protocol::Set
 {
     LDEBUG("Got a Set Player Position And Rotation: x= " + std::to_string(pck->x) + "\ty= " + std::to_string(pck->feet_y) + "\tz= " + std::to_string(pck->z) + "\tyaw= " + std::to_string(pck->yaw) + "\tpitch= " + std::to_string(pck->pitch));
     this->setPosition(pck->x, pck->feet_y, pck->z);
-    this->setRotation(pck->yaw, pck->pitch);
+    float yaw_tmp = pck->yaw;
+    while (yaw_tmp < 0)
+        yaw_tmp += 360;
+    while (yaw_tmp > 360)
+        yaw_tmp -= 360;
+    this->setRotation(yaw_tmp, pck->pitch);
 }
 
 void Player::_onSetPlayerRotation(const std::shared_ptr<protocol::SetPlayerRotation> &pck)
