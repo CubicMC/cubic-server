@@ -10,6 +10,7 @@
 #include "nlohmann/json.hpp"
 #include "protocol/ClientPackets.hpp"
 #include "Server.hpp"
+#include "whitelist/Whitelist.hpp"
 
 Client::Client(int sockfd, struct sockaddr_in6 addr)
     : _sockfd(sockfd), _addr(addr), _status(protocol::ClientStatus::Initial)
@@ -335,13 +336,20 @@ void Client::_onLoginStart(const std::shared_ptr<protocol::LoginStart> &pck)
 {
     LDEBUG("Got a Login Start");
     protocol::LoginSuccess resPck;
+    WhitelistHandling::Whitelist whitelist;
+    nlohmann::json whitelistData = whitelist.parseWhitelist(whitelist.getFilename());
+
     resPck.uuid = pck->has_player_uuid ? pck->player_uuid : u128{std::hash<std::string>{}("OfflinePlayer:"), std::hash<std::string>{}(pck->name)};
     resPck.username = pck->name;
     resPck.numberOfProperties = 0;
     resPck.name = ""; // TODO: figure out what to put there
     resPck.value = ""; // TODO: figure out what to put there
     resPck.isSigned = false;
-    sendLoginSuccess(resPck);
+
+    if (Server::getInstance()->getEnforceWhitelist() == false || whitelist.isPlayer(resPck.uuid, resPck.username, whitelistData).first == true)
+        sendLoginSuccess(resPck);
+    else
+        this->disconnect("You are not whitelisted on this server.");
 }
 
 void Client::_onEncryptionResponse(const std::shared_ptr<protocol::EncryptionResponse> &pck)
