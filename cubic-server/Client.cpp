@@ -502,8 +502,8 @@ void Client::sendLoginPlay(const protocol::LoginPlay &packet)
 
     // Send all chunks around the player
     // TODO: send chunk closer to the player first
-    for (int32_t x = 0; x < 8; x++) {
-        for (int32_t z = 0; z < 8; z++) {
+    for (int32_t x = -8; x < 8; x++) {
+        for (int32_t z = -8; z < 8; z++) {
             this->_player->sendChunkAndLightUpdate(x, z);
         }
     }
