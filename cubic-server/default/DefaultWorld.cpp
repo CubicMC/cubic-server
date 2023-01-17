@@ -1,6 +1,5 @@
 #include "DefaultWorld.hpp"
-#include <stdio.h>
-#include <zlib.h>
+#include "../world_storage/GZIP.hpp"
 #include <iostream>
 
 #define CHUNK 0xFF
@@ -97,31 +96,9 @@ void DefaultWorld::save() {
     });
     std::vector<uint8_t> buffer = _data->serialize();
 
-    FILE *file_buf = fopen("level.dat", "w");
-    unsigned char *in = buffer.data();
-    unsigned char out[CHUNK];
-    int res;
+    GZIP gzip;
 
-    z_stream strm;
-
-    strm.zalloc = Z_NULL;
-    strm.zfree = Z_NULL;
-    strm.opaque = Z_NULL;
-
-    deflateInit2(&strm, Z_DEFAULT_COMPRESSION, Z_DEFLATED, 15 | 16, 8, Z_DEFAULT_STRATEGY);
-
-    strm.next_in = in;
-    strm.avail_in = buffer.size();
-
-    do {
-        strm.avail_out = CHUNK;
-        strm.next_out = out;
-        deflate(&strm, Z_FINISH);
-        fwrite(out, sizeof(char), CHUNK - strm.avail_out, file_buf);
-    } while (strm.avail_out == 0);
-
-    fclose(file_buf);
-    deflateEnd(&strm);
+    gzip.compress(buffer, "level.dat");
 }
 
 void DefaultWorld::stop() { World::stop(); }
