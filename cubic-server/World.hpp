@@ -31,7 +31,7 @@ public:
         _keepAliveClock.start();
         _timeUpdateClock.start();
     }
-    const int32_t &getSeed() const {
+    int32_t getSeed() const {
         return _seed;
     }
     virtual void tick();
