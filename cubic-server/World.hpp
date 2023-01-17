@@ -27,8 +27,12 @@ public:
         _timeUpdateClock(20, std::bind(&World::updateTime, this)) // 1 second for time updates
     {
         _log = logging::Logger::get_instance();
+        _seed = -721274728;
         _keepAliveClock.start();
         _timeUpdateClock.start();
+    }
+    const int32_t &getSeed() const {
+        return _seed;
     }
     virtual void tick();
     virtual void initialize() = 0;
@@ -57,6 +61,7 @@ protected:
     world_storage::LevelData _levelData;
     TickClock _keepAliveClock;
     TickClock _timeUpdateClock;
+    int32_t _seed;
 };
 
 
