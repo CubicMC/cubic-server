@@ -60,7 +60,7 @@ void World::updateTime() {
     std::shared_ptr<std::vector<uint8_t>> data;
 
     _age += 20;
-    _time += 200;
+    _time += 20;
     if (_time > 24000)
         _time = 0;
 

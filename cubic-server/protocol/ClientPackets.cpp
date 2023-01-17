@@ -75,6 +75,49 @@ std::shared_ptr<std::vector<uint8_t>> protocol::createLoginPlay(const LoginPlay 
     return packet;
 }
 
+std::shared_ptr<std::vector<uint8_t>> protocol::createUpdateEntityPosition(const UpdateEntityPosition &in)
+{
+    std::vector<uint8_t> payload;
+    serialize(payload,
+        in.entityId, addVarInt,
+        in.deltaX, addShort,
+        in.deltaY, addShort,
+        in.deltaZ, addShort,
+        in.onGround, addBoolean);
+    auto packet = std::make_shared<std::vector<uint8_t>>();
+    finalize(*packet.get(), payload, (int32_t)ClientPacketID::UpdateEntityPosition);
+    return packet;
+}
+
+std::shared_ptr<std::vector<uint8_t>> protocol::createUpdateEntityPositionRotation(const UpdateEntityPositionRotation &in)
+{
+    std::vector<uint8_t> payload;
+    serialize(payload,
+        in.entityId, addVarInt,
+        in.deltaX, addShort,
+        in.deltaY, addShort,
+        in.deltaZ, addShort,
+        in.yaw, addByte,
+        in.pitch, addByte,
+        in.onGround, addBoolean);
+    auto packet = std::make_shared<std::vector<uint8_t>>();
+    finalize(*packet.get(), payload, (int32_t)ClientPacketID::UpdateEntityPositionRotation);
+    return packet;
+}
+
+std::shared_ptr<std::vector<uint8_t>> protocol::createUpdateEntityRotation(const UpdateEntityRotation &in)
+{
+    std::vector<uint8_t> payload;
+    serialize(payload,
+        in.entityId, addVarInt,
+        in.yaw, addByte,
+        in.pitch, addByte,
+        in.onGround, addBoolean);
+    auto packet = std::make_shared<std::vector<uint8_t>>();
+    finalize(*packet.get(), payload, (int32_t)ClientPacketID::UpdateEntityRotation);
+    return packet;
+}
+
 std::shared_ptr<std::vector<uint8_t>> protocol::createPlayerChatMessage(const PlayerChatMessage &in)
 {
     std::vector<uint8_t> payload;

@@ -486,7 +486,7 @@ void Client::sendLoginPlay(const protocol::LoginPlay &packet)
 {
     auto pck = protocol::createLoginPlay(packet);
     _sendData(*pck);
-    this->_player->getDimension()->spawnPlayer(this->_player);
+    // this->_player->getDimension()->spawnPlayer(this->_player); // Spawn Player isn't working
     this->_player->_dim->addEntity(this->_player);
     LDEBUG("Sent a login play");
 }
@@ -510,10 +510,10 @@ void Client::sendUpdateTime(const protocol::UpdateTime &data)
 
 void Client::sendChatMessageResponse(const protocol::PlayerChatMessage &packet)
 {
-    auto pck = protocol::createPlayerChatMessage(packet);
-    _sendData(*pck);
+    // auto pck = protocol::createPlayerChatMessage(packet);
+    // _sendData(*pck);
 
-    LDEBUG("Sent a chat message response");
+    // LDEBUG("Sent a chat message response");
 }
 
 void Client::sendWorldEvent(const protocol::WorldEvent &packet)

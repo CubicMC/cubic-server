@@ -74,3 +74,11 @@ Vector2<uint8_t> &Entity::getRotation() {
 const Vector2<uint8_t> &Entity::getRotation() const {
     return _rot;
 }
+
+Vector3<double> &Entity::getLastPosition() {
+    return _lastPos;
+}
+
+Vector2<uint8_t> &Entity::getLastRotation() {
+    return _lastRot;
+}
