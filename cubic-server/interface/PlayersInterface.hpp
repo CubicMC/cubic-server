@@ -12,8 +12,9 @@ class PlayersInterface : public Gtk::ScrolledWindow {
         bool on_timeout();
         std::string get_nb_players();
     protected:
-        Gtk::Label m_label;
-        std::string m_nb_players = "Players : --";
+        Gtk::TextView m_Players_view;
+        Glib::RefPtr<Gtk::TextBuffer> m_Players;
+        std::string m_Nb_players = "Players : --";
 };
 
 #endif /* !PLAYERSINTERFACE_HPP */
