@@ -219,20 +219,22 @@ void Player::sendUpdateEntityRotation(std::shared_ptr<std::vector<uint8_t>> pck)
     LDEBUG("Sent an entity rotation packet");
 }
 
-void Player::sendSynchronizePosition()
+void Player::sendSynchronizePosition(Vector3<double> pos)
 {
     auto pck = protocol::createSynchronizePlayerPosition({
-        0,
-        0,
-        0,
+        pos.x,
+        pos.y,
+        pos.z,
         0,
         0,
         0x08 | 0x10,
         0,
         true,
+
     });
+    this->setPosition(pos);
     this->_cli->_sendData(*pck);
-    // LDEBUG("Synchronized player position");
+    LDEBUG("Synchronized player position");
 
 }
 

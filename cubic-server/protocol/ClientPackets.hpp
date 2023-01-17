@@ -169,6 +169,9 @@ namespace protocol
         std::string displayName;
     };
 
+    struct _RemovePlayer {
+    };
+
     struct _Player {
         u128 uuid;
         // AddPlayer
@@ -182,6 +185,9 @@ namespace protocol
 
         // UpdateDisplayName
         _UpdateDisplayName updateDisplayName;
+
+        // RemovePlayer
+        _RemovePlayer removePlayer;
     };
 
     struct PlayerInfo

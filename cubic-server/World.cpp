@@ -97,7 +97,7 @@ void World::updateTime() {
     }
 }
 
-void World::addPlayerInfo(Player *current) {
+void World::sendPlayerInfoAddPlayer(Player *current) {
     // get list of players
     std::vector<Player *> players = this->getPlayers();
     std::vector<protocol::_Player> players_info;
@@ -144,5 +144,31 @@ void World::addPlayerInfo(Player *current) {
         .numberOfPlayers = (int32_t) players.size(),
         .players = players_info
     });
+    LDEBUG("Sent player info to " + current->getUsername());
+}
+
+void World::sendPlayerInfoRemovePlayer(Player *current) {
+    // get list of players
+    std::vector<Player *> players = this->getPlayers();
+
+    // iterate through the list of players
+    for (auto &player : players) {
+
+        // send to each player the info of the current removed player
+        if (player != current) {
+            player->getClient()->sendPlayerInfo({
+                .action = 4,
+                .numberOfPlayers = 1,
+                .players = {
+                    {
+                        .uuid = current->getUuid(),
+                        .removePlayer = {
+
+                        }
+                    }
+                }
+            });
+        }
+    }
     LDEBUG("Sent player info to " + current->getUsername());
 }

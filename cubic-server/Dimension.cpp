@@ -84,7 +84,7 @@ void Dimension::spawnPlayer(const Player *current)
         LDEBUG("player is : " + player->getUsername());
         LDEBUG("current is : " + current->getUsername());
         //if (current->getPos().distance(player->getPos()) <= 12) {
-        if (player != current) {
+        if (player->getId() != current->getId()) {
             player->getClient()->sendSpawnPlayer({
                 current->getId(),
                 current->getUuid(),

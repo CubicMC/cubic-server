@@ -35,7 +35,8 @@ public:
     virtual const world_storage::LevelData &getLevelData() const;
     virtual void setLevelData(const world_storage::LevelData &value);
     virtual void updateTime();
-    virtual void addPlayerInfo(Player *);
+    virtual void sendPlayerInfoAddPlayer(Player *);
+    virtual void sendPlayerInfoRemovePlayer(Player *current);
 
 protected:
     std::shared_ptr<Chat> _chat;

@@ -42,6 +42,16 @@ Client::~Client()
     // Remove the player from the world
     if (!_player)
         return;
+    std::stringstream uuidsstr;
+    std::string uuidstr;
+
+    uuidsstr << std::hex << _player->getUuid().most << _player->getUuid().least;
+    uuidstr = uuidsstr.str();
+    uuidstr.insert(8, "-");
+    uuidstr.insert(12, "-");
+    uuidstr.insert(16, "-");
+    uuidstr.insert(20, "-");
+
     chat::Message disconnectMsg = chat::Message("", {
         .color = "yellow",
         .translate = "multiplayer.player.left",
@@ -57,12 +67,13 @@ Client::~Client()
                 ),
                 chat::message::HoverEvent(
                     chat::message::HoverEvent::Action::ShowEntity,
-                    "{\"type\": \"minecraft:player\", \"id\": \"6fa26f17-3468-82b8-6ee5-8e8fbfb9b756\", \"name\": \"" + _player->getUsername() + "\"}"
+                    "{\"type\": \"minecraft:player\", \"id\": \"" + uuidstr + "\", \"name\": \"" + _player->getUsername() + "\"}"
                 )
             )
         })
     });
     //std::cout << "Player disconnected was with id : " << std::hex << _player->getUuid().most << '-' << _player->getUuid().least << std::endl;
+    this->_player->getDimension()->getWorld()->sendPlayerInfoRemovePlayer(this->_player);
     _player->_dim->removeEntity(_player);
 
     // Send a disconnect message
@@ -417,7 +428,7 @@ void Client::sendLoginSuccess(const protocol::LoginSuccess &packet)
     LDEBUG("Switched to play state");
 
     protocol::LoginPlay resPck = {
-            .entityID = 0, // TODO: figure out what is this
+            .entityID = _player->getId(), // TODO: figure out what is this
             .isHardcore = false, // TODO: something like this this->_player->_dim->getWorld()->getDifficulty();
             .gamemode = 0, // TODO: something like this this->_player->getGamemode()
             .previousGamemode = 0, // TODO: something like this this->_player->getPreviousGamemode().has_value() ? this->_player->getPreviousGamemode() : -1;
@@ -518,32 +529,25 @@ void Client::sendLoginSuccess(const protocol::LoginSuccess &packet)
     }
     sendLoginPlay(resPck);
     resPck.registryCodec.destroy();
-    // this->_player->getDimension()->spawnPlayer(this->_player); // Spawn Player isn't working
-    this->_player->_dim->addEntity(this->_player);
-
-    LDEBUG("Sent a login play");
-
-    // Send all chunks around the player
-    // TODO: send chunk closer to the player first
-    for (int32_t x = -8; x < 8; x++) {
-        for (int32_t z = -8; z < 8; z++) {
-            this->_player->sendChunkAndLightUpdate(x, z);
-        }
-    }
-    // this->_player->sendChunkAndLightUpdate(0, 0);
 }
 
 void Client::sendLoginPlay(const protocol::LoginPlay &packet)
 {
-    static int32_t i = 0;
     auto pck = protocol::createLoginPlay(packet);
     _sendData(*pck);
     LDEBUG("Sent a login play");
-    this->_player->_id = i;
-    i += 1;
+    // Send all chunks around the player
+    // TODO: send chunk closer to the player first
+    for (int32_t x = -2; x < 2; x++) {
+        for (int32_t z = -2; z < 2; z++) {
+            this->_player->sendChunkAndLightUpdate(x, z);
+        }
+    }
+    this->_player->sendSynchronizePosition({0, -58, 0});
+    // this->_player->sendChunkAndLightUpdate(0, 0);
     this->_player->_dim->addEntity(this->_player);
     LDEBUG("Added entity player to dimension");
-    this->_player->getDimension()->getWorld()->addPlayerInfo(this->_player);
+    this->_player->getDimension()->getWorld()->sendPlayerInfoAddPlayer(this->_player);
     this->_player->getDimension()->spawnPlayer(this->_player);
 }
 
