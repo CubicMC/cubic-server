@@ -1,6 +1,5 @@
 #include "Overworld.hpp"
-
-constexpr int NB_SPAWN_CHUNKS = 19;
+#include "World.hpp"
 
 void Overworld::tick()
 {
@@ -37,5 +36,5 @@ void Overworld::generateChunk(int x, int z)
 {
     LDEBUG("Generate - Overworld (" + std::to_string(x) + ", " + std::to_string(z) + ")");
     _2d_pos pos{x, z};
-    _level.addChunkColumn(pos)->generate(world_storage::WorldType::FLAT);
+    _level.addChunkColumn(pos).generate(world_storage::WorldType::FLAT);
 }

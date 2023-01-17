@@ -38,16 +38,17 @@ Client::~Client()
         close(_sockfd);
     }
 
-    // Send a disconnect message
+    // Remove the player from the world
     if (!_player)
         return;
+    _player->_dim->removeEntity(_player);
+
+    // Send a disconnect message
     _player->_dim->getWorld()->getChat()->sendSystemMessage(
         _player->getUsername() + " left the game",
         _player->_dim->getWorld()->getWorldGroup()
     );
 
-    // Remove the player from the world
-    _player->_dim->removeEntity(_player);
     delete _player;
 }
 
@@ -496,7 +497,17 @@ void Client::sendLoginPlay(const protocol::LoginPlay &packet)
     _sendData(*pck);
     // this->_player->getDimension()->spawnPlayer(this->_player); // Spawn Player isn't working
     this->_player->_dim->addEntity(this->_player);
+
     LDEBUG("Sent a login play");
+
+    // Send all chunks around the player
+    // TODO: send chunk closer to the player first
+    for (int32_t x = -8; x < 8; x++) {
+        for (int32_t z = -8; z < 8; z++) {
+            this->_player->sendChunkAndLightUpdate(x, z);
+        }
+    }
+    // this->_player->sendChunkAndLightUpdate(0, 0);
 }
 
 void Client::sendSpawnPlayer(const protocol::SpawnPlayer &data)
@@ -555,4 +566,12 @@ void Client::disconnect(const chat::Message &reason)
     _sendData(*pck);
     _is_running = false;
     LDEBUG("Sent a disconnect login packet");
+}
+
+void Client::sendChunkDataAndLightUpdate(const protocol::ChunkDataAndLightUpdate &packet)
+{
+    // this->_player->getDimension()->
+    auto pck = protocol::createChunkDataAndLightUpdate(packet);
+    _sendData(*pck);
+    LDEBUG("Sent a chunk data and light update");
 }

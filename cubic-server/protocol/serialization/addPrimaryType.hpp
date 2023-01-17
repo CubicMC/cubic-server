@@ -75,6 +75,11 @@ namespace protocol
             out.push_back((data >> (56 - i * 8)) & 0xFF);
     }
 
+    constexpr void addUnsignedLong(std::vector<uint8_t> &out, const uint64_t &data)
+    {
+        for (int i = 0; i < 8; i++)
+            out.push_back((data >> (56 - i * 8)) & 0xFF);
+    }
 
     // Variable length integer
     constexpr void addVarLong(std::vector<uint8_t> &out, const int64_t &data)

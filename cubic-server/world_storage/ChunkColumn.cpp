@@ -1,5 +1,10 @@
-#include "ChunkColumn.hpp"
 #include <memory>
+
+#include "ChunkColumn.hpp"
+#include "Palette.hpp"
+#include "protocol/serialization/addPrimaryType.hpp"
+#include "logging/Logger.hpp"
+#include "globalPalette_TEMP.hpp"
 
 namespace world_storage {
 
@@ -7,51 +12,73 @@ ChunkColumn::~ChunkColumn()
 {
 }
 
-void ChunkColumn::updateBlock(protocol::Position pos, Block id) {
-    _blocks.at(pos.x + pos.z * 16 + pos.y * 16*16) = id;
+void ChunkColumn::updateBlock(protocol::Position pos, Block block)
+{
+    this->updateBlock(pos, getGlobalPaletteIdFromBlock(block));
 }
 
-Block ChunkColumn::getBlock(protocol::Position pos) {
-    return _blocks.at(pos.x + pos.z * 16 + pos.y * 16*16);
+void ChunkColumn::updateBlock(protocol::Position pos, GlobalBlockId id)
+{;
+    if (pos.y > _heightMap.motionBlocking.at(pos.x + pos.z * SECTION_WIDTH).get_value())
+        _heightMap.motionBlocking.at(pos.x + pos.z * SECTION_WIDTH).setValue(pos.y);
+    _blocks.at(calculateBlockIdx(pos)) = id;
 }
 
-const std::array<Block, CHUNK_3D_SIZE*NB_OF_CHUNKS> &ChunkColumn::getBlocks() const {
+Block ChunkColumn::getBlock(protocol::Position pos) const
+{
+    return getBlockFromGlobalPaletteId(_blocks.at(calculateBlockIdx(pos)));
+}
+
+const std::array<GlobalBlockId, SECTION_3D_SIZE * NB_OF_CHUNKS> &ChunkColumn::getBlocks() const
+{
     return _blocks;
 }
 
-void ChunkColumn::updateSkyLight(protocol::Position pos, uint8_t light) {
-    _skyLights.at(pos.x + pos.z * 16 + pos.y * 16*16) = light;
+void ChunkColumn::updateSkyLight(protocol::Position pos, uint8_t light)
+{
+    _skyLights.at(calculateBlockIdx(pos)) = light;
 }
 
-uint8_t ChunkColumn::getSkyLight(protocol::Position pos) {
-    return _skyLights.at(pos.x + pos.z * 16 + pos.y * 16*16);
+uint8_t ChunkColumn::getSkyLight(protocol::Position pos) const
+{
+    return _skyLights.at(calculateBlockIdx(pos));
 }
 
-const std::array<uint8_t, CHUNK_3D_SIZE*NB_OF_CHUNKS> &ChunkColumn::getSkyLights() const {
+const std::array<uint8_t, SECTION_3D_SIZE * NB_OF_CHUNKS> &ChunkColumn::getSkyLights() const
+{
     return _skyLights;
 }
 
-void ChunkColumn::updateBlockLight(protocol::Position pos, uint8_t light) {
-    _blockLights.at(pos.x + pos.z * 16 + pos.y * 16*16) = light;
+void ChunkColumn::updateBlockLight(protocol::Position pos, uint8_t light)
+{
+    _blockLights.at(calculateBlockIdx(pos)) = light;
+    // _blockLights.at(pos.x + pos.z * 16 + pos.y * 16*16) = light;
 }
 
-uint8_t ChunkColumn::getBlockLight(protocol::Position pos) {
-    return _blockLights.at(pos.x + pos.z * 16 + pos.y * 16*16);
+uint8_t ChunkColumn::getBlockLight(protocol::Position pos) const
+{
+    return _blockLights.at(calculateBlockIdx(pos));
+    // return _blockLights.at(pos.x + pos.z * 16 + pos.y * 16*16);
 }
 
-const std::array<uint8_t, CHUNK_3D_SIZE*NB_OF_CHUNKS> &ChunkColumn::getBlockLights() const {
+const std::array<uint8_t, SECTION_3D_SIZE * NB_OF_CHUNKS> &ChunkColumn::getBlockLights() const
+{
     return _blockLights;
 }
 
-void ChunkColumn::updateBiome(protocol::Position pos, uint8_t biome) {
-    _biomes.at(pos.x + pos.z * 4 + pos.y * 4*4) = biome;
+void ChunkColumn::updateBiome(protocol::Position pos, uint8_t biome)
+{
+    _biomes.at(calculateBlockIdx(pos)) = biome;
+    // _biomes.at(pos.x + pos.z * 16 + pos.y * 16*16) = biome;
 }
 
-uint8_t ChunkColumn::getBiome(protocol::Position pos) {
-    return _biomes.at(pos.x + pos.z * 4 + pos.y * 4*4);
+uint8_t ChunkColumn::getBiome(protocol::Position pos) const
+{
+    return _biomes.at(calculateBlockIdx(pos));
+    // return _biomes.at(pos.x + pos.z * 16 + pos.y * 16*16);
 }
 
-const std::array<uint8_t, BIOME_3D_SIZE*NB_OF_CHUNKS> &ChunkColumn::getBiomes() const {
+const std::array<uint8_t, BIOME_SECTION_3D_SIZE * NB_OF_CHUNKS> &ChunkColumn::getBiomes() const {
     return _biomes;
 }
 
@@ -150,18 +177,21 @@ void ChunkColumn::_generateEnd() {
 }
 
 void ChunkColumn::_generateFlat() {
-    for (int x = 0; x < 16; x++) {
+    // TODO: optimize this
+    // This take forever because of the Block constructor
+    for (int y = 0; y < 4; y++) {
         for (int z = 0; z < 16; z++) {
-            for (int y = 0; y < 4; y++) {
+            for (int x = 0; x < 16; x++) {
                 if (y == 0) {
-                    updateBlock({x, y, z}, {7});
+                    updateBlock({x, y, z}, getGlobalPaletteIdFromBlockName("minecraft:bedrock"));
                 } else if (y == 1 || y == 2) {
-                    updateBlock({x, y, z}, {3});
+                    updateBlock({x, y, z}, getGlobalPaletteIdFromBlockName("minecraft:dirt"));
                 } else {
-                    updateBlock({x, y, z}, {2});
+                    updateBlock({x, y, z}, getGlobalPaletteIdFromBlockName("minecraft:grass_block"));
                 }
             }
         }
     }
 }
-}
+
+} // namespace world_storage
