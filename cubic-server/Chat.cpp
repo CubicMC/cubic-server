@@ -51,7 +51,7 @@ void Chat::sendSystemMessage(const chat::Message &message, bool overlay, const W
         LERROR("worldGroup is null");
         return;
     }
-    LDEBUG("send System Message: " + message.getMessage());
+    // LDEBUG("send System Message: " );// + message.getMessage()); // FUCKING CRASHES THE SERVER BECAUSE I DON'T FUCKING KNOW
 
     // TODO: Filter client by chat visibility
     for (const auto &world : worldGroup->getWorlds()) {
