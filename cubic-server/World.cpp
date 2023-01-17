@@ -25,13 +25,27 @@ std::shared_ptr<Dimension> World::getDimension(const std::string_view &name) con
     return this->_dimensions.at(name);
 }
 
-std::vector<Entity *> World::getEntities()
+std::vector<Entity *> World::getEntities() const
 {
     std::vector<Entity *> entities;
     for (auto _dimension : _dimensions)
         for (auto _entity : _dimension.second->getEntities())
             entities.push_back(_entity);
     return entities;
+}
+
+std::vector<Player *> World::getPlayers() const
+{
+    std::vector<Player *> players;
+
+    for (auto &entity : this->getEntities()) {
+        auto player = dynamic_cast<Player *>(entity);
+
+        if (player != nullptr) {
+            players.push_back(player);
+        }
+    }
+    return players;
 }
 
 void World::forEachEntity(std::function<void(Entity *)> callback)
