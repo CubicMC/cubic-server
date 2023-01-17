@@ -89,6 +89,7 @@ private:
         new command_parser::Help,
         new command_parser::QuestionMark,
         new command_parser::Stop,
+        new command_parser::Seed,
     };
 };
 
