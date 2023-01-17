@@ -526,18 +526,18 @@ void Player::_onTeleportToEntity(const std::shared_ptr<protocol::TeleportToEntit
 
 void Player::_onUseItemOn(const std::shared_ptr<protocol::UseItemOn> &pck)
 {
-    switch (this->_heldItem) {
-        case 0: this->getDimension()->blockUpdate(pck->location, 1);
-        case 1: this->getDimension()->blockUpdate(pck->location, 2);
-        case 2: this->getDimension()->blockUpdate(pck->location, 3);
-        case 3: this->getDimension()->blockUpdate(pck->location, 4);
-        case 4: this->getDimension()->blockUpdate(pck->location, 5);
-        case 5: this->getDimension()->blockUpdate(pck->location, 7);
-        case 6: this->getDimension()->blockUpdate(pck->location, 17);
-        case 7: this->getDimension()->blockUpdate(pck->location, 18);
-        case 8: this->getDimension()->blockUpdate(pck->location, 56);
-    }
     LDEBUG("Got a Use Item On");
+    switch (this->_heldItem) {
+        case 0: this->getDimension()->blockUpdate(pck->location, 1); break;
+        case 1: this->getDimension()->blockUpdate(pck->location, 2); break;
+        case 2: this->getDimension()->blockUpdate(pck->location, 3); break;
+        case 3: this->getDimension()->blockUpdate(pck->location, 4); break;
+        case 4: this->getDimension()->blockUpdate(pck->location, 5); break;
+        case 5: this->getDimension()->blockUpdate(pck->location, 7); break;
+        case 6: this->getDimension()->blockUpdate(pck->location, 17); break;
+        case 7: this->getDimension()->blockUpdate(pck->location, 18); break;
+        case 8: this->getDimension()->blockUpdate(pck->location, 56); break;
+    }
 }
 
 void Player::_onUseItem(const std::shared_ptr<protocol::UseItem> &pck)
