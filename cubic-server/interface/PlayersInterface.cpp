@@ -22,7 +22,7 @@ PlayersInterface::PlayersInterface()
     m_Players_view.set_cursor_visible(false);
     m_Players_view.set_vscroll_policy(Gtk::SCROLL_MINIMUM);
 
-    int timeout_value = 100; //in ms
+    int timeout_value = 1500; //in ms
     sigc::slot<bool>my_slot = sigc::mem_fun(*this, &PlayersInterface::on_timeout);
     Glib::signal_timeout().connect(my_slot, timeout_value);
 
@@ -37,16 +37,28 @@ bool PlayersInterface::on_timeout()
     std::vector<Player *> playersList_copy; // How can I get it ?
 
     for (auto world : Server::getInstance()->getWorldGroup("default")->getWorlds()) {
-        for (auto dim : world->getDimentions())
+        if (world.second->getPlayers().size() != 0) {
+            if (playersList_copy.size() == 0) {
+                for (auto player : world.second->getPlayers()) {
+                    playersList_copy.push_back(player);
+                }
+            } else {
+                playersList_copy.insert(playersList_copy.end(), world.second->getPlayers().begin(), world.second->getPlayers().end());
+            }
+        }
     }
 
-    for (std::vector<Player *>::iterator it = playersList_copy.begin(); it != playersList_copy.end(); it++) {
-        std::cout << it* << std::endl;
-        // temp += it.getUsername() + "\n";
-        nb_players = nb_players + 1;
+    if (playersList_copy.size() != 0) {
+        for (auto player : playersList_copy) {
+            temp += player->getUsername() + "\n";
+            nb_players = nb_players + 1;
+        }
     }
-    this->m_Players->set_text(temp.c_str());
-    this->m_Nb_players = "Players : " + std::to_string(nb_players);
+
+    if (m_Players->get_text().raw() != temp) {
+        this->m_Players->set_text(temp.c_str());
+        this->m_Nb_players = "Players : " + std::to_string(nb_players);
+    }
 
  return true;
 }
