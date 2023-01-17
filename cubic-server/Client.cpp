@@ -515,7 +515,7 @@ void Client::sendLoginPlay(const protocol::LoginPlay &packet)
     i += 1;
     this->_player->_dim->addEntity(this->_player);
     LDEBUG("Added entity player to dimension");
-    // this->_player->getDimension()->getWorld()->addPlayerInfo(this->_player);
+    this->_player->getDimension()->getWorld()->addPlayerInfo(this->_player);
     this->_player->getDimension()->spawnPlayer(this->_player);
 }
 
