@@ -98,6 +98,7 @@ private:
     protocol::ClientStatus _status;
     Player *_player;
     logging::Logger *_log;
+    std::mutex _write_mutex;
 };
 
 #endif /* D23DD5CC_1F28_49BB_B77D_E244C60CC705 */

@@ -128,12 +128,15 @@ bool Client::isDisconnected() const
 void Client::_sendData(const std::vector<uint8_t> &data)
 {
     // This is extremely inefficient but it will do for now
+    _write_mutex.lock();
     for (const auto i : data)
         _send_buffer.push_back(i);
+    _write_mutex.unlock();
 }
 
 void Client::_flushSendData()
 {
+    _write_mutex.lock();
     char send_buffer[2048];
     size_t to_send = std::min(_send_buffer.size(), (size_t)2048);
     std::copy(_send_buffer.begin(), _send_buffer.begin() + to_send, send_buffer);
@@ -142,10 +145,13 @@ void Client::_flushSendData()
     if (write_return == -1)
         LERROR("Write error" + std::string(strerror(errno)));
 
-    if (write_return <= 0)
+    if (write_return <= 0) {
+        _write_mutex.unlock();
         return;
+    }
 
     _send_buffer.erase(_send_buffer.begin(), _send_buffer.begin() + write_return);
+    _write_mutex.unlock();
 }
 
 void Client::switchToPlayState(u128 playerUuid, const std::string &username)
