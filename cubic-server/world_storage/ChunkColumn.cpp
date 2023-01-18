@@ -179,15 +179,39 @@ void ChunkColumn::_generateEnd() {
 void ChunkColumn::_generateFlat() {
     // TODO: optimize this
     // This take forever because of the Block constructor
-    for (int y = 0; y < 4; y++) {
+    for (int y = 0; y < 7; y++) {
         for (int z = 0; z < 16; z++) {
             for (int x = 0; x < 16; x++) {
                 if (y == 0) {
                     updateBlock({x, y, z}, getGlobalPaletteIdFromBlockName("minecraft:bedrock"));
                 } else if (y == 1 || y == 2) {
                     updateBlock({x, y, z}, getGlobalPaletteIdFromBlockName("minecraft:dirt"));
-                } else {
+                } else if (y == 3) {
                     updateBlock({x, y, z}, getGlobalPaletteIdFromBlockName("minecraft:grass_block"));
+                } else if (y == 4 && z == 8 && x == 8) {
+                    updateBlock({x, y, z}, getGlobalPaletteIdFromBlockName("minecraft:oak_log"));
+                } else if (y == 5) {
+                    switch (x + (z * 16)) {
+                        case 7 + 7 * 16:
+                        case 8 + 7 * 16:
+                        case 9 + 7 * 16:
+                            updateBlock({x, y, z}, getGlobalPaletteIdFromBlockName("minecraft:oak_leaves"));
+                            break;
+                        case 7 + 8 * 16:
+                        case 9 + 8 * 16:
+                            updateBlock({x, y, z}, getGlobalPaletteIdFromBlockName("minecraft:oak_leaves"));
+                            break;
+                        case 7 + 9 * 16:
+                        case 8 + 9 * 16:
+                        case 9 + 9 * 16:
+                            updateBlock({x, y, z}, getGlobalPaletteIdFromBlockName("minecraft:oak_leaves"));
+                            break;
+                        case 8 + 8 * 16:
+                            updateBlock({x, y, z}, getGlobalPaletteIdFromBlockName("minecraft:oak_log"));
+                            break;
+                    }
+                } else if (y == 6 && z == 8 && x == 8) {
+                    updateBlock({x, y, z}, getGlobalPaletteIdFromBlockName("minecraft:oak_leaves"));
                 }
             }
         }
