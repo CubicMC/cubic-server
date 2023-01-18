@@ -278,7 +278,7 @@ void Player::sendLoginPlay(const protocol::LoginPlay &packet)
     // Send login message
     chat::Message connectionMsg = chat::Message("", {
         .color = "yellow",
-        .translate = "multiplayer.player.join",
+        .translate = "multiplayer.player.joined",
         .with = std::vector<chat::Message>({
             chat::Message(
                 this->getUsername(),

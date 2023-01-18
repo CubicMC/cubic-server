@@ -41,8 +41,8 @@ ChunkColumn &Level::getChunkColumn(int x, int z)
 const ChunkColumn &Level::getChunkColumn(int x, int z) const
 {
     _2d_pos pos = {
-        x < 0 ? -1 + int(x/16) : int(x/16),
-        z < 0 ? -1 + int(z/16) : int(z/16)
+        x < 0 ? -1 + int((x + 1) / 16) : int(x / 16),
+        z < 0 ? -1 + int((z + 1) / 16) : int(z / 16)
     };
     return _chunkColumns.at(pos);
 }

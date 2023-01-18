@@ -19,7 +19,7 @@ void ChunkColumn::updateBlock(protocol::Position pos, Block block)
 
 void ChunkColumn::updateBlock(protocol::Position pos, GlobalBlockId id)
 {
-    logging::Logger::get_instance()->info("update Block before if (" + std::to_string(pos.x) + ", " + std::to_string(pos.y) + ", " + std::to_string(pos.z) + ")");
+    // logging::Logger::get_instance()->info("update Block before if (" + std::to_string(pos.x) + ", " + std::to_string(pos.y) + ", " + std::to_string(pos.z) + ")");
     if (pos.y > _heightMap.motionBlocking.at(pos.x + pos.z * SECTION_WIDTH).get_value())
         _heightMap.motionBlocking.at(pos.x + pos.z * SECTION_WIDTH).setValue(pos.y);
     // logging::Logger::get_instance()->info("update Block after if");
