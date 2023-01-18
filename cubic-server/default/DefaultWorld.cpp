@@ -84,8 +84,8 @@ void DefaultWorld::save() {
             new nbt::Long("Time", 0),
             new nbt::Int("Time", 19133 ),
             new nbt::Compound("Version", {
-                    new nbt::Int("Id", 3120),
-                    new nbt::String("Name", "1.19.2"),
+                    new nbt::Int("Id", 3105),
+                    new nbt::String("Name", "1.19"),
                     new nbt::String("Series", "main"),
                     new nbt::Byte("Snapshot", 0)
             }),
