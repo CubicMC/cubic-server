@@ -11,6 +11,7 @@ World::World(WorldGroup *worldGroup):
 {
     _log = logging::Logger::get_instance();
     _timeUpdateClock.start();
+    _seed = -721274728;
     _chat = worldGroup->getChat();
 }
 
@@ -172,3 +173,8 @@ void World::sendPlayerInfoRemovePlayer(Player *current) {
     }
     LDEBUG("Sent player info to " + current->getUsername());
 }
+
+
+int64_t World::getSeed() const {
+        return _seed;
+    }

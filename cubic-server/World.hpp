@@ -22,6 +22,7 @@ class World
 {
 public:
     World(WorldGroup *worldGroup);
+
     virtual void tick();
     virtual void initialize() = 0;
     virtual WorldGroup *getWorldGroup() const;
@@ -38,6 +39,8 @@ public:
     virtual void sendPlayerInfoAddPlayer(Player *);
     virtual void sendPlayerInfoRemovePlayer(Player *current);
 
+    virtual int64_t getSeed() const;
+
 protected:
     std::shared_ptr<Chat> _chat;
     WorldGroup *_worldGroup;
@@ -48,6 +51,7 @@ protected:
     long _time;
     world_storage::LevelData _levelData;
     TickClock _timeUpdateClock;
+    int64_t _seed;
 };
 
 
