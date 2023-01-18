@@ -26,7 +26,10 @@ std::vector<Entity *> &Dimension::getEntities()
 
 void Dimension::removeEntity(Entity *entity)
 {
+    LINFO("In remove entity in dimension");
     _entities.erase(std::remove(_entities.begin(), _entities.end(), entity), _entities.end());
+    for (auto &player : getPlayerList())
+        player->sendRemoveEntities({entity->getId()});
 }
 
 void Dimension::addEntity(Entity *entity)

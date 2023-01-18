@@ -426,7 +426,7 @@ void Client::sendLoginSuccess(const protocol::LoginSuccess &packet)
     protocol::LoginPlay resPck = {
             .entityID = _player->getId(), // TODO: figure out what is this
             .isHardcore = false, // TODO: something like this this->_player->_dim->getWorld()->getDifficulty();
-            .gamemode = 0, // TODO: something like this this->_player->getGamemode()
+            .gamemode = 1, // TODO: something like this this->_player->getGamemode()
             .previousGamemode = 0, // TODO: something like this this->_player->getPreviousGamemode().has_value() ? this->_player->getPreviousGamemode() : -1;
             .dimensionNames = std::vector<std::string>({"minecraft:overworld"}), // TODO: something like this this->_player->_dim->getWorld()->getDimensions();
             .registryCodec = nbt::Compound("", {
@@ -534,17 +534,24 @@ void Client::sendLoginPlay(const protocol::LoginPlay &packet)
     LDEBUG("Sent a login play");
     // Send all chunks around the player
     // TODO: send chunk closer to the player first
-    for (int32_t x = -2; x < 2; x++) {
-        for (int32_t z = -2; z < 2; z++) {
+    this->_player->sendChunkAndLightUpdate(0, 0);
+    for (int32_t x = -4; x < 4; x++) {
+        for (int32_t z = -4; z < 4; z++) {
+            if (x == 0 && z == 0)
+                continue;
             this->_player->sendChunkAndLightUpdate(x, z);
         }
     }
-    this->_player->sendSynchronizePosition({0, -58, 0});
+    this->_player->sendSynchronizePosition({8.5, 65, 8.5});
+    // for (auto &player : this->_player->getDimension()->getPlayerList())
+    //     player->sendSynchronizePosition({0, -58, 0});
     // this->_player->sendChunkAndLightUpdate(0, 0);
     this->_player->_dim->addEntity(this->_player);
     LDEBUG("Added entity player to dimension");
     this->_player->getDimension()->getWorld()->sendPlayerInfoAddPlayer(this->_player);
     this->_player->getDimension()->spawnPlayer(this->_player);
+    // for (auto &player : this->_player->getDimension()->getPlayerList())
+    //     player->sendTeleportEntity(this->_player->getId(), {0, -58, 0});
 }
 
 void Client::sendPlayerInfo(const protocol::PlayerInfo &data)
@@ -629,12 +636,4 @@ void Client::disconnect(const chat::Message &reason)
     _sendData(*pck);
     _is_running = false;
     LDEBUG("Sent a disconnect login packet");
-}
-
-void Client::sendChunkDataAndLightUpdate(const protocol::ChunkDataAndLightUpdate &packet)
-{
-    // this->_player->getDimension()->
-    auto pck = protocol::createChunkDataAndLightUpdate(packet);
-    _sendData(*pck);
-    LDEBUG("Sent a chunk data and light update");
 }

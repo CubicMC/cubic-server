@@ -33,7 +33,10 @@ namespace protocol
         PlayerChatMessage = 0x30,
         PlayerInfo = 0x34,
         SynchronizePlayerPosition = 0x36,
+        RemoveEntities = 0x38,
+        HeadRotation = 0x3C,
         UpdateTime = 0x59,
+        TeleportEntity = 0x63,
         EntitySoundEffect = 0x5c,
         SoundEffect = 0x5d,
         DisconnectPlay = 0x17,
@@ -222,6 +225,21 @@ namespace protocol
 
     std::shared_ptr<std::vector<uint8_t>> createSynchronizePlayerPosition(const SynchronizePlayerPosition &);
 
+    struct RemoveEntities
+    {
+        std::vector<int32_t> entities;
+    };
+
+    std::shared_ptr<std::vector<uint8_t>> createRemoveEntities(const RemoveEntities &in);
+
+    struct HeadRotation
+    {
+        int32_t entityID;
+        uint8_t headYaw;
+    };
+
+    std::shared_ptr<std::vector<uint8_t>> createHeadRotation(const HeadRotation &in);
+
     struct CustomSoundEffect
     {
         std::string name;
@@ -317,6 +335,20 @@ namespace protocol
     };
 
     std::shared_ptr<std::vector<uint8_t>> createUpdateTime(const UpdateTime &);
+
+    struct TeleportEntity
+    {
+        int32_t entityID;
+        double x;
+        double y;
+        double z;
+        uint8_t yaw;
+        uint8_t pitch;
+        bool onGround;
+    };
+
+    std::shared_ptr<std::vector<uint8_t>> createTeleportEntity(const TeleportEntity &);
+
     struct PluginMessageResponse
     {
         std::string channel;

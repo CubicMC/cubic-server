@@ -9,6 +9,7 @@
 #include "types.hpp"
 #include "Chat.hpp"
 #include "TickClock.hpp"
+#include "protocol/ClientPackets.hpp"
 
 class Client;
 class Entity;
@@ -38,9 +39,12 @@ public:
     void sendKeepAlive(long id);
     void sendSynchronizePosition(Vector3<double> pos);
     void sendSwingArm(bool main_hand, int32_t swinger_id);
-    void sendUpdateEntityPosition(std::shared_ptr<std::vector<uint8_t>> pck);
-    void sendUpdateEntityPositionAndRotation(std::shared_ptr<std::vector<uint8_t>> pck);
-    void sendUpdateEntityRotation(std::shared_ptr<std::vector<uint8_t>> pck);
+    void sendTeleportEntity(int32_t id, const Vector3<double> &pos);
+    void sendRemoveEntities(const std::vector<int32_t> &entities);
+    void sendUpdateEntityPosition(const protocol::UpdateEntityPosition &data);
+    void sendUpdateEntityPositionAndRotation(const protocol::UpdateEntityPositionRotation &data);
+    void sendUpdateEntityRotation(const protocol::UpdateEntityRotation &data);
+    void sendHeadRotation(const protocol::HeadRotation &data);
     void sendChunkAndLightUpdate(int32_t x, int32_t z);
 
 private:

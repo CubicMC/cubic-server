@@ -29,9 +29,15 @@ void Player::tick()
 
     bool updatePos = false;
     bool updateRot = false;
+    int16_t deltaX = 0;
+    int16_t deltaY = 0;
+    int16_t deltaZ = 0;
 
     if (_pos != _lastPos) {
         updatePos = true;
+        deltaX = static_cast<int16_t>((this->_pos.x * 32.0 - this->_lastPos.x * 32.0) * 128.0);
+        deltaY = static_cast<int16_t>((this->_pos.y * 32.0 - this->_lastPos.y * 32.0) * 128.0);
+        deltaZ = static_cast<int16_t>((this->_pos.z * 32.0 - this->_lastPos.z * 32.0) * 128.0);
         _lastPos = _pos;
     }
     if (_rot != _lastRot) {
@@ -42,40 +48,51 @@ void Player::tick()
         for (auto i : this->getDimension()->getPlayerList()) {
             if (i->getId() == this->getId())
                 continue;
-            i->sendUpdateEntityPositionAndRotation(protocol::createUpdateEntityPositionRotation({
+            i->sendUpdateEntityPositionAndRotation({
                 this->getId(),
-                static_cast<int16_t>((this->_pos.x * 32.0 - this->_lastPos.x * 32) * 128),
-                static_cast<int16_t>((this->_pos.y * 32.0 - this->_lastPos.y * 32) * 128),
-                static_cast<int16_t>((this->_pos.z * 32.0 - this->_lastPos.z * 32) * 128),
-                (uint8_t) (this->_rot.x),
-                (uint8_t) (this->_rot.y),
+                deltaX,
+                deltaY,
+                deltaZ,
+                this->_rot.x,
+                this->_rot.y,
                 true
-            }));
+            });
+            i->sendHeadRotation({
+                this->getId(),
+                _rot.x
+            });
         }
     } else if (updatePos && !updateRot) {
         for (auto i : this->getDimension()->getPlayerList()) {
             if (i->getId() == this->getId())
                 continue;
-            i->sendUpdateEntityPosition(protocol::createUpdateEntityPosition({
+            i->sendUpdateEntityPosition({
                 this->getId(),
-                static_cast<int16_t>((this->_pos.x * 32.0 - this->_lastPos.x * 32) * 128),
-                static_cast<int16_t>((this->_pos.y * 32.0 - this->_lastPos.y * 32) * 128),
-                static_cast<int16_t>((this->_pos.z * 32.0 - this->_lastPos.z * 32) * 128),
+                deltaX,
+                deltaY,
+                deltaZ,
                 true
-            }));
+            });
         }
     } else if (!updatePos && updateRot) {
         for (auto i : this->getDimension()->getPlayerList()) {
             if (i->getId() == this->getId())
                 continue;
-            i->sendUpdateEntityRotation(protocol::createUpdateEntityRotation({
+            i->sendUpdateEntityRotation({
                 this->getId(),
-                (uint8_t) (this->_rot.x),
-                (uint8_t) (this->_rot.y),
+                this->_rot.x,
+                this->_rot.y,
                 true
-            }));
+            });
+            i->sendHeadRotation({
+                this->getId(),
+                _rot.x
+            });
         }
     }
+
+    if (_pos.y < -100)
+        sendSynchronizePosition({_pos.x, -58, _pos.z});
 }
 
 Client *Player::getClient() const
@@ -175,12 +192,12 @@ void Player::playSoundEffect(SoundsList sound, const Entity *entity, SoundCatego
         (int32_t) sound,
         (int32_t) category,
         entity->getId(),
-        0.5, // TODO: get the right volume
+        1.0, // TODO: get the right volume
         1.0, // TODO: get the right pitch
         1 // TODO: get the right seed
     });
     this->_cli->_sendData(*pck);
-    LDEBUG("Sent a sound effect packet");
+    LDEBUG("Sent a entity sound effect packet");
 }
 
 void Player::playCustomSound(std::string sound, protocol::FloatingPosition position, SoundCategory category)
@@ -218,22 +235,32 @@ void Player::sendKeepAlive(long id)
     LDEBUG("Sent a keep alive packet");
 }
 
-void Player::sendUpdateEntityPosition(std::shared_ptr<std::vector<uint8_t>> pck)
+void Player::sendUpdateEntityPosition(const protocol::UpdateEntityPosition &data)
 {
+    auto pck = protocol::createUpdateEntityPosition(data);
     this->_cli->_sendData(*pck);
     LDEBUG("Sent an entity position packet");
 }
 
-void Player::sendUpdateEntityPositionAndRotation(std::shared_ptr<std::vector<uint8_t>> pck)
+void Player::sendUpdateEntityPositionAndRotation(const protocol::UpdateEntityPositionRotation &data)
 {
+    auto pck = protocol::createUpdateEntityPositionRotation(data);
     this->_cli->_sendData(*pck);
     LDEBUG("Sent an entity position and rotation packet");
 }
 
-void Player::sendUpdateEntityRotation(std::shared_ptr<std::vector<uint8_t>> pck)
+void Player::sendUpdateEntityRotation(const protocol::UpdateEntityRotation &data)
 {
+    auto pck = protocol::createUpdateEntityRotation(data);
     this->_cli->_sendData(*pck);
     LDEBUG("Sent an entity rotation packet");
+}
+
+void Player::sendHeadRotation(const protocol::HeadRotation &data)
+{
+    auto pck = protocol::createHeadRotation(data);
+    this->_cli->_sendData(*pck);
+    LDEBUG("Sent an entity head rotation packet");
 }
 
 void Player::sendSynchronizePosition(Vector3<double> pos)
@@ -249,10 +276,15 @@ void Player::sendSynchronizePosition(Vector3<double> pos)
         true,
 
     });
-    this->setPosition(pos);
     this->_cli->_sendData(*pck);
+    this->forceSetPosition(pos);
     LDEBUG("Synchronized player position");
 
+    for (auto i : this->getDimension()->getPlayerList()) {
+        if (i->getId() == this->getId())
+            continue;
+        i->sendTeleportEntity(this->getId(), pos);
+    }
 }
 
 void Player::sendChunkAndLightUpdate(int32_t x, int32_t z)
@@ -294,6 +326,34 @@ void Player::sendChunkAndLightUpdate(int32_t x, int32_t z)
     LDEBUG("Sent a chunk data and light update packet (" + std::to_string(x) + ", " + std::to_string(z) + ")");
     delete motionBlockingList;
     delete worldSurfaceList;
+}
+
+void Player::sendRemoveEntities(const std::vector<int32_t> &entities)
+{
+    auto pck = protocol::createRemoveEntities({entities});
+    this->_cli->_sendData(*pck);
+    LINFO("Sent a Remove Entities packet");
+}
+
+void Player::sendSwingArm(bool main_hand, int32_t swinger_id)
+{
+    auto pck = protocol::createEntityAnimationClient(
+        main_hand ? protocol::EntityAnimationID::SwingMainArm : protocol::EntityAnimationID::SwingOffHand,
+        swinger_id
+    );
+    _cli->_sendData(*pck);
+}
+
+void Player::sendTeleportEntity(int32_t id, const Vector3<double> &pos)
+{
+    auto pck = protocol::createTeleportEntity({
+        id,
+        pos.x,
+        pos.y,
+        pos.z
+    });
+    _cli->_sendData(*pck);
+    LDEBUG("Sent a Teleport Entity");
 }
 
 #pragma endregion
@@ -400,26 +460,26 @@ void Player::_onLockDifficulty(const std::shared_ptr<protocol::LockDifficulty> &
 
 void Player::_onSetPlayerPosition(const std::shared_ptr<protocol::SetPlayerPosition> &pck)
 {
-    // LDEBUG("Got a Set Player Position");
+    LINFO("Got a Set Player Position (" + std::to_string(pck->x) + ", " + std::to_string(pck->feet_y) + ", " + std::to_string(pck->z) + ")");
     this->setPosition(pck->x, pck->feet_y, pck->z);
 }
 
 void Player::_onSetPlayerPositionAndRotation(const std::shared_ptr<protocol::SetPlayerPositionAndRotation> &pck)
 {
-    // LDEBUG("Got a Set Player Position And Rotation");
+    LINFO("Got a Set Player Position And Rotation (" + std::to_string(pck->x) + ", " + std::to_string(pck->feet_y) + ", " + std::to_string(pck->z) + ")");
     this->setPosition(pck->x, pck->feet_y, pck->z);
     float yaw_tmp = pck->yaw;
     while (yaw_tmp < 0)
         yaw_tmp += 360;
     while (yaw_tmp > 360)
         yaw_tmp -= 360;
-    this->setRotation(yaw_tmp, pck->pitch);
+    this->setRotation(yaw_tmp, pck->pitch/1.5);
 }
 
 void Player::_onSetPlayerRotation(const std::shared_ptr<protocol::SetPlayerRotation> &pck)
 {
     LDEBUG("Got a Set Player Rotation");
-    this->setRotation(pck->yaw, pck->pitch);
+    this->setRotation(pck->yaw, pck->pitch/1.5);
 }
 
 void Player::_onSetPlayerOnGround(const std::shared_ptr<protocol::SetPlayerOnGround> &pck)
@@ -535,15 +595,6 @@ void Player::_onProgramStructureBlock(const std::shared_ptr<protocol::ProgramStr
 void Player::_onUpdateSign(const std::shared_ptr<protocol::UpdateSign> &pck)
 {
     LDEBUG("Got a Update Sign");
-}
-
-void Player::sendSwingArm(bool main_hand, int32_t swinger_id)
-{
-    auto pck = protocol::createEntityAnimationClient(
-        main_hand ? protocol::EntityAnimationID::SwingMainArm : protocol::EntityAnimationID::SwingOffHand,
-        swinger_id
-    );
-    _cli->_sendData(*pck);
 }
 
 void Player::_onSwingArm(const std::shared_ptr<protocol::SwingArm> &pck)
