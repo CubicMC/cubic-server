@@ -21,7 +21,7 @@ void SoundSystem::tick()
             if (!player)
                 continue;
 
-            player->playSoundEffect(SoundsList::entity_piglin_angry, player, SoundCategory::Ambient);
+            player->playSoundEffect(SoundsList::block_bell_use, player, SoundCategory::Ambient);
         }
     }
 }

@@ -353,6 +353,17 @@ std::shared_ptr<std::vector<uint8_t>> protocol::createPluginMessageResponse(cons
     return packet;
 }
 
+std::shared_ptr<std::vector<uint8_t>> protocol::createBlockUpdate(const BlockUpdate &in)
+{
+    std::vector<uint8_t> payload;
+    serialize(payload,
+        in.location, addPosition,
+        in.block_id, addVarInt);
+    auto packet = std::make_shared<std::vector<uint8_t>>();
+    finalize(*packet, payload, (int32_t)ClientPacketID::BlockUpdate);
+    return packet;
+}
+
 std::shared_ptr<std::vector<uint8_t>> protocol::createSystemChatMessage(const SystemChatMessage &in)
 {
     std::vector<uint8_t> payload;
@@ -449,5 +460,17 @@ std::shared_ptr<std::vector<uint8_t>> protocol::createChunkDataAndLightUpdate(co
         in.blockLight, addLightArray);
     auto packet = std::make_shared<std::vector<uint8_t>>();
     finalize(*packet, payload, (int32_t) ClientPacketID::ChunkDataAndLightUpdate);
+    return packet;
+}
+
+std::shared_ptr<std::vector<uint8_t>> protocol::createPlayerAbilities(const PlayerAbilitiesClient &in)
+{
+    std::vector<uint8_t> payload;
+    serialize(payload,
+        in.flags, addByte,
+        in.flyingSpeed, addFloat,
+        in.fieldOfViewModifier, addFloat);
+    auto packet = std::make_shared<std::vector<uint8_t>>();
+    finalize(*packet, payload, (int32_t) ClientPacketID::PlayerAbilities);
     return packet;
 }

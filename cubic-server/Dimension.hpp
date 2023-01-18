@@ -11,6 +11,7 @@
 #include "logging/Logger.hpp"
 #include "Entity.hpp"
 #include "world_storage/Level.hpp"
+#include "math/Vector3.hpp"
 
 class World;
 
@@ -33,11 +34,14 @@ public:
     virtual void addEntity(Entity *entity);
     virtual void forEachEntity(std::function<void(Entity *)> callback);
     virtual void forEachEntityIf(std::function<void(Entity *)> callback, std::function<bool(const Entity *)> predicate);
+    virtual void forEachPlayer(std::function<void(Player *)> callback);
+    virtual void forEachPlayerIf(std::function<void(Player *)> callback, std::function<bool(const Entity *)> predicate);
 
     const world_storage::Level &getLevel() const;
     world_storage::Level &getEditableLevel();
     virtual void generateChunk(int x, int z);
-    virtual void spawnPlayer(const Player *);
+    virtual void blockUpdate(protocol::Position position, int32_t id);
+    virtual void spawnPlayer(Player *player);
     std::counting_semaphore<1000> dimensionLock;
 
 protected:

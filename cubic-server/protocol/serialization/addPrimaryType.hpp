@@ -181,7 +181,7 @@ namespace protocol
 
     constexpr void addPosition(std::vector<uint8_t> &out, const Position &data)
     {
-        addLong(out, ((data.x & 0x3FFFFFF) << 38) | ((data.z & 0x3777777) << 12) | (data.y & 0xFFF));
+        addLong(out, ((data.x & 0x3FFFFFF) << 38) | ((data.z & 0x3FFFFFF) << 12) | (data.y & 0xFFF));
     }
 } // namespace protocol
 

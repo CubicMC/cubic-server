@@ -29,7 +29,7 @@ void Chat::sendPlayerMessage(const chat::Message &message, const Player *sender)
             auto player = dynamic_cast<Player*>(entity);
             if (player == nullptr)
                 continue;
-            player->getClient()->sendChatMessageResponse({
+            player->sendChatMessageResponse({
                 "",
                 true,
                 response.dump(),
@@ -61,7 +61,7 @@ void Chat::sendSystemMessage(const chat::Message &message, bool overlay, const W
             auto player = dynamic_cast<Player*>(entity);
             if (player == nullptr)
                 continue;
-            player->getClient()->sendSystemChatMessage({
+            player->sendSystemChatMessage({
                 message.serialize(),
                 overlay
             });
@@ -82,7 +82,7 @@ void Chat::sendSayMessage(const chat::Message &message, const Player *sender)
             auto player = dynamic_cast<Player*>(entity);
             if (player == nullptr)
                 continue;
-            player->getClient()->sendChatMessageResponse({
+            player->sendChatMessageResponse({
                 "",
                 true,
                 message.serialize(),
@@ -99,7 +99,7 @@ void Chat::sendSayMessage(const chat::Message &message, const Player *sender)
     }
 }
 
-void Chat::sendMsgMessage(const chat::Message &message, Client *sender, Client *to)
+void Chat::sendMsgMessage(const chat::Message &message, Player *sender, Player *to)
 {
     if (sender == nullptr) {
         LERROR("sender is null");

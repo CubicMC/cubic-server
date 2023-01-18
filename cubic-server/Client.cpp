@@ -422,11 +422,12 @@ void Client::sendLoginSuccess(const protocol::LoginSuccess &packet)
 
     switchToPlayState(packet.uuid, packet.username);
     LDEBUG("Switched to play state");
+    this->_player->setGamemode(1);
 
     protocol::LoginPlay resPck = {
             .entityID = _player->getId(), // TODO: figure out what is this
             .isHardcore = false, // TODO: something like this this->_player->_dim->getWorld()->getDifficulty();
-            .gamemode = 1, // TODO: something like this this->_player->getGamemode()
+            .gamemode = this->_player->getGamemode(),
             .previousGamemode = 0, // TODO: something like this this->_player->getPreviousGamemode().has_value() ? this->_player->getPreviousGamemode() : -1;
             .dimensionNames = std::vector<std::string>({"minecraft:overworld"}), // TODO: something like this this->_player->_dim->getWorld()->getDimensions();
             .registryCodec = nbt::Compound("", {
@@ -523,94 +524,8 @@ void Client::sendLoginSuccess(const protocol::LoginSuccess &packet)
         resPck.deathDimensionName = ""; // TODO: something like this->_player->deathDimensionName;
         resPck.deathLocation = {0, 0, 0}; // TODO: something like this->_player->deathLocation;
     }
-    sendLoginPlay(resPck);
+    _player->sendLoginPlay(resPck);
     resPck.registryCodec.destroy();
-}
-
-void Client::sendLoginPlay(const protocol::LoginPlay &packet)
-{
-    auto pck = protocol::createLoginPlay(packet);
-    _sendData(*pck);
-    LDEBUG("Sent a login play");
-    // Send all chunks around the player
-    // TODO: send chunk closer to the player first
-    this->_player->sendChunkAndLightUpdate(0, 0);
-    for (int32_t x = -4; x < 4; x++) {
-        for (int32_t z = -4; z < 4; z++) {
-            if (x == 0 && z == 0)
-                continue;
-            this->_player->sendChunkAndLightUpdate(x, z);
-        }
-    }
-    this->_player->sendSynchronizePosition({8.5, 65, 8.5});
-    // for (auto &player : this->_player->getDimension()->getPlayerList())
-    //     player->sendSynchronizePosition({0, -58, 0});
-    // this->_player->sendChunkAndLightUpdate(0, 0);
-    this->_player->_dim->addEntity(this->_player);
-    LDEBUG("Added entity player to dimension");
-    this->_player->getDimension()->getWorld()->sendPlayerInfoAddPlayer(this->_player);
-    this->_player->getDimension()->spawnPlayer(this->_player);
-    // for (auto &player : this->_player->getDimension()->getPlayerList())
-    //     player->sendTeleportEntity(this->_player->getId(), {0, -58, 0});
-}
-
-void Client::sendPlayerInfo(const protocol::PlayerInfo &data)
-{
-    LDEBUG("Sending PlayerInfo. Currently there is: " + std::to_string(data.numberOfPlayers) + " players");
-    auto pck = protocol::createPlayerInfo(data);
-    _sendData(*pck);
-
-    LDEBUG("Sent a Player Info packet");
-}
-
-void Client::sendSpawnPlayer(const protocol::SpawnPlayer &data)
-{
-    auto pck = protocol::createSpawnPlayer(data);
-    _sendData(*pck);
-
-    LDEBUG("Sent a Spawn Player packet on coords: " + std::to_string(data.x) + " " + std::to_string(data.y) + " " + std::to_string(data.z));
-}
-
-void Client::sendUpdateTime(const protocol::UpdateTime &data)
-{
-    auto pck = protocol::createUpdateTime(data);
-    _sendData(*pck);
-
-    LDEBUG("Sent an Update Time packet");
-}
-
-void Client::sendChatMessageResponse(const protocol::PlayerChatMessage &packet)
-{
-    // auto pck = protocol::createPlayerChatMessage(packet);
-    // _sendData(*pck);
-
-    // LDEBUG("Sent a chat message response");
-}
-
-void Client::sendSystemChatMessage(const protocol::SystemChatMessage &packet)
-{
-    std::string temp = "{\"style\":{\"color\":\"red\"},\"translate\":\"multiplayer.player.left\",\"with\":[{\"insertion\":\"Trompette2\",\"clickEvent\":{\"action\":\"suggest_command\",\"value\":\"/tell Trompette2 \"},\"hoverEvent\":{\"action\":\"show_entity\",\"contents\":{\"type\":\"minecraft:player\",\"id\":\"e02c083d-1c61-3b49-b7ea-4d47e2b9698a\",\"name\":{\"text\":\"Trompette2\"}}},\"text\":\"Trompette2\"}]}";
-    auto pck = protocol::createSystemChatMessage(packet);
-    // auto pck = protocol::createPlayerChatMessage(packet);
-    // auto pck = protocol::createSystemChatMessage({
-    //     temp,
-    //     false
-    // });
-    _sendData(*pck);
-
-    LDEBUG("Sent a system chat message to " + _player->getUsername());
-    LDEBUG("template: ");
-    LDEBUG(temp);
-    LDEBUG("message: ");
-    LDEBUG(packet.JSONData);
-}
-
-void Client::sendWorldEvent(const protocol::WorldEvent &packet)
-{
-    auto pck = protocol::createWorldEvent(packet);
-    _sendData(*pck);
-
-    LDEBUG("Sent a world event");
 }
 
 void Client::disconnect(const chat::Message &reason)

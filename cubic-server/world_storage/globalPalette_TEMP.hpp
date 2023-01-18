@@ -17,6 +17,10 @@ constexpr uint32_t getGlobalPaletteIdFromBlockName(const std::string &name)
     else if (name == "minecraft:dirt") return 10;
     else if (name == "minecraft:oak_log") return 118;
     else if (name == "minecraft:oak_leaves") return 207;
+    else if (name == "minecraft:glass") return 460;
+    else if (name == "minecraft:cobblestone") return 14;
+    else if (name == "minecraft:pink_terracotta") return 7482;
+    else if (name == "minecraft:purple_carpet") return 8617;
 
     // Default
     return 0;
@@ -33,6 +37,10 @@ constexpr std::string getBlockFromGlobalPaletteId(uint32_t id)
     else if (id == 10) return "minecraft:dirt";
     else if (id == 118) return "minecraft:oak_log";
     else if (id == 207) return "minecraft:oak_leaves";
+    else if (id == 460) return "minecraft:glass";
+    else if (id == 14) return "minecraft:cobblestone";
+    else if (id == 7482) return "minecraft:pink_terracotta";
+    else if (id == 8617) return "minecraft:purple_carpet";
 
     // Default
     return "minecraft:air";

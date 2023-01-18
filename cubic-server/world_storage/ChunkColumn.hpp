@@ -28,9 +28,10 @@ constexpr int NB_OF_CHUNKS = CHUNK_HEIGHT / SECTION_HEIGHT;
 // TODO: Accept negative position for y
 constexpr uint64_t calculateBlockIdx(const protocol::Position &pos)
 {
-    if (pos.x < 0 || pos.x >= SECTION_WIDTH || pos.y < 0 || pos.y >= CHUNK_HEIGHT || pos.z < 0 || pos.z >= SECTION_WIDTH)
-        throw std::runtime_error("Invalid position: (" + std::to_string(pos.x) + ", " + std::to_string(pos.y) + ", " + std::to_string(pos.z) + ")");
-    return pos.x + (pos.z * SECTION_WIDTH) + (pos.y * (SECTION_WIDTH * SECTION_WIDTH));
+    auto y = pos.y - CHUNK_HEIGHT_MIN;
+    if (pos.x < 0 || pos.x >= SECTION_WIDTH || y < 0 || y >= CHUNK_HEIGHT || pos.z < 0 || pos.z >= SECTION_WIDTH)
+        throw std::runtime_error("Invalid position: (" + std::to_string(pos.x) + ", " + std::to_string(y) + ", " + std::to_string(pos.z) + ")");
+    return pos.x + (pos.z * SECTION_WIDTH) + (y * (SECTION_WIDTH * SECTION_WIDTH));
 }
 
 struct BlockEntity {

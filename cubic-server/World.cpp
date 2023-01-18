@@ -93,7 +93,7 @@ void World::updateTime() {
         auto player = dynamic_cast<Player *>(entity);
 
         if (player) {
-            player->getClient()->sendUpdateTime({ _age,_time });
+            player->sendUpdateTime({ _age,_time });
         }
     }
 }
@@ -108,7 +108,7 @@ void World::sendPlayerInfoAddPlayer(Player *current) {
 
         // send to each player the info of the current added player
         if (player != current) {
-            player->getClient()->sendPlayerInfo({
+            player->sendPlayerInfo({
                 .action = 0,
                 .numberOfPlayers = 1,
                 .players = {
@@ -140,7 +140,7 @@ void World::sendPlayerInfoAddPlayer(Player *current) {
     }
 
     // send the infos of all players to the current added player
-    current->getClient()->sendPlayerInfo({
+    current->sendPlayerInfo({
         .action = 0,
         .numberOfPlayers = (int32_t) players.size(),
         .players = players_info
@@ -157,7 +157,7 @@ void World::sendPlayerInfoRemovePlayer(Player *current) {
 
         // send to each player the info of the current removed player
         if (player != current) {
-            player->getClient()->sendPlayerInfo({
+            player->sendPlayerInfo({
                 .action = 4,
                 .numberOfPlayers = 1,
                 .players = {

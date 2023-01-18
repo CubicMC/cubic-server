@@ -8,6 +8,7 @@
 #include "protocol/ClientPackets.hpp"
 #include <cstdint>
 #include "World.hpp"
+#include "world_storage/globalPalette_TEMP.hpp"
 
 Player::Player(Client *cli, std::shared_ptr<Dimension> dim, u128 uuid, const std::string &username):
     _cli(cli),
@@ -21,6 +22,19 @@ Player::Player(Client *cli, std::shared_ptr<Dimension> dim, u128 uuid, const std
 {
     _log = logging::Logger::get_instance();
     _keepAliveClock.start();
+    _heldItem = 0;
+
+    // Generate uuid string
+    std::stringstream uuidsstr;
+    std::string uuidstr;
+
+    uuidsstr << std::hex << this->getUuid().most << this->getUuid().least;
+    uuidstr = uuidsstr.str();
+    uuidstr.insert(8, "-");
+    uuidstr.insert(13, "-");
+    uuidstr.insert(18, "-");
+    uuidstr.insert(23, "-");
+    this->_uuidString = uuidstr;
 }
 
 void Player::tick()
@@ -110,23 +124,24 @@ const u128 &Player::getUuid() const
     return _uuid;
 }
 
-std::string Player::getUuidString() const
+uint16_t Player::getHeldItem() const
 {
-    std::stringstream uuidsstr;
-    std::string uuidstr;
-
-    uuidsstr << std::hex << this->getUuid().most << this->getUuid().least;
-    uuidstr = uuidsstr.str();
-    uuidstr.insert(8, "-");
-    uuidstr.insert(13, "-");
-    uuidstr.insert(18, "-");
-    uuidstr.insert(23, "-");
-    return uuidstr;
+    return this->_heldItem;
 }
 
-const int32_t Player::getGamemode() const
+const std::string &Player::getUuidString() const
+{
+    return this->_uuidString;
+}
+
+uint8_t Player::getGamemode() const
 {
     return _gamemode;
+}
+
+void Player::setGamemode(uint8_t gamemode)
+{
+    _gamemode = gamemode;
 }
 
 void Player::disconnect(const chat::Message &reason)
@@ -226,6 +241,128 @@ void Player::stopSound(uint8_t flags, SoundCategory category, std::string sound)
     });
     this->_cli->_sendData(*pck);
     LDEBUG("Sent a stop sound packet");
+}
+
+void Player::sendBlockUpdate(const protocol::BlockUpdate &packet)
+{
+    auto pck = protocol::createBlockUpdate(packet);
+    this->_cli->_sendData(*pck);
+
+    LINFO("Sent a block update at (" + std::to_string(packet.location.x) + ", " + std::to_string(packet.location.y) + ", " + std::to_string(packet.location.z) + ") = " + std::to_string(packet.block_id) + " to " + this->getUsername());
+}
+
+void Player::sendLoginPlay(const protocol::LoginPlay &packet)
+{
+    auto pck = protocol::createLoginPlay(packet);
+    _cli->_sendData(*pck);
+    LDEBUG("Sent a login play");
+    // Send all chunks around the player
+    // TODO: send chunk closer to the player first
+    sendChunkAndLightUpdate(0, 0);
+    for (int32_t x = -4; x < 4; x++) {
+        for (int32_t z = -4; z < 4; z++) {
+            if (x == 0 && z == 0)
+                continue;
+            sendChunkAndLightUpdate(x, z);
+        }
+    }
+    sendSynchronizePosition({8.5, 65, 8.5});
+    // for (auto &player : this->_player->getDimension()->getPlayerList())
+    //     player->sendSynchronizePosition({0, -58, 0});
+    // this->_player->sendChunkAndLightUpdate(0, 0);
+    _dim->addEntity(this);
+    LDEBUG("Added entity player to dimension");
+    getDimension()->getWorld()->sendPlayerInfoAddPlayer(this);
+    getDimension()->spawnPlayer(this);
+
+    // Send login message
+    chat::Message connectionMsg = chat::Message("", {
+        .color = "yellow",
+        .translate = "multiplayer.player.joined",
+        .with = std::vector<chat::Message>({
+            chat::Message(
+                this->getUsername(),
+                {
+                    .insertion = this->getUsername(),
+                },
+                chat::message::ClickEvent(
+                    chat::message::ClickEvent::Action::SuggestCommand,
+                    "/tell " + this->getUsername() + " "
+                ),
+                chat::message::HoverEvent(
+                    chat::message::HoverEvent::Action::ShowEntity,
+                    "{\"type\": \"minecraft:player\", \"id\": \"" + this->getUuidString() + "\", \"name\": \"" + this->getUsername() + "\"}"
+                )
+            )
+        })
+    });
+
+    this->getDimension()->getWorld()->getChat()->sendSystemMessage(
+        connectionMsg,
+        false,
+        this->getDimension()->getWorld()->getWorldGroup()
+    );
+    // for (auto &player : this->_player->getDimension()->getPlayerList())
+    //     player->sendTeleportEntity(this->_player->getId(), {0, -58, 0});
+}
+
+void Player::sendPlayerInfo(const protocol::PlayerInfo &data)
+{
+    LDEBUG("Sending PlayerInfo. Currently there is: " + std::to_string(data.numberOfPlayers) + " players");
+    auto pck = protocol::createPlayerInfo(data);
+    this->_cli->_sendData(*pck);
+
+    LDEBUG("Sent a Player Info packet");
+}
+
+void Player::sendSpawnPlayer(const protocol::SpawnPlayer &data)
+{
+    auto pck = protocol::createSpawnPlayer(data);
+    this->_cli->_sendData(*pck);
+
+    LDEBUG("Sent a Spawn Player packet on coords: " + std::to_string(data.x) + " " + std::to_string(data.y) + " " + std::to_string(data.z));
+}
+
+void Player::sendUpdateTime(const protocol::UpdateTime &data)
+{
+    auto pck = protocol::createUpdateTime(data);
+    this->_cli->_sendData(*pck);
+
+    LDEBUG("Sent an Update Time packet");
+}
+
+void Player::sendChatMessageResponse(const protocol::PlayerChatMessage &packet)
+{
+    // auto pck = protocol::createPlayerChatMessage(packet);
+    // this->_cli->_sendData(*pck);
+
+    // LDEBUG("Sent a chat message response");
+}
+
+void Player::sendSystemChatMessage(const protocol::SystemChatMessage &packet)
+{
+    std::string temp = "{\"style\":{\"color\":\"red\"},\"translate\":\"multiplayer.player.left\",\"with\":[{\"insertion\":\"Trompette2\",\"clickEvent\":{\"action\":\"suggest_command\",\"value\":\"/tell Trompette2 \"},\"hoverEvent\":{\"action\":\"show_entity\",\"contents\":{\"type\":\"minecraft:player\",\"id\":\"e02c083d-1c61-3b49-b7ea-4d47e2b9698a\",\"name\":{\"text\":\"Trompette2\"}}},\"text\":\"Trompette2\"}]}";
+    auto pck = protocol::createSystemChatMessage(packet);
+    // auto pck = protocol::createPlayerChatMessage(packet);
+    // auto pck = protocol::createSystemChatMessage({
+    //     temp,
+    //     false
+    // });
+    this->_cli->_sendData(*pck);
+
+    LDEBUG("Sent a system chat message to " + this->getUsername());
+    LDEBUG("template: ");
+    LDEBUG(temp);
+    LDEBUG("message: ");
+    LDEBUG(packet.JSONData);
+}
+
+void Player::sendWorldEvent(const protocol::WorldEvent &packet)
+{
+    auto pck = protocol::createWorldEvent(packet);
+    this->_cli->_sendData(*pck);
+
+    LDEBUG("Sent a world event");
 }
 
 void Player::sendKeepAlive(long id)
@@ -332,7 +469,7 @@ void Player::sendRemoveEntities(const std::vector<int32_t> &entities)
 {
     auto pck = protocol::createRemoveEntities({entities});
     this->_cli->_sendData(*pck);
-    LINFO("Sent a Remove Entities packet");
+    LDEBUG("Sent a Remove Entities packet");
 }
 
 void Player::sendSwingArm(bool main_hand, int32_t swinger_id)
@@ -354,6 +491,13 @@ void Player::sendTeleportEntity(int32_t id, const Vector3<double> &pos)
     });
     _cli->_sendData(*pck);
     LDEBUG("Sent a Teleport Entity");
+}
+
+void Player::sendPlayerAbilities(const protocol::PlayerAbilitiesClient &packet)
+{
+    auto pck = protocol::createPlayerAbilities(packet);
+    _cli->_sendData(*pck);
+    LDEBUG("Sent a Player Abilities packet");
 }
 
 #pragma endregion
@@ -460,13 +604,13 @@ void Player::_onLockDifficulty(const std::shared_ptr<protocol::LockDifficulty> &
 
 void Player::_onSetPlayerPosition(const std::shared_ptr<protocol::SetPlayerPosition> &pck)
 {
-    LINFO("Got a Set Player Position (" + std::to_string(pck->x) + ", " + std::to_string(pck->feet_y) + ", " + std::to_string(pck->z) + ")");
+    LDEBUG("Got a Set Player Position (" + std::to_string(pck->x) + ", " + std::to_string(pck->feet_y) + ", " + std::to_string(pck->z) + ")");
     this->setPosition(pck->x, pck->feet_y, pck->z);
 }
 
 void Player::_onSetPlayerPositionAndRotation(const std::shared_ptr<protocol::SetPlayerPositionAndRotation> &pck)
 {
-    LINFO("Got a Set Player Position And Rotation (" + std::to_string(pck->x) + ", " + std::to_string(pck->feet_y) + ", " + std::to_string(pck->z) + ")");
+    LDEBUG("Got a Set Player Position And Rotation (" + std::to_string(pck->x) + ", " + std::to_string(pck->feet_y) + ", " + std::to_string(pck->z) + ")");
     this->setPosition(pck->x, pck->feet_y, pck->z);
     float yaw_tmp = pck->yaw;
     while (yaw_tmp < 0)
@@ -509,12 +653,26 @@ void Player::_onPlaceRecipe(const std::shared_ptr<protocol::PlaceRecipe> &pck)
 
 void Player::_onPlayerAbilities(const std::shared_ptr<protocol::PlayerAbilities> &pck)
 {
+    this->_isFlying = pck->flags & protocol::PlayerAbilitiesFlags::Flying;
+    uint8_t flags = this->_isFlying ? protocol::PlayerAbilitiesFlags::Flying : 0x00;
+    flags |= protocol::PlayerAbilitiesFlags::Invulnerable | protocol::PlayerAbilitiesFlags::AllowFlying| protocol::PlayerAbilitiesFlags::CreativeMode;
+    this->sendPlayerAbilities({
+        flags,
+        0.05f,
+        0.1f
+    });
     LDEBUG("Got a Player Abilities");
 }
 
 void Player::_onPlayerAction(const std::shared_ptr<protocol::PlayerAction> &pck)
 {
-    LDEBUG("Got a Player Action");
+    // LINFO("Got a Player Action " + std::to_string(pck->status) + " at (" + std::to_string(pck->location.x) + ", " + std::to_string(pck->location.y) + ", " + std::to_string(pck->location.z) + ")");
+    LDEBUG("Got a Player Action and player is in gamemode " + std::to_string(this->getGamemode()) + " and status is " + std::to_string(pck->status));
+    if (pck->status == 0 && this->getGamemode() == 1) {
+        this->getDimension()->blockUpdate(pck->location, 0);
+    } else if (pck->status == 2) {
+        this->getDimension()->blockUpdate(pck->location, 0);
+    }
 }
 
 void Player::_onPlayerCommand(const std::shared_ptr<protocol::PlayerCommand> &pck)
@@ -569,6 +727,7 @@ void Player::_onSetBeaconEffect(const std::shared_ptr<protocol::SetBeaconEffect>
 
 void Player::_onSetHeldItem(const std::shared_ptr<protocol::SetHeldItem> &pck)
 {
+    this->_heldItem = pck->slot;
     LDEBUG("Got a Set Held Item");
 }
 
@@ -614,7 +773,27 @@ void Player::_onTeleportToEntity(const std::shared_ptr<protocol::TeleportToEntit
 
 void Player::_onUseItemOn(const std::shared_ptr<protocol::UseItemOn> &pck)
 {
-    LDEBUG("Got a Use Item On");
+    LDEBUG("Got a Use Item On (" + std::to_string(pck->location.x) + ", " + std::to_string(pck->location.y) + ", " + std::to_string(pck->location.z) + ") -> " + std::to_string(this->_heldItem));
+    switch (pck->face)
+    {
+        case 0: pck->location.y--; break;
+        case 1: pck->location.y++; break;
+        case 2: pck->location.z--; break;
+        case 3: pck->location.z++; break;
+        case 4: pck->location.x--; break;
+        case 5: pck->location.x++; break;
+    }
+    switch (this->_heldItem) {
+        case 0: this->getDimension()->blockUpdate(pck->location, world_storage::getGlobalPaletteIdFromBlockName("minecraft:grass_block")); break;
+        case 1: this->getDimension()->blockUpdate(pck->location, world_storage::getGlobalPaletteIdFromBlockName("minecraft:dirt")); break;
+        case 2: this->getDimension()->blockUpdate(pck->location, world_storage::getGlobalPaletteIdFromBlockName("minecraft:bedrock")); break;
+        case 3: this->getDimension()->blockUpdate(pck->location, world_storage::getGlobalPaletteIdFromBlockName("minecraft:oak_log")); break;
+        case 4: this->getDimension()->blockUpdate(pck->location, world_storage::getGlobalPaletteIdFromBlockName("minecraft:oak_leaves")); break;
+        case 5: this->getDimension()->blockUpdate(pck->location, world_storage::getGlobalPaletteIdFromBlockName("minecraft:glass")); break;
+        case 6: this->getDimension()->blockUpdate(pck->location, world_storage::getGlobalPaletteIdFromBlockName("minecraft:cobblestone")); break;
+        case 7: this->getDimension()->blockUpdate(pck->location, world_storage::getGlobalPaletteIdFromBlockName("minecraft:pink_terracotta")); break;
+        case 8: this->getDimension()->blockUpdate(pck->location, world_storage::getGlobalPaletteIdFromBlockName("minecraft:purple_carpet")); break;
+    }
 }
 
 void Player::_onUseItem(const std::shared_ptr<protocol::UseItem> &pck)

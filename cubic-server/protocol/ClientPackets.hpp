@@ -23,6 +23,7 @@ namespace protocol
         SpawnPlayer = 0x02,
         EntityAnimationClient = 0x03,
         LoginSuccess = 0x02,
+        BlockUpdate = 0x09,
         PluginMessage = 0x15,
         CustomSoundEffect = 0x16,
         WorldEvent = 0x20,
@@ -43,6 +44,7 @@ namespace protocol
         KeepAlive = 0x1e,
         ChunkDataAndLightUpdate = 0x1F,
         StopSound = 0x5e,
+        PlayerAbilities = 0x2f,
         SystemChatMessage = 0x5f
     };
     struct PingResponse
@@ -327,7 +329,6 @@ namespace protocol
 
     std::shared_ptr<std::vector<uint8_t>> createSpawnPlayer(const SpawnPlayer &);
 
-
     struct UpdateTime
     {
         long world_age;
@@ -359,6 +360,14 @@ namespace protocol
 
     std::shared_ptr<std::vector<uint8_t>> createKeepAlive(long id);
 
+    struct BlockUpdate
+    {
+        Position location;
+        int32_t block_id;
+    };
+
+    std::shared_ptr<std::vector<uint8_t>> createBlockUpdate(const BlockUpdate &);
+
     struct SystemChatMessage
     {
         std::string JSONData;
@@ -377,6 +386,20 @@ namespace protocol
 
     std::shared_ptr<std::vector<uint8_t>> createEntityAnimationClient(EntityAnimationID animId, int32_t entityID);
 
+    enum PlayerAbilitiesFlags : uint8_t {
+        Invulnerable = 0x01,
+        Flying = 0x02,
+        AllowFlying = 0x04,
+        CreativeMode = 0x08
+    };
+    struct PlayerAbilitiesClient
+    {
+        uint8_t flags;
+        float flyingSpeed;
+        float fieldOfViewModifier;
+    };
+
+    std::shared_ptr<std::vector<uint8_t>> createPlayerAbilities(const PlayerAbilitiesClient &in);
 }
 
 #endif /* A7ADDD9E_6961_4A3D_AAB2_DF37DB6915F0 */
