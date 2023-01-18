@@ -32,7 +32,7 @@ int main(int argc, char **argv)
     std::thread InterfaceThread;
 
     auto logger = logging::Logger::get_instance();
-    // logger->unset_display_specification_level_in_console(logging::LogLevel::DEBUG);
+    logger->unset_display_specification_level_in_console(logging::LogLevel::DEBUG);
 
     if (program["--nogui"] == false) {
         InterfaceThread = std::thread(&ManagementInterface::launch, argc, argv);

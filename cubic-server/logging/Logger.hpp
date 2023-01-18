@@ -21,6 +21,7 @@ namespace logging
 {
     enum class LogLevel
     {
+        NONE,
         DEBUG,
         INFO,
         WARNING,

@@ -3,6 +3,7 @@
 #include "logging/Logger.hpp"
 #include "WorldGroup.hpp"
 #include "nlohmann/json.hpp"
+#include "World.hpp"
 
 Chat::Chat()
 {
@@ -32,9 +33,10 @@ void Chat::sendPlayerMessage(const chat::Message &message, const Player *sender)
                 "",
                 true,
                 response.dump(),
+                // (int32_t) chat::message::Type::System,
                 (int32_t) chat::message::Type::Chat,
-                {0, 0}, // sender->getUUID(),
-                "{\"text\": \"PlayerName\"}", // sender->getName();
+                sender->getUuid(),
+                "{\"text\": \"\"}", // sender->getName();
                 false,
                 "",
                 std::time(nullptr),
@@ -45,12 +47,13 @@ void Chat::sendPlayerMessage(const chat::Message &message, const Player *sender)
     }
 }
 
-void Chat::sendSystemMessage(const chat::Message &message, const WorldGroup *worldGroup)
+void Chat::sendSystemMessage(const chat::Message &message, bool overlay, const WorldGroup *worldGroup)
 {
     if (worldGroup == nullptr) {
         LERROR("worldGroup is null");
         return;
     }
+    LDEBUG("send System Message: " + message.getMessage()); // FUCKING CRASHES THE SERVER BECAUSE I DON'T FUCKING KNOW
 
     // TODO: Filter client by chat visibility
     for (const auto &world : worldGroup->getWorlds()) {
@@ -58,18 +61,9 @@ void Chat::sendSystemMessage(const chat::Message &message, const WorldGroup *wor
             auto player = dynamic_cast<Player*>(entity);
             if (player == nullptr)
                 continue;
-            player->getClient()->sendChatMessageResponse({
-                "",
-                true,
+            player->getClient()->sendSystemChatMessage({
                 message.serialize(),
-                (int32_t) chat::message::Type::System,
-                {0, 0},
-                "",
-                false,
-                "",
-                std::time(nullptr),
-                0,
-                std::vector<uint8_t>()
+                overlay
             });
         }
     }
@@ -167,12 +161,16 @@ chat::Message::Message(
 
 std::string chat::Message::serialize() const
 {
+    std::cout << "in serialize: " + toJson().dump() << std::endl;
     return toJson().dump();
 }
 
 nlohmann::json chat::Message::toJson() const
 {
     nlohmann::json response;
+
+    if (_message.size() > 0)
+        response["text"] = _message;
 
     if (_options.bold.has_value())
         response["bold"] = _options.bold.value();
@@ -184,12 +182,25 @@ nlohmann::json chat::Message::toJson() const
         response["strikethrough"] = _options.strikethrough.value();
     if (_options.obfuscated.has_value())
         response["obfuscated"] = _options.obfuscated.value();
+    if (_options.font.has_value())
+        response["font"] = _options.font.value();
+    if (_options.color.has_value())
+        response["color"] = _options.color.value();
+    if (_options.insertion.has_value())
+        response["insertion"] = _options.insertion.value();
+    if (_options.translate.has_value())
+        response["translate"] = _options.translate.value();
+    if (_options.with.has_value()) {
+        response["with"] = nlohmann::json::array();
+        for (auto &withMsg : _options.with.value())
+            response["with"].push_back(withMsg.toJson());
+    };
 
     if (_clickEvent.has_value())
-        response["clickEvent"] = _clickEvent->toJson();
+        response["clickEvent"] = _clickEvent.value().toJson();
 
     if (_hoverEvent.has_value())
-        response["hoverEvent"] = _hoverEvent->toJson();
+        response["hoverEvent"] = _hoverEvent.value().toJson();
 
     if (_extra.size() > 0) {
         response["extra"] = nlohmann::json::array();
@@ -241,7 +252,20 @@ nlohmann::json chat::message::HoverEvent::toJson() const
             LERROR("Unknown hover event action: " + std::to_string((int32_t) action)); break;
     }
 
-    response["value"] = value;
+    response["contents"] == value;
+    // response["contents"] = nlohmann::json::object();
+    // response["contents"]["type"] = "minecraft:player";
+    // response["contents"]["id"] = "7e4a61cc-83fa-4441-a299-bf69786e610a";
+    // response["contents"]["name"] = chat::Message("PlayerName").toJson();
+    /*
+    A JSON-NBT String describing the entity. Contains 3 values: id, the entity's UUID (with dashes);
+    type (optional), which contains the resource location for the entity's type (eg minecraft:zombie);
+    and name, which contains the entity's custom name (if present).
+    Note that this is a String and not a JSON object. It should be set in a String directly ("value":"{id:7e4a61cc-83fa-4441-a299-bf69786e610a,type:minecraft:zombie,name:Zombie}")
+    or as the content of a component. If the entity is invalid, "Invalid Entity!" will be displayed.
+    Note that the client does not need to have the given entity loaded.
+    */
+    // response["value"] = value;
 
     return response;
 }
@@ -327,7 +351,7 @@ chat::message::HoverEvent chat::message::HoverEvent::fromJson(const nlohmann::js
     return event;
 }
 
-std::string_view chat::Message::getMessage() const
+std::string chat::Message::getMessage() const
 {
     return _message;
 }

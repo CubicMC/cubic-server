@@ -3,6 +3,7 @@
 #include <unistd.h>
 #include <poll.h>
 #include <cstring>
+#include <string>
 #include <memory>
 
 #include "Client.hpp"
@@ -10,6 +11,7 @@
 #include "nlohmann/json.hpp"
 #include "protocol/ClientPackets.hpp"
 #include "Server.hpp"
+#include "World.hpp"
 #include "whitelist/Whitelist.hpp"
 
 Client::Client(int sockfd, struct sockaddr_in6 addr)
@@ -34,20 +36,48 @@ Client::~Client()
     uint32_t error_code_size = sizeof(error_code);
     getsockopt(_sockfd, SOL_SOCKET, SO_ERROR, &error_code, &error_code_size);
     if (error_code == 0) {
-        _flushSendData();
+        //_flushSendData();
         close(_sockfd);
     }
 
     // Remove the player from the world
     if (!_player)
         return;
+
+    chat::Message disconnectMsg = chat::Message("", {
+        .color = "yellow",
+        .translate = "multiplayer.player.left",
+        .with = std::vector<chat::Message>({
+            chat::Message(
+                _player->getUsername(),
+                {
+                    .insertion = _player->getUsername(),
+                },
+                chat::message::ClickEvent(
+                    chat::message::ClickEvent::Action::SuggestCommand,
+                    "/tell " + _player->getUsername() + " "
+                ),
+                chat::message::HoverEvent(
+                    chat::message::HoverEvent::Action::ShowEntity,
+                    "{\"type\": \"minecraft:player\", \"id\": \"" + _player->getUuidString() + "\", \"name\": \"" + _player->getUsername() + "\"}"
+                )
+            )
+        })
+    });
+    //std::cout << "Player disconnected was with id : " << uuidstr << std::endl;
+    this->_player->getDimension()->getWorld()->sendPlayerInfoRemovePlayer(this->_player);
     _player->_dim->removeEntity(_player);
 
     // Send a disconnect message
     _player->_dim->getWorld()->getChat()->sendSystemMessage(
-        _player->getUsername() + " left the game",
+        disconnectMsg,
+        false,
         _player->_dim->getWorld()->getWorldGroup()
     );
+    // _player->_dim->getWorld()->getChat()->sendPlayerMessage(
+    //     disconnectMsg,
+    //     _player
+    // );
 
     delete _player;
 }
@@ -105,12 +135,15 @@ bool Client::isDisconnected() const
 void Client::_sendData(const std::vector<uint8_t> &data)
 {
     // This is extremely inefficient but it will do for now
+    _write_mutex.lock();
     for (const auto i : data)
         _send_buffer.push_back(i);
+    _write_mutex.unlock();
 }
 
 void Client::_flushSendData()
 {
+    _write_mutex.lock();
     char send_buffer[2048];
     size_t to_send = std::min(_send_buffer.size(), (size_t)2048);
     std::copy(_send_buffer.begin(), _send_buffer.begin() + to_send, send_buffer);
@@ -119,10 +152,13 @@ void Client::_flushSendData()
     if (write_return == -1)
         LERROR("Write error" + std::string(strerror(errno)));
 
-    if (write_return <= 0)
+    if (write_return <= 0) {
+        _write_mutex.unlock();
         return;
+    }
 
     _send_buffer.erase(_send_buffer.begin(), _send_buffer.begin() + write_return);
+    _write_mutex.unlock();
 }
 
 void Client::switchToPlayState(u128 playerUuid, const std::string &username)
@@ -388,9 +424,9 @@ void Client::sendLoginSuccess(const protocol::LoginSuccess &packet)
     LDEBUG("Switched to play state");
 
     protocol::LoginPlay resPck = {
-            .entityID = 0, // TODO: figure out what is this
+            .entityID = _player->getId(), // TODO: figure out what is this
             .isHardcore = false, // TODO: something like this this->_player->_dim->getWorld()->getDifficulty();
-            .gamemode = 0, // TODO: something like this this->_player->getGamemode()
+            .gamemode = 1, // TODO: something like this this->_player->getGamemode()
             .previousGamemode = 0, // TODO: something like this this->_player->getPreviousGamemode().has_value() ? this->_player->getPreviousGamemode() : -1;
             .dimensionNames = std::vector<std::string>({"minecraft:overworld"}), // TODO: something like this this->_player->_dim->getWorld()->getDimensions();
             .registryCodec = nbt::Compound("", {
@@ -495,19 +531,36 @@ void Client::sendLoginPlay(const protocol::LoginPlay &packet)
 {
     auto pck = protocol::createLoginPlay(packet);
     _sendData(*pck);
-    // this->_player->getDimension()->spawnPlayer(this->_player); // Spawn Player isn't working
-    this->_player->_dim->addEntity(this->_player);
-
     LDEBUG("Sent a login play");
-
     // Send all chunks around the player
     // TODO: send chunk closer to the player first
-    for (int32_t x = -8; x < 8; x++) {
-        for (int32_t z = -8; z < 8; z++) {
+    this->_player->sendChunkAndLightUpdate(0, 0);
+    for (int32_t x = -4; x < 4; x++) {
+        for (int32_t z = -4; z < 4; z++) {
+            if (x == 0 && z == 0)
+                continue;
             this->_player->sendChunkAndLightUpdate(x, z);
         }
     }
+    this->_player->sendSynchronizePosition({8.5, 65, 8.5});
+    // for (auto &player : this->_player->getDimension()->getPlayerList())
+    //     player->sendSynchronizePosition({0, -58, 0});
     // this->_player->sendChunkAndLightUpdate(0, 0);
+    this->_player->_dim->addEntity(this->_player);
+    LDEBUG("Added entity player to dimension");
+    this->_player->getDimension()->getWorld()->sendPlayerInfoAddPlayer(this->_player);
+    this->_player->getDimension()->spawnPlayer(this->_player);
+    // for (auto &player : this->_player->getDimension()->getPlayerList())
+    //     player->sendTeleportEntity(this->_player->getId(), {0, -58, 0});
+}
+
+void Client::sendPlayerInfo(const protocol::PlayerInfo &data)
+{
+    LDEBUG("Sending PlayerInfo. Currently there is: " + std::to_string(data.numberOfPlayers) + " players");
+    auto pck = protocol::createPlayerInfo(data);
+    _sendData(*pck);
+
+    LDEBUG("Sent a Player Info packet");
 }
 
 void Client::sendSpawnPlayer(const protocol::SpawnPlayer &data)
@@ -515,7 +568,7 @@ void Client::sendSpawnPlayer(const protocol::SpawnPlayer &data)
     auto pck = protocol::createSpawnPlayer(data);
     _sendData(*pck);
 
-    LDEBUG("Sent a Spawn Player packet");
+    LDEBUG("Sent a Spawn Player packet on coords: " + std::to_string(data.x) + " " + std::to_string(data.y) + " " + std::to_string(data.z));
 }
 
 void Client::sendUpdateTime(const protocol::UpdateTime &data)
@@ -526,13 +579,30 @@ void Client::sendUpdateTime(const protocol::UpdateTime &data)
     LDEBUG("Sent an Update Time packet");
 }
 
-
 void Client::sendChatMessageResponse(const protocol::PlayerChatMessage &packet)
 {
     // auto pck = protocol::createPlayerChatMessage(packet);
     // _sendData(*pck);
 
     // LDEBUG("Sent a chat message response");
+}
+
+void Client::sendSystemChatMessage(const protocol::SystemChatMessage &packet)
+{
+    std::string temp = "{\"style\":{\"color\":\"red\"},\"translate\":\"multiplayer.player.left\",\"with\":[{\"insertion\":\"Trompette2\",\"clickEvent\":{\"action\":\"suggest_command\",\"value\":\"/tell Trompette2 \"},\"hoverEvent\":{\"action\":\"show_entity\",\"contents\":{\"type\":\"minecraft:player\",\"id\":\"e02c083d-1c61-3b49-b7ea-4d47e2b9698a\",\"name\":{\"text\":\"Trompette2\"}}},\"text\":\"Trompette2\"}]}";
+    auto pck = protocol::createSystemChatMessage(packet);
+    // auto pck = protocol::createPlayerChatMessage(packet);
+    // auto pck = protocol::createSystemChatMessage({
+    //     temp,
+    //     false
+    // });
+    _sendData(*pck);
+
+    LDEBUG("Sent a system chat message to " + _player->getUsername());
+    LDEBUG("template: ");
+    LDEBUG(temp);
+    LDEBUG("message: ");
+    LDEBUG(packet.JSONData);
 }
 
 void Client::sendWorldEvent(const protocol::WorldEvent &packet)
@@ -574,12 +644,4 @@ void Client::disconnect(const chat::Message &reason)
     _sendData(*pck);
     _is_running = false;
     LDEBUG("Sent a disconnect login packet");
-}
-
-void Client::sendChunkDataAndLightUpdate(const protocol::ChunkDataAndLightUpdate &packet)
-{
-    // this->_player->getDimension()->
-    auto pck = protocol::createChunkDataAndLightUpdate(packet);
-    _sendData(*pck);
-    LDEBUG("Sent a chunk data and light update");
 }

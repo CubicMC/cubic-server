@@ -3,11 +3,21 @@
 #include "protocol/ClientPackets.hpp"
 #include "Player.hpp"
 #include "Player.hpp"
+#include "WorldGroup.hpp"
+
+World::World(WorldGroup *worldGroup):
+    _worldGroup(worldGroup),
+    _timeUpdateClock(20, std::bind(&World::updateTime, this)) // 1 second for time updates
+{
+    _log = logging::Logger::get_instance();
+    _timeUpdateClock.start();
+    _seed = -721274728;
+    _chat = worldGroup->getChat();
+}
 
 void World::tick()
 {
     _timeUpdateClock.tick();
-    _keepAliveClock.tick();
 }
 
 WorldGroup *World::getWorldGroup() const
@@ -87,26 +97,84 @@ void World::updateTime() {
         }
     }
 }
-void World::processKeepAlive()
-{
-    long id = std::chrono::system_clock::now().time_since_epoch().count();
-    forEachEntityIf(
-        [this, id](Entity *entity) {
-            Player *player = dynamic_cast<Player *>(entity);
-            if (player->keepAliveId() != 0) {
-                player->setKeepAliveIgnored(player->keepAliveIgnored() + 1);
-                if (this->_keepAliveClock.tickRate() * player->keepAliveIgnored() >= 600)
-                    player->disconnect("Timed out from keep alive LOL");
-                return;
-            }
-            player->setKeepAliveId(id);
-            player->sendKeepAlive(id);
-        },
-        [](const Entity *entity) {
-            const Player *player = dynamic_cast<const Player *>(entity);
-            if (player == nullptr)
-                return false;
-            return true;
+
+void World::sendPlayerInfoAddPlayer(Player *current) {
+    // get list of players
+    std::vector<Player *> players = this->getPlayers();
+    std::vector<protocol::_Player> players_info;
+
+    // iterate through the list of players
+    for (auto &player : players) {
+
+        // send to each player the info of the current added player
+        if (player != current) {
+            player->getClient()->sendPlayerInfo({
+                .action = 0,
+                .numberOfPlayers = 1,
+                .players = {
+                    {
+                        .uuid = current->getUuid(),
+                        .addPlayer = {
+                            .name = current->getUsername(),
+                            .numberOfProperties = 0,
+                            .gamemode = current->getGamemode(),
+                            .ping = 0,
+                            .hasDisplayName = false
+                        }
+                    }
+                }
+            });
         }
-    );
+
+        // save the content of the iterated player for after
+        players_info.push_back({
+            .uuid = player->getUuid(),
+            .addPlayer = {
+                .name = player->getUsername(),
+                .numberOfProperties = 0,
+                .gamemode = player->getGamemode(),
+                .ping = 0,
+                .hasDisplayName = false
+            }
+        });
+    }
+
+    // send the infos of all players to the current added player
+    current->getClient()->sendPlayerInfo({
+        .action = 0,
+        .numberOfPlayers = (int32_t) players.size(),
+        .players = players_info
+    });
+    LDEBUG("Sent player info to " + current->getUsername());
 }
+
+void World::sendPlayerInfoRemovePlayer(Player *current) {
+    // get list of players
+    std::vector<Player *> players = this->getPlayers();
+
+    // iterate through the list of players
+    for (auto &player : players) {
+
+        // send to each player the info of the current removed player
+        if (player != current) {
+            player->getClient()->sendPlayerInfo({
+                .action = 4,
+                .numberOfPlayers = 1,
+                .players = {
+                    {
+                        .uuid = current->getUuid(),
+                        .removePlayer = {
+
+                        }
+                    }
+                }
+            });
+        }
+    }
+    LDEBUG("Sent player info to " + current->getUsername());
+}
+
+
+int64_t World::getSeed() const {
+        return _seed;
+    }
