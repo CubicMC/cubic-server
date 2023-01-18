@@ -23,9 +23,10 @@ public:
     Client *getClient() const;
     const std::string &getUsername() const;
     const u128 &getUuid() const;
-    const uint16_t &getHeldItem() const;
-    std::string getUuidString() const;
-    const int32_t getGamemode() const;
+    uint16_t getHeldItem() const;
+    const std::string &getUuidString() const;
+    uint8_t getGamemode() const;
+    void setGamemode(uint8_t gm);
     long keepAliveId() const;
     void setKeepAliveId(long id);
     uint8_t keepAliveIgnored() const;
@@ -33,6 +34,13 @@ public:
 
 public:
     void disconnect(const chat::Message &reason = "Disconnected");
+    void sendLoginPlay(const protocol::LoginPlay &packet);
+    void sendPlayerInfo(const protocol::PlayerInfo &data);
+    void sendSpawnPlayer(const protocol::SpawnPlayer &data);
+    void sendUpdateTime(const protocol::UpdateTime &data);
+    void sendChatMessageResponse(const protocol::PlayerChatMessage &packet);
+    void sendSystemChatMessage(const protocol::SystemChatMessage &packet);
+    void sendWorldEvent(const protocol::WorldEvent &packet);
     void playSoundEffect(SoundsList sound, protocol::FloatingPosition position, SoundCategory category = SoundCategory::Master);
     void playSoundEffect(SoundsList sound, const Entity *entity, SoundCategory category = SoundCategory::Master);
     void playCustomSound(std::string sound, protocol::FloatingPosition position, SoundCategory category = SoundCategory::Master);
@@ -47,6 +55,8 @@ public:
     void sendUpdateEntityRotation(const protocol::UpdateEntityRotation &data);
     void sendHeadRotation(const protocol::HeadRotation &data);
     void sendChunkAndLightUpdate(int32_t x, int32_t z);
+    void sendBlockUpdate(const protocol::BlockUpdate &packet);
+    void sendPlayerAbilities(const protocol::PlayerAbilitiesClient &packet);
 
 private:
     void _onConfirmTeleportation(const std::shared_ptr<protocol::ConfirmTeleportation> &pck);
@@ -101,12 +111,14 @@ private:
     logging::Logger *_log;
     Client *_cli;
     std::string _username;
+    std::string _uuidString;
     u128 _uuid;
     long _keepAliveId;
     uint8_t  _keepAliveIgnored;
     uint16_t _heldItem;
-    int32_t _gamemode;
+    uint8_t _gamemode;
     TickClock _keepAliveClock;
+    bool _isFlying;
 };
 
 #endif //CUBICSERVER_PLAYER_HPP

@@ -147,7 +147,7 @@ public:
     void sendSystemMessage(const chat::Message &message, bool overlay, const WorldGroup *worldGroup);
     void sendSayMessage(const chat::Message &message, const Player *sender);
     // Either keep client or change to Player but I need to get the client to send the message
-    void sendMsgMessage(const chat::Message &message, Client *sender, Client *to);
+    void sendMsgMessage(const chat::Message &message, Player *sender, Player *to);
     // void sendTeamMessage(const Message &message, const Player *sender, const std::string &team);
     // void sendEmoteMessage(const Message &message, const Player &sender);
     // TODO: Maybe more complicated than that, because of the selector (@a, @p, @r, @e, @s)

@@ -18,9 +18,11 @@ void ChunkColumn::updateBlock(protocol::Position pos, Block block)
 }
 
 void ChunkColumn::updateBlock(protocol::Position pos, GlobalBlockId id)
-{;
+{
+    logging::Logger::get_instance()->info("update Block before if (" + std::to_string(pos.x) + ", " + std::to_string(pos.y) + ", " + std::to_string(pos.z) + ")");
     if (pos.y > _heightMap.motionBlocking.at(pos.x + pos.z * SECTION_WIDTH).get_value())
         _heightMap.motionBlocking.at(pos.x + pos.z * SECTION_WIDTH).setValue(pos.y);
+    // logging::Logger::get_instance()->info("update Block after if");
     _blocks.at(calculateBlockIdx(pos)) = id;
 }
 
@@ -183,13 +185,13 @@ void ChunkColumn::_generateFlat() {
         for (int z = 0; z < 16; z++) {
             for (int x = 0; x < 16; x++) {
                 if (y == 0) {
-                    updateBlock({x, y, z}, getGlobalPaletteIdFromBlockName("minecraft:bedrock"));
+                    updateBlock({x, y + CHUNK_HEIGHT_MIN, z}, getGlobalPaletteIdFromBlockName("minecraft:bedrock"));
                 } else if (y == 1 || y == 2) {
-                    updateBlock({x, y, z}, getGlobalPaletteIdFromBlockName("minecraft:dirt"));
+                    updateBlock({x, y + CHUNK_HEIGHT_MIN, z}, getGlobalPaletteIdFromBlockName("minecraft:dirt"));
                 } else if (y == 3) {
-                    updateBlock({x, y, z}, getGlobalPaletteIdFromBlockName("minecraft:grass_block"));
+                    updateBlock({x, y + CHUNK_HEIGHT_MIN, z}, getGlobalPaletteIdFromBlockName("minecraft:grass_block"));
                 } else if ((y == 4 || y == 5 || y == 6) && z == 8 && x == 8) {
-                    updateBlock({x, y, z}, getGlobalPaletteIdFromBlockName("minecraft:oak_log"));
+                    updateBlock({x, y + CHUNK_HEIGHT_MIN, z}, getGlobalPaletteIdFromBlockName("minecraft:oak_log"));
                 } else if (y == 7 || y == 8) {
                     switch (x + (z * 16)) {
                         case 6 + 6 * 16:
@@ -197,37 +199,37 @@ void ChunkColumn::_generateFlat() {
                         case 8 + 6 * 16:
                         case 9 + 6 * 16:
                         case 10 + 6 * 16:
-                            updateBlock({x, y, z}, getGlobalPaletteIdFromBlockName("minecraft:oak_leaves"));
+                            updateBlock({x, y + CHUNK_HEIGHT_MIN, z}, getGlobalPaletteIdFromBlockName("minecraft:oak_leaves"));
                             break;
                         case 6 + 7 * 16:
                         case 7 + 7 * 16:
                         case 8 + 7 * 16:
                         case 9 + 7 * 16:
                         case 10 + 7 * 16:
-                            updateBlock({x, y, z}, getGlobalPaletteIdFromBlockName("minecraft:oak_leaves"));
+                            updateBlock({x, y + CHUNK_HEIGHT_MIN, z}, getGlobalPaletteIdFromBlockName("minecraft:oak_leaves"));
                             break;
                         case 6 + 8 * 16:
                         case 7 + 8 * 16:
                         case 9 + 8 * 16:
                         case 10 + 8 * 16:
-                            updateBlock({x, y, z}, getGlobalPaletteIdFromBlockName("minecraft:oak_leaves"));
+                            updateBlock({x, y + CHUNK_HEIGHT_MIN, z}, getGlobalPaletteIdFromBlockName("minecraft:oak_leaves"));
                             break;
                         case 6 + 9 * 16:
                         case 7 + 9 * 16:
                         case 8 + 9 * 16:
                         case 9 + 9 * 16:
                         case 10 + 9 * 16:
-                            updateBlock({x, y, z}, getGlobalPaletteIdFromBlockName("minecraft:oak_leaves"));
+                            updateBlock({x, y + CHUNK_HEIGHT_MIN, z}, getGlobalPaletteIdFromBlockName("minecraft:oak_leaves"));
                             break;
                         case 6 + 10 * 16:
                         case 7 + 10 * 16:
                         case 8 + 10 * 16:
                         case 9 + 10 * 16:
                         case 10 + 10 * 16:
-                            updateBlock({x, y, z}, getGlobalPaletteIdFromBlockName("minecraft:oak_leaves"));
+                            updateBlock({x, y + CHUNK_HEIGHT_MIN, z}, getGlobalPaletteIdFromBlockName("minecraft:oak_leaves"));
                             break;
                         case 8 + 8 * 16:
-                            updateBlock({x, y, z}, getGlobalPaletteIdFromBlockName("minecraft:oak_log"));
+                            updateBlock({x, y + CHUNK_HEIGHT_MIN, z}, getGlobalPaletteIdFromBlockName("minecraft:oak_log"));
                             break;
                     }
                 } else if (y == 9 || y == 10) {
@@ -237,7 +239,7 @@ void ChunkColumn::_generateFlat() {
                         case 9 + 8 * 16:
                         case 8 + 9 * 16:
                         case 8 + 8 * 16:
-                            updateBlock({x, y, z}, getGlobalPaletteIdFromBlockName("minecraft:oak_leaves"));
+                            updateBlock({x, y + CHUNK_HEIGHT_MIN, z}, getGlobalPaletteIdFromBlockName("minecraft:oak_leaves"));
                             break;
                     }
                 }

@@ -101,7 +101,7 @@ namespace protocol
             for (uint8_t y = 0; y < world_storage::SECTION_HEIGHT; y++) {
                 for (uint8_t z = 0; z < world_storage::SECTION_WIDTH; z++) {
                     for (uint8_t x = 0; x < world_storage::SECTION_WIDTH; x++) {
-                        int blockNumber = world_storage::calculateBlockIdx({x, y, z});
+                        int blockNumber = world_storage::calculateBlockIdx({x, y + world_storage::CHUNK_HEIGHT_MIN, z});
                         int startLong = (blockNumber * blockPalette.getBytePerBlock()) / 64;
                         int startOffset = (blockNumber * blockPalette.getBytePerBlock()) % 64;
                         int endLong = ((blockNumber + 1) * blockPalette.getBytePerBlock() - 1) / 64;

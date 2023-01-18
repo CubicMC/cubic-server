@@ -69,15 +69,7 @@ public:
     void sendStatusResponse(const std::string &json);
     void sendPingResponse(int64_t payload);
     void sendLoginSuccess(const protocol::LoginSuccess &packet);
-    void sendLoginPlay(const protocol::LoginPlay &packet);
-    void sendPlayerInfo(const protocol::PlayerInfo &data);
-    void sendSpawnPlayer(const protocol::SpawnPlayer &data);
-    void sendUpdateTime(const protocol::UpdateTime &data);
-    void sendChatMessageResponse(const protocol::PlayerChatMessage &packet);
-    void sendSystemChatMessage(const protocol::SystemChatMessage &packet);
-    void sendWorldEvent(const protocol::WorldEvent &packet);
     void disconnect(const chat::Message &reason = "Disconnected");
-    void sendBlockUpdate(const protocol::BlockUpdate &packet);
 
 private:
     void _handlePacket();

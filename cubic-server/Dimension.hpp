@@ -41,7 +41,7 @@ public:
     world_storage::Level &getEditableLevel();
     virtual void generateChunk(int x, int z);
     virtual void blockUpdate(protocol::Position position, int32_t id);
-    virtual void spawnPlayer(const Player *);
+    virtual void spawnPlayer(Player *player);
     std::counting_semaphore<1000> dimensionLock;
 
 protected:
