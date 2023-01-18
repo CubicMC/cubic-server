@@ -26,7 +26,10 @@ std::vector<Entity *> &Dimension::getEntities()
 
 void Dimension::removeEntity(Entity *entity)
 {
+    LINFO("In remove entity in dimension");
     _entities.erase(std::remove(_entities.begin(), _entities.end(), entity), _entities.end());
+    for (auto &player : getPlayerList())
+        player->sendRemoveEntities({entity->getId()});
 }
 
 void Dimension::addEntity(Entity *entity)
@@ -81,8 +84,10 @@ void Dimension::spawnPlayer(const Player *current)
     const std::vector<Player *> player_list = this->getPlayerList();
 
     for (auto &player : player_list) {
-
+        LDEBUG("player is : " + player->getUsername());
+        LDEBUG("current is : " + current->getUsername());
         //if (current->getPos().distance(player->getPos()) <= 12) {
+        if (player->getId() != current->getId()) {
             player->getClient()->sendSpawnPlayer({
                 current->getId(),
                 current->getUuid(),
@@ -92,6 +97,7 @@ void Dimension::spawnPlayer(const Player *current)
                 current->getRotation().x,
                 current->getRotation().y
             });
+            LDEBUG("send spawn player to " + player->getUsername());
             current->getClient()->sendSpawnPlayer({
                 player->getId(),
                 player->getUuid(),
@@ -101,6 +107,8 @@ void Dimension::spawnPlayer(const Player *current)
                 player->getRotation().x,
                 player->getRotation().y
             });
+            LDEBUG("send spawn player to " + current->getUsername());
         //}
+        }
     }
 }

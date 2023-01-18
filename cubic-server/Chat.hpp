@@ -36,7 +36,7 @@ namespace chat::message {
         ClickEvent() = default;
 
     public:
-        ClickEvent(Action action, std::string_view value)
+        ClickEvent(Action action, const std::string &value)
             : action(action), value(value), _log(logging::Logger::get_instance())
         {}
         nlohmann::json toJson() const;
@@ -46,7 +46,7 @@ namespace chat::message {
 
     private:
         Action action;
-        std::string_view value;
+        std::string value;
         logging::Logger *_log;
     };
 
@@ -62,7 +62,7 @@ namespace chat::message {
         HoverEvent() = default;
 
     public:
-        HoverEvent(Action action, std::string_view value)
+        HoverEvent(Action action, const std::string &value)
             : action(action), value(value), _log(logging::Logger::get_instance())
         {};
         nlohmann::json toJson() const;
@@ -72,7 +72,7 @@ namespace chat::message {
 
     private:
         Action action;
-        std::string_view value;
+        std::string value;
         logging::Logger *_log;
     };
 }
@@ -81,15 +81,17 @@ namespace chat {
     class Message {
     public:
         struct Options {
-            Options() = default;
+            // Options() = default;
             std::optional<bool> bold;
             std::optional<bool> italic;
             std::optional<bool> underlined;
             std::optional<bool> strikethrough;
             std::optional<bool> obfuscated;
-            std::optional<std::string_view> font;
-            std::optional<std::string_view> color;
-            std::optional<std::string_view> insertion;
+            std::optional<std::string> font;
+            std::optional<std::string> color;
+            std::optional<std::string> insertion;
+            std::optional<std::string> translate;
+            std::optional<std::vector<Message>> with;
         };
 
     private:
@@ -108,7 +110,7 @@ namespace chat {
             std::optional<chat::message::ClickEvent> clickEvent = std::nullopt,
             std::optional<chat::message::HoverEvent> hoverEvent = std::nullopt);
 
-        std::string_view getMessage() const;
+        std::string getMessage() const;
         Options getOptions() const;
         std::optional<chat::message::ClickEvent> getClickEvent() const;
         std::optional<chat::message::HoverEvent> getHoverEvent() const;
@@ -142,7 +144,7 @@ public:
     Chat();
 
     void sendPlayerMessage(const chat::Message &message, const Player *sender);
-    void sendSystemMessage(const chat::Message &message, const WorldGroup *worldGroup);
+    void sendSystemMessage(const chat::Message &message, bool overlay, const WorldGroup *worldGroup);
     void sendSayMessage(const chat::Message &message, const Player *sender);
     // Either keep client or change to Player but I need to get the client to send the message
     void sendMsgMessage(const chat::Message &message, Client *sender, Client *to);

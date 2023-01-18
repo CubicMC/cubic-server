@@ -1,5 +1,6 @@
 #include "Seed.hpp"
 #include "Server.hpp"
+#include "World.hpp"
 
 using namespace command_parser;
 

@@ -2,6 +2,7 @@
 #include "logging/Logger.hpp"
 #include "Server.hpp"
 #include "SoundSystem.hpp"
+#include "World.hpp"
 
 #include <utility>
 #include <thread>

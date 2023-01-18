@@ -70,12 +70,13 @@ public:
     void sendPingResponse(int64_t payload);
     void sendLoginSuccess(const protocol::LoginSuccess &packet);
     void sendLoginPlay(const protocol::LoginPlay &packet);
+    void sendPlayerInfo(const protocol::PlayerInfo &data);
     void sendSpawnPlayer(const protocol::SpawnPlayer &data);
     void sendUpdateTime(const protocol::UpdateTime &data);
     void sendChatMessageResponse(const protocol::PlayerChatMessage &packet);
+    void sendSystemChatMessage(const protocol::SystemChatMessage &packet);
     void sendWorldEvent(const protocol::WorldEvent &packet);
     void disconnect(const chat::Message &reason = "Disconnected");
-    void sendChunkDataAndLightUpdate(const protocol::ChunkDataAndLightUpdate &packet);
 
 private:
     void _handlePacket();
@@ -96,6 +97,7 @@ private:
     protocol::ClientStatus _status;
     Player *_player;
     logging::Logger *_log;
+    std::mutex _write_mutex;
 };
 
 #endif /* D23DD5CC_1F28_49BB_B77D_E244C60CC705 */

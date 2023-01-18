@@ -21,21 +21,8 @@ constexpr int NB_SPAWN_CHUNKS = 19;
 class World
 {
 public:
-    World(WorldGroup *worldGroup):
-        _worldGroup(worldGroup),
-        _age(0),
-        _time(0),
-        _keepAliveClock(100, std::bind(&World::processKeepAlive, this)), // 5 seconds for keep-alives
-        _timeUpdateClock(20, std::bind(&World::updateTime, this)) // 1 second for time updates
-    {
-        _log = logging::Logger::get_instance();
-        _seed = -721274728;
-        _keepAliveClock.start();
-        _timeUpdateClock.start();
-    }
-    int64_t getSeed() const {
-        return _seed;
-    }
+    World(WorldGroup *worldGroup);
+
     virtual void tick();
     virtual void initialize() = 0;
     virtual WorldGroup *getWorldGroup() const;
@@ -49,8 +36,10 @@ public:
     virtual const world_storage::LevelData &getLevelData() const;
     virtual void setLevelData(const world_storage::LevelData &value);
     virtual void updateTime();
+    virtual void sendPlayerInfoAddPlayer(Player *);
+    virtual void sendPlayerInfoRemovePlayer(Player *current);
 
-    virtual void processKeepAlive();
+    virtual int64_t getSeed() const;
 
 protected:
     std::shared_ptr<Chat> _chat;
@@ -61,7 +50,6 @@ protected:
     long _age;
     long _time;
     world_storage::LevelData _levelData;
-    TickClock _keepAliveClock;
     TickClock _timeUpdateClock;
     int64_t _seed;
 };

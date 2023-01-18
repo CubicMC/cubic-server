@@ -31,14 +31,19 @@ namespace protocol
         UpdateEntityPositionRotation = 0x27,
         UpdateEntityRotation = 0x28,
         PlayerChatMessage = 0x30,
-        UpdateTime = 0x59,
+        PlayerInfo = 0x34,
         SynchronizePlayerPosition = 0x36,
+        RemoveEntities = 0x38,
+        HeadRotation = 0x3C,
+        UpdateTime = 0x59,
+        TeleportEntity = 0x63,
         EntitySoundEffect = 0x5c,
         SoundEffect = 0x5d,
         DisconnectPlay = 0x17,
         KeepAlive = 0x1e,
         ChunkDataAndLightUpdate = 0x1F,
-        StopSound = 0x5e
+        StopSound = 0x5e,
+        SystemChatMessage = 0x5f
     };
     struct PingResponse
     {
@@ -145,6 +150,57 @@ namespace protocol
 
     std::shared_ptr<std::vector<uint8_t>> createPlayerChatMessage(const PlayerChatMessage &);
 
+    struct _AddPlayer {
+        std::string name;
+        int32_t numberOfProperties;
+        // properties lol
+        int32_t gamemode;
+        int32_t ping;
+        bool hasDisplayName;
+    };
+
+    struct _UpdateGamemode {
+        int32_t gamemode;
+    };
+
+    struct _UpdateLatency {
+        int32_t latency;
+    };
+
+    struct _UpdateDisplayName {
+        bool hasDisplayName;
+        std::string displayName;
+    };
+
+    struct _RemovePlayer {
+    };
+
+    struct _Player {
+        u128 uuid;
+        // AddPlayer
+        _AddPlayer addPlayer;
+
+        // UpdateGamemode
+        _UpdateGamemode updateGamemode;
+
+        // UpdateLatency
+        _UpdateLatency updateLatency;
+
+        // UpdateDisplayName
+        _UpdateDisplayName updateDisplayName;
+
+        // RemovePlayer
+        _RemovePlayer removePlayer;
+    };
+
+    struct PlayerInfo
+    {
+        int32_t action;
+        int32_t numberOfPlayers;
+        std::vector<_Player> players;
+    };
+    std::shared_ptr<std::vector<uint8_t>> createPlayerInfo(const PlayerInfo &);
+
     struct WorldEvent
     {
         int32_t event;
@@ -167,7 +223,22 @@ namespace protocol
         bool dismountVehicle;
     };
 
-    std::shared_ptr<SynchronizePlayerPosition> parseSynchronizePlayerPosition(std::vector<uint8_t> &buffer);
+    std::shared_ptr<std::vector<uint8_t>> createSynchronizePlayerPosition(const SynchronizePlayerPosition &);
+
+    struct RemoveEntities
+    {
+        std::vector<int32_t> entities;
+    };
+
+    std::shared_ptr<std::vector<uint8_t>> createRemoveEntities(const RemoveEntities &in);
+
+    struct HeadRotation
+    {
+        int32_t entityID;
+        uint8_t headYaw;
+    };
+
+    std::shared_ptr<std::vector<uint8_t>> createHeadRotation(const HeadRotation &in);
 
     struct CustomSoundEffect
     {
@@ -264,6 +335,20 @@ namespace protocol
     };
 
     std::shared_ptr<std::vector<uint8_t>> createUpdateTime(const UpdateTime &);
+
+    struct TeleportEntity
+    {
+        int32_t entityID;
+        double x;
+        double y;
+        double z;
+        uint8_t yaw;
+        uint8_t pitch;
+        bool onGround;
+    };
+
+    std::shared_ptr<std::vector<uint8_t>> createTeleportEntity(const TeleportEntity &);
+
     struct PluginMessageResponse
     {
         std::string channel;
@@ -273,6 +358,13 @@ namespace protocol
     std::shared_ptr<std::vector<uint8_t>> createPluginMessageResponse(const PluginMessageResponse &);
 
     std::shared_ptr<std::vector<uint8_t>> createKeepAlive(long id);
+
+    struct SystemChatMessage
+    {
+        std::string JSONData;
+        bool overlay;
+    };
+    std::shared_ptr<std::vector<uint8_t>> createSystemChatMessage(const SystemChatMessage &);
 
     enum class EntityAnimationID : int32_t {
         SwingMainArm = 0x00,

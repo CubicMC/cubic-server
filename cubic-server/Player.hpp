@@ -8,6 +8,8 @@
 #include "SoundList.hpp"
 #include "types.hpp"
 #include "Chat.hpp"
+#include "TickClock.hpp"
+#include "protocol/ClientPackets.hpp"
 
 class Client;
 class Entity;
@@ -21,6 +23,8 @@ public:
     Client *getClient() const;
     const std::string &getUsername() const;
     const u128 &getUuid() const;
+    std::string getUuidString() const;
+    const int32_t getGamemode() const;
     long keepAliveId() const;
     void setKeepAliveId(long id);
     uint8_t keepAliveIgnored() const;
@@ -33,10 +37,14 @@ public:
     void playCustomSound(std::string sound, protocol::FloatingPosition position, SoundCategory category = SoundCategory::Master);
     void stopSound(uint8_t flags = 0, SoundCategory category = SoundCategory::Ambient, std::string sound = "");
     void sendKeepAlive(long id);
+    void sendSynchronizePosition(Vector3<double> pos);
     void sendSwingArm(bool main_hand, int32_t swinger_id);
-    void sendUpdateEntityPosition(std::shared_ptr<std::vector<uint8_t>> pck);
-    void sendUpdateEntityPositionAndRotation(std::shared_ptr<std::vector<uint8_t>> pck);
-    void sendUpdateEntityRotation(std::shared_ptr<std::vector<uint8_t>> pck);
+    void sendTeleportEntity(int32_t id, const Vector3<double> &pos);
+    void sendRemoveEntities(const std::vector<int32_t> &entities);
+    void sendUpdateEntityPosition(const protocol::UpdateEntityPosition &data);
+    void sendUpdateEntityPositionAndRotation(const protocol::UpdateEntityPositionRotation &data);
+    void sendUpdateEntityRotation(const protocol::UpdateEntityRotation &data);
+    void sendHeadRotation(const protocol::HeadRotation &data);
     void sendChunkAndLightUpdate(int32_t x, int32_t z);
 
 private:
@@ -87,12 +95,16 @@ private:
     void _onUseItemOn(const std::shared_ptr<protocol::UseItemOn> &pck);
     void _onUseItem(const std::shared_ptr<protocol::UseItem> &pck);
 
+    void _processKeepAlive();
+
     logging::Logger *_log;
     Client *_cli;
     std::string _username;
     u128 _uuid;
     long _keepAliveId;
     uint8_t  _keepAliveIgnored;
+    int32_t _gamemode;
+    TickClock _keepAliveClock;
 };
 
 

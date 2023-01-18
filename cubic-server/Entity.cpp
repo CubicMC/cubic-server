@@ -2,7 +2,7 @@
 
 Entity::Entity(std::shared_ptr<Dimension> dim) : _dim(dim)
 {
-    static int32_t currentID = 0;
+    static std::atomic<int32_t> currentID = 0;
 
     _onFire = false;
     _crouching = false;
@@ -18,7 +18,7 @@ Entity::Entity(std::shared_ptr<Dimension> dim) : _dim(dim)
     _noGravity = false;
     _pose = Pose::Standing;
     _tickFrozenInPowderedSnow = 0;
-    _id = currentID++;
+    _id = currentID.fetch_add(1);
 }
 
 void Entity::setDimension(std::shared_ptr<Dimension> dim)
@@ -36,6 +36,18 @@ void Entity::setPosition(double x, double y, double z)
     _pos.x = x;
     _pos.y = y;
     _pos.z = z;
+}
+void Entity::forceSetPosition(const Vector3<double> &pos)
+{
+    _pos = pos;
+    _lastPos = _pos;
+}
+void Entity::forceSetPosition(double x, double y, double z)
+{
+    _pos.x = x;
+    _pos.y = y;
+    _pos.z = z;
+    _lastPos = _pos;
 }
 
 void Entity::setRotation(const Vector2<uint8_t> &rot)
