@@ -8,6 +8,7 @@
 #include <vector>
 #include <cstdint>
 #include <string>
+#include <ostream>
 #include <zlib.h>
 
 class GZIP
