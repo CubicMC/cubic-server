@@ -33,9 +33,10 @@ void Chat::sendPlayerMessage(const chat::Message &message, const Player *sender)
                 "",
                 true,
                 response.dump(),
+                // (int32_t) chat::message::Type::System,
                 (int32_t) chat::message::Type::Chat,
-                {0, 0}, // sender->getUUID(),
-                "{\"text\": \"PlayerName\"}", // sender->getName();
+                sender->getUuid(),
+                "{\"text\": \"\"}", // sender->getName();
                 false,
                 "",
                 std::time(nullptr),
@@ -251,7 +252,20 @@ nlohmann::json chat::message::HoverEvent::toJson() const
             LERROR("Unknown hover event action: " + std::to_string((int32_t) action)); break;
     }
 
-    response["value"] = value;
+    response["contents"] == value;
+    // response["contents"] = nlohmann::json::object();
+    // response["contents"]["type"] = "minecraft:player";
+    // response["contents"]["id"] = "7e4a61cc-83fa-4441-a299-bf69786e610a";
+    // response["contents"]["name"] = chat::Message("PlayerName").toJson();
+    /*
+    A JSON-NBT String describing the entity. Contains 3 values: id, the entity's UUID (with dashes);
+    type (optional), which contains the resource location for the entity's type (eg minecraft:zombie);
+    and name, which contains the entity's custom name (if present).
+    Note that this is a String and not a JSON object. It should be set in a String directly ("value":"{id:7e4a61cc-83fa-4441-a299-bf69786e610a,type:minecraft:zombie,name:Zombie}")
+    or as the content of a component. If the entity is invalid, "Invalid Entity!" will be displayed.
+    Note that the client does not need to have the given entity loaded.
+    */
+    // response["value"] = value;
 
     return response;
 }

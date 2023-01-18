@@ -1,4 +1,7 @@
 #include <cstdint>
+#include <string>
+#include <iostream>
+#include <sstream>
 
 #include "Player.hpp"
 #include "Server.hpp"
@@ -88,6 +91,20 @@ const std::string &Player::getUsername() const
 const u128 &Player::getUuid() const
 {
     return _uuid;
+}
+
+std::string Player::getUuidString() const
+{
+    std::stringstream uuidsstr;
+    std::string uuidstr;
+
+    uuidsstr << std::hex << this->getUuid().most << this->getUuid().least;
+    uuidstr = uuidsstr.str();
+    uuidstr.insert(8, "-");
+    uuidstr.insert(13, "-");
+    uuidstr.insert(18, "-");
+    uuidstr.insert(23, "-");
+    return uuidstr;
 }
 
 const int32_t Player::getGamemode() const

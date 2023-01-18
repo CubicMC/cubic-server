@@ -3,6 +3,7 @@
 #include <unistd.h>
 #include <poll.h>
 #include <cstring>
+#include <string>
 #include <memory>
 
 #include "Client.hpp"
@@ -42,15 +43,6 @@ Client::~Client()
     // Remove the player from the world
     if (!_player)
         return;
-    std::stringstream uuidsstr;
-    std::string uuidstr;
-
-    uuidsstr << std::hex << _player->getUuid().most << _player->getUuid().least;
-    uuidstr = uuidsstr.str();
-    uuidstr.insert(8, "-");
-    uuidstr.insert(12, "-");
-    uuidstr.insert(16, "-");
-    uuidstr.insert(20, "-");
 
     chat::Message disconnectMsg = chat::Message("", {
         .color = "yellow",
@@ -67,21 +59,25 @@ Client::~Client()
                 ),
                 chat::message::HoverEvent(
                     chat::message::HoverEvent::Action::ShowEntity,
-                    "{\"type\": \"minecraft:player\", \"id\": \"" + uuidstr + "\", \"name\": \"" + _player->getUsername() + "\"}"
+                    "{\"type\": \"minecraft:player\", \"id\": \"" + _player->getUuidString() + "\", \"name\": \"" + _player->getUsername() + "\"}"
                 )
             )
         })
     });
-    //std::cout << "Player disconnected was with id : " << std::hex << _player->getUuid().most << '-' << _player->getUuid().least << std::endl;
+    //std::cout << "Player disconnected was with id : " << uuidstr << std::endl;
     this->_player->getDimension()->getWorld()->sendPlayerInfoRemovePlayer(this->_player);
     _player->_dim->removeEntity(_player);
 
     // Send a disconnect message
     _player->_dim->getWorld()->getChat()->sendSystemMessage(
         disconnectMsg,
-        true,
+        false,
         _player->_dim->getWorld()->getWorldGroup()
     );
+    // _player->_dim->getWorld()->getChat()->sendPlayerMessage(
+    //     disconnectMsg,
+    //     _player
+    // );
 
     delete _player;
 }
@@ -565,7 +561,7 @@ void Client::sendSpawnPlayer(const protocol::SpawnPlayer &data)
     auto pck = protocol::createSpawnPlayer(data);
     _sendData(*pck);
 
-    LDEBUG("Sent a Spawn Player packet");
+    LDEBUG("Sent a Spawn Player packet on coords: " + std::to_string(data.x) + " " + std::to_string(data.y) + " " + std::to_string(data.z));
 }
 
 void Client::sendUpdateTime(const protocol::UpdateTime &data)
@@ -586,10 +582,20 @@ void Client::sendChatMessageResponse(const protocol::PlayerChatMessage &packet)
 
 void Client::sendSystemChatMessage(const protocol::SystemChatMessage &packet)
 {
+    std::string temp = "{\"style\":{\"color\":\"red\"},\"translate\":\"multiplayer.player.left\",\"with\":[{\"insertion\":\"Trompette2\",\"clickEvent\":{\"action\":\"suggest_command\",\"value\":\"/tell Trompette2 \"},\"hoverEvent\":{\"action\":\"show_entity\",\"contents\":{\"type\":\"minecraft:player\",\"id\":\"e02c083d-1c61-3b49-b7ea-4d47e2b9698a\",\"name\":{\"text\":\"Trompette2\"}}},\"text\":\"Trompette2\"}]}";
     auto pck = protocol::createSystemChatMessage(packet);
+    // auto pck = protocol::createPlayerChatMessage(packet);
+    // auto pck = protocol::createSystemChatMessage({
+    //     temp,
+    //     false
+    // });
     _sendData(*pck);
 
     LDEBUG("Sent a system chat message to " + _player->getUsername());
+    LDEBUG("template: ");
+    LDEBUG(temp);
+    LDEBUG("message: ");
+    LDEBUG(packet.JSONData);
 }
 
 void Client::sendWorldEvent(const protocol::WorldEvent &packet)

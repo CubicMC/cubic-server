@@ -122,14 +122,14 @@ std::shared_ptr<std::vector<uint8_t>> protocol::createPlayerChatMessage(const Pl
 {
     std::vector<uint8_t> payload;
     serialize(payload,
-        in.signedContent, addString,
+        in.signedContent, addChat,
         in.hasUnsignedContent, addBoolean,
         in.unsignedContent, addString,
         in.type, addVarInt,
         in.senderUUID, addUUID,
-        in.senderName, addString,
+        in.senderName, addChat,
         in.hasTeamName, addBoolean,
-        in.teamName, addString,
+        in.teamName, addChat,
         in.timestamp, addLong,
         in.salt, addLong,
         in.signature, addArray<uint8_t, addByte>);
@@ -321,7 +321,6 @@ std::shared_ptr<std::vector<uint8_t>> protocol::createSystemChatMessage(const Sy
     finalize(*packet, payload, (int32_t) ClientPacketID::SystemChatMessage);
     return packet;
 }
-
 
 std::shared_ptr<std::vector<uint8_t>> protocol::createPlayerInfo(const PlayerInfo &in)
 {
