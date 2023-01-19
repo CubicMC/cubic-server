@@ -38,7 +38,7 @@ jobs:
     - name: Create temp folder
       run: |
         mkdir ${{github.workspace}}/temp
-        cp ${{github.workspace}}/build/cubic-server/cubic-server ${{github.workspace}}/temp
+        cp ${{github.workspace}}/build/cubic-server/CubicServer ${{github.workspace}}/temp
 
     - name: Upload artifact in case of tag
       if: github.event_name != 'workflow_dispatch'
