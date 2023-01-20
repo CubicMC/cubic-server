@@ -41,6 +41,7 @@ jobs:
 
     - name: Cache build
       uses: actions/cache@v3
+      id: cache-build
       with:
         path: ${{github.workspace}}/build
         key: ${{ matrix.CXXcompiler }}-build
@@ -49,7 +50,11 @@ jobs:
     # Configure CMake in a 'build' subdirectory. `CMAKE_BUILD_TYPE` is only required if you are using a single-configuration generator such as make.
     # See https://cmake.org/cmake/help/latest/variable/CMAKE_BUILD_TYPE.html?highlight=cmake_build_type
     - name: Configure CMake
-      run: cmake -S ${{github.workspace}} -B ${{github.workspace}}/build
+      env:
+        CACHE_HIT: ${{steps.cache-build.outputs.cache-hit}}
+      run: |
+        if [[ "$CACHE_HIT" == 'false' ]]; then
+            cmake -S ${{github.workspace}} -B ${{github.workspace}}/build
 
       # Build the program with the given configuration
     - name: Build
