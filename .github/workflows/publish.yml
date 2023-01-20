@@ -38,40 +38,40 @@ jobs:
     - name: Create temp folder
       run: |
         mkdir ${{github.workspace}}/temp
-        cp ${{github.workspace}}/build/cubic-server/CubicServer ${{github.workspace}}/temp
+        cp ${{github.workspace}}/build/CubicServer ${{github.workspace}}/temp
 
     - name: Upload artifact in case of tag
       if: github.event_name != 'workflow_dispatch'
       uses: actions/upload-artifact@v3
       with:
-        name: cubic-server_${{ github.ref_name }}
-        path: ${{github.workspace}}/temp/cubic-server
+        name: CubicServer_${{ github.ref_name }}
+        path: ${{github.workspace}}/temp/CubicServer
 
     - name: Upload assets to release in case of tag
       if: github.event_name != 'workflow_dispatch'
       uses: svenstaro/upload-release-action@v2
       with:
         repo_token: ${{ secrets.GITHUB_TOKEN }}
-        file: ${{github.workspace}}/temp/cubic-server
+        file: ${{github.workspace}}/temp/CubicServer
         tag: ${{ github.ref }}
-        asset_name: cubic-server_${{ inputs.release_tag_name }}
+        asset_name: CubicServer_${{ inputs.release_tag_name }}
         overwrite: true
 
     - name: Upload artifact in case of workflow_dispatch
       if: github.event_name == 'workflow_dispatch'
       uses: actions/upload-artifact@v3
       with:
-        name: cubic-server_${{ inputs.release_tag_name }}
-        path: ${{github.workspace}}/temp/cubic-server
+        name: CubicServer_${{ inputs.release_tag_name }}
+        path: ${{github.workspace}}/temp/CubicServer
 
     - name: Upload assets to release in case of workflow_dispatch
       if: github.event_name == 'workflow_dispatch'
       uses: svenstaro/upload-release-action@v2
       with:
         repo_token: ${{ secrets.GITHUB_TOKEN }}
-        file: ${{github.workspace}}/temp/cubic-server
+        file: ${{github.workspace}}/temp/CubicServer
         tag: ${{ inputs.release_tag_name }}
-        asset_name: cubic-server_${{ inputs.release_tag_name }}
+        asset_name: CubicServer_${{ inputs.release_tag_name }}
         overwrite: true
 # build-windows:
 #     runs-on: windows-latest
