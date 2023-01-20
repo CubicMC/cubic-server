@@ -55,6 +55,7 @@ jobs:
       run: |
         if [[ "$CACHE_HIT" == 'false' ]]; then
             cmake -S ${{github.workspace}} -B ${{github.workspace}}/build
+        fi
 
       # Build the program with the given configuration
     - name: Build
