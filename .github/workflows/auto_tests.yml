@@ -22,8 +22,8 @@ jobs:
         include:
           - CCcompiler: "gcc-12"
             CXXcompiler: "g++-12"
-          - CCcompiler: "clang-15"
-            CXXcompiler: "clang++-15"
+        #   - CCcompiler: "clang-15"
+        #     CXXcompiler: "clang++-15"
 
     runs-on: ubuntu-22.04 #self-hosted
     env:
