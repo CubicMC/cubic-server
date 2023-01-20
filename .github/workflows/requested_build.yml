@@ -57,6 +57,12 @@ jobs:
     # Checkout the repository
     - uses: actions/checkout@v3
 
+    - name: Add clang-15 repos
+      run: |
+        echo "deb http://apt.llvm.org/jammy/ llvm-toolchain-jammy-15 main" | sudo tee -a /etc/apt/sources.list
+        echo "deb-src http://apt.llvm.org/jammy/ llvm-toolchain-jammy-15 main" | sudo tee -a /etc/apt/sources.list
+        wget -O - https://apt.llvm.org/llvm-snapshot.gpg.key | sudo apt-key add -
+
     # install dependencies if needed
     - name: install all if not self-hosted
       if: ${{ !contains(github.repository, 'self-hosted') }}
