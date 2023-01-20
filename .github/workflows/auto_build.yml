@@ -53,4 +53,4 @@ jobs:
 
       # Build the program with the given configuration
     - name: Build
-      run: cmake --build ${{github.workspace}}/build -j `nproc`
+      run: cmake --build ${{github.workspace}}/build -j2
