@@ -32,6 +32,9 @@ jobs:
     # Checkout the repository
     - uses: actions/checkout@v3
 
+    - name: ccache
+      uses: hendrikmuhs/ccache-action@v1.2
+
     # install dependencies if needed
     - name: install all if not self-hosted
       if: ${{ !contains(github.repository, 'self-hosted') }}
@@ -54,7 +57,7 @@ jobs:
         CACHE_HIT: ${{steps.cache-build.outputs.cache-hit}}
       run: |
         if [[ "$CACHE_HIT" == 'false' ]]; then
-            cmake -S ${{github.workspace}} -B ${{github.workspace}}/build
+            cmake -S ${{github.workspace}} -B ${{github.workspace}}/build -D CMAKE_C_COMPILER_LAUNCHER=ccache -D CMAKE_CXX_COMPILER_LAUNCHER=ccache
         fi
 
       # Build the program with the given configuration
