@@ -16,7 +16,14 @@ FetchContent_Declare(
   json
   URL https://github.com/nlohmann/json/releases/download/v3.11.2/json.tar.xz
 )
+FetchContent_Declare(
+  noise
+  GIT_REPOSITORY https://github.com/Reputeless/PerlinNoise.git
+  GIT_TAG v3.0.0
+)
+
 FetchContent_MakeAvailable(json)
+FetchContent_MakeAvailable(noise)
 
 FetchContent_Declare(
     argparse
@@ -48,9 +55,10 @@ pkg_check_modules(GTKMM REQUIRED gtkmm-3.0)
 add_executable(${CMAKE_PROJECT_NAME})
 add_subdirectory(cubic-server)
 
-set(CMAKE_EXE_LINKER_FLAGS "-static-libgcc -static-libstdc++")
-
-target_include_directories(${CMAKE_PROJECT_NAME} PRIVATE ${GTKMM_INCLUDE_DIRS})
+target_include_directories(${CMAKE_PROJECT_NAME} PRIVATE
+    ${GTKMM_INCLUDE_DIRS}
+    ${noise_SOURCE_DIR}
+)
 target_include_directories(${CMAKE_PROJECT_NAME} PUBLIC cubic-server)
 target_link_libraries (${CMAKE_PROJECT_NAME} PRIVATE
         Threads::Threads
