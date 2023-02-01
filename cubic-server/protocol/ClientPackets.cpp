@@ -431,13 +431,13 @@ std::shared_ptr<std::vector<uint8_t>> protocol::createPlayerInfo(const PlayerInf
     return packet;
 }
 
-std::shared_ptr<std::vector<uint8_t>> protocol::createEntityAnimationClient(EntityAnimationID animId, int32_t entityID)
+std::shared_ptr<std::vector<uint8_t>> protocol::createEntityAnimation(EntityAnimationID animId, int32_t entityID)
 {
     std::vector<uint8_t> payload;
     serialize(payload, entityID, addVarInt,
         (uint8_t)animId, addByte);
     auto packet = std::make_shared<std::vector<uint8_t>>();
-    finalize(*packet, payload, (int32_t) ClientPacketID::EntityAnimationClient);
+    finalize(*packet, payload, (int32_t) ClientPacketID::EntityAnimation);
     return packet;
 }
 

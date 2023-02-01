@@ -19,11 +19,11 @@
 #include "allCommands.hpp"
 
 #ifndef MC_VERSION
-#define MC_VERSION "1.19"
+#define MC_VERSION "1.19.3"
 #endif
 
 #ifndef MC_PROTOCOL
-#define MC_PROTOCOL 759
+#define MC_PROTOCOL 761
 #endif
 
 #ifndef MS_PER_TICK

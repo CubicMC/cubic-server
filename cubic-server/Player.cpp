@@ -474,7 +474,7 @@ void Player::sendRemoveEntities(const std::vector<int32_t> &entities)
 
 void Player::sendSwingArm(bool main_hand, int32_t swinger_id)
 {
-    auto pck = protocol::createEntityAnimationClient(
+    auto pck = protocol::createEntityAnimation(
         main_hand ? protocol::EntityAnimationID::SwingMainArm : protocol::EntityAnimationID::SwingOffHand,
         swinger_id
     );

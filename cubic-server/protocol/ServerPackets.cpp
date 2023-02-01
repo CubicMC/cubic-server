@@ -33,18 +33,10 @@ std::shared_ptr<LoginStart> protocol::parseLoginStart(std::vector<uint8_t> &buff
 
     parse(at, buffer.data() + buffer.size() - 1, *h,
           popString, &LoginStart::name,
-          popBoolean, &LoginStart::has_sig_data);
-    if (h->has_sig_data) {
+          popBoolean, &LoginStart::has_player_uuid);
+    if (h->has_player_uuid)
         parse(at, buffer.data() + buffer.size() - 1, *h,
-              popLong, &LoginStart::timestamp,
-              popArray<uint8_t, popByte>, &LoginStart::public_key,
-              popArray<uint8_t, popByte>, &LoginStart::signature);
-    }
-//    parse(at, buffer.data() + buffer.size() - 1, *h,
-//          popBoolean, &LoginStart::has_player_uuid);
-//    if (h->has_player_uuid)
-//        parse(at, buffer.data() + buffer.size() - 1, *h,
-//              popUUID, &LoginStart::player_uuid);
+            popUUID, &LoginStart::player_uuid);
     return h;
 }
 
