@@ -92,10 +92,6 @@ namespace protocol
     struct LoginStart : BaseServerPacket
     {
         std::string name;
-        bool has_sig_data;
-        int64_t timestamp;
-        std::vector<uint8_t> public_key;
-        std::vector<uint8_t> signature;
         bool has_player_uuid;
         u128 player_uuid;
     };

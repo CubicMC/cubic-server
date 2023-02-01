@@ -17,37 +17,41 @@ namespace protocol
 {
 
     enum class ClientPacketID : int32_t {
-        Status = 0x00,
+        // Login State
         DisconnectLogin = 0x00,
-        Ping = 0x01,
-        SpawnPlayer = 0x02,
-        EntityAnimationClient = 0x03,
         LoginSuccess = 0x02,
+
+        // Status State
+        Status = 0x00,
+        Ping = 0x01,
+        
+        // Play State
+        SpawnPlayer = 0x02,
+        EntityAnimation = 0x03,
         BlockUpdate = 0x09,
         PluginMessage = 0x15,
-        CustomSoundEffect = 0x16,
-        UnloadChunk = 0x1a,
-        WorldEvent = 0x20,
-        LoginPlay = 0x23,
-        UpdateEntityPosition = 0x26,
-        UpdateEntityPositionRotation = 0x27,
-        UpdateEntityRotation = 0x28,
-        PlayerChatMessage = 0x30,
-        PlayerInfo = 0x34,
-        SynchronizePlayerPosition = 0x36,
-        RemoveEntities = 0x38,
-        HeadRotation = 0x3C,
-        CenterChunk = 0x48,
-        UpdateTime = 0x59,
-        TeleportEntity = 0x63,
-        EntitySoundEffect = 0x5c,
-        SoundEffect = 0x5d,
         DisconnectPlay = 0x17,
-        KeepAlive = 0x1e,
-        ChunkDataAndLightUpdate = 0x1F,
-        StopSound = 0x5e,
-        PlayerAbilities = 0x2f,
-        SystemChatMessage = 0x5f
+        // CustomSoundEffect = 0x16, TODO: This is removed in the last revision of wiki.vg
+        UnloadChunk = 0x1b,
+        KeepAlive = 0x1F,
+        ChunkDataAndLightUpdate = 0x20,
+        WorldEvent = 0x21,
+        LoginPlay = 0x24,
+        UpdateEntityPosition = 0x27,
+        UpdateEntityPositionRotation = 0x28,
+        UpdateEntityRotation = 0x29,
+        PlayerAbilities = 0x30,
+        PlayerChatMessage = 0x31,
+        SynchronizePlayerPosition = 0x38,
+        RemoveEntities = 0x3A,
+        HeadRotation = 0x3E,
+        CenterChunk = 0x4a,
+        UpdateTime = 0x5A,
+        EntitySoundEffect = 0x5D,
+        SoundEffect = 0x5E,
+        StopSound = 0x5F,
+        SystemChatMessage = 0x60,
+        TeleportEntity = 0x64,
     };
     struct PingResponse
     {
@@ -390,7 +394,7 @@ namespace protocol
         MagicCriticalEffect = 0x05,
     };
 
-    std::shared_ptr<std::vector<uint8_t>> createEntityAnimationClient(EntityAnimationID animId, int32_t entityID);
+    std::shared_ptr<std::vector<uint8_t>> createEntityAnimation(EntityAnimationID animId, int32_t entityID);
 
     enum PlayerAbilitiesFlags : uint8_t {
         Invulnerable = 0x01,
