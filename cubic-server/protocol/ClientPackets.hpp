@@ -187,6 +187,7 @@ namespace protocol
 
     struct _InitializeChat {
         // TODO: Let Miki do it xd
+        bool has_sig_data;
     };
 
     struct _UpdateListed {
@@ -216,7 +217,7 @@ namespace protocol
 
     struct PlayerInfoUpdate
     {
-        std::vector<uint64_t> actions;
+        uint8_t actions;
         int32_t numberOfActions;
         std::vector<_Actions> actionSets;
     };

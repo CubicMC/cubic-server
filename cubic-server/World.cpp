@@ -136,13 +136,15 @@ void World::sendPlayerInfoAddPlayer(Player *current) {
     std::vector<Player *> players = this->getPlayers();
     std::vector<protocol::_Actions> players_info;
 
-    std::vector<uint64_t> actions = {0};
+    uint8_t actions = 0x3f; // TODO: bruh
 
-    BITSET_SET_BIT(actions, 0, 1); // Add Player
-    BITSET_SET_BIT(actions, 2, 1); // Update Gamemode
-    BITSET_SET_BIT(actions, 3, 1); // Update listed
-    BITSET_SET_BIT(actions, 4, 1); // Update latency
-    BITSET_SET_BIT(actions, 5, 1); // Update display names
+    // BITSET_SET_BIT(actions, 0, 1); // Add Player
+    // BITSET_SET_BIT(actions, 1, 1); // Add Player
+    // BITSET_SET_BIT(actions, 2, 1); // Update Gamemode
+    // BITSET_SET_BIT(actions, 3, 1); // Update listed
+    // BITSET_SET_BIT(actions, 4, 1); // Update latency
+    // BITSET_SET_BIT(actions, 5, 1); // Update display names
+
 
     // iterate through the list of players
     for (auto &player : players) {
@@ -151,13 +153,16 @@ void World::sendPlayerInfoAddPlayer(Player *current) {
 
             player->sendPlayerInfoUpdate({
                 .actions = actions,
-                .numberOfActions = 1, // TODO: Optimize if multiple connect at the same time
+                .numberOfActions = 1,
                 .actionSets = {
                     {
                         .uuid = current->getUuid(),
                         .addPlayer = {
                             .name = current->getUsername(),
                             .numberOfProperties = 0,
+                        },
+                        .initializeChat = {
+                            .has_sig_data = false,
                         },
                         .updateGamemode = {
                             .gamemode = current->getGamemode(),
@@ -174,7 +179,6 @@ void World::sendPlayerInfoAddPlayer(Player *current) {
                     }
                 }
             });
-            continue;
         }
 
         // save the content of the iterated player for after
@@ -183,6 +187,9 @@ void World::sendPlayerInfoAddPlayer(Player *current) {
             .addPlayer = {
                 .name = player->getUsername(),
                 .numberOfProperties = 0,
+            },
+            .initializeChat = {
+                .has_sig_data = false,
             },
             .updateGamemode = {
                 .gamemode = player->getGamemode(),
@@ -200,14 +207,12 @@ void World::sendPlayerInfoAddPlayer(Player *current) {
     }
 
     // send the infos of all players to the current added player
-    // if (players_info.size() != 0) {
-    //     current->sendPlayerInfoUpdate({
-    //         .actions = actions,
-    //         .numberOfActions = (int32_t) players_info.size(),
-    //         .actionSets = players_info
-    //     });
-    //     LDEBUG("Sent player info to " + current->getUsername());
-    // }
+    current->sendPlayerInfoUpdate({
+        .actions = actions,
+        .numberOfActions = (int32_t) players_info.size(),
+        .actionSets = players_info
+    });
+    LDEBUG("Sent player info to " + current->getUsername());
 }
 
 void World::sendPlayerInfoRemovePlayer(const Player *current) {

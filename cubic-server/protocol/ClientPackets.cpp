@@ -411,39 +411,45 @@ std::shared_ptr<std::vector<uint8_t>> protocol::createPlayerInfoUpdate(const Pla
 {
     std::vector<uint8_t> payload;
     serialize(payload,
-        in.actions, addBitSet,
+        in.actions, addByte,
         (int32_t) in.actionSets.size(), addVarInt
     );
 
     for (auto &actionSet : in.actionSets) {
         serialize(payload, actionSet.uuid, addUUID);
 
-        if (BITSET_GET_BIT(in.actions, 0)) { // Add Player
+        if (in.actions & 0b00000001) { // Add Player
             serialize(payload,
                 actionSet.addPlayer.name, addString,
                 0, addVarInt // Number of properties -> To change to handle skins and stuff
             );
         }
-        if (BITSET_GET_BIT(in.actions, 1)) { // Initialize chat
+        if (in.actions & 0b00000010) { // Initialize chat
+            serialize(payload,
+                actionSet.initializeChat.has_sig_data, addBoolean
+            );
             // TODO: miki
         }
-        if (BITSET_GET_BIT(in.actions, 2)) { // Update gamemode
+        if (in.actions & 0b00000100) { // Update gamemode
             serialize(payload,
                 actionSet.updateGamemode.gamemode, addVarInt
             );
         }
-        if (BITSET_GET_BIT(in.actions, 3)) { // Update listed
+        if (in.actions & 0b00001000) { // Update listed
             serialize(payload,
                 actionSet.updateListed.listed, addBoolean
             );
         }
-        if (BITSET_GET_BIT(in.actions, 4)) { // Update latency
+        if (in.actions & 0b00010000) { // Update latency
             serialize(payload,
                 actionSet.updateLatency.latency, addVarInt
             );
         }
-        if (BITSET_GET_BIT(in.actions, 5)) { // Update display name
-            // TODO
+        if (in.actions & 0b00100000) { // Update display name
+            serialize(payload,
+                actionSet.updateDisplayName.hasDisplayName, addBoolean
+            );
+            // TODO: Add a proper display name
         }
     }
 
