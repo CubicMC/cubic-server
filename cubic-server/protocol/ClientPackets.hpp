@@ -11,6 +11,7 @@
 
 #include "Structures.hpp"
 #include "typeSerialization.hpp"
+#include "types.hpp"
 #include "world_storage/ChunkColumn.hpp"
 
 namespace protocol
@@ -41,7 +42,8 @@ namespace protocol
         UpdateEntityRotation = 0x29,
         PlayerAbilities = 0x30,
         PlayerChatMessage = 0x31,
-        // PlayerInfo = 0x34, TODO: This completely changed T_T
+        PlayerInfoRemove = 0x35,
+        PlayerInfoUpdate = 0x36,
         SynchronizePlayerPosition = 0x38,
         RemoveEntities = 0x3A,
         HeadRotation = 0x3E,
@@ -157,13 +159,15 @@ namespace protocol
 
     std::shared_ptr<std::vector<uint8_t>> createPlayerChatMessage(const PlayerChatMessage &);
 
+    struct PlayerInfoRemove {
+        std::vector<u128> uuids;
+    };
+    std::shared_ptr<std::vector<uint8_t>> createPlayerInfoRemove(const PlayerInfoRemove &);
+
     struct _AddPlayer {
         std::string name;
         int32_t numberOfProperties;
         // properties lol
-        int32_t gamemode;
-        int32_t ping;
-        bool hasDisplayName;
     };
 
     struct _UpdateGamemode {
@@ -179,34 +183,42 @@ namespace protocol
         std::string displayName;
     };
 
-    struct _RemovePlayer {
+    struct _InitializeChat {
+        // TODO: Let Miki do it xd
     };
 
-    struct _Player {
+    struct _UpdateListed {
+        bool listed;
+    };
+
+    struct _Actions {
         u128 uuid;
         // AddPlayer
         _AddPlayer addPlayer;
 
+        // InitializeChat
+        _InitializeChat initializeChat;
+
         // UpdateGamemode
         _UpdateGamemode updateGamemode;
+
+        // UpdateListed
+        _UpdateListed updateListed;
 
         // UpdateLatency
         _UpdateLatency updateLatency;
 
         // UpdateDisplayName
         _UpdateDisplayName updateDisplayName;
-
-        // RemovePlayer
-        _RemovePlayer removePlayer;
     };
 
-    struct PlayerInfo
+    struct PlayerInfoUpdate
     {
-        int32_t action;
-        int32_t numberOfPlayers;
-        std::vector<_Player> players;
+        std::vector<uint64_t> actions;
+        int32_t numberOfActions;
+        std::vector<_Actions> actionSets;
     };
-    std::shared_ptr<std::vector<uint8_t>> createPlayerInfo(const PlayerInfo &);
+    std::shared_ptr<std::vector<uint8_t>> createPlayerInfoUpdate(const PlayerInfoUpdate &);
 
     struct WorldEvent
     {

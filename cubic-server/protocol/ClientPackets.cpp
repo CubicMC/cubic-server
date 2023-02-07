@@ -1,6 +1,8 @@
 #include "PacketUtils.hpp"
 #include "ClientPackets.hpp"
 #include "protocol/serialization/addPrimaryType.hpp"
+#include "protocol/typeSerialization.hpp"
+#include <cassert>
 #include <cstdint>
 #include <memory>
 #include <vector>
@@ -195,6 +197,8 @@ std::shared_ptr<std::vector<uint8_t>> protocol::createHeadRotation(const HeadRot
 
 std::shared_ptr<std::vector<uint8_t>> protocol::createCustomSoundEffect(const CustomSoundEffect &in)
 {
+    return std::make_shared<std::vector<uint8_t>>();
+    /*
     std::vector<uint8_t> payload;
     serialize(payload,
         in.name, addIdentifier,
@@ -209,6 +213,7 @@ std::shared_ptr<std::vector<uint8_t>> protocol::createCustomSoundEffect(const Cu
     auto packet = std::make_shared<std::vector<uint8_t>>();
     finalize(*packet, payload, (int32_t) ClientPacketID::CustomSoundEffect);
     return packet;
+    */
 }
 
 std::shared_ptr<std::vector<uint8_t>> protocol::createEntitySoundEffect(const EntitySoundEffect &in)
@@ -376,58 +381,61 @@ std::shared_ptr<std::vector<uint8_t>> protocol::createSystemChatMessage(const Sy
     return packet;
 }
 
-std::shared_ptr<std::vector<uint8_t>> protocol::createPlayerInfo(const PlayerInfo &in)
+std::shared_ptr<std::vector<uint8_t>> protocol::createPlayerInfoRemove(const PlayerInfoRemove &in)
+{
+    std::vector<uint8_t> payload;
+
+    serialize(payload,
+        in.uuids, addArray<u128, addUUID>
+    );
+
+    auto packet = std::make_shared<std::vector<uint8_t>>();
+    finalize(*packet, payload, (int32_t) ClientPacketID::PlayerInfoRemove);
+    return packet;
+}
+
+std::shared_ptr<std::vector<uint8_t>> protocol::createPlayerInfoUpdate(const PlayerInfoUpdate &in)
 {
     std::vector<uint8_t> payload;
     serialize(payload,
-        in.action, addVarInt,
-        (int32_t) in.players.size(), addVarInt
+        in.actions, addBitSet,
+        (int32_t) in.actionSets.size(), addVarInt
     );
 
-    for (auto &player : in.players) {
-        serialize(payload, player.uuid, addUUID);
+    for (auto &actionSet : in.actionSets) {
+        serialize(payload, actionSet.uuid, addUUID);
 
-        switch (in.action) {
-            case 0:
-                serialize(payload,
-                    player.addPlayer.name, addString,
-                    0, addVarInt,
-                    player.addPlayer.gamemode, addVarInt,
-                    player.addPlayer.ping, addVarInt,
-                    false, addBoolean, // Has display name
-                    false, addBoolean // Has signature data
-                );
-                break;
-
-            case 1:
-                serialize(payload, player.updateGamemode.gamemode, addVarInt);
-                break;
-
-            case 2:
-                serialize(payload, player.updateLatency.latency, addVarInt);
-                break;
-
-            case 3:
-                serialize(payload, player.updateDisplayName.hasDisplayName, addBoolean);
-                if (player.updateDisplayName.hasDisplayName)
-                    serialize(payload, player.updateDisplayName.displayName, addChat);
-                break;
-
-            default:
-                break;
+        if (BITSET_GET_BIT(in.actions, 0)) { // Add Player
+            serialize(payload,
+                actionSet.addPlayer.name, addString,
+                0, addVarInt // Number of properties -> To change to handle skins and stuff
+            );
+        }
+        if (BITSET_GET_BIT(in.actions, 1)) { // Initialize chat
+            // TODO: miki
+        }
+        if (BITSET_GET_BIT(in.actions, 2)) { // Update gamemode
+            serialize(payload,
+                actionSet.updateGamemode.gamemode, addVarInt
+            );
+        }
+        if (BITSET_GET_BIT(in.actions, 3)) { // Update listed
+            serialize(payload,
+                actionSet.updateListed.listed, addBoolean
+            );
+        }
+        if (BITSET_GET_BIT(in.actions, 4)) { // Update latency
+            serialize(payload,
+                actionSet.updateLatency.latency, addVarInt
+            );
+        }
+        if (BITSET_GET_BIT(in.actions, 5)) { // Update display name
+            // TODO
         }
     }
 
     auto packet = std::make_shared<std::vector<uint8_t>>();
-    finalize(*packet, payload, (int32_t) ClientPacketID::PlayerInfo);
-    // std::cout << "Players action lol: " << in.action << std::endl;
-    // std::cout << "Players size lol: " << in.players.size() << std::endl;
-    // std::cout << "PlayerInfo packet size: " << packet->size() << std::endl;
-    // std::cout << "PlayerInfo packet id: " << (int32_t) ClientPacketID::PlayerInfo << std::endl;
-    // std::cout << "PlayerInfo packet: ";
-    // for (auto value : *packet)
-    //     std::cout << std::hex << (int)value;
-    // std::cout << std::endl;
+    finalize(*packet, payload, (int32_t) ClientPacketID::PlayerInfoUpdate);
     return packet;
 }
 

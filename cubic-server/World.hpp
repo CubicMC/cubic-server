@@ -37,7 +37,7 @@ public:
     virtual void setLevelData(const world_storage::LevelData &value);
     virtual void updateTime();
     virtual void sendPlayerInfoAddPlayer(Player *);
-    virtual void sendPlayerInfoRemovePlayer(Player *current);
+    virtual void sendPlayerInfoRemovePlayer(const Player *current);
 
     virtual int64_t getSeed() const;
 

@@ -259,8 +259,8 @@ void Player::sendLoginPlay(const protocol::LoginPlay &packet)
     // Send all chunks around the player
     // TODO: send chunk closer to the player first
     sendChunkAndLightUpdate(0, 0);
-    for (int32_t x = -4; x < 4; x++) {
-        for (int32_t z = -4; z < 4; z++) {
+    for (int32_t x = -8; x < 8; x++) {
+        for (int32_t z = -8; z < 8; z++) {
             if (x == 0 && z == 0)
                 continue;
             sendChunkAndLightUpdate(x, z);
@@ -276,40 +276,47 @@ void Player::sendLoginPlay(const protocol::LoginPlay &packet)
     getDimension()->spawnPlayer(this);
 
     // Send login message
-    chat::Message connectionMsg = chat::Message("", {
-        .color = "yellow",
-        .translate = "multiplayer.player.joined",
-        .with = std::vector<chat::Message>({
-            chat::Message(
-                this->getUsername(),
-                {
-                    .insertion = this->getUsername(),
-                },
-                chat::message::ClickEvent(
-                    chat::message::ClickEvent::Action::SuggestCommand,
-                    "/tell " + this->getUsername() + " "
-                ),
-                chat::message::HoverEvent(
-                    chat::message::HoverEvent::Action::ShowEntity,
-                    "{\"type\": \"minecraft:player\", \"id\": \"" + this->getUuidString() + "\", \"name\": \"" + this->getUsername() + "\"}"
-                )
-            )
-        })
-    });
+    // chat::Message connectionMsg = chat::Message("", {
+    //     .color = "yellow",
+    //     .translate = "multiplayer.player.joined",
+    //     .with = std::vector<chat::Message>({
+    //         chat::Message(
+    //             this->getUsername(),
+    //             {
+    //                 .insertion = this->getUsername(),
+    //             },
+    //             chat::message::ClickEvent(
+    //                 chat::message::ClickEvent::Action::SuggestCommand,
+    //                 "/tell " + this->getUsername() + " "
+    //             ),
+    //             chat::message::HoverEvent(
+    //                 chat::message::HoverEvent::Action::ShowEntity,
+    //                 "{\"type\": \"minecraft:player\", \"id\": \"" + this->getUuidString() + "\", \"name\": \"" + this->getUsername() + "\"}"
+    //             )
+    //         )
+    //     })
+    // });
 
-    this->getDimension()->getWorld()->getChat()->sendSystemMessage(
-        connectionMsg,
-        false,
-        this->getDimension()->getWorld()->getWorldGroup()
-    );
+    // this->getDimension()->getWorld()->getChat()->sendSystemMessage(
+    //     connectionMsg,
+    //     false,
+    //     this->getDimension()->getWorld()->getWorldGroup()
+    // );
     // for (auto &player : this->_player->getDimension()->getPlayerList())
     //     player->sendTeleportEntity(this->_player->getId(), {0, -58, 0});
 }
 
-void Player::sendPlayerInfo(const protocol::PlayerInfo &data)
+void Player::sendPlayerInfoUpdate(const protocol::PlayerInfoUpdate &data)
 {
-    LDEBUG("Sending PlayerInfo. Currently there is: " + std::to_string(data.numberOfPlayers) + " players");
-    auto pck = protocol::createPlayerInfo(data);
+    auto pck = protocol::createPlayerInfoUpdate(data);
+    this->_cli->_sendData(*pck);
+
+    LDEBUG("Sent a Player Info packet");
+}
+
+void Player::sendPlayerInfoRemove(const protocol::PlayerInfoRemove &data)
+{
+    auto pck = protocol::createPlayerInfoRemove(data);
     this->_cli->_sendData(*pck);
 
     LDEBUG("Sent a Player Info packet");
