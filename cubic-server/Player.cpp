@@ -353,6 +353,13 @@ void Player::sendSpawnPlayer(const protocol::SpawnPlayer &data)
     LDEBUG("Sent a Spawn Player packet on coords: ", data.x, " ", data.y, " ", data.z);
 }
 
+void Player::sendEntityVelocity(const protocol::EntityVelocity &data) {
+    auto pck = protocol::createEntityVelocity(data);
+    this->_cli->_sendData(*pck);
+
+    LDEBUG("Sent an Entity Velocity packet with velocity: x -> " + std::to_string(data.velocity_x) + " | " +  "y -> " + std::to_string(data.velocity_y) + " | "+  "z -> " + std::to_string(data.velocity_z));
+}
+
 void Player::sendUpdateTime(const protocol::UpdateTime &data)
 {
     auto pck = protocol::createUpdateTime(data);

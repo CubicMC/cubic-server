@@ -506,6 +506,39 @@ std::shared_ptr<std::vector<uint8_t>> protocol::createSystemChatMessage(const Sy
         in.overlay, addBoolean
     );
     auto packet = std::make_shared<std::vector<uint8_t>>();
+    finalize(*packet, payload, (int32_t)ClientPacketID::SpawnPlayer);
+
+    return packet;
+}
+
+std::shared_ptr<std::vector<uint8_t>> protocol::createEntityVelocity(const EntityVelocity &in) {
+    std::vector<uint8_t> payload;
+
+    serialize(payload,
+              in.entity_id, addVarInt,
+              in.velocity_x, addShort,
+              in.velocity_y, addShort,
+              in.velocity_z, addShort
+    );
+
+    auto packet = std::make_shared<std::vector<uint8_t>>();
+    finalize(*packet, payload, (int32_t)ClientPacketID::EntityVelocity);
+
+    return packet;
+}
+
+std::shared_ptr<std::vector<uint8_t>> protocol::createUpdateTime(const UpdateTime &in)
+{
+    std::vector<uint8_t> payload;
+
+    serialize(payload,
+        in.world_age, addLong,
+        in.time_of_day, addLong
+    );
+
+    auto packet = std::make_shared<std::vector<uint8_t>>();
+    finalize(*packet, payload, (int32_t)ClientPacketID::UpdateTime);
+
     finalize(*packet, payload, (int32_t) ClientPacketID::SystemChatMessage);
     return packet;
 }

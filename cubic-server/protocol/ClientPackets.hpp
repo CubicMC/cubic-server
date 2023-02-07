@@ -50,6 +50,7 @@ namespace protocol
         HeadRotation = 0x3E,
         ServerData = 0x41,
         CenterChunk = 0x4a,
+        EntityVelocity = 0x52,
         UpdateTime = 0x5A,
         EntitySoundEffect = 0x5D,
         SoundEffect = 0x5E,
@@ -411,7 +412,18 @@ namespace protocol
         std::string JSONData;
         bool overlay;
     };
+
     std::shared_ptr<std::vector<uint8_t>> createSystemChatMessage(const SystemChatMessage &);
+
+    struct EntityVelocity
+    {
+        int32_t entity_id;
+        int16_t velocity_x;
+        int16_t velocity_y;
+        int16_t velocity_z;
+    };
+
+    std::shared_ptr<std::vector<uint8_t>> createEntityVelocity(const EntityVelocity &);
 
     struct TeleportEntity
     {

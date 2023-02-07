@@ -58,6 +58,7 @@ public:
     void sendPlayerInfoUpdate(const protocol::PlayerInfoUpdate &data);
     void sendPlayerInfoRemove(const protocol::PlayerInfoRemove &data);
     void sendSpawnPlayer(const protocol::SpawnPlayer &data);
+    void sendEntityVelocity(const protocol::EntityVelocity &data);
     void sendUpdateTime(const protocol::UpdateTime &data);
     void sendChatMessageResponse(const protocol::PlayerChatMessage &packet);
     void sendSystemChatMessage(const protocol::SystemChatMessage &packet);
