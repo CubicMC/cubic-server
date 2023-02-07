@@ -4,6 +4,8 @@
 #include "Player.hpp"
 #include "Player.hpp"
 #include "WorldGroup.hpp"
+#include "protocol/typeSerialization.hpp"
+#include <cstdint>
 
 World::World(WorldGroup *worldGroup):
     _worldGroup(worldGroup),
@@ -132,29 +134,47 @@ void World::updateTime() {
 void World::sendPlayerInfoAddPlayer(Player *current) {
     // get list of players
     std::vector<Player *> players = this->getPlayers();
-    std::vector<protocol::_Player> players_info;
+    std::vector<protocol::_Actions> players_info;
+
+    std::vector<uint64_t> actions = {0};
+
+    BITSET_SET_BIT(actions, 0, 1); // Add Player
+    BITSET_SET_BIT(actions, 2, 1); // Update Gamemode
+    BITSET_SET_BIT(actions, 3, 1); // Update listed
+    BITSET_SET_BIT(actions, 4, 1); // Update latency
+    BITSET_SET_BIT(actions, 5, 1); // Update display names
 
     // iterate through the list of players
     for (auto &player : players) {
-
         // send to each player the info of the current added player
-        if (player != current) {
-            player->sendPlayerInfo({
-                .action = 0,
-                .numberOfPlayers = 1,
-                .players = {
+        if (player->getId() != current->getId()) {
+
+            player->sendPlayerInfoUpdate({
+                .actions = actions,
+                .numberOfActions = 1, // TODO: Optimize if multiple connect at the same time
+                .actionSets = {
                     {
                         .uuid = current->getUuid(),
                         .addPlayer = {
                             .name = current->getUsername(),
                             .numberOfProperties = 0,
+                        },
+                        .updateGamemode = {
                             .gamemode = current->getGamemode(),
-                            .ping = 0,
-                            .hasDisplayName = false
+                        },
+                        .updateListed = {
+                            .listed = true,
+                        },
+                        .updateLatency = {
+                            .latency = 0, // TODO
+                        },
+                        .updateDisplayName = {
+                            .hasDisplayName = false,
                         }
                     }
                 }
             });
+            continue;
         }
 
         // save the content of the iterated player for after
@@ -163,42 +183,43 @@ void World::sendPlayerInfoAddPlayer(Player *current) {
             .addPlayer = {
                 .name = player->getUsername(),
                 .numberOfProperties = 0,
+            },
+            .updateGamemode = {
                 .gamemode = player->getGamemode(),
-                .ping = 0,
-                .hasDisplayName = false
+            },
+            .updateListed = {
+                .listed = true,
+            },
+            .updateLatency = {
+                .latency = 0, // TODO
+            },
+            .updateDisplayName = {
+                .hasDisplayName = false,
             }
         });
     }
 
     // send the infos of all players to the current added player
-    current->sendPlayerInfo({
-        .action = 0,
-        .numberOfPlayers = (int32_t) players.size(),
-        .players = players_info
-    });
-    LDEBUG("Sent player info to ", current->getUsername());
+    // if (players_info.size() != 0) {
+    //     current->sendPlayerInfoUpdate({
+    //         .actions = actions,
+    //         .numberOfActions = (int32_t) players_info.size(),
+    //         .actionSets = players_info
+    //     });
+    //     LDEBUG("Sent player info to " + current->getUsername());
+    // }
 }
 
-void World::sendPlayerInfoRemovePlayer(Player *current) {
+void World::sendPlayerInfoRemovePlayer(const Player *current) {
     // get list of players
     std::vector<Player *> players = this->getPlayers();
 
     // iterate through the list of players
     for (auto &player : players) {
-
         // send to each player the info of the current removed player
-        if (player != current) {
-            player->sendPlayerInfo({
-                .action = 4,
-                .numberOfPlayers = 1,
-                .players = {
-                    {
-                        .uuid = current->getUuid(),
-                        .removePlayer = {
-
-                        }
-                    }
-                }
+        if (player->getId() != current->getId()) {
+            player->sendPlayerInfoRemove({
+                std::vector<u128>({current->getUuid()})
             });
         }
     }

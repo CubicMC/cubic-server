@@ -45,7 +45,7 @@ int main(int argc, char **argv)
     CommandLine cmd;
 
     auto logger = logging::Logger::get_instance();
-    logger->unset_display_specification_level_in_console(logging::LogLevel::DEBUG);
+    // logger->unset_display_specification_level_in_console(logging::LogLevel::DEBUG);
 
     if (program["--nogui"] == false)
         interfaceContainer.launch(argc, argv);
