@@ -192,7 +192,7 @@ namespace Blocks {
         case 7056:
         case 7057:
         case 7058:
-            return "minecraft::acacia_button";
+            return "minecraft:acacia_button";
         }
         return nullptr;
     }
