@@ -64,7 +64,7 @@ class Block:
         data += "}\n"
         return data
 
-    def to_cpp(self):
+    def toProtocol(self):
         data = "namespace " + self.name.split(":")[1].title().replace("_", "") + " {\n"
 
         if self.properties != []:
@@ -92,18 +92,18 @@ class Block:
             data = self.print_switch(all_props, [], data)
         else:
             data += "return " + str(self.states[0]["id"]) + ";\n"
+        data += "return 0;\n"
         data += "}\n"
         data += "}\n"
 
-        data += "std::string toName(Block id) {\n"
-        data += "switch (id) {\n"
+        return data + "\n"
+
+    def toName(self):
+        data = ""
         for state in self.states:
             data += "case " + str(state["id"]) + ":\n"
         data += "return \"" + self.name + "\";\n"
-        data += "}\n"
-        data += "return nullptr;\n"
-        data += "}\n"
-        return data + "\n"
+        return data
 
 blocks = []
 with open(sys.argv[1]) as f:
@@ -119,6 +119,13 @@ with open("generated.hpp", "w") as f:
 typedef uint16_t Block;
 
 namespace Blocks {\n""")
-    for block in blocks:
-        f.write(block.to_cpp())
+    for block in blocks :
+        f.write(block.toProtocol())
+    f.write("std::string toName(Block id) {\n" +
+        "switch (id) {\n")
+    for block in blocks :
+        f.write(block.toName())
+    f.write("}\n" +
+        "return nullptr;\n" +
+        "}\n")
     f.write("}\n")
