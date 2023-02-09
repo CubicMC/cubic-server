@@ -1,5 +1,7 @@
 #include <string>
 #include <cstdint>
+#include <vector>
+#include <stdexcept>
 
 typedef uint16_t Block;
 
@@ -120,6 +122,47 @@ namespace Blocks {
                     }
                 }
             }
+        }
+        constexpr Block paletteToProtocol(std::string name, std::vector<std::pair<std::string, std::string>> properties) {
+            if (properties.size() != 3)
+                throw std::runtime_error("Invalid number of properties");
+            Properties::Face face;
+            Properties::Facing facing;
+            Properties::Powered powered;
+            for (auto prop : properties) {
+                if (prop.first == "face") {
+                    if (prop.second == "floor") {
+                        face = Properties::Face::FLOOR;
+                    } else if (prop.second == "wall") {
+                        face = Properties::Face::WALL;
+                    } else if (prop.second == "ceiling") {
+                        face = Properties::Face::CEILING;
+                    } else {
+                        throw std::runtime_error("Invalid property \"face\" value");
+                    }
+                } else if (prop.first == "facing") {
+                    if (prop.second == "north") {
+                        facing = Properties::Facing::NORTH;
+                    } else if (prop.second == "south") {
+                        facing = Properties::Facing::SOUTH;
+                    } else if (prop.second == "west") {
+                        facing = Properties::Facing::WEST;
+                    } else if (prop.second == "east") {
+                        facing = Properties::Facing::EAST;
+                    } else {
+                        throw std::runtime_error("Invalid property \"facing\" value");
+                    }
+                } else if (prop.first == "powered") {
+                    if (prop.second == "true") {
+                        powered = Properties::Powered::TRUE;
+                    } else if (prop.second == "false") {
+                        powered = Properties::Powered::FALSE;
+                    } else {
+                        throw std::runtime_error("Invalid property \"powered\" value");
+                    }
+                }
+            }
+            return toProtocol(face, facing, powered);
         }
     }
 
