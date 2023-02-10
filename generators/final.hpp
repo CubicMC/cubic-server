@@ -122,6 +122,7 @@ namespace Blocks {
                     }
                 }
             }
+            return 0;
         }
         constexpr Block paletteToProtocol(std::string name, std::vector<std::pair<std::string, std::string>> properties) {
             if (properties.size() != 3)
@@ -160,6 +161,8 @@ namespace Blocks {
                     } else {
                         throw std::runtime_error("Invalid property \"powered\" value");
                     }
+                } else {
+                    throw std::runtime_error("Invalid property name");
                 }
             }
             return toProtocol(face, facing, powered);
