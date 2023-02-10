@@ -144,7 +144,9 @@ class Block:
         return data + "\n"
 
     def fromNameToProtocolId(self):
-        data = ""
+        data = "if (name == \"" + self.name + "\") {\n"
+        data += "return " + self.name.split(":")[1].title().replace("_", "") + "::paletteToProtocol(properties);\n"
+        data += "}\n"
         return data
 
     def toName(self):
