@@ -124,7 +124,7 @@ namespace Blocks {
             }
             return 0;
         }
-        constexpr Block paletteToProtocol(std::string name, std::vector<std::pair<std::string, std::string>> properties) {
+        constexpr Block paletteToProtocol(std::vector<std::pair<std::string, std::string>> properties) {
             if (properties.size() != 3)
                 throw std::runtime_error("Invalid number of properties");
             Properties::Face face;
