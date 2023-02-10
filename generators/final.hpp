@@ -168,13 +168,13 @@ namespace Blocks {
             return toProtocol(face, facing, powered);
         }
     }
+
     constexpr Block fromNameToProtocolId(std::string name, std::vector<std::pair<std::string, std::string>> properties) {
         if (name == "minecraft:acacia_button") {
             return AcaciaButton::paletteToProtocol(properties);
         }
         return 0;
     }
-
     constexpr std::string toName(Block id) {
         switch (id) {
         case 7035:

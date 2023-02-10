@@ -1,5 +1,7 @@
 #include <string>
 #include <cstdint>
+#include <vector>
+#include <stdexcept>
 
 typedef uint16_t Block;
 
@@ -97571,7 +97573,10 @@ return 0;
 }
 }
 
-std::string toName(Block id) {
+constexpr Block fromNameToProtocolId(std::string name, std::vector<std::pair<std::string, std::string>> properties) {
+return 0;
+}
+constexpr std::string toName(Block id) {
 switch (id) {
 case 7035:
 case 7036:

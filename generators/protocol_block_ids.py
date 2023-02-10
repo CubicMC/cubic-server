@@ -64,9 +64,8 @@ class Block:
         data += "}\n"
         return data
 
-    def toProtocol(self):
-        data = "namespace " + self.name.split(":")[1].title().replace("_", "") + " {\n"
-
+    def Properties(self):
+        data = ""
         if self.properties != []:
             data += "namespace Properties {\n"
             for prop in self.properties:
@@ -79,6 +78,10 @@ class Block:
                 data = data[:-2] + "\n};\n"
             data += "}\n"
 
+        return data
+
+    def toProtocol(self):
+        data = ""
         data += "constexpr Block toProtocol("
         if self.properties != []:
             for prop in self.properties:
@@ -94,9 +97,24 @@ class Block:
             data += "return " + str(self.states[0]["id"]) + ";\n"
         data += "return 0;\n"
         data += "}\n"
-        data += "}\n"
 
+        return data
+
+    def paletteToProtocol(self):
+        data = ""
+        return data
+
+    def namespace(self):
+        data = "namespace " + self.name.split(":")[1].title().replace("_", "") + " {\n"
+        data += self.Properties()
+        data += self.toProtocol()
+        data += self.paletteToProtocol()
+        data += "}\n"
         return data + "\n"
+
+    def fromNameToProtocolId(self):
+        data = ""
+        return data
 
     def toName(self):
         data = ""
@@ -115,13 +133,22 @@ for block in data:
 with open("generated.hpp", "w") as f:
     f.write("""#include <string>
 #include <cstdint>
+#include <vector>
+#include <stdexcept>
 
 typedef uint16_t Block;
 
 namespace Blocks {\n""")
     for block in blocks :
-        f.write(block.toProtocol())
-    f.write("std::string toName(Block id) {\n" +
+        f.write(block.namespace())
+
+    f.write("constexpr Block fromNameToProtocolId(std::string name, std::vector<std::pair<std::string, std::string>> properties) {\n")
+    for block in blocks :
+        f.write(block.fromNameToProtocolId())
+    f.write("return 0;\n")
+    f.write("}\n")
+
+    f.write("constexpr std::string toName(Block id) {\n" +
         "switch (id) {\n")
     for block in blocks :
         f.write(block.toName())
