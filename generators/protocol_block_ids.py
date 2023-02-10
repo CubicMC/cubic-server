@@ -100,7 +100,39 @@ class Block:
         return data
 
     def paletteToProtocol(self):
-        data = ""
+        data = "constexpr Block paletteToProtocol(std::vector<std::pair<std::string, std::string>> properties) {\n"
+        data += "if (properties.size() != " + str(len(self.properties)) + ")\n"
+        data += "throw std::runtime_error(\"Invalid number of properties\");\n"
+        if self.properties != []:
+            for prop in self.properties:
+                data += "Properties::" + prop.capitalize() + " " + prop + ";\n"
+            data += "for (auto prop : properties) {\n"
+            first_prop = True
+            for prop in self.properties:
+                first_value = True
+                if first_prop:
+                    data += "if (prop.first == \"" + prop + "\") {\n"
+                    first_prop = False
+                else:
+                    data += "} else if (prop.first == \"" + prop + "\") {\n"
+                for each in self.properties[prop]:
+                    if first_value:
+                        data += "if (prop.second == \"" + each + "\") {\n"
+                        first_value = False
+                    else:
+                        data += "} else if (prop.second == \"" + each + "\") {\n"
+                    data += prop + " = Properties::" + prop.capitalize() + "::" + (num2words(each).replace("-", "_").upper() if each.isdigit() else each.upper()) + ";\n"
+                data += "} else {\n"
+                data += "throw std::runtime_error(\"Invalid property \\\"" + prop + "\\\" value\");\n"
+                data += "}\n"
+            data += "} else {\n"
+            data += "throw std::runtime_error(\"Invalid property name\");\n"
+            data += "}\n"
+            data += "}\n"
+            data += "return toProtocol(" + ", ".join(self.properties) + ");\n"
+        else:
+            data += "return toProtocol();"
+        data += "}\n"
         return data
 
     def namespace(self):
