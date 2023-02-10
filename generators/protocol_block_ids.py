@@ -81,8 +81,7 @@ class Block:
         return data
 
     def toProtocol(self):
-        data = ""
-        data += "constexpr Block toProtocol("
+        data = "constexpr Block toProtocol("
         if self.properties != []:
             for prop in self.properties:
                 data += "Properties::" + prop.capitalize() + " " + prop + ", "
@@ -93,9 +92,9 @@ class Block:
             for prop in self.properties:
                 all_props.append(prop)
             data = self.print_switch(all_props, [], data)
+            data += "return 0;\n"
         else:
             data += "return " + str(self.states[0]["id"]) + ";\n"
-        data += "return 0;\n"
         data += "}\n"
 
         return data
