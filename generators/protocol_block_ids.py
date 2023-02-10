@@ -2,6 +2,9 @@ import json
 import sys
 from num2words import num2words
 
+global number_of_protocol_ids
+number_of_protocol_ids = 0
+
 def change_item_in_list(list, elem):
     for i in range(len(list)):
         if list[i][0] == elem[0]:
@@ -150,8 +153,10 @@ class Block:
         return data
 
     def toName(self):
+        global number_of_protocol_ids
         data = ""
         for state in self.states:
+            number_of_protocol_ids += 1
             data += "case " + str(state["id"]) + ":\n"
         data += "return \"" + self.name + "\";\n"
         return data
@@ -189,3 +194,4 @@ namespace Blocks {\n""")
         "return nullptr;\n" +
         "}\n")
     f.write("}\n")
+    f.write("constexpr int NUMBER_OF_PROTOCOL_IDS = " + str(number_of_protocol_ids) + ";\n")
