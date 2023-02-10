@@ -169,7 +169,7 @@ namespace Blocks {
         }
     }
 
-    std::string toName(Block id) {
+    constexpr std::string toName(Block id) {
         switch (id) {
         case 7035:
         case 7036:
