@@ -134,7 +134,7 @@ class Block:
             data += "}\n"
             data += "return toProtocol(" + ", ".join(self.properties) + ");\n"
         else:
-            data += "return toProtocol();"
+            data += "return toProtocol();\n"
         data += "}\n"
         return data
 
@@ -146,11 +146,8 @@ class Block:
         data += "}\n"
         return data + "\n"
 
-    def fromNameToProtocolId(self):
-        data = "if (name == \"" + self.name + "\") {\n"
-        data += "return " + self.name.split(":")[1].title().replace("_", "") + "::paletteToProtocol(properties);\n"
-        data += "}\n"
-        return data
+    def nameToProtocolId(self):
+        return "{\"" + self.name + "\", " + self.name.split(":")[1].title().replace("_", "") + "::paletteToProtocol},\n"
 
     def toName(self):
         global number_of_protocol_ids
@@ -169,29 +166,36 @@ for block in data:
     blocks.append(Block(block, data[block]))
 
 with open("generated.hpp", "w") as f:
-    f.write("""#include <string>
-#include <cstdint>
-#include <vector>
-#include <stdexcept>
+    f.write("#include <string>\n")
+    f.write("#include <cstdint>\n")
+    f.write("#include <vector>\n")
+    f.write("#include <stdexcept>\n")
+    f.write("#include <unordered_map>\n")
+    f.write("#include <functional>\n\n")
 
-typedef uint16_t Block;
+    f.write("typedef uint16_t Block;\n\n")
 
-namespace Blocks {\n""")
+    f.write("namespace Blocks {\n")
+
     for block in blocks :
         f.write(block.namespace())
 
-    f.write("constexpr Block fromNameToProtocolId(std::string name, std::vector<std::pair<std::string, std::string>> properties) {\n")
+    f.write("static const std::unordered_map<std::string, std::function<Block(std::vector<std::pair<std::string, std::string>>)>> nameToProtocolId {\n")
     for block in blocks :
-        f.write(block.fromNameToProtocolId())
-    f.write("return 0;\n")
-    f.write("}\n")
+        f.write(block.nameToProtocolId())
+    f.write("};\n\n")
 
-    f.write("constexpr std::string toName(Block id) {\n" +
-        "switch (id) {\n")
+    f.write("Block fromNameToProtocolId(std::string name, std::vector<std::pair<std::string, std::string>> properties) {\n")
+    f.write("return nameToProtocolId.at(name)(properties); // this may throw an exception\n")
+    f.write("}\n\n")
+
+    f.write("constexpr std::string toName(Block id) {\n")
+    f.write("switch (id) {\n")
     for block in blocks :
         f.write(block.toName())
-    f.write("}\n" +
-        "return nullptr;\n" +
-        "}\n")
     f.write("}\n")
+    f.write("return nullptr;\n")
+    f.write("}\n")
+    f.write("}\n\n")
+
     f.write("constexpr int NUMBER_OF_PROTOCOL_IDS = " + str(number_of_protocol_ids) + ";\n")

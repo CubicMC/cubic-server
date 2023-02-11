@@ -2,6 +2,8 @@
 #include <cstdint>
 #include <vector>
 #include <stdexcept>
+#include <unordered_map>
+#include <functional>
 
 typedef uint16_t Block;
 
@@ -169,12 +171,14 @@ namespace Blocks {
         }
     }
 
-    constexpr Block fromNameToProtocolId(std::string name, std::vector<std::pair<std::string, std::string>> properties) {
-        if (name == "minecraft:acacia_button") {
-            return AcaciaButton::paletteToProtocol(properties);
-        }
-        return 0;
+    static const std::unordered_map<std::string, std::function<Block(std::vector<std::pair<std::string, std::string>>)>> nameToProtocolId {
+        {"minecraft:acacia_button", AcaciaButton::paletteToProtocol},
+    };
+
+    Block fromNameToProtocolId(std::string name, std::vector<std::pair<std::string, std::string>> properties) {
+        return nameToProtocolId.at(name)(properties); // this may throw an exception
     }
+
     constexpr std::string toName(Block id) {
         switch (id) {
         case 7035:
