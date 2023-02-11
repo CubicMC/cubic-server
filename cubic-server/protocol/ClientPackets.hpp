@@ -54,6 +54,65 @@ namespace protocol
         SystemChatMessage = 0x60,
         TeleportEntity = 0x64,
     };
+    
+    struct TeleportEntity
+    {
+        int32_t entityID;
+        double x;
+        double y;
+        double z;
+        uint8_t yaw;
+        uint8_t pitch;
+        bool onGround;
+    };
+
+    struct _AddPlayer {
+        std::string name;
+        int32_t numberOfProperties;
+        // properties lol
+    };
+
+    struct _UpdateGamemode {
+        int32_t gamemode;
+    };
+
+    struct _UpdateLatency {
+        int32_t latency;
+    };
+
+    struct _UpdateDisplayName {
+        bool hasDisplayName;
+        std::string displayName;
+    };
+
+    struct _InitializeChat {
+        // TODO: Let Miki do it xd
+    };
+
+    struct _UpdateListed {
+        bool listed;
+    };
+
+    struct _Actions {
+        u128 uuid;
+        // AddPlayer
+        _AddPlayer addPlayer;
+
+        // InitializeChat
+        _InitializeChat initializeChat;
+
+        // UpdateGamemode
+        _UpdateGamemode updateGamemode;
+
+        // UpdateListed
+        _UpdateListed updateListed;
+
+        // UpdateLatency
+        _UpdateLatency updateLatency;
+
+        // UpdateDisplayName
+        _UpdateDisplayName updateDisplayName;
+    };
 
     struct LoginSuccess
     {
@@ -337,65 +396,6 @@ namespace protocol
         bool overlay;
     };
     std::shared_ptr<std::vector<uint8_t>> createSystemChatMessage(const SystemChatMessage &);
-
-    struct TeleportEntity
-    {
-        int32_t entityID;
-        double x;
-        double y;
-        double z;
-        uint8_t yaw;
-        uint8_t pitch;
-        bool onGround;
-    };
-
-    struct _AddPlayer {
-        std::string name;
-        int32_t numberOfProperties;
-        // properties lol
-    };
-
-    struct _UpdateGamemode {
-        int32_t gamemode;
-    };
-
-    struct _UpdateLatency {
-        int32_t latency;
-    };
-
-    struct _UpdateDisplayName {
-        bool hasDisplayName;
-        std::string displayName;
-    };
-
-    struct _InitializeChat {
-        // TODO: Let Miki do it xd
-    };
-
-    struct _UpdateListed {
-        bool listed;
-    };
-
-    struct _Actions {
-        u128 uuid;
-        // AddPlayer
-        _AddPlayer addPlayer;
-
-        // InitializeChat
-        _InitializeChat initializeChat;
-
-        // UpdateGamemode
-        _UpdateGamemode updateGamemode;
-
-        // UpdateListed
-        _UpdateListed updateListed;
-
-        // UpdateLatency
-        _UpdateLatency updateLatency;
-
-        // UpdateDisplayName
-        _UpdateDisplayName updateDisplayName;
-    };
 }
 
 #endif /* A7ADDD9E_6961_4A3D_AAB2_DF37DB6915F0 */
