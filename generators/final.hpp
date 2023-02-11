@@ -5,9 +5,15 @@
 #include <unordered_map>
 #include <functional>
 
-typedef uint16_t Block;
 
 namespace Blocks {
+    typedef uint16_t BlockId;
+
+    struct Block {
+        std::string name;
+        std::vector<std::pair<std::string, std::string>> properties;
+    };
+
     namespace AcaciaButton {
         namespace Properties {
             enum class Face {
@@ -28,7 +34,7 @@ namespace Blocks {
                 FALSE,
             };
         }
-        constexpr Block toProtocol(Properties::Face face, Properties::Facing facing, Properties::Powered powered) {
+        constexpr BlockId toProtocol(Properties::Face face, Properties::Facing facing, Properties::Powered powered) {
             switch (face) {
             case Properties::Face::FLOOR:
                 switch (facing) {
@@ -126,7 +132,7 @@ namespace Blocks {
             }
             return 0;
         }
-        constexpr Block paletteToProtocol(std::vector<std::pair<std::string, std::string>> properties) {
+        constexpr BlockId paletteToProtocol(std::vector<std::pair<std::string, std::string>> properties) {
             if (properties.size() != 3)
                 throw std::runtime_error("Invalid number of properties");
             Properties::Face face;
@@ -171,42 +177,65 @@ namespace Blocks {
         }
     }
 
-    static const std::unordered_map<std::string, std::function<Block(std::vector<std::pair<std::string, std::string>>)>> nameToProtocolId {
+    static const std::unordered_map<std::string, std::function<BlockId(std::vector<std::pair<std::string, std::string>>)>> nameToProtocolId {
         {"minecraft:acacia_button", AcaciaButton::paletteToProtocol},
     };
 
-    Block fromNameToProtocolId(std::string name, std::vector<std::pair<std::string, std::string>> properties) {
-        return nameToProtocolId.at(name)(properties); // this may throw an exception
+    BlockId fromNameToProtocolId(Block block) {
+        return nameToProtocolId.at(block.name)(block.properties); // this may throw an exception
     }
 
-    constexpr std::string toName(Block id) {
+    constexpr Block toName(BlockId id) {
         switch (id) {
         case 7035:
+            return {"minecraft:acacia_button", {{"face", "floor"}, {"facing", "north"}, {"powered", "true"}}};
         case 7036:
+            return {"minecraft:acacia_button", {{"face", "floor"}, {"facing", "north"}, {"powered", "false"}}};
         case 7037:
+            return {"minecraft:acacia_button", {{"face", "floor"}, {"facing", "south"}, {"powered", "true"}}};
         case 7038:
+            return {"minecraft:acacia_button", {{"face", "floor"}, {"facing", "south"}, {"powered", "false"}}};
         case 7039:
+            return {"minecraft:acacia_button", {{"face", "floor"}, {"facing", "west"}, {"powered", "true"}}};
         case 7040:
+            return {"minecraft:acacia_button", {{"face", "floor"}, {"facing", "west"}, {"powered", "false"}}};
         case 7041:
+            return {"minecraft:acacia_button", {{"face", "floor"}, {"facing", "east"}, {"powered", "true"}}};
         case 7042:
+            return {"minecraft:acacia_button", {{"face", "floor"}, {"facing", "east"}, {"powered", "false"}}};
         case 7043:
+            return {"minecraft:acacia_button", {{"face", "wall"}, {"facing", "north"}, {"powered", "true"}}};
         case 7044:
+            return {"minecraft:acacia_button", {{"face", "wall"}, {"facing", "north"}, {"powered", "false"}}};
         case 7045:
+            return {"minecraft:acacia_button", {{"face", "wall"}, {"facing", "south"}, {"powered", "true"}}};
         case 7046:
+            return {"minecraft:acacia_button", {{"face", "wall"}, {"facing", "south"}, {"powered", "false"}}};
         case 7047:
+            return {"minecraft:acacia_button", {{"face", "wall"}, {"facing", "west"}, {"powered", "true"}}};
         case 7048:
+            return {"minecraft:acacia_button", {{"face", "wall"}, {"facing", "west"}, {"powered", "false"}}};
         case 7049:
+            return {"minecraft:acacia_button", {{"face", "wall"}, {"facing", "east"}, {"powered", "true"}}};
         case 7050:
+            return {"minecraft:acacia_button", {{"face", "wall"}, {"facing", "east"}, {"powered", "false"}}};
         case 7051:
+            return {"minecraft:acacia_button", {{"face", "ceiling"}, {"facing", "north"}, {"powered", "true"}}};
         case 7052:
+            return {"minecraft:acacia_button", {{"face", "ceiling"}, {"facing", "north"}, {"powered", "false"}}};
         case 7053:
+            return {"minecraft:acacia_button", {{"face", "ceiling"}, {"facing", "south"}, {"powered", "true"}}};
         case 7054:
+            return {"minecraft:acacia_button", {{"face", "ceiling"}, {"facing", "south"}, {"powered", "false"}}};
         case 7055:
+            return {"minecraft:acacia_button", {{"face", "ceiling"}, {"facing", "west"}, {"powered", "true"}}};
         case 7056:
+            return {"minecraft:acacia_button", {{"face", "ceiling"}, {"facing", "west"}, {"powered", "false"}}};
         case 7057:
+            return {"minecraft:acacia_button", {{"face", "ceiling"}, {"facing", "east"}, {"powered", "true"}}};
         case 7058:
-            return "minecraft:acacia_button";
+            return {"minecraft:acacia_button", {{"face", "ceiling"}, {"facing", "east"}, {"powered", "false"}}};
         }
-        return nullptr;
+        return {"minecraft:air", {}};
     }
 }
