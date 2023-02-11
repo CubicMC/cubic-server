@@ -2,6 +2,32 @@ import json
 import sys
 from num2words import num2words
 
+global indentation
+indentation = 0
+
+def writer(data, file):
+    global indentation
+    lines = data.splitlines()
+    is_switch = 0
+    for line in lines:
+        if line:
+            if (line.startswith("switch")):
+                is_switch += 1
+            if line[0] == "}" and is_switch == 0:
+                indentation -= 4
+        file.write(" " * indentation + line + "\n")
+        if line:
+            if line[-1] == "}" and is_switch > 0:
+                is_switch -= 1
+                if is_switch > 0:
+                    indentation -= 4
+            if line[-1] == ":" and line.startswith("case") and is_switch > 0:
+                indentation += 4
+            if line[-1] == ";" and line.startswith("return") and is_switch > 0:
+                indentation -= 4
+            if line[-1] == "{" and is_switch == 0:
+                indentation += 4
+
 global number_of_protocol_ids
 number_of_protocol_ids = 0
 
@@ -199,3 +225,38 @@ with open("generated.hpp", "w") as f:
     f.write("}\n\n")
 
     f.write("constexpr int NUMBER_OF_PROTOCOL_IDS = " + str(number_of_protocol_ids) + ";\n")
+
+with open("generated_bis.hpp", "w") as f:
+    writer("#include <string>\n", f)
+    writer("#include <cstdint>\n", f)
+    writer("#include <vector>\n", f)
+    writer("#include <stdexcept>\n", f)
+    writer("#include <unordered_map>\n", f)
+    writer("#include <functional>\n\n", f)
+
+    writer("typedef uint16_t Block;\n\n", f)
+
+    writer("namespace Blocks {\n", f)
+
+    for block in blocks :
+        writer(block.namespace(), f)
+
+    writer("static const std::unordered_map<std::string, std::function<Block(std::vector<std::pair<std::string, std::string>>)>> nameToProtocolId {\n", f)
+    for block in blocks :
+        writer(block.nameToProtocolId(), f)
+    writer("};\n\n", f)
+
+    writer("Block fromNameToProtocolId(std::string name, std::vector<std::pair<std::string, std::string>> properties) {\n", f)
+    writer("return nameToProtocolId.at(name)(properties); // this may throw an exception\n", f)
+    writer("}\n\n", f)
+
+    writer("constexpr std::string toName(Block id) {\n", f)
+    writer("switch (id) {\n", f)
+    for block in blocks :
+        writer(block.toName(), f)
+    writer("}\n", f)
+    writer("return nullptr;\n", f)
+    writer("}\n", f)
+    writer("}\n\n", f)
+
+    writer("constexpr int NUMBER_OF_PROTOCOL_IDS = " + str(number_of_protocol_ids) + ";\n", f)
