@@ -8,5 +8,7 @@ int main(int argc, char** argv) {
         Blocks::fromNameToProtocolId("minecraft:acacia_button",
             {{"face", "ceiling"}, {"facing", "south"}, {"powered", "true"}}) <<
         std::endl;
+    std::cout << Blocks::toName(Blocks::fromNameToProtocolId("minecraft:acacia_sapling", {{"stage", "0"}})) <<
+        std::endl;
     return 0;
 }
