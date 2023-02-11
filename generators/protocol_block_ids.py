@@ -15,7 +15,7 @@ def writer(data, file):
                 is_switch += 1
             if line[0] == "}" and is_switch == 0:
                 indentation -= 4
-        file.write(" " * indentation + line + "\n")
+        file.write((" " * indentation if line else "") + line + "\n")
         if line:
             if line[-1] == "}" and is_switch > 0:
                 is_switch -= 1
@@ -110,7 +110,7 @@ class Block:
         return data
 
     def toProtocol(self):
-        data = "constexpr Block toProtocol("
+        data = "constexpr BlockId toProtocol("
         if self.properties != []:
             for prop in self.properties:
                 data += "Properties::" + prop.capitalize() + " " + prop + ", "
@@ -129,7 +129,7 @@ class Block:
         return data
 
     def paletteToProtocol(self):
-        data = "constexpr Block paletteToProtocol(std::vector<std::pair<std::string, std::string>> properties) {\n"
+        data = "constexpr BlockId paletteToProtocol(std::vector<std::pair<std::string, std::string>> properties) {\n"
         data += "if (properties.size() != " + str(len(self.properties)) + ")\n"
         data += "throw std::runtime_error(\"Invalid number of properties\");\n"
         if self.properties != []:
@@ -181,7 +181,12 @@ class Block:
         for state in self.states:
             number_of_protocol_ids += 1
             data += "case " + str(state["id"]) + ":\n"
-        data += "return \"" + self.name + "\";\n"
+            data += "return {\"" + self.name + "\", {"
+            if self.properties != []:
+                for prop in self.properties:
+                    data += "{\"" + prop + "\", \"" + state["properties"][prop] + "\"}, "
+                data = data[:-2]
+            data += "}};\n"
         return data
 
 blocks = []
@@ -199,28 +204,32 @@ with open("generated.hpp", "w") as f:
     f.write("#include <unordered_map>\n")
     f.write("#include <functional>\n\n")
 
-    f.write("typedef uint16_t Block;\n\n")
-
     f.write("namespace Blocks {\n")
+    f.write("typedef uint16_t BlockId;\n\n")
+
+    f.write("struct Block {")
+    f.write("std::string name;\n")
+    f.write("std::vector<std::pair<std::string, std::string>> properties;\n")
+    f.write("};\n\n")
 
     for block in blocks :
         f.write(block.namespace())
 
-    f.write("static const std::unordered_map<std::string, std::function<Block(std::vector<std::pair<std::string, std::string>>)>> nameToProtocolId {\n")
+    f.write("static const std::unordered_map<std::string, std::function<BlockId(std::vector<std::pair<std::string, std::string>>)>> nameToProtocolId {\n")
     for block in blocks :
         f.write(block.nameToProtocolId())
     f.write("};\n\n")
 
-    f.write("Block fromNameToProtocolId(std::string name, std::vector<std::pair<std::string, std::string>> properties) {\n")
-    f.write("return nameToProtocolId.at(name)(properties); // this may throw an exception\n")
+    f.write("BlockId fromNameToProtocolId(Block block) {\n")
+    f.write("return nameToProtocolId.at(block.name)(block.properties); // this may throw an exception\n")
     f.write("}\n\n")
 
-    f.write("constexpr std::string toName(Block id) {\n")
+    f.write("constexpr Block toName(BlockId id) {\n")
     f.write("switch (id) {\n")
     for block in blocks :
         f.write(block.toName())
     f.write("}\n")
-    f.write("return nullptr;\n")
+    f.write("return {\"minecraft:air\", {}};\n")
     f.write("}\n")
     f.write("}\n\n")
 
@@ -234,28 +243,32 @@ with open("generated_bis.hpp", "w") as f:
     writer("#include <unordered_map>\n", f)
     writer("#include <functional>\n\n", f)
 
-    writer("typedef uint16_t Block;\n\n", f)
-
     writer("namespace Blocks {\n", f)
+    writer("typedef uint16_t BlockId;\n\n", f)
+
+    writer("struct Block {", f)
+    writer("std::string name;\n", f)
+    writer("std::vector<std::pair<std::string, std::string>> properties;\n", f)
+    writer("};\n\n", f)
 
     for block in blocks :
         writer(block.namespace(), f)
 
-    writer("static const std::unordered_map<std::string, std::function<Block(std::vector<std::pair<std::string, std::string>>)>> nameToProtocolId {\n", f)
+    writer("static const std::unordered_map<std::string, std::function<BlockId(std::vector<std::pair<std::string, std::string>>)>> nameToProtocolId {\n", f)
     for block in blocks :
         writer(block.nameToProtocolId(), f)
     writer("};\n\n", f)
 
-    writer("Block fromNameToProtocolId(std::string name, std::vector<std::pair<std::string, std::string>> properties) {\n", f)
-    writer("return nameToProtocolId.at(name)(properties); // this may throw an exception\n", f)
+    writer("BlockId fromNameToProtocolId(Block block) {\n", f)
+    writer("return nameToProtocolId.at(block.name)(block.properties); // this may throw an exception\n", f)
     writer("}\n\n", f)
 
-    writer("constexpr std::string toName(Block id) {\n", f)
+    writer("constexpr Block toName(BlockId id) {\n", f)
     writer("switch (id) {\n", f)
     for block in blocks :
         writer(block.toName(), f)
     writer("}\n", f)
-    writer("return nullptr;\n", f)
+    writer("return {\"minecraft:air\", {}};\n", f)
     writer("}\n", f)
     writer("}\n\n", f)
 
