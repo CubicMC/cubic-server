@@ -31,7 +31,7 @@ namespace protocol
         ConfirmTeleportation = 0x00,
         QueryBlockEntityTag = 0x01,
         ChangeDifficulty = 0x02,
-        MessageAcknowledgement = 0x03,
+        MessageAcknowledgement = 0x03, // TODO: Implement
         ChatMessage = 0x05,
         ClientCommand = 0x06,
         ClientInformation = 0x07,
@@ -96,6 +96,12 @@ namespace protocol
     {};
     std::shared_ptr<StatusRequest> parseStatusRequest(std::vector<uint8_t> &buffer);
 
+    struct PingRequest : BaseServerPacket
+    {
+        int64_t payload;
+    };
+    std::shared_ptr<PingRequest> parsePingRequest(std::vector<uint8_t> &buffer);
+
     struct LoginStart : BaseServerPacket
     {
         std::string name;
@@ -103,18 +109,6 @@ namespace protocol
         u128 player_uuid;
     };
     std::shared_ptr<LoginStart> parseLoginStart(std::vector<uint8_t> &buffer);
-
-    struct PingRequest : BaseServerPacket
-    {
-        int64_t payload;
-    };
-    std::shared_ptr<PingRequest> parsePingRequest(std::vector<uint8_t> &buffer);
-
-    struct ConfirmTeleportation : BaseServerPacket
-    {
-        int32_t teleport_id;
-    };
-    std::shared_ptr<ConfirmTeleportation> parseConfirmTeleportation(std::vector<uint8_t> &buffer);
 
     struct EncryptionResponse : BaseServerPacket
     {
@@ -125,6 +119,12 @@ namespace protocol
         std::vector<uint8_t> message_signature;
     };
     std::shared_ptr<EncryptionResponse> parseEncryptionResponse(std::vector<uint8_t> &buffer);
+
+    struct ConfirmTeleportation : BaseServerPacket
+    {
+        int32_t teleport_id;
+    };
+    std::shared_ptr<ConfirmTeleportation> parseConfirmTeleportation(std::vector<uint8_t> &buffer);
 
     struct QueryBlockEntityTag : BaseServerPacket
     {

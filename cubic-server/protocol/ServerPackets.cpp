@@ -26,6 +26,17 @@ std::shared_ptr<StatusRequest> protocol::parseStatusRequest(std::vector<uint8_t>
     return {};
 }
 
+std::shared_ptr<PingRequest> protocol::parsePingRequest(std::vector<uint8_t> &buffer)
+{
+    auto h = std::make_shared<PingRequest>();
+    auto at = buffer.data();
+
+    parse(at, buffer.data() + buffer.size() - 1, *h,
+          popLong, &PingRequest::payload);
+    return h;
+}
+
+
 std::shared_ptr<LoginStart> protocol::parseLoginStart(std::vector<uint8_t> &buffer)
 {
     auto h = std::make_shared<LoginStart>();
@@ -37,26 +48,6 @@ std::shared_ptr<LoginStart> protocol::parseLoginStart(std::vector<uint8_t> &buff
     if (h->has_player_uuid)
         parse(at, buffer.data() + buffer.size() - 1, *h,
             popUUID, &LoginStart::player_uuid);
-    return h;
-}
-
-std::shared_ptr<PingRequest> protocol::parsePingRequest(std::vector<uint8_t> &buffer)
-{
-    auto h = std::make_shared<PingRequest>();
-    auto at = buffer.data();
-
-    parse(at, buffer.data() + buffer.size() - 1, *h,
-          popLong, &PingRequest::payload);
-    return h;
-}
-
-std::shared_ptr<ConfirmTeleportation> protocol::parseConfirmTeleportation(std::vector<uint8_t> &buffer)
-{
-    auto h = std::make_shared<ConfirmTeleportation>();
-    auto at = buffer.data();
-
-    parse(at, buffer.data() + buffer.size() - 1, *h,
-          popVarInt, &ConfirmTeleportation::teleport_id);
     return h;
 }
 
@@ -74,6 +65,16 @@ std::shared_ptr<EncryptionResponse> protocol::parseEncryptionResponse(std::vecto
           popArray<uint8_t, popByte>, &EncryptionResponse::verify_token,
           popLong, &EncryptionResponse::salt,
           popArray<uint8_t, popByte>, &EncryptionResponse::message_signature);
+    return h;
+}
+
+std::shared_ptr<ConfirmTeleportation> protocol::parseConfirmTeleportation(std::vector<uint8_t> &buffer)
+{
+    auto h = std::make_shared<ConfirmTeleportation>();
+    auto at = buffer.data();
+
+    parse(at, buffer.data() + buffer.size() - 1, *h,
+          popVarInt, &ConfirmTeleportation::teleport_id);
     return h;
 }
 
