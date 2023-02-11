@@ -7,7 +7,7 @@
 
 
 namespace Blocks {
-    typedef uint16_t BlockId;
+    typedef int32_t BlockId;
 
     struct Block {
         std::string name;

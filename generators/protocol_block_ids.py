@@ -189,87 +189,100 @@ class Block:
             data += "}};\n"
         return data
 
-blocks = []
-with open(sys.argv[1]) as f:
-    data = json.load(f)
 
-for block in data:
-    blocks.append(Block(block, data[block]))
+def load_json(filename):
+    blocks = []
+    with open(filename) as f:
+        data = json.load(f)
 
-with open("generated.hpp", "w") as f:
-    f.write("#include <string>\n")
-    f.write("#include <cstdint>\n")
-    f.write("#include <vector>\n")
-    f.write("#include <stdexcept>\n")
-    f.write("#include <unordered_map>\n")
-    f.write("#include <functional>\n\n")
+    for block in data:
+        blocks.append(Block(block, data[block]))
+    return blocks
 
-    f.write("namespace Blocks {\n")
-    f.write("typedef uint16_t BlockId;\n\n")
+def write_header(blocks):
+    with open("generated.hpp", "w") as f:
+        f.write("#include <string>\n")
+        f.write("#include <cstdint>\n")
+        f.write("#include <vector>\n")
+        f.write("#include <stdexcept>\n")
+        f.write("#include <unordered_map>\n")
+        f.write("#include <functional>\n\n")
 
-    f.write("struct Block {")
-    f.write("std::string name;\n")
-    f.write("std::vector<std::pair<std::string, std::string>> properties;\n")
-    f.write("};\n\n")
+        f.write("namespace Blocks {\n")
+        f.write("typedef int32_t BlockId;\n\n")
 
-    for block in blocks :
-        f.write(block.namespace())
+        f.write("struct Block {")
+        f.write("std::string name;\n")
+        f.write("std::vector<std::pair<std::string, std::string>> properties;\n")
+        f.write("};\n\n")
 
-    f.write("static const std::unordered_map<std::string, std::function<BlockId(std::vector<std::pair<std::string, std::string>>)>> nameToProtocolId {\n")
-    for block in blocks :
-        f.write(block.nameToProtocolId())
-    f.write("};\n\n")
+        for block in blocks :
+            f.write(block.namespace())
 
-    f.write("BlockId fromNameToProtocolId(Block block) {\n")
-    f.write("return nameToProtocolId.at(block.name)(block.properties); // this may throw an exception\n")
-    f.write("}\n\n")
+        f.write("static const std::unordered_map<std::string, std::function<BlockId(std::vector<std::pair<std::string, std::string>>)>> nameToProtocolId {\n")
+        for block in blocks :
+            f.write(block.nameToProtocolId())
+        f.write("};\n\n")
 
-    f.write("constexpr Block toName(BlockId id) {\n")
-    f.write("switch (id) {\n")
-    for block in blocks :
-        f.write(block.toName())
-    f.write("}\n")
-    f.write("return {\"minecraft:air\", {}};\n")
-    f.write("}\n")
-    f.write("}\n\n")
+        f.write("BlockId fromNameToProtocolId(Block block) {\n")
+        f.write("return nameToProtocolId.at(block.name)(block.properties); // this may throw an exception\n")
+        f.write("}\n\n")
 
-    f.write("constexpr int NUMBER_OF_PROTOCOL_IDS = " + str(number_of_protocol_ids) + ";\n")
+        f.write("constexpr Block toName(BlockId id) {\n")
+        f.write("switch (id) {\n")
+        for block in blocks :
+            f.write(block.toName())
+        f.write("}\n")
+        f.write("return {\"minecraft:air\", {}};\n")
+        f.write("}\n\n")
 
-with open("generated_bis.hpp", "w") as f:
-    writer("#include <string>\n", f)
-    writer("#include <cstdint>\n", f)
-    writer("#include <vector>\n", f)
-    writer("#include <stdexcept>\n", f)
-    writer("#include <unordered_map>\n", f)
-    writer("#include <functional>\n\n", f)
+        f.write("constexpr int NUMBER_OF_PROTOCOL_IDS = " + str(number_of_protocol_ids) + ";\n")
+        f.write("}\n")
 
-    writer("namespace Blocks {\n", f)
-    writer("typedef uint16_t BlockId;\n\n", f)
+def write_header_bis(blocks):
+    with open("generated_bis.hpp", "w") as f:
+        writer("#include <string>\n", f)
+        writer("#include <cstdint>\n", f)
+        writer("#include <vector>\n", f)
+        writer("#include <stdexcept>\n", f)
+        writer("#include <unordered_map>\n", f)
+        writer("#include <functional>\n\n", f)
 
-    writer("struct Block {", f)
-    writer("std::string name;\n", f)
-    writer("std::vector<std::pair<std::string, std::string>> properties;\n", f)
-    writer("};\n\n", f)
+        writer("namespace Blocks {\n", f)
+        writer("typedef int32_t BlockId;\n\n", f)
 
-    for block in blocks :
-        writer(block.namespace(), f)
+        writer("struct Block {", f)
+        writer("std::string name;\n", f)
+        writer("std::vector<std::pair<std::string, std::string>> properties;\n", f)
+        writer("};\n\n", f)
 
-    writer("static const std::unordered_map<std::string, std::function<BlockId(std::vector<std::pair<std::string, std::string>>)>> nameToProtocolId {\n", f)
-    for block in blocks :
-        writer(block.nameToProtocolId(), f)
-    writer("};\n\n", f)
+        for block in blocks :
+            writer(block.namespace(), f)
 
-    writer("BlockId fromNameToProtocolId(Block block) {\n", f)
-    writer("return nameToProtocolId.at(block.name)(block.properties); // this may throw an exception\n", f)
-    writer("}\n\n", f)
+        writer("static const std::unordered_map<std::string, std::function<BlockId(std::vector<std::pair<std::string, std::string>>)>> nameToProtocolId {\n", f)
+        for block in blocks :
+            writer(block.nameToProtocolId(), f)
+        writer("};\n\n", f)
 
-    writer("constexpr Block toName(BlockId id) {\n", f)
-    writer("switch (id) {\n", f)
-    for block in blocks :
-        writer(block.toName(), f)
-    writer("}\n", f)
-    writer("return {\"minecraft:air\", {}};\n", f)
-    writer("}\n", f)
-    writer("}\n\n", f)
+        writer("BlockId fromNameToProtocolId(Block block) {\n", f)
+        writer("return nameToProtocolId.at(block.name)(block.properties); // this may throw an exception\n", f)
+        writer("}\n\n", f)
 
-    writer("constexpr int NUMBER_OF_PROTOCOL_IDS = " + str(number_of_protocol_ids) + ";\n", f)
+        writer("constexpr Block toName(BlockId id) {\n", f)
+        writer("switch (id) {\n", f)
+        for block in blocks :
+            writer(block.toName(), f)
+        writer("}\n", f)
+        writer("return {\"minecraft:air\", {}};\n", f)
+        writer("}\n\n", f)
+
+        writer("constexpr int NUMBER_OF_PROTOCOL_IDS = " + str(number_of_protocol_ids) + ";\n", f)
+        writer("}\n", f)
+
+def main():
+    blocks = load_json("blocks.json")
+    write_header(blocks)
+    write_header_bis(blocks)
+
+if __name__ == "__main__":
+    main()
