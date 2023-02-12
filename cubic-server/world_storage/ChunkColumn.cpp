@@ -1,4 +1,5 @@
 #include <memory>
+#include <PerlinNoise.hpp>
 
 #include "ChunkColumn.hpp"
 #include "Palette.hpp"
@@ -19,10 +20,20 @@ void ChunkColumn::updateBlock(protocol::Position pos, Block block)
 
 void ChunkColumn::updateBlock(protocol::Position pos, GlobalBlockId id)
 {
-    // logging::Logger::get_instance()->info("update Block before if (" + std::to_string(pos.x) + ", " + std::to_string(pos.y) + ", " + std::to_string(pos.z) + ")");
-    if (pos.y > _heightMap.motionBlocking.at(pos.x + pos.z * SECTION_WIDTH).get_value())
-        _heightMap.motionBlocking.at(pos.x + pos.z * SECTION_WIDTH).setValue(pos.y);
-    // logging::Logger::get_instance()->info("update Block after if");
+    // Heightmap update
+    int blockNumber = pos.x + pos.z * SECTION_WIDTH;
+    int startLong = (blockNumber * HEIGHTMAP_BITS) / 64;
+    int startOffset = (blockNumber * HEIGHTMAP_BITS) % 64;
+    int endLong = ((blockNumber + 1) * HEIGHTMAP_BITS - 1) / 64;
+
+    if (pos.y > _heightMap.motionBlocking.at(startLong).get_value() >> startOffset) {
+        _heightMap.motionBlocking[startLong] |= (pos.y << startOffset);
+
+        if (startLong != endLong)
+            _heightMap.motionBlocking[endLong] |= (pos.y >> (64 - startOffset));
+    }
+
+    // Block update
     _blocks.at(calculateBlockIdx(pos)) = id;
 }
 
@@ -31,7 +42,7 @@ Block ChunkColumn::getBlock(protocol::Position pos) const
     return getBlockFromGlobalPaletteId(_blocks.at(calculateBlockIdx(pos)));
 }
 
-const std::array<GlobalBlockId, SECTION_3D_SIZE * NB_OF_CHUNKS> &ChunkColumn::getBlocks() const
+const std::array<GlobalBlockId, SECTION_3D_SIZE * NB_OF_SECTIONS> &ChunkColumn::getBlocks() const
 {
     return _blocks;
 }
@@ -46,7 +57,7 @@ uint8_t ChunkColumn::getSkyLight(protocol::Position pos) const
     return _skyLights.at(calculateBlockIdx(pos));
 }
 
-const std::array<uint8_t, SECTION_3D_SIZE * NB_OF_CHUNKS> &ChunkColumn::getSkyLights() const
+const std::array<uint8_t, SECTION_3D_SIZE * NB_OF_SECTIONS> &ChunkColumn::getSkyLights() const
 {
     return _skyLights;
 }
@@ -63,24 +74,22 @@ uint8_t ChunkColumn::getBlockLight(protocol::Position pos) const
     // return _blockLights.at(pos.x + pos.z * 16 + pos.y * 16*16);
 }
 
-const std::array<uint8_t, SECTION_3D_SIZE * NB_OF_CHUNKS> &ChunkColumn::getBlockLights() const
+const std::array<uint8_t, SECTION_3D_SIZE * NB_OF_SECTIONS> &ChunkColumn::getBlockLights() const
 {
     return _blockLights;
 }
 
 void ChunkColumn::updateBiome(protocol::Position pos, uint8_t biome)
 {
-    _biomes.at(calculateBlockIdx(pos)) = biome;
-    // _biomes.at(pos.x + pos.z * 16 + pos.y * 16*16) = biome;
+    _biomes.at(calculateBiomeIdx(pos)) = biome;
 }
 
 uint8_t ChunkColumn::getBiome(protocol::Position pos) const
 {
-    return _biomes.at(calculateBlockIdx(pos));
-    // return _biomes.at(pos.x + pos.z * 16 + pos.y * 16*16);
+    return _biomes.at(calculateBiomeIdx(pos));
 }
 
-const std::array<uint8_t, BIOME_SECTION_3D_SIZE * NB_OF_CHUNKS> &ChunkColumn::getBiomes() const {
+const std::array<uint8_t, BIOME_SECTION_3D_SIZE * NB_OF_SECTIONS> &ChunkColumn::getBiomes() const {
     return _biomes;
 }
 
@@ -169,7 +178,26 @@ void ChunkColumn::generate(WorldType worldType) {
     }
 }
 
-void ChunkColumn::_generateOverworld() {
+void ChunkColumn::_generateOverworld()
+{
+    // TODO: Pass the seed to the chunk
+    auto noiseMaker = siv::PerlinNoise();
+    // generate biomes
+    for (int y = 0; y < NB_OF_SECTIONS * 4; y++) {
+        for (int z = 0; z < 4; z++) {
+            for (int x = 0; x < 4; x++) {
+                updateBiome({x, y - 16, z}, noiseMaker.noise3D(x, y, z) > 0 ? 1 : 0);
+            }
+        }
+    }
+
+    for (int z = 0; z < 16; z++) {
+        for (int x = 0; x < 16; x++) {
+            int yMax = std::floor(noiseMaker.noise2D_01(x, z) * (double)CHUNK_HEIGHT);
+            for (int y = 0; y < yMax; y++)
+                updateBlock({x, y + CHUNK_HEIGHT_MIN, z}, getGlobalPaletteIdFromBlockName("minecraft:stone"));
+        }
+    }
 }
 
 void ChunkColumn::_generateNether() {

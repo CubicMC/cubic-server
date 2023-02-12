@@ -450,7 +450,7 @@ void Player::sendChunkAndLightUpdate(int32_t x, int32_t z)
         }),
         chunk,
         {}, // TODO: BlockEntities
-        true,
+        false,
         {}, // TODO: Sky light mask
         {}, // TODO: Block light mask
         {}, // TODO: empty sky light mask

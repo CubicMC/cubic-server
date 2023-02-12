@@ -273,7 +273,8 @@ public:
         return _value;
     }
 
-    void setValue(int64_t value) {
+    void setValue(int64_t value)
+    {
         _value = value;
     }
 
@@ -285,6 +286,11 @@ public:
     void operator|=(int64_t value)
     {
         _value |= value;
+    }
+
+    void operator=(int64_t value)
+    {
+        this->setValue(value);
     }
 
     [[nodiscard]] constexpr std::vector<uint8_t> serialize() const override {

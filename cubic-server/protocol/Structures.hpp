@@ -1,5 +1,6 @@
 #pragma once
 
+#include <ostream>
 #include <cstdint>
 
 #include "common.hpp"
@@ -24,6 +25,30 @@ namespace protocol
         int64_t x;
         int64_t y;
         int64_t z;
+        constexpr Position operator*(int64_t i) const
+        {
+            return Position{x * i, y * i, z * i};
+        }
+        constexpr Position operator/(int64_t i) const
+        {
+            return Position{x / i, y / i, z / i};
+        }
+        constexpr Position operator%(int64_t i) const
+        {
+            return Position{x % i, y % i, z % i};
+        }
+        constexpr Position operator+(const Position &other) const
+        {
+            return Position{x + other.x, y + other.y, z + other.z};
+        }
+        constexpr Position operator-(const Position &other) const
+        {
+            return Position{x - other.x, y - other.y, z - other.z};
+        }
+        std::ostream &operator<<(std::ostream &os) const
+        {
+            return os << "Position(" << x << ", " << y << ", " << z << ")";
+        }
     };
 
     struct Slot
