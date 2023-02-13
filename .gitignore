@@ -39,5 +39,3 @@ cmake-build-release
 logs
 config.yml
 .cache
-.venv
-blocks.json
