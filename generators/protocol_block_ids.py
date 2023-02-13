@@ -281,7 +281,7 @@ def parse_args(options):
     parser = argparse.ArgumentParser()
     parser.add_argument("-i", "--input", help="input file", default=options["input"])
     parser.add_argument("-o", "--output", help="output file", default=options["output"])
-    parser.add_argument("-f", "--format", help="format the code", action="store_true")
+    parser.add_argument("-f", "--format", help="format the code", action=argparse.BooleanOptionalAction)
     args = parser.parse_args()
     if args.input != "blocks.json":
         print("I hope you know what you are doing, cause for now the script only works with the blocks.json file")
@@ -295,7 +295,7 @@ def main():
     options = {"input": "blocks.json", "output": "generated/blocks"}
     options = parse_args(options)
     blocks = load_json(options["input"])
-    os.makedirs('/'.join(options["output"].split('/')[:-1]), exist_ok=True)
+    os.makedirs(os.path.dirname(options["output"]), exist_ok=True)
     write_header_file(options["output"], blocks)
     write_source_file(options["output"], blocks)
 
