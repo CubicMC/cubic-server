@@ -15,7 +15,7 @@ formated = True
 global number_of_protocol_ids
 number_of_protocol_ids = 0
 
-# this function is used to format the output
+# used to format the output
 def writer(data, file):
     global indentation
     global is_switch
@@ -43,7 +43,7 @@ def writer(data, file):
     else:
         file.write(data)
 
-# this function is used to add an element to a list of dict/tuple if it doesn't exist, and if it does, it replaces it
+# used to add an element to a list of dict/tuple if it doesn't exist, and if it does, it replaces it
 def change_item_in_list(list, elem):
     for i in range(len(list)):
         if list[i][0] == elem[0]:
@@ -52,15 +52,15 @@ def change_item_in_list(list, elem):
     list.append(elem)
     return list
 
-# this class is used to store the data of each block
+# store the data of each block
 class Block:
-    # this function is used to initialize the class aka get the data from the json file
+    # initialize the class aka get the data from the json file
     def __init__(self, name, data):
         valid = True
         self.name = name
         self.properties = data["properties"] if "properties" in data else [] # this stores the properties of the block and if it doesn't have any, it stores an empty list
         self.states = data["states"]
-        # this loop is used to check if the block has a "short" property (and so a short state),
+        # check if the block has a "short" property (and so a short state),
         # if it does, it renames it to "short_" and adds it to the list of properties (and to the states) cause short is a reserved keyword in c++
         for prop in self.properties:
             if prop == "short":
@@ -84,7 +84,7 @@ class Block:
                 new_states.append({"id": state["id"], "properties": new_state})
             self.states = new_states
 
-    # this function is used to get the protocol id of a specific state of the block
+    # get the protocol id of a specific state of the block
     def get_protocol_id_from_state(self, state):
         valid = False
         for each in self.states:
@@ -98,7 +98,7 @@ class Block:
                 return str(each["id"])
         return 0
 
-    # this function is used to print the switch statement of the toProtocol function (it's recursive)
+    # print the switch statement of the toProtocol function (it's recursive)
     def print_switch(self, remaining_props, state, data):
         data += "switch (" + remaining_props[0] + ") {\n"
         for each in self.properties[remaining_props[0]]:
@@ -112,7 +112,7 @@ class Block:
         data += "}\n"
         return data
 
-    # this function is used to print the different properties of the block in the header file as enums
+    # print the different properties of the block in the header file as enums
     def Properties(self):
         data = ""
         if self.properties != []:
@@ -129,7 +129,7 @@ class Block:
 
         return data
 
-    # this function is used to print the toProtocol function in the header file
+    # print the toProtocol function in the header file
     def toProtocol(self):
         data = "constexpr BlockId toProtocol("
         if self.properties != []:
@@ -149,7 +149,7 @@ class Block:
 
         return data
 
-    # this function is used to print the paletteToProtocol function in the header file
+    # print the paletteToProtocol function in the header file
     def paletteToProtocol(self):
         data = "constexpr BlockId paletteToProtocol(std::vector<std::pair<std::string, std::string>> properties) {\n"
         data += "if (properties.size() != " + str(len(self.properties)) + ")\n"
@@ -172,6 +172,11 @@ class Block:
                         first_value = False
                     else:
                         data += "} else if (prop.second == \"" + each + "\") {\n"
+                    # this line add to data the value of the property (for example "face")
+                    # the enum of the property (for example "Face")
+                    # the value of the property (for example "floor")
+                    # if the value is a number it converts it to a string
+                    # if the value contains a "-" it replaces it with "_"
                     data += prop + " = Properties::" + prop.capitalize() + "::" + (num2words(each).replace("-", "_").upper() if each.isdigit() else each.upper()) + ";\n"
                 data += "} else {\n"
                 data += "throw std::runtime_error(\"Invalid property \\\"" + prop + "\\\" value\");\n"
@@ -186,7 +191,7 @@ class Block:
         data += "}\n"
         return data
 
-    # this function is used to print the namespace of the block in the header file and so all the things that are inside it
+    # print the namespace of the block in the header file and so all the things that are inside it
     def namespace(self):
         data = "namespace " + self.name.split(":")[1].title().replace("_", "") + " {\n"
         data += self.Properties()
@@ -195,11 +200,11 @@ class Block:
         data += "}\n"
         return data + "\n"
 
-    # this function is used to print the name of the block and the function that returns the protocol id of the block
+    # print the name of the block and the function that returns the protocol id of the block
     def nameToProtocolId(self):
         return "{\"" + self.name + "\", " + self.name.split(":")[1].title().replace("_", "") + "::paletteToProtocol},\n"
 
-    # this function is used to print the toName function that returns the name of the block and the properties of the block from the protocol id
+    # print the toName function that returns the name of the block and the properties of the block from the protocol id
     def toName(self):
         global number_of_protocol_ids
         data = ""
@@ -214,7 +219,7 @@ class Block:
             data += "}};\n"
         return data
 
-# this function is used to load the json file
+# load the json file
 def load_json(filename):
     blocks = []
     with open(filename) as f:
@@ -224,7 +229,7 @@ def load_json(filename):
         blocks.append(Block(block, data[block]))
     return blocks
 
-# this function is used to write the header file
+# write the header file
 def write_header_file(filename, blocks):
     with open(filename + ".hpp", "w") as f:
         writer("#include <string>\n", f)
@@ -256,7 +261,7 @@ def write_header_file(filename, blocks):
         writer("constexpr int NUMBER_OF_PROTOCOL_IDS = " + str(number_of_protocol_ids) + ";\n", f)
         writer("}\n", f)
 
-# this function is used to write the source file
+# write the source file
 def write_source_file(filename, blocks):
     with open(filename + ".cpp", 'w') as f:
         writer("#include \"" + filename.split("/")[-1] + ".hpp\"\n\n", f)
@@ -275,7 +280,7 @@ def write_source_file(filename, blocks):
         writer("}\n", f)
         writer("}\n", f)
 
-# this function is used to get different option you can pass to the script
+# get different option you can pass to the script
 def parse_args(options):
     global formated
     parser = argparse.ArgumentParser()
@@ -290,7 +295,6 @@ def parse_args(options):
     formated = args.format
     return options
 
-# this is the main function
 def main():
     options = {"input": "blocks.json", "output": "generated/blocks"}
     options = parse_args(options)
