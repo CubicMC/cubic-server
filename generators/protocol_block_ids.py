@@ -149,9 +149,9 @@ class Block:
 
         return data
 
-    # print the paletteToProtocol function in the header file
+    # print the paletteToProtocol function in the source file
     def paletteToProtocol(self):
-        data = "constexpr BlockId paletteToProtocol(std::vector<std::pair<std::string, std::string>> properties) {\n"
+        data = "BlockId paletteToProtocol(std::vector<std::pair<std::string, std::string>> properties) {\n"
         data += "if (properties.size() != " + str(len(self.properties)) + ")\n"
         data += "throw std::runtime_error(\"Invalid number of properties\");\n"
         if self.properties != []:
@@ -192,10 +192,16 @@ class Block:
         return data
 
     # print the namespace of the block in the header file and so all the things that are inside it
-    def namespace(self):
+    def namespaceForHeaderFile(self):
         data = "namespace " + self.name.split(":")[1].title().replace("_", "") + " {\n"
         data += self.Properties()
         data += self.toProtocol()
+        data += "BlockId paletteToProtocol(std::vector<std::pair<std::string, std::string>> properties);\n"
+        data += "}\n"
+        return data + "\n"
+
+    def namespaceForSourceFile(self):
+        data = "namespace " + self.name.split(":")[1].title().replace("_", "") + " {\n"
         data += self.paletteToProtocol()
         data += "}\n"
         return data + "\n"
@@ -248,12 +254,9 @@ def write_header_file(filename, blocks):
         writer("};\n\n", f)
 
         for block in blocks :
-            writer(block.namespace(), f)
+            writer(block.namespaceForHeaderFile(), f)
 
-        writer("static const std::unordered_map<std::string, std::function<BlockId(std::vector<std::pair<std::string, std::string>>)>> nameToProtocolId {\n", f)
-        for block in blocks :
-            writer(block.nameToProtocolId(), f)
-        writer("};\n\n", f)
+        writer("extern const std::unordered_map<std::string, std::function<BlockId(std::vector<std::pair<std::string, std::string>>)>> nameToProtocolId;", f)
 
         writer("BlockId fromNameToProtocolId(Block block);\n", f)
         writer("Block toName(BlockId id);\n", f)
@@ -267,6 +270,14 @@ def write_source_file(filename, blocks):
         writer("#include \"" + filename.split("/")[-1] + ".hpp\"\n\n", f)
 
         writer("namespace Blocks {\n", f)
+        for block in blocks :
+            writer(block.namespaceForSourceFile(), f)
+
+        writer("const std::unordered_map<std::string, std::function<BlockId(std::vector<std::pair<std::string, std::string>>)>> nameToProtocolId {\n", f)
+        for block in blocks :
+            writer(block.nameToProtocolId(), f)
+        writer("};\n\n", f)
+
         writer("BlockId fromNameToProtocolId(Block block) {\n", f)
         writer("return nameToProtocolId.at(block.name)(block.properties); // this may throw an exception\n", f)
         writer("}\n\n", f)
