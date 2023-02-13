@@ -131,7 +131,7 @@ class Block:
 
     # print the toProtocol function in the header file
     def toProtocol(self):
-        data = "constexpr BlockId toProtocol("
+        data = "BlockId toProtocol("
         if self.properties != []:
             for prop in self.properties:
                 data += "Properties::" + prop.capitalize() + " " + prop + ", "
@@ -195,13 +195,19 @@ class Block:
     def namespaceForHeaderFile(self):
         data = "namespace " + self.name.split(":")[1].title().replace("_", "") + " {\n"
         data += self.Properties()
-        data += self.toProtocol()
+        data += "BlockId toProtocol("
+        if self.properties != []:
+            for prop in self.properties:
+                data += "Properties::" + prop.capitalize() + " " + prop + ", "
+            data = data[:-2]
+        data += ");\n"
         data += "BlockId paletteToProtocol(std::vector<std::pair<std::string, std::string>> properties);\n"
         data += "}\n"
         return data + "\n"
 
     def namespaceForSourceFile(self):
         data = "namespace " + self.name.split(":")[1].title().replace("_", "") + " {\n"
+        data += self.toProtocol()
         data += self.paletteToProtocol()
         data += "}\n"
         return data + "\n"
