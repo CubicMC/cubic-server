@@ -50,7 +50,8 @@ namespace protocol
         HeadRotation = 0x3E,
         ServerData = 0x41,
         CenterChunk = 0x4a,
-        EntityVelocity = 0x52,
+        EntityVelocity = 0x4f,
+        Health = 0x52,
         UpdateTime = 0x5A,
         EntitySoundEffect = 0x5D,
         SoundEffect = 0x5E,
@@ -424,6 +425,15 @@ namespace protocol
     };
 
     std::shared_ptr<std::vector<uint8_t>> createEntityVelocity(const EntityVelocity &);
+
+    struct Health
+    {
+        float health;
+        int32_t food;
+        float foodSaturation;
+    };
+
+    std::shared_ptr<std::vector<uint8_t>> createHealth(const Health &);
 
     struct TeleportEntity
     {

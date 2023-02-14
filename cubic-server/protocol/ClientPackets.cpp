@@ -527,6 +527,22 @@ std::shared_ptr<std::vector<uint8_t>> protocol::createEntityVelocity(const Entit
     return packet;
 }
 
+std::shared_ptr<std::vector<uint8_t>> protocol::createHealth(const Health &in)
+{
+    std::vector<uint8_t> payload;
+
+    serialize(payload,
+            in.health, addFloat,
+            in.food, addVarInt,
+            in.foodSaturation, addFloat
+    );
+
+    auto packet = std::make_shared<std::vector<uint8_t>>();
+    finalize(*packet, payload, (int32_t)ClientPacketID::Health);
+
+    return packet;
+}
+
 std::shared_ptr<std::vector<uint8_t>> protocol::createUpdateTime(const UpdateTime &in)
 {
     std::vector<uint8_t> payload;

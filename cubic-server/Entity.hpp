@@ -41,6 +41,7 @@ public:
     virtual void forceSetPosition(double x, double y, double z);
     virtual void setRotation(const Vector2<uint8_t> &rot);
     virtual void setRotation(uint8_t yaw, uint8_t pitch);
+    virtual void setHealth(float health);
     [[nodiscard]] virtual std::shared_ptr<Dimension> getDimension() const;
     [[nodiscard]] virtual int32_t getId() const;
     [[nodiscard]] virtual Vector3<double> &getPosition();
@@ -49,6 +50,8 @@ public:
     [[nodiscard]] virtual const Vector2<uint8_t> &getRotation() const;
     [[nodiscard]] virtual Vector3<double> &getLastPosition();
     [[nodiscard]] virtual Vector2<uint8_t> &getLastRotation();
+    [[nodiscard]] virtual const float &getHealth() const;
+    [[nodiscard]] virtual float &getHealth();
 
     virtual void teleport(const Vector3<double> &pos);
 
