@@ -27,6 +27,8 @@ target_sources (${CMAKE_PROJECT_NAME} PRIVATE
         CommandLine.hpp
         CommandLine.cpp
         allCommands.hpp
+        Operator.hpp
+        Operator.cpp
 )
 
 if (GTEST)

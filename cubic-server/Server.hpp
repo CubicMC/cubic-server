@@ -18,6 +18,8 @@
 #include "command_parser/commands/CommandBase.hpp"
 #include "allCommands.hpp"
 
+#include "Operator.hpp"
+
 #ifndef MC_VERSION
 #define MC_VERSION "1.19"
 #endif
@@ -64,6 +66,7 @@ public:
         return _commands;
     }
 
+    Permissions permissions;
 private:
     Server();
     void _acceptLoop();

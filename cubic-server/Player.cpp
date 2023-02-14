@@ -144,6 +144,36 @@ void Player::setGamemode(uint8_t gamemode)
     _gamemode = gamemode;
 }
 
+const bool Player::isOperator() const
+{
+    return !!this->_operatorLevel;
+}
+
+const bool Player::hasPermission(uint8_t requiredLevel) const
+{
+    return this->_operatorLevel >= requiredLevel;
+}
+
+const uint8_t &Player::getOperatorLevel() const
+{
+    return this->_operatorLevel;
+}
+
+void Player::setOperatorLevel(uint8_t level)
+{
+    this->_operatorLevel = level;
+}
+
+const bool &Player::canBypassSpawnProtection() const
+{
+    return this->_bypassSpawnProtection;
+}
+
+void Player::setSpawnProtectionBypass(bool bypassesSpawnProtection)
+{
+    this->_bypassSpawnProtection = bypassesSpawnProtection;
+}
+
 void Player::disconnect(const chat::Message &reason)
 {
     nlohmann::json json;

@@ -31,6 +31,12 @@ public:
     void setKeepAliveId(long id);
     uint8_t keepAliveIgnored() const;
     void setKeepAliveIgnored(uint8_t ign);
+    const bool isOperator() const;
+    const bool hasPermission(uint8_t requiredLevel) const;
+    const uint8_t &getOperatorLevel() const;
+    void setOperatorLevel(uint8_t level);
+    const bool &canBypassSpawnProtection() const;
+    void setSpawnProtectionBypass(bool bypassesSpawnProtection);
 
 public:
     void disconnect(const chat::Message &reason = "Disconnected");
@@ -119,6 +125,9 @@ private:
     uint8_t _gamemode;
     TickClock _keepAliveClock;
     bool _isFlying;
+    bool _isOperator;
+    uint8_t _operatorLevel;
+    bool _bypassSpawnProtection;
 };
 
 #endif //CUBICSERVER_PLAYER_HPP
