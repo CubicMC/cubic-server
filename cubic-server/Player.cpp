@@ -656,6 +656,17 @@ void Player::_onQueryEntityTag(const std::shared_ptr<protocol::QueryEntityTag> &
 
 void Player::_onInteract(const std::shared_ptr<protocol::Interact> &pck)
 {
+    Entity *target = _dim->getEntityByID(pck->entity_id);
+
+    switch (pck->type) {
+        case 0:
+            break;
+        case 1:
+            target->attack(1, _pos);
+            break;
+        case 2:
+            break;
+    }
     LDEBUG("Got a Interact");
 }
 

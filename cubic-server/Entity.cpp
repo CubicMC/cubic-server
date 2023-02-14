@@ -26,6 +26,23 @@ Entity::Entity(std::shared_ptr<Dimension> dim) : _dim(dim)
     _lastRot = {0, 0};
 }
 
+void Entity::attack(float damage, Vector3<double> source)
+{
+    std::vector<Player *> players =  _dim->getPlayerList();
+    Vector3<double> direction = _pos - source;
+
+    direction.normalize();
+    //_health -= damage;
+    for (auto &player : players) {
+        player->sendEntityVelocity({
+            _id,
+            static_cast<int16_t>(direction.x * 1000),
+            static_cast<int16_t>(direction.y * 1000),
+            static_cast<int16_t>(direction.z * 1000)
+        });
+    }
+}
+
 void Entity::setDimension(std::shared_ptr<Dimension> dim)
 {
     _dim = dim;

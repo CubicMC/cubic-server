@@ -33,6 +33,7 @@ public:
     Entity(std::shared_ptr<Dimension> dim);
     virtual ~Entity() {};
     virtual void tick() = 0;
+    virtual void attack(float damage, Vector3<double> source);
     virtual void setDimension(std::shared_ptr<Dimension> dim);
     virtual void setPosition(const Vector3<double> &pos);
     virtual void setPosition(double x, double y, double z);
@@ -69,6 +70,7 @@ protected:
     Pose _pose;
     int16_t _tickFrozenInPowderedSnow;
     int32_t _id;
+    float _health;
     Vector3<double> _pos;
     Vector2<uint8_t> _rot;
     Vector3<double> _lastPos;
