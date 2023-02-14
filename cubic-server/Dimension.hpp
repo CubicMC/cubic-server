@@ -40,7 +40,9 @@ public:
     [[nodiscard]] virtual World *getWorld() const;
     [[nodiscard]] virtual std::counting_semaphore<SEMAPHORE_MAX> &getDimensionLock();
     [[nodiscard]] virtual std::vector<Player *> getPlayerList() const;
-    virtual std::vector<Entity *> &getEntities();
+    [[nodiscard]] virtual std::vector<Entity *> &getEntities();
+    [[nodiscard]] virtual Entity * &getEntityByID(int32_t id);
+
     virtual void removeEntity(Entity *entity);
     virtual void addEntity(Entity *entity);
     virtual void forEachEntity(std::function<void(Entity *)> callback);
