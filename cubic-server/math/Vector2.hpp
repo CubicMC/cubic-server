@@ -119,6 +119,11 @@ public:
         return this->x == other.x && this->y == other.y;
     }
 
+    bool operator!=(const Vector2 &other) noexcept
+    {
+        return this->x != other.x || this->y != other.y;
+    }
+
     T x;
     T y;
 };

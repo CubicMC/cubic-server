@@ -126,6 +126,11 @@ public:
         return this->x == other.x && this->y == other.y && this->z == other.z;
     }
 
+    bool operator!=(const Vector3 &other) noexcept
+    {
+        return this->x != other.x || this->y != other.y || this->z != other.z;
+    }
+
     T x;
     T y;
     T z;
