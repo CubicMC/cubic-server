@@ -102,24 +102,33 @@ Permissions::~Permissions()
     std::ofstream filestream(this->_operatorFileName);
 
     if (!!filestream) {
-        for (Operator op : this->_operatorList) {
+        for (const Operator &op : this->_operatorList) {
             filestream << op.getName();
         }
         filestream.close();
     }
 }
 
-void Permissions::addOperator(const u128 &uuid, const std::string &name)
+void Permissions::addOperator(const std::string &name)
 {
+    Server *server = Server::getInstance();
+
+    server->forEachWorldGroup(
+        [](WorldGroup &worldGroup)
+            {
+                
+            }
+    );
+    
+
     this->_operatorList.push_back(
         {
-            uuid,
+            {0, 0},
             name,
             this->_defaultOperatorLevel,
             this->_minimalSpawnProtectionBypassLevel <= this->_defaultOperatorLevel
         }
     );
-    Server *server = Server::getInstance();
 }
 
 bool Permissions::removeOperator(const std::string &name)

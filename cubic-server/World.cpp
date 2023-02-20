@@ -70,6 +70,20 @@ void World::forEachEntityIf(std::function<void(Entity *)> callback, std::functio
         _dimension.second->forEachEntityIf(callback, predicate);
 }
 
+void World::forEachDimension(std::function<void(Dimension &)> callback)
+{
+    for (auto & _dimension : _dimensions)
+        callback(*_dimension.second.get());
+}
+
+void World::forEachDimensionIf(std::function<void(Dimension &)> callback, std::function<bool(const Dimension &)> predicate)
+{
+    for (auto & _dimension : _dimensions) {
+        if (predicate(*_dimension.second.get()))
+            callback(*_dimension.second.get());
+    }
+}
+
 const world_storage::LevelData &World::getLevelData() const
 {
     return _levelData;

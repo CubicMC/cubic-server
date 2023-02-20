@@ -58,6 +58,20 @@ std::unordered_map<std::string_view, std::shared_ptr<World>> WorldGroup::getWorl
     return this->_worlds;
 }
 
+void WorldGroup::forEachWorld(std::function<void(World &)> callback)
+{
+    for (auto &world : this->_worlds)
+        callback(*world.second.get());
+}
+
+void WorldGroup::forEachWorldIf(std::function<void(World &)> callback, std::function<bool(const World &)> predicate)
+{
+    for (auto &world : this->_worlds) {
+        if (predicate(*world.second.get()))
+            callback(*world.second.get());
+    }
+}
+
 //void WorldGroup::initialize()
 //{
 //    LWARN("Initialized empty world group");

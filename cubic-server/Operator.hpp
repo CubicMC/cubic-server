@@ -36,7 +36,7 @@ public:
     Permissions(const std::string &filename = "ops.json");
     ~Permissions();
     
-    void addOperator(const u128 &uuid, const std::string &name);
+    void addOperator(const std::string &name);
     bool removeOperator(const std::string &name);
     const bool getOperatorInfos(const u128 &uuid, Operator &op) const;
     const bool getOperatorInfos(const std::string &name, Operator &op) const;

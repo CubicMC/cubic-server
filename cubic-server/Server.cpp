@@ -8,6 +8,7 @@
 #include <exception>
 #include <cstring>
 #include <algorithm>
+#include <unordered_map>
 
 #include <nlohmann/json.hpp>
 
@@ -101,6 +102,20 @@ void Server::stop()
     std::this_thread::sleep_for(std::chrono::milliseconds(2000)); // Temporary
 
     exit(0);
+}
+
+void Server::forEachWorldGroup(std::function<void(WorldGroup &)> callback)
+{
+    for (auto &worldGroup : this->_worldGroups)
+        callback(*worldGroup.second);
+}
+
+void Server::forEachWorldGroupIf(std::function<void(WorldGroup &)> callback, std::function<bool(const WorldGroup &)> predicate)
+{
+    for (auto &worldGroup : this->_worldGroups) {
+        if (predicate(*worldGroup.second))
+            callback(*worldGroup.second);
+    }
 }
 
 void Server::_acceptLoop()
