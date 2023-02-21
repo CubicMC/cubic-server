@@ -60,6 +60,7 @@ class Block:
         self.name = name
         self.properties = data["properties"] if "properties" in data else [] # this stores the properties of the block and if it doesn't have any, it stores an empty list
         self.states = data["states"]
+        self.protocolId = data["states"][0]["id"]
         # check if the block has a "short" property (and so a short state),
         # if it does, it renames it to "short_" and adds it to the list of properties (and to the states) cause short is a reserved keyword in c++
         for prop in self.properties:
@@ -229,6 +230,7 @@ class Block:
                     data += "{\"" + prop + "\", \"" + state["properties"][prop] + "\"}, "
                 data = data[:-2]
             data += "}};\n"
+            data += "break;\n"
         return data
 
 # load the json file
@@ -276,11 +278,12 @@ def test2(filename, blocks):
         writer("};\n\n", f)
 
         writer("BlockId fromNameToProtocolId(Block block) {\n", f)
-        writer("return toProtocol[block.name](block.properties);\n", f)
+        writer("return toProtocol.at(block.name)(block.properties);\n", f)
         writer("}\n\n", f)
 
         writer("Block toName(BlockId id) {\n", f)
         writer("switch (id) {\n", f)
+        blocks.sort(key=lambda block: block.protocolId)
         for block in blocks:
             writer(block.toName(), f)
         writer("}\n", f)
