@@ -49,7 +49,6 @@ private:
     std::string _operatorFileName;
     uint8_t _defaultOperatorLevel;
     uint8_t _minimalSpawnProtectionBypassLevel;
-    std::vector<Operator> _operatorList;
     std::unordered_map<std::string, Operator> _operators;
 };
 
