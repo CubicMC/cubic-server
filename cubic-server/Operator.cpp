@@ -2,8 +2,10 @@
 #include <iostream>
 #include <fstream>
 #include <algorithm>
+
 #include "Operator.hpp"
 #include "Server.hpp"
+#include "World.hpp"
 
 Operator::Operator(const u128 &uuid, const std::string name, const uint8_t level, const bool bypassSpawnProtection):
     _uuid(uuid),
@@ -84,14 +86,15 @@ Permissions::Permissions(const std::string &filename):
     if (!!filestream) {
         while (!filestream.eof()) {
             std::getline(filestream, line);
-            this->_operatorList.push_back(
-                {
+            this->_operators.emplace(
+                line,
+                Operator(
                     {0, 0},
                     line,
                     4,
                     true
-                }
-            );
+                )
+                );
         }
         filestream.close();
     }
@@ -102,8 +105,8 @@ Permissions::~Permissions()
     std::ofstream filestream(this->_operatorFileName);
 
     if (!!filestream) {
-        for (const Operator &op : this->_operatorList) {
-            filestream << op.getName();
+        for (const auto &op : this->_operators) {
+            filestream << op.first;
         }
         filestream.close();
     }
@@ -111,113 +114,122 @@ Permissions::~Permissions()
 
 void Permissions::addOperator(const std::string &name)
 {
-    Server *server = Server::getInstance();
+    if (this->_operators.find(name) != this->_operators.end()) { // cannot find operator with this name
+        Server *server = Server::getInstance();
+        Player *selectedPlayer = nullptr;
 
-    server->forEachWorldGroup(
-        [](WorldGroup &worldGroup)
+        server->forEachWorldGroup(
+            [&name, &selectedPlayer](WorldGroup &worldGroup)
             {
-                
+                worldGroup.forEachWorld(
+                    [&name, &selectedPlayer](World &world)
+                    {
+                        world.forEachPlayer(
+                            [&name, &selectedPlayer](Player *player)
+                            {
+                                if (player && player->getUsername() == name)
+                                    selectedPlayer = player;
+                            }
+                        );
+                    }
+                ); 
             }
-    );
-    
+        );
 
-    this->_operatorList.push_back(
-        {
-            {0, 0},
-            name,
-            this->_defaultOperatorLevel,
-            this->_minimalSpawnProtectionBypassLevel <= this->_defaultOperatorLevel
+        if (selectedPlayer == nullptr) {
+            this->_operators.emplace(
+                name,
+                Operator(
+                    {0, 0},
+                    name,
+                    this->_defaultOperatorLevel,
+                    this->_minimalSpawnProtectionBypassLevel <= this->_defaultOperatorLevel
+                )
+            );
+        } else {
+            this->_operators.emplace(
+                name,
+                Operator(
+                    selectedPlayer->getUuid(),
+                    selectedPlayer->getUsername(),
+                    this->_defaultOperatorLevel,
+                    this->_minimalSpawnProtectionBypassLevel <= this->_defaultOperatorLevel
+                )
+            );
         }
-    );
+    } else { // already op
+    }
 }
 
 bool Permissions::removeOperator(const std::string &name)
 {
-    std::vector<Operator>::const_iterator it = std::find(this->_operatorList.begin(), this->_operatorList.end(), name);
+    if (this->_operators.find(name) != this->_operators.end()) { // cannot find operator with this name
 
-    if (it != this->_operatorList.end()) {
-        this->_operatorList.erase(it);
+        Server *server = Server::getInstance();
+        Player *selectedPlayer = nullptr;
+
+        server->forEachWorldGroup(
+            [&name, &selectedPlayer](WorldGroup &worldGroup)
+            {
+                worldGroup.forEachWorld(
+                    [&name, &selectedPlayer](World &world)
+                    {
+                        world.forEachPlayer(
+                            [&name, &selectedPlayer](Player *player)
+                            {
+                                if (player && player->getUsername() == name)
+                                    selectedPlayer = player;
+                            }
+                        );
+                    }
+                );
+            }
+        );
+
+        this->_operators.erase(name); // erase from operator map
+        if (selectedPlayer) { // if operator is connected
+            selectedPlayer->setOperatorLevel(0);
+            selectedPlayer->setSpawnProtectionBypass(0 >= this->_minimalSpawnProtectionBypassLevel);
+        }
         return (true);
-    } else {
-        return (false);
-    }
-}
-
-const bool Permissions::getOperatorInfos(const u128 &uuid, Operator &op) const
-{
-    std::vector<Operator>::const_iterator it = std::find(this->_operatorList.begin(), this->_operatorList.end(), uuid);
-
-    if (it != this->_operatorList.end()) {
-        op = *it;
-        return (true);
-    } else {
+    } else { // already not operator
         return (false);
     }
 }
 
 const bool Permissions::getOperatorInfos(const std::string &name, Operator &op) const
 {
-    std::vector<Operator>::const_iterator it = std::find(this->_operatorList.begin(), this->_operatorList.end(), name);
+    auto it = this->_operators.find(name);
 
-    if (it != this->_operatorList.end()) {
-        op = *it;
+    if (it != this->_operators.end()) {
+        op = it->second;
         return (true);
     } else {
         return (false);
     }
 }
 
-const bool Permissions::isOperator(const u128 &uuid) const
-{
-    std::vector<Operator>::const_iterator it = std::find(this->_operatorList.begin(), this->_operatorList.end(), uuid);
-
-    return (it != this->_operatorList.end());
-}
-
 const bool Permissions::isOperator(const std::string &name) const
 {
-    std::vector<Operator>::const_iterator it = std::find(this->_operatorList.begin(), this->_operatorList.end(), name);
-
-    return (it != this->_operatorList.end());
-}
-
-const uint8_t Permissions::getOperatorLevel(const u128 &uuid) const
-{
-    std::vector<Operator>::const_iterator it = std::find(this->_operatorList.begin(), this->_operatorList.end(), uuid);
-
-    if (it != this->_operatorList.end())
-        return (it->getLevel());
-    else
-        return (0);
+    return (this->_operators.find(name) != this->_operators.end());
 }
 
 const uint8_t Permissions::getOperatorLevel(const std::string &name) const
 {
-    std::vector<Operator>::const_iterator it = std::find(this->_operatorList.begin(), this->_operatorList.end(), name);
+    auto it = this->_operators.find(name);
 
-    if (it != this->_operatorList.end())
-        return (it->getLevel());
+    if (it != this->_operators.end())
+        return (it->second.getLevel());
     else
         return (0);
 }
 
-const bool Permissions::canBypassSpawnProtection(const u128 &uuid) const
-{
-    std::vector<Operator>::const_iterator it = std::find(this->_operatorList.begin(), this->_operatorList.end(), uuid);
-
-    if (it != this->_operatorList.end())
-        return (it->getBypassSpawnProtection());
-    else
-        return (false);
-}
-
 const bool Permissions::canBypassSpawnProtection(const std::string &name) const
 {
-    std::vector<Operator>::const_iterator it = std::find(this->_operatorList.begin(), this->_operatorList.end(), name);
+    auto it = this->_operators.find(name);
 
-    if (it != this->_operatorList.end())
-        return (it->getBypassSpawnProtection());
+    if (it != this->_operators.end())
+        return (it->second.getBypassSpawnProtection());
     else
         return (false);
 }
-

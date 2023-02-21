@@ -70,6 +70,23 @@ void World::forEachEntityIf(std::function<void(Entity *)> callback, std::functio
         _dimension.second->forEachEntityIf(callback, predicate);
 }
 
+void World::forEachPlayer(std::function<void(Player *)> callback)
+{
+    std::vector<Player *> _players = this->getPlayers();
+
+    for (auto _player : _players)
+        callback(_player);
+}
+
+void World::forEachPlayerIf(std::function<void(Player *)> callback, std::function<bool(const Entity *)> predicate)
+{
+    std::vector<Player *> _players = this->getPlayers();
+
+    for (auto _player : _players)
+        if (predicate(_player))
+            callback(_player);
+}
+
 void World::forEachDimension(std::function<void(Dimension &)> callback)
 {
     for (auto & _dimension : _dimensions)

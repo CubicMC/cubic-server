@@ -1,8 +1,10 @@
 #ifndef CUBICSERVER_OPERATOR_HPP
 #define CUBICSERVER_OPERATOR_HPP
 
-#include "types.hpp"
+#include <unordered_map>
 #include <vector>
+
+#include "types.hpp"
 
 class Operator
 {
@@ -38,13 +40,9 @@ public:
     
     void addOperator(const std::string &name);
     bool removeOperator(const std::string &name);
-    const bool getOperatorInfos(const u128 &uuid, Operator &op) const;
     const bool getOperatorInfos(const std::string &name, Operator &op) const;
-    const bool isOperator(const u128 &uuid) const;
     const bool isOperator(const std::string &name) const;
-    const uint8_t getOperatorLevel(const u128 &uuid) const;
     const uint8_t getOperatorLevel(const std::string &name) const;
-    const bool canBypassSpawnProtection(const u128 &uuid) const;
     const bool canBypassSpawnProtection(const std::string &name) const;
 
 private:
@@ -52,6 +50,7 @@ private:
     uint8_t _defaultOperatorLevel;
     uint8_t _minimalSpawnProtectionBypassLevel;
     std::vector<Operator> _operatorList;
+    std::unordered_map<std::string, Operator> _operators;
 };
 
 #endif /* CUBICSERVER_OPERATOR_HPP */

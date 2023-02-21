@@ -32,6 +32,8 @@ public:
     virtual std::shared_ptr<Dimension> getDimension(const std::string_view &name) const;
     virtual void forEachEntity(std::function<void(Entity *)> callback);
     virtual void forEachEntityIf(std::function<void(Entity *)> callback, std::function<bool(const Entity *)> predicate);
+    virtual void forEachPlayer(std::function<void(Player *)> callback);
+    virtual void forEachPlayerIf(std::function<void(Player *)> callback, std::function<bool(const Entity *)> predicate);
     virtual void forEachDimension(std::function<void(Dimension &)> callback);
     virtual void forEachDimensionIf(std::function<void(Dimension &)> callback, std::function<bool(const Dimension &)> predicate);
 
