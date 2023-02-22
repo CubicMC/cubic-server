@@ -1,9 +1,14 @@
+#include <memory>
 #include <optional>
+#include <utility>
 #include <vector>
 
 #include "ServerPackets.hpp"
 #include "nbt.hpp"
 #include "PacketUtils.hpp"
+#include "protocol/Structures.hpp"
+#include "protocol/serialization/pop.hpp"
+#include "protocol/serialization/popPrimaryType.hpp"
 #include "typeSerialization.hpp"
 
 using namespace protocol;
@@ -117,6 +122,22 @@ std::shared_ptr<ChatMessage> protocol::parseChatMessage(std::vector<uint8_t> &bu
           popLong, &ChatMessage::salt,
           popArray<uint8_t, popByte>, &ChatMessage::signature,
           popBoolean, &ChatMessage::isSigned);
+    return h;
+}
+
+std::shared_ptr<ChatCommand> protocol::parseChatCommand(std::vector<uint8_t> &buffer)
+{
+    auto h = std::make_shared<ChatCommand>();
+    auto at = buffer.data();
+
+    parse(at, buffer.data() + buffer.size() - 1, *h,
+          popString, &ChatCommand::command,
+          popLong, &ChatCommand::timestamp,
+          popLong, &ChatCommand::salt,
+          popArray<argumentSignature, popArgumentSignature>, &ChatCommand::argumentSignatures,
+          //popVarInt, &ChatCommand::messageCount,
+          popArray<long, popLong>, &ChatCommand::acknowledged
+          );
     return h;
 }
 

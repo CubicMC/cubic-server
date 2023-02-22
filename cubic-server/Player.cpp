@@ -526,6 +526,12 @@ void Player::_onChatMessage(const std::shared_ptr<protocol::ChatMessage> &pck)
     _log->debug("Got a Chat Message");
 }
 
+void Player::_onChatCommand(const std::shared_ptr<protocol::ChatCommand> &pck)
+{
+    LDEBUG("Got a Chat Command");
+    LDEBUG("The command is :" + pck->command);
+}
+
 void Player::_onClientCommand(const std::shared_ptr<protocol::ClientCommand> &pck)
 {
     LDEBUG("Got a Client Command");

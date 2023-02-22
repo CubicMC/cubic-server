@@ -63,6 +63,7 @@ private:
     void _onQueryBlockEntityTag(const std::shared_ptr<protocol::QueryBlockEntityTag> &pck);
     void _onChangeDifficulty(const std::shared_ptr<protocol::ChangeDifficulty> &pck);
     void _onChatMessage(const std::shared_ptr<protocol::ChatMessage> &pck);
+    void _onChatCommand(const std::shared_ptr<protocol::ChatCommand> &pck);
     void _onClientCommand(const std::shared_ptr<protocol::ClientCommand> &pck);
     void _onClientInformation(const std::shared_ptr<protocol::ClientInformation> &pck);
     void _onCommandSuggestionRequest(const std::shared_ptr<protocol::CommandSuggestionRequest> &pck);

@@ -73,5 +73,11 @@ namespace protocol
         float yaw;
         float pitch;
     };
+
+    struct argumentSignature
+    {
+        std::string argument;
+        std::vector<uint8_t> signature;
+    };
 } // namespace protocol
 

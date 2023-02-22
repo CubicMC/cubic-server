@@ -213,6 +213,7 @@ void Client::handleParsedClientPacket(const std::shared_ptr<protocol::BaseServer
             PCK_CALLBACK_PLAY(QueryBlockEntityTag);
             PCK_CALLBACK_PLAY(ChangeDifficulty);
             PCK_CALLBACK_PLAY(ChatMessage);
+            PCK_CALLBACK_PLAY(ChatCommand);
             PCK_CALLBACK_PLAY(ClientCommand);
             PCK_CALLBACK_PLAY(ClientInformation);
             PCK_CALLBACK_PLAY(CommandSuggestionRequest);
