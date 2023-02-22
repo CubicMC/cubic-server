@@ -61,6 +61,7 @@ class Block:
         self.properties = data["properties"] if "properties" in data else [] # this stores the properties of the block and if it doesn't have any, it stores an empty list
         self.states = data["states"]
         self.protocolId = data["states"][0]["id"]
+        self.lastProtocolId = data["states"][-1]["id"]
         # check if the block has a "short" property (and so a short state),
         # if it does, it renames it to "short_" and adds it to the list of properties (and to the states) cause short is a reserved keyword in c++
         for prop in self.properties:
@@ -223,14 +224,12 @@ class Block:
         data = ""
         for state in self.states:
             number_of_protocol_ids += 1
-            data += "case " + str(state["id"]) + ":\n"
-            data += "return {\"" + self.name + "\", {"
+            data += "{\"" + self.name + "\", {"
             if self.properties != []:
                 for prop in self.properties:
                     data += "{\"" + prop + "\", \"" + state["properties"][prop] + "\"}, "
                 data = data[:-2]
-            data += "}};\n"
-            data += "break;\n"
+            data += "}},\n"
         return data
 
 # load the json file
@@ -241,9 +240,9 @@ def load_json(filename):
 
     for block in data:
         blocks.append(Block(block, data[block]))
-    return blocks
+    return blocks # [0:5]
 
-def test(path, block):
+def create_block_files(path, block):
     with open(path + "/blocks/" + block.name.split(":")[1].title().replace("_", "") + ".hpp", "w") as f:
         writer("#include <string>\n", f)
         writer("#include <cstdint>\n", f)
@@ -266,13 +265,13 @@ def test(path, block):
         writer("}\n", f)
 
 
-def test2(filename, blocks):
+def create_blockStates_files(filename, blocks):
     with open(filename + ".cpp", "w") as f:
         writer("#include \"" + os.path.basename(filename) + ".hpp\"\n", f)
         writer("#include <stdexcept>\n\n", f)
 
         writer("namespace Blocks {\n", f)
-        writer("const std::unordered_map<std::string, std::function<BlockId(std::vector<std::pair<std::string, std::string>>)>> toProtocol = {\n", f)
+        writer("static const std::unordered_map<std::string, std::function<BlockId(std::vector<std::pair<std::string, std::string>>)>> toProtocol = {\n", f)
         for block in blocks:
             writer(block.nameToProtocolId(), f)
         writer("};\n\n", f)
@@ -281,13 +280,19 @@ def test2(filename, blocks):
         writer("return toProtocol.at(block.name)(block.properties);\n", f)
         writer("}\n\n", f)
 
-        writer("Block toName(BlockId id) {\n", f)
-        writer("switch (id) {\n", f)
         blocks.sort(key=lambda block: block.protocolId)
+        writer("static const Block toBlock [" + str(blocks[-1].lastProtocolId + 1) + "] {\n", f)
+        i = 0
         for block in blocks:
+            while i < block.protocolId:
+                writer("{\"minecraft:air\", {}},\n", f)
+                i += 1
             writer(block.toName(), f)
-        writer("}\n", f)
-        writer("return {\"minecraft:air\", {}};\n", f)
+            i = block.lastProtocolId + 1
+        writer("};\n\n", f)
+
+        writer("Block fromProtocolIdToName(BlockId id) {\n", f)
+        writer("return toBlock[id];\n", f)
         writer("}\n", f)
         writer("}\n", f)
 
@@ -301,7 +306,7 @@ def test2(filename, blocks):
         writer("std::vector<std::pair<std::string, std::string>> properties;\n", f)
         writer("};\n\n", f)
 
-        writer("extern const std::unordered_map<std::string, std::function<BlockId(std::vector<std::pair<std::string, std::string>>)>> toProtocol;\n", f)
+        # writer("extern const std::unordered_map<std::string, std::function<BlockId(std::vector<std::pair<std::string, std::string>>)>> toProtocol;\n", f)
         writer("BlockId fromNameToProtocolId(Block block);\n", f)
         writer("Block toName(BlockId id);\n", f)
         writer("constexpr int NUMBER_OF_PROTOCOL_IDS = " + str(number_of_protocol_ids) + ";\n", f)
@@ -398,8 +403,8 @@ def main():
     blocks = load_json(options["input"])
     os.makedirs(os.path.dirname(options["output"]) + "/blocks", exist_ok=True)
     for block in blocks:
-        test(os.path.dirname(options["output"]), block)
-    test2(options["output"], blocks)
+        create_block_files(os.path.dirname(options["output"]), block)
+    create_blockStates_files(options["output"], blocks)
     # write_header_file(options["output"], blocks)
     # write_source_file(options["output"], blocks)
 

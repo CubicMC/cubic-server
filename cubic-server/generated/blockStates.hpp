@@ -938,7 +938,6 @@ namespace Blocks {
         std::vector<std::pair<std::string, std::string>> properties;
     };
 
-    extern const std::unordered_map<std::string, std::function<BlockId(std::vector<std::pair<std::string, std::string>>)>> toProtocol;
     BlockId fromNameToProtocolId(Block block);
     Block toName(BlockId id);
     constexpr int NUMBER_OF_PROTOCOL_IDS = 21448;
