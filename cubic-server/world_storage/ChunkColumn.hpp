@@ -11,11 +11,9 @@
 #include "protocol/Structures.hpp"
 #include "Block.hpp"
 #include "Palette.hpp"
+#include "types.hpp"
 
 namespace world_storage {
-
-typedef uint32_t GlobalBlockId;
-typedef uint8_t GlobalBiomeId;
 
 // Chunk
 constexpr int CHUNK_HEIGHT_MIN = -64;
@@ -44,10 +42,9 @@ constexpr int BIOME_PER_CHUNK = BIOME_SECTION_3D_SIZE*NB_OF_SECTIONS;
 // Heightmap
 constexpr int HEIGHTMAP_BITS = bitsNeeded(CHUNK_HEIGHT + 1);
 constexpr int HEIGHTMAP_ARRAY_SIZE = SECTION_2D_SIZE * HEIGHTMAP_BITS / 64;
-// constexpr int HEIGHTMAP_ARRAY_SIZE = SECTION_2D_SIZE * HEIGHTMAP_BITS / 64 + (SECTION_2D_SIZE * HEIGHTMAP_BITS % 64 != 0);
 
 // TODO: Accept negative position for y
-constexpr uint64_t calculateBlockIdx(const protocol::Position &pos)
+constexpr uint64_t calculateBlockIdx(const Position &pos)
 {
     auto y = pos.y - CHUNK_HEIGHT_MIN;
     if (pos.x < 0 || pos.x >= SECTION_WIDTH || y < 0 || y >= CHUNK_HEIGHT || pos.z < 0 || pos.z >= SECTION_WIDTH)
@@ -56,7 +53,7 @@ constexpr uint64_t calculateBlockIdx(const protocol::Position &pos)
 }
 
 // TODO: Accept negative position for y
-constexpr uint64_t calculateBiomeIdx(const protocol::Position &pos)
+constexpr uint64_t calculateBiomeIdx(const Position &pos)
 {
     auto y = pos.y - BIOME_HEIGHT_MIN;
     if (pos.x < 0 || pos.x >= BIOME_SECTION_WIDTH || y < 0 || y >= BIOME_HEIGHT || pos.z < 0 || pos.z >= BIOME_SECTION_WIDTH)
@@ -83,34 +80,36 @@ enum class WorldType {
 class ChunkColumn
 {
 public:
-    ChunkColumn() = default;
+    ChunkColumn(const Position2D &chunkPos);
     ~ChunkColumn();
 
-    void updateBlock(protocol::Position pos, Block block);
-    void updateBlock(protocol::Position pos, GlobalBlockId id);
-    Block getBlock(protocol::Position pos) const;
+    void updateBlock(Position pos, Block block);
+    void updateBlock(Position pos, GlobalBlockId id);
+    GlobalBlockId getBlock(Position pos) const;
     const std::array<GlobalBlockId, SECTION_3D_SIZE * NB_OF_SECTIONS> &getBlocks() const;
 
-    void updateSkyLight(protocol::Position pos, uint8_t light);
-    uint8_t getSkyLight(protocol::Position pos) const;
+    void updateSkyLight(Position pos, uint8_t light);
+    uint8_t getSkyLight(Position pos) const;
     const std::array<uint8_t, SECTION_3D_SIZE * NB_OF_SECTIONS> &getSkyLights() const;
 
-    void updateBlockLight(protocol::Position pos, uint8_t light);
-    uint8_t getBlockLight(protocol::Position pos) const;
+    void updateBlockLight(Position pos, uint8_t light);
+    uint8_t getBlockLight(Position pos) const;
     const std::array<uint8_t, SECTION_3D_SIZE * NB_OF_SECTIONS> &getBlockLights() const;
 
-    void updateBiome(protocol::Position pos, uint8_t biome);
-    uint8_t getBiome(protocol::Position pos) const;
-    const std::array<uint8_t, BIOME_SECTION_3D_SIZE * NB_OF_SECTIONS> &getBiomes() const;
+    void updateBiome(Position pos, GlobalBiomeId biome);
+    GlobalBiomeId getBiome(Position pos) const;
+    const std::array<GlobalBiomeId, BIOME_SECTION_3D_SIZE * NB_OF_SECTIONS> &getBiomes() const;
 
-    void updateBlockEntity(protocol::Position pos, BlockEntity *BlockEntity);
-    void addBlockEntity(protocol::Position pos, BlockEntity *BlockEntity);
-    void removeBlockEntity(protocol::Position pos);
-    BlockEntity *getBlockEntity(protocol::Position pos);
+    void updateBlockEntity(Position pos, BlockEntity *BlockEntity);
+    void addBlockEntity(Position pos, BlockEntity *BlockEntity);
+    void removeBlockEntity(Position pos);
+    BlockEntity *getBlockEntity(Position pos);
     const std::vector<BlockEntity *> &getBlockEntities() const;
 
     int64_t getTick();
     void setTick(int64_t tick);
+    Position2D getChunkPos() const;
+    bool isReady() const;
 
     // void updateEntity(std::size_t id, Entity *e);
     // void updateEntity(u128 uuid, Entity *e);
@@ -122,9 +121,9 @@ public:
     // const std::deque<Entity *> &getEntities();
 
     void updateHeightMap(void);
-    const HeightMap &getHeightMap(void);
+    const HeightMap &getHeightMap() const;
 
-    void generate(WorldType worldType);
+    void generate(WorldType worldType, Seed seed);
 
 private:
     std::array<GlobalBlockId, BLOCKS_PER_CHUNK> _blocks;
@@ -133,13 +132,14 @@ private:
     std::array<uint8_t, BIOME_PER_CHUNK> _biomes;
     std::vector<BlockEntity *> _blockEntities;
     int64_t _tickData;
-    // std::deque<Entity *> _entities;
+    Position2D _chunkPos;
     HeightMap _heightMap;
+    bool _ready;
 
-    void _generateOverworld();
-    void _generateNether();
-    void _generateEnd();
-    void _generateFlat();
+    void _generateOverworld(Seed seed);
+    void _generateNether(Seed seed);
+    void _generateEnd(Seed seed);
+    void _generateFlat(Seed seed);
 };
 
 } // namespace world_storage

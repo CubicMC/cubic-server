@@ -1,5 +1,7 @@
 #include "Overworld.hpp"
 #include "World.hpp"
+#include <queue>
+#include <future>
 
 void Overworld::tick()
 {
@@ -11,7 +13,7 @@ void Overworld::tick()
 
     Dimension::tick();
     // Put the ticking code specific for this dimension here
-//    LDEBUG("Tick - Overworld");
+    // LDEBUG("Tick - Overworld");
 
     auto endProcessing = std::chrono::system_clock::now();
     _processingMutex.unlock();
@@ -20,21 +22,30 @@ void Overworld::tick()
 void Overworld::initialize()
 {
     Dimension::initialize();
+    LINFO("Initialize - Overworld");
     int x = -NB_SPAWN_CHUNKS/2, z = -NB_SPAWN_CHUNKS/2;
     while (x < NB_SPAWN_CHUNKS/2 || z < NB_SPAWN_CHUNKS/2) {
-        generateChunk(x, z);
+        this->getWorld()->getGenerationPool().add(&Overworld::generateChunk, this, x, z);
         if (x == NB_SPAWN_CHUNKS/2) {
             x = -NB_SPAWN_CHUNKS/2;
             z++;
         } else
             x++;
     }
-    generateChunk(x, z);
+    this->getWorld()->getGenerationPool().add(&Overworld::generateChunk, this, x, z);
+
+    // TODO: Move this to a better place
+    this->_worldGenFuture = std::async(std::launch::async, [this]{
+        this->getWorld()->getGenerationPool().wait();
+        LINFO("Overworld initialized");
+        this->_isInitialized = true;
+    });
 }
 
 void Overworld::generateChunk(int x, int z)
 {
     LDEBUG("Generate - Overworld (" + std::to_string(x) + ", " + std::to_string(z) + ")");
-    _2d_pos pos{x, z};
-    _level.addChunkColumn(pos).generate(world_storage::WorldType::OVERWORLD);
+    Position2D pos{x, z};
+    _level.addChunkColumn(pos).generate(world_storage::WorldType::OVERWORLD, this->getWorld()->getSeed());
+    LINFO("Chunk generated (" + std::to_string(x) + ", " + std::to_string(z) + ")");
 }

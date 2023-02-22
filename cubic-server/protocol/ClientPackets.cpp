@@ -193,6 +193,19 @@ std::shared_ptr<std::vector<uint8_t>> protocol::createHeadRotation(const HeadRot
     return packet;
 }
 
+std::shared_ptr<std::vector<uint8_t>> protocol::createCenterChunk(const Position2D &in)
+{
+    std::vector<uint8_t> payload;
+
+    serialize(payload,
+        in.x, addVarInt,
+        in.z, addVarInt
+    );
+    auto packet = std::make_shared<std::vector<uint8_t>>();
+    finalize(*packet, payload, (int32_t) ClientPacketID::CenterChunk);
+    return packet;
+}
+
 std::shared_ptr<std::vector<uint8_t>> protocol::createCustomSoundEffect(const CustomSoundEffect &in)
 {
     std::vector<uint8_t> payload;
@@ -460,6 +473,17 @@ std::shared_ptr<std::vector<uint8_t>> protocol::createChunkDataAndLightUpdate(co
         in.blockLight, addLightArray);
     auto packet = std::make_shared<std::vector<uint8_t>>();
     finalize(*packet, payload, (int32_t) ClientPacketID::ChunkDataAndLightUpdate);
+    return packet;
+}
+
+std::shared_ptr<std::vector<uint8_t>> protocol::createUnloadChunk(const Position2D &in)
+{
+    std::vector<uint8_t> payload;
+    serialize(payload,
+        in.x, addInt,
+        in.z, addInt);
+    auto packet = std::make_shared<std::vector<uint8_t>>();
+    finalize(*packet, payload, (int32_t) ClientPacketID::UnloadChunk);
     return packet;
 }
 

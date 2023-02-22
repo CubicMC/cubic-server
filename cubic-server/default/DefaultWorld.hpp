@@ -12,6 +12,12 @@ public:
     DefaultWorld(WorldGroup *worldGroup);
     void tick() override;
     void initialize() override;
+    void stop() override;
+
+private:
+    std::vector<std::thread> _processingThreads;
+    std::atomic<bool> _running;
+
 };
 
 

@@ -37,6 +37,45 @@ Player::Player(Client *cli, std::shared_ptr<Dimension> dim, u128 uuid, const std
     this->_uuidString = uuidstr;
 }
 
+Player::~Player()
+{
+    // Send a disconnect message to the chat
+    chat::Message disconnectMsg = chat::Message("", {
+        .color = "yellow",
+        .translate = "multiplayer.player.left",
+        .with = std::vector<chat::Message>({
+            chat::Message(
+                this->getUsername(),
+                {
+                    .insertion = this->getUsername(),
+                },
+                chat::message::ClickEvent(
+                    chat::message::ClickEvent::Action::SuggestCommand,
+                    "/tell " + this->getUsername()
+                ),
+                chat::message::HoverEvent(
+                    chat::message::HoverEvent::Action::ShowEntity,
+                    "{\"type\": \"minecraft:player\", \"id\": \"" + this->getUuidString() + "\", \"name\": \"" + this->getUsername() + "\"}"
+                )
+            )
+        })
+    });
+
+    this->_dim->getWorld()->sendPlayerInfoRemovePlayer(this);
+    this->_dim->removeEntity(this);
+
+    // Send a disconnect message
+    this->_dim->getWorld()->getChat()->sendSystemMessage(
+        disconnectMsg,
+        false,
+        this->_dim->getWorld()->getWorldGroup()
+    );
+    // _player->_dim->getWorld()->getChat()->sendPlayerMessage(
+    //     disconnectMsg,
+    //     _player
+    // );
+}
+
 void Player::tick()
 {
     _keepAliveClock.tick();
@@ -180,11 +219,75 @@ void Player::setKeepAliveIgnored(uint8_t ign)
     _keepAliveIgnored = ign;
 }
 
-uint8_t Player::keepAliveIgnored() const {
+uint8_t Player::keepAliveIgnored() const
+{
     return _keepAliveIgnored;
 }
 
-void Player::playSoundEffect(SoundsList sound, protocol::FloatingPosition position, SoundCategory category)
+void Player::setPosition(const Vector3<double> &pos)
+{
+    auto newChunkPos = Position2D(getChunkCoo(pos.x), getChunkCoo(pos.z));
+    auto oldChunkPos = Position2D(getChunkCoo(_pos.x), getChunkCoo(_pos.z));
+
+    Entity::setPosition(pos);
+
+    if (newChunkPos == oldChunkPos)
+        return;
+
+    auto renderDistance = this->getDimension()->getWorld()->getRenderDistance();
+
+    // Load and unload chunks
+    this->sendSetCenterChunk(newChunkPos);
+
+    //* Old chunks
+    // Positive changes
+	for (int32_t x = oldChunkPos.x - renderDistance; x < std::min(newChunkPos.x - renderDistance, oldChunkPos.x + renderDistance + 1); x++) {
+        for (int32_t z = oldChunkPos.z - renderDistance; z < oldChunkPos.z + renderDistance + 1; z++)
+            this->sendUnloadChunk(x, z);
+	}
+    for (int32_t z = oldChunkPos.z - renderDistance; z < std::min(newChunkPos.z - renderDistance, oldChunkPos.z + renderDistance + 1); z++) {
+        for (int32_t x = oldChunkPos.x - renderDistance + (newChunkPos.x - oldChunkPos.x); x < oldChunkPos.x + renderDistance + 1; x++)
+            this->sendUnloadChunk(x, z);
+    }
+
+    // Negative changes
+    for (int32_t x = oldChunkPos.x + renderDistance; x >= std::max(newChunkPos.x + renderDistance + 1, oldChunkPos.x - renderDistance); x--) {
+        for (int32_t z = oldChunkPos.z - renderDistance; z < oldChunkPos.z + renderDistance + 1; z++)
+            this->sendUnloadChunk(x, z);
+    }
+    for (int32_t z = oldChunkPos.z + renderDistance; z >= std::max(newChunkPos.z + renderDistance + 1, oldChunkPos.z - renderDistance); z--) {
+        for (int32_t x = oldChunkPos.x - renderDistance ; x < oldChunkPos.x + renderDistance + 1 + (newChunkPos.x - oldChunkPos.x); x++)
+            this->sendUnloadChunk(x, z);
+    }
+
+    //* New chunks
+    // Positive changes
+    for (int32_t x = newChunkPos.x + renderDistance; x >= std::max(oldChunkPos.x + renderDistance + 1, newChunkPos.x - renderDistance); x--) {
+        for (int32_t z = newChunkPos.z - renderDistance; z < newChunkPos.z + renderDistance + 1; z++)
+            this->sendChunkAndLightUpdate(x, z);
+    }
+    for (int32_t z = newChunkPos.z + renderDistance; z >= std::max(oldChunkPos.z + renderDistance + 1, newChunkPos.z - renderDistance); z--) {
+        for (int32_t x = newChunkPos.x - renderDistance; x < newChunkPos.x + renderDistance + 1 - (newChunkPos.x - oldChunkPos.x); x++)
+            this->sendChunkAndLightUpdate(x, z);
+    }
+
+    // Negative changes
+    for (int32_t x = newChunkPos.x - renderDistance; x < std::min(oldChunkPos.x - renderDistance, newChunkPos.x + renderDistance + 1); x++) {
+        for (int32_t z = newChunkPos.z - renderDistance; z < newChunkPos.z + renderDistance + 1; z++)
+            this->sendChunkAndLightUpdate(x, z);
+    }
+    for (int32_t z = newChunkPos.z - renderDistance; z < std::min(oldChunkPos.z - renderDistance, newChunkPos.z + renderDistance + 1); z++) {
+        for (int32_t x = newChunkPos.x - renderDistance - (newChunkPos.x - oldChunkPos.x); x < newChunkPos.x + renderDistance + 1; x++)
+            this->sendChunkAndLightUpdate(x, z);
+    }
+}
+
+void Player::setPosition(double x, double y, double z)
+{
+    this->setPosition({x, y, z});
+}
+
+void Player::playSoundEffect(SoundsList sound, FloatingPosition position, SoundCategory category)
 {
     auto pck = protocol::createSoundEffect({
         (int32_t) sound,
@@ -215,7 +318,7 @@ void Player::playSoundEffect(SoundsList sound, const Entity *entity, SoundCatego
     LDEBUG("Sent a entity sound effect packet");
 }
 
-void Player::playCustomSound(std::string sound, protocol::FloatingPosition position, SoundCategory category)
+void Player::playCustomSound(std::string sound, FloatingPosition position, SoundCategory category)
 {
     auto pck = protocol::createCustomSoundEffect({
         sound,
@@ -256,11 +359,12 @@ void Player::sendLoginPlay(const protocol::LoginPlay &packet)
     auto pck = protocol::createLoginPlay(packet);
     _cli->_sendData(*pck);
     LDEBUG("Sent a login play");
+    auto renderDistance = this->getDimension()->getWorld()->getRenderDistance();
     // Send all chunks around the player
     // TODO: send chunk closer to the player first
     sendChunkAndLightUpdate(0, 0);
-    for (int32_t x = -4; x < 4; x++) {
-        for (int32_t z = -4; z < 4; z++) {
+    for (int32_t x = -renderDistance; x < renderDistance + 1; x++) {
+        for (int32_t z = -renderDistance; z < renderDistance + 1; z++) {
             if (x == 0 && z == 0)
                 continue;
             sendChunkAndLightUpdate(x, z);
@@ -400,6 +504,13 @@ void Player::sendHeadRotation(const protocol::HeadRotation &data)
     LDEBUG("Sent an entity head rotation packet");
 }
 
+void Player::sendSetCenterChunk(const Position2D &pos)
+{
+    auto pck = protocol::createCenterChunk(pos);
+    this->_cli->_sendData(*pck);
+    LINFO("Sent a center chunk packet");
+}
+
 void Player::sendSynchronizePosition(Vector3<double> pos)
 {
     auto pck = protocol::createSynchronizePlayerPosition({
@@ -424,10 +535,41 @@ void Player::sendSynchronizePosition(Vector3<double> pos)
     }
 }
 
+void Player::sendChunkAndLightUpdate(const Position2D &pos)
+{
+    this->sendChunkAndLightUpdate(pos.x, pos.z);
+}
+
 void Player::sendChunkAndLightUpdate(int32_t x, int32_t z)
 {
-    auto chunk = this->_dim->getLevel().getChunkColumn({x, z});
+    if (!this->_dim->hasChunkLoaded(x, z)) {
+        this->_chunks[{x, z}] = ChunkStateHolder{
+            ChunkState::Loading,
+            this->_dim->loadOrGenerateChunk(x, z, [this](const world_storage::ChunkColumn &chunk) {
+                // pls don't kill me
+                // this is a hack to check if the client is still connected
+                // And the best part ? I don't even know if it works
+                if (
+                    std::find_if(
+                        Server::getInstance()->getClients().begin(),
+                        Server::getInstance()->getClients().end(),
+                        [this](const std::shared_ptr<Client> &cli) { return (&(*cli) == this->_cli); }
+                    ) == Server::getInstance()->getClients().end()
+                ) return;
+                if (this->_chunks.contains(chunk.getChunkPos()) && this->_chunks[chunk.getChunkPos()].state == ChunkState::Loading)
+                    this->sendChunkAndLightUpdate(chunk);
+            }
+        )};
+        return;
+    }
+
+    this->sendChunkAndLightUpdate(this->_dim->getChunk(x, z));
+}
+
+void Player::sendChunkAndLightUpdate(const world_storage::ChunkColumn &chunk)
+{
     auto heightMap = chunk.getHeightMap();
+    auto chunkPos = chunk.getChunkPos();
 
     std::vector<nbt::Base *> motionBlocking;
     std::vector<nbt::Base *> worldSurface;
@@ -442,8 +584,8 @@ void Player::sendChunkAndLightUpdate(int32_t x, int32_t z)
     auto worldSurfaceList = new nbt::List("WORLD_SURFACE", worldSurface);
 
     auto packet = protocol::createChunkDataAndLightUpdate({
-        x,
-        z,
+        chunkPos.x,
+        chunkPos.z,
         nbt::Compound("", {
             motionBlockingList,
             worldSurfaceList
@@ -460,9 +602,35 @@ void Player::sendChunkAndLightUpdate(int32_t x, int32_t z)
     });
     this->_cli->_sendData(*packet);
 
-    LDEBUG("Sent a chunk data and light update packet (" + std::to_string(x) + ", " + std::to_string(z) + ")");
+    if (this->_chunks.contains(chunkPos)) {
+        this->_chunks[chunkPos].state = ChunkState::Loaded;
+        this->_chunks[chunkPos].task = nullptr;
+    } else {
+        this->_chunks[chunkPos] = ChunkStateHolder{
+            ChunkState::Loaded,
+            nullptr
+        };
+    }
+
+    logging::Logger::get_instance()->debug("Sent a chunk data and light update packet (" + std::to_string(chunkPos.x) + ", " + std::to_string(chunkPos.z) + ")");
     delete motionBlockingList;
     delete worldSurfaceList;
+}
+
+void Player::sendUnloadChunk(int32_t x, int32_t z)
+{
+    if (!this->_chunks.contains({x, z}))
+        return;
+    else if (this->_chunks[{x, z}].state == ChunkState::Loading) {
+        this->_chunks[{x, z}].task->cancel();
+        this->_chunks.erase({x, z});
+        return;
+    }
+
+    auto pck = protocol::createUnloadChunk({x, z});
+    this->_cli->_sendData(*pck);
+    this->_chunks.erase({x, z});
+    LDEBUG("Sent an unload chunk packet (" + std::to_string(x) + ", " + std::to_string(z) + ")");
 }
 
 void Player::sendRemoveEntities(const std::vector<int32_t> &entities)
@@ -605,12 +773,14 @@ void Player::_onLockDifficulty(const std::shared_ptr<protocol::LockDifficulty> &
 void Player::_onSetPlayerPosition(const std::shared_ptr<protocol::SetPlayerPosition> &pck)
 {
     LDEBUG("Got a Set Player Position (" + std::to_string(pck->x) + ", " + std::to_string(pck->feet_y) + ", " + std::to_string(pck->z) + ")");
+    // TODO: Validate the position
     this->setPosition(pck->x, pck->feet_y, pck->z);
 }
 
 void Player::_onSetPlayerPositionAndRotation(const std::shared_ptr<protocol::SetPlayerPositionAndRotation> &pck)
 {
     LDEBUG("Got a Set Player Position And Rotation (" + std::to_string(pck->x) + ", " + std::to_string(pck->feet_y) + ", " + std::to_string(pck->z) + ")");
+    // TODO: Validate the position
     this->setPosition(pck->x, pck->feet_y, pck->z);
     float yaw_tmp = pck->yaw;
     while (yaw_tmp < 0)

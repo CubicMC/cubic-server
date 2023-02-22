@@ -6,20 +6,33 @@
 #include "protocol/serialization/addPrimaryType.hpp"
 #include "logging/Logger.hpp"
 #include "globalPalette_TEMP.hpp"
+#include "generation/overworld.hpp"
+#include "types.hpp"
 
 namespace world_storage {
+
+ChunkColumn::ChunkColumn(const Position2D &chunkPos):
+    _chunkPos(chunkPos),
+    _ready(false)
+{
+    for (auto &block: this->_blocks)
+        block = 0;
+    for (auto &biome: this->_biomes)
+        biome = 0;
+}
 
 ChunkColumn::~ChunkColumn()
 {
 }
 
-void ChunkColumn::updateBlock(protocol::Position pos, Block block)
+void ChunkColumn::updateBlock(Position pos, Block block)
 {
     this->updateBlock(pos, getGlobalPaletteIdFromBlock(block));
 }
 
-void ChunkColumn::updateBlock(protocol::Position pos, GlobalBlockId id)
+void ChunkColumn::updateBlock(Position pos, GlobalBlockId id)
 {
+    // TODO: Move the bitStoring to a separate class
     // Heightmap update
     int blockNumber = pos.x + pos.z * SECTION_WIDTH;
     int startLong = (blockNumber * HEIGHTMAP_BITS) / 64;
@@ -37,9 +50,9 @@ void ChunkColumn::updateBlock(protocol::Position pos, GlobalBlockId id)
     _blocks.at(calculateBlockIdx(pos)) = id;
 }
 
-Block ChunkColumn::getBlock(protocol::Position pos) const
+GlobalBlockId ChunkColumn::getBlock(Position pos) const
 {
-    return getBlockFromGlobalPaletteId(_blocks.at(calculateBlockIdx(pos)));
+    return _blocks.at(calculateBlockIdx(pos));
 }
 
 const std::array<GlobalBlockId, SECTION_3D_SIZE * NB_OF_SECTIONS> &ChunkColumn::getBlocks() const
@@ -47,12 +60,12 @@ const std::array<GlobalBlockId, SECTION_3D_SIZE * NB_OF_SECTIONS> &ChunkColumn::
     return _blocks;
 }
 
-void ChunkColumn::updateSkyLight(protocol::Position pos, uint8_t light)
+void ChunkColumn::updateSkyLight(Position pos, uint8_t light)
 {
     _skyLights.at(calculateBlockIdx(pos)) = light;
 }
 
-uint8_t ChunkColumn::getSkyLight(protocol::Position pos) const
+uint8_t ChunkColumn::getSkyLight(Position pos) const
 {
     return _skyLights.at(calculateBlockIdx(pos));
 }
@@ -62,13 +75,13 @@ const std::array<uint8_t, SECTION_3D_SIZE * NB_OF_SECTIONS> &ChunkColumn::getSky
     return _skyLights;
 }
 
-void ChunkColumn::updateBlockLight(protocol::Position pos, uint8_t light)
+void ChunkColumn::updateBlockLight(Position pos, uint8_t light)
 {
     _blockLights.at(calculateBlockIdx(pos)) = light;
     // _blockLights.at(pos.x + pos.z * 16 + pos.y * 16*16) = light;
 }
 
-uint8_t ChunkColumn::getBlockLight(protocol::Position pos) const
+uint8_t ChunkColumn::getBlockLight(Position pos) const
 {
     return _blockLights.at(calculateBlockIdx(pos));
     // return _blockLights.at(pos.x + pos.z * 16 + pos.y * 16*16);
@@ -79,12 +92,12 @@ const std::array<uint8_t, SECTION_3D_SIZE * NB_OF_SECTIONS> &ChunkColumn::getBlo
     return _blockLights;
 }
 
-void ChunkColumn::updateBiome(protocol::Position pos, uint8_t biome)
+void ChunkColumn::updateBiome(Position pos, uint8_t biome)
 {
     _biomes.at(calculateBiomeIdx(pos)) = biome;
 }
 
-uint8_t ChunkColumn::getBiome(protocol::Position pos) const
+uint8_t ChunkColumn::getBiome(Position pos) const
 {
     return _biomes.at(calculateBiomeIdx(pos));
 }
@@ -93,18 +106,18 @@ const std::array<uint8_t, BIOME_SECTION_3D_SIZE * NB_OF_SECTIONS> &ChunkColumn::
     return _biomes;
 }
 
-void ChunkColumn::updateBlockEntity(protocol::Position pos, BlockEntity *BlockEntity) {
+void ChunkColumn::updateBlockEntity(Position pos, BlockEntity *BlockEntity) {
 }
 
-void ChunkColumn::addBlockEntity(protocol::Position pos, BlockEntity *BlockEntity) {// entity must be a pointer or a reference ?
+void ChunkColumn::addBlockEntity(Position pos, BlockEntity *BlockEntity) {// entity must be a pointer or a reference ?
     _blockEntities.push_back(BlockEntity);// TODO: see which of emplace_back of emplace_front is better or push_back or push_front
     // _blockEntities.emplace_back(std::make_shared<BlockEntity>(BlockEntity));
 }
 
-void ChunkColumn::removeBlockEntity(protocol::Position pos) {
+void ChunkColumn::removeBlockEntity(Position pos) {
 }
 
-BlockEntity *ChunkColumn::getBlockEntity(protocol::Position pos) {
+BlockEntity *ChunkColumn::getBlockEntity(Position pos) {
     return _blockEntities.at(0);
 }
 
@@ -118,6 +131,16 @@ int64_t ChunkColumn::getTick() {
 
 void ChunkColumn::setTick(int64_t tick) {
     _tickData = tick;
+}
+
+Position2D ChunkColumn::getChunkPos() const
+{
+    return _chunkPos;
+}
+
+bool ChunkColumn::isReady() const
+{
+    return this->_ready;
 }
 
 // void ChunkColumn::updateEntity(std::size_t id, Entity *e) {
@@ -151,67 +174,125 @@ void ChunkColumn::setTick(int64_t tick) {
 //     return _entities;
 // }
 
-void ChunkColumn::updateHeightMap(void) {
+void ChunkColumn::updateHeightMap(void)
+{
 }
 
-const HeightMap &ChunkColumn::getHeightMap() {
+const HeightMap &ChunkColumn::getHeightMap() const
+{
     return _heightMap;
 }
 
-void ChunkColumn::generate(WorldType worldType) {
+void ChunkColumn::generate(WorldType worldType, Seed seed)
+{
     switch (worldType)
     {
     case WorldType::OVERWORLD:
-        _generateOverworld();
+        _generateOverworld(seed);
         break;
     case WorldType::NETHER:
-        _generateNether();
+        _generateNether(seed);
         break;
     case WorldType::END:
-        _generateEnd();
+        _generateEnd(seed);
         break;
     case WorldType::FLAT:
-        _generateFlat();
+        _generateFlat(seed);
         break;
     default:
         break;
     }
+    this->_ready = true;
 }
 
-void ChunkColumn::_generateOverworld()
+void ChunkColumn::_generateOverworld(Seed seed)
 {
-    // TODO: Pass the seed to the chunk
-    auto noiseMaker = siv::PerlinNoise();
-    // generate biomes
-    for (int y = 0; y < NB_OF_SECTIONS * 4; y++) {
-        for (int z = 0; z < 4; z++) {
-            for (int x = 0; x < 4; x++) {
-                updateBiome({x, y - 16, z}, noiseMaker.noise3D(x, y, z) > 0 ? 1 : 0);
+    auto generator = generation::Overworld(seed);
+    int normalHeight = 100;
+    int waterLevel = 86;
+
+    // generate blocks
+    for (int y = CHUNK_HEIGHT_MIN; y < CHUNK_HEIGHT_MAX; y++) {
+        for (int z = 0; z < SECTION_WIDTH; z++) {
+            for (int x = 0; x < SECTION_WIDTH; x++) {
+                updateBlock({x, y, z}, generator.getBlock(x + this->_chunkPos.x * SECTION_WIDTH, y, z + this->_chunkPos.z * SECTION_WIDTH));
             }
         }
     }
 
-    for (int z = 0; z < 16; z++) {
-        for (int x = 0; x < 16; x++) {
-            int yMax = std::floor(noiseMaker.noise2D_01(x, z) * (double)CHUNK_HEIGHT);
-            for (int y = 0; y < yMax; y++)
-                updateBlock({x, y + CHUNK_HEIGHT_MIN, z}, getGlobalPaletteIdFromBlockName("minecraft:stone"));
+    // TODO: empove this to fill caves
+    // generate water
+    for (int z = 0; z < SECTION_WIDTH; z++) {
+        for (int x = 0; x < SECTION_WIDTH; x++) {
+            for (int y = waterLevel; 0 < y; y--) {
+                if (getBlock({x, y, z}) == 1) break;
+                updateBlock({x, y, z}, 75);
+            }
+        }
+    }
+
+    // generate grass
+    for (int z = 0; z < SECTION_WIDTH; z++) {
+        for (int x = 0; x < SECTION_WIDTH; x++) {
+            auto lastBlock = 0;
+            for (int y = CHUNK_HEIGHT_MAX - 2; CHUNK_HEIGHT_MIN <= y; y--) {
+                auto block = getBlock({x, y, z});
+                if (block == 0) continue;
+                if (block == 75) {
+                    lastBlock = 75;
+                    continue;
+                }
+                if (block == 1 && lastBlock == 75) {
+                    updateBlock({x, y, z}, 107); // sand
+                    break;
+                }
+                if (block == 1 && lastBlock == 0) {
+                    updateBlock({x, y, z}, 9); // grass
+                    updateBlock({x, y - 1, z}, 10); // dirt
+                    updateBlock({x, y - 2, z}, 10); // dirt
+                    break;
+                }
+            }
+        }
+    }
+
+    // generate bedrock
+    int64_t state = (((this->_chunkPos.x * 0x4F9939F508L + this->_chunkPos.z * 0x1EF1565BD5L) ^ 0x5DEECE66DL) * 0x9D89DAE4D6C29D9L + 0x1844E300013E5B56L) & 0xFFFFFFFFFFFFL;
+    for (int x = 0; x < SECTION_WIDTH; x++) {
+        for (int z = 0; z < SECTION_WIDTH; z++) {
+            updateBlock({x, 0 + CHUNK_HEIGHT_MIN, z}, 74); // bedrock
+            if (4 <= (state >> 17) % 5)
+                updateBlock({x, 1 + CHUNK_HEIGHT_MIN, z}, 74); // bedrock
+            state = ((state * 0x530F32EB772C5F11L + 0x89712D3873C4CD04L) * 0x9D89DAE4D6C29D9L + 0x1844E300013E5B56L) & 0xFFFFFFFFFFFFL;
+        }
+    }
+
+    // generate biomes
+    for (int y = 0; y < BIOME_HEIGHT_MAX; y++) {
+        for (int z = 0; z < BIOME_SECTION_WIDTH; z++) {
+            for (int x = 0; x < BIOME_SECTION_WIDTH; x++) {
+                // TODO
+                updateBiome({x, y + BIOME_HEIGHT_MIN, z}, generator.getBiome(x, y, z));
+            }
         }
     }
 }
 
-void ChunkColumn::_generateNether() {
+void ChunkColumn::_generateNether(Seed seed)
+{
 }
 
-void ChunkColumn::_generateEnd() {
+void ChunkColumn::_generateEnd(Seed seed)
+{
 }
 
-void ChunkColumn::_generateFlat() {
+void ChunkColumn::_generateFlat(Seed seed)
+{
     // TODO: optimize this
     // This take forever because of the Block constructor
     for (int y = 0; y < 11; y++) {
-        for (int z = 0; z < 16; z++) {
-            for (int x = 0; x < 16; x++) {
+        for (int z = 0; z < SECTION_WIDTH; z++) {
+            for (int x = 0; x < SECTION_WIDTH; x++) {
                 if (y == 0) {
                     updateBlock({x, y + CHUNK_HEIGHT_MIN, z}, getGlobalPaletteIdFromBlockName("minecraft:bedrock"));
                 } else if (y == 1 || y == 2) {

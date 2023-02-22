@@ -3,6 +3,7 @@
 void TheNether::initialize()
 {
     Dimension::initialize();
+    this->_isInitialized = true;
 }
 
 void TheNether::tick()

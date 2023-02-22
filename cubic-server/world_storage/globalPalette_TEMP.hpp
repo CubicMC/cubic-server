@@ -4,17 +4,20 @@
 // TODO: generate this file LOL
 
 #include "Block.hpp"
+#include "types.hpp"
 
 namespace world_storage
 {
 
-constexpr uint32_t getGlobalPaletteIdFromBlockName(const std::string &name)
+constexpr GlobalBlockId getGlobalPaletteIdFromBlockName(const std::string &name)
 {
     if (name == "minecraft:air") return 0;
     else if (name == "minecraft:bedrock") return 74;
     else if (name == "minecraft:grass_block") return 9;
     else if (name == "minecraft:grass") return 1596;
     else if (name == "minecraft:stone") return 1;
+    else if (name == "minecraft:water") return 75;
+    else if (name == "minecraft:sand") return 107;
     else if (name == "minecraft:dirt") return 10;
     else if (name == "minecraft:oak_log") return 118;
     else if (name == "minecraft:oak_leaves") return 207;
@@ -27,9 +30,9 @@ constexpr uint32_t getGlobalPaletteIdFromBlockName(const std::string &name)
     return 0;
 }
 
-uint32_t getGlobalPaletteIdFromBlock(const Block &block);
+GlobalBlockId getGlobalPaletteIdFromBlock(const Block &block);
 
-constexpr std::string getBlockFromGlobalPaletteId(uint32_t id)
+constexpr std::string getBlockFromGlobalPaletteId(GlobalBlockId id)
 {
     if (id == 0) return "minecraft:air";
     else if (id == 74) return "minecraft:bedrock";

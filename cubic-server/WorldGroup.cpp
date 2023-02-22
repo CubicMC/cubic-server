@@ -23,8 +23,8 @@ void WorldGroup::run()
 {
     while (_running) {
         auto start_time = std::chrono::system_clock::now();
-        for (auto &world : _worlds) {
-            world.second->tick();
+        for (auto &[_, world] : _worlds) {
+            world->tick();
         }
         _soundSystem->tick();
         auto end_time = std::chrono::system_clock::now();
@@ -36,6 +36,11 @@ void WorldGroup::run()
         }
         std::this_thread::sleep_for(std::chrono::milliseconds(MS_PER_TICK) - compute_time);
     }
+
+    // Stop all worlds
+    for (auto &[_, world] : _worlds)
+        world->stop();
+    // TODO: Save the worlds
 }
 
 void WorldGroup::stop()
@@ -58,7 +63,10 @@ std::unordered_map<std::string_view, std::shared_ptr<World>> WorldGroup::getWorl
     return this->_worlds;
 }
 
-//void WorldGroup::initialize()
-//{
-//    LWARN("Initialized empty world group");
-//}
+bool WorldGroup::isInitialized() const
+{
+    for (auto &[_, world] : _worlds)
+        if (!world->isInitialized())
+            return false;
+    return true;
+}

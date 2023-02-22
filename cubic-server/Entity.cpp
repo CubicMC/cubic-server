@@ -19,6 +19,10 @@ Entity::Entity(std::shared_ptr<Dimension> dim) : _dim(dim)
     _pose = Pose::Standing;
     _tickFrozenInPowderedSnow = 0;
     _id = currentID.fetch_add(1);
+    _pos = {0, 0, 0};
+    _lastPos = {0, 0, 0};
+    _rot = {0, 0};
+    _lastRot = {0, 0};
 }
 
 void Entity::setDimension(std::shared_ptr<Dimension> dim)
@@ -33,21 +37,18 @@ void Entity::setPosition(const Vector3<double> &pos)
 
 void Entity::setPosition(double x, double y, double z)
 {
-    _pos.x = x;
-    _pos.y = y;
-    _pos.z = z;
+    this->setPosition({x, y, z});
 }
+
 void Entity::forceSetPosition(const Vector3<double> &pos)
 {
     _pos = pos;
     _lastPos = _pos;
 }
+
 void Entity::forceSetPosition(double x, double y, double z)
 {
-    _pos.x = x;
-    _pos.y = y;
-    _pos.z = z;
-    _lastPos = _pos;
+    this->forceSetPosition({x, y, z});
 }
 
 void Entity::setRotation(const Vector2<uint8_t> &rot)

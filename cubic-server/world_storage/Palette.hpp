@@ -8,6 +8,7 @@
 
 #include "world_storage/Block.hpp"
 #include "globalPalette_TEMP.hpp"
+
 namespace world_storage {
 
 // https://stackoverflow.com/a/23784921
@@ -32,7 +33,7 @@ public:
         }
     }
 
-    constexpr uint64_t getId(uint32_t globalId) const
+    constexpr uint64_t getId(int32_t globalId) const
     {
         auto it = std::find(_nameToId.begin(), _nameToId.end(), globalId);
         if (it == _nameToId.end())

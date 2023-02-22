@@ -49,8 +49,6 @@ public:
     [[nodiscard]] virtual Vector3<double> &getLastPosition();
     [[nodiscard]] virtual Vector2<uint8_t> &getLastRotation();
 
-
-
 protected:
     std::shared_ptr<Dimension> _dim;
     bool _onFire;

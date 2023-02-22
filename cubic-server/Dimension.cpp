@@ -2,6 +2,15 @@
 #include "Player.hpp"
 #include "World.hpp"
 #include "logging/Logger.hpp"
+#include "world_storage/ChunkColumn.hpp"
+
+Dimension::Dimension(World *world):
+    _world(world),
+    dimensionLock(std::counting_semaphore<1000>(0)),
+    _isInitialized(false)
+{
+    _log = logging::Logger::get_instance();
+}
 
 void Dimension::tick()
 {
@@ -12,7 +21,11 @@ void Dimension::tick()
 
 void Dimension::initialize()
 {
+}
 
+bool Dimension::isInitialized() const
+{
+    return _isInitialized;
 }
 
 World *Dimension::getWorld() const
@@ -80,8 +93,22 @@ world_storage::Level &Dimension::getEditableLevel()
 
 void Dimension::generateChunk(int x, int z)
 {
-
 }
+
+std::shared_ptr<ThreadPool::Task> Dimension::loadOrGenerateChunk(int x, int z, std::function<void(world_storage::ChunkColumn &)> callback)
+{
+    return this->_world->getGenerationPool().add(&Dimension::loadOrGenerateChunkSync, this, x, z, callback);
+}
+
+world_storage::ChunkColumn &Dimension::loadOrGenerateChunkSync(int x, int z, std::function<void(world_storage::ChunkColumn &)> callback)
+{
+    // TODO: add a way to load chunks from disk. Maybe load it in the generation pool task ?
+    this->generateChunk(x, z);
+    if (callback)
+        callback(this->_level.getChunkColumn(x, z));
+    return this->_level.getChunkColumn(x, z);
+}
+
 
 std::vector<Player *> Dimension::getPlayerList() const
 {
@@ -95,6 +122,16 @@ std::vector<Player *> Dimension::getPlayerList() const
         }
     }
     return player_list;
+}
+
+bool Dimension::hasChunkLoaded(int x, int z) const
+{
+    return this->_level.hasChunkColumn(x, z);
+}
+
+world_storage::ChunkColumn &Dimension::getChunk(int x, int z)
+{
+    return this->_level.getChunkColumn(x, z);
 }
 
 void Dimension::spawnPlayer(Player *current)
@@ -131,14 +168,17 @@ void Dimension::spawnPlayer(Player *current)
     }
 }
 
-void Dimension::blockUpdate(protocol::Position position, int32_t id)
+void Dimension::blockUpdate(Position position, int32_t id)
 {
     LINFO("Dimension block update (" + std::to_string(position.x) + ", " + std::to_string(position.y) + ", " + std::to_string(position.z) + ") -> " + std::to_string(id) + ")");
-    auto &chunk = this->_level.getChunkColumn(position.x, position.z);
+    auto &chunk = this->_level.getChunkColumnFromBlockPos(position.x, position.z);
+
+    // Weird ass modulo to get the correct block position in the chunk
     auto x = position.x % 16;
     auto z = position.z % 16;
     if (x < 0) x += 16;
     if (z < 0) z += 16;
+
     chunk.updateBlock({x, position.y, z}, id);
     this->forEachPlayer([&position, &id](Player *player)
         {

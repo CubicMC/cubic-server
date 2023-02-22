@@ -11,6 +11,7 @@
 #include "addPrimaryType.hpp"
 #include "world_storage/Palette.hpp"
 #include "world_storage/ChunkColumn.hpp"
+#include "types.hpp"
 
 namespace protocol
 {
@@ -77,7 +78,7 @@ namespace protocol
         addArray<int32_t, addVarInt>(out, data.data());
     }
 
-    constexpr void addBiomeSection(std::vector<uint8_t> &out, const world_storage::GlobalBiomeId *section)
+    constexpr void addBiomeSection(std::vector<uint8_t> &out, const GlobalBiomeId *section)
     {
         world_storage::BiomePalette biomePalette;
         for (uint8_t i = 0; i < world_storage::BIOME_SECTION_3D_SIZE; i++)
@@ -116,7 +117,7 @@ namespace protocol
         addArray<uint64_t, addUnsignedLong>(out, longArray);
     }
 
-    constexpr void addBlockSection(std::vector<uint8_t> &out, const world_storage::GlobalBlockId *section)
+    constexpr void addBlockSection(std::vector<uint8_t> &out, const GlobalBlockId *section)
     {
         world_storage::BlockPalette blockPalette;
         uint16_t blockInsideSection = 0;

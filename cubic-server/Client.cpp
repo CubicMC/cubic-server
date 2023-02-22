@@ -14,71 +14,36 @@
 #include "World.hpp"
 #include "whitelist/Whitelist.hpp"
 
-Client::Client(int sockfd, struct sockaddr_in6 addr)
-    : _sockfd(sockfd), _addr(addr), _status(protocol::ClientStatus::Initial)
+Client::Client(int sockfd, struct sockaddr_in6 addr):
+    _sockfd(sockfd),
+    _addr(addr),
+    _status(protocol::ClientStatus::Initial),
+    _networkThread(&Client::networkLoop, this),
+    _player(nullptr),
+    _is_running(true),
+    _log(logging::Logger::get_instance())
 {
-    _is_running = true;
-    _log = logging::Logger::get_instance();
-    _player = nullptr;
 }
 
 Client::~Client()
 {
     // Stop the thread
-    if (_is_running)
-        _is_running = false;
-    if (_current_thread->joinable())
-        _current_thread->join();
-    delete _current_thread;
+    _is_running = false;
+    if (this->_networkThread.joinable())
+        this->_networkThread.join();
 
     // Close the socket
     int error_code;
     uint32_t error_code_size = sizeof(error_code);
     getsockopt(_sockfd, SOL_SOCKET, SO_ERROR, &error_code, &error_code_size);
     if (error_code == 0) {
-        //_flushSendData();
+        this->_tryFlushAllSendData();
         close(_sockfd);
     }
 
     // Remove the player from the world
     if (!_player)
         return;
-
-    chat::Message disconnectMsg = chat::Message("", {
-        .color = "yellow",
-        .translate = "multiplayer.player.left",
-        .with = std::vector<chat::Message>({
-            chat::Message(
-                _player->getUsername(),
-                {
-                    .insertion = _player->getUsername(),
-                },
-                chat::message::ClickEvent(
-                    chat::message::ClickEvent::Action::SuggestCommand,
-                    "/tell " + _player->getUsername() + " "
-                ),
-                chat::message::HoverEvent(
-                    chat::message::HoverEvent::Action::ShowEntity,
-                    "{\"type\": \"minecraft:player\", \"id\": \"" + _player->getUuidString() + "\", \"name\": \"" + _player->getUsername() + "\"}"
-                )
-            )
-        })
-    });
-    //std::cout << "Player disconnected was with id : " << uuidstr << std::endl;
-    this->_player->getDimension()->getWorld()->sendPlayerInfoRemovePlayer(this->_player);
-    _player->_dim->removeEntity(_player);
-
-    // Send a disconnect message
-    _player->_dim->getWorld()->getChat()->sendSystemMessage(
-        disconnectMsg,
-        false,
-        _player->_dim->getWorld()->getWorldGroup()
-    );
-    // _player->_dim->getWorld()->getChat()->sendPlayerMessage(
-    //     disconnectMsg,
-    //     _player
-    // );
-
     delete _player;
 }
 
@@ -117,16 +82,6 @@ void Client::networkLoop()
     _is_running = false;
 }
 
-std::thread *Client::getRunningThread()
-{
-    return _current_thread;
-}
-
-void Client::setRunningThread(std::thread *thread)
-{
-    _current_thread = thread;
-}
-
 bool Client::isDisconnected() const
 {
     return !_is_running;
@@ -159,6 +114,20 @@ void Client::_flushSendData()
 
     _send_buffer.erase(_send_buffer.begin(), _send_buffer.begin() + write_return);
     _write_mutex.unlock();
+}
+
+void Client::_tryFlushAllSendData()
+{
+    pollfd poll_set[1];
+    poll_set[0].fd = _sockfd;
+    poll_set[0].events = POLLOUT;
+
+    while (!_send_buffer.empty()) {
+        if (poll(poll_set, 1, 0) == -1)
+            return;
+        if (poll_set[0].revents & POLLOUT)
+            _flushSendData();
+    }
 }
 
 void Client::switchToPlayState(u128 playerUuid, const std::string &username)
@@ -341,9 +310,22 @@ void Client::_onStatusRequest(const std::shared_ptr<protocol::StatusRequest> &pc
     auto srv = Server::getInstance();
     auto conf = srv->getConfig();
     auto cli = srv->getClients();
+    auto worldGroup = srv->getWorldGroup("default");
 
     // TODO: Fix this
     nlohmann::json json;
+
+    json["previewsChat"] = false;
+    json["favicon"] = DEFAULT_FAVICON; // TODO: Understand how this works, cause right now it is witchcraft
+    json["description"]["text"] = conf.getMotd();
+    json["enforcesSecureChat"] = false;
+
+    // Old
+    if (!worldGroup->isInitialized()) {
+        sendStatusResponse(json.dump());
+        return;
+    }
+
     json["version"]["name"] = MC_VERSION;
     json["version"]["protocol"] = MC_PROTOCOL;
     json["players"]["max"] = conf.getMaxPlayers();
@@ -354,10 +336,6 @@ void Client::_onStatusRequest(const std::shared_ptr<protocol::StatusRequest> &pc
                 return each->getStatus() == protocol::ClientStatus::Play;
             }
     );
-    json["description"]["text"] = conf.getMotd();
-    json["favicon"] = DEFAULT_FAVICON; // TODO: Understand how this works, cause right now it is witchcraft
-    json["previewsChat"] = false;
-    json["enforcesSecureChat"] = false;
 
     sendStatusResponse(json.dump());
 }
@@ -374,6 +352,7 @@ void Client::_onLoginStart(const std::shared_ptr<protocol::LoginStart> &pck)
     LDEBUG("Got a Login Start");
     protocol::LoginSuccess resPck;
     WhitelistHandling::Whitelist whitelist;
+    // TODO: Move this to the server
     nlohmann::json whitelistData = whitelist.parseWhitelist(whitelist.getFilename());
 
     resPck.uuid = pck->has_player_uuid ? pck->player_uuid : u128{std::hash<std::string>{}("OfflinePlayer:"), std::hash<std::string>{}(pck->name)};
@@ -383,10 +362,14 @@ void Client::_onLoginStart(const std::shared_ptr<protocol::LoginStart> &pck)
     resPck.value = ""; // TODO: figure out what to put there
     resPck.isSigned = false;
 
-    if (Server::getInstance()->getEnforceWhitelist() == false || whitelist.isPlayer(resPck.uuid, resPck.username, whitelistData).first == true)
-        sendLoginSuccess(resPck);
-    else
+    if (!Server::getInstance()->getWorldGroup("default")->isInitialized()) {
+        this->disconnect("Server is not initialized yet.");
+        return;
+    } else if (Server::getInstance()->getEnforceWhitelist() && !whitelist.isPlayer(resPck.uuid, resPck.username, whitelistData).first) {
         this->disconnect("You are not whitelisted on this server.");
+        return;
+    }
+    sendLoginSuccess(resPck);
 }
 
 void Client::_onEncryptionResponse(const std::shared_ptr<protocol::EncryptionResponse> &pck)
@@ -426,9 +409,9 @@ void Client::sendLoginSuccess(const protocol::LoginSuccess &packet)
 
     protocol::LoginPlay resPck = {
             .entityID = _player->getId(), // TODO: figure out what is this
-            .isHardcore = false, // TODO: something like this this->_player->_dim->getWorld()->getDifficulty();
+            .isHardcore = false, // TODO: something like this this->_player->_dim->getWorld()->getDifficulty(); Thats not difficulty tho (peaceful, easy, normal, hard)
             .gamemode = this->_player->getGamemode(),
-            .previousGamemode = 1, // TODO: something like this this->_player->getPreviousGamemode().has_value() ? this->_player->getPreviousGamemode() : -1;
+            .previousGamemode = 0, // TODO: something like this this->_player->getPreviousGamemode().has_value() ? this->_player->getPreviousGamemode() : -1;
             .dimensionNames = std::vector<std::string>({"minecraft:overworld"}), // TODO: something like this this->_player->_dim->getWorld()->getDimensions();
             .registryCodec = nbt::Compound("", {
                 new nbt::Compound("minecraft:dimension_type", {
@@ -549,7 +532,6 @@ void Client::disconnect(const chat::Message &reason)
         _player->disconnect(reason);
         return;
     }
-    std::this_thread::sleep_for(std::chrono::milliseconds(100));
 
     nlohmann::json json;
 
@@ -566,4 +548,11 @@ void Client::disconnect(const chat::Message &reason)
     _sendData(*pck);
     _is_running = false;
     LDEBUG("Sent a disconnect login packet");
+}
+
+void Client::stop(const chat::Message &reason)
+{
+    this->disconnect(reason);
+    if (this->_networkThread.joinable())
+        this->_networkThread.join();
 }

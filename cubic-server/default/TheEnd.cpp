@@ -19,4 +19,5 @@ void TheEnd::tick()
 void TheEnd::initialize()
 {
     Dimension::initialize();
+    this->_isInitialized = true;
 }

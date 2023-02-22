@@ -7,47 +7,86 @@ Level::~Level()
 {
 }
 
-ChunkColumn &Level::addChunkColumn(_2d_pos pos, const ChunkColumn &chunkColumn) {
+ChunkColumn &Level::addChunkColumn(Position2D pos, const ChunkColumn &chunkColumn)
+{
+    _chunkColumnsMutex.lock();
     _chunkColumns.insert({pos, chunkColumn});
+    _chunkColumnsMutex.unlock();
     return _chunkColumns.at(pos);
 }
 
-ChunkColumn &Level::addChunkColumn(_2d_pos pos)
+ChunkColumn &Level::addChunkColumn(Position2D pos)
 {
-    _chunkColumns.insert({pos, {}});
+    _chunkColumnsMutex.lock();
+    _chunkColumns.insert({pos, {pos}});
+    _chunkColumnsMutex.unlock();
     return _chunkColumns.at(pos);
 }
 
-ChunkColumn &Level::getChunkColumn(_2d_pos pos)
+bool Level::hasChunkColumn(const Position2D &pos) const
+{
+    return _chunkColumns.contains(pos) && _chunkColumns.at(pos).isReady();
+}
+
+bool Level::hasChunkColumn(int x, int z) const
+{
+    return this->hasChunkColumn({x, z});
+}
+
+ChunkColumn &Level::getChunkColumn(Position2D pos)
 {
     return _chunkColumns.at(pos);
 }
 
-const ChunkColumn &Level::getChunkColumn(_2d_pos pos) const
+const ChunkColumn &Level::getChunkColumn(Position2D pos) const
 {
     return _chunkColumns.at(pos);
 }
 
 ChunkColumn &Level::getChunkColumn(int x, int z)
 {
-    _2d_pos pos = {
-        x < 0 ? -1 + int((x + 1) / 16) : int(x / 16),
-        z < 0 ? -1 + int((z + 1) / 16) : int(z / 16)
-    };
-    logging::Logger::get_instance()->info("getChunkColumn: " + std::to_string(pos.x) + ", " + std::to_string(pos.z));
-    return _chunkColumns.at(pos);
+    return this->getChunkColumn({x, z});
 }
 
 const ChunkColumn &Level::getChunkColumn(int x, int z) const
 {
-    _2d_pos pos = {
-        x < 0 ? -1 + int((x + 1) / 16) : int(x / 16),
-        z < 0 ? -1 + int((z + 1) / 16) : int(z / 16)
-    };
-    return _chunkColumns.at(pos);
+    return this->getChunkColumn({x, z});
 }
 
-void Level::removeChunkColumn(_2d_pos pos) {
+// Get the chunk from the block coordinate
+ChunkColumn &Level::getChunkColumnFromBlockPos(int x, int z)
+{
+    return this->getChunkColumn({
+        getChunkCoo(x),
+        getChunkCoo(z)
+    });
+}
+
+ChunkColumn &Level::getChunkColumnFromBlockPos(Position2D pos)
+{
+    return this->getChunkColumn({
+        getChunkCoo(pos.x),
+        getChunkCoo(pos.z)
+    });
+}
+
+const ChunkColumn &Level::getChunkColumnFromBlockPos(int x, int z) const
+{
+    return this->getChunkColumn({
+        getChunkCoo(x),
+        getChunkCoo(z)
+    });
+}
+
+const ChunkColumn &Level::getChunkColumnFromBlockPos(Position2D pos) const
+{
+    return this->getChunkColumn({
+        getChunkCoo(pos.x),
+        getChunkCoo(pos.z)
+    });
+}
+
+void Level::removeChunkColumn(Position2D pos) {
     _chunkColumns.erase(pos);
 }
 
