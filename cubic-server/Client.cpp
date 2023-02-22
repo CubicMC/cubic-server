@@ -127,6 +127,8 @@ void Client::_tryFlushAllSendData()
             return;
         if (poll_set[0].revents & POLLOUT)
             _flushSendData();
+        else
+            return;
     }
 }
 
