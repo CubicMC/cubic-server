@@ -11,6 +11,7 @@
 #include <cstring>
 #include <string>
 #include <vector>
+#include <bitset>
 
 #include "protocol/ParseExceptions.hpp"
 #include "protocol/common.hpp"
@@ -255,6 +256,20 @@ namespace protocol
         p.z = h << 26 >> 38;
         p.y = h << 52 >> 52;
         return p;
+    }
+
+    template <uint64_t size>
+    constexpr std::bitset<size> popBitSet(uint8_t *&at, uint8_t *eof)
+    {
+        std::bitset<size> result;
+
+        for (uint32_t bit = 0; bit < size; bit += 8) {
+            uint8_t byte = popByte(at, eof);
+            for (uint8_t i = 0; i < 8 && bit + i < size; i++)
+            result[bit + i] = byte & (1 >> i);
+        }
+
+        return result;
     }
 } // namespace protocol
 
