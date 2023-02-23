@@ -62,7 +62,7 @@ GlobalBlockId generation::Overworld::getBlock(position_type x, position_type y, 
         blockId = 1;
 
     // Trying to make caves
-    if (blockId == 1 && noise.noise3D.density >= 0.9 &&  noise.noise3D.density <= 1.1)
+    if (blockId == 1 && noise.noise3D.density >= 0.5 &&  noise.noise3D.density <= 1.5)
         blockId = 0;
 
     return blockId;

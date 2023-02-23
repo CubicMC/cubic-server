@@ -220,7 +220,7 @@ void ChunkColumn::_generateOverworld(Seed seed)
         }
     }
 
-    // TODO: empove this to fill caves
+    // TODO: improve this to fill caves
     // generate water
     for (int z = 0; z < SECTION_WIDTH; z++) {
         for (int x = 0; x < SECTION_WIDTH; x++) {
