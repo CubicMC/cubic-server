@@ -1,10 +1,12 @@
 #include <cstdint>
+#include <optional>
 #include <string>
 #include <iostream>
 #include <sstream>
 
 #include "Player.hpp"
 #include "Server.hpp"
+#include "command_parser/CommandParser.hpp"
 #include "protocol/ClientPackets.hpp"
 #include <cstdint>
 #include "World.hpp"
@@ -530,6 +532,7 @@ void Player::_onChatCommand(const std::shared_ptr<protocol::ChatCommand> &pck)
 {
     LDEBUG("Got a Chat Command");
     LDEBUG("The command is :" + pck->command);
+    command_parser::parseCommand(pck->command, std::make_optional<Player *>(this));
 }
 
 void Player::_onClientCommand(const std::shared_ptr<protocol::ClientCommand> &pck)
