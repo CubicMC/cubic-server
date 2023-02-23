@@ -121,7 +121,7 @@ public:
         return *this;
     }
 
-    bool operator==(const Vector3 &other) noexcept
+    bool operator==(const Vector3 &other) const noexcept
     {
         return this->x == other.x && this->y == other.y && this->z == other.z;
     }
