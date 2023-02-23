@@ -1,6 +1,6 @@
 #include "CommandParser.hpp"
 
-void command_parser::parseCommand(std::string &command) {
+void command_parser::parseCommand(std::string &command, const std::optional<Player *> &invoker) {
     std::vector<std::string> args;
     size_t pos = command.find(' ');
 
