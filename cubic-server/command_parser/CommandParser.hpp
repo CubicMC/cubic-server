@@ -2,7 +2,6 @@
 #define CUBICSERVER_COMMANDPARSER_HPP
 
 #include "Server.hpp"
-#include <optional>
 
 namespace command_parser {
     void parseCommand(std::string &command, const std::optional<Player *> &invoker);

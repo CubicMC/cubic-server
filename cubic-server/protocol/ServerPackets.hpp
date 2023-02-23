@@ -1,7 +1,6 @@
 #ifndef AE9C1FA0_D3A2_4B7D_962E_4EAF72963603
 #define AE9C1FA0_D3A2_4B7D_962E_4EAF72963603
 
-#include <bitset>
 #include <cstdint>
 #include <string>
 #include <memory>
@@ -11,7 +10,6 @@
 #include <functional>
 #include <map>
 
-#include "protocol/Structures.hpp"
 #include "typeSerialization.hpp"
 #include "types.hpp"
 

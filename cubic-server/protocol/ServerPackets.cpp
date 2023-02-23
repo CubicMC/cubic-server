@@ -1,14 +1,9 @@
-#include <memory>
 #include <optional>
-#include <utility>
 #include <vector>
 
 #include "ServerPackets.hpp"
 #include "nbt.hpp"
 #include "PacketUtils.hpp"
-#include "protocol/Structures.hpp"
-#include "protocol/serialization/pop.hpp"
-#include "protocol/serialization/popPrimaryType.hpp"
 #include "typeSerialization.hpp"
 
 using namespace protocol;
