@@ -42,6 +42,12 @@ void Overworld::initialize()
     });
 }
 
+void Overworld::stop()
+{
+    Dimension::stop();
+    this->_worldGenFuture.wait();
+}
+
 void Overworld::generateChunk(int x, int z)
 {
     LDEBUG("Generate - Overworld (" + std::to_string(x) + ", " + std::to_string(z) + ")");

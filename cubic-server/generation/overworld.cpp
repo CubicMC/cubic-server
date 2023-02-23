@@ -55,7 +55,7 @@ GlobalBlockId generation::Overworld::getBlock(position_type x, position_type y, 
     //! NEW NEW
     auto noise = getNoise(x, y, z);
     int heightOffset = 100;
-    int surfaceLevel = heightOffset + noise.noise2D.weirdness * 20;
+    int surfaceLevel = heightOffset + noise.noise2D.continentalness * 20;
     GlobalBlockId blockId = 0;
 
     if (y < surfaceLevel)

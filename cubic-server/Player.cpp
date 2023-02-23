@@ -185,17 +185,8 @@ void Player::setGamemode(uint8_t gamemode)
 
 void Player::disconnect(const chat::Message &reason)
 {
-    nlohmann::json json;
-
-    // TODO: test this, cause I don't know if the translate key is the correct one
-    json["translate"] = "chat.type.text";
-    json["with"] = nlohmann::json::array({
-        {"text", this->_username},
-        {reason.toJson()}
-    });
-
     auto pck = protocol::createPlayDisconnect({
-        json.dump()
+        reason.serialize()
     });
     this->_cli->_sendData(*pck);
     this->_cli->_is_running = false;

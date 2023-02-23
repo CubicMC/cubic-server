@@ -33,6 +33,7 @@ public:
     Dimension(World *world);
     virtual void initialize();
     virtual void tick();
+    virtual void stop();
 
     [[nodiscard]] virtual bool isInitialized() const;
     [[nodiscard]] virtual World *getWorld() const;

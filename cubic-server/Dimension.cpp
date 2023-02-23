@@ -19,6 +19,10 @@ void Dimension::tick()
     });
 }
 
+void Dimension::stop()
+{
+}
+
 void Dimension::initialize()
 {
 }

@@ -28,6 +28,8 @@ void World::tick()
 void World::stop()
 {
     this->_generationPool.stop();
+    for (auto &[_, dim] : _dimensions)
+        dim->stop();
 }
 
 bool World::isInitialized() const

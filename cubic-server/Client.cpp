@@ -535,17 +535,8 @@ void Client::disconnect(const chat::Message &reason)
         return;
     }
 
-    nlohmann::json json;
-
-    // TODO: test this, cause I don't know if the translate key is the correct one
-    json["translate"] = "chat.type.text";
-    json["with"] = nlohmann::json::array({
-        {"text", "PlayerName"},
-        {reason.toJson()}
-    });
-
     auto pck = protocol::createLoginDisconnect({
-        json.dump()
+        reason.serialize()
     });
     _sendData(*pck);
     _is_running = false;
