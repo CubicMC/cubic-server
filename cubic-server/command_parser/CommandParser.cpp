@@ -24,9 +24,14 @@ void command_parser::parseCommand(std::string &command, const std::optional<Play
         }
     );
     if (result != Server::getInstance()->getCommands().end())
-        (*result)->execute(args);
+        (*result)->execute(args, invoker);
     else {
-        logging::Logger::get_instance()->info("Unknown or incomplete command, see below for error");
-        logging::Logger::get_instance()->info(commandName.erase(commandName.find_last_not_of(' ') + 1) + "<--[HERE]");
+        if (invoker.has_value()) {
+            // (*invoker)->sendPlayerChatMessage("Unknown or incomplete command, see below for error"); // TODO: Change this to the correct packet (gl @STMiki)
+            // (*invoker)->sendPlayerChatMessage(commandName.erase(commandName.find_last_not_of(' ') + 1) + "<--[HERE]"); // TODO: Change this to the correct packet (gl @STMiki)
+        } else {
+            logging::Logger::get_instance()->info("Unknown or incomplete command, see below for error");
+            logging::Logger::get_instance()->info(commandName.erase(commandName.find_last_not_of(' ') + 1) + "<--[HERE]");
+        }
     }
 }
