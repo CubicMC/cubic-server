@@ -16,7 +16,7 @@ class WorldGroup
 {
 public:
     WorldGroup(std::shared_ptr<Chat> chat);
-    ~WorldGroup();
+    virtual ~WorldGroup();
 
     virtual void initialize() = 0;
     virtual void run();
