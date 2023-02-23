@@ -135,9 +135,8 @@ std::shared_ptr<ChatCommand> protocol::parseChatCommand(std::vector<uint8_t> &bu
           popLong, &ChatCommand::timestamp,
           popLong, &ChatCommand::salt,
           popArray<argumentSignature, popArgumentSignature>, &ChatCommand::argumentSignatures,
-          //popVarInt, &ChatCommand::messageCount,
-          popArray<long, popLong>, &ChatCommand::acknowledged
-          );
+          popVarInt, &ChatCommand::messageCount,
+          popBitSet<20>, &ChatCommand::acknowledged);
     return h;
 }
 

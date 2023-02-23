@@ -156,8 +156,8 @@ namespace protocol
         long timestamp;
         long salt;
         std::vector<argumentSignature> argumentSignatures;
-        //int32_t messageCount;
-        std::vector<long> acknowledged;
+        int32_t messageCount;
+        std::bitset<20> acknowledged;
     };
     std::shared_ptr<ChatCommand> parseChatCommand(std::vector<uint8_t> &buffer);
 
