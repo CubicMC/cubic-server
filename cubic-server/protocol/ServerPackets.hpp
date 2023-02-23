@@ -148,6 +148,8 @@ namespace protocol
     };
     std::shared_ptr<ChatMessage> parseChatMessage(std::vector<uint8_t> &buffer);
 
+    ///
+    ///@brief this is the link to the packet: https://wiki.vg/Protocol#Chat_Command
     struct ChatCommand : BaseServerPacket
     {
         std::string command;
@@ -157,6 +159,8 @@ namespace protocol
         int32_t messageCount;
         std::bitset<20> acknowledged;
     };
+    ///
+    ///@brief This function is used to parse the chat command packet
     std::shared_ptr<ChatCommand> parseChatCommand(std::vector<uint8_t> &buffer);
 
     struct ClientCommand : BaseServerPacket
