@@ -13,7 +13,7 @@
 
 Player::Player(Client *cli, std::shared_ptr<Dimension> dim, u128 uuid, const std::string &username):
     _cli(cli),
-    Entity(dim),
+    LivingEntity(dim),
     _uuid(uuid),
     _username(username),
     _keepAliveId(0),
@@ -666,14 +666,16 @@ void Player::_onQueryEntityTag(const std::shared_ptr<protocol::QueryEntityTag> &
 
 void Player::_onInteract(const std::shared_ptr<protocol::Interact> &pck)
 {
-    Entity *target = _dim->getEntityByID(pck->entity_id);
+    LivingEntity *target = dynamic_cast<LivingEntity *>(_dim->getEntityByID(pck->entity_id));
     Player *player = dynamic_cast<Player *>(target);
 
     switch (pck->type) {
         case 0:
             break;
         case 1:
-            target->attack(1, _pos);
+            if (target != nullptr) {
+                target->attack(1, _pos);
+            }
             if (player != nullptr) {
                 player->sendHealth();
             }

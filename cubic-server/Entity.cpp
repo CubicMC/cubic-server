@@ -26,23 +26,6 @@ Entity::Entity(std::shared_ptr<Dimension> dim) : _dim(dim)
     _lastRot = {0, 0};
 }
 
-void Entity::attack(float damage, Vector3<double> source)
-{
-    std::vector<Player *> players =  _dim->getPlayerList();
-    Vector3<double> direction = source - _pos;
-
-    direction.normalize();
-    _health -= damage;
-    for (auto &player : players) {
-        player->sendEntityVelocity({
-            _id,
-            static_cast<int16_t>(direction.x * 1000),
-            static_cast<int16_t>(direction.y * 1000),
-            static_cast<int16_t>(direction.z * 1000)
-        });
-    }
-}
-
 void Entity::setDimension(std::shared_ptr<Dimension> dim)
 {
     _dim = dim;
@@ -80,11 +63,6 @@ void Entity::setRotation(uint8_t yaw, uint8_t pitch)
     _rot.y = pitch;
 }
 
-void Entity::setHealth(float health)
-{
-    _health = health;
-}
-
 std::shared_ptr<Dimension> Entity::getDimension() const
 {
     return _dim;
@@ -119,13 +97,6 @@ Vector2<uint8_t> &Entity::getLastRotation() {
     return _lastRot;
 }
 
-const float &Entity::getHealth() const {
-    return _health;
-}
-
-float &Entity::getHealth() {
-    return _health;
-}
 void Entity::teleport(const Vector3<double> &pos) {
     this->forceSetPosition(pos);
 
