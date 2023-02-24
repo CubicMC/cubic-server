@@ -18,8 +18,10 @@ void Op::execute(std::vector<std::string>& args) const {
 
             if (server->permissions.isOperator(args[0]))
                 logging::Logger::get_instance()->info(args[0] + " is already opped.");
-            else
+            else {
                 server->permissions.addOperator(args[0]);
+                logging::Logger::get_instance()->info(args[0] + " opped.");
+            }
                 
         }
     }
