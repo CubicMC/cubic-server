@@ -65,6 +65,14 @@ GlobalBlockId generation::Overworld::getBlock(position_type x, position_type y, 
     // auto density = noise.noise3D.density / (1.0 / (double (y + world_storage::CHUNK_HEIGHT_MIN) + 0.001)) * 10;
     // auto density = (noise.noise3D.density + 1) / (1.0 / (double (y))) + 1;
     auto density = noise.noise3D.density;
+    if (y >= 70)
+        density *= 1.5;
+    if (y >= 80)
+        density *= 1.5;
+    if (y >= 90)
+        density *= 1.5;
+    if (y >= 100)
+        density *= 100.0;
     if (blockId == 1 && density >= -.15 &&  density <= .05)
         blockId = 0;
     // Trying to repair caves surface

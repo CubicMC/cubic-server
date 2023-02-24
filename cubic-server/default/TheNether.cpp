@@ -8,9 +8,7 @@ void TheNether::initialize()
 
 void TheNether::tick()
 {
-    _numThreadsWaiting++;
     _processingMutex.lock();
-    _numThreadsWaiting--;
 
     auto startProcessing = std::chrono::system_clock::now();
 

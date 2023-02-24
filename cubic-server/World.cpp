@@ -11,7 +11,7 @@ World::World(WorldGroup *worldGroup):
     _time(0),
     _renderDistance(8), // TODO: Should be loaded from config
     _timeUpdateClock(20, std::bind(&World::updateTime, this)), // 1 second for time updates
-    _generationPool(16, "WorldGen", ThreadPool::Behavior::Cancel)
+    _generationPool(16, "WorldGen", thread_pool::Pool::Behavior::Cancel)
 {
     _log = logging::Logger::get_instance();
     _timeUpdateClock.start();
@@ -28,8 +28,12 @@ void World::tick()
 void World::stop()
 {
     this->_generationPool.stop();
+    this->_generationPool.wait();
+
     for (auto &[_, dim] : _dimensions)
         dim->stop();
+
+    // TODO: Save the worlds
 }
 
 bool World::isInitialized() const
@@ -194,7 +198,7 @@ void World::sendPlayerInfoRemovePlayer(Player *current) {
     LDEBUG("Sent player info to " + current->getUsername());
 }
 
-ThreadPool &World::getGenerationPool()
+thread_pool::Pool &World::getGenerationPool()
 {
     return _generationPool;
 }

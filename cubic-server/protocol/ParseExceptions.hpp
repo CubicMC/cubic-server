@@ -3,15 +3,19 @@
 
 #include <stdexcept>
 
-#define DEFINE_EXCEPTION(name) \
+
+#define DEFINE_EXCEPTION_FROM(name, except) \
     class name : public std::runtime_error \
     { \
     public: \
         name(char const *const message) throw() \
-            : std::runtime_error(message) \
+            : except(message) \
         { \
         } \
     }
+
+#define DEFINE_EXCEPTION(name) \
+    DEFINE_EXCEPTION_FROM(name, std::runtime_error)
 
 namespace protocol
 {

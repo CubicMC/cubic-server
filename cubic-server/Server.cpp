@@ -3,7 +3,6 @@
 #include <cerrno>
 #include <sys/socket.h>
 #include <poll.h>
-#include <thread>
 #include <chrono>
 #include <exception>
 #include <cstring>
@@ -72,9 +71,6 @@ void Server::launch()
     _worldGroups.emplace("default", new DefaultWorldGroup(defaultChat));
     _worldGroups.at("default")->initialize();
 
-    // Run the default world group
-    _worldGroupThreads.emplace("default", std::thread{&DefaultWorldGroup::run, _worldGroups.at("default")});
-
     _acceptLoop();
 
     this->_stop();
@@ -142,8 +138,6 @@ void Server::_stop()
 
     for (auto &[name, worldGroup] : _worldGroups) {
         worldGroup->stop();
-        if (_worldGroupThreads[name].joinable())
-            _worldGroupThreads[name].join();
         delete worldGroup;
     }
     if (this->_sockfd != -1)

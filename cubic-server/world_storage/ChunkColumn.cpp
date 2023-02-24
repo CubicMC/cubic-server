@@ -187,7 +187,7 @@ void ChunkColumn::generate(WorldType worldType, Seed seed)
 {
     switch (worldType)
     {
-    case WorldType::OVERWORLD:
+    case WorldType::NORMAL:
         _generateOverworld(seed);
         break;
     case WorldType::NETHER:

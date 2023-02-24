@@ -1,14 +1,8 @@
-#include "ThreadPool.hpp"
+#include "Pool.hpp"
+#include "Task.hpp"
 #include "logging/Logger.hpp"
 
-ThreadPool::Task::Task(Id id, std::function<void()> task, ThreadPool *pool):
-    _id(id),
-    _status(Status::Waiting),
-    _task(task),
-    _pool(pool)
-{}
-
-ThreadPool::ThreadPool(size_t nbThreads, const std::string &name, const Behavior &behavior):
+thread_pool::Pool::Pool(size_t nbThreads, const std::string &name, const Behavior &behavior):
     _name(name),
     _stop(false),
     _behavior(behavior)
@@ -16,17 +10,17 @@ ThreadPool::ThreadPool(size_t nbThreads, const std::string &name, const Behavior
     this->_queueMutex.lock();
     for (size_t i = 0; i < nbThreads; ++i) {
         this->_isRunning[i] = false;
-        this->_workers.emplace_back(&ThreadPool::runJob, this, i);
+        this->_workers.emplace_back(&Pool::runJob, this, i);
     }
     this->_queueMutex.unlock();
 }
 
-ThreadPool::~ThreadPool()
+thread_pool::Pool::~Pool()
 {
     this->stop();
 }
 
-void ThreadPool::cancel(Task::Id id)
+void thread_pool::Pool::cancel(Task::Id id)
 {
     this->_queueMutex.lock();
     auto task = std::find_if(
@@ -41,7 +35,7 @@ void ThreadPool::cancel(Task::Id id)
     this->_queueMutex.unlock();
 }
 
-void ThreadPool::stop()
+void thread_pool::Pool::stop()
 {
     if (this->_behavior == Behavior::Cancel) {
         this->_queueMutex.lock();
@@ -58,7 +52,7 @@ void ThreadPool::stop()
     }
 }
 
-void ThreadPool::wait()
+void thread_pool::Pool::wait()
 {
     this->_queueMutex.lock();
     while (this->_tasks.size() > 0) {
@@ -78,7 +72,7 @@ void ThreadPool::wait()
     }
 }
 
-void ThreadPool::resize(size_t nbThreads)
+void thread_pool::Pool::resize(size_t nbThreads)
 {
     if (nbThreads == this->_workers.size())
         return;
@@ -89,16 +83,16 @@ void ThreadPool::resize(size_t nbThreads)
         this->shrink(this->_workers.size() - nbThreads);
 }
 
-void ThreadPool::grow(size_t nbThreads)
+void thread_pool::Pool::grow(size_t nbThreads)
 {
     if (nbThreads == 0)
         return;
 
     for (size_t i = this->_workers.size(); i < nbThreads; ++i)
-        this->_workers.emplace_back(&ThreadPool::runJob, this, i);
+        this->_workers.emplace_back(&Pool::runJob, this, i);
 }
 
-void ThreadPool::shrink(size_t nbThreads)
+void thread_pool::Pool::shrink(size_t nbThreads)
 {
     if (nbThreads == 0)
         return;
@@ -116,11 +110,11 @@ void ThreadPool::shrink(size_t nbThreads)
     this->_stop = false;
 
     for (size_t i = 0; i < nbThreads; ++i)
-        this->_workers.emplace_back(&ThreadPool::runJob, this, i);
+        this->_workers.emplace_back(&Pool::runJob, this, i);
     this->_queueMutex.unlock();
 }
 
-void ThreadPool::runJob(int workerId)
+void thread_pool::Pool::runJob(int workerId)
 {
     while(true)
     {
@@ -141,37 +135,25 @@ void ThreadPool::runJob(int workerId)
     }
 }
 
-
-std::string ThreadPool::name() const
+const std::string &thread_pool::Pool::name() const
 {
     return this->_name;
 }
 
-std::string &ThreadPool::name()
-{
-    return this->_name;
-}
-
-
-size_t ThreadPool::size() const
+size_t thread_pool::Pool::size() const
 {
     return this->_workers.size();
 }
 
 
-ThreadPool::Behavior ThreadPool::behavior() const
+const thread_pool::Pool::Behavior &thread_pool::Pool::behavior() const
 {
     return this->_behavior;
 }
 
-ThreadPool::Behavior &ThreadPool::behavior()
+std::vector<std::shared_ptr<thread_pool::Task>> thread_pool::Pool::tasks()
 {
-    return this->_behavior;
-}
-
-std::vector<std::shared_ptr<ThreadPool::Task>> ThreadPool::tasks()
-{
-    std::vector<std::shared_ptr<Task>> tasks;
+    std::vector<std::shared_ptr<thread_pool::Task>> tasks;
 
     this->_queueMutex.lock();
     for (auto &task: this->_tasks)

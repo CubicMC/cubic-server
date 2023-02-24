@@ -57,32 +57,32 @@ const ChunkColumn &Level::getChunkColumn(int x, int z) const
 ChunkColumn &Level::getChunkColumnFromBlockPos(int x, int z)
 {
     return this->getChunkColumn({
-        getChunkCoo(x),
-        getChunkCoo(z)
+        transformBlockPosToChunkPos(x),
+        transformBlockPosToChunkPos(z)
     });
 }
 
 ChunkColumn &Level::getChunkColumnFromBlockPos(Position2D pos)
 {
     return this->getChunkColumn({
-        getChunkCoo(pos.x),
-        getChunkCoo(pos.z)
+        transformBlockPosToChunkPos(pos.x),
+        transformBlockPosToChunkPos(pos.z)
     });
 }
 
 const ChunkColumn &Level::getChunkColumnFromBlockPos(int x, int z) const
 {
     return this->getChunkColumn({
-        getChunkCoo(x),
-        getChunkCoo(z)
+        transformBlockPosToChunkPos(x),
+        transformBlockPosToChunkPos(z)
     });
 }
 
 const ChunkColumn &Level::getChunkColumnFromBlockPos(Position2D pos) const
 {
     return this->getChunkColumn({
-        getChunkCoo(pos.x),
-        getChunkCoo(pos.z)
+        transformBlockPosToChunkPos(pos.x),
+        transformBlockPosToChunkPos(pos.z)
     });
 }
 

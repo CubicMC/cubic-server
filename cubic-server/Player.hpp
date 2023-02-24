@@ -26,12 +26,6 @@ public:
         Loaded
     };
 
-    struct ChunkStateHolder
-    {
-        ChunkState state;
-        std::shared_ptr<ThreadPool::Task> task;
-    };
-
 public:
     Player(Client *cli, std::shared_ptr<Dimension> dim, u128 uuid, const std::string &username);
     ~Player() override;
@@ -132,6 +126,7 @@ private:
     void _onUseItemOn(const std::shared_ptr<protocol::UseItemOn> &pck);
     void _onUseItem(const std::shared_ptr<protocol::UseItem> &pck);
 
+private:
     void _processKeepAlive();
 
     logging::Logger *_log;
@@ -145,7 +140,7 @@ private:
     uint8_t _gamemode;
     TickClock _keepAliveClock;
     bool _isFlying;
-    std::unordered_map<Position2D, ChunkStateHolder> _chunks;
+    std::unordered_map<Position2D, ChunkState> _chunks;
 };
 
 #endif //CUBICSERVER_PLAYER_HPP

@@ -18,6 +18,8 @@ Client::Client(int sockfd, struct sockaddr_in6 addr):
     _sockfd(sockfd),
     _addr(addr),
     _status(protocol::ClientStatus::Initial),
+    _recv_buffer(0),
+    _send_buffer(0),
     _networkThread(&Client::networkLoop, this),
     _player(nullptr),
     _is_running(true),
@@ -68,7 +70,7 @@ void Client::networkLoop()
                 break;
             else
             {
-                // This is extremely inefficient but it will do for now
+                // TODO: This is extremely inefficient but it will do for now
                 for (int i = 0; i < read_size; i++)
                     _recv_buffer.push_back(in_buffer[i]);
                 _handlePacket();

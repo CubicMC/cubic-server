@@ -13,22 +13,23 @@
 #include "world_storage/Level.hpp"
 #include "math/Vector3.hpp"
 #include "world_storage/ChunkColumn.hpp"
-#include "ThreadPool.hpp"
+#include "thread_pool/Pool.hpp"
+
+constexpr int SEMAPHORE_MAX = 1000;
 
 class World;
 class Player;
 class Entity;
 
-constexpr Position getChunkPosition(const Position &position)
-{
-    Position chunkPos(position.x % 16, position.y, position.z % 16);
-    if (chunkPos.x < 0) chunkPos.x += 16;
-    if (chunkPos.z < 0) chunkPos.z += 16;
-    return chunkPos;
-}
-
 class Dimension
 {
+private:
+    struct ChunkRequest
+    {
+        std::shared_ptr<thread_pool::Task> task;
+        std::vector<Player *> players;
+    };
+
 public:
     Dimension(World *world);
     virtual void initialize();
@@ -37,6 +38,7 @@ public:
 
     [[nodiscard]] virtual bool isInitialized() const;
     [[nodiscard]] virtual World *getWorld() const;
+    [[nodiscard]] virtual std::counting_semaphore<SEMAPHORE_MAX> &getDimensionLock();
     [[nodiscard]] virtual std::vector<Player *> getPlayerList() const;
     virtual std::vector<Entity *> &getEntities();
     virtual void removeEntity(Entity *entity);
@@ -52,15 +54,32 @@ public:
     virtual void blockUpdate(Position position, int32_t id);
     virtual void spawnPlayer(Player *player);
 
+    /**
+     * @brief Check if a chunk is loaded
+     *
+     * @param x int32_t
+     * @param z int32_t
+     * @return bool
+     */
     virtual bool hasChunkLoaded(int x, int z) const;
+
+    /**
+     * @brief Remove a player from a chunk that is being loaded
+     *
+     * @note This function is thread-safe
+     *
+     * @param pos Position2D
+     * @param player Player *
+     */
+    virtual void removePlayerFromLoadingChunk(const Position2D &pos, Player *player);
 
     /**
      * @brief Get a loaded chunk
      *
      * @throws std::runtime_error if the chunk is not loaded
      *
-     * @param x
-     * @param z
+     * @param x int32_t
+     * @param z int32_t
      * @return world_storage::ChunkColumn&
      */
     virtual world_storage::ChunkColumn &getChunk(int x, int z);
@@ -70,25 +89,27 @@ public:
      *
      * @note This function is thread-safe
      *
-     * @param x
-     * @param z
-     * @param callback
+     * @param x int32_t
+     * @param z int32_t
      * @return size_t a job id,
      */
-    virtual std::shared_ptr<ThreadPool::Task> loadOrGenerateChunk(int x, int z, std::function<void(world_storage::ChunkColumn &)> callback = nullptr);
-    virtual world_storage::ChunkColumn &loadOrGenerateChunkSync(int x, int z, std::function<void(world_storage::ChunkColumn &)> callback = nullptr);
-
-public:
-    std::counting_semaphore<1000> dimensionLock;
+    virtual std::shared_ptr<thread_pool::Task> loadOrGenerateChunk(int x, int z, Player *player);
 
 protected:
+    virtual void _run();
+
+protected:
+    std::counting_semaphore<SEMAPHORE_MAX> _dimensionLock;
     std::vector<Entity *> _entities;
     logging::Logger *_log;
     World *_world;
-    std::atomic<int> _numThreadsWaiting;
     std::mutex _processingMutex;
-    bool _isInitialized;
+    std::atomic<bool> _isInitialized;
+    std::atomic<bool> _isRunning;
     world_storage::Level _level;
+    std::mutex _loadingChunksMutex;
+    std::unordered_map<Position2D, ChunkRequest> _loadingChunks;
+    std::thread _processingThread;
 };
 
 

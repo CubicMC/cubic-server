@@ -8,7 +8,7 @@
 #include "ChunkColumn.hpp"
 #include "types.hpp"
 
-constexpr int getChunkCoo(int64_t x)
+constexpr int transformBlockPosToChunkPos(int64_t x)
 {
     return x < 0 ? -1 + int64_t((x + 1) / 16) : int64_t(x / 16);
 }

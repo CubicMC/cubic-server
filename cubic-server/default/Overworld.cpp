@@ -5,9 +5,7 @@
 
 void Overworld::tick()
 {
-    _numThreadsWaiting++;
     _processingMutex.lock();
-    _numThreadsWaiting--;
 
     auto startProcessing = std::chrono::system_clock::now();
 
@@ -52,6 +50,6 @@ void Overworld::generateChunk(int x, int z)
 {
     LDEBUG("Generate - Overworld (" + std::to_string(x) + ", " + std::to_string(z) + ")");
     Position2D pos{x, z};
-    _level.addChunkColumn(pos).generate(world_storage::WorldType::OVERWORLD, this->getWorld()->getSeed());
+    _level.addChunkColumn(pos).generate(world_storage::WorldType::NORMAL, this->getWorld()->getSeed());
     LINFO("Chunk generated (" + std::to_string(x) + ", " + std::to_string(z) + ")");
 }

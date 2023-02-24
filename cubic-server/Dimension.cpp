@@ -3,10 +3,11 @@
 #include "World.hpp"
 #include "logging/Logger.hpp"
 #include "world_storage/ChunkColumn.hpp"
+#include "Server.hpp"
 
 Dimension::Dimension(World *world):
     _world(world),
-    dimensionLock(std::counting_semaphore<1000>(0)),
+    _dimensionLock(std::counting_semaphore<1000>(0)),
     _isInitialized(false)
 {
     _log = logging::Logger::get_instance();
@@ -21,10 +22,16 @@ void Dimension::tick()
 
 void Dimension::stop()
 {
+    this->_isRunning = false;
+    this->_dimensionLock.release();
+
+    if (_processingThread.joinable())
+        _processingThread.join();
 }
 
 void Dimension::initialize()
 {
+    this->_processingThread = std::thread(&Dimension::_run, this);
 }
 
 bool Dimension::isInitialized() const
@@ -35,6 +42,11 @@ bool Dimension::isInitialized() const
 World *Dimension::getWorld() const
 {
     return _world;
+}
+
+std::counting_semaphore<1000> &Dimension::getDimensionLock()
+{
+    return _dimensionLock;
 }
 
 std::vector<Entity *> &Dimension::getEntities()
@@ -99,20 +111,56 @@ void Dimension::generateChunk(int x, int z)
 {
 }
 
-std::shared_ptr<ThreadPool::Task> Dimension::loadOrGenerateChunk(int x, int z, std::function<void(world_storage::ChunkColumn &)> callback)
+std::shared_ptr<thread_pool::Task> Dimension::loadOrGenerateChunk(int x, int z, Player *player)
 {
-    return this->_world->getGenerationPool().add(&Dimension::loadOrGenerateChunkSync, this, x, z, callback);
+    this->_loadingChunksMutex.lock();
+    if (this->_loadingChunks.contains({x, z})) {
+        if (std::find(this->_loadingChunks[{x, z}].players.begin(), this->_loadingChunks[{x, z}].players.end(), player)
+            == this->_loadingChunks[{x, z}].players.end()
+        ) { this->_loadingChunks[{x, z}].players.push_back(player); }
+        this->_loadingChunksMutex.unlock();
+        return this->_loadingChunks[{x, z}].task;
+    }
+
+    auto request = ChunkRequest{
+        this->_world->getGenerationPool().add([this, x, z]{
+            // TODO: load chunk from disk if it exists
+            this->generateChunk(x, z);
+
+            // This send the chunk to the players that are loading it
+            this->_loadingChunksMutex.lock();
+            for (auto &entity: this->_entities) {
+                // pls don't kill me
+                // this is a hack to check if the client is still connected
+                // And the best part ? I don't even know if it works
+                if (
+                    std::find_if(
+                        this->_loadingChunks[{x, z}].players.begin(),
+                        this->_loadingChunks[{x, z}].players.end(),
+                        [entity](const Player *player) { return player == entity; }
+                    ) == this->_loadingChunks[{x, z}].players.end()
+                ) continue;
+                reinterpret_cast<Player *>(entity)->sendChunkAndLightUpdate(this->_level.getChunkColumn(x, z));
+            }
+            this->_loadingChunks.erase({x, z});
+            this->_loadingChunksMutex.unlock();
+        }),
+        {player}
+    };
+
+    this->_loadingChunks[{x, z}] = request;
+    this->_loadingChunksMutex.unlock();
+
+    return request.task;
 }
 
-world_storage::ChunkColumn &Dimension::loadOrGenerateChunkSync(int x, int z, std::function<void(world_storage::ChunkColumn &)> callback)
+void Dimension::_run()
 {
-    // TODO: add a way to load chunks from disk. Maybe load it in the generation pool task ?
-    this->generateChunk(x, z);
-    if (callback)
-        callback(this->_level.getChunkColumn(x, z));
-    return this->_level.getChunkColumn(x, z);
+    while (this->_isRunning) {
+        this->_dimensionLock.acquire();
+        this->tick();
+    }
 }
-
 
 std::vector<Player *> Dimension::getPlayerList() const
 {
@@ -131,6 +179,26 @@ std::vector<Player *> Dimension::getPlayerList() const
 bool Dimension::hasChunkLoaded(int x, int z) const
 {
     return this->_level.hasChunkColumn(x, z);
+}
+
+void Dimension::removePlayerFromLoadingChunk(const Position2D &pos, Player *player)
+{
+    this->_loadingChunksMutex.lock();
+    if (!this->_loadingChunks.contains(pos)) {
+        this->_loadingChunksMutex.unlock();
+        return;
+    }
+
+    this->_loadingChunks[pos].players.erase(
+        std::remove(this->_loadingChunks[pos].players.begin(), this->_loadingChunks[pos].players.end(), player),
+        this->_loadingChunks[pos].players.end()
+    );
+
+    if (this->_loadingChunks[pos].players.empty()) {
+        this->_loadingChunks[pos].task->cancel();
+        this->_loadingChunks.erase(pos);
+    }
+    this->_loadingChunksMutex.unlock();
 }
 
 world_storage::ChunkColumn &Dimension::getChunk(int x, int z)

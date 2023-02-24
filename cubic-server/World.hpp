@@ -12,7 +12,7 @@
 #include "logging/Logger.hpp"
 #include "world_storage/LevelData.hpp"
 #include "TickClock.hpp"
-#include "ThreadPool.hpp"
+#include "thread_pool/Pool.hpp"
 #include "types.hpp"
 
 class WorldGroup;
@@ -44,7 +44,7 @@ public:
     virtual void sendPlayerInfoAddPlayer(Player *);
     virtual void sendPlayerInfoRemovePlayer(Player *current);
 
-    virtual ThreadPool &getGenerationPool();
+    virtual thread_pool::Pool &getGenerationPool();
 
     virtual Seed getSeed() const;
     virtual uint8_t getRenderDistance() const;
@@ -60,7 +60,7 @@ protected:
     world_storage::LevelData _levelData;
     TickClock _timeUpdateClock;
     Seed _seed;
-    ThreadPool _generationPool;
+    thread_pool::Pool _generationPool;
 };
 
 

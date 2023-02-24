@@ -17,7 +17,6 @@ public:
 private:
     std::vector<std::thread> _processingThreads;
     std::atomic<bool> _running;
-
 };
 
 

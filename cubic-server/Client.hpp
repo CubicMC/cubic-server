@@ -90,9 +90,9 @@ private:
     const struct sockaddr_in6 _addr;
     std::atomic<bool> _is_running;
     protocol::ClientStatus _status;
-    std::thread _networkThread;
     std::vector<uint8_t> _recv_buffer;
     std::vector<uint8_t> _send_buffer;
+    std::thread _networkThread;
     Player *_player;
     logging::Logger *_log;
     std::mutex _write_mutex;

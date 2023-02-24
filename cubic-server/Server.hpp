@@ -91,7 +91,6 @@ private:
 
     Configuration::ConfigHandler _config;
     std::unordered_map<std::string_view, WorldGroup *> _worldGroups;
-    std::unordered_map<std::string_view, std::thread> _worldGroupThreads;
     std::vector<CommandBase *> _commands = {
         new command_parser::Help,
         new command_parser::QuestionMark,

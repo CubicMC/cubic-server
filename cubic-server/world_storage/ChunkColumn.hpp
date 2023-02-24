@@ -71,7 +71,7 @@ struct HeightMap {
 };
 
 enum class WorldType {
-    OVERWORLD,
+    NORMAL,
     NETHER,
     END,
     FLAT

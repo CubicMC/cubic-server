@@ -7,8 +7,10 @@
 #include <utility>
 #include <thread>
 
-WorldGroup::WorldGroup(std::shared_ptr<Chat> chat)
-    : _chat(std::move(chat)), _soundSystem(new SoundSystem(this)), _running(true)
+WorldGroup::WorldGroup(std::shared_ptr<Chat> chat):
+    _chat(std::move(chat)),
+    _soundSystem(new SoundSystem(this)),
+    _running(true)
 {
     _log = logging::Logger::get_instance();
 }
@@ -19,7 +21,12 @@ WorldGroup::~WorldGroup()
         delete _soundSystem;
 }
 
-void WorldGroup::run()
+void WorldGroup::initialize()
+{
+    this->_thread = std::thread(&WorldGroup::_run, this);
+}
+
+void WorldGroup::_run()
 {
     while (_running) {
         auto start_time = std::chrono::system_clock::now();
@@ -36,16 +43,18 @@ void WorldGroup::run()
         }
         std::this_thread::sleep_for(std::chrono::milliseconds(MS_PER_TICK) - compute_time);
     }
-
-    // Stop all worlds
-    for (auto &[_, world] : _worlds)
-        world->stop();
-    // TODO: Save the worlds
 }
 
 void WorldGroup::stop()
 {
     _running = false;
+
+    if (_thread.joinable())
+        _thread.join();
+
+    // Stop all worlds
+    for (auto &[_, world] : _worlds)
+        world->stop();
 }
 
 std::shared_ptr<Chat> WorldGroup::getChat() const

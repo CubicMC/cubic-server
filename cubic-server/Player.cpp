@@ -217,8 +217,8 @@ uint8_t Player::keepAliveIgnored() const
 
 void Player::setPosition(const Vector3<double> &pos)
 {
-    auto newChunkPos = Position2D(getChunkCoo(pos.x), getChunkCoo(pos.z));
-    auto oldChunkPos = Position2D(getChunkCoo(_pos.x), getChunkCoo(_pos.z));
+    auto newChunkPos = Position2D(transformBlockPosToChunkPos(pos.x), transformBlockPosToChunkPos(pos.z));
+    auto oldChunkPos = Position2D(transformBlockPosToChunkPos(_pos.x), transformBlockPosToChunkPos(_pos.z));
 
     Entity::setPosition(pos);
 
@@ -499,7 +499,7 @@ void Player::sendSetCenterChunk(const Position2D &pos)
 {
     auto pck = protocol::createCenterChunk(pos);
     this->_cli->_sendData(*pck);
-    LINFO("Sent a center chunk packet");
+    LDEBUG("Sent a center chunk packet");
 }
 
 void Player::sendSynchronizePosition(Vector3<double> pos)
@@ -534,23 +534,23 @@ void Player::sendChunkAndLightUpdate(const Position2D &pos)
 void Player::sendChunkAndLightUpdate(int32_t x, int32_t z)
 {
     if (!this->_dim->hasChunkLoaded(x, z)) {
-        this->_chunks[{x, z}] = ChunkStateHolder{
-            ChunkState::Loading,
-            this->_dim->loadOrGenerateChunk(x, z, [this](const world_storage::ChunkColumn &chunk) {
-                // pls don't kill me
-                // this is a hack to check if the client is still connected
-                // And the best part ? I don't even know if it works
-                if (
-                    std::find_if(
-                        Server::getInstance()->getClients().begin(),
-                        Server::getInstance()->getClients().end(),
-                        [this](const std::shared_ptr<Client> &cli) { return (&(*cli) == this->_cli); }
-                    ) == Server::getInstance()->getClients().end()
-                ) return;
-                if (this->_chunks.contains(chunk.getChunkPos()) && this->_chunks[chunk.getChunkPos()].state == ChunkState::Loading)
-                    this->sendChunkAndLightUpdate(chunk);
-            }
-        )};
+        this->_dim->loadOrGenerateChunk(x, z, this);
+        this->_chunks[{x, z}] = ChunkState::Loading;
+        //     [this](const world_storage::ChunkColumn &chunk) {
+        //         // pls don't kill me
+        //         // this is a hack to check if the client is still connected
+        //         // And the best part ? I don't even know if it works
+        //         if (
+        //             std::find_if(
+        //                 Server::getInstance()->getClients().begin(),
+        //                 Server::getInstance()->getClients().end(),
+        //                 [this](const std::shared_ptr<Client> &cli) { return (&(*cli) == this->_cli); }
+        //             ) == Server::getInstance()->getClients().end()
+        //         ) return;
+        //         if (this->_chunks.contains(chunk.getChunkPos()) && this->_chunks[chunk.getChunkPos()].state == ChunkState::Loading)
+        //             this->sendChunkAndLightUpdate(chunk);
+        //     }
+        // )};
         return;
     }
 
@@ -583,7 +583,7 @@ void Player::sendChunkAndLightUpdate(const world_storage::ChunkColumn &chunk)
         }),
         chunk,
         {}, // TODO: BlockEntities
-        false,
+        false, // Trust Edges: If edges should be trusted for light updates.
         {}, // TODO: Sky light mask
         {}, // TODO: Block light mask
         {}, // TODO: empty sky light mask
@@ -593,15 +593,7 @@ void Player::sendChunkAndLightUpdate(const world_storage::ChunkColumn &chunk)
     });
     this->_cli->_sendData(*packet);
 
-    if (this->_chunks.contains(chunkPos)) {
-        this->_chunks[chunkPos].state = ChunkState::Loaded;
-        this->_chunks[chunkPos].task = nullptr;
-    } else {
-        this->_chunks[chunkPos] = ChunkStateHolder{
-            ChunkState::Loaded,
-            nullptr
-        };
-    }
+    this->_chunks[chunkPos] = ChunkState::Loaded;
 
     logging::Logger::get_instance()->debug("Sent a chunk data and light update packet (" + std::to_string(chunkPos.x) + ", " + std::to_string(chunkPos.z) + ")");
     delete motionBlockingList;
@@ -612,8 +604,8 @@ void Player::sendUnloadChunk(int32_t x, int32_t z)
 {
     if (!this->_chunks.contains({x, z}))
         return;
-    else if (this->_chunks[{x, z}].state == ChunkState::Loading) {
-        this->_chunks[{x, z}].task->cancel();
+    else if (this->_chunks[{x, z}] == ChunkState::Loading) {
+        this->_dim->removePlayerFromLoadingChunk({x, z}, this);
         this->_chunks.erase({x, z});
         return;
     }
