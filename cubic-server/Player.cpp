@@ -162,6 +162,10 @@ const uint8_t &Player::getOperatorLevel() const
 void Player::setOperatorLevel(uint8_t level)
 {
     this->_operatorLevel = level;
+    if (level == 0)
+        this->_isOperator = false;
+    else
+        this->_isOperator = true;
 }
 
 const bool &Player::canBypassSpawnProtection() const

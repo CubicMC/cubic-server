@@ -94,7 +94,7 @@ Permissions::Permissions(const std::string &filename):
                     4,
                     true
                 )
-                );
+            );
         }
         filestream.close();
     }
@@ -114,7 +114,7 @@ Permissions::~Permissions()
 
 void Permissions::addOperator(const std::string &name)
 {
-    if (this->_operators.find(name) != this->_operators.end()) { // cannot find operator with this name
+    if (this->_operators.find(name) == this->_operators.end()) { // cannot find operator with this name
         Server *server = Server::getInstance();
         Player *selectedPlayer = nullptr;
 
@@ -156,6 +156,7 @@ void Permissions::addOperator(const std::string &name)
                     this->_minimalSpawnProtectionBypassLevel <= this->_defaultOperatorLevel
                 )
             );
+            selectedPlayer->setOperatorLevel(this->_defaultOperatorLevel);
         }
     } else { // already op
     }
