@@ -96,6 +96,7 @@ private:
         new command_parser::QuestionMark,
         new command_parser::Stop,
         new command_parser::Seed,
+        new command_parser::Op,
     };
 };
 
