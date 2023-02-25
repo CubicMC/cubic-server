@@ -11,8 +11,6 @@ DefaultWorld::DefaultWorld(WorldGroup *worldGroup):
 void DefaultWorld::tick()
 {
     World::tick();
-    for (auto &[_, dim] : this->_dimensions)
-        dim->getDimensionLock().release();
 }
 
 void DefaultWorld::initialize()

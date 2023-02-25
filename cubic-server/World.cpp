@@ -23,6 +23,8 @@ void World::tick()
 {
     // TODO: I don't think this should tick if there are no players / chunks loaded
     _timeUpdateClock.tick();
+    for (auto &[_, dim] : this->_dimensions)
+        dim->getDimensionLock().release();
 }
 
 void World::initialize()
