@@ -17,15 +17,10 @@ void DefaultWorld::tick()
 
 void DefaultWorld::initialize()
 {
-    for (auto &[_, dim] : this->_dimensions)
-        dim->initialize();
+    World::initialize();
 }
 
 void DefaultWorld::stop()
 {
     World::stop();
-    this->_running = false;
-
-    for (auto &[_, dim] : this->_dimensions)
-        dim->stop();
 }

@@ -25,6 +25,12 @@ void World::tick()
     _timeUpdateClock.tick();
 }
 
+void World::initialize()
+{
+    for (auto &[_, dim] : this->_dimensions)
+        dim->initialize();
+}
+
 void World::stop()
 {
     this->_generationPool.stop();

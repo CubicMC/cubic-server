@@ -3,9 +3,8 @@
 
 #include <stdexcept>
 
-
 #define DEFINE_EXCEPTION_FROM(name, except) \
-    class name : public std::runtime_error \
+    class name : public except \
     { \
     public: \
         name(char const *const message) throw() \

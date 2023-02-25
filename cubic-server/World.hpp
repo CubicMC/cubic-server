@@ -26,7 +26,7 @@ public:
     World(WorldGroup *worldGroup);
 
     virtual void tick();
-    virtual void initialize() = 0;
+    virtual void initialize();
     virtual void stop();
 
     virtual bool isInitialized() const;
