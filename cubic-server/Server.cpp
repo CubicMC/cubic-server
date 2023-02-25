@@ -3,7 +3,6 @@
 #include <cerrno>
 #include <sys/socket.h>
 #include <poll.h>
-#include <thread>
 #include <chrono>
 #include <exception>
 #include <cstring>
@@ -21,8 +20,10 @@
 #include "WorldGroup.hpp"
 #include "default/DefaultWorldGroup.hpp"
 
-Server::Server()
-    : _config()
+Server::Server():
+    _sockfd(-1),
+    _config(),
+    _running(true)
 {
     _config.parse("./config.yml");
     _host = _config.getIP();
@@ -37,15 +38,7 @@ Server::Server()
 
 Server::~Server()
 {
-    for (auto &worldGroup : _worldGroups)
-    {
-        worldGroup.second->stop();
-        if (_worldGroupThreads[worldGroup.first]->joinable())
-            _worldGroupThreads[worldGroup.first]->join();
-        delete worldGroup.second;
-        delete _worldGroupThreads[worldGroup.first];
-    }
-    LDEBUG("Server destroyed");
+
 }
 
 void Server::launch()
@@ -68,9 +61,7 @@ void Server::launch()
     setsockopt(_sockfd, SOL_SOCKET, SO_REUSEADDR, &yes, sizeof(yes));
     setsockopt(_sockfd, IPPROTO_IPV6, IPV6_V6ONLY, &no, sizeof(no));
     if (bind(_sockfd, reinterpret_cast<struct sockaddr *>(&_addr), sizeof(_addr)))
-    {
         throw std::runtime_error(strerror(errno));
-    }
 
     // Listen
     listen(_sockfd, SOMAXCONN);
@@ -80,27 +71,14 @@ void Server::launch()
     _worldGroups.emplace("default", new DefaultWorldGroup(defaultChat));
     _worldGroups.at("default")->initialize();
 
-    // Run the default world group
-    auto thread = new std::thread(&DefaultWorldGroup::run, _worldGroups.at("default"));
-    _worldGroupThreads.emplace("default", thread);
-
-//    auto acceptThread = std::thread(&Server::_acceptLoop, this);
     _acceptLoop();
 
-//    _networkLoop();
+    this->_stop();
 }
 
 void Server::stop()
 {
-    // Flush worlds to disk
-
-    //Disconect all clients
-    for (auto &client : _clients)
-        client->disconnect("Server Closed");
-
-    std::this_thread::sleep_for(std::chrono::milliseconds(2000)); // Temporary
-
-    exit(0);
+    this->_running = false;
 }
 
 void Server::_acceptLoop()
@@ -109,8 +87,7 @@ void Server::_acceptLoop()
 
     poll_set[0].fd = _sockfd;
     poll_set[0].events = POLLIN;
-    while (true)
-    {
+    while (this->_running) {
         poll(poll_set, 1, 50);
         if (poll_set[0].revents & POLLIN)
         {
@@ -125,21 +102,47 @@ void Server::_acceptLoop()
                 throw std::runtime_error(strerror(errno));
             }
             // Add accepted client to the vector of clients
-            auto cli = std::make_shared<Client>(client_fd, client_addr);
-            _clients.push_back(cli);
+            // auto cli = std::make_shared<Client>(client_fd, client_addr);
+            // _clients.push_back(cli);
+            _clients.push_back(std::make_shared<Client>(client_fd, client_addr));
+
+            // Emplace_back is not working, I don't know why
+            // _clients.emplace_back(client_fd, client_addr);
+
             // That line is kinda borked, but I'll check one day how to fix it
-            auto *cli_thread = new std::thread(&Client::networkLoop, &(*cli));
+            // auto *cli_thread = new std::thread(&Client::networkLoop, &(*cli));
             // That is 99.99% a data race, but aight, it will probably
             // never happen
-            cli->setRunningThread(cli_thread);
-
-//            std::cout << "Client added to the list" << std::endl;
+            // cli->setRunningThread(cli_thread);
         }
 
-        _clients.erase(std::remove_if(
-                           _clients.begin(), _clients.end(),
-                           [](const std::shared_ptr<Client> &cli)
-                           { return cli->isDisconnected(); }),
-                       _clients.end());
+        _clients.erase(
+            std::remove_if(
+                _clients.begin(),
+                _clients.end(),
+                [](const std::shared_ptr<Client> &cli){ return cli->isDisconnected(); }
+            ),
+            _clients.end()
+        );
     }
+}
+
+void Server::_stop()
+{
+    //Disconect all clients
+    for (auto &client : _clients)
+        client->stop("Server Closed");
+
+    // Needed because the client will not be destroyed if a reference still exists
+    this->_clients.clear();
+
+    for (auto &[name, worldGroup] : _worldGroups) {
+        worldGroup->stop();
+        delete worldGroup;
+    }
+    if (this->_sockfd != -1)
+        close(this->_sockfd);
+    for (auto &command : _commands)
+        delete command;
+    LINFO("Server stopped");
 }

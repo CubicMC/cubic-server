@@ -1,7 +1,10 @@
-#include "ManagementInterface.hpp"
 #include <string>
 #include <iostream>
 #include <unistd.h>
+#include <thread>
+
+#include "ManagementInterface.hpp"
+#include "Server.hpp"
 
 ManagementInterface::ManagementInterface()
 {
@@ -30,19 +33,37 @@ ManagementInterface::ManagementInterface()
     show_all_children();
 }
 
-bool ManagementInterface::on_timeout(){
+bool ManagementInterface::on_delete_event(GdkEventAny *event)
+{
+    if (event->type != GDK_DELETE || !Server::getInstance()->isRunning())
+        return false;
+
+    Gtk::MessageDialog dialog("Quit ?", true, Gtk::MESSAGE_QUESTION, Gtk::BUTTONS_YES_NO);
+    dialog.set_title("Quit ?");
+    dialog.set_message("Are you sure you want to quit ?");
+    dialog.set_secondary_text("All players will be disconnected and the world will be saved.");
+    dialog.set_default_response(Gtk::RESPONSE_YES);
+
+    int result = dialog.run();
+
+    if (result == Gtk::RESPONSE_YES)
+        Server::getInstance()->stop();
+
+    return true;
+}
+
+bool ManagementInterface::on_timeout()
+{
     std::string title = this->m_players_section.get_nb_players();
 
     this->m_players_title.set_text(title.c_str());
 
- return true;
+    return true;
 }
 
-int ManagementInterface::launch(int argc, char **argv){
-    auto app = Gtk::Application::create(argc, argv, "org.cubicserver.example");
-    ManagementInterface window;
-
-    return app->run(window);
+void ManagementInterface::stop()
+{
+    this->close();
 }
 
 ManagementInterface::~ManagementInterface() {}

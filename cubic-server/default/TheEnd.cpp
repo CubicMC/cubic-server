@@ -2,9 +2,7 @@
 
 void TheEnd::tick()
 {
-    _numThreadsWaiting++;
     _processingMutex.lock();
-    _numThreadsWaiting--;
 
     auto startProcessing = std::chrono::system_clock::now();
 
@@ -19,4 +17,5 @@ void TheEnd::tick()
 void TheEnd::initialize()
 {
     Dimension::initialize();
+    this->_isInitialized = true;
 }

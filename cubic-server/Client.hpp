@@ -47,9 +47,6 @@ public:
 
     void networkLoop();
 
-    void setRunningThread(std::thread *thread);
-    std::thread *getRunningThread();
-
     [[nodiscard]] bool isDisconnected() const;
 
     [[nodiscard]] protocol::ClientStatus getStatus() const {
@@ -62,18 +59,26 @@ public:
 
     void switchToPlayState(u128 playerUuid, const std::string &username);
 
-    void handleParsedClientPacket(const std::shared_ptr<protocol::BaseServerPacket>& packet,
-                                  protocol::ServerPacketsID packetID);
+    void handleParsedClientPacket(
+        const std::shared_ptr<protocol::BaseServerPacket>& packet,
+        protocol::ServerPacketsID packetID
+    );
 
     // All the send packets go here
     void sendStatusResponse(const std::string &json);
     void sendPingResponse(int64_t payload);
     void sendLoginSuccess(const protocol::LoginSuccess &packet);
+
+    // Disconnect the client
     void disconnect(const chat::Message &reason = "Disconnected");
+
+    // Stop the client (called by the server on shutdown)
+    void stop(const chat::Message &reason = "Disconnected");
 
 private:
     void _handlePacket();
     void _flushSendData();
+    void _tryFlushAllSendData();
     void _sendData(const std::vector<uint8_t> &data);
     void _onHandshake(const std::shared_ptr<protocol::Handshake>& pck);
     void _onStatusRequest(const std::shared_ptr<protocol::StatusRequest>& pck);
@@ -83,11 +88,11 @@ private:
 
     const int _sockfd;
     const struct sockaddr_in6 _addr;
-    bool _is_running;
-    std::thread *_current_thread{};
+    std::atomic<bool> _is_running;
+    protocol::ClientStatus _status;
     std::vector<uint8_t> _recv_buffer;
     std::vector<uint8_t> _send_buffer;
-    protocol::ClientStatus _status;
+    std::thread _networkThread;
     Player *_player;
     logging::Logger *_log;
     std::mutex _write_mutex;

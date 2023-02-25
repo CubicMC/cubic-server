@@ -1,31 +1,14 @@
 #pragma once
 
+#include <ostream>
 #include <cstdint>
 
 #include "common.hpp"
 #include "nbt.hpp"
+#include "types.hpp"
 
 namespace protocol
 {
-
-    // https://wiki.vg/Data_types#Fixed-point_numbers
-    // https://wiki.vg/index.php?title=Protocol&oldid=17753#Custom_Sound_Effect
-    // https://wiki.vg/index.php?title=Protocol&oldid=17753#Sound_Effect
-    // I think I should move this outside the protocol, but where ? '-'
-    struct FloatingPosition
-    {
-        double x;
-        double z;
-        double y;
-    };
-
-    struct Position
-    {
-        int64_t x;
-        int64_t y;
-        int64_t z;
-    };
-
     struct Slot
     {
         bool present;
@@ -66,12 +49,6 @@ namespace protocol
         int16_t height;
         int32_t type;
         nbt::Compound data;
-    };
-
-    struct Rotation
-    {
-        float yaw;
-        float pitch;
     };
 } // namespace protocol
 
