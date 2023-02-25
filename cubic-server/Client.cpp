@@ -452,48 +452,66 @@ void Client::sendLoginSuccess(const protocol::LoginSuccess &packet)
                                     }),
                             })
                     }),
-                    new nbt::Compound("minecraft:worldgen/biome", {
-                            new nbt::String("type", "minecraft:worldgen/biome"),
-                            new nbt::List("value", {
-                                    new nbt::Compound("", {
-                                            new nbt::String("name", "minecraft:plains"),
-                                            new nbt::Int("id", 0),
-                                            new nbt::Compound("element", {
-                                                    new nbt::String("precipitation", "none"),
-                                                    new nbt::Float("temperature", 0.8),
-                                                    new nbt::Float("downfall", 0.4),
-                                                    new nbt::Compound("effects", {
-                                                            new nbt::Int("sky_color", 7907327),
-                                                            new nbt::Int("water_fog_color", 329011),
-                                                            new nbt::Int("fog_color", 12638463),
-                                                            new nbt::Int("water_color", 4159204),
-                                                    })
-                                            }),
-                                    })
-                            })
+                new nbt::Compound("minecraft:worldgen/biome", {
+                    new nbt::String("type", "minecraft:worldgen/biome"),
+                    new nbt::List("value", {
+                        new nbt::Compound("", {
+                            new nbt::String("name", "minecraft:plains"),
+                            new nbt::Int("id", 0),
+                            new nbt::Compound("element", {
+                                new nbt::String("precipitation", "none"),
+                                new nbt::Float("temperature", 0.8),
+                                new nbt::Float("downfall", 0.4),
+                                new nbt::Compound("effects", {
+                                    new nbt::Int("sky_color", 7907327),
+                                    new nbt::Int("water_fog_color", 329011),
+                                    new nbt::Int("fog_color", 12638463),
+                                    new nbt::Int("water_color", 4159204),
+                                })
+                            }),
+                        }),
+                        new nbt::Compound("", {
+                            new nbt::String("name", "minecraft:my_super_cool_biome_lol_haha"),
+                            new nbt::Int("id", 1),
+                            new nbt::Compound("element", {
+                                new nbt::String("precipitation", "none"),
+                                new nbt::Float("temperature", 0.8),
+                                new nbt::Float("downfall", 0.4),
+                                new nbt::Compound("effects", {
+                                    new nbt::Int("sky_color", 7907327),
+                                    new nbt::Int("water_fog_color", 329011),
+                                    new nbt::Int("fog_color", 12638463),
+                                    new nbt::Int("water_color", 4159204),
+                                })
+                            }),
+                        })
                     })
-                    // new nbt::Compound("minecraft:chat_type", {
-                    //         new nbt::String("type", "minecraft:chat_type"),
-                    //         new nbt::List("value", {
-                    //                 new nbt::Compound("", {
-                    //                         new nbt::String("name", "minecraft:chat"),
-                    //                         new nbt::Int("id", 0),
-                    //                         new nbt::Compound("element", {
-                    //                                 new nbt::Compound("chat", {
-                    //                                         new nbt::Compound("decoration", {
-                    //                                                 new nbt::List("parameters", {
-                    //                                                         new nbt::String("", "sender"),
-                    //                                                         new nbt::String("", "content")
-                    //                                                 }),
-                    //                                                 new nbt::String("translation_key", "chat.type.text.narrate"),
-                    //                                                 new nbt::Compound("style", {})
-                    //                                         }),
-                    //                                         new nbt::String("priority", "chat")
-                    //                                 })
-                    //                         })
-                    //                 })
-                    //         })
-                    // })
+                }),
+                new nbt::Compound("minecraft:chat_type", {
+                    new nbt::String("type", "minecraft:chat_type"),
+                    new nbt::List("value", {
+                        new nbt::Compound("", {
+                            new nbt::String("name", "minecraft:chat"),
+                            new nbt::Int("id", 0),
+                            new nbt::Compound("element", {
+                                new nbt::Compound("chat", {
+                                    new nbt::List("parameters", {
+                                        new nbt::String("", "sender"),
+                                        new nbt::String("", "content")
+                                    }),
+                                    new nbt::String("translation_key", "chat.type.text"),
+                                }),
+                                new nbt::Compound("narration", {
+                                    new nbt::List("parameters", {
+                                        new nbt::String("", "sender"),
+                                        new nbt::String("", "content")
+                                    }),
+                                    new nbt::String("translation_key", "chat.type.text.narrate"),
+                                })
+                            })
+                        })
+                    })
+                })
             }),
             .dimensionType = "minecraft:overworld", // TODO: something like this this->_player->_dim->getDimensionType();
             .dimensionName = "overworld", // TODO: something like this this->_player->getDimension()->name;
@@ -504,7 +522,7 @@ void Client::sendLoginSuccess(const protocol::LoginSuccess &packet)
             .reducedDebugInfo = false, // false for developpment only
             .enableRespawnScreen = true, // TODO: implement gamerules !this->_player->_dim->getWorld()->getGamerules()["doImmediateRespawn"];
             .isDebug = false, // TODO: something like this->_player->_dim->getWorld()->isDebugModeWorld;
-            .isFlat = true, // TODO: something like this->_player->_dim->isFlat;
+            .isFlat = false, // TODO: something like this->_player->_dim->isFlat;
             .hasDeathLocation = false // TODO: something like this->_player->hasDeathLocation;
     };
     if (resPck.hasDeathLocation) {
