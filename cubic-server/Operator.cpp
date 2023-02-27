@@ -77,9 +77,12 @@ const bool Operator::operator<=(const Operator &op) const
 Permissions::Permissions(const std::string &filename):
     _operatorFileName(filename)
 {
+    // set default operator level and minimal spawn protection bypass level, should be set manually in the server properties but are hard coded for now
     this->_defaultOperatorLevel = 4;
     this->_minimalSpawnProtectionBypassLevel = 4;
 
+    // reads the operator file line per line   ! file is not a json !   ! default filename "ops.json" !
+    // adds every name in the file to the operator list with level 4 and spawn protection bypass privilege
     std::ifstream filestream(filename, std::ifstream::in);
     std::string line;
 
@@ -102,6 +105,7 @@ Permissions::Permissions(const std::string &filename):
 
 Permissions::~Permissions()
 {
+    // writes every operator name in the operator file
     std::ofstream filestream(this->_operatorFileName);
 
     if (!!filestream) {
@@ -115,6 +119,8 @@ Permissions::~Permissions()
 void Permissions::addOperator(const std::string &name)
 {
     if (this->_operators.find(name) == this->_operators.end()) { // cannot find operator with this name
+
+        // searches for the player with the right name
         Server *server = Server::getInstance();
         Player *selectedPlayer = nullptr;
 
@@ -136,7 +142,8 @@ void Permissions::addOperator(const std::string &name)
             }
         );
 
-        if (selectedPlayer == nullptr) {
+        if (selectedPlayer == nullptr) { // player not found
+            // adds operator to the list with 0 uuid
             this->_operators.emplace(
                 name,
                 Operator(
@@ -146,7 +153,8 @@ void Permissions::addOperator(const std::string &name)
                     this->_minimalSpawnProtectionBypassLevel <= this->_defaultOperatorLevel
                 )
             );
-        } else {
+        } else { // player found
+            // adds operator to the list with correct uuid
             this->_operators.emplace(
                 name,
                 Operator(
@@ -156,9 +164,12 @@ void Permissions::addOperator(const std::string &name)
                     this->_minimalSpawnProtectionBypassLevel <= this->_defaultOperatorLevel
                 )
             );
+            
+            // adjusts player operator level and spawn protection bypass privilege in his own class for rapid access
             selectedPlayer->setOperatorLevel(this->_defaultOperatorLevel);
+            selectedPlayer->setSpawnProtectionBypass(this->_minimalSpawnProtectionBypassLevel <= this->_defaultOperatorLevel);
         }
-    } else { // already op
+    } else { // player already an operator
     }
 }
 
@@ -166,6 +177,7 @@ bool Permissions::removeOperator(const std::string &name)
 {
     if (this->_operators.find(name) != this->_operators.end()) { // cannot find operator with this name
 
+        // searches for the player with the right name
         Server *server = Server::getInstance();
         Player *selectedPlayer = nullptr;
 
@@ -188,7 +200,7 @@ bool Permissions::removeOperator(const std::string &name)
         );
 
         this->_operators.erase(name); // erase from operator map
-        if (selectedPlayer) { // if operator is connected
+        if (selectedPlayer) { // operator is connected, adjusts its level and spawn protection bypass privilege
             selectedPlayer->setOperatorLevel(0);
             selectedPlayer->setSpawnProtectionBypass(0 >= this->_minimalSpawnProtectionBypassLevel);
         }
@@ -196,10 +208,12 @@ bool Permissions::removeOperator(const std::string &name)
     } else { // already not operator
         return (false);
     }
+    // returned true if operator successfuly removed, false otherwise
 }
 
 const bool Permissions::getOperatorInfos(const std::string &name, Operator &op) const
 {
+    // modify the op referenced variable with operator informations if found
     auto it = this->_operators.find(name);
 
     if (it != this->_operators.end()) {
@@ -208,6 +222,7 @@ const bool Permissions::getOperatorInfos(const std::string &name, Operator &op) 
     } else {
         return (false);
     }
+    // returned true if player is operator, false otherwise
 }
 
 const bool Permissions::isOperator(const std::string &name) const
@@ -223,6 +238,7 @@ const uint8_t Permissions::getOperatorLevel(const std::string &name) const
         return (it->second.getLevel());
     else
         return (0);
+    // returned operator level, 0 if player is not and operator
 }
 
 const bool Permissions::canBypassSpawnProtection(const std::string &name) const
@@ -233,4 +249,5 @@ const bool Permissions::canBypassSpawnProtection(const std::string &name) const
         return (it->second.getBypassSpawnProtection());
     else
         return (false);
+    // returned operator spawn protection bypass privilege, false if player is not and operator
 }
