@@ -14,6 +14,7 @@ void Op::execute(std::vector<std::string>& args) const {
         if (args.size() != 1)
             logging::Logger::get_instance()->info("Too many arguments");
         else {
+            // do nothing if operator found with that name, otherwise, promote player to operator
             Server *server = Server::getInstance();
 
             if (server->permissions.isOperator(args[0]))
