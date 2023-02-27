@@ -16,6 +16,7 @@ void Deop::execute(std::vector<std::string>& args) const {
         else {
             Server *server = Server::getInstance();
 
+            // do nothing if operator with that name not found, otherwise, removes operator privilege
             if (!server->permissions.isOperator(args[0]))
                 logging::Logger::get_instance()->info(args[0] + " is not an operator.");
             else {
