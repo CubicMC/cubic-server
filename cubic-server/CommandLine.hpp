@@ -3,8 +3,9 @@
 
 namespace CommandLine
 {
-    ///
-    ///@brief Launch a loop that will read stdin and parse the command
+    /**
+     * @brief Launch a loop that will read stdin and parse the command
+     */
     void launch();
 }
 

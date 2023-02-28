@@ -527,9 +527,11 @@ void Player::_onChatMessage(const std::shared_ptr<protocol::ChatMessage> &pck)
     _log->debug("Got a Chat Message");
 }
 
-///
-/// @brief This function is called when a client sends a command in the chat.
-/// @param pck The packet recieved from the client.
+/**
+ * @brief This function is called when a client sends a command in the chat.
+ *
+ * @param pck The packet recieved from the client.
+ */
 void Player::_onChatCommand(const std::shared_ptr<protocol::ChatCommand> &pck)
 {
     LDEBUG("Got a Chat Command");

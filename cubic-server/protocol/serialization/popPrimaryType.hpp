@@ -258,13 +258,14 @@ namespace protocol
         return p;
     }
 
-    ///
-    ///@brief Pop a bitset from the packet
-    ///
-    ///@tparam size The size of the bitset to pop
-    ///@param at The current position in the packet
-    ///@param eof The end of the packet
-    ///@return A bitset of size size
+    /**
+     * @brief Pop a bitset from the packet
+     *
+     * @tparam size The size of the bitset to pop
+     * @param at The current position in the packet
+     * @param eof The end of the packet
+     * @return A bitset of size size
+     */
     template <uint64_t size>
     constexpr std::bitset<size> popBitSet(uint8_t *&at, uint8_t *eof)
     {

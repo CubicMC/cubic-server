@@ -88,22 +88,22 @@ namespace logging
         void set_log_buffer_size(int size);
 
     private:
-        Logger();                                                                   /// Private constructor to prevent multiple instances
+        Logger();                                                                   // Private constructor to prevent multiple instances
         Logger(const Logger&) = delete;
         Logger& operator=(const Logger&) = delete;
         Logger(Logger&&) = delete;
         Logger& operator=(Logger&&) = delete;
         std::string get_file_path() const;
 
-        std::fstream _file_stream;                                                  /// Stream to the current log file
-        FileAndFolderHandler _file_and_folder_handler;                              /// Handler for files and folders
+        std::fstream _file_stream;                                                  // Stream to the current log file
+        FileAndFolderHandler _file_and_folder_handler;                              // Handler for files and folders
 
-        std::unordered_map<LogLevel, std::string> _specification_level_in_file;     /// Map of LogLevel and his associated string to display in the log file
-        std::unordered_map<LogLevel, std::string> _specification_level_in_console;  /// Map of LogLevel and his associated string to display in the console
+        std::unordered_map<LogLevel, std::string> _specification_level_in_file;     // Map of LogLevel and his associated string to display in the log file
+        std::unordered_map<LogLevel, std::string> _specification_level_in_console;  // Map of LogLevel and his associated string to display in the console
 
         void _log(LogLevel level, const std::string &message);
 
-        std::queue<LogMessage> _log_buffer;                                         /// Buffer to store logs before the file is opened
+        std::queue<LogMessage> _log_buffer;                                         // Buffer to store logs before the file is opened
         int _buffer_size;
 
         std::mutex _loggerMutex;
