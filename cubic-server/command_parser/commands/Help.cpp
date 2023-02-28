@@ -14,7 +14,7 @@ void Help::execute(std::vector<std::string>& args, const std::optional<Player *>
     if (args.empty()) {
         if (invoker.has_value()) {
             for (auto command : Server::getInstance()->getCommands()) {
-                // if (invoker.value()->_operatorLevel >= command->_permissionLevel) // TODO: uncomment this when permissions are implemented
+                // if (invoker.value()->isOperator()) // TODO: uncomment this when permissions are implemented
                     // (*invoker)->sendPlayerChatMessage(command->_help); // TODO: Change this to the correct packet (gl @STMiki)
             }
         } else {
@@ -45,7 +45,7 @@ void Help::execute(std::vector<std::string>& args, const std::optional<Player *>
 
 void Help::help(std::vector<std::string>& args, const std::optional<Player *> &invoker) const {
     if (invoker.has_value()) {
-        // if (invoker.value()->_operatorLevel >= this->_permissionLevel) // TODO: uncomment this when permissions are implemented
+        // if (invoker.value()->isOperator()) // TODO: uncomment this when permissions are implemented
             // (*invoker)->sendPlayerChatMessage("/help [<command>]"); // TODO: Change this to the correct packet (gl @STMiki)
     } else
         logging::Logger::get_instance()->info("/help [<command>]");

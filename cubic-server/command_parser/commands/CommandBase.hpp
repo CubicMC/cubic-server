@@ -9,7 +9,7 @@
 class Player;
 
 struct CommandBase {
-    CommandBase(std::string name, std::string help, uint8_t permissionLevel) : _name(name), _help(help), _permissionLevel(permissionLevel) {}
+    CommandBase(std::string name, std::string help, bool needOp) : _name(name), _help(help), _needOp(needOp) {}
 
     virtual void autocomplete(std::vector<std::string>& args, const std::optional<Player *> &invoker) const = 0;
     virtual void execute(std::vector<std::string>& args, const std::optional<Player *> &invoker) const = 0;
@@ -17,7 +17,7 @@ struct CommandBase {
 
     const std::string _name;
     const std::string _help;
-    const uint8_t _permissionLevel;
+    const uint8_t _needOp;
 };
 
 #endif //CUBICSERVER_COMMANDPARSER_COMMANDS_BASE_HPP

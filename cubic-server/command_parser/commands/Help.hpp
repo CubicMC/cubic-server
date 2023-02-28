@@ -5,7 +5,7 @@
 
 namespace command_parser {
 struct Help : public CommandBase {
-    Help() : CommandBase("help", "/help [<command>] (help)", 0) {}
+    Help() : CommandBase("help", "/help [<command>] (help)", false) {}
 
     void autocomplete(std::vector<std::string>& args, const std::optional<Player *> &invoker) const override;
     void execute(std::vector<std::string>& args, const std::optional<Player *> &invoker) const override;

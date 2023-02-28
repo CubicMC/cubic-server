@@ -5,7 +5,7 @@
 
 namespace command_parser {
 struct QuestionMark : public CommandBase {
-    QuestionMark() : CommandBase("?", "/help [<command>] (question mark)", 0) {}
+    QuestionMark() : CommandBase("?", "/? [<command>] (question mark)", false) {}
 
     void autocomplete(std::vector<std::string>& args, const std::optional<Player *> &invoker) const override;
     void execute(std::vector<std::string>& args, const std::optional<Player *> &invoker) const override;

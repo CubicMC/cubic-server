@@ -5,7 +5,7 @@
 
 namespace command_parser {
 struct Stop : public CommandBase {
-    Stop() : CommandBase("stop", "/stop", 4) {}
+    Stop() : CommandBase("stop", "/stop", true) {}
 
     void autocomplete(std::vector<std::string>& args, const std::optional<Player *> &invoker) const override;
     void execute(std::vector<std::string>& args, const std::optional<Player *> &invoker) const override;
