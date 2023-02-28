@@ -30,27 +30,6 @@ namespace protocol
         return parse(begin, end, out, args...);
     }
 
-    // Was used for parsing array, but it's not needed anymore
-    // template <typename H>
-    // constexpr uint8_t *parseExtra(uint8_t *&begin, uint8_t *end, H &out)
-    // {
-    //     return begin;
-    // }
-
-    // template <typename H, typename F, typename T, typename... Args>
-    // constexpr uint8_t *parseExtra(
-    //         uint8_t *&begin,
-    //         uint8_t *end,
-    //         H &out,
-    //         F (*parser)(const T &data, uint8_t *&begin, uint8_t *end),
-    //         F H::*field,
-    //         const T &data,
-    //         Args... args)
-    // {
-    //     out.*field = parser(data, begin, end);
-    //     return parseExtra(begin, end, out, args...);
-    // }
-
     constexpr void serialize(
         std::vector<uint8_t> &out
     )

@@ -64,15 +64,22 @@ public:
         return _commands;
     }
 
+    bool isRunning() const {
+        return _running;
+    }
+
 private:
     Server();
     void _acceptLoop();
+    void _stop();
 
+private:
     std::string _host;
     uint16_t _port;
     uint32_t _maxPlayer;
     std::string _motd;
     bool _enforceWhitelist;
+    std::atomic<bool> _running;
 
     logging::Logger *_log;
 
@@ -84,12 +91,12 @@ private:
 
     Configuration::ConfigHandler _config;
     std::unordered_map<std::string_view, WorldGroup *> _worldGroups;
-    std::unordered_map<std::string_view, std::thread *> _worldGroupThreads;
     std::vector<CommandBase *> _commands = {
         new command_parser::Help,
         new command_parser::QuestionMark,
         new command_parser::Stop,
         new command_parser::Seed,
+        new command_parser::DumpChunk,
     };
 };
 

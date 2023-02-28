@@ -10,6 +10,7 @@
 #include "Chat.hpp"
 #include "TickClock.hpp"
 #include "protocol/ClientPackets.hpp"
+#include "world_storage/ChunkColumn.hpp"
 
 class Client;
 class Entity;
@@ -18,8 +19,19 @@ class Player : public Entity
 {
     friend class Client;
 public:
+    enum ChunkState
+    {
+        Unloaded,
+        Loading,
+        Loaded
+    };
+
+public:
     Player(Client *cli, std::shared_ptr<Dimension> dim, u128 uuid, const std::string &username);
+    ~Player() override;
+
     void tick() override;
+
     Client *getClient() const;
     const std::string &getUsername() const;
     const u128 &getUuid() const;
@@ -33,6 +45,10 @@ public:
     void setKeepAliveIgnored(uint8_t ign);
 
 public:
+    virtual void setPosition(const Vector3<double> &pos) override;
+    virtual void setPosition(double x, double y, double z) override;
+
+public:
     void disconnect(const chat::Message &reason = "Disconnected");
     void sendLoginPlay(const protocol::LoginPlay &packet);
     void sendPlayerInfo(const protocol::PlayerInfo &data);
@@ -41,9 +57,9 @@ public:
     void sendChatMessageResponse(const protocol::PlayerChatMessage &packet);
     void sendSystemChatMessage(const protocol::SystemChatMessage &packet);
     void sendWorldEvent(const protocol::WorldEvent &packet);
-    void playSoundEffect(SoundsList sound, protocol::FloatingPosition position, SoundCategory category = SoundCategory::Master);
+    void playSoundEffect(SoundsList sound, FloatingPosition position, SoundCategory category = SoundCategory::Master);
     void playSoundEffect(SoundsList sound, const Entity *entity, SoundCategory category = SoundCategory::Master);
-    void playCustomSound(std::string sound, protocol::FloatingPosition position, SoundCategory category = SoundCategory::Master);
+    void playCustomSound(std::string sound, FloatingPosition position, SoundCategory category = SoundCategory::Master);
     void stopSound(uint8_t flags = 0, SoundCategory category = SoundCategory::Ambient, std::string sound = "");
     void sendKeepAlive(long id);
     void sendSynchronizePosition(Vector3<double> pos);
@@ -54,7 +70,11 @@ public:
     void sendUpdateEntityPositionAndRotation(const protocol::UpdateEntityPositionRotation &data);
     void sendUpdateEntityRotation(const protocol::UpdateEntityRotation &data);
     void sendHeadRotation(const protocol::HeadRotation &data);
+    void sendSetCenterChunk(const Position2D &pos);
+    void sendChunkAndLightUpdate(const Position2D &pos);
     void sendChunkAndLightUpdate(int32_t x, int32_t z);
+    void sendChunkAndLightUpdate(const world_storage::ChunkColumn &chunk);
+    void sendUnloadChunk(int32_t x, int32_t z);
     void sendBlockUpdate(const protocol::BlockUpdate &packet);
     void sendPlayerAbilities(const protocol::PlayerAbilitiesClient &packet);
 
@@ -107,6 +127,7 @@ private:
     void _onUseItemOn(const std::shared_ptr<protocol::UseItemOn> &pck);
     void _onUseItem(const std::shared_ptr<protocol::UseItem> &pck);
 
+private:
     void _processKeepAlive();
 
     logging::Logger *_log;
@@ -120,6 +141,7 @@ private:
     uint8_t _gamemode;
     TickClock _keepAliveClock;
     bool _isFlying;
+    std::unordered_map<Position2D, ChunkState> _chunks;
 };
 
 #endif //CUBICSERVER_PLAYER_HPP

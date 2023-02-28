@@ -26,6 +26,7 @@ namespace protocol
         BlockUpdate = 0x09,
         PluginMessage = 0x15,
         CustomSoundEffect = 0x16,
+        UnloadChunk = 0x1a,
         WorldEvent = 0x20,
         LoginPlay = 0x23,
         UpdateEntityPosition = 0x26,
@@ -36,6 +37,7 @@ namespace protocol
         SynchronizePlayerPosition = 0x36,
         RemoveEntities = 0x38,
         HeadRotation = 0x3C,
+        CenterChunk = 0x48,
         UpdateTime = 0x59,
         TeleportEntity = 0x63,
         EntitySoundEffect = 0x5c,
@@ -254,6 +256,8 @@ namespace protocol
         long seed;
     };
 
+    std::shared_ptr<std::vector<uint8_t>> createCenterChunk(const Position2D &in);
+
     std::shared_ptr<std::vector<uint8_t>> createCustomSoundEffect(const CustomSoundEffect &);
 
     struct EntitySoundEffect
@@ -315,6 +319,8 @@ namespace protocol
         std::vector<std::array<uint8_t, LIGHT_ARRAY_SIZE>> blockLight;
     };
     std::shared_ptr<std::vector<uint8_t>> createChunkDataAndLightUpdate(const ChunkDataAndLightUpdate &);
+
+    std::shared_ptr<std::vector<uint8_t>> createUnloadChunk(const Position2D &);
 
     struct SpawnPlayer
     {

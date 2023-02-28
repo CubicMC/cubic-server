@@ -1,46 +1,48 @@
 target_sources (${CMAKE_PROJECT_NAME} PRIVATE
-        main.cpp
-        Server.cpp
-        Server.hpp
-        Client.cpp
-        Client.hpp
-        Player.cpp
-        Player.hpp
-        Entity.cpp
-        Entity.hpp
-        Chat.cpp
-        Chat.hpp
-        WorldGroup.cpp
-        WorldGroup.hpp
-        World.cpp
-        World.hpp
-        Dimension.cpp
-        Dimension.hpp
-        SoundList.hpp
-        nbt.hpp
-        nbt.cpp
-        SoundSystem.hpp
-        SoundSystem.cpp
-        concept.hpp
-        TickClock.hpp
-        TickClock.cpp
-        CommandLine.hpp
-        CommandLine.cpp
-        allCommands.hpp
+    main.cpp
+    Server.cpp
+    Server.hpp
+    Client.cpp
+    Client.hpp
+    Player.cpp
+    Player.hpp
+    Entity.cpp
+    Entity.hpp
+    Chat.cpp
+    Chat.hpp
+    WorldGroup.cpp
+    WorldGroup.hpp
+    World.cpp
+    World.hpp
+    Dimension.cpp
+    Dimension.hpp
+    SoundList.hpp
+    nbt.hpp
+    nbt.cpp
+    SoundSystem.hpp
+    SoundSystem.cpp
+    concept.hpp
+    TickClock.hpp
+    TickClock.cpp
+    CommandLine.hpp
+    CommandLine.cpp
+    allCommands.hpp
+    types.hpp
+    types.cpp
 )
 
 if (GTEST)
     enable_testing()
 
     add_executable(
-            nbt_test
-            nbt.hpp
-            nbt_unittest.cpp
+        nbt_test
+        nbt.hpp
+        nbt_unittest.cpp
     )
 
     target_link_libraries(
-            nbt_test
-            GTest::gtest_main
+        nbt_test
+        GTest::gtest_main
     )
 
     include(GoogleTest)
@@ -56,3 +58,5 @@ add_subdirectory (interface)
 add_subdirectory (world_storage)
 add_subdirectory (command_parser)
 add_subdirectory (whitelist)
+add_subdirectory (generation)
+add_subdirectory (thread_pool)

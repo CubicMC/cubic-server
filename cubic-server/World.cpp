@@ -7,17 +7,49 @@
 
 World::World(WorldGroup *worldGroup):
     _worldGroup(worldGroup),
-    _timeUpdateClock(20, std::bind(&World::updateTime, this)) // 1 second for time updates
+    _age(0),
+    _time(0),
+    _renderDistance(8), // TODO: Should be loaded from config
+    _timeUpdateClock(20, std::bind(&World::updateTime, this)), // 1 second for time updates
+    _generationPool(16, "WorldGen", thread_pool::Pool::Behavior::Cancel)
 {
     _log = logging::Logger::get_instance();
     _timeUpdateClock.start();
-    _seed = -721274728;
+    _seed = -721274728; // TODO: Should be loaded from config or generated
     _chat = worldGroup->getChat();
 }
 
 void World::tick()
 {
+    // TODO: I don't think this should tick if there are no players / chunks loaded
     _timeUpdateClock.tick();
+    for (auto &[_, dim] : this->_dimensions)
+        dim->getDimensionLock().release();
+}
+
+void World::initialize()
+{
+    for (auto &[_, dim] : this->_dimensions)
+        dim->initialize();
+}
+
+void World::stop()
+{
+    this->_generationPool.stop();
+    this->_generationPool.wait();
+
+    for (auto &[_, dim] : _dimensions)
+        dim->stop();
+
+    // TODO: Save the worlds
+}
+
+bool World::isInitialized() const
+{
+    for (auto &[_, dim] : _dimensions)
+        if (!dim->isInitialized())
+            return false;
+    return true;
 }
 
 WorldGroup *World::getWorldGroup() const
@@ -174,7 +206,17 @@ void World::sendPlayerInfoRemovePlayer(Player *current) {
     LDEBUG("Sent player info to " + current->getUsername());
 }
 
+thread_pool::Pool &World::getGenerationPool()
+{
+    return _generationPool;
+}
 
-int64_t World::getSeed() const {
-        return _seed;
-    }
+Seed World::getSeed() const
+{
+    return _seed;
+}
+
+uint8_t World::getRenderDistance() const
+{
+    return _renderDistance;
+}

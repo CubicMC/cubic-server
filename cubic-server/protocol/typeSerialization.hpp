@@ -9,7 +9,7 @@
 // bitset = std::vector<uint64_t>
 // ! could throw if if we access a bit that is not in the bitset
 constexpr bool BITSET_GET_BIT(const std::vector<uint64_t> &bitset, uint32_t bit) {
-    return bitset[bit / 64] & (1ULL << (bit % 64)) == 1;
+    return (bitset[bit / 64] & (1ULL << (bit % 64))) == 1;
 }
 
 // ! could throw if if we access a bit that is not in the bitset

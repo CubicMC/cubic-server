@@ -12,6 +12,8 @@
 #include "logging/Logger.hpp"
 #include "world_storage/LevelData.hpp"
 #include "TickClock.hpp"
+#include "thread_pool/Pool.hpp"
+#include "types.hpp"
 
 class WorldGroup;
 class Dimension;
@@ -24,7 +26,10 @@ public:
     World(WorldGroup *worldGroup);
 
     virtual void tick();
-    virtual void initialize() = 0;
+    virtual void initialize();
+    virtual void stop();
+
+    virtual bool isInitialized() const;
     virtual WorldGroup *getWorldGroup() const;
     virtual std::shared_ptr<Chat> getChat() const;
     virtual std::vector<Entity *> getEntities() const;
@@ -39,19 +44,23 @@ public:
     virtual void sendPlayerInfoAddPlayer(Player *);
     virtual void sendPlayerInfoRemovePlayer(Player *current);
 
-    virtual int64_t getSeed() const;
+    virtual thread_pool::Pool &getGenerationPool();
+
+    virtual Seed getSeed() const;
+    virtual uint8_t getRenderDistance() const;
 
 protected:
     std::shared_ptr<Chat> _chat;
     WorldGroup *_worldGroup;
     logging::Logger *_log;
-    std::vector<std::thread *> _processingThreads;
     std::unordered_map<std::string_view, std::shared_ptr<Dimension>> _dimensions;
     long _age;
     long _time;
+    uint8_t _renderDistance;
     world_storage::LevelData _levelData;
     TickClock _timeUpdateClock;
-    int64_t _seed;
+    Seed _seed;
+    thread_pool::Pool _generationPool;
 };
 
 

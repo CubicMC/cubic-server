@@ -1,11 +1,12 @@
 #include <gtest/gtest.h>
 #include "../Level.hpp"
+#include "types.hpp"
 
 world_storage::Level level;
 
 TEST(LevelTest, addChunkColumn_and_getChunkColumn)
 {
-    _2d_pos pos;
+    Position2D pos;
     pos.x = 0;
     pos.z = 0;
     EXPECT_NO_THROW(level.addChunkColumn(pos));
@@ -14,7 +15,7 @@ TEST(LevelTest, addChunkColumn_and_getChunkColumn)
 
 TEST(LevelTest, addChunkColumn_and_removeChunkColumn)
 {
-    _2d_pos pos;
+    Position2D pos;
     pos.x = 0;
     pos.z = 0;
     EXPECT_NO_THROW(level.addChunkColumn(pos));
@@ -23,7 +24,7 @@ TEST(LevelTest, addChunkColumn_and_removeChunkColumn)
 
 TEST(LevelTest, addChunkColumn_and_getChunkColumn_with_raw_coordinate)
 {
-    _2d_pos pos;
+    Position2D pos;
     pos.x = 0;
     pos.z = 0;
     EXPECT_NO_THROW(level.addChunkColumn(pos));
@@ -42,24 +43,24 @@ TEST(LevelTest, addChunkColumn_and_getChunkColumn_with_raw_coordinate)
 
 TEST(LevelTest, addChunkColumn_and_removeChunkColumn_with_raw_negative_coordinate)
 {
-    _2d_pos pos;
+    Position2D pos;
     pos.x = -1;
     pos.z = 0;
     EXPECT_NO_THROW(level.addChunkColumn(pos));
-    EXPECT_NO_THROW(level.getChunkColumn(-4, 4));
+    EXPECT_NO_THROW(level.getChunkColumnFromBlockPos(-4, 4));
 
     pos.x = 0;
     pos.z = -1;
     EXPECT_NO_THROW(level.addChunkColumn(pos));
-    EXPECT_NO_THROW(level.getChunkColumn(4, -4));
+    EXPECT_NO_THROW(level.getChunkColumnFromBlockPos(4, -4));
 
     pos.x = -1;
     pos.z = -1;
     EXPECT_NO_THROW(level.addChunkColumn(pos));
-    EXPECT_NO_THROW(level.getChunkColumn(-4, -4));
+    EXPECT_NO_THROW(level.getChunkColumnFromBlockPos(-4, -4));
 
     pos.x = -4;
     pos.z = -7;
     EXPECT_NO_THROW(level.addChunkColumn(pos));
-    EXPECT_NO_THROW(level.getChunkColumn(-54, -105));
+    EXPECT_NO_THROW(level.getChunkColumnFromBlockPos(-54, -105));
 }
