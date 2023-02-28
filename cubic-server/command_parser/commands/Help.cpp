@@ -3,14 +3,14 @@
 
 using namespace command_parser;
 
-void Help::autocomplete(std::vector<std::string>& args, const Player *invoker) const {
+void Help::autocomplete(std::vector<std::string>& args, Player *invoker) const {
     if (invoker)
         return;
     else
         logging::Logger::get_instance()->info("autocomplete help");
 }
 
-void Help::execute(std::vector<std::string>& args, const Player *invoker) const {
+void Help::execute(std::vector<std::string>& args, Player *invoker) const {
     if (args.empty()) {
         if (invoker) {
             for (auto command : Server::getInstance()->getCommands()) {
@@ -43,7 +43,7 @@ void Help::execute(std::vector<std::string>& args, const Player *invoker) const 
     }
 }
 
-void Help::help(std::vector<std::string>& args, const Player *invoker) const {
+void Help::help(std::vector<std::string>& args, Player *invoker) const {
     if (invoker) {
         // if (invoker->isOperator()) // TODO: uncomment this when permissions are implemented
             // invoker->sendPlayerChatMessage("/help [<command>]"); // TODO: Change this to the correct packet (gl @STMiki)

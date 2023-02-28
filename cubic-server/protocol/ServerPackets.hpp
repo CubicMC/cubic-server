@@ -25,8 +25,8 @@ namespace protocol
         EncryptionResponse = 0x01,
         QueryBlockEntityTag = 0x01,
         ChangeDifficulty = 0x02,
-        ChatMessage = 0x03,
-        ChatCommand = 0x04,
+        ChatCommand = 0x03,
+        ChatMessage = 0x04,
         ClientCommand = 0x06,
         ClientInformation = 0x07,
         CommandSuggestionRequest = 0x08,
@@ -158,8 +158,11 @@ namespace protocol
         long timestamp;
         long salt;
         std::vector<argumentSignature> argumentSignatures;
-        int32_t messageCount;
-        std::bitset<20> acknowledged;
+        // There are the things for 1.19
+        bool signedPreview;
+        // There are the things for 1.19.3
+        // int32_t messageCount;
+        // std::bitset<20> acknowledged;
     };
 
     /**

@@ -3,14 +3,14 @@
 
 using namespace command_parser;
 
-void Stop::autocomplete(std::vector<std::string>& args, const Player *invoker) const {
+void Stop::autocomplete(std::vector<std::string>& args, Player *invoker) const {
     if (invoker)
         return;
     else
         logging::Logger::get_instance()->info("autocomplete stop");
 }
 
-void Stop::execute(std::vector<std::string>& args, const Player *invoker) const {
+void Stop::execute(std::vector<std::string>& args, Player *invoker) const {
     if (invoker) {
         // if (invoker->isOperator()) { // TODO: uncomment this when permissions are implemented
             // invoker->sendSystemChatMessage("Stopping server..."); // TODO: Know what this will do, and then change this to the correct thing
@@ -20,7 +20,7 @@ void Stop::execute(std::vector<std::string>& args, const Player *invoker) const 
         Server::getInstance()->stop();
 }
 
-void Stop::help(std::vector<std::string>& args, const Player *invoker) const {
+void Stop::help(std::vector<std::string>& args, Player *invoker) const {
     if (invoker) {
         // if (invoker->isOperator()) // TODO: uncomment this when permissions are implemented
             // invoker->sendPlayerChatMessage("/stop"); // TODO: Change this to the correct packet (gl @STMiki)

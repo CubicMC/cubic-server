@@ -3,14 +3,14 @@
 
 using namespace command_parser;
 
-void QuestionMark::autocomplete(std::vector<std::string>& args, const Player *invoker) const {
+void QuestionMark::autocomplete(std::vector<std::string>& args, Player *invoker) const {
     if (invoker)
         return;
     else
         logging::Logger::get_instance()->info("autocomplete ?");
 }
 
-void QuestionMark::execute(std::vector<std::string>& args, const Player *invoker) const {
+void QuestionMark::execute(std::vector<std::string>& args, Player *invoker) const {
     if (args.empty()) {
         if (invoker) {
             for (auto command : Server::getInstance()->getCommands()) {
@@ -43,7 +43,7 @@ void QuestionMark::execute(std::vector<std::string>& args, const Player *invoker
     }
 }
 
-void QuestionMark::help(std::vector<std::string>& args, const Player *invoker) const {
+void QuestionMark::help(std::vector<std::string>& args, Player *invoker) const {
     if (invoker) {
         // if (invoker->isOperator()) // TODO: uncomment this when permissions are implemented
             // invoker->sendPlayerChatMessage("/? [<command>]"); // TODO: Change this to the correct packet (gl @STMiki)

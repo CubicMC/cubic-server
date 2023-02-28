@@ -342,18 +342,10 @@ void Player::sendChatMessageResponse(const protocol::PlayerChatMessage &packet)
 
 void Player::sendSystemChatMessage(const protocol::SystemChatMessage &packet)
 {
-    std::string temp = "{\"style\":{\"color\":\"red\"},\"translate\":\"multiplayer.player.left\",\"with\":[{\"insertion\":\"Trompette2\",\"clickEvent\":{\"action\":\"suggest_command\",\"value\":\"/tell Trompette2 \"},\"hoverEvent\":{\"action\":\"show_entity\",\"contents\":{\"type\":\"minecraft:player\",\"id\":\"e02c083d-1c61-3b49-b7ea-4d47e2b9698a\",\"name\":{\"text\":\"Trompette2\"}}},\"text\":\"Trompette2\"}]}";
     auto pck = protocol::createSystemChatMessage(packet);
-    // auto pck = protocol::createPlayerChatMessage(packet);
-    // auto pck = protocol::createSystemChatMessage({
-    //     temp,
-    //     false
-    // });
     this->_cli->_sendData(*pck);
 
     LDEBUG("Sent a system chat message to " + this->getUsername());
-    LDEBUG("template: ");
-    LDEBUG(temp);
     LDEBUG("message: ");
     LDEBUG(packet.JSONData);
 }
@@ -535,7 +527,7 @@ void Player::_onChatMessage(const std::shared_ptr<protocol::ChatMessage> &pck)
 void Player::_onChatCommand(const std::shared_ptr<protocol::ChatCommand> &pck)
 {
     LDEBUG("Got a Chat Command");
-    LDEBUG("The command is :" + pck->command);
+    LDEBUG("The command is :\"" + pck->command + "\"");
     command_parser::parseCommand(pck->command, this);
 }
 
