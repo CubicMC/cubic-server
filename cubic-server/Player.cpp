@@ -534,7 +534,7 @@ void Player::_onChatCommand(const std::shared_ptr<protocol::ChatCommand> &pck)
 {
     LDEBUG("Got a Chat Command");
     LDEBUG("The command is :" + pck->command);
-    command_parser::parseCommand(pck->command, std::make_optional<Player *>(this));
+    command_parser::parseCommand(pck->command, this);
 }
 
 void Player::_onClientCommand(const std::shared_ptr<protocol::ClientCommand> &pck)

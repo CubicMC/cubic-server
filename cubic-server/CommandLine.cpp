@@ -9,7 +9,7 @@ void CommandLine::launch()
     std::string command = "";
     do {
         std::getline(std::cin, command);
-        command_parser::parseCommand(command, std::nullopt);
+        command_parser::parseCommand(command, nullptr);
     } while (command != "/stop" || command != "stop");
 
 }

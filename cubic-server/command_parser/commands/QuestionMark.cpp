@@ -3,19 +3,19 @@
 
 using namespace command_parser;
 
-void QuestionMark::autocomplete(std::vector<std::string>& args, const std::optional<Player *> &invoker) const {
-    if (invoker.has_value())
+void QuestionMark::autocomplete(std::vector<std::string>& args, const Player *invoker) const {
+    if (invoker)
         return;
     else
         logging::Logger::get_instance()->info("autocomplete ?");
 }
 
-void QuestionMark::execute(std::vector<std::string>& args, const std::optional<Player *> &invoker) const {
+void QuestionMark::execute(std::vector<std::string>& args, const Player *invoker) const {
     if (args.empty()) {
-        if (invoker.has_value()) {
+        if (invoker) {
             for (auto command : Server::getInstance()->getCommands()) {
-                // if (invoker.value()->isOperator()) // TODO: uncomment this when permissions are implemented
-                    // (*invoker)->sendPlayerChatMessage(command->_help); // TODO: Change this to the correct packet (gl @STMiki)
+                // if (invoker->isOperator()) // TODO: uncomment this when permissions are implemented
+                    // invoker->sendPlayerChatMessage(command->_help); // TODO: Change this to the correct packet (gl @STMiki)
             }
         } else {
             for (auto command : Server::getInstance()->getCommands()) {
@@ -34,8 +34,8 @@ void QuestionMark::execute(std::vector<std::string>& args, const std::optional<P
         if (result != Server::getInstance()->getCommands().end())
             (*result)->help(args, invoker);
         else {
-            if (invoker.has_value())
-                // (*invoker)->sendPlayerChatMessage("Unknown command or insufficient permissions"); // TODO: Change this to the correct packet (gl @STMiki)
+            if (invoker)
+                // invoker->sendPlayerChatMessage("Unknown command or insufficient permissions"); // TODO: Change this to the correct packet (gl @STMiki)
                 return;
             else
                 logging::Logger::get_instance()->info("Unknown command or insufficient permissions");
@@ -43,10 +43,10 @@ void QuestionMark::execute(std::vector<std::string>& args, const std::optional<P
     }
 }
 
-void QuestionMark::help(std::vector<std::string>& args, const std::optional<Player *> &invoker) const {
-    if (invoker.has_value()) {
-        // if (invoker.value()->isOperator()) // TODO: uncomment this when permissions are implemented
-            // (*invoker)->sendPlayerChatMessage("/? [<command>]"); // TODO: Change this to the correct packet (gl @STMiki)
+void QuestionMark::help(std::vector<std::string>& args, const Player *invoker) const {
+    if (invoker) {
+        // if (invoker->isOperator()) // TODO: uncomment this when permissions are implemented
+            // invoker->sendPlayerChatMessage("/? [<command>]"); // TODO: Change this to the correct packet (gl @STMiki)
     } else
         logging::Logger::get_instance()->info("/? [<command>]");
 }

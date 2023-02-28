@@ -1,6 +1,6 @@
 #include "CommandParser.hpp"
 
-void command_parser::parseCommand(std::string &command, const std::optional<Player *> &invoker) {
+void command_parser::parseCommand(std::string &command, const Player *invoker) {
     std::vector<std::string> args;
     size_t pos = command.find(' ');
 
@@ -26,7 +26,7 @@ void command_parser::parseCommand(std::string &command, const std::optional<Play
     if (result != Server::getInstance()->getCommands().end())
         (*result)->execute(args, invoker);
     else {
-        if (invoker.has_value()) {
+        if (invoker) {
             // (*invoker)->sendPlayerChatMessage("Unknown or incomplete command, see below for error"); // TODO: Change this to the correct packet (gl @STMiki)
             // (*invoker)->sendPlayerChatMessage(commandName.erase(commandName.find_last_not_of(' ') + 1) + "<--[HERE]"); // TODO: Change this to the correct packet (gl @STMiki)
         } else {
