@@ -14,9 +14,14 @@ void command_parser::DumpChunk::autocomplete(std::vector<std::string>& args, Pla
 
 void command_parser::DumpChunk::execute(std::vector<std::string>& args, Player *invoker) const
 {
-    if (args.size() != 2) {
+    if (args.size() != 2 && !invoker) {
         std::cout << "Usage: /dumpChunk <x> <z>" << std::endl;
         return;
+    }
+
+    if (args.size() == 0 && invoker) {
+        args.push_back(std::to_string(transformBlockPosToChunkPos(invoker->getPosition().x)));
+        args.push_back(std::to_string(transformBlockPosToChunkPos(invoker->getPosition().z)));
     }
     std::cout << "Testing chunk..." << std::endl;
 
