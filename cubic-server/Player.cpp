@@ -35,6 +35,8 @@ Player::Player(Client *cli, std::shared_ptr<Dimension> dim, u128 uuid, const std
     uuidstr.insert(18, "-");
     uuidstr.insert(23, "-");
     this->_uuidString = uuidstr;
+
+    this->setOperator(Server::getInstance()->permissions.isOperator(username));
 }
 
 void Player::tick()
@@ -144,38 +146,14 @@ void Player::setGamemode(uint8_t gamemode)
     _gamemode = gamemode;
 }
 
+void Player::setOperator(const bool isOp)
+{
+    this->_isOperator = isOp;
+}
+
 const bool Player::isOperator() const
 {
-    return !!this->_operatorLevel;
-}
-
-const bool Player::hasPermission(uint8_t requiredLevel) const
-{
-    return this->_operatorLevel >= requiredLevel;
-}
-
-const uint8_t &Player::getOperatorLevel() const
-{
-    return this->_operatorLevel;
-}
-
-void Player::setOperatorLevel(uint8_t level)
-{
-    this->_operatorLevel = level;
-    if (level == 0)
-        this->_isOperator = false;
-    else
-        this->_isOperator = true;
-}
-
-const bool &Player::canBypassSpawnProtection() const
-{
-    return this->_bypassSpawnProtection;
-}
-
-void Player::setSpawnProtectionBypass(bool bypassesSpawnProtection)
-{
-    this->_bypassSpawnProtection = bypassesSpawnProtection;
+    return this->_isOperator;
 }
 
 void Player::disconnect(const chat::Message &reason)
