@@ -7,8 +7,7 @@ void command_parser::Seed::autocomplete(std::vector<std::string>& args) const {
 }
 
 void command_parser::Seed::execute(std::vector<std::string>& args) const {
-    std::string msg = "Seed: [" + std::to_string(Server::getInstance()->getWorldGroup("default")->getWorld("default")->getSeed()) + "]";
-    LINFO(msg);
+    LINFO("Seed: [", Server::getInstance()->getWorldGroup("default")->getWorld("default")->getSeed(), "]");
 }
 
 void command_parser::Seed::help(std::vector<std::string>& args) const {

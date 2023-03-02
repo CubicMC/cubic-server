@@ -67,12 +67,12 @@ namespace logging
     class LogMessage
     {
     public:
-            LogMessage(LogLevel level, std::string message);
+        LogMessage(LogLevel level, std::string message);
 
-            const LogLevel& get_level() const;
-            const std::string& get_message() const;
-            const std::time_t& get_time() const;
-            const int get_millis() const;
+        const LogLevel& get_level() const;
+        const std::string& get_message() const;
+        const std::time_t& get_time() const;
+        const int get_millis() const;
 
     private:
         const LogLevel _level;

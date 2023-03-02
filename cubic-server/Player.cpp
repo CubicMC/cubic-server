@@ -738,7 +738,7 @@ void Player::_onJigsawGenerate(const std::shared_ptr<protocol::JigsawGenerate> &
 void Player::_onKeepAliveResponse(const std::shared_ptr<protocol::KeepAliveResponse> &pck)
 {
     if (pck->keep_alive_id != _keepAliveId) {
-        LERROR("Got a Keep Alive Response with a wrong ID: " + std::to_string(pck->keep_alive_id) + " (expected " + std::to_string(_keepAliveId) + ")");
+        LERROR("Got a Keep Alive Response with a wrong ID: ", pck->keep_alive_id, " (expected ",_keepAliveId, ")");
         this->disconnect("Wrong Keep Alive ID");
         return;
     }
@@ -754,14 +754,14 @@ void Player::_onLockDifficulty(const std::shared_ptr<protocol::LockDifficulty> &
 
 void Player::_onSetPlayerPosition(const std::shared_ptr<protocol::SetPlayerPosition> &pck)
 {
-    LDEBUG("Got a Set Player Position (" + std::to_string(pck->x) + ", " + std::to_string(pck->feet_y) + ", " + std::to_string(pck->z) + ")");
+    LDEBUG("Got a Set Player Position (", pck->x, ", ", pck->feet_y, ", ", pck->z, ")");
     // TODO: Validate the position
     this->setPosition(pck->x, pck->feet_y, pck->z);
 }
 
 void Player::_onSetPlayerPositionAndRotation(const std::shared_ptr<protocol::SetPlayerPositionAndRotation> &pck)
 {
-    LDEBUG("Got a Set Player Position And Rotation (" + std::to_string(pck->x) + ", " + std::to_string(pck->feet_y) + ", " + std::to_string(pck->z) + ")");
+    LDEBUG("Got a Set Player Position And Rotation (", pck->x, ", ", pck->feet_y, ", ", pck->z, ")");
     // TODO: Validate the position
     this->setPosition(pck->x, pck->feet_y, pck->z);
     float yaw_tmp = pck->yaw;
@@ -818,7 +818,7 @@ void Player::_onPlayerAbilities(const std::shared_ptr<protocol::PlayerAbilities>
 
 void Player::_onPlayerAction(const std::shared_ptr<protocol::PlayerAction> &pck)
 {
-    // LINFO("Got a Player Action " + std::to_string(pck->status) + " at (" + std::to_string(pck->location.x) + ", " + std::to_string(pck->location.y) + ", " + std::to_string(pck->location.z) + ")");
+    // LINFO("Got a Player Action ", pck->status, " at ", pck->location);
     LDEBUG("Got a Player Action and player is in gamemode ", this->getGamemode(), " and status is ", pck->status);
     if (pck->status == 0 && this->getGamemode() == 1) {
         this->getDimension()->blockUpdate(pck->location, 0);
