@@ -26,7 +26,7 @@ void command_parser::parseCommand(std::string &command) {
     if (result != Server::getInstance()->getCommands().end())
         (*result)->execute(args);
     else {
-        logging::Logger::get_instance()->info("Unknown or incomplete command, see below for error");
-        logging::Logger::get_instance()->info(commandName.erase(commandName.find_last_not_of(' ') + 1) + "<--[HERE]");
+        LINFO("Unknown or incomplete command, see below for error");
+        LINFO(commandName.erase(commandName.find_last_not_of(' ') + 1) + "<--[HERE]");
     }
 }

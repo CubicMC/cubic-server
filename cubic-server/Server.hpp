@@ -81,8 +81,6 @@ private:
     bool _enforceWhitelist;
     std::atomic<bool> _running;
 
-    logging::Logger *_log;
-
     // Looks like it is thread-safe, if something breaks it is here
     std::vector<std::shared_ptr<Client>> _clients;
 

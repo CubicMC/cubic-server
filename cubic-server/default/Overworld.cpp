@@ -48,8 +48,8 @@ void Overworld::stop()
 
 void Overworld::generateChunk(int x, int z)
 {
-    LDEBUG("Generate - Overworld (" + std::to_string(x) + ", " + std::to_string(z) + ")");
+    LDEBUG("Generate - Overworld (", x, ", ", z, ")");
     Position2D pos{x, z};
     _level.addChunkColumn(pos).generate(world_storage::WorldType::NORMAL, this->getWorld()->getSeed());
-    LINFO("Chunk generated (" + std::to_string(x) + ", " + std::to_string(z) + ")");
+    LINFO("Chunk generated (", x, ", ", z, ")");
 }

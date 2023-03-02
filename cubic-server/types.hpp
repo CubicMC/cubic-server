@@ -3,9 +3,7 @@
 
 #include <cstdint>
 #include <string>
-#include <sstream>
-
-#include "nbt.hpp"
+#include <iostream>
 
 struct u128 {
     uint64_t most;
@@ -52,9 +50,9 @@ struct Position
     constexpr Position operator-(value_type i) const;
 
     constexpr bool operator==(const Position &other) const;
-
-    std::ostream &operator<<(std::ostream &os) const;
 };
+
+std::ostream &operator<<(std::ostream &os, const Position &pos);
 
 struct Position2D
 {
@@ -85,15 +83,17 @@ struct Position2D
     constexpr Position2D operator-(const value_type &i) const;
 
     constexpr bool operator==(const Position2D &other) const;
-
-    std::ostream &operator<<(std::ostream &os) const;
 };
+
+std::ostream &operator<<(std::ostream &os, const Position2D &pos);
 
 struct Rotation
 {
     float yaw;
     float pitch;
 };
+
+std::ostream &operator<<(std::ostream &os, const Rotation &rot);
 
 // Position
 constexpr Position Position::operator*(value_type i) const

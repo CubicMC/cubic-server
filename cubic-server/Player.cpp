@@ -20,7 +20,6 @@ Player::Player(Client *cli, std::shared_ptr<Dimension> dim, u128 uuid, const std
     _gamemode(0),
     _keepAliveClock(200, std::bind(&Player::_processKeepAlive, this)) // 5 seconds for keep-alives
 {
-    _log = logging::Logger::get_instance();
     _keepAliveClock.start();
     _heldItem = 0;
 
@@ -342,7 +341,7 @@ void Player::sendBlockUpdate(const protocol::BlockUpdate &packet)
     auto pck = protocol::createBlockUpdate(packet);
     this->_cli->_sendData(*pck);
 
-    LINFO("Sent a block update at (" + std::to_string(packet.location.x) + ", " + std::to_string(packet.location.y) + ", " + std::to_string(packet.location.z) + ") = " + std::to_string(packet.block_id) + " to " + this->getUsername());
+    LINFO("Sent a block update at ", packet.location, " = ", packet.block_id, " to ", this->getUsername());
 }
 
 void Player::sendLoginPlay(const protocol::LoginPlay &packet)
@@ -403,7 +402,7 @@ void Player::sendLoginPlay(const protocol::LoginPlay &packet)
 
 void Player::sendPlayerInfo(const protocol::PlayerInfo &data)
 {
-    LDEBUG("Sending PlayerInfo. Currently there is: " + std::to_string(data.numberOfPlayers) + " players");
+    LDEBUG("Sending PlayerInfo. Currently there is: ", data.numberOfPlayers, " players");
     auto pck = protocol::createPlayerInfo(data);
     this->_cli->_sendData(*pck);
 
@@ -415,7 +414,7 @@ void Player::sendSpawnPlayer(const protocol::SpawnPlayer &data)
     auto pck = protocol::createSpawnPlayer(data);
     this->_cli->_sendData(*pck);
 
-    LDEBUG("Sent a Spawn Player packet on coords: " + std::to_string(data.x) + " " + std::to_string(data.y) + " " + std::to_string(data.z));
+    LDEBUG("Sent a Spawn Player packet on coords: ", data.x, " ", data.y, " ", data.z);
 }
 
 void Player::sendUpdateTime(const protocol::UpdateTime &data)
@@ -595,7 +594,7 @@ void Player::sendChunkAndLightUpdate(const world_storage::ChunkColumn &chunk)
 
     this->_chunks[chunkPos] = ChunkState::Loaded;
 
-    logging::Logger::get_instance()->debug("Sent a chunk data and light update packet (" + std::to_string(chunkPos.x) + ", " + std::to_string(chunkPos.z) + ")");
+    LDEBUG("Sent a chunk data and light update packet ", chunkPos, ")");
     delete motionBlockingList;
     delete worldSurfaceList;
 }
@@ -613,7 +612,7 @@ void Player::sendUnloadChunk(int32_t x, int32_t z)
     auto pck = protocol::createUnloadChunk({x, z});
     this->_cli->_sendData(*pck);
     this->_chunks.erase({x, z});
-    LDEBUG("Sent an unload chunk packet (" + std::to_string(x) + ", " + std::to_string(z) + ")");
+    LDEBUG("Sent an unload chunk packet (", x, ", ", z, ")");
 }
 
 void Player::sendRemoveEntities(const std::vector<int32_t> &entities)
@@ -674,7 +673,7 @@ void Player::_onChatMessage(const std::shared_ptr<protocol::ChatMessage> &pck)
 {
     // TODO: verify that the message is valid (signature, etc.)
     _dim->getWorld()->getChat()->sendPlayerMessage(pck->message, this);
-    _log->debug("Got a Chat Message");
+    LDEBUG("Got a Chat Message");
 }
 
 void Player::_onClientCommand(const std::shared_ptr<protocol::ClientCommand> &pck)
@@ -820,7 +819,7 @@ void Player::_onPlayerAbilities(const std::shared_ptr<protocol::PlayerAbilities>
 void Player::_onPlayerAction(const std::shared_ptr<protocol::PlayerAction> &pck)
 {
     // LINFO("Got a Player Action " + std::to_string(pck->status) + " at (" + std::to_string(pck->location.x) + ", " + std::to_string(pck->location.y) + ", " + std::to_string(pck->location.z) + ")");
-    LDEBUG("Got a Player Action and player is in gamemode " + std::to_string(this->getGamemode()) + " and status is " + std::to_string(pck->status));
+    LDEBUG("Got a Player Action and player is in gamemode ", this->getGamemode(), " and status is ", pck->status);
     if (pck->status == 0 && this->getGamemode() == 1) {
         this->getDimension()->blockUpdate(pck->location, 0);
     } else if (pck->status == 2) {
@@ -926,7 +925,7 @@ void Player::_onTeleportToEntity(const std::shared_ptr<protocol::TeleportToEntit
 
 void Player::_onUseItemOn(const std::shared_ptr<protocol::UseItemOn> &pck)
 {
-    LDEBUG("Got a Use Item On (" + std::to_string(pck->location.x) + ", " + std::to_string(pck->location.y) + ", " + std::to_string(pck->location.z) + ") -> " + std::to_string(this->_heldItem));
+    LDEBUG("Got a Use Item On ", pck->location, " -> ", this->_heldItem);
     switch (pck->face)
     {
         case 0: pck->location.y--; break;

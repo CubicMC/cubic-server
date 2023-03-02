@@ -4,13 +4,13 @@
 using namespace command_parser;
 
 void Help::autocomplete(std::vector<std::string>& args) const {
-    logging::Logger::get_instance()->info("autocomplete help");
+    LINFO("autocomplete help");
 }
 
 void Help::execute(std::vector<std::string>& args) const {
     if (args.empty()) {
         for (auto command : Server::getInstance()->getCommands()) {
-            logging::Logger::get_instance()->info(command->_help);
+            LINFO(command->_help);
         }
     }
     else {
@@ -24,10 +24,10 @@ void Help::execute(std::vector<std::string>& args) const {
         if (result != Server::getInstance()->getCommands().end())
             (*result)->help(args);
         else
-            logging::Logger::get_instance()->info("Unknown command or insufficient permissions");
+            LINFO("Unknown command or insufficient permissions");
     }
 }
 
 void Help::help(std::vector<std::string>& args) const {
-    logging::Logger::get_instance()->info("/help [<command>]");
+    LINFO("/help [<command>]");
 }

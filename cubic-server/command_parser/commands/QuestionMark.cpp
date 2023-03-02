@@ -4,13 +4,13 @@
 using namespace command_parser;
 
 void QuestionMark::autocomplete(std::vector<std::string>& args) const {
-    logging::Logger::get_instance()->info("autocomplete ?");
+    LINFO("autocomplete ?");
 }
 
 void QuestionMark::execute(std::vector<std::string>& args) const {
     if (args.empty()) {
         for (auto command : Server::getInstance()->getCommands()) {
-            logging::Logger::get_instance()->info(command->_help);
+            LINFO(command->_help);
         }
     }
     else {
@@ -24,10 +24,10 @@ void QuestionMark::execute(std::vector<std::string>& args) const {
         if (result != Server::getInstance()->getCommands().end())
             (*result)->help(args);
         else
-            logging::Logger::get_instance()->info("Unknown command or insufficient permissions");
+            LINFO("Unknown command or insufficient permissions");
     }
 }
 
 void QuestionMark::help(std::vector<std::string>& args) const {
-    logging::Logger::get_instance()->info("/? [<command>]");
+    LINFO("/? [<command>]");
 }

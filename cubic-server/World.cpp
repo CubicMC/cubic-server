@@ -13,7 +13,6 @@ World::World(WorldGroup *worldGroup):
     _timeUpdateClock(20, std::bind(&World::updateTime, this)), // 1 second for time updates
     _generationPool(16, "WorldGen", thread_pool::Pool::Behavior::Cancel)
 {
-    _log = logging::Logger::get_instance();
     _timeUpdateClock.start();
     _seed = -721274728; // TODO: Should be loaded from config or generated
     _chat = worldGroup->getChat();
@@ -177,7 +176,7 @@ void World::sendPlayerInfoAddPlayer(Player *current) {
         .numberOfPlayers = (int32_t) players.size(),
         .players = players_info
     });
-    LDEBUG("Sent player info to " + current->getUsername());
+    LDEBUG("Sent player info to ", current->getUsername());
 }
 
 void World::sendPlayerInfoRemovePlayer(Player *current) {
@@ -203,7 +202,7 @@ void World::sendPlayerInfoRemovePlayer(Player *current) {
             });
         }
     }
-    LDEBUG("Sent player info to " + current->getUsername());
+    LDEBUG("Sent player info to ", current->getUsername());
 }
 
 thread_pool::Pool &World::getGenerationPool()
