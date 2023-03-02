@@ -288,7 +288,8 @@ void Client::_handlePacket()
             packet = parser(to_parse);
         }
         catch (std::runtime_error &error) {
-            LERROR("Error during packet parsing :", std::endl, error.what());
+            LERROR("Error during packet parsing :");
+            LERROR(error.what());
             return;
         }
         // Callback to handle the packet
