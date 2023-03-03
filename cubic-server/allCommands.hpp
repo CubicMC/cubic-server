@@ -3,3 +3,4 @@
 #include "command_parser/commands/Stop.hpp"
 #include "command_parser/commands/Seed.hpp"
 #include "command_parser/commands/DumpChunk.hpp"
+#include "command_parser/commands/Log.hpp"

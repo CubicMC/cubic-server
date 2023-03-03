@@ -120,6 +120,25 @@ std::shared_ptr<ChatMessage> protocol::parseChatMessage(std::vector<uint8_t> &bu
     return h;
 }
 
+std::shared_ptr<ChatCommand> protocol::parseChatCommand(std::vector<uint8_t> &buffer)
+{
+    auto h = std::make_shared<ChatCommand>();
+    auto at = buffer.data();
+
+    parse(at, buffer.data() + buffer.size() - 1, *h,
+          popString, &ChatCommand::command,
+          popLong, &ChatCommand::timestamp,
+          popLong, &ChatCommand::salt,
+          popArray<ArgumentSignature, popArgumentSignature>, &ChatCommand::argumentSignatures,
+          // There are the things for 1.19
+          popBoolean, &ChatCommand::signedPreview
+          // There are the things for 1.19.3
+          // popVarInt, &ChatCommand::messageCount,
+          // popBitSet<20>, &ChatCommand::acknowledged
+    );
+    return h;
+}
+
 std::shared_ptr<ClientCommand> protocol::parseClientCommand(std::vector<uint8_t> &buffer)
 {
     auto h = std::make_shared<ClientCommand>();

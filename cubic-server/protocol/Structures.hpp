@@ -50,5 +50,11 @@ namespace protocol
         int32_t type;
         nbt::Compound data;
     };
+
+    struct ArgumentSignature
+    {
+        std::string argument;
+        std::vector<uint8_t> signature;
+    };
 } // namespace protocol
 

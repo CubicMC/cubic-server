@@ -1,11 +1,11 @@
-#ifndef CUBICSERVER_COMMANDPARSER_COMMANDS_HELP_HPP
-#define CUBICSERVER_COMMANDPARSER_COMMANDS_HELP_HPP
+#ifndef CUBICSERVER_COMMANDPARSER_COMMANDS_LOG_HPP
+#define CUBICSERVER_COMMANDPARSER_COMMANDS_LOG_HPP
 
 #include "CommandBase.hpp"
 
 namespace command_parser {
-struct Help : public CommandBase {
-    Help() : CommandBase("help", "/help [<command>] (help)", false) {}
+struct Log : public CommandBase {
+    Log() : CommandBase("log", "/log <on|off> (type)", false) {}
 
     void autocomplete(std::vector<std::string>& args, Player *invoker) const override;
     void execute(std::vector<std::string>& args, Player *invoker) const override;
@@ -13,4 +13,4 @@ struct Help : public CommandBase {
 };
 }
 
-#endif //CUBICSERVER_COMMANDPARSER_COMMANDS_HELP_HPP
+#endif //CUBICSERVER_COMMANDPARSER_COMMANDS_LOG_HPP

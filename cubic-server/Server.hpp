@@ -95,6 +95,7 @@ private:
         new command_parser::Stop,
         new command_parser::Seed,
         new command_parser::DumpChunk,
+        new command_parser::Log,
     };
 };
 

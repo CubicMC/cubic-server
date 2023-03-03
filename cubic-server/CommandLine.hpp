@@ -7,6 +7,9 @@ class CommandLine
 {
 public:
     CommandLine(): _running(true) {}
+    /**
+     * @brief Launch a loop that will read stdin and parse the command
+     */
     void launch();
     void stop();
 

@@ -25,7 +25,8 @@ namespace protocol
         EncryptionResponse = 0x01,
         QueryBlockEntityTag = 0x01,
         ChangeDifficulty = 0x02,
-        ChatMessage = 0x03,
+        ChatCommand = 0x03,
+        ChatMessage = 0x04,
         ClientCommand = 0x06,
         ClientInformation = 0x07,
         CommandSuggestionRequest = 0x08,
@@ -146,6 +147,31 @@ namespace protocol
         bool isSigned;
     };
     std::shared_ptr<ChatMessage> parseChatMessage(std::vector<uint8_t> &buffer);
+
+    /**
+     * @brief this is the link to the packet: https://wiki.vg/Protocol#Chat_Command
+     *
+     */
+    struct ChatCommand : BaseServerPacket
+    {
+        std::string command;
+        long timestamp;
+        long salt;
+        std::vector<ArgumentSignature> argumentSignatures;
+        // There are the things for 1.19
+        bool signedPreview;
+        // There are the things for 1.19.3
+        // int32_t messageCount;
+        // std::bitset<20> acknowledged;
+    };
+
+    /**
+     * @brief This function is used to parse the chat command packet
+     *
+     * @param buffer
+     * @return std::shared_ptr<ChatCommand>
+     */
+    std::shared_ptr<ChatCommand> parseChatCommand(std::vector<uint8_t> &buffer);
 
     struct ClientCommand : BaseServerPacket
     {
@@ -509,6 +535,7 @@ namespace protocol
             {ServerPacketsID::QueryBlockEntityTag, &parseQueryBlockEntityTag},
             {ServerPacketsID::ChangeDifficulty, &parseChangeDifficulty},
             {ServerPacketsID::ChatMessage, &parseChatMessage},
+            {ServerPacketsID::ChatCommand, &parseChatCommand},
             {ServerPacketsID::ClientCommand, &parseClientCommand},
             {ServerPacketsID::ClientInformation, &parseClientInformation},
             {ServerPacketsID::CommandSuggestionRequest, &parseCommandSuggestionRequest},
