@@ -31,7 +31,6 @@ protected:
 protected:
     std::shared_ptr<Chat> _chat;
     std::unordered_map<std::string_view, std::shared_ptr<World>> _worlds;
-    logging::Logger *_log;
     SoundSystem *_soundSystem;
     std::atomic<bool> _running;
     std::thread _thread;

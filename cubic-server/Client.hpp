@@ -94,7 +94,6 @@ private:
     std::vector<uint8_t> _send_buffer;
     std::thread _networkThread;
     Player *_player;
-    logging::Logger *_log;
     std::mutex _write_mutex;
 };
 

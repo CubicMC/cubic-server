@@ -129,7 +129,6 @@ private:
 private:
     void _processKeepAlive();
 
-    logging::Logger *_log;
     Client *_cli;
     std::string _username;
     std::string _uuidString;

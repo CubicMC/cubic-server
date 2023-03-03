@@ -37,7 +37,7 @@ namespace chat::message {
 
     public:
         ClickEvent(Action action, const std::string &value)
-            : action(action), value(value), _log(logging::Logger::get_instance())
+            : action(action), value(value)
         {}
         nlohmann::json toJson() const;
 
@@ -47,7 +47,6 @@ namespace chat::message {
     private:
         Action action;
         std::string value;
-        logging::Logger *_log;
     };
 
     class HoverEvent {
@@ -63,7 +62,7 @@ namespace chat::message {
 
     public:
         HoverEvent(Action action, const std::string &value)
-            : action(action), value(value), _log(logging::Logger::get_instance())
+            : action(action), value(value)
         {};
         nlohmann::json toJson() const;
 
@@ -73,7 +72,6 @@ namespace chat::message {
     private:
         Action action;
         std::string value;
-        logging::Logger *_log;
     };
 }
 
@@ -155,7 +153,6 @@ public:
 
 private:
     std::unordered_map<chat::message::Type, chat::Message> _messagesLog;
-    logging::Logger *_log;
 };
 
 #endif //CUBICSERVER_CHAT_HPP

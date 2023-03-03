@@ -22,8 +22,7 @@ Client::Client(int sockfd, struct sockaddr_in6 addr):
     _send_buffer(0),
     _networkThread(&Client::networkLoop, this),
     _player(nullptr),
-    _is_running(true),
-    _log(logging::Logger::get_instance())
+    _is_running(true)
 {
 }
 
@@ -65,7 +64,7 @@ void Client::networkLoop()
         {
             int read_size = read(_sockfd, in_buffer, 2048);
             if (read_size == -1)
-                LERROR("Read error" + std::string(strerror(errno)));
+                LERROR("Read error", strerror(errno));
             else if (read_size == 0)
                 break;
             else
@@ -107,7 +106,7 @@ void Client::_flushSendData()
 
     ssize_t write_return = write(_sockfd, send_buffer, to_send);
     if (write_return == -1)
-        LERROR("Write error" + std::string(strerror(errno)));
+        LERROR("Write error", strerror(errno));
 
     if (write_return <= 0) {
         _write_mutex.unlock();
@@ -233,8 +232,8 @@ void Client::handleParsedClientPacket(const std::shared_ptr<protocol::BaseServer
         }
         break;
     }
-    LERROR("Unhandled packet: " + std::to_string(static_cast<int>(packetID)) +
-        " in status " + std::to_string(static_cast<int>(_status))); // TODO: Properly handle the unknown packet
+    LERROR("Unhandled packet: ", static_cast<int>(packetID) +
+        " in status ", static_cast<int>(_status)); // TODO: Properly handle the unknown packet
 }
 
 void Client::_handlePacket()
@@ -281,7 +280,7 @@ void Client::_handlePacket()
         std::vector<uint8_t> to_parse(data.begin() + (at - data.data()), data.end());
         data.erase(data.begin(), data.begin() + (start_payload - data.data()) + length);
         if (error) {
-            LWARN("Unhandled packet: " + std::to_string(static_cast<int>(packet_id)) + " in status " + std::to_string(static_cast<int>(_status)));
+            LWARN("Unhandled packet: ", static_cast<int>(packet_id), " in status ", static_cast<int>(_status));
             return;
         }
         std::shared_ptr<protocol::BaseServerPacket> packet;
@@ -378,7 +377,7 @@ void Client::_onLoginStart(const std::shared_ptr<protocol::LoginStart> &pck)
 
 void Client::_onEncryptionResponse(const std::shared_ptr<protocol::EncryptionResponse> &pck)
 {
-    _log->debug("Got a Encryption Response");
+    LDEBUG("Got a Encryption Response");
 }
 
 void Client::sendStatusResponse(const std::string &json)
