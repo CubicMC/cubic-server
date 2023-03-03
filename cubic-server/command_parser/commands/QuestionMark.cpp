@@ -1,16 +1,14 @@
 #include "QuestionMark.hpp"
 #include "Server.hpp"
 
-using namespace command_parser;
-
-void QuestionMark::autocomplete(std::vector<std::string>& args, Player *invoker) const {
+void command_parser::QuestionMark::autocomplete(std::vector<std::string>& args, Player *invoker) const {
     if (invoker)
         return;
     else
         LINFO("autocomplete ?");
 }
 
-void QuestionMark::execute(std::vector<std::string>& args, Player *invoker) const {
+void command_parser::QuestionMark::execute(std::vector<std::string>& args, Player *invoker) const {
     if (args.empty()) {
         if (invoker) {
             for (auto command : Server::getInstance()->getCommands()) {
@@ -43,7 +41,7 @@ void QuestionMark::execute(std::vector<std::string>& args, Player *invoker) cons
     }
 }
 
-void QuestionMark::help(std::vector<std::string>& args, Player *invoker) const {
+void command_parser::QuestionMark::help(std::vector<std::string>& args, Player *invoker) const {
     if (invoker) {
         // if (invoker->isOperator()) // TODO: uncomment this when permissions are implemented
             // invoker->sendPlayerChatMessage("/? [<command>]"); // TODO: Change this to the correct packet (gl @STMiki)
