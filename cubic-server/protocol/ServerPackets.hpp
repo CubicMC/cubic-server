@@ -157,7 +157,7 @@ namespace protocol
         std::string command;
         long timestamp;
         long salt;
-        std::vector<argumentSignature> argumentSignatures;
+        std::vector<ArgumentSignature> argumentSignatures;
         // There are the things for 1.19
         bool signedPreview;
         // There are the things for 1.19.3

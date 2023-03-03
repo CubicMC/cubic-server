@@ -129,7 +129,7 @@ std::shared_ptr<ChatCommand> protocol::parseChatCommand(std::vector<uint8_t> &bu
           popString, &ChatCommand::command,
           popLong, &ChatCommand::timestamp,
           popLong, &ChatCommand::salt,
-          popArray<argumentSignature, popArgumentSignature>, &ChatCommand::argumentSignatures,
+          popArray<ArgumentSignature, popArgumentSignature>, &ChatCommand::argumentSignatures,
           // There are the things for 1.19
           popBoolean, &ChatCommand::signedPreview
           // There are the things for 1.19.3

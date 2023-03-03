@@ -56,9 +56,9 @@ namespace protocol
         return static_cast<ClientInformationMainHand>(value);
     }
 
-    constexpr argumentSignature popArgumentSignature(uint8_t *&at, uint8_t *eof)
+    constexpr ArgumentSignature popArgumentSignature(uint8_t *&at, uint8_t *eof)
     {
-        argumentSignature argumentSignature;
+        ArgumentSignature argumentSignature;
         argumentSignature.argument = popString(at, eof);
         argumentSignature.signature = popArray<uint8_t, popByte>(at, eof);
         return argumentSignature;

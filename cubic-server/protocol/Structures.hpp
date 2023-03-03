@@ -51,7 +51,7 @@ namespace protocol
         nbt::Compound data;
     };
 
-    struct argumentSignature
+    struct ArgumentSignature
     {
         std::string argument;
         std::vector<uint8_t> signature;
