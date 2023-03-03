@@ -32,8 +32,6 @@ void CommandLine::run()
         std::getline(std::cin, command);
 
         command_parser::parseCommand(command, nullptr);
-        if (command == "/stop" || command != "stop")
-            this->_running = false;
     }
     Server::getInstance()->stop();
 }
