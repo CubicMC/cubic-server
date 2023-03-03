@@ -27,7 +27,6 @@ general:\n\
 
     ConfigHandler::ConfigHandler()
     {
-        _log = logging::Logger::get_instance();
     }
 
     void ConfigHandler::parse(const std::string &path) {
@@ -42,8 +41,7 @@ general:\n\
             _enforceWhitelist = _baseNode["general"]["enforce-whitelist"].as<bool>();
         }
         catch (const std::exception &e) {
-            LERROR("Config parsing failed, exiting now!");
-            LERROR(e.what());
+            LERROR("Config parsing failed, exiting now!" << std::endl << e.what());
             exit(1); // TODO: Use an exception
         }
     }

@@ -7,7 +7,7 @@ void Stop::autocomplete(std::vector<std::string>& args, Player *invoker) const {
     if (invoker)
         return;
     else
-        logging::Logger::get_instance()->info("autocomplete stop");
+        LINFO("autocomplete stop");
 }
 
 void Stop::execute(std::vector<std::string>& args, Player *invoker) const {
@@ -25,5 +25,5 @@ void Stop::help(std::vector<std::string>& args, Player *invoker) const {
         // if (invoker->isOperator()) // TODO: uncomment this when permissions are implemented
             // invoker->sendPlayerChatMessage("/stop"); // TODO: Change this to the correct packet (gl @STMiki)
     } else
-        logging::Logger::get_instance()->info("/stop");
+        LINFO("/stop");
 }

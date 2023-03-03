@@ -32,8 +32,7 @@ Server::Server():
     _motd = _config.getMotd();
     _enforceWhitelist = _config.getEnforceWhitelist();
 
-    _log = logging::Logger::get_instance();
-    LINFO("Server created with host: " + _host + " and port: " + std::to_string(_port));
+    LINFO("Server created with host: ", _host, " and port: ", _port);
 }
 
 Server::~Server()

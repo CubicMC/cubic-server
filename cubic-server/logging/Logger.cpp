@@ -1,7 +1,8 @@
-#include "Logger.hpp"
-#include "TimeFormatter.hpp"
 #include <iostream>
 #include <algorithm>
+
+#include "Logger.hpp"
+#include "TimeFormatter.hpp"
 
 namespace logging
 {

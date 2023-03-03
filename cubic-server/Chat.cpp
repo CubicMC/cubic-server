@@ -7,7 +7,6 @@
 
 Chat::Chat()
 {
-    _log = logging::Logger::get_instance();
 }
 
 void Chat::sendPlayerMessage(const chat::Message &message, const Player *sender)
@@ -53,7 +52,7 @@ void Chat::sendSystemMessage(const chat::Message &message, bool overlay, const W
         LERROR("worldGroup is null");
         return;
     }
-    LDEBUG("send System Message: " + message.getMessage()); // FUCKING CRASHES THE SERVER BECAUSE I DON'T FUCKING KNOW
+    LDEBUG("send System Message: ", message.getMessage()); // FUCKING CRASHES THE SERVER BECAUSE I DON'T FUCKING KNOW
 
     // TODO: Filter client by chat visibility
     for (const auto &world : worldGroup->getWorlds()) {
@@ -228,7 +227,7 @@ nlohmann::json chat::message::ClickEvent::toJson() const
         case Action::CopyToClipboard:
             response["action"] = "copy_to_clipboard"; break;
         default:
-            LERROR("Unknown click event action: " + std::to_string((int32_t) action)); break;
+            LERROR("Unknown click event action: ", static_cast<int32_t>(action)); break;
     }
 
     response["value"] = value;
@@ -248,7 +247,7 @@ nlohmann::json chat::message::HoverEvent::toJson() const
         case Action::ShowEntity:
             response["action"] = "show_entity"; break;
         default:
-            LERROR("Unknown hover event action: " + std::to_string((int32_t) action)); break;
+            LERROR("Unknown hover event action: ", static_cast<int32_t>(action)); break;
     }
 
     response["contents"] == value;

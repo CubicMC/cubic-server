@@ -23,7 +23,7 @@ GlobalBlockId generation::Overworld::getBlock(position_type x, position_type y, 
     //     ? ((y - world_storage::CHUNK_HEIGHT_MIN) / (heightOffset - (double) world_storage::CHUNK_HEIGHT_MIN)) / 100.0
     //     : ((y - world_storage::CHUNK_HEIGHT_MIN) / ((double) world_storage::CHUNK_HEIGHT_MAX - heightOffset)) / 100.0;
 
-    // // logging::Logger::get_instance()->info(std::to_string(densityMultiplier));
+    // // LINFO(std::to_string(densityMultiplier));
 
     // // double densityMultiplier = std::tanh(y / 384) + heightOffset;
 

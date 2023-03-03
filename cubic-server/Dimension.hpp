@@ -101,7 +101,6 @@ protected:
 protected:
     std::counting_semaphore<SEMAPHORE_MAX> _dimensionLock;
     std::vector<Entity *> _entities;
-    logging::Logger *_log;
     World *_world;
     std::mutex _processingMutex;
     std::atomic<bool> _isInitialized;

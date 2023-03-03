@@ -10,7 +10,6 @@ Dimension::Dimension(World *world):
     _dimensionLock(std::counting_semaphore<1000>(0)),
     _isInitialized(false)
 {
-    _log = logging::Logger::get_instance();
 }
 
 void Dimension::tick()
@@ -211,8 +210,8 @@ void Dimension::spawnPlayer(Player *current)
     const std::vector<Player *> player_list = this->getPlayerList();
 
     for (auto &player : player_list) {
-        LDEBUG("player is : " + player->getUsername());
-        LDEBUG("current is : " + current->getUsername());
+        LDEBUG("player is : ", player->getUsername());
+        LDEBUG("current is : ", current->getUsername());
         //if (current->getPos().distance(player->getPos()) <= 12) {
         if (player->getId() != current->getId()) {
             player->sendSpawnPlayer({
@@ -224,7 +223,7 @@ void Dimension::spawnPlayer(Player *current)
                 current->getRotation().x,
                 current->getRotation().y
             });
-            LDEBUG("send spawn player to " + player->getUsername());
+            LDEBUG("send spawn player to ", player->getUsername());
             current->sendSpawnPlayer({
                 player->getId(),
                 player->getUuid(),
@@ -234,7 +233,7 @@ void Dimension::spawnPlayer(Player *current)
                 player->getRotation().x,
                 player->getRotation().y
             });
-            LDEBUG("send spawn player to " + current->getUsername());
+            LDEBUG("send spawn player to ", current->getUsername());
         //}
         }
     }
@@ -242,7 +241,7 @@ void Dimension::spawnPlayer(Player *current)
 
 void Dimension::blockUpdate(Position position, int32_t id)
 {
-    LINFO("Dimension block update (" + std::to_string(position.x) + ", " + std::to_string(position.y) + ", " + std::to_string(position.z) + ") -> " + std::to_string(id) + ")");
+    LINFO("Dimension block update ", position, " -> ", id, ")");
     auto &chunk = this->_level.getChunkColumnFromBlockPos(position.x, position.z);
 
     // Weird ass modulo to get the correct block position in the chunk

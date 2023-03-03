@@ -52,7 +52,6 @@ public:
 protected:
     std::shared_ptr<Chat> _chat;
     WorldGroup *_worldGroup;
-    logging::Logger *_log;
     std::unordered_map<std::string_view, std::shared_ptr<Dimension>> _dimensions;
     long _age;
     long _time;

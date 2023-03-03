@@ -11,11 +11,45 @@
 
 #include "FileAndFolderHandler.hpp"
 
-#define LDEBUG(msg) _log->debug(msg)
-#define LINFO(msg) _log->info(msg)
-#define LWARN(msg) _log->warn(msg)
-#define LERROR(msg) _log->error(msg)
-#define LFATAL(msg) _log->fatal(msg)
+#define _GET_NTH_ARG(_0, _1, _2, _3, _4, _5, _6, _7, _8, _9, N, ...) N
+
+#define _LOG0() __FILE__ << ":" << __LINE__ << " Log called without arguments !"
+#define _LOG1(msg) msg
+#define _LOG2(msg, ...) msg << _LOG1(__VA_ARGS__)
+#define _LOG3(msg, ...) msg << _LOG2(__VA_ARGS__)
+#define _LOG4(msg, ...) msg << _LOG3(__VA_ARGS__)
+#define _LOG5(msg, ...) msg << _LOG4(__VA_ARGS__)
+#define _LOG6(msg, ...) msg << _LOG5(__VA_ARGS__)
+#define _LOG7(msg, ...) msg << _LOG6(__VA_ARGS__)
+#define _LOG8(msg, ...) msg << _LOG7(__VA_ARGS__)
+#define _LOG9(msg, ...) msg << _LOG8(__VA_ARGS__)
+
+#define _LOGN(...) \
+_GET_NTH_ARG( \
+    ,##__VA_ARGS__, \
+    _LOG9(__VA_ARGS__), \
+    _LOG8(__VA_ARGS__), \
+    _LOG7(__VA_ARGS__), \
+    _LOG6(__VA_ARGS__), \
+    _LOG5(__VA_ARGS__), \
+    _LOG4(__VA_ARGS__), \
+    _LOG3(__VA_ARGS__), \
+    _LOG2(__VA_ARGS__), \
+    _LOG1(__VA_ARGS__), \
+    _LOG0(__VA_ARGS__), \
+)
+
+#define _LOG(type, ...) do { \
+    std::stringstream __ss; \
+    __ss << _LOGN(__VA_ARGS__); \
+    ::logging::Logger::get_instance()->type(__ss.str()); \
+} while (0)
+
+#define LDEBUG(...) _LOG(debug, __VA_ARGS__)
+#define LINFO(...) _LOG(info, __VA_ARGS__)
+#define LWARN(...) _LOG(warn, __VA_ARGS__)
+#define LERROR(...) _LOG(error, __VA_ARGS__)
+#define LFATAL(...) _LOG(fatal, __VA_ARGS__)
 
 namespace logging
 {
@@ -32,12 +66,12 @@ namespace logging
     class LogMessage
     {
     public:
-            LogMessage(LogLevel level, std::string message);
+        LogMessage(LogLevel level, std::string message);
 
-            const LogLevel& get_level() const;
-            const std::string& get_message() const;
-            const std::time_t& get_time() const;
-            const int get_millis() const;
+        const LogLevel& get_level() const;
+        const std::string& get_message() const;
+        const std::time_t& get_time() const;
+        const int get_millis() const;
 
     private:
         const LogLevel _level;
@@ -67,13 +101,9 @@ namespace logging
         ~Logger();;
 
         void debug(const std::string &msg);
-
         void info(const std::string &msg);
-
         void warn(const std::string &msg);
-
         void error(const std::string &msg);
-
         void fatal(const std::string &msg);
 
         void set_display_specification_level_in_file(LogLevel level);
@@ -88,22 +118,31 @@ namespace logging
         void set_log_buffer_size(int size);
 
     private:
-        Logger();                                                                   // Private constructor to prevent multiple instances
+        // Private constructor to prevent multiple instances
+        Logger();
         Logger(const Logger&) = delete;
         Logger& operator=(const Logger&) = delete;
         Logger(Logger&&) = delete;
         Logger& operator=(Logger&&) = delete;
+
         std::string get_file_path() const;
 
-        std::fstream _file_stream;                                                  // Stream to the current log file
-        FileAndFolderHandler _file_and_folder_handler;                              // Handler for files and folders
+        // Stream to the current log file
+        std::fstream _file_stream;
 
-        std::unordered_map<LogLevel, std::string> _specification_level_in_file;     // Map of LogLevel and his associated string to display in the log file
-        std::unordered_map<LogLevel, std::string> _specification_level_in_console;  // Map of LogLevel and his associated string to display in the console
+        // Handler for files and folders
+        FileAndFolderHandler _file_and_folder_handler;
+
+        // Map of LogLevel and his associated string to display in the log file
+        std::unordered_map<LogLevel, std::string> _specification_level_in_file;
+
+        // Map of LogLevel and his associated string to display in the console
+        std::unordered_map<LogLevel, std::string> _specification_level_in_console;
 
         void _log(LogLevel level, const std::string &message);
 
-        std::queue<LogMessage> _log_buffer;                                         // Buffer to store logs before the file is opened
+        // Buffer to store logs before the file is opened
+        std::queue<LogMessage> _log_buffer;
         int _buffer_size;
 
         std::mutex _loggerMutex;

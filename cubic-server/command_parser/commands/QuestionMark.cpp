@@ -7,7 +7,7 @@ void QuestionMark::autocomplete(std::vector<std::string>& args, Player *invoker)
     if (invoker)
         return;
     else
-        logging::Logger::get_instance()->info("autocomplete ?");
+        LINFO("autocomplete ?");
 }
 
 void QuestionMark::execute(std::vector<std::string>& args, Player *invoker) const {
@@ -19,7 +19,7 @@ void QuestionMark::execute(std::vector<std::string>& args, Player *invoker) cons
             }
         } else {
             for (auto command : Server::getInstance()->getCommands()) {
-                logging::Logger::get_instance()->info(command->_help);
+                LINFO(command->_help);
             }
         }
     }
@@ -38,7 +38,7 @@ void QuestionMark::execute(std::vector<std::string>& args, Player *invoker) cons
                 // invoker->sendPlayerChatMessage("Unknown command or insufficient permissions"); // TODO: Change this to the correct packet (gl @STMiki)
                 return;
             else
-                logging::Logger::get_instance()->info("Unknown command or insufficient permissions");
+                LINFO("Unknown command or insufficient permissions");
         }
     }
 }
@@ -48,5 +48,5 @@ void QuestionMark::help(std::vector<std::string>& args, Player *invoker) const {
         // if (invoker->isOperator()) // TODO: uncomment this when permissions are implemented
             // invoker->sendPlayerChatMessage("/? [<command>]"); // TODO: Change this to the correct packet (gl @STMiki)
     } else
-        logging::Logger::get_instance()->info("/? [<command>]");
+        LINFO("/? [<command>]");
 }
