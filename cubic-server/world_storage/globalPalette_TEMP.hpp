@@ -15,6 +15,9 @@ constexpr GlobalBlockId getGlobalPaletteIdFromBlockName(const std::string &name)
     else if (name == "minecraft:bedrock") return 76;
     else if (name == "minecraft:grass_block") return 9;
     else if (name == "minecraft:grass") return 1954;
+    else if (name == "minecraft:stone") return 1;
+    else if (name == "minecraft:water") return 92;
+    else if (name == "minecraft:sand") return 109;
     else if (name == "minecraft:dirt") return 10;
     else if (name == "minecraft:oak_log") return 120;
     else if (name == "minecraft:oak_leaves") return 241;

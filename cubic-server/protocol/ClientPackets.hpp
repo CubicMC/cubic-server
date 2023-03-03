@@ -48,6 +48,7 @@ namespace protocol
         SynchronizePlayerPosition = 0x38,
         RemoveEntities = 0x3A,
         HeadRotation = 0x3E,
+        ServerData = 0x41,
         CenterChunk = 0x4a,
         UpdateTime = 0x5A,
         EntitySoundEffect = 0x5D,
@@ -55,6 +56,7 @@ namespace protocol
         StopSound = 0x5F,
         SystemChatMessage = 0x60,
         TeleportEntity = 0x64,
+        FeatureFlags = 0x67,
     };
     struct PingResponse
     {
@@ -262,6 +264,17 @@ namespace protocol
 
     std::shared_ptr<std::vector<uint8_t>> createHeadRotation(const HeadRotation &in);
 
+    struct ServerData
+    {
+        bool has_motd;
+        std::string motd;
+        bool has_icon;
+        std::string icon;
+        bool enforce_secure_chat;
+    };
+
+    std::shared_ptr<std::vector<uint8_t>> createServerData(const ServerData &in);
+
     struct CustomSoundEffect
     {
         std::string name;
@@ -424,6 +437,13 @@ namespace protocol
     };
 
     std::shared_ptr<std::vector<uint8_t>> createPlayerAbilities(const PlayerAbilitiesClient &in);
+
+    struct FeatureFlags
+    {
+        std::vector<std::string> flags;
+    };
+
+    std::shared_ptr<std::vector<uint8_t>> createFeatureFlags(const FeatureFlags &in);
 }
 
 #endif /* A7ADDD9E_6961_4A3D_AAB2_DF37DB6915F0 */

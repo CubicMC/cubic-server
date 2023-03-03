@@ -195,6 +195,20 @@ std::shared_ptr<std::vector<uint8_t>> protocol::createHeadRotation(const HeadRot
     return packet;
 }
 
+std::shared_ptr<std::vector<uint8_t>> protocol::createServerData(const ServerData &in)
+{
+    std::vector<uint8_t> payload;
+
+    serialize(payload,
+        in.has_motd, addBoolean,
+        in.has_icon, addBoolean,
+        in.enforce_secure_chat, addBoolean
+    );
+    auto packet = std::make_shared<std::vector<uint8_t>>();
+    finalize(*packet, payload, (int32_t) ClientPacketID::ServerData);
+    return packet;
+}
+
 std::shared_ptr<std::vector<uint8_t>> protocol::createCenterChunk(const Position2D &in)
 {
     std::vector<uint8_t> payload;
@@ -512,3 +526,15 @@ std::shared_ptr<std::vector<uint8_t>> protocol::createPlayerAbilities(const Play
     finalize(*packet, payload, (int32_t) ClientPacketID::PlayerAbilities);
     return packet;
 }
+
+std::shared_ptr<std::vector<uint8_t>> protocol::createFeatureFlags(const FeatureFlags &in)
+{
+    std::vector<uint8_t> payload;
+    serialize(payload,
+        in.flags, addArray<std::string, addString>);
+    auto packet = std::make_shared<std::vector<uint8_t>>();
+    finalize(*packet, payload, (int32_t) ClientPacketID::FeatureFlags);
+    return packet;
+}
+
+
