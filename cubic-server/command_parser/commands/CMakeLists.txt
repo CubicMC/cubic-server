@@ -10,4 +10,6 @@ target_sources (${CMAKE_PROJECT_NAME} PRIVATE
     Seed.cpp
     DumpChunk.hpp
     DumpChunk.cpp
+    Log.hpp
+    Log.cpp
 )
