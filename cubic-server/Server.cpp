@@ -65,6 +65,10 @@ void Server::launch()
     // Listen
     listen(_sockfd, SOMAXCONN);
 
+    // Initialize the global palette
+    _globalPalette.initialize();
+    LINFO("GlobalPalette initialized");
+
     // Initialize default world group
     auto defaultChat = std::make_shared<Chat>();
     _worldGroups.emplace("default", new DefaultWorldGroup(defaultChat));

@@ -18,6 +18,9 @@
 #include "command_parser/commands/CommandBase.hpp"
 #include "allCommands.hpp"
 
+#include "protocol_id_converter/blockStates.hpp"
+
+
 #ifndef MC_VERSION
 #define MC_VERSION "1.19.3"
 #endif
@@ -68,6 +71,10 @@ public:
         return _running;
     }
 
+    const Blocks::GlobalPalette &getGlobalPalette() const {
+        return _globalPalette;
+    }
+
 private:
     Server();
     void _acceptLoop();
@@ -97,6 +104,7 @@ private:
         new command_parser::DumpChunk,
         new command_parser::Log,
     };
+    Blocks::GlobalPalette _globalPalette;
 };
 
 #endif /* F43D56DD_C750_470F_A7C9_27CE21D37FC3 */
