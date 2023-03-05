@@ -1,9 +1,14 @@
 #include <fstream>
+#include <filesystem>
 
 #include "blockStates.hpp"
 #include "logging/Logger.hpp"
 
 void Blocks::GlobalPalette::initialize(std::string path) {
+    if (!std::filesystem::exists(path)) {
+        LERROR("File " << path << " not found !");
+        return;
+    }
     nlohmann::json file = nlohmann::json::parse(std::ifstream("blocks.json"));
     for(auto block : file.items()) {
         Blocks::InternalBlock b;
@@ -34,11 +39,11 @@ Blocks::BlockId Blocks::GlobalPalette::fromBlockToProtocolId(Blocks::Block block
         return b.name == block.name;
     });
     if (internalBlock == this->_blocks.end()) {
-        // LERROR("Block not found in palette (name: " << block.name << ")");
+        LERROR("Block not found in palette (name: " << block.name << ")");
         return 0;
     }
     if (block.properties.size() != internalBlock->properties.size()) {
-        // LERROR("Block properties size mismatch with block " << block.name);
+        LERROR("Block properties size mismatch with block " << block.name);
         return 0;
     }
     if (block.properties.size() == 0 && internalBlock->properties.size() == 0)
@@ -50,12 +55,12 @@ Blocks::BlockId Blocks::GlobalPalette::fromBlockToProtocolId(Blocks::Block block
             return p.name == property.first;
         });
         if (internalProperty == internalBlock->properties.end()) {
-            // LERROR("Property not found (name: " << property.first << ")");
+            LERROR("Property not found (name: " << property.first << ")");
             return 0;
         }
         auto value = std::find(internalProperty->values.begin(), internalProperty->values.end(), property.second);
         if (value == internalProperty->values.end()) {
-            // LERROR("Value not found (name: " << property.second << ")");
+            LERROR("Value not found (name: " << property.second << ")");
             return 0;
         }
         id += internalProperty->baseWeight * (value - internalProperty->values.begin());
@@ -78,5 +83,6 @@ Blocks::Block Blocks::GlobalPalette::fromProtocolIdToBlock(Blocks::BlockId id) c
             return block;
         }
     }
+    LERROR("Block not found in palette (id: " << id << ")");
     return {"minecraft:air", {}};
 }
