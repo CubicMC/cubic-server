@@ -46,6 +46,11 @@ public:
         return Vector2<T>(other.x + this->x, other.y + this->y);
     }
 
+    Vector2 operator+(const T &other) noexcept
+    {
+        return Vector2<T>(other + this->x, other + this->y);
+    }
+
     Vector2 operator+=(const Vector2 &other) noexcept
     {
         this->x += other.x;
@@ -54,9 +59,22 @@ public:
         return *this;
     }
 
+    Vector2 operator+=(const T &other) noexcept
+    {
+        this->x += other;
+        this->y += other;
+
+        return *this;
+    }
+
     Vector2 operator-(const Vector2 &other) noexcept
     {
         return Vector2<T>(other.x - this->x, other.y - this->y);
+    }
+
+    Vector2 operator-(const T &other) noexcept
+    {
+        return Vector2<T>(other - this->x, other - this->y);
     }
 
     Vector2 operator-=(const Vector2 &other) noexcept
@@ -67,9 +85,22 @@ public:
         return *this;
     }
 
+    Vector2 operator-=(const T &other) noexcept
+    {
+        this->x -= other;
+        this->y -= other;
+
+        return *this;
+    }
+
     Vector2 operator*(const Vector2 &other) noexcept
     {
         return Vector2<T>(other.x * this->x, other.y * this->y);
+    }
+
+    Vector2 operator*(const T &other) noexcept
+    {
+        return Vector2<T>(other * this->x, other * this->y);
     }
 
     Vector2 operator*=(const Vector2 &other) noexcept
@@ -80,9 +111,22 @@ public:
         return *this;
     }
 
+    Vector2 operator*=(const T &other) noexcept
+    {
+        this->x *= other;
+        this->y *= other;
+
+        return *this;
+    }
+
     Vector2 operator/(const Vector2 &other) noexcept
     {
         return Vector2<T>(other.x / this->x, other.y / this->y);
+    }
+
+    Vector2 operator/(const T &other) noexcept
+    {
+        return Vector2<T>(other / this->x, other / this->y);
     }
 
     Vector2 operator/=(const Vector2 &other) noexcept
@@ -93,15 +137,36 @@ public:
         return *this;
     }
 
+    Vector2 operator/=(const T &other) noexcept
+    {
+        this->x /= other;
+        this->y /= other;
+
+        return *this;
+    }
+
     Vector2 operator%(const Vector2 &other) noexcept
     {
         return Vector2<T>(other.x % this->x, other.y % this->y, other.z % this->z);
+    }
+
+    Vector2 operator%(const T &other) noexcept
+    {
+        return Vector2<T>(other % this->x, other % this->y);
     }
 
     Vector2 operator%=(const Vector2 &other) noexcept
     {
         this->x %= other.x;
         this->y %= other.y;
+
+        return *this;
+    }
+
+    Vector2 operator%=(const T &other) noexcept
+    {
+        this->x %= other;
+        this->y %= other;
 
         return *this;
     }
@@ -114,14 +179,32 @@ public:
         return *this;
     }
 
+    Vector2 &operator=(const T &other) noexcept
+    {
+        this->x = other;
+        this->y = other;
+
+        return *this;
+    }
+
     bool operator==(const Vector2 &other) const noexcept
     {
         return this->x == other.x && this->y == other.y;
     }
 
+    bool operator==(const T &other) noexcept
+    {
+        return this->x == other && this->y == other;
+    }
+
     bool operator!=(const Vector2 &other) noexcept
     {
         return this->x != other.x || this->y != other.y;
+    }
+
+    bool operator!=(const T &other) noexcept
+    {
+        return this->x != other || this->y != other;
     }
 
     T x;

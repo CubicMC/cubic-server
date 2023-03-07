@@ -664,6 +664,10 @@ void Player::_onQueryEntityTag(const std::shared_ptr<protocol::QueryEntityTag> &
     LDEBUG("Got a Query Entity Tag");
 }
 
+
+/*
+ * @brief Handle a player's interaction with an entity.
+ */
 void Player::_onInteract(const std::shared_ptr<protocol::Interact> &pck)
 {
     LivingEntity *target = dynamic_cast<LivingEntity *>(_dim->getEntityByID(pck->entity_id));
@@ -673,11 +677,11 @@ void Player::_onInteract(const std::shared_ptr<protocol::Interact> &pck)
         case 0:
             break;
         case 1:
-            if (target != nullptr) {
-                target->attack(1, _pos);
-            }
-            if (player != nullptr) {
+            if (player != nullptr && player->_gamemode != 1) {
+                player->attack(1, _pos);
                 player->sendHealth();
+            } else if (target != nullptr) {
+                target->attack(1, _pos);
             }
             break;
         case 2:

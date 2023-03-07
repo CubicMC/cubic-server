@@ -1,19 +1,30 @@
 #include "LivingEntity.hpp"
 #include "Player.hpp"
 
+/*
+ * @brief Attack the entity
+ *
+ * @param damage The damage to deal
+ * @param source The source of the damage
+ */
 void LivingEntity::attack(float damage, Vector3<double> source)
 {
     std::vector<Player *> players =  _dim->getPlayerList();
-    Vector3<double> direction = source - _pos;
+
+    // compute knockback
+    double knockback = 1000;
+    Vector3<double> direction = (source - _pos) * knockback;
 
     direction.normalize();
     _health -= damage;
+
+    // send entity velocity too connected players (should be optimized)
     for (auto &player : players) {
         player->sendEntityVelocity({
             _id,
-            static_cast<int16_t>(direction.x * 1000),
-            static_cast<int16_t>(direction.y * 1000),
-            static_cast<int16_t>(direction.z * 1000)
+            static_cast<int16_t>(direction.x),
+            static_cast<int16_t>(direction.y),
+            static_cast<int16_t>(direction.z)
         });
     }
 }
