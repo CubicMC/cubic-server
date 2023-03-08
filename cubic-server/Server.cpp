@@ -26,7 +26,8 @@
 #include "default/DefaultWorldGroup.hpp"
 
 static const std::unordered_map<std::string, std::uint32_t> _checksums = {
-    {"https://cdn.cubic-mc.com/1.19/blocks-1.19.json", 0x8b138b58}
+    {"https://cdn.cubic-mc.com/1.19/blocks-1.19.json", 0x8b138b58},
+    {"https://cdn.cubic-mc.com/1.19.3/blocks-1.19.3.json", 0xb8a10fa2}
 };
 
 Server::Server():
