@@ -28,8 +28,9 @@ Player::Player(Client *cli, std::shared_ptr<Dimension> dim, u128 uuid, const std
     std::stringstream uuidsstr;
     std::string uuidstr;
 
-    uuidsstr << std::hex << this->getUuid().most << this->getUuid().least;
+    uuidsstr << std::setfill('0') << std::setw(16) << std::hex << this->getUuid().most << std::setfill('0') << std::setw(16) << this->getUuid().least;
     uuidstr = uuidsstr.str();
+    LINFO(uuidstr);
     uuidstr.insert(8, "-");
     uuidstr.insert(13, "-");
     uuidstr.insert(18, "-");
@@ -345,11 +346,45 @@ void Player::sendBlockUpdate(const protocol::BlockUpdate &packet)
     LINFO("Sent a block update at ", packet.location, " = ", packet.block_id, " to ", this->getUsername());
 }
 
+void Player::sendFeatureFlags(const protocol::FeatureFlags &packet)
+{
+    auto pck = protocol::createFeatureFlags(packet);
+    _cli->_sendData(*pck);
+}
+
+void Player::sendServerData(const protocol::ServerData &packet)
+{
+    auto pck = protocol::createServerData(packet);
+    _cli->_sendData(*pck);
+}
+
 void Player::sendLoginPlay(const protocol::LoginPlay &packet)
 {
     auto pck = protocol::createLoginPlay(packet);
     _cli->_sendData(*pck);
     LDEBUG("Sent a login play");
+
+    this->sendFeatureFlags({
+        {"minecraft:vanilla"}
+    });
+
+    this->sendPlayerAbilities({
+        (uint8_t)protocol::PlayerAbilitiesFlags::Invulnerable |
+            (uint8_t)protocol::PlayerAbilitiesFlags::Flying |
+            (uint8_t)protocol::PlayerAbilitiesFlags::AllowFlying |
+            (uint8_t)protocol::PlayerAbilitiesFlags::CreativeMode,
+        0.05,
+        0.1
+    });
+
+    this->sendServerData({
+        false,
+        "",
+        false,
+        "",
+        false
+    });
+
     auto renderDistance = this->getDimension()->getWorld()->getRenderDistance();
     // Send all chunks around the player
     // TODO: send chunk closer to the player first
@@ -361,7 +396,6 @@ void Player::sendLoginPlay(const protocol::LoginPlay &packet)
             sendChunkAndLightUpdate(x, z);
         }
     }
-    sendSynchronizePosition({8.5, 65, 8.5});
     // for (auto &player : this->_player->getDimension()->getPlayerList())
     //     player->sendSynchronizePosition({0, -58, 0});
     // this->_player->sendChunkAndLightUpdate(0, 0);
@@ -369,6 +403,7 @@ void Player::sendLoginPlay(const protocol::LoginPlay &packet)
     LDEBUG("Added entity player to dimension");
     getDimension()->getWorld()->sendPlayerInfoAddPlayer(this);
     getDimension()->spawnPlayer(this);
+    sendSynchronizePosition({8.5, 100, 8.5});
 
     // Send login message
     chat::Message connectionMsg = chat::Message("", {
@@ -397,14 +432,19 @@ void Player::sendLoginPlay(const protocol::LoginPlay &packet)
         false,
         this->getDimension()->getWorld()->getWorldGroup()
     );
-    // for (auto &player : this->_player->getDimension()->getPlayerList())
-    //     player->sendTeleportEntity(this->_player->getId(), {0, -58, 0});
 }
 
-void Player::sendPlayerInfo(const protocol::PlayerInfo &data)
+void Player::sendPlayerInfoUpdate(const protocol::PlayerInfoUpdate &data)
 {
-    LDEBUG("Sending PlayerInfo. Currently there is: ", data.numberOfPlayers, " players");
-    auto pck = protocol::createPlayerInfo(data);
+    auto pck = protocol::createPlayerInfoUpdate(data);
+    this->_cli->_sendData(*pck);
+
+    LDEBUG("Sent a Player Info packet");
+}
+
+void Player::sendPlayerInfoRemove(const protocol::PlayerInfoRemove &data)
+{
+    auto pck = protocol::createPlayerInfoRemove(data);
     this->_cli->_sendData(*pck);
 
     LDEBUG("Sent a Player Info packet");
@@ -617,7 +657,7 @@ void Player::sendRemoveEntities(const std::vector<int32_t> &entities)
 
 void Player::sendSwingArm(bool main_hand, int32_t swinger_id)
 {
-    auto pck = protocol::createEntityAnimationClient(
+    auto pck = protocol::createEntityAnimation(
         main_hand ? protocol::EntityAnimationID::SwingMainArm : protocol::EntityAnimationID::SwingOffHand,
         swinger_id
     );

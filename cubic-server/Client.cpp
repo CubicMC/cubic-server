@@ -495,15 +495,18 @@ void Client::sendLoginSuccess(const protocol::LoginSuccess &packet)
                             new nbt::Int("id", 0),
                             new nbt::Compound("element", {
                                 new nbt::Compound("chat", {
-                                    new nbt::Compound("decoration", {
-                                        new nbt::List("parameters", {
-                                            new nbt::String("", "sender"),
-                                            new nbt::String("", "content")
-                                        }),
-                                        new nbt::String("translation_key", "chat.type.text.narrate"),
-                                        new nbt::Compound("style", {})
+                                    new nbt::List("parameters", {
+                                        new nbt::String("", "sender"),
+                                        new nbt::String("", "content")
                                     }),
-                                    new nbt::String("priority", "chat")
+                                    new nbt::String("translation_key", "chat.type.text"),
+                                }),
+                                new nbt::Compound("narration", {
+                                    new nbt::List("parameters", {
+                                        new nbt::String("", "sender"),
+                                        new nbt::String("", "content")
+                                    }),
+                                    new nbt::String("translation_key", "chat.type.text.narrate"),
                                 })
                             })
                         })
@@ -519,7 +522,7 @@ void Client::sendLoginSuccess(const protocol::LoginSuccess &packet)
             .reducedDebugInfo = false, // false for developpment only
             .enableRespawnScreen = true, // TODO: implement gamerules !this->_player->_dim->getWorld()->getGamerules()["doImmediateRespawn"];
             .isDebug = false, // TODO: something like this->_player->_dim->getWorld()->isDebugModeWorld;
-            .isFlat = true, // TODO: something like this->_player->_dim->isFlat;
+            .isFlat = false, // TODO: something like this->_player->_dim->isFlat;
             .hasDeathLocation = false // TODO: something like this->_player->hasDeathLocation;
     };
     if (resPck.hasDeathLocation) {

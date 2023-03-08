@@ -51,7 +51,8 @@ public:
 public:
     void disconnect(const chat::Message &reason = "Disconnected");
     void sendLoginPlay(const protocol::LoginPlay &packet);
-    void sendPlayerInfo(const protocol::PlayerInfo &data);
+    void sendPlayerInfoUpdate(const protocol::PlayerInfoUpdate &data);
+    void sendPlayerInfoRemove(const protocol::PlayerInfoRemove &data);
     void sendSpawnPlayer(const protocol::SpawnPlayer &data);
     void sendUpdateTime(const protocol::UpdateTime &data);
     void sendChatMessageResponse(const protocol::PlayerChatMessage &packet);
@@ -77,6 +78,8 @@ public:
     void sendUnloadChunk(int32_t x, int32_t z);
     void sendBlockUpdate(const protocol::BlockUpdate &packet);
     void sendPlayerAbilities(const protocol::PlayerAbilitiesClient &packet);
+    void sendFeatureFlags(const protocol::FeatureFlags &packet);
+    void sendServerData(const protocol::ServerData &packet);
 
 private:
     void _onConfirmTeleportation(const std::shared_ptr<protocol::ConfirmTeleportation> &pck);

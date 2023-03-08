@@ -226,7 +226,7 @@ void ChunkColumn::_generateOverworld(Seed seed)
         for (int x = 0; x < SECTION_WIDTH; x++) {
             for (int y = waterLevel; 0 < y; y--) {
                 if (getBlock({x, y, z}) == 1) break;
-                updateBlock({x, y, z}, 75);
+                updateBlock({x, y, z}, getGlobalPaletteIdFromBlockName("minecraft:water"));
             }
         }
     }
@@ -237,19 +237,19 @@ void ChunkColumn::_generateOverworld(Seed seed)
             auto lastBlock = 0;
             for (int y = CHUNK_HEIGHT_MAX - 2; CHUNK_HEIGHT_MIN <= y; y--) {
                 auto block = getBlock({x, y, z});
-                if (block == 0) continue;
-                if (block == 75) {
-                    lastBlock = 75;
+                if (block == getGlobalPaletteIdFromBlockName("minecraft:air")) continue;
+                if (block == getGlobalPaletteIdFromBlockName("minecraft:water")) {
+                    lastBlock = getGlobalPaletteIdFromBlockName("minecraft:water");
                     continue;
                 }
-                if (block == 1 && lastBlock == 75) {
-                    updateBlock({x, y, z}, 107); // sand
+                if (block == getGlobalPaletteIdFromBlockName("minecraft:stone") && lastBlock == getGlobalPaletteIdFromBlockName("minecraft:water")) {
+                    updateBlock({x, y, z}, getGlobalPaletteIdFromBlockName("minecraft:sand")); // sand
                     break;
                 }
-                if (block == 1 && lastBlock == 0) {
-                    updateBlock({x, y, z}, 9); // grass
-                    updateBlock({x, y - 1, z}, 10); // dirt
-                    updateBlock({x, y - 2, z}, 10); // dirt
+                if (block == getGlobalPaletteIdFromBlockName("minecraft:stone") && lastBlock == getGlobalPaletteIdFromBlockName("minecraft:air")) {
+                    updateBlock({x, y, z}, getGlobalPaletteIdFromBlockName("minecraft:grass_block")); // grass
+                    updateBlock({x, y - 1, z}, getGlobalPaletteIdFromBlockName("minecraft:dirt")); // dirt
+                    updateBlock({x, y - 2, z}, getGlobalPaletteIdFromBlockName("minecraft:dirt")); // dirt
                     break;
                 }
             }
@@ -260,9 +260,9 @@ void ChunkColumn::_generateOverworld(Seed seed)
     int64_t state = (((this->_chunkPos.x * 0x4F9939F508L + this->_chunkPos.z * 0x1EF1565BD5L) ^ 0x5DEECE66DL) * 0x9D89DAE4D6C29D9L + 0x1844E300013E5B56L) & 0xFFFFFFFFFFFFL;
     for (int x = 0; x < SECTION_WIDTH; x++) {
         for (int z = 0; z < SECTION_WIDTH; z++) {
-            updateBlock({x, 0 + CHUNK_HEIGHT_MIN, z}, 74); // bedrock
+            updateBlock({x, 0 + CHUNK_HEIGHT_MIN, z}, getGlobalPaletteIdFromBlockName("minecraft:bedrock")); // bedrock
             if (4 <= (state >> 17) % 5)
-                updateBlock({x, 1 + CHUNK_HEIGHT_MIN, z}, 74); // bedrock
+                updateBlock({x, 1 + CHUNK_HEIGHT_MIN, z}, getGlobalPaletteIdFromBlockName("minecraft:bedrock")); // bedrock
             state = ((state * 0x530F32EB772C5F11L + 0x89712D3873C4CD04L) * 0x9D89DAE4D6C29D9L + 0x1844E300013E5B56L) & 0xFFFFFFFFFFFFL;
         }
     }
