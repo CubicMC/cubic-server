@@ -76,10 +76,15 @@ void Server::launch()
     listen(_sockfd, SOMAXCONN);
 
     _downloadFile(std::string("https://cdn.cubic-mc.com/") + MC_VERSION + "/blocks-" + MC_VERSION + ".json", std::string("blocks-") + MC_VERSION + ".json");
+    _downloadFile(std::string("https://cdn.cubic-mc.com/") + MC_VERSION + "/registries-" + MC_VERSION + ".json", std::string("registries-") + MC_VERSION + ".json");
 
     // Initialize the global palette
     _globalPalette.initialize(std::string("blocks-") + MC_VERSION + ".json");
     LINFO("GlobalPalette initialized");
+
+    // Initialize the item converter
+    _itemConverter.initialize();
+    LINFO("ItemConverter initialized");
 
     // Initialize default world group
     auto defaultChat = std::make_shared<Chat>();

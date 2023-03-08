@@ -19,6 +19,7 @@
 #include "allCommands.hpp"
 
 #include "protocol_id_converter/blockStates.hpp"
+#include "protocol_id_converter/itemConverter.hpp"
 
 
 #ifndef MC_VERSION
@@ -77,6 +78,10 @@ public:
         return _globalPalette;
     }
 
+    const Items::ItemConverter &getItemConverter() const {
+        return _itemConverter;
+    }
+
 private:
     Server();
     void _acceptLoop();
@@ -108,6 +113,7 @@ private:
         new command_parser::Log,
     };
     Blocks::GlobalPalette _globalPalette;
+    Items::ItemConverter _itemConverter;
 };
 
 #endif /* F43D56DD_C750_470F_A7C9_27CE21D37FC3 */
