@@ -432,34 +432,34 @@ std::shared_ptr<std::vector<uint8_t>> protocol::createPlayerInfoUpdate(const Pla
     for (auto &actionSet : in.actionSets) {
         serialize(payload, actionSet.uuid, addUUID);
 
-        if (in.actions & 0b00000001) { // Add Player
+        if (in.actions & (uint8_t)PlayerInfoUpdateActions::AddPlayer) { // Add Player
             serialize(payload,
                 actionSet.addPlayer.name, addString,
                 0, addVarInt // Number of properties -> To change to handle skins and stuff
             );
         }
-        if (in.actions & 0b00000010) { // Initialize chat
+        if (in.actions & (uint8_t)PlayerInfoUpdateActions::InitializeChat) { // Initialize chat
             serialize(payload,
                 actionSet.initializeChat.has_sig_data, addBoolean
             );
             // TODO: miki
         }
-        if (in.actions & 0b00000100) { // Update gamemode
+        if (in.actions & (uint8_t)PlayerInfoUpdateActions::UpdateGamemode) { // Update gamemode
             serialize(payload,
                 actionSet.updateGamemode.gamemode, addVarInt
             );
         }
-        if (in.actions & 0b00001000) { // Update listed
+        if (in.actions & (uint8_t)PlayerInfoUpdateActions::UpdateListed) { // Update listed
             serialize(payload,
                 actionSet.updateListed.listed, addBoolean
             );
         }
-        if (in.actions & 0b00010000) { // Update latency
+        if (in.actions & (uint8_t)PlayerInfoUpdateActions::UpdateLatency) { // Update latency
             serialize(payload,
                 actionSet.updateLatency.latency, addVarInt
             );
         }
-        if (in.actions & 0b00100000) { // Update display name
+        if (in.actions & (uint8_t)PlayerInfoUpdateActions::UpdateDisplayName) { // Update display name
             serialize(payload,
                 actionSet.updateDisplayName.hasDisplayName, addBoolean
             );

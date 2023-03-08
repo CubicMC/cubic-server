@@ -217,6 +217,15 @@ namespace protocol
         _UpdateDisplayName updateDisplayName;
     };
 
+    enum class PlayerInfoUpdateActions : uint8_t {
+        AddPlayer = 0b00000001,
+        InitializeChat = 0b00000010,
+        UpdateGamemode = 0b00000100,
+        UpdateListed = 0b00001000,
+        UpdateLatency = 0b00010000,
+        UpdateDisplayName = 0b00100000,
+    };
+
     struct PlayerInfoUpdate
     {
         uint8_t actions;

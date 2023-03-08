@@ -369,7 +369,10 @@ void Player::sendLoginPlay(const protocol::LoginPlay &packet)
     });
 
     this->sendPlayerAbilities({
-        4 | 1 | 2 | 8,
+        (uint8_t)protocol::PlayerAbilitiesFlags::Invulnerable |
+            (uint8_t)protocol::PlayerAbilitiesFlags::Flying |
+            (uint8_t)protocol::PlayerAbilitiesFlags::AllowFlying |
+            (uint8_t)protocol::PlayerAbilitiesFlags::CreativeMode,
         0.05,
         0.1
     });

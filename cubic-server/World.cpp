@@ -136,15 +136,13 @@ void World::sendPlayerInfoAddPlayer(Player *current) {
     std::vector<Player *> players = this->getPlayers();
     std::vector<protocol::_Actions> players_info;
 
-    uint8_t actions = 0x3f; // TODO: bruh
-
-    // BITSET_SET_BIT(actions, 0, 1); // Add Player
-    // BITSET_SET_BIT(actions, 1, 1); // Add Player
-    // BITSET_SET_BIT(actions, 2, 1); // Update Gamemode
-    // BITSET_SET_BIT(actions, 3, 1); // Update listed
-    // BITSET_SET_BIT(actions, 4, 1); // Update latency
-    // BITSET_SET_BIT(actions, 5, 1); // Update display names
-
+    uint8_t actions =
+        (uint8_t)protocol::PlayerInfoUpdateActions::AddPlayer |
+        (uint8_t)protocol::PlayerInfoUpdateActions::InitializeChat |
+        (uint8_t)protocol::PlayerInfoUpdateActions::UpdateGamemode |
+        (uint8_t)protocol::PlayerInfoUpdateActions::UpdateListed |
+        (uint8_t)protocol::PlayerInfoUpdateActions::UpdateLatency |
+        (uint8_t)protocol::PlayerInfoUpdateActions::UpdateDisplayName;
 
     // iterate through the list of players
     for (auto &player : players) {
