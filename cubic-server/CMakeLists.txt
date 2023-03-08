@@ -49,6 +49,7 @@ if (GTEST)
     gtest_discover_tests(nbt_test)
 endif()
 
+add_subdirectory (protocol_id_converter)
 add_subdirectory (protocol)
 add_subdirectory (default)
 add_subdirectory (math)

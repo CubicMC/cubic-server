@@ -16,9 +16,10 @@ namespace logging
      */
     std::string TimeFormatter::get_time()
     {
+        std::chrono::time_point<std::chrono::system_clock> time_point = std::chrono::system_clock::now();
         const std::time_t now = std::time(nullptr);
         const std::tm* tm_now = std::localtime(&now);
-        int millis = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count() - (now * 1000);
+        int millis = std::chrono::duration_cast<std::chrono::milliseconds>(time_point.time_since_epoch()).count() - (now * 1000);
         std::stringstream ss;
         ss << std::put_time(tm_now, "%Y/%m/%d %H:%M:%S.") << std::setfill('0') << std::setw(3) << millis;
         return ss.str();
@@ -35,9 +36,10 @@ namespace logging
      */
     std::string TimeFormatter::get_time(std::string format)
     {
+        std::chrono::time_point<std::chrono::system_clock> time_point = std::chrono::system_clock::now();
         const std::time_t now = std::time(nullptr);
         const std::tm* tm_now = std::localtime(&now);
-        int millis = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count() - (now * 1000);
+        int millis = std::chrono::duration_cast<std::chrono::milliseconds>(time_point.time_since_epoch()).count() - (now * 1000);
         std::unordered_map<std::string, std::string> values = {
             {"YYYY", std::to_string(tm_now->tm_year + 1900)},
             {"MM", tm_now->tm_mon + 1 < 10 ? "0" + std::to_string(tm_now->tm_mon + 1) : std::to_string(tm_now->tm_mon + 1)},
@@ -66,9 +68,10 @@ namespace logging
      */
     std::string TimeFormatter::get_time(std::string &format)
     {
+        std::chrono::time_point<std::chrono::system_clock> time_point = std::chrono::system_clock::now();
         const std::time_t now = std::time(nullptr);
         const std::tm* tm_now = std::localtime(&now);
-        int millis = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count() - (now * 1000);
+        int millis = std::chrono::duration_cast<std::chrono::milliseconds>(time_point.time_since_epoch()).count() - (now * 1000);
         std::unordered_map<std::string, std::string> values = {
             {"YYYY", std::to_string(tm_now->tm_year + 1900)},
             {"MM", tm_now->tm_mon + 1 < 10 ? "0" + std::to_string(tm_now->tm_mon + 1) : std::to_string(tm_now->tm_mon + 1)},

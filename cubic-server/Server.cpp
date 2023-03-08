@@ -1,3 +1,4 @@
+#include <fstream>
 #include <iostream>
 #include <netdb.h>
 #include <cerrno>
@@ -8,7 +9,11 @@
 #include <cstring>
 #include <algorithm>
 
+#include <curl/curl.h>
+
 #include <nlohmann/json.hpp>
+
+#include <CRC.h>
 
 #include "Server.hpp"
 
@@ -19,6 +24,11 @@
 #include "logging/Logger.hpp"
 #include "WorldGroup.hpp"
 #include "default/DefaultWorldGroup.hpp"
+
+static const std::unordered_map<std::string, std::uint32_t> _checksums = {
+    {"https://cdn.cubic-mc.com/1.19/blocks-1.19.json", 0x8b138b58},
+    {"https://cdn.cubic-mc.com/1.19.3/blocks-1.19.3.json", 0xb8a10fa2}
+};
 
 Server::Server():
     _sockfd(-1),
@@ -64,6 +74,12 @@ void Server::launch()
 
     // Listen
     listen(_sockfd, SOMAXCONN);
+
+    _downloadFile(std::string("https://cdn.cubic-mc.com/") + MC_VERSION + "/blocks-" + MC_VERSION + ".json", std::string("blocks-") + MC_VERSION + ".json");
+
+    // Initialize the global palette
+    _globalPalette.initialize(std::string("blocks-") + MC_VERSION + ".json");
+    LINFO("GlobalPalette initialized");
 
     // Initialize default world group
     auto defaultChat = std::make_shared<Chat>();
@@ -144,4 +160,44 @@ void Server::_stop()
     for (auto &command : _commands)
         delete command;
     LINFO("Server stopped");
+}
+
+void Server::_downloadFile(const std::string &url, const std::string &path)
+{
+    if (std::filesystem::exists(path)) {
+        LDEBUG("File " << path << " already exists. Skipping download");
+    } else {
+        LDEBUG("Downloading file " << path);
+        CURL *curl;
+        FILE *fp;
+        CURLcode res;
+        curl = curl_easy_init();
+        if (curl) {
+            fp = fopen(path.c_str(),"wb");
+            curl_easy_setopt(curl, CURLOPT_URL, url.c_str());
+            // curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, NULL);
+            curl_easy_setopt(curl, CURLOPT_WRITEDATA, fp);
+            res = curl_easy_perform(curl);
+            curl_easy_cleanup(curl);
+            fclose(fp);
+        }
+    }
+    std::ifstream file(path);
+    std::string str((std::istreambuf_iterator<char>(file)), std::istreambuf_iterator<char>());
+    std::uint32_t crc = CRC::Calculate(str.c_str(), str.length(), CRC::CRC_32());
+    LDEBUG("CRC32 of " << path << " is 0x" << std::hex << crc);
+    try {
+        _checksums.at(url);
+    } catch (std::out_of_range &e) {
+        LFATAL("No checksum for file " << path << ". Maybe this version is not supported.");
+        this->stop();
+        return;
+    }
+    if (crc == _checksums.at(url))
+        LDEBUG("File " << path << " is valid");
+    else {
+        LFATAL("File " << path << " is corrupted. Please delete it and restart the server");
+        this->stop();
+        return;
+    }
 }

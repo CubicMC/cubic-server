@@ -12,7 +12,7 @@ struct u128 {
 
 typedef int64_t Seed;
 
-typedef uint16_t GlobalBlockId;
+typedef int32_t GlobalBlockId;
 typedef uint8_t GlobalBiomeId;
 
 // https://wiki.vg/Data_types#Fixed-point_numbers
