@@ -190,12 +190,13 @@ void Server::_downloadFile(const std::string &url, const std::string &path)
     } catch (std::out_of_range &e) {
         LFATAL("No checksum for file " << path << ". Maybe this version is not supported.");
         this->stop();
+        return;
     }
     if (crc == _checksums.at(url))
         LDEBUG("File " << path << " is valid");
     else {
         LFATAL("File " << path << " is corrupted. Please delete it and restart the server");
         this->stop();
+        return;
     }
-    file.close();
 }
