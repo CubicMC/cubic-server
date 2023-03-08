@@ -51,5 +51,5 @@ void Overworld::generateChunk(int x, int z)
     LDEBUG("Generate - Overworld (", x, ", ", z, ")");
     Position2D pos{x, z};
     _level.addChunkColumn(pos).generate(world_storage::WorldType::NORMAL, this->getWorld()->getSeed());
-    LINFO("Chunk generated (", x, ", ", z, ")");
+    LDEBUG("Chunk generated (", x, ", ", z, ")");
 }
