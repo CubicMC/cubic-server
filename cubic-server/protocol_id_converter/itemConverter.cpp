@@ -9,7 +9,7 @@ void Items::ItemConverter::initialize(const std::string path) {
         LERROR("File " << path << " not found !");
         return;
     }
-    nlohmann::json file = nlohmann::json::parse(std::ifstream("registries.json"));
+    nlohmann::json file = nlohmann::json::parse(std::ifstream(path));
     for(auto item : file["minecraft:item"]["entries"].items()) {
         Items::InternalItem i;
         i.name = item.key();
