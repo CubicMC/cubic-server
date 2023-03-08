@@ -28,7 +28,8 @@
 static const std::unordered_map<std::string, std::uint32_t> _checksums = {
     {"https://cdn.cubic-mc.com/1.19/blocks-1.19.json", 0x8b138b58},
     {"https://cdn.cubic-mc.com/1.19/registries-1.19.json", 0x30407a82},
-    {"https://cdn.cubic-mc.com/1.19.3/blocks-1.19.3.json", 0xb8a10fa2}
+    {"https://cdn.cubic-mc.com/1.19.3/blocks-1.19.3.json", 0xb8a10fa2},
+    {"https://cdn.cubic-mc.com/1.19.3/registries-1.19.3.json", 0xdfabe75c}
 };
 
 Server::Server():
