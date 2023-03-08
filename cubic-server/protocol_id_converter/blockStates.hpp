@@ -47,7 +47,7 @@ namespace Blocks {
              * @param block The block to convert
              * @return The protocol id of the block
              */
-            BlockId fromBlockToProtocolId(Block block) const;
+            BlockId fromBlockToProtocolId(const Block block) const;
             /**
              * @brief Convert a protocol id to a block
              * @param id The protocol id to convert

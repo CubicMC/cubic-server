@@ -35,7 +35,7 @@ void Blocks::GlobalPalette::initialize(std::string path) {
 }
 
 Blocks::BlockId Blocks::GlobalPalette::fromBlockToProtocolId(Blocks::Block block) const {
-    auto internalBlock = std::find_if(this->_blocks.begin(), this->_blocks.end(), [&block](Blocks::InternalBlock b) {
+    auto internalBlock = std::find_if(this->_blocks.begin(), this->_blocks.end(), [&block](const Blocks::InternalBlock &b) {
         return b.name == block.name;
     });
     if (internalBlock == this->_blocks.end()) {
@@ -51,7 +51,7 @@ Blocks::BlockId Blocks::GlobalPalette::fromBlockToProtocolId(Blocks::Block block
 
     BlockId id = internalBlock->baseProtocolId;
     for (auto property : block.properties) {
-        auto internalProperty = std::find_if(internalBlock->properties.begin(), internalBlock->properties.end(), [&property](Blocks::InternalProperty p) {
+        auto internalProperty = std::find_if(internalBlock->properties.begin(), internalBlock->properties.end(), [&property](const Blocks::InternalProperty &p) {
             return p.name == property.first;
         });
         if (internalProperty == internalBlock->properties.end()) {
@@ -70,18 +70,18 @@ Blocks::BlockId Blocks::GlobalPalette::fromBlockToProtocolId(Blocks::Block block
 
 Blocks::Block Blocks::GlobalPalette::fromProtocolIdToBlock(Blocks::BlockId id) const {
     for (auto b : this->_blocks) {
-        if (id >= b.baseProtocolId && id <= b.maxProtocolId) {
-            Blocks::Block block;
-            block.name = b.name;
-            if (b.properties.size() == 0)
-                return block;
-            id -= b.baseProtocolId;
-            for (auto property : b.properties) {
-                block.properties.push_back({property.name, property.values[id / property.baseWeight]});
-                id %= property.baseWeight;
-            }
+        if (id < b.baseProtocolId || id > b.maxProtocolId)
+            continue;
+        Blocks::Block block;
+        block.name = b.name;
+        if (b.properties.size() == 0)
             return block;
+        id -= b.baseProtocolId;
+        for (auto property : b.properties) {
+            block.properties.push_back({property.name, property.values[id / property.baseWeight]});
+            id %= property.baseWeight;
         }
+        return block;
     }
     LERROR("Block not found in palette (id: " << id << ")");
     return {"minecraft:air", {}};
