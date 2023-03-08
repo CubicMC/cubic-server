@@ -420,11 +420,11 @@ void Client::sendLoginSuccess(const protocol::LoginSuccess &packet)
             .registryCodec = nbt::Compound("", {
                 new nbt::Compound("minecraft:dimension_type", {
                     new nbt::String("type", "minecraft:dimension_type"),
-                        new nbt::List("value", {
-                            new nbt::Compound("", {
-                                new nbt::String("name", "minecraft:overworld"),
-                                new nbt::Int("id", 0),
-                                new nbt::Compound("element", {
+                    new nbt::List("value", {
+                        new nbt::Compound("", {
+                            new nbt::String("name", "minecraft:overworld"),
+                            new nbt::Int("id", 0),
+                            new nbt::Compound("element", {
                                 new nbt::Byte("ultrawarm", 0),
                                 new nbt::Int("logical_height", 256),
                                 new nbt::String("infiniburn", "#minecraft:infiniburn_overworld"),
