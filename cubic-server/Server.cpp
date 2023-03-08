@@ -26,7 +26,7 @@
 #include "default/DefaultWorldGroup.hpp"
 
 static const std::unordered_map<std::string, std::uint32_t> _checksums = {
-    {"https://cdn.cubic-mc.com/1.19/blocks-1.19.json", 2718205092}
+    {"https://cdn.cubic-mc.com/1.19/blocks-1.19.json", 0x8b138b58}
 };
 
 Server::Server():
@@ -183,12 +183,19 @@ void Server::_downloadFile(const std::string &url, const std::string &path)
     }
     std::ifstream file(path);
     std::string str((std::istreambuf_iterator<char>(file)), std::istreambuf_iterator<char>());
-    std::uint32_t crc = CRC::Calculate(str.c_str(), sizeof(str.c_str()), CRC::CRC_32());
-    // LINFO("CRC32 of " << path << " is " << crc);
+    std::uint32_t crc = CRC::Calculate(str.c_str(), str.length(), CRC::CRC_32());
+    LDEBUG("CRC32 of " << path << " is 0x" << std::hex << crc);
+    try {
+        _checksums.at(url);
+    } catch (std::out_of_range &e) {
+        LFATAL("No checksum for file " << path << ". Maybe this version is not supported.");
+        this->stop();
+    }
     if (crc == _checksums.at(url))
         LDEBUG("File " << path << " is valid");
     else {
         LFATAL("File " << path << " is corrupted. Please delete it and restart the server");
         this->stop();
     }
+    file.close();
 }
