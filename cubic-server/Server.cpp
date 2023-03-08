@@ -164,9 +164,9 @@ void Server::_stop()
 void Server::_downloadFile(const std::string &url, const std::string &path)
 {
     if (std::filesystem::exists(path)) {
-        LINFO("File " << path << " already exists. Skipping download");
+        LDEBUG("File " << path << " already exists. Skipping download");
     } else {
-        LINFO("Downloading file " << path);
+        LDEBUG("Downloading file " << path);
         CURL *curl;
         FILE *fp;
         CURLcode res;
