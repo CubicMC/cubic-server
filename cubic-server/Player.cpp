@@ -9,7 +9,7 @@
 #include "protocol/ClientPackets.hpp"
 #include <cstdint>
 #include "World.hpp"
-#include "world_storage/globalPalette_TEMP.hpp"
+#include "blocks.hpp"
 
 Player::Player(Client *cli, std::shared_ptr<Dimension> dim, u128 uuid, const std::string &username):
     _cli(cli),
@@ -343,7 +343,7 @@ void Player::sendBlockUpdate(const protocol::BlockUpdate &packet)
     auto pck = protocol::createBlockUpdate(packet);
     this->_cli->_sendData(*pck);
 
-    LINFO("Sent a block update at ", packet.location, " = ", packet.block_id, " to ", this->getUsername());
+    LDEBUG("Sent a block update at ", packet.location, " = ", packet.block_id, " to ", this->getUsername());
 }
 
 void Player::sendFeatureFlags(const protocol::FeatureFlags &packet)
@@ -981,15 +981,18 @@ void Player::_onUseItemOn(const std::shared_ptr<protocol::UseItemOn> &pck)
         case 5: pck->location.x++; break;
     }
     switch (this->_heldItem) {
-        case 0: this->getDimension()->blockUpdate(pck->location, world_storage::getGlobalPaletteIdFromBlockName("minecraft:grass_block")); break;
-        case 1: this->getDimension()->blockUpdate(pck->location, world_storage::getGlobalPaletteIdFromBlockName("minecraft:dirt")); break;
-        case 2: this->getDimension()->blockUpdate(pck->location, world_storage::getGlobalPaletteIdFromBlockName("minecraft:bedrock")); break;
-        case 3: this->getDimension()->blockUpdate(pck->location, world_storage::getGlobalPaletteIdFromBlockName("minecraft:oak_log")); break;
-        case 4: this->getDimension()->blockUpdate(pck->location, world_storage::getGlobalPaletteIdFromBlockName("minecraft:oak_leaves")); break;
-        case 5: this->getDimension()->blockUpdate(pck->location, world_storage::getGlobalPaletteIdFromBlockName("minecraft:glass")); break;
-        case 6: this->getDimension()->blockUpdate(pck->location, world_storage::getGlobalPaletteIdFromBlockName("minecraft:cobblestone")); break;
-        case 7: this->getDimension()->blockUpdate(pck->location, world_storage::getGlobalPaletteIdFromBlockName("minecraft:pink_terracotta")); break;
-        case 8: this->getDimension()->blockUpdate(pck->location, world_storage::getGlobalPaletteIdFromBlockName("minecraft:purple_carpet")); break;
+        case 0: this->getDimension()->blockUpdate(pck->location, Blocks::GrassBlock::toProtocol(Blocks::GrassBlock::Properties::Snowy::FALSE)); break;
+        case 1: this->getDimension()->blockUpdate(pck->location, Blocks::Dirt::toProtocol()); break;
+        case 2: this->getDimension()->blockUpdate(pck->location, Blocks::Bedrock::toProtocol()); break;
+        case 3: this->getDimension()->blockUpdate(pck->location, Blocks::OakLog::toProtocol(Blocks::OakLog::Properties::Axis::Y)); break;
+        case 4: this->getDimension()->blockUpdate(pck->location, Blocks::OakLeaves::toProtocol(
+                                    Blocks::OakLeaves::Properties::Distance::ONE,
+                                    Blocks::OakLeaves::Properties::Persistent::FALSE,
+                                    Blocks::OakLeaves::Properties::Waterlogged::FALSE)); break;
+        case 5: this->getDimension()->blockUpdate(pck->location, Blocks::Glass::toProtocol()); break;
+        case 6: this->getDimension()->blockUpdate(pck->location, Blocks::Cobblestone::toProtocol()); break;
+        case 7: this->getDimension()->blockUpdate(pck->location, Blocks::PinkTerracotta::toProtocol()); break;
+        case 8: this->getDimension()->blockUpdate(pck->location, Blocks::PurpleCarpet::toProtocol()); break;
     }
 }
 

@@ -241,7 +241,7 @@ void Dimension::spawnPlayer(Player *current)
 
 void Dimension::blockUpdate(Position position, int32_t id)
 {
-    LINFO("Dimension block update ", position, " -> ", id, ")");
+    LDEBUG("Dimension block update ", position, " -> ", id, ")");
     auto &chunk = this->_level.getChunkColumnFromBlockPos(position.x, position.z);
 
     // Weird ass modulo to get the correct block position in the chunk

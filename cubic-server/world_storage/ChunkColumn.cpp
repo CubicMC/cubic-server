@@ -5,9 +5,10 @@
 #include "Palette.hpp"
 #include "protocol/serialization/addPrimaryType.hpp"
 #include "logging/Logger.hpp"
-#include "globalPalette_TEMP.hpp"
 #include "generation/overworld.hpp"
 #include "types.hpp"
+#include "Server.hpp"
+#include "blocks.hpp"
 
 namespace world_storage {
 
@@ -23,11 +24,6 @@ ChunkColumn::ChunkColumn(const Position2D &chunkPos):
 
 ChunkColumn::~ChunkColumn()
 {
-}
-
-void ChunkColumn::updateBlock(Position pos, Block block)
-{
-    this->updateBlock(pos, getGlobalPaletteIdFromBlock(block));
 }
 
 void ChunkColumn::updateBlock(Position pos, GlobalBlockId id)
@@ -226,7 +222,7 @@ void ChunkColumn::_generateOverworld(Seed seed)
         for (int x = 0; x < SECTION_WIDTH; x++) {
             for (int y = waterLevel; 0 < y; y--) {
                 if (getBlock({x, y, z}) == 1) break;
-                updateBlock({x, y, z}, getGlobalPaletteIdFromBlockName("minecraft:water"));
+                updateBlock({x, y, z}, Blocks::Water::toProtocol(Blocks::Water::Properties::Level::ZERO));
             }
         }
     }
@@ -237,19 +233,19 @@ void ChunkColumn::_generateOverworld(Seed seed)
             auto lastBlock = 0;
             for (int y = CHUNK_HEIGHT_MAX - 2; CHUNK_HEIGHT_MIN <= y; y--) {
                 auto block = getBlock({x, y, z});
-                if (block == getGlobalPaletteIdFromBlockName("minecraft:air")) continue;
-                if (block == getGlobalPaletteIdFromBlockName("minecraft:water")) {
-                    lastBlock = getGlobalPaletteIdFromBlockName("minecraft:water");
+                if (block == Blocks::Air::toProtocol()) continue;
+                if (block == Blocks::Water::toProtocol(Blocks::Water::Properties::Level::ZERO)) {
+                    lastBlock = Blocks::Water::toProtocol(Blocks::Water::Properties::Level::ZERO);
                     continue;
                 }
-                if (block == getGlobalPaletteIdFromBlockName("minecraft:stone") && lastBlock == getGlobalPaletteIdFromBlockName("minecraft:water")) {
-                    updateBlock({x, y, z}, getGlobalPaletteIdFromBlockName("minecraft:sand")); // sand
+                if (block == Blocks::Stone::toProtocol() && lastBlock == Blocks::Water::toProtocol(Blocks::Water::Properties::Level::ZERO)) {
+                    updateBlock({x, y, z}, Blocks::Sand::toProtocol()); // sand
                     break;
                 }
-                if (block == getGlobalPaletteIdFromBlockName("minecraft:stone") && lastBlock == getGlobalPaletteIdFromBlockName("minecraft:air")) {
-                    updateBlock({x, y, z}, getGlobalPaletteIdFromBlockName("minecraft:grass_block")); // grass
-                    updateBlock({x, y - 1, z}, getGlobalPaletteIdFromBlockName("minecraft:dirt")); // dirt
-                    updateBlock({x, y - 2, z}, getGlobalPaletteIdFromBlockName("minecraft:dirt")); // dirt
+                if (block == Blocks::Stone::toProtocol() && lastBlock == Blocks::Air::toProtocol()) {
+                    updateBlock({x, y, z}, Blocks::GrassBlock::toProtocol(Blocks::GrassBlock::Properties::Snowy::FALSE)); // grass
+                    updateBlock({x, y - 1, z}, Blocks::Dirt::toProtocol()); // dirt
+                    updateBlock({x, y - 2, z}, Blocks::Dirt::toProtocol()); // dirt
                     break;
                 }
             }
@@ -260,9 +256,9 @@ void ChunkColumn::_generateOverworld(Seed seed)
     int64_t state = (((this->_chunkPos.x * 0x4F9939F508L + this->_chunkPos.z * 0x1EF1565BD5L) ^ 0x5DEECE66DL) * 0x9D89DAE4D6C29D9L + 0x1844E300013E5B56L) & 0xFFFFFFFFFFFFL;
     for (int x = 0; x < SECTION_WIDTH; x++) {
         for (int z = 0; z < SECTION_WIDTH; z++) {
-            updateBlock({x, 0 + CHUNK_HEIGHT_MIN, z}, getGlobalPaletteIdFromBlockName("minecraft:bedrock")); // bedrock
+            updateBlock({x, 0 + CHUNK_HEIGHT_MIN, z}, Blocks::Bedrock::toProtocol()); // bedrock
             if (4 <= (state >> 17) % 5)
-                updateBlock({x, 1 + CHUNK_HEIGHT_MIN, z}, getGlobalPaletteIdFromBlockName("minecraft:bedrock")); // bedrock
+                updateBlock({x, 1 + CHUNK_HEIGHT_MIN, z}, Blocks::Bedrock::toProtocol()); // bedrock
             state = ((state * 0x530F32EB772C5F11L + 0x89712D3873C4CD04L) * 0x9D89DAE4D6C29D9L + 0x1844E300013E5B56L) & 0xFFFFFFFFFFFFL;
         }
     }
@@ -294,13 +290,13 @@ void ChunkColumn::_generateFlat(Seed seed)
         for (int z = 0; z < SECTION_WIDTH; z++) {
             for (int x = 0; x < SECTION_WIDTH; x++) {
                 if (y == 0) {
-                    updateBlock({x, y + CHUNK_HEIGHT_MIN, z}, getGlobalPaletteIdFromBlockName("minecraft:bedrock"));
+                    updateBlock({x, y + CHUNK_HEIGHT_MIN, z}, Blocks::Bedrock::toProtocol());
                 } else if (y == 1 || y == 2) {
-                    updateBlock({x, y + CHUNK_HEIGHT_MIN, z}, getGlobalPaletteIdFromBlockName("minecraft:dirt"));
+                    updateBlock({x, y + CHUNK_HEIGHT_MIN, z}, Blocks::Dirt::toProtocol());
                 } else if (y == 3) {
-                    updateBlock({x, y + CHUNK_HEIGHT_MIN, z}, getGlobalPaletteIdFromBlockName("minecraft:grass_block"));
+                    updateBlock({x, y + CHUNK_HEIGHT_MIN, z}, Blocks::GrassBlock::toProtocol(Blocks::GrassBlock::Properties::Snowy::FALSE));
                 } else if ((y == 4 || y == 5 || y == 6) && z == 8 && x == 8) {
-                    updateBlock({x, y + CHUNK_HEIGHT_MIN, z}, getGlobalPaletteIdFromBlockName("minecraft:oak_log"));
+                    updateBlock({x, y + CHUNK_HEIGHT_MIN, z}, Blocks::OakLog::toProtocol(Blocks::OakLog::Properties::Axis::Y));
                 } else if (y == 7 || y == 8) {
                     switch (x + (z * 16)) {
                         case 6 + 6 * 16:
@@ -308,37 +304,57 @@ void ChunkColumn::_generateFlat(Seed seed)
                         case 8 + 6 * 16:
                         case 9 + 6 * 16:
                         case 10 + 6 * 16:
-                            updateBlock({x, y + CHUNK_HEIGHT_MIN, z}, getGlobalPaletteIdFromBlockName("minecraft:oak_leaves"));
+                            updateBlock({x, y + CHUNK_HEIGHT_MIN, z},
+                                Blocks::OakLeaves::toProtocol(
+                                    Blocks::OakLeaves::Properties::Distance::ONE,
+                                    Blocks::OakLeaves::Properties::Persistent::FALSE,
+                                    Blocks::OakLeaves::Properties::Waterlogged::FALSE));
                             break;
                         case 6 + 7 * 16:
                         case 7 + 7 * 16:
                         case 8 + 7 * 16:
                         case 9 + 7 * 16:
                         case 10 + 7 * 16:
-                            updateBlock({x, y + CHUNK_HEIGHT_MIN, z}, getGlobalPaletteIdFromBlockName("minecraft:oak_leaves"));
+                            updateBlock({x, y + CHUNK_HEIGHT_MIN, z},
+                                Blocks::OakLeaves::toProtocol(
+                                    Blocks::OakLeaves::Properties::Distance::ONE,
+                                    Blocks::OakLeaves::Properties::Persistent::FALSE,
+                                    Blocks::OakLeaves::Properties::Waterlogged::FALSE));
                             break;
                         case 6 + 8 * 16:
                         case 7 + 8 * 16:
                         case 9 + 8 * 16:
                         case 10 + 8 * 16:
-                            updateBlock({x, y + CHUNK_HEIGHT_MIN, z}, getGlobalPaletteIdFromBlockName("minecraft:oak_leaves"));
+                            updateBlock({x, y + CHUNK_HEIGHT_MIN, z},
+                                Blocks::OakLeaves::toProtocol(
+                                    Blocks::OakLeaves::Properties::Distance::ONE,
+                                    Blocks::OakLeaves::Properties::Persistent::FALSE,
+                                    Blocks::OakLeaves::Properties::Waterlogged::FALSE));
                             break;
                         case 6 + 9 * 16:
                         case 7 + 9 * 16:
                         case 8 + 9 * 16:
                         case 9 + 9 * 16:
                         case 10 + 9 * 16:
-                            updateBlock({x, y + CHUNK_HEIGHT_MIN, z}, getGlobalPaletteIdFromBlockName("minecraft:oak_leaves"));
+                            updateBlock({x, y + CHUNK_HEIGHT_MIN, z},
+                                Blocks::OakLeaves::toProtocol(
+                                    Blocks::OakLeaves::Properties::Distance::ONE,
+                                    Blocks::OakLeaves::Properties::Persistent::FALSE,
+                                    Blocks::OakLeaves::Properties::Waterlogged::FALSE));
                             break;
                         case 6 + 10 * 16:
                         case 7 + 10 * 16:
                         case 8 + 10 * 16:
                         case 9 + 10 * 16:
                         case 10 + 10 * 16:
-                            updateBlock({x, y + CHUNK_HEIGHT_MIN, z}, getGlobalPaletteIdFromBlockName("minecraft:oak_leaves"));
+                            updateBlock({x, y + CHUNK_HEIGHT_MIN, z},
+                                Blocks::OakLeaves::toProtocol(
+                                    Blocks::OakLeaves::Properties::Distance::ONE,
+                                    Blocks::OakLeaves::Properties::Persistent::FALSE,
+                                    Blocks::OakLeaves::Properties::Waterlogged::FALSE));
                             break;
                         case 8 + 8 * 16:
-                            updateBlock({x, y + CHUNK_HEIGHT_MIN, z}, getGlobalPaletteIdFromBlockName("minecraft:oak_log"));
+                            updateBlock({x, y + CHUNK_HEIGHT_MIN, z}, Blocks::OakLog::toProtocol(Blocks::OakLog::Properties::Axis::Y));
                             break;
                     }
                 } else if (y == 9 || y == 10) {
@@ -348,7 +364,11 @@ void ChunkColumn::_generateFlat(Seed seed)
                         case 9 + 8 * 16:
                         case 8 + 9 * 16:
                         case 8 + 8 * 16:
-                            updateBlock({x, y + CHUNK_HEIGHT_MIN, z}, getGlobalPaletteIdFromBlockName("minecraft:oak_leaves"));
+                            updateBlock({x, y + CHUNK_HEIGHT_MIN, z},
+                                Blocks::OakLeaves::toProtocol(
+                                    Blocks::OakLeaves::Properties::Distance::ONE,
+                                    Blocks::OakLeaves::Properties::Persistent::FALSE,
+                                    Blocks::OakLeaves::Properties::Waterlogged::FALSE));
                             break;
                     }
                 }

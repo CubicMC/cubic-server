@@ -33,6 +33,8 @@
 #define MS_PER_TICK 50
 #endif
 
+#define GLOBAL_PALETTE Server::getInstance()->getGlobalPalette()
+
 class Server
 {
 public:

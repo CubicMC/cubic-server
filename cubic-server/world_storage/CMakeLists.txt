@@ -8,8 +8,6 @@ target_sources (${CMAKE_PROJECT_NAME} PRIVATE
     Block.hpp
     Block.cpp
     Palette.hpp
-    globalPalette_TEMP.hpp
-    globalPalette_TEMP.cpp
 )
 
 if (GTEST)
