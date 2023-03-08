@@ -1,3 +1,4 @@
+#include <fstream>
 #include <iostream>
 #include <netdb.h>
 #include <cerrno>
@@ -12,6 +13,8 @@
 
 #include <nlohmann/json.hpp>
 
+#include <CRC.h>
+
 #include "Server.hpp"
 
 #include "protocol/typeSerialization.hpp"
@@ -21,6 +24,10 @@
 #include "logging/Logger.hpp"
 #include "WorldGroup.hpp"
 #include "default/DefaultWorldGroup.hpp"
+
+static const std::unordered_map<std::string, std::uint32_t> _checksums = {
+    {"https://cdn.cubic-mc.com/1.19/blocks-1.19.json", 2718205092}
+};
 
 Server::Server():
     _sockfd(-1),
@@ -67,10 +74,10 @@ void Server::launch()
     // Listen
     listen(_sockfd, SOMAXCONN);
 
-    _downloadFile(std::string("https://cdn.cubic-mc.com/") + MC_VERSION + "/blocks.json", "blocks.json");
+    _downloadFile(std::string("https://cdn.cubic-mc.com/") + MC_VERSION + "/blocks-" + MC_VERSION + ".json", std::string("blocks-") + MC_VERSION + ".json");
 
     // Initialize the global palette
-    _globalPalette.initialize();
+    _globalPalette.initialize(std::string("blocks-") + MC_VERSION + ".json");
     LINFO("GlobalPalette initialized");
 
     // Initialize default world group
@@ -158,19 +165,30 @@ void Server::_downloadFile(const std::string &url, const std::string &path)
 {
     if (std::filesystem::exists(path)) {
         LINFO("File " << path << " already exists. Skipping download");
-        return;
+    } else {
+        LINFO("Downloading file " << path);
+        CURL *curl;
+        FILE *fp;
+        CURLcode res;
+        curl = curl_easy_init();
+        if (curl) {
+            fp = fopen(path.c_str(),"wb");
+            curl_easy_setopt(curl, CURLOPT_URL, url.c_str());
+            // curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, NULL);
+            curl_easy_setopt(curl, CURLOPT_WRITEDATA, fp);
+            res = curl_easy_perform(curl);
+            curl_easy_cleanup(curl);
+            fclose(fp);
+        }
     }
-    CURL *curl;
-    FILE *fp;
-    CURLcode res;
-    curl = curl_easy_init();
-    if (curl) {
-        fp = fopen(path.c_str(),"wb");
-        curl_easy_setopt(curl, CURLOPT_URL, url.c_str());
-        // curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, NULL);
-        curl_easy_setopt(curl, CURLOPT_WRITEDATA, fp);
-        res = curl_easy_perform(curl);
-        curl_easy_cleanup(curl);
-        fclose(fp);
+    std::ifstream file(path);
+    std::string str((std::istreambuf_iterator<char>(file)), std::istreambuf_iterator<char>());
+    std::uint32_t crc = CRC::Calculate(str.c_str(), sizeof(str.c_str()), CRC::CRC_32());
+    // LINFO("CRC32 of " << path << " is " << crc);
+    if (crc == _checksums.at(url))
+        LDEBUG("File " << path << " is valid");
+    else {
+        LFATAL("File " << path << " is corrupted. Please delete it and restart the server");
+        this->stop();
     }
 }

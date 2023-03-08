@@ -9,7 +9,7 @@ void Blocks::GlobalPalette::initialize(std::string path) {
         LERROR("File " << path << " not found !");
         return;
     }
-    nlohmann::json file = nlohmann::json::parse(std::ifstream("blocks.json"));
+    nlohmann::json file = nlohmann::json::parse(std::ifstream(path));
     for(auto block : file.items()) {
         Blocks::InternalBlock b;
         b.name = block.key();
