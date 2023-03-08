@@ -68,7 +68,6 @@ void Server::launch()
     listen(_sockfd, SOMAXCONN);
 
     _downloadFile(std::string("https://cdn.cubic-mc.com/") + MC_VERSION + "/blocks.json", "blocks.json");
-    _downloadFile(std::string("https://cdn.cubic-mc.com/") + MC_VERSION + "/registries.json", "registries.json");
 
     // Initialize the global palette
     _globalPalette.initialize();
@@ -157,6 +156,10 @@ void Server::_stop()
 
 void Server::_downloadFile(const std::string &url, const std::string &path)
 {
+    if (std::filesystem::exists(path)) {
+        LINFO("File " << path << " already exists. Skipping download");
+        return;
+    }
     CURL *curl;
     FILE *fp;
     CURLcode res;
