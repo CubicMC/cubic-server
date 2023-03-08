@@ -66,4 +66,5 @@ target_link_libraries (${CMAKE_PROJECT_NAME} PRIVATE
     nlohmann_json::nlohmann_json
     ${GTKMM_LIBRARIES}
     argparse
+    curl
 )

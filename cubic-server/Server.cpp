@@ -8,6 +8,8 @@
 #include <cstring>
 #include <algorithm>
 
+#include <curl/curl.h>
+
 #include <nlohmann/json.hpp>
 
 #include "Server.hpp"
@@ -64,6 +66,9 @@ void Server::launch()
 
     // Listen
     listen(_sockfd, SOMAXCONN);
+
+    _downloadFile(std::string("https://cdn.cubic-mc.com/") + MC_VERSION + "/blocks.json", "blocks.json");
+    _downloadFile(std::string("https://cdn.cubic-mc.com/") + MC_VERSION + "/registries.json", "registries.json");
 
     // Initialize the global palette
     _globalPalette.initialize();
@@ -148,4 +153,21 @@ void Server::_stop()
     for (auto &command : _commands)
         delete command;
     LINFO("Server stopped");
+}
+
+void Server::_downloadFile(const std::string &url, const std::string &path)
+{
+    CURL *curl;
+    FILE *fp;
+    CURLcode res;
+    curl = curl_easy_init();
+    if (curl) {
+        fp = fopen(path.c_str(),"wb");
+        curl_easy_setopt(curl, CURLOPT_URL, url.c_str());
+        // curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, NULL);
+        curl_easy_setopt(curl, CURLOPT_WRITEDATA, fp);
+        res = curl_easy_perform(curl);
+        curl_easy_cleanup(curl);
+        fclose(fp);
+    }
 }

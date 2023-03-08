@@ -79,6 +79,7 @@ private:
     Server();
     void _acceptLoop();
     void _stop();
+    void _downloadFile(const std::string &url, const std::string &path);
 
 private:
     std::string _host;
