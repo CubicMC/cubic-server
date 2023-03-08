@@ -418,40 +418,40 @@ void Client::sendLoginSuccess(const protocol::LoginSuccess &packet)
             .previousGamemode = 0, // TODO: something like this this->_player->getPreviousGamemode().has_value() ? this->_player->getPreviousGamemode() : -1;
             .dimensionNames = std::vector<std::string>({"minecraft:overworld"}), // TODO: something like this this->_player->_dim->getWorld()->getDimensions();
             .registryCodec = nbt::Compound("", {
-                    new nbt::Compound("minecraft:dimension_type", {
-                            new nbt::String("type", "minecraft:dimension_type"),
-                            new nbt::List("value", {
-                                    new nbt::Compound("", {
-                                            new nbt::String("name", "minecraft:overworld"),
-                                            new nbt::Int("id", 0),
-                                            new nbt::Compound("element", {
-                                                    new nbt::Byte("ultrawarm", 0),
-                                                    new nbt::Int("logical_height", 256),
-                                                    new nbt::String("infiniburn", "#minecraft:infiniburn_overworld"),
-                                                    new nbt::Byte("piglin_safe", 0),
-                                                    new nbt::Float("ambient_light", 0.0),
-                                                    new nbt::Byte("has_skylight", 1),
-                                                    new nbt::String("effects", "minecraft:overworld"),
-                                                    new nbt::Byte("has_raids", 1),
-                                                    new nbt::Int("monster_spawn_block_light_limit", 0),
-                                                    new nbt::Byte("respawn_anchor_works", 0),
-                                                    new nbt::Int("height", 384),
-                                                    new nbt::Byte("has_ceiling", 0),
-                                                    new nbt::Compound("monster_spawn_light_level", {
-                                                            new nbt::String("type", "minecraft:uniform"),
-                                                            new nbt::Compound("value", {
-                                                                    new nbt::Int("max_inclusive", 7),
-                                                                    new nbt::Int("min_inclusive", 0),
-                                                            })
-                                                    }),
-                                                    new nbt::Byte("natural", 1),
-                                                    new nbt::Int("min_y", -64),
-                                                    new nbt::Float("coordinate_scale", 1.0),
-                                                    new nbt::Byte("bed_works", 1),
-                                            }),
-                                    }),
-                            })
-                    }),
+                new nbt::Compound("minecraft:dimension_type", {
+                    new nbt::String("type", "minecraft:dimension_type"),
+                        new nbt::List("value", {
+                            new nbt::Compound("", {
+                                new nbt::String("name", "minecraft:overworld"),
+                                new nbt::Int("id", 0),
+                                new nbt::Compound("element", {
+                                new nbt::Byte("ultrawarm", 0),
+                                new nbt::Int("logical_height", 256),
+                                new nbt::String("infiniburn", "#minecraft:infiniburn_overworld"),
+                                new nbt::Byte("piglin_safe", 0),
+                                new nbt::Float("ambient_light", 0.0),
+                                new nbt::Byte("has_skylight", 1),
+                                new nbt::String("effects", "minecraft:overworld"),
+                                new nbt::Byte("has_raids", 1),
+                                new nbt::Int("monster_spawn_block_light_limit", 0),
+                                new nbt::Byte("respawn_anchor_works", 0),
+                                new nbt::Int("height", 384),
+                                new nbt::Byte("has_ceiling", 0),
+                                new nbt::Compound("monster_spawn_light_level", {
+                                    new nbt::String("type", "minecraft:uniform"),
+                                    new nbt::Compound("value", {
+                                        new nbt::Int("max_inclusive", 7),
+                                        new nbt::Int("min_inclusive", 0),
+                                    })
+                                }),
+                                new nbt::Byte("natural", 1),
+                                new nbt::Int("min_y", -64),
+                                new nbt::Float("coordinate_scale", 1.0),
+                                new nbt::Byte("bed_works", 1),
+                            }),
+                        }),
+                    })
+                }),
                 new nbt::Compound("minecraft:worldgen/biome", {
                     new nbt::String("type", "minecraft:worldgen/biome"),
                     new nbt::List("value", {

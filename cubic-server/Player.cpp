@@ -6,7 +6,6 @@
 #include "Player.hpp"
 #include "Server.hpp"
 #include "command_parser/CommandParser.hpp"
-#include "logging/Logger.hpp"
 #include "protocol/ClientPackets.hpp"
 #include <cstdint>
 #include "World.hpp"
@@ -404,34 +403,32 @@ void Player::sendLoginPlay(const protocol::LoginPlay &packet)
     sendSynchronizePosition({8.5, 100, 8.5});
 
     // Send login message
-    // chat::Message connectionMsg = chat::Message("", {
-    //     .color = "yellow",
-    //     .translate = "multiplayer.player.joined",
-    //     .with = std::vector<chat::Message>({
-    //         chat::Message(
-    //             this->getUsername(),
-    //             {
-    //                 .insertion = this->getUsername(),
-    //             },
-    //             chat::message::ClickEvent(
-    //                 chat::message::ClickEvent::Action::SuggestCommand,
-    //                 "/tell " + this->getUsername() + " "
-    //             ),
-    //             chat::message::HoverEvent(
-    //                 chat::message::HoverEvent::Action::ShowEntity,
-    //                 "{\"type\": \"minecraft:player\", \"id\": \"" + this->getUuidString() + "\", \"name\": \"" + this->getUsername() + "\"}"
-    //             )
-    //         )
-    //     })
-    // });
+    chat::Message connectionMsg = chat::Message("", {
+        .color = "yellow",
+        .translate = "multiplayer.player.joined",
+        .with = std::vector<chat::Message>({
+            chat::Message(
+                this->getUsername(),
+                {
+                    .insertion = this->getUsername(),
+                },
+                chat::message::ClickEvent(
+                    chat::message::ClickEvent::Action::SuggestCommand,
+                    "/tell " + this->getUsername() + " "
+                ),
+                chat::message::HoverEvent(
+                    chat::message::HoverEvent::Action::ShowEntity,
+                    "{\"type\": \"minecraft:player\", \"id\": \"" + this->getUuidString() + "\", \"name\": \"" + this->getUsername() + "\"}"
+                )
+            )
+        })
+    });
 
-    // this->getDimension()->getWorld()->getChat()->sendSystemMessage(
-    //     connectionMsg,
-    //     false,
-    //     this->getDimension()->getWorld()->getWorldGroup()
-    // );
-    // for (auto &player : this->_player->getDimension()->getPlayerList())
-    //     player->sendTeleportEntity(this->_player->getId(), {0, -58, 0});
+    this->getDimension()->getWorld()->getChat()->sendSystemMessage(
+        connectionMsg,
+        false,
+        this->getDimension()->getWorld()->getWorldGroup()
+    );
 }
 
 void Player::sendPlayerInfoUpdate(const protocol::PlayerInfoUpdate &data)
@@ -461,7 +458,7 @@ void Player::sendSpawnPlayer(const protocol::SpawnPlayer &data)
 void Player::sendUpdateTime(const protocol::UpdateTime &data)
 {
     auto pck = protocol::createUpdateTime(data);
-    // this->_cli->_sendData(*pck);
+    this->_cli->_sendData(*pck);
 
     LDEBUG("Sent an Update Time packet");
 }

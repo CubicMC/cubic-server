@@ -162,11 +162,8 @@ namespace protocol
         long timestamp;
         long salt;
         std::vector<ArgumentSignature> argumentSignatures;
-        // There are the things for 1.19
-        bool signedPreview;
-        // There are the things for 1.19.3
-        // int32_t messageCount;
-        // std::bitset<20> acknowledged;
+        int32_t messageCount;
+        std::bitset<20> acknowledged;
     };
 
     /**
