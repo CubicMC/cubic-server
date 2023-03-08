@@ -34,7 +34,7 @@ void Blocks::GlobalPalette::initialize(std::string path) {
     }
 }
 
-Blocks::BlockId Blocks::GlobalPalette::fromBlockToProtocolId(Blocks::Block block) const {
+GlobalBlockId Blocks::GlobalPalette::fromBlockToProtocolId(Blocks::Block block) const {
     auto internalBlock = std::find_if(this->_blocks.begin(), this->_blocks.end(), [&block](const Blocks::InternalBlock &b) {
         return b.name == block.name;
     });
@@ -49,7 +49,7 @@ Blocks::BlockId Blocks::GlobalPalette::fromBlockToProtocolId(Blocks::Block block
     if (block.properties.size() == 0 && internalBlock->properties.size() == 0)
         return internalBlock->baseProtocolId;
 
-    BlockId id = internalBlock->baseProtocolId;
+    GlobalBlockId id = internalBlock->baseProtocolId;
     for (auto property : block.properties) {
         auto internalProperty = std::find_if(internalBlock->properties.begin(), internalBlock->properties.end(), [&property](const Blocks::InternalProperty &p) {
             return p.name == property.first;
@@ -68,7 +68,7 @@ Blocks::BlockId Blocks::GlobalPalette::fromBlockToProtocolId(Blocks::Block block
     return id;
 }
 
-Blocks::Block Blocks::GlobalPalette::fromProtocolIdToBlock(Blocks::BlockId id) const {
+Blocks::Block Blocks::GlobalPalette::fromProtocolIdToBlock(GlobalBlockId id) const {
     for (auto b : this->_blocks) {
         if (id < b.baseProtocolId || id > b.maxProtocolId)
             continue;

@@ -4,10 +4,9 @@
 
 #include "nlohmann/json.hpp"
 
-namespace Blocks {
-    // Using int32_t because it's the same size as a varint
-    typedef int32_t BlockId;
+#include "types.hpp"
 
+namespace Blocks {
     /**
      * @brief Internal representation of a block property (only used in the GlobalPalette class)
      */
@@ -47,13 +46,13 @@ namespace Blocks {
              * @param block The block to convert
              * @return The protocol id of the block
              */
-            BlockId fromBlockToProtocolId(const Block block) const;
+            GlobalBlockId fromBlockToProtocolId(const Block block) const;
             /**
              * @brief Convert a protocol id to a block
              * @param id The protocol id to convert
              * @return The block corresponding to the protocol id
              */
-            Block fromProtocolIdToBlock(BlockId id) const;
+            Block fromProtocolIdToBlock(GlobalBlockId id) const;
             /**
              * @brief Initialize the global palette with the blocks from the given json file
              * @param path The path to the json file
