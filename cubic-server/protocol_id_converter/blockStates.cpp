@@ -4,7 +4,7 @@
 #include "blockStates.hpp"
 #include "logging/Logger.hpp"
 
-void Blocks::GlobalPalette::initialize(std::string path) {
+void Blocks::GlobalPalette::initialize(const std::string &path) {
     if (!std::filesystem::exists(path)) {
         LERROR("File " << path << " not found !");
         return;
@@ -34,7 +34,7 @@ void Blocks::GlobalPalette::initialize(std::string path) {
     }
 }
 
-BlockId Blocks::GlobalPalette::fromBlockToProtocolId(Blocks::Block block) const {
+BlockId Blocks::GlobalPalette::fromBlockToProtocolId(const Blocks::Block &block) const {
     auto internalBlock = std::find_if(this->_blocks.begin(), this->_blocks.end(), [&block](const Blocks::InternalBlock &b) {
         return b.name == block.name;
     });
