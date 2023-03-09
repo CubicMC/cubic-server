@@ -12,7 +12,7 @@ generation::Overworld::Overworld(Seed seed)
 {
 }
 
-GlobalBlockId generation::Overworld::getBlock(position_type x, position_type y, position_type z)
+BlockId generation::Overworld::getBlock(position_type x, position_type y, position_type z)
 {
     //! OLD
     // double test = y - world_storage::CHUNK_HEIGHT_MIN;
@@ -56,7 +56,7 @@ GlobalBlockId generation::Overworld::getBlock(position_type x, position_type y, 
     auto noise = getNoise(x, y, z);
     int heightOffset = 100;
     int surfaceLevel = heightOffset + noise.noise2D.continentalness * 20;
-    GlobalBlockId blockId = 0;
+    BlockId blockId = 0;
 
     if (y < surfaceLevel)
         blockId = 1;
@@ -82,18 +82,18 @@ GlobalBlockId generation::Overworld::getBlock(position_type x, position_type y, 
     return blockId;
 }
 
-GlobalBlockId generation::Overworld::getBlock(const Position &pos)
+BlockId generation::Overworld::getBlock(const Position &pos)
 {
     return getBlock(pos.x, pos.y, pos.z);
 }
 
-GlobalBiomeId generation::Overworld::getBiome(position_type x, position_type y, position_type z)
+BiomeId generation::Overworld::getBiome(position_type x, position_type y, position_type z)
 {
     // TODO: Implement lol
     return getNoise(x, y, z).noise2D.weirdness > 0.0 ? 0 : 1;
 }
 
-GlobalBiomeId generation::Overworld::getBiome(const Position &pos)
+BiomeId generation::Overworld::getBiome(const Position &pos)
 {
     return getBiome(pos.x, pos.y, pos.z);
 }

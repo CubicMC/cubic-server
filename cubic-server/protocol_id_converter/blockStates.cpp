@@ -4,7 +4,7 @@
 #include "blockStates.hpp"
 #include "logging/Logger.hpp"
 
-void Blocks::GlobalPalette::initialize(std::string path) {
+void Blocks::GlobalPalette::initialize(const std::string &path) {
     if (!std::filesystem::exists(path)) {
         LERROR("File " << path << " not found !");
         return;
@@ -34,7 +34,7 @@ void Blocks::GlobalPalette::initialize(std::string path) {
     }
 }
 
-GlobalBlockId Blocks::GlobalPalette::fromBlockToProtocolId(Blocks::Block block) const {
+BlockId Blocks::GlobalPalette::fromBlockToProtocolId(const Blocks::Block &block) const {
     auto internalBlock = std::find_if(this->_blocks.begin(), this->_blocks.end(), [&block](const Blocks::InternalBlock &b) {
         return b.name == block.name;
     });
@@ -49,7 +49,7 @@ GlobalBlockId Blocks::GlobalPalette::fromBlockToProtocolId(Blocks::Block block) 
     if (block.properties.size() == 0 && internalBlock->properties.size() == 0)
         return internalBlock->baseProtocolId;
 
-    GlobalBlockId id = internalBlock->baseProtocolId;
+    BlockId id = internalBlock->baseProtocolId;
     for (auto property : block.properties) {
         auto internalProperty = std::find_if(internalBlock->properties.begin(), internalBlock->properties.end(), [&property](const Blocks::InternalProperty &p) {
             return p.name == property.first;
@@ -68,7 +68,7 @@ GlobalBlockId Blocks::GlobalPalette::fromBlockToProtocolId(Blocks::Block block) 
     return id;
 }
 
-Blocks::Block Blocks::GlobalPalette::fromProtocolIdToBlock(GlobalBlockId id) const {
+Blocks::Block Blocks::GlobalPalette::fromProtocolIdToBlock(BlockId id) const {
     for (auto b : this->_blocks) {
         if (id < b.baseProtocolId || id > b.maxProtocolId)
             continue;

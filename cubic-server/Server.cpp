@@ -27,7 +27,9 @@
 
 static const std::unordered_map<std::string, std::uint32_t> _checksums = {
     {"https://cdn.cubic-mc.com/1.19/blocks-1.19.json", 0x8b138b58},
-    {"https://cdn.cubic-mc.com/1.19.3/blocks-1.19.3.json", 0xb8a10fa2}
+    {"https://cdn.cubic-mc.com/1.19/registries-1.19.json", 0x30407a82},
+    {"https://cdn.cubic-mc.com/1.19.3/blocks-1.19.3.json", 0xb8a10fa2},
+    {"https://cdn.cubic-mc.com/1.19.3/registries-1.19.3.json", 0xdfabe75c}
 };
 
 Server::Server():
@@ -76,10 +78,15 @@ void Server::launch()
     listen(_sockfd, SOMAXCONN);
 
     _downloadFile(std::string("https://cdn.cubic-mc.com/") + MC_VERSION + "/blocks-" + MC_VERSION + ".json", std::string("blocks-") + MC_VERSION + ".json");
+    _downloadFile(std::string("https://cdn.cubic-mc.com/") + MC_VERSION + "/registries-" + MC_VERSION + ".json", std::string("registries-") + MC_VERSION + ".json");
 
     // Initialize the global palette
     _globalPalette.initialize(std::string("blocks-") + MC_VERSION + ".json");
     LINFO("GlobalPalette initialized");
+
+    // Initialize the item converter
+    _itemConverter.initialize(std::string("registries-") + MC_VERSION + ".json");
+    LINFO("ItemConverter initialized");
 
     // Initialize default world group
     auto defaultChat = std::make_shared<Chat>();

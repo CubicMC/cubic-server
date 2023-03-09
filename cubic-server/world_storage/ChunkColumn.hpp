@@ -83,9 +83,9 @@ public:
     ChunkColumn(const Position2D &chunkPos);
     ~ChunkColumn();
 
-    void updateBlock(Position pos, GlobalBlockId id);
-    GlobalBlockId getBlock(Position pos) const;
-    const std::array<GlobalBlockId, SECTION_3D_SIZE * NB_OF_SECTIONS> &getBlocks() const;
+    void updateBlock(Position pos, BlockId id);
+    BlockId getBlock(Position pos) const;
+    const std::array<BlockId, SECTION_3D_SIZE * NB_OF_SECTIONS> &getBlocks() const;
 
     void updateSkyLight(Position pos, uint8_t light);
     uint8_t getSkyLight(Position pos) const;
@@ -95,9 +95,9 @@ public:
     uint8_t getBlockLight(Position pos) const;
     const std::array<uint8_t, SECTION_3D_SIZE * NB_OF_SECTIONS> &getBlockLights() const;
 
-    void updateBiome(Position pos, GlobalBiomeId biome);
-    GlobalBiomeId getBiome(Position pos) const;
-    const std::array<GlobalBiomeId, BIOME_SECTION_3D_SIZE * NB_OF_SECTIONS> &getBiomes() const;
+    void updateBiome(Position pos, BiomeId biome);
+    BiomeId getBiome(Position pos) const;
+    const std::array<BiomeId, BIOME_SECTION_3D_SIZE * NB_OF_SECTIONS> &getBiomes() const;
 
     void updateBlockEntity(Position pos, BlockEntity *BlockEntity);
     void addBlockEntity(Position pos, BlockEntity *BlockEntity);
@@ -125,7 +125,7 @@ public:
     void generate(WorldType worldType, Seed seed);
 
 private:
-    std::array<GlobalBlockId, BLOCKS_PER_CHUNK> _blocks;
+    std::array<BlockId, BLOCKS_PER_CHUNK> _blocks;
     std::array<uint8_t, BLOCKS_PER_CHUNK> _skyLights;
     std::array<uint8_t, BLOCKS_PER_CHUNK> _blockLights;
     std::array<uint8_t, BIOME_PER_CHUNK> _biomes;

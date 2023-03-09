@@ -46,18 +46,18 @@ namespace Blocks {
              * @param block The block to convert
              * @return The protocol id of the block
              */
-            GlobalBlockId fromBlockToProtocolId(const Block block) const;
+            BlockId fromBlockToProtocolId(const Block &block) const;
             /**
              * @brief Convert a protocol id to a block
              * @param id The protocol id to convert
              * @return The block corresponding to the protocol id
              */
-            Block fromProtocolIdToBlock(GlobalBlockId id) const;
+            Block fromProtocolIdToBlock(BlockId id) const;
             /**
              * @brief Initialize the global palette with the blocks from the given json file
              * @param path The path to the json file
              */
-            void initialize(std::string path = "blocks.json");
+            void initialize(const std::string &path = "blocks.json");
         private:
             std::vector<InternalBlock> _blocks; // The internal blocks
     };

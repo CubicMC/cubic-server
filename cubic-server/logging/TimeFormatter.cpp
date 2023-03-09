@@ -17,7 +17,8 @@ namespace logging
     std::string TimeFormatter::get_time()
     {
         std::chrono::time_point<std::chrono::system_clock> time_point = std::chrono::system_clock::now();
-        const std::time_t now = std::time(nullptr);
+        const std::time_t now = std::chrono::system_clock::to_time_t(time_point);
+        // const std::time_t now = std::time(nullptr);
         const std::tm* tm_now = std::localtime(&now);
         int millis = std::chrono::duration_cast<std::chrono::milliseconds>(time_point.time_since_epoch()).count() - (now * 1000);
         std::stringstream ss;
@@ -37,7 +38,8 @@ namespace logging
     std::string TimeFormatter::get_time(std::string format)
     {
         std::chrono::time_point<std::chrono::system_clock> time_point = std::chrono::system_clock::now();
-        const std::time_t now = std::time(nullptr);
+        const std::time_t now = std::chrono::system_clock::to_time_t(time_point);
+        // const std::time_t now = std::time(nullptr);
         const std::tm* tm_now = std::localtime(&now);
         int millis = std::chrono::duration_cast<std::chrono::milliseconds>(time_point.time_since_epoch()).count() - (now * 1000);
         std::unordered_map<std::string, std::string> values = {
@@ -69,7 +71,8 @@ namespace logging
     std::string TimeFormatter::get_time(std::string &format)
     {
         std::chrono::time_point<std::chrono::system_clock> time_point = std::chrono::system_clock::now();
-        const std::time_t now = std::time(nullptr);
+        const std::time_t now = std::chrono::system_clock::to_time_t(time_point);
+        // const std::time_t now = std::time(nullptr);
         const std::tm* tm_now = std::localtime(&now);
         int millis = std::chrono::duration_cast<std::chrono::milliseconds>(time_point.time_since_epoch()).count() - (now * 1000);
         std::unordered_map<std::string, std::string> values = {
