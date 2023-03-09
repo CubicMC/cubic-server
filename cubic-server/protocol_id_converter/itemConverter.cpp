@@ -18,7 +18,7 @@ void Items::ItemConverter::initialize(const std::string &path) {
     }
 }
 
-GlobalItemId Items::ItemConverter::fromItemToProtocolId(const std::string &name) const {
+ItemId Items::ItemConverter::fromItemToProtocolId(const std::string &name) const {
     auto item = std::find_if(this->_items.begin(), this->_items.end(), [&name](const Items::InternalItem &i) {
         return i.name == name;
     });
@@ -29,7 +29,7 @@ GlobalItemId Items::ItemConverter::fromItemToProtocolId(const std::string &name)
     return item->protocolId;
 }
 
-std::string Items::ItemConverter::fromProtocolIdToItem(GlobalItemId id) const {
+std::string Items::ItemConverter::fromProtocolIdToItem(ItemId id) const {
     auto item = std::find_if(this->_items.begin(), this->_items.end(), [&id](const Items::InternalItem &i) {
         return i.protocolId == id;
     });

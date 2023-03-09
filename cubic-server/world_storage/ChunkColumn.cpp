@@ -26,7 +26,7 @@ ChunkColumn::~ChunkColumn()
 {
 }
 
-void ChunkColumn::updateBlock(Position pos, GlobalBlockId id)
+void ChunkColumn::updateBlock(Position pos, BlockId id)
 {
     // TODO: Move the bitStoring to a separate class
     // Heightmap update
@@ -46,12 +46,12 @@ void ChunkColumn::updateBlock(Position pos, GlobalBlockId id)
     _blocks.at(calculateBlockIdx(pos)) = id;
 }
 
-GlobalBlockId ChunkColumn::getBlock(Position pos) const
+BlockId ChunkColumn::getBlock(Position pos) const
 {
     return _blocks.at(calculateBlockIdx(pos));
 }
 
-const std::array<GlobalBlockId, SECTION_3D_SIZE * NB_OF_SECTIONS> &ChunkColumn::getBlocks() const
+const std::array<BlockId, SECTION_3D_SIZE * NB_OF_SECTIONS> &ChunkColumn::getBlocks() const
 {
     return _blocks;
 }

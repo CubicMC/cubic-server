@@ -39,10 +39,10 @@ namespace generation
         Generator(Seed seed);
         virtual ~Generator() = default;
 
-        virtual GlobalBlockId getBlock(position_type x, position_type y, position_type z) = 0;
-        virtual GlobalBlockId getBlock(const Position &pos) = 0;
-        virtual GlobalBiomeId getBiome(position_type x, position_type y, position_type z) = 0;
-        virtual GlobalBiomeId getBiome(const Position &pos) = 0;
+        virtual BlockId getBlock(position_type x, position_type y, position_type z) = 0;
+        virtual BlockId getBlock(const Position &pos) = 0;
+        virtual BiomeId getBiome(position_type x, position_type y, position_type z) = 0;
+        virtual BiomeId getBiome(const Position &pos) = 0;
 
         virtual GenerationNoise getNoise(position_type x, position_type y, position_type z, double frequency = 0.02, uint8_t octaves = 3);
 

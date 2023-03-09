@@ -12,11 +12,11 @@ namespace generation
     {
     public:
         Overworld(Seed seed);
-        GlobalBlockId getBlock(position_type x, position_type y, position_type z) override;
-        GlobalBlockId getBlock(const Position &pos) override;
+        BlockId getBlock(position_type x, position_type y, position_type z) override;
+        BlockId getBlock(const Position &pos) override;
 
-        GlobalBiomeId getBiome(position_type x, position_type y, position_type z) override;
-        GlobalBiomeId getBiome(const Position &pos) override;
+        BiomeId getBiome(position_type x, position_type y, position_type z) override;
+        BiomeId getBiome(const Position &pos) override;
     };
 }
 
