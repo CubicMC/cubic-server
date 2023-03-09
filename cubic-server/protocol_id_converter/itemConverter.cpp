@@ -4,7 +4,7 @@
 #include "itemConverter.hpp"
 #include "logging/Logger.hpp"
 
-void Items::ItemConverter::initialize(const std::string path) {
+void Items::ItemConverter::initialize(const std::string &path) {
     if (!std::filesystem::exists(path)) {
         LERROR("File " << path << " not found !");
         return;
@@ -18,8 +18,8 @@ void Items::ItemConverter::initialize(const std::string path) {
     }
 }
 
-Items::ItemId Items::ItemConverter::fromItemToProtocolId(std::string name) const {
-    auto item = std::find_if(this->_items.begin(), this->_items.end(), [&name](Items::InternalItem i) {
+GlobalItemId Items::ItemConverter::fromItemToProtocolId(const std::string &name) const {
+    auto item = std::find_if(this->_items.begin(), this->_items.end(), [&name](const Items::InternalItem &i) {
         return i.name == name;
     });
     if (item == this->_items.end()) {
@@ -29,8 +29,8 @@ Items::ItemId Items::ItemConverter::fromItemToProtocolId(std::string name) const
     return item->protocolId;
 }
 
-std::string Items::ItemConverter::fromProtocolIdToItem(ItemId id) const {
-    auto item = std::find_if(this->_items.begin(), this->_items.end(), [&id](Items::InternalItem i) {
+std::string Items::ItemConverter::fromProtocolIdToItem(GlobalItemId id) const {
+    auto item = std::find_if(this->_items.begin(), this->_items.end(), [&id](const Items::InternalItem &i) {
         return i.protocolId == id;
     });
     if (item == this->_items.end()) {
