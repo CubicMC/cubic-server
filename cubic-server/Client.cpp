@@ -409,7 +409,6 @@ void Client::sendLoginSuccess(const protocol::LoginSuccess &packet)
 
     switchToPlayState(packet.uuid, packet.username);
     LDEBUG("Switched to play state");
-    this->_player->setGamemode(3);
 
     protocol::LoginPlay resPck = {
             .entityID = _player->getId(), // TODO: figure out what is this

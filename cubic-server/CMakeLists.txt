@@ -29,6 +29,7 @@ target_sources (${CMAKE_PROJECT_NAME} PRIVATE
     allCommands.hpp
     types.hpp
     types.cpp
+    blocks.hpp
 )
 
 if (GTEST)
@@ -61,3 +62,4 @@ add_subdirectory (command_parser)
 add_subdirectory (whitelist)
 add_subdirectory (generation)
 add_subdirectory (thread_pool)
+add_subdirectory (blocks)

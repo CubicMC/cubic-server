@@ -2,8 +2,6 @@
 #include "Server.hpp"
 #include "World.hpp"
 
-#include "world_storage/globalPalette_TEMP.hpp"
-
 #include <iostream>
 
 
@@ -37,9 +35,9 @@ void command_parser::DumpChunk::execute(std::vector<std::string>& args, Player *
     auto blocks = chunk.getBlocks();
 
     for (const auto &block : blocks) {
-        auto name = world_storage::getBlockFromGlobalPaletteId(block);
-        if (world_storage::getGlobalPaletteIdFromBlockName(name) != block || (block == 0 && name != "minecraft:air"))
-            LDEBUG("ERROR: " << name << " has id " << block << " but should have id " << world_storage::getGlobalPaletteIdFromBlockName(name));
+        auto name = GLOBAL_PALETTE.fromProtocolIdToBlock(block).name;
+        if (GLOBAL_PALETTE.fromBlockToProtocolId({name}) != block || (block == 0 && name != "minecraft:air"))
+            LDEBUG("ERROR: " << name << " has id " << block << " but should have id " << GLOBAL_PALETTE.fromBlockToProtocolId({name}));
     }
     LDEBUG("--- CHUNK DATA ---");
     {
@@ -88,7 +86,7 @@ void command_parser::DumpChunk::execute(std::vector<std::string>& args, Player *
             LDEBUG('\t' << "Palette size: " << paletteSize);
             for (int32_t i = 0; i < paletteSize; i++) {
                 auto value = protocol::popVarInt(at, eof);
-                LDEBUG('\t' << '\t' << "Palette entry " << i << ": " << value << " -> " << world_storage::getBlockFromGlobalPaletteId(value));
+                LDEBUG('\t' << '\t' << "Palette entry " << i << ": " << value << " -> " << GLOBAL_PALETTE.fromProtocolIdToBlock(value).name);
             }
         } else
             LDEBUG('\t' << "Direct value palette");
@@ -116,7 +114,7 @@ void command_parser::DumpChunk::execute(std::vector<std::string>& args, Player *
             LDEBUG('\t' << "Palette size: " << paletteSize);
             for (int32_t i = 0; i < paletteSize; i++) {
                 auto value = protocol::popVarInt(at, eof);
-                LDEBUG('\t' << '\t' << "Palette entry " << i << ": " << value << " -> " << world_storage::getBlockFromGlobalPaletteId(value));
+                LDEBUG('\t' << '\t' << "Palette entry " << i << ": " << value << " -> " << GLOBAL_PALETTE.fromProtocolIdToBlock(value).name);
             }
         } else
             LDEBUG('\t' << "Direct value palette");

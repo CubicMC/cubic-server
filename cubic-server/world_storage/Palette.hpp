@@ -7,7 +7,6 @@
 #include <map>
 
 #include "world_storage/Block.hpp"
-#include "globalPalette_TEMP.hpp"
 
 namespace world_storage {
 

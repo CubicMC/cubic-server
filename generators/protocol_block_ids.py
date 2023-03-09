@@ -203,14 +203,14 @@ class Block:
                 data += "Properties::" + prop.capitalize() + " " + prop + ", "
             data = data[:-2]
         data += ");\n"
-        data += "BlockId paletteToProtocol(std::vector<std::pair<std::string, std::string>> properties);\n"
+        # data += "BlockId paletteToProtocol(std::vector<std::pair<std::string, std::string>> properties);\n"
         data += "}\n"
         return data + "\n"
 
     def namespaceForSourceFile(self):
         data = "namespace " + self.name.split(":")[1].title().replace("_", "") + " {\n"
         data += self.toProtocol()
-        data += self.paletteToProtocol()
+        # data += self.paletteToProtocol()
         data += "}\n"
         return data + "\n"
 

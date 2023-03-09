@@ -83,7 +83,6 @@ public:
     ChunkColumn(const Position2D &chunkPos);
     ~ChunkColumn();
 
-    void updateBlock(Position pos, Block block);
     void updateBlock(Position pos, GlobalBlockId id);
     GlobalBlockId getBlock(Position pos) const;
     const std::array<GlobalBlockId, SECTION_3D_SIZE * NB_OF_SECTIONS> &getBlocks() const;

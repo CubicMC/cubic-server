@@ -10,6 +10,10 @@ if (CMAKE_BUILD_TYPE MATCHES Debug)
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g3")
 endif()
 
+if (CMAKE_BUILD_TYPE MATCHES Release)
+    set(CMAKE_INTERPROCEDURAL_OPTIMIZATION TRUE)
+endif()
+
 include(FetchContent)
 
 FetchContent_Declare(
