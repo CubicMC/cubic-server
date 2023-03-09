@@ -10,10 +10,12 @@ namespace logging
     LogMessage::LogMessage(LogLevel level, std::string message)
         :
         _level(level),
-        _message(message),
-        _time(std::time(nullptr)),
-        _millis(std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count() - (_time * 1000))
+        _message(message)
     {
+        std::chrono::time_point<std::chrono::system_clock> time_point = std::chrono::system_clock::now();
+        const std::time_t now = std::chrono::system_clock::to_time_t(time_point);
+        _time = now;
+        _millis = std::chrono::duration_cast<std::chrono::milliseconds>(time_point.time_since_epoch()).count() - (now * 1000);
     }
 
     const LogLevel& LogMessage::get_level() const

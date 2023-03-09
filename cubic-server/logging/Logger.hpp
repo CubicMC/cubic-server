@@ -76,8 +76,8 @@ namespace logging
     private:
         const LogLevel _level;
         const std::string _message;
-        const std::time_t _time;
-        const int _millis;
+        std::time_t _time;
+        int _millis;
     };
     std::ostream& operator<<(std::ostream& os, const LogMessage& log);
 
