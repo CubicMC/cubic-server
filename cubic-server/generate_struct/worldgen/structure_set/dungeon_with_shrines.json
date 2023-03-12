@@ -1,0 +1,14 @@
+{
+  "structures": [
+    {
+      "structure": "generate_struct:dungeon",
+      "weight": 1
+    }
+  ],
+  "placement": {
+    "salt": 121541467,
+    "spacing": 500,
+    "separation": 15,
+    "type": "minecraft:random_spread"
+  }
+}
