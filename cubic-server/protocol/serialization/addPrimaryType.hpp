@@ -64,7 +64,8 @@ namespace protocol
                 return;
             }
             out.push_back((value & SEGMENT_BITS) | CONTINUE_BIT);
-            value >>= 7;
+            // value >>= 7;
+            value = *((uint32_t *) &value) >> 7;
         }
     }
 
@@ -94,7 +95,8 @@ namespace protocol
                 return;
             }
             out.push_back((value & SEGMENT_BITS) | CONTINUE_BIT);
-            value >>= 7;
+            // value >>= 7;
+            value = *((uint64_t *) &value) >> 7;
         }
     }
 

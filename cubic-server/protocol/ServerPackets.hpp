@@ -32,6 +32,7 @@ namespace protocol
         QueryBlockEntityTag = 0x01,
         ChangeDifficulty = 0x02,
         MessageAcknowledgement = 0x03, // TODO: Implement
+        ChatCommand = 0x04,
         ChatMessage = 0x05,
         ClientCommand = 0x06,
         ClientInformation = 0x07,
@@ -138,6 +139,28 @@ namespace protocol
         uint8_t new_difficulty;
     };
     std::shared_ptr<ChangeDifficulty> parseChangeDifficulty(std::vector<uint8_t> &buffer);
+
+    /**
+     * @brief this is the link to the packet: https://wiki.vg/Protocol#Chat_Command
+     *
+     */
+    struct ChatCommand : BaseServerPacket
+    {
+        std::string command;
+        long timestamp;
+        long salt;
+        std::vector<ArgumentSignature> argumentSignatures;
+        int32_t messageCount;
+        std::bitset<20> acknowledged;
+    };
+
+    /**
+     * @brief This function is used to parse the chat command packet
+     *
+     * @param buffer
+     * @return std::shared_ptr<ChatCommand>
+     */
+    std::shared_ptr<ChatCommand> parseChatCommand(std::vector<uint8_t> &buffer);
 
     struct ChatMessage : BaseServerPacket
     {
@@ -512,6 +535,7 @@ namespace protocol
             {ServerPacketsID::ConfirmTeleportation, &parseConfirmTeleportation},
             {ServerPacketsID::QueryBlockEntityTag, &parseQueryBlockEntityTag},
             {ServerPacketsID::ChangeDifficulty, &parseChangeDifficulty},
+            {ServerPacketsID::ChatCommand, &parseChatCommand},
             {ServerPacketsID::ChatMessage, &parseChatMessage},
             {ServerPacketsID::ClientCommand, &parseClientCommand},
             {ServerPacketsID::ClientInformation, &parseClientInformation},

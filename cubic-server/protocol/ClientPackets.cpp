@@ -140,6 +140,17 @@ std::shared_ptr<std::vector<uint8_t>> protocol::createPlayDisconnect(const Disco
     return packet;
 }
 
+std::shared_ptr<std::vector<uint8_t>> protocol::createUnloadChunk(const Position2D &in)
+{
+    std::vector<uint8_t> payload;
+    serialize(payload,
+        in.x, addInt,
+        in.z, addInt);
+    auto packet = std::make_shared<std::vector<uint8_t>>();
+    finalize(*packet, payload, (int32_t) ClientPacketID::UnloadChunk);
+    return packet;
+}
+
 std::shared_ptr<std::vector<uint8_t>> protocol::createKeepAlive(long id)
 {
     std::vector<uint8_t> payload;
@@ -307,39 +318,45 @@ std::shared_ptr<std::vector<uint8_t>> protocol::createPlayerInfoUpdate(const Pla
 {
     std::vector<uint8_t> payload;
     serialize(payload,
-        in.actions, addBitSet,
+        in.actions, addByte,
         (int32_t) in.actionSets.size(), addVarInt
     );
 
     for (auto &actionSet : in.actionSets) {
         serialize(payload, actionSet.uuid, addUUID);
 
-        if (BITSET_GET_BIT(in.actions, 0)) { // Add Player
+        if (in.actions & (uint8_t)PlayerInfoUpdateActions::AddPlayer) { // Add Player
             serialize(payload,
                 actionSet.addPlayer.name, addString,
                 0, addVarInt // Number of properties -> To change to handle skins and stuff
             );
         }
-        if (BITSET_GET_BIT(in.actions, 1)) { // Initialize chat
+        if (in.actions & (uint8_t)PlayerInfoUpdateActions::InitializeChat) { // Initialize chat
+            serialize(payload,
+                actionSet.initializeChat.has_sig_data, addBoolean
+            );
             // TODO: miki
         }
-        if (BITSET_GET_BIT(in.actions, 2)) { // Update gamemode
+        if (in.actions & (uint8_t)PlayerInfoUpdateActions::UpdateGamemode) { // Update gamemode
             serialize(payload,
                 actionSet.updateGamemode.gamemode, addVarInt
             );
         }
-        if (BITSET_GET_BIT(in.actions, 3)) { // Update listed
+        if (in.actions & (uint8_t)PlayerInfoUpdateActions::UpdateListed) { // Update listed
             serialize(payload,
                 actionSet.updateListed.listed, addBoolean
             );
         }
-        if (BITSET_GET_BIT(in.actions, 4)) { // Update latency
+        if (in.actions & (uint8_t)PlayerInfoUpdateActions::UpdateLatency) { // Update latency
             serialize(payload,
                 actionSet.updateLatency.latency, addVarInt
             );
         }
-        if (BITSET_GET_BIT(in.actions, 5)) { // Update display name
-            // TODO
+        if (in.actions & (uint8_t)PlayerInfoUpdateActions::UpdateDisplayName) { // Update display name
+            serialize(payload,
+                actionSet.updateDisplayName.hasDisplayName, addBoolean
+            );
+            // TODO: Add a proper display name
         }
     }
 
@@ -386,6 +403,33 @@ std::shared_ptr<std::vector<uint8_t>> protocol::createHeadRotation(const HeadRot
     );
     auto packet = std::make_shared<std::vector<uint8_t>>();
     finalize(*packet, payload, (int32_t) ClientPacketID::HeadRotation);
+    return packet;
+}
+
+std::shared_ptr<std::vector<uint8_t>> protocol::createServerData(const ServerData &in)
+{
+    std::vector<uint8_t> payload;
+
+    serialize(payload,
+        in.has_motd, addBoolean,
+        in.has_icon, addBoolean,
+        in.enforce_secure_chat, addBoolean
+    );
+    auto packet = std::make_shared<std::vector<uint8_t>>();
+    finalize(*packet, payload, (int32_t) ClientPacketID::ServerData);
+    return packet;
+}
+
+std::shared_ptr<std::vector<uint8_t>> protocol::createCenterChunk(const Position2D &in)
+{
+    std::vector<uint8_t> payload;
+
+    serialize(payload,
+        in.x, addVarInt,
+        in.z, addVarInt
+    );
+    auto packet = std::make_shared<std::vector<uint8_t>>();
+    finalize(*packet, payload, (int32_t) ClientPacketID::CenterChunk);
     return packet;
 }
 
@@ -480,5 +524,15 @@ std::shared_ptr<std::vector<uint8_t>> protocol::createTeleportEntity(const Telep
 
     auto packet = std::make_shared<std::vector<uint8_t>>();
     finalize(*packet, payload, (int32_t)ClientPacketID::TeleportEntity);
+    return packet;
+}
+
+std::shared_ptr<std::vector<uint8_t>> protocol::createFeatureFlags(const FeatureFlags &in)
+{
+    std::vector<uint8_t> payload;
+    serialize(payload,
+        in.flags, addArray<std::string, addString>);
+    auto packet = std::make_shared<std::vector<uint8_t>>();
+    finalize(*packet, payload, (int32_t) ClientPacketID::FeatureFlags);
     return packet;
 }

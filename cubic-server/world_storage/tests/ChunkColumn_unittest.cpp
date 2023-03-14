@@ -8,7 +8,7 @@ using world_storage::NB_OF_CHUNKS;
 world_storage::ChunkColumn chunkColumn;
 
 // TEST(ChunkColumnTest, Blocks) {
-//     protocol::Position pos = {0, 0, 0};
+//     Position pos = {0, 0, 0};
 //     chunkColumn.updateBlock(pos, 1);
 //     EXPECT_EQ(chunkColumn.getBlock(pos), 1);
 //     std::array<uint16_t, CHUNK_3D_SIZE*NB_OF_CHUNKS> blocks;
@@ -17,7 +17,7 @@ world_storage::ChunkColumn chunkColumn;
 // }
 
 TEST(ChunkColumnTest, SkyLights) {
-    protocol::Position pos = {0, 0, 0};
+    Position pos = {0, 0, 0};
     chunkColumn.updateSkyLight(pos, 1);
     EXPECT_EQ(chunkColumn.getSkyLight(pos), 1);
     std::array<uint8_t, CHUNK_3D_SIZE*NB_OF_CHUNKS> skyLights;
@@ -26,7 +26,7 @@ TEST(ChunkColumnTest, SkyLights) {
 }
 
 TEST(ChunkColumnTest, BlockLights) {
-    protocol::Position pos = {0, 0, 0};
+    Position pos = {0, 0, 0};
     chunkColumn.updateBlockLight(pos, 1);
     EXPECT_EQ(chunkColumn.getBlockLight(pos), 1);
     std::array<uint8_t, CHUNK_3D_SIZE*NB_OF_CHUNKS> blockLights;
@@ -35,7 +35,7 @@ TEST(ChunkColumnTest, BlockLights) {
 }
 
 TEST(ChunkColumnTest, Biomes) {
-    protocol::Position pos = {0, 0, 0};
+    Position pos = {0, 0, 0};
     chunkColumn.updateBiome(pos, 1);
     EXPECT_EQ(chunkColumn.getBiome(pos), 1);
     std::array<uint8_t, BIOME_3D_SIZE*NB_OF_CHUNKS> biomes;

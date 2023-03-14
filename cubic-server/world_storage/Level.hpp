@@ -3,28 +3,15 @@
 
 #include <unordered_map>
 #include <functional>
+#include <mutex>
 
 #include "ChunkColumn.hpp"
+#include "types.hpp"
 
-struct _2d_pos {
-    int x;
-    int z;
-
-    bool operator==(const _2d_pos& other) const {
-        return x == other.x && z == other.z;
-    }
-};
-
-template<>
-struct std::hash<_2d_pos>
+constexpr int transformBlockPosToChunkPos(int64_t x)
 {
-    std::size_t operator()(_2d_pos const& pos) const noexcept
-    {
-        std::size_t h1 = std::hash<int>{}(pos.x);
-        std::size_t h2 = std::hash<int>{}(pos.z);
-        return h1 ^ (h2 << 1);
-    }
-};
+    return x < 0 ? -1 + int64_t((x + 1) / 16) : int64_t(x / 16);
+}
 
 namespace world_storage {
 
@@ -34,18 +21,29 @@ public:
     Level() = default;
     ~Level();
 
-    ChunkColumn &addChunkColumn(_2d_pos pos, const ChunkColumn &chunkColumn);
-    ChunkColumn &addChunkColumn(_2d_pos pos);
+    ChunkColumn &addChunkColumn(Position2D pos, const ChunkColumn &chunkColumn);
+    ChunkColumn &addChunkColumn(Position2D pos);
+
+    bool hasChunkColumn(const Position2D &pos) const;
+    bool hasChunkColumn(int x, int z) const;
+
     /** Get the chunk from chunk coordinate */
-    ChunkColumn &getChunkColumn(_2d_pos pos);
-    const ChunkColumn &getChunkColumn(_2d_pos pos) const;
-    /** Get the chunk from raw coordinate */
+    ChunkColumn &getChunkColumn(Position2D pos);
     ChunkColumn &getChunkColumn(int x, int z);
+    const ChunkColumn &getChunkColumn(Position2D pos) const;
     const ChunkColumn &getChunkColumn(int x, int z) const;
-    void removeChunkColumn(_2d_pos pos);
+
+    /** Get the chunk from raw coordinate */
+    ChunkColumn &getChunkColumnFromBlockPos(int x, int z);
+    ChunkColumn &getChunkColumnFromBlockPos(Position2D pos);
+    const ChunkColumn &getChunkColumnFromBlockPos(int x, int z) const;
+    const ChunkColumn &getChunkColumnFromBlockPos(Position2D pos) const;
+
+    void removeChunkColumn(Position2D pos);
 
 private:
-    std::unordered_map<_2d_pos, ChunkColumn> _chunkColumns;
+    std::mutex _chunkColumnsMutex;
+    std::unordered_map<Position2D, ChunkColumn> _chunkColumns;
 };
 
 }

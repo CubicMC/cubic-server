@@ -9,17 +9,48 @@
 
 World::World(WorldGroup *worldGroup):
     _worldGroup(worldGroup),
-    _timeUpdateClock(20, std::bind(&World::updateTime, this)) // 1 second for time updates
+    _age(0),
+    _time(0),
+    _renderDistance(8), // TODO: Should be loaded from config
+    _timeUpdateClock(20, std::bind(&World::updateTime, this)), // 1 second for time updates
+    _generationPool(4, "WorldGen", thread_pool::Pool::Behavior::Cancel)
 {
-    _log = logging::Logger::get_instance();
     _timeUpdateClock.start();
-    _seed = -721274728;
+    _seed = -721274728; // TODO: Should be loaded from config or generated
     _chat = worldGroup->getChat();
 }
 
 void World::tick()
 {
+    // TODO: I don't think this should tick if there are no players / chunks loaded
     _timeUpdateClock.tick();
+    for (auto &[_, dim] : this->_dimensions)
+        dim->getDimensionLock().release();
+}
+
+void World::initialize()
+{
+    for (auto &[_, dim] : this->_dimensions)
+        dim->initialize();
+}
+
+void World::stop()
+{
+    this->_generationPool.stop();
+    this->_generationPool.wait();
+
+    for (auto &[_, dim] : _dimensions)
+        dim->stop();
+
+    // TODO: Save the worlds
+}
+
+bool World::isInitialized() const
+{
+    for (auto &[_, dim] : _dimensions)
+        if (!dim->isInitialized())
+            return false;
+    return true;
 }
 
 WorldGroup *World::getWorldGroup() const
@@ -105,13 +136,13 @@ void World::sendPlayerInfoAddPlayer(Player *current) {
     std::vector<Player *> players = this->getPlayers();
     std::vector<protocol::_Actions> players_info;
 
-    std::vector<uint64_t> actions = {0};
-
-    BITSET_SET_BIT(actions, 0, 1); // Add Player
-    BITSET_SET_BIT(actions, 2, 1); // Update Gamemode
-    BITSET_SET_BIT(actions, 3, 1); // Update listed
-    BITSET_SET_BIT(actions, 4, 1); // Update latency
-    BITSET_SET_BIT(actions, 5, 1); // Update display names
+    uint8_t actions =
+        (uint8_t)protocol::PlayerInfoUpdateActions::AddPlayer |
+        (uint8_t)protocol::PlayerInfoUpdateActions::InitializeChat |
+        (uint8_t)protocol::PlayerInfoUpdateActions::UpdateGamemode |
+        (uint8_t)protocol::PlayerInfoUpdateActions::UpdateListed |
+        (uint8_t)protocol::PlayerInfoUpdateActions::UpdateLatency |
+        (uint8_t)protocol::PlayerInfoUpdateActions::UpdateDisplayName;
 
     // iterate through the list of players
     for (auto &player : players) {
@@ -120,13 +151,16 @@ void World::sendPlayerInfoAddPlayer(Player *current) {
 
             player->sendPlayerInfoUpdate({
                 .actions = actions,
-                .numberOfActions = 1, // TODO: Optimize if multiple connect at the same time
+                .numberOfActions = 1,
                 .actionSets = {
                     {
                         .uuid = current->getUuid(),
                         .addPlayer = {
                             .name = current->getUsername(),
                             .numberOfProperties = 0,
+                        },
+                        .initializeChat = {
+                            .has_sig_data = false,
                         },
                         .updateGamemode = {
                             .gamemode = current->getGamemode(),
@@ -153,6 +187,9 @@ void World::sendPlayerInfoAddPlayer(Player *current) {
                 .name = player->getUsername(),
                 .numberOfProperties = 0,
             },
+            .initializeChat = {
+                .has_sig_data = false,
+            },
             .updateGamemode = {
                 .gamemode = player->getGamemode(),
             },
@@ -169,14 +206,12 @@ void World::sendPlayerInfoAddPlayer(Player *current) {
     }
 
     // send the infos of all players to the current added player
-    // if (players_info.size() != 0) {
-    //     current->sendPlayerInfoUpdate({
-    //         .actions = actions,
-    //         .numberOfActions = (int32_t) players_info.size(),
-    //         .actionSets = players_info
-    //     });
-    //     LDEBUG("Sent player info to " + current->getUsername());
-    // }
+    current->sendPlayerInfoUpdate({
+        .actions = actions,
+        .numberOfActions = (int32_t) players_info.size(),
+        .actionSets = players_info
+    });
+    LDEBUG("Sent player info to " + current->getUsername());
 }
 
 void World::sendPlayerInfoRemovePlayer(const Player *current) {
@@ -192,10 +227,20 @@ void World::sendPlayerInfoRemovePlayer(const Player *current) {
             });
         }
     }
-    LDEBUG("Sent player info to " + current->getUsername());
+    LDEBUG("Sent player info to ", current->getUsername());
 }
 
+thread_pool::Pool &World::getGenerationPool()
+{
+    return _generationPool;
+}
 
-int64_t World::getSeed() const {
-        return _seed;
-    }
+Seed World::getSeed() const
+{
+    return _seed;
+}
+
+uint8_t World::getRenderDistance() const
+{
+    return _renderDistance;
+}

@@ -20,8 +20,8 @@ namespace logging
             void unset_folder_path();
             void unset_file_path();
         private:
-            std::string _folder_path;   /// Path to the folder where log files are stored
-            std::string _file_path;     /// Path to the current log file
+            std::string _folder_path;   // Path to the folder where log files are stored
+            std::string _file_path;     // Path to the current log file
     };
 }
 
