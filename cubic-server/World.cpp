@@ -177,7 +177,6 @@ void World::sendPlayerInfoAddPlayer(Player *current) {
                     }
                 }
             });
-            continue;
         }
 
         // save the content of the iterated player for after

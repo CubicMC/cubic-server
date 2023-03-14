@@ -142,6 +142,8 @@ namespace protocol
 
     std::shared_ptr<std::vector<uint8_t>> createPlayDisconnect(const Disconnect &);
 
+    std::shared_ptr<std::vector<uint8_t>> createUnloadChunk(const Position2D &);
+
     std::shared_ptr<std::vector<uint8_t>> createKeepAlive(long id);
 
     // Only for chunk data and light update packet

@@ -185,11 +185,6 @@ namespace protocol
     {
         addLong(out, ((data.x & 0x3FFFFFF) << 38) | ((data.z & 0x3FFFFFF) << 12) | (data.y & 0xFFF));
     }
-
-    constexpr void addBitSet(std::vector<uint8_t> &out, const std::vector<uint64_t> &bitset)
-    {
-        addArray<uint64_t, addUnsignedLong>(out, bitset);
-    }
 } // namespace protocol
 
 #endif
