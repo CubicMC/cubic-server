@@ -14,6 +14,7 @@ namespace Configuration
 general:\n\
   max_players: 20\n\
   motd: A Cubic Server\n\
+  whitelist: false\n\
   enforce-whitelist: false\
 ";
 
@@ -38,6 +39,7 @@ general:\n\
             _port = _baseNode["network"]["port"].as<uint16_t>();
             _maxPlayers = _baseNode["general"]["max_players"].as<uint32_t>();
             _motd = _baseNode["general"]["motd"].as<std::string>();
+            _whitelist = _baseNode["general"]["whitelist"].as<bool>();
             _enforceWhitelist = _baseNode["general"]["enforce-whitelist"].as<bool>();
         }
         catch (const std::exception &e) {
@@ -69,5 +71,10 @@ general:\n\
     bool ConfigHandler::getEnforceWhitelist() const
     {
         return _enforceWhitelist;
+    }
+    
+    bool ConfigHandler::getWhitelist() const
+    {
+        return _whitelist;
     }
 }
