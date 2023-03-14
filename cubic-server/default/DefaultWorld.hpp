@@ -12,6 +12,7 @@ public:
     DefaultWorld(WorldGroup *worldGroup);
     void tick() override;
     void initialize() override;
+    void stop() override;
 };
 
 

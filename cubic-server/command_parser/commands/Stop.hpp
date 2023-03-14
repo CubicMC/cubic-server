@@ -5,11 +5,11 @@
 
 namespace command_parser {
 struct Stop : public CommandBase {
-    Stop() : CommandBase("stop", "/stop") {}
+    Stop() : CommandBase("stop", "/stop", true) {}
 
-    void autocomplete(std::vector<std::string>& args) const override;
-    void execute(std::vector<std::string>& args) const override;
-    void help(std::vector<std::string>& args) const override;
+    void autocomplete(std::vector<std::string>& args, Player *invoker) const override;
+    void execute(std::vector<std::string>& args, Player *invoker) const override;
+    void help(std::vector<std::string>& args, Player *invoker) const override;
 };
 }
 

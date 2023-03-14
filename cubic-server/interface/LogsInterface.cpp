@@ -15,7 +15,8 @@ LogsInterface::LogsInterface() :
   m_Error("Error"),
   m_Fatal("Fatal"),
   m_Debug("Debug"),
-  m_Reset("↺")
+  m_Reset("↺"),
+  m_Selected_logLevel(logging::LogLevel::NONE)
 {
     pack_start(m_VBox_main, Gtk::PACK_EXPAND_WIDGET);
 

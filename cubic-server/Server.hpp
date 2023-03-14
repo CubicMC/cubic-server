@@ -18,19 +18,24 @@
 #include "command_parser/commands/CommandBase.hpp"
 #include "allCommands.hpp"
 
+#include "protocol_id_converter/blockStates.hpp"
+#include "protocol_id_converter/itemConverter.hpp"
+
 #include "Operator.hpp"
 
 #ifndef MC_VERSION
-#define MC_VERSION "1.19"
+#define MC_VERSION "1.19.3"
 #endif
 
 #ifndef MC_PROTOCOL
-#define MC_PROTOCOL 759
+#define MC_PROTOCOL 761
 #endif
 
 #ifndef MS_PER_TICK
 #define MS_PER_TICK 50
 #endif
+
+#define GLOBAL_PALETTE Server::getInstance()->getGlobalPalette()
 
 class Server
 {
@@ -66,21 +71,36 @@ public:
         return _commands;
     }
 
+    bool isRunning() const {
+        return _running;
+    }
+
+    const Blocks::GlobalPalette &getGlobalPalette() const {
+        return _globalPalette;
+    }
+
+    const Items::ItemConverter &getItemConverter() const {
+        return _itemConverter;
+    }
+
     void forEachWorldGroup(std::function<void(WorldGroup &)> callback);
     void forEachWorldGroupIf(std::function<void(WorldGroup &)> callback, std::function<bool(const WorldGroup &)> predicate);
 
     Permissions permissions;
+
 private:
     Server();
     void _acceptLoop();
+    void _stop();
+    void _downloadFile(const std::string &url, const std::string &path);
 
+private:
     std::string _host;
     uint16_t _port;
     uint32_t _maxPlayer;
     std::string _motd;
     bool _enforceWhitelist;
-
-    logging::Logger *_log;
+    std::atomic<bool> _running;
 
     // Looks like it is thread-safe, if something breaks it is here
     std::vector<std::shared_ptr<Client>> _clients;
@@ -90,14 +110,17 @@ private:
 
     Configuration::ConfigHandler _config;
     std::unordered_map<std::string_view, WorldGroup *> _worldGroups;
-    std::unordered_map<std::string_view, std::thread *> _worldGroupThreads;
     std::vector<CommandBase *> _commands = {
         new command_parser::Help,
         new command_parser::QuestionMark,
         new command_parser::Stop,
         new command_parser::Seed,
+        new command_parser::DumpChunk,
+        new command_parser::Log,
         new command_parser::Op,
     };
+    Blocks::GlobalPalette _globalPalette;
+    Items::ItemConverter _itemConverter;
 };
 
 #endif /* F43D56DD_C750_470F_A7C9_27CE21D37FC3 */

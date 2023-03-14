@@ -18,14 +18,22 @@ namespace protocol
 
     enum class ServerPacketsID : int32_t {
         Handshake = 0x00,
+
+        // Status state
         StatusRequest = 0x00,
-        LoginStart = 0x00,
-        ConfirmTeleportation = 0x00,
         PingRequest = 0x01,
+
+        // Login state
+        LoginStart = 0x00,
         EncryptionResponse = 0x01,
+
+        // Play state
+        ConfirmTeleportation = 0x00,
         QueryBlockEntityTag = 0x01,
         ChangeDifficulty = 0x02,
-        ChatMessage = 0x03,
+        MessageAcknowledgement = 0x03,
+        ChatCommand = 0x04,
+        ChatMessage = 0x05,
         ClientCommand = 0x06,
         ClientInformation = 0x07,
         CommandSuggestionRequest = 0x08,
@@ -51,23 +59,24 @@ namespace protocol
         PlayerCommand = 0x1d,
         PlayerInput = 0x1e,
         Pong = 0x1f,
-        ChangeRecipeBookSettings = 0x20,
-        SetSeenRecipe = 0x21,
-        RenameItem = 0x22,
-        ResourcePack = 0x23,
-        SeenAdvancements = 0x24,
-        SelectTrade = 0x25,
-        SetBeaconEffect = 0x26,
-        SetHeldItem = 0x27,
-        ProgramCommandBlock = 0x28,
-        ProgramCommandBlockMinecart = 0x29,
-        ProgramJigsawBlock = 0x2b,
-        ProgramStructureBlock = 0x2c,
-        UpdateSign = 0x2d,
-        SwingArm = 0x2e,
-        TeleportToEntity = 0x2f,
-        UseItemOn = 0x30,
-        UseItem = 0x31,
+        PlayerSession = 0x20, // TODO: Implement
+        ChangeRecipeBookSettings = 0x21,
+        SetSeenRecipe = 0x22,
+        RenameItem = 0x23,
+        ResourcePack = 0x24,
+        SeenAdvancements = 0x25,
+        SelectTrade = 0x26,
+        SetBeaconEffect = 0x27,
+        SetHeldItem = 0x28,
+        ProgramCommandBlock = 0x29,
+        ProgramCommandBlockMinecart = 0x2a,
+        ProgramJigsawBlock = 0x2c,
+        ProgramStructureBlock = 0x2d,
+        UpdateSign = 0x2e,
+        SwingArm = 0x2f,
+        TeleportToEntity = 0x30,
+        UseItemOn = 0x31,
+        UseItem = 0x32,
     };
 
     struct BaseServerPacket {
@@ -91,10 +100,6 @@ namespace protocol
     struct LoginStart : BaseServerPacket
     {
         std::string name;
-        bool has_sig_data;
-        int64_t timestamp;
-        std::vector<uint8_t> public_key;
-        std::vector<uint8_t> signature;
         bool has_player_uuid;
         u128 player_uuid;
     };
@@ -146,6 +151,28 @@ namespace protocol
         bool isSigned;
     };
     std::shared_ptr<ChatMessage> parseChatMessage(std::vector<uint8_t> &buffer);
+
+    /**
+     * @brief this is the link to the packet: https://wiki.vg/Protocol#Chat_Command
+     *
+     */
+    struct ChatCommand : BaseServerPacket
+    {
+        std::string command;
+        long timestamp;
+        long salt;
+        std::vector<ArgumentSignature> argumentSignatures;
+        int32_t messageCount;
+        std::bitset<20> acknowledged;
+    };
+
+    /**
+     * @brief This function is used to parse the chat command packet
+     *
+     * @param buffer
+     * @return std::shared_ptr<ChatCommand>
+     */
+    std::shared_ptr<ChatCommand> parseChatCommand(std::vector<uint8_t> &buffer);
 
     struct ClientCommand : BaseServerPacket
     {
@@ -509,6 +536,7 @@ namespace protocol
             {ServerPacketsID::QueryBlockEntityTag, &parseQueryBlockEntityTag},
             {ServerPacketsID::ChangeDifficulty, &parseChangeDifficulty},
             {ServerPacketsID::ChatMessage, &parseChatMessage},
+            {ServerPacketsID::ChatCommand, &parseChatCommand},
             {ServerPacketsID::ClientCommand, &parseClientCommand},
             {ServerPacketsID::ClientInformation, &parseClientInformation},
             {ServerPacketsID::CommandSuggestionRequest, &parseCommandSuggestionRequest},

@@ -1,16 +1,24 @@
 #include "Help.hpp"
 #include "Server.hpp"
 
-using namespace command_parser;
-
-void Help::autocomplete(std::vector<std::string>& args) const {
-    logging::Logger::get_instance()->info("autocomplete help");
+void command_parser::Help::autocomplete(std::vector<std::string>& args, Player *invoker) const {
+    if (invoker)
+        return;
+    else
+        LINFO("autocomplete help");
 }
 
-void Help::execute(std::vector<std::string>& args) const {
+void command_parser::Help::execute(std::vector<std::string>& args, Player *invoker) const {
     if (args.empty()) {
-        for (auto command : Server::getInstance()->getCommands()) {
-            logging::Logger::get_instance()->info(command->_help);
+        if (invoker) {
+            for (auto command : Server::getInstance()->getCommands()) {
+                // if (invoker->isOperator()) // TODO: uncomment this when permissions are implemented
+                    // invoker->sendPlayerChatMessage(command->_help); // TODO: Change this to the correct packet (gl @STMiki)
+            }
+        } else {
+            for (auto command : Server::getInstance()->getCommands()) {
+                LINFO(command->_help);
+            }
         }
     }
     else {
@@ -22,12 +30,21 @@ void Help::execute(std::vector<std::string>& args) const {
             }
         );
         if (result != Server::getInstance()->getCommands().end())
-            (*result)->help(args);
-        else
-            logging::Logger::get_instance()->info("Unknown command or insufficient permissions");
+            (*result)->help(args, invoker);
+        else {
+            if (invoker)
+                // invoker->sendPlayerChatMessage("Unknown command or insufficient permissions"); // TODO: Change this to the correct packet (gl @STMiki)
+                return;
+            else
+                LINFO("Unknown command or insufficient permissions");
+        }
     }
 }
 
-void Help::help(std::vector<std::string>& args) const {
-    logging::Logger::get_instance()->info("/help [<command>]");
+void command_parser::Help::help(std::vector<std::string>& args, Player *invoker) const {
+    if (invoker) {
+        // if (invoker->isOperator()) // TODO: uncomment this when permissions are implemented
+            // invoker->sendPlayerChatMessage("/help [<command>]"); // TODO: Change this to the correct packet (gl @STMiki)
+    } else
+        LINFO("/help [<command>]");
 }
