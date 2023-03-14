@@ -89,6 +89,7 @@ void WorldGroup::forEachWorldIf(std::function<void(World &)> callback, std::func
 //{
 //    LWARN("Initialized empty world group");
 //}
+
 bool WorldGroup::isInitialized() const
 {
     for (auto &[_, world] : _worlds)

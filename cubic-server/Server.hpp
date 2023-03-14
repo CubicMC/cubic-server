@@ -83,7 +83,7 @@ public:
         return _itemConverter;
     }
 
-        void forEachWorldGroup(std::function<void(WorldGroup &)> callback);
+    void forEachWorldGroup(std::function<void(WorldGroup &)> callback);
     void forEachWorldGroupIf(std::function<void(WorldGroup &)> callback, std::function<bool(const WorldGroup &)> predicate);
 
     Permissions permissions;
