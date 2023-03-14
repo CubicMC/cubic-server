@@ -5,10 +5,11 @@
 
 #include "Player.hpp"
 #include "Server.hpp"
+#include "command_parser/CommandParser.hpp"
 #include "protocol/ClientPackets.hpp"
 #include <cstdint>
 #include "World.hpp"
-#include "world_storage/globalPalette_TEMP.hpp"
+#include "blocks.hpp"
 
 Player::Player(Client *cli, std::shared_ptr<Dimension> dim, u128 uuid, const std::string &username):
     _cli(cli),
@@ -20,7 +21,6 @@ Player::Player(Client *cli, std::shared_ptr<Dimension> dim, u128 uuid, const std
     _gamemode(0),
     _keepAliveClock(200, std::bind(&Player::_processKeepAlive, this)) // 5 seconds for keep-alives
 {
-    _log = logging::Logger::get_instance();
     _keepAliveClock.start();
     _heldItem = 0;
 
@@ -28,8 +28,9 @@ Player::Player(Client *cli, std::shared_ptr<Dimension> dim, u128 uuid, const std
     std::stringstream uuidsstr;
     std::string uuidstr;
 
-    uuidsstr << std::hex << this->getUuid().most << this->getUuid().least;
+    uuidsstr << std::setfill('0') << std::setw(16) << std::hex << this->getUuid().most << std::setfill('0') << std::setw(16) << this->getUuid().least;
     uuidstr = uuidsstr.str();
+    LINFO(uuidstr);
     uuidstr.insert(8, "-");
     uuidstr.insert(13, "-");
     uuidstr.insert(18, "-");
@@ -37,6 +38,45 @@ Player::Player(Client *cli, std::shared_ptr<Dimension> dim, u128 uuid, const std
     this->_uuidString = uuidstr;
 
     this->setOperator(Server::getInstance()->permissions.isOperator(username));
+}
+
+Player::~Player()
+{
+    // Send a disconnect message to the chat
+    chat::Message disconnectMsg = chat::Message("", {
+        .color = "yellow",
+        .translate = "multiplayer.player.left",
+        .with = std::vector<chat::Message>({
+            chat::Message(
+                this->getUsername(),
+                {
+                    .insertion = this->getUsername(),
+                },
+                chat::message::ClickEvent(
+                    chat::message::ClickEvent::Action::SuggestCommand,
+                    "/tell " + this->getUsername()
+                ),
+                chat::message::HoverEvent(
+                    chat::message::HoverEvent::Action::ShowEntity,
+                    "{\"type\": \"minecraft:player\", \"id\": \"" + this->getUuidString() + "\", \"name\": \"" + this->getUsername() + "\"}"
+                )
+            )
+        })
+    });
+
+    this->_dim->getWorld()->sendPlayerInfoRemovePlayer(this);
+    this->_dim->removeEntity(this);
+
+    // Send a disconnect message
+    this->_dim->getWorld()->getChat()->sendSystemMessage(
+        disconnectMsg,
+        false,
+        this->_dim->getWorld()->getWorldGroup()
+    );
+    // _player->_dim->getWorld()->getChat()->sendPlayerMessage(
+    //     disconnectMsg,
+    //     _player
+    // );
 }
 
 void Player::tick()
@@ -158,17 +198,8 @@ const bool Player::isOperator() const
 
 void Player::disconnect(const chat::Message &reason)
 {
-    nlohmann::json json;
-
-    // TODO: test this, cause I don't know if the translate key is the correct one
-    json["translate"] = "chat.type.text";
-    json["with"] = nlohmann::json::array({
-        {"text", this->_username},
-        {reason.toJson()}
-    });
-
     auto pck = protocol::createPlayDisconnect({
-        json.dump()
+        reason.serialize()
     });
     this->_cli->_sendData(*pck);
     this->_cli->_is_running = false;
@@ -192,11 +223,75 @@ void Player::setKeepAliveIgnored(uint8_t ign)
     _keepAliveIgnored = ign;
 }
 
-uint8_t Player::keepAliveIgnored() const {
+uint8_t Player::keepAliveIgnored() const
+{
     return _keepAliveIgnored;
 }
 
-void Player::playSoundEffect(SoundsList sound, protocol::FloatingPosition position, SoundCategory category)
+void Player::setPosition(const Vector3<double> &pos)
+{
+    auto newChunkPos = Position2D(transformBlockPosToChunkPos(pos.x), transformBlockPosToChunkPos(pos.z));
+    auto oldChunkPos = Position2D(transformBlockPosToChunkPos(_pos.x), transformBlockPosToChunkPos(_pos.z));
+
+    Entity::setPosition(pos);
+
+    if (newChunkPos == oldChunkPos)
+        return;
+
+    auto renderDistance = this->getDimension()->getWorld()->getRenderDistance();
+
+    // Load and unload chunks
+    this->sendSetCenterChunk(newChunkPos);
+
+    //* Old chunks
+    // Positive changes
+	for (int32_t x = oldChunkPos.x - renderDistance; x < std::min(newChunkPos.x - renderDistance, oldChunkPos.x + renderDistance + 1); x++) {
+        for (int32_t z = oldChunkPos.z - renderDistance; z < oldChunkPos.z + renderDistance + 1; z++)
+            this->sendUnloadChunk(x, z);
+	}
+    for (int32_t z = oldChunkPos.z - renderDistance; z < std::min(newChunkPos.z - renderDistance, oldChunkPos.z + renderDistance + 1); z++) {
+        for (int32_t x = oldChunkPos.x - renderDistance + (newChunkPos.x - oldChunkPos.x); x < oldChunkPos.x + renderDistance + 1; x++)
+            this->sendUnloadChunk(x, z);
+    }
+
+    // Negative changes
+    for (int32_t x = oldChunkPos.x + renderDistance; x >= std::max(newChunkPos.x + renderDistance + 1, oldChunkPos.x - renderDistance); x--) {
+        for (int32_t z = oldChunkPos.z - renderDistance; z < oldChunkPos.z + renderDistance + 1; z++)
+            this->sendUnloadChunk(x, z);
+    }
+    for (int32_t z = oldChunkPos.z + renderDistance; z >= std::max(newChunkPos.z + renderDistance + 1, oldChunkPos.z - renderDistance); z--) {
+        for (int32_t x = oldChunkPos.x - renderDistance ; x < oldChunkPos.x + renderDistance + 1 + (newChunkPos.x - oldChunkPos.x); x++)
+            this->sendUnloadChunk(x, z);
+    }
+
+    //* New chunks
+    // Positive changes
+    for (int32_t x = newChunkPos.x + renderDistance; x >= std::max(oldChunkPos.x + renderDistance + 1, newChunkPos.x - renderDistance); x--) {
+        for (int32_t z = newChunkPos.z - renderDistance; z < newChunkPos.z + renderDistance + 1; z++)
+            this->sendChunkAndLightUpdate(x, z);
+    }
+    for (int32_t z = newChunkPos.z + renderDistance; z >= std::max(oldChunkPos.z + renderDistance + 1, newChunkPos.z - renderDistance); z--) {
+        for (int32_t x = newChunkPos.x - renderDistance; x < newChunkPos.x + renderDistance + 1 - (newChunkPos.x - oldChunkPos.x); x++)
+            this->sendChunkAndLightUpdate(x, z);
+    }
+
+    // Negative changes
+    for (int32_t x = newChunkPos.x - renderDistance; x < std::min(oldChunkPos.x - renderDistance, newChunkPos.x + renderDistance + 1); x++) {
+        for (int32_t z = newChunkPos.z - renderDistance; z < newChunkPos.z + renderDistance + 1; z++)
+            this->sendChunkAndLightUpdate(x, z);
+    }
+    for (int32_t z = newChunkPos.z - renderDistance; z < std::min(oldChunkPos.z - renderDistance, newChunkPos.z + renderDistance + 1); z++) {
+        for (int32_t x = newChunkPos.x - renderDistance - (newChunkPos.x - oldChunkPos.x); x < newChunkPos.x + renderDistance + 1; x++)
+            this->sendChunkAndLightUpdate(x, z);
+    }
+}
+
+void Player::setPosition(double x, double y, double z)
+{
+    this->setPosition({x, y, z});
+}
+
+void Player::playSoundEffect(SoundsList sound, FloatingPosition position, SoundCategory category)
 {
     auto pck = protocol::createSoundEffect({
         (int32_t) sound,
@@ -227,7 +322,7 @@ void Player::playSoundEffect(SoundsList sound, const Entity *entity, SoundCatego
     LDEBUG("Sent a entity sound effect packet");
 }
 
-void Player::playCustomSound(std::string sound, protocol::FloatingPosition position, SoundCategory category)
+void Player::playCustomSound(std::string sound, FloatingPosition position, SoundCategory category)
 {
     auto pck = protocol::createCustomSoundEffect({
         sound,
@@ -260,7 +355,19 @@ void Player::sendBlockUpdate(const protocol::BlockUpdate &packet)
     auto pck = protocol::createBlockUpdate(packet);
     this->_cli->_sendData(*pck);
 
-    LINFO("Sent a block update at (" + std::to_string(packet.location.x) + ", " + std::to_string(packet.location.y) + ", " + std::to_string(packet.location.z) + ") = " + std::to_string(packet.block_id) + " to " + this->getUsername());
+    LDEBUG("Sent a block update at ", packet.location, " = ", packet.block_id, " to ", this->getUsername());
+}
+
+void Player::sendFeatureFlags(const protocol::FeatureFlags &packet)
+{
+    auto pck = protocol::createFeatureFlags(packet);
+    _cli->_sendData(*pck);
+}
+
+void Player::sendServerData(const protocol::ServerData &packet)
+{
+    auto pck = protocol::createServerData(packet);
+    _cli->_sendData(*pck);
 }
 
 void Player::sendLoginPlay(const protocol::LoginPlay &packet)
@@ -268,17 +375,39 @@ void Player::sendLoginPlay(const protocol::LoginPlay &packet)
     auto pck = protocol::createLoginPlay(packet);
     _cli->_sendData(*pck);
     LDEBUG("Sent a login play");
+
+    this->sendFeatureFlags({
+        {"minecraft:vanilla"}
+    });
+
+    this->sendPlayerAbilities({
+        (uint8_t)protocol::PlayerAbilitiesFlags::Invulnerable |
+            (uint8_t)protocol::PlayerAbilitiesFlags::Flying |
+            (uint8_t)protocol::PlayerAbilitiesFlags::AllowFlying |
+            (uint8_t)protocol::PlayerAbilitiesFlags::CreativeMode,
+        0.05,
+        0.1
+    });
+
+    this->sendServerData({
+        false,
+        "",
+        false,
+        "",
+        false
+    });
+
+    auto renderDistance = this->getDimension()->getWorld()->getRenderDistance();
     // Send all chunks around the player
     // TODO: send chunk closer to the player first
     sendChunkAndLightUpdate(0, 0);
-    for (int32_t x = -4; x < 4; x++) {
-        for (int32_t z = -4; z < 4; z++) {
+    for (int32_t x = -renderDistance; x < renderDistance + 1; x++) {
+        for (int32_t z = -renderDistance; z < renderDistance + 1; z++) {
             if (x == 0 && z == 0)
                 continue;
             sendChunkAndLightUpdate(x, z);
         }
     }
-    sendSynchronizePosition({8.5, 65, 8.5});
     // for (auto &player : this->_player->getDimension()->getPlayerList())
     //     player->sendSynchronizePosition({0, -58, 0});
     // this->_player->sendChunkAndLightUpdate(0, 0);
@@ -286,6 +415,7 @@ void Player::sendLoginPlay(const protocol::LoginPlay &packet)
     LDEBUG("Added entity player to dimension");
     getDimension()->getWorld()->sendPlayerInfoAddPlayer(this);
     getDimension()->spawnPlayer(this);
+    sendSynchronizePosition({8.5, 100, 8.5});
 
     // Send login message
     chat::Message connectionMsg = chat::Message("", {
@@ -314,14 +444,19 @@ void Player::sendLoginPlay(const protocol::LoginPlay &packet)
         false,
         this->getDimension()->getWorld()->getWorldGroup()
     );
-    // for (auto &player : this->_player->getDimension()->getPlayerList())
-    //     player->sendTeleportEntity(this->_player->getId(), {0, -58, 0});
 }
 
-void Player::sendPlayerInfo(const protocol::PlayerInfo &data)
+void Player::sendPlayerInfoUpdate(const protocol::PlayerInfoUpdate &data)
 {
-    LDEBUG("Sending PlayerInfo. Currently there is: " + std::to_string(data.numberOfPlayers) + " players");
-    auto pck = protocol::createPlayerInfo(data);
+    auto pck = protocol::createPlayerInfoUpdate(data);
+    this->_cli->_sendData(*pck);
+
+    LDEBUG("Sent a Player Info packet");
+}
+
+void Player::sendPlayerInfoRemove(const protocol::PlayerInfoRemove &data)
+{
+    auto pck = protocol::createPlayerInfoRemove(data);
     this->_cli->_sendData(*pck);
 
     LDEBUG("Sent a Player Info packet");
@@ -332,7 +467,7 @@ void Player::sendSpawnPlayer(const protocol::SpawnPlayer &data)
     auto pck = protocol::createSpawnPlayer(data);
     this->_cli->_sendData(*pck);
 
-    LDEBUG("Sent a Spawn Player packet on coords: " + std::to_string(data.x) + " " + std::to_string(data.y) + " " + std::to_string(data.z));
+    LDEBUG("Sent a Spawn Player packet on coords: ", data.x, " ", data.y, " ", data.z);
 }
 
 void Player::sendUpdateTime(const protocol::UpdateTime &data)
@@ -353,18 +488,10 @@ void Player::sendChatMessageResponse(const protocol::PlayerChatMessage &packet)
 
 void Player::sendSystemChatMessage(const protocol::SystemChatMessage &packet)
 {
-    std::string temp = "{\"style\":{\"color\":\"red\"},\"translate\":\"multiplayer.player.left\",\"with\":[{\"insertion\":\"Trompette2\",\"clickEvent\":{\"action\":\"suggest_command\",\"value\":\"/tell Trompette2 \"},\"hoverEvent\":{\"action\":\"show_entity\",\"contents\":{\"type\":\"minecraft:player\",\"id\":\"e02c083d-1c61-3b49-b7ea-4d47e2b9698a\",\"name\":{\"text\":\"Trompette2\"}}},\"text\":\"Trompette2\"}]}";
     auto pck = protocol::createSystemChatMessage(packet);
-    // auto pck = protocol::createPlayerChatMessage(packet);
-    // auto pck = protocol::createSystemChatMessage({
-    //     temp,
-    //     false
-    // });
     this->_cli->_sendData(*pck);
 
     LDEBUG("Sent a system chat message to " + this->getUsername());
-    LDEBUG("template: ");
-    LDEBUG(temp);
     LDEBUG("message: ");
     LDEBUG(packet.JSONData);
 }
@@ -412,6 +539,13 @@ void Player::sendHeadRotation(const protocol::HeadRotation &data)
     LDEBUG("Sent an entity head rotation packet");
 }
 
+void Player::sendSetCenterChunk(const Position2D &pos)
+{
+    auto pck = protocol::createCenterChunk(pos);
+    this->_cli->_sendData(*pck);
+    LDEBUG("Sent a center chunk packet");
+}
+
 void Player::sendSynchronizePosition(Vector3<double> pos)
 {
     auto pck = protocol::createSynchronizePlayerPosition({
@@ -436,10 +570,41 @@ void Player::sendSynchronizePosition(Vector3<double> pos)
     }
 }
 
+void Player::sendChunkAndLightUpdate(const Position2D &pos)
+{
+    this->sendChunkAndLightUpdate(pos.x, pos.z);
+}
+
 void Player::sendChunkAndLightUpdate(int32_t x, int32_t z)
 {
-    auto chunk = this->_dim->getLevel().getChunkColumn({x, z});
+    if (!this->_dim->hasChunkLoaded(x, z)) {
+        this->_dim->loadOrGenerateChunk(x, z, this);
+        this->_chunks[{x, z}] = ChunkState::Loading;
+        //     [this](const world_storage::ChunkColumn &chunk) {
+        //         // pls don't kill me
+        //         // this is a hack to check if the client is still connected
+        //         // And the best part ? I don't even know if it works
+        //         if (
+        //             std::find_if(
+        //                 Server::getInstance()->getClients().begin(),
+        //                 Server::getInstance()->getClients().end(),
+        //                 [this](const std::shared_ptr<Client> &cli) { return (&(*cli) == this->_cli); }
+        //             ) == Server::getInstance()->getClients().end()
+        //         ) return;
+        //         if (this->_chunks.contains(chunk.getChunkPos()) && this->_chunks[chunk.getChunkPos()].state == ChunkState::Loading)
+        //             this->sendChunkAndLightUpdate(chunk);
+        //     }
+        // )};
+        return;
+    }
+
+    this->sendChunkAndLightUpdate(this->_dim->getChunk(x, z));
+}
+
+void Player::sendChunkAndLightUpdate(const world_storage::ChunkColumn &chunk)
+{
     auto heightMap = chunk.getHeightMap();
+    auto chunkPos = chunk.getChunkPos();
 
     std::vector<nbt::Base *> motionBlocking;
     std::vector<nbt::Base *> worldSurface;
@@ -454,15 +619,15 @@ void Player::sendChunkAndLightUpdate(int32_t x, int32_t z)
     auto worldSurfaceList = new nbt::List("WORLD_SURFACE", worldSurface);
 
     auto packet = protocol::createChunkDataAndLightUpdate({
-        x,
-        z,
+        chunkPos.x,
+        chunkPos.z,
         nbt::Compound("", {
             motionBlockingList,
             worldSurfaceList
         }),
         chunk,
         {}, // TODO: BlockEntities
-        true,
+        false, // Trust Edges: If edges should be trusted for light updates.
         {}, // TODO: Sky light mask
         {}, // TODO: Block light mask
         {}, // TODO: empty sky light mask
@@ -472,9 +637,27 @@ void Player::sendChunkAndLightUpdate(int32_t x, int32_t z)
     });
     this->_cli->_sendData(*packet);
 
-    LDEBUG("Sent a chunk data and light update packet (" + std::to_string(x) + ", " + std::to_string(z) + ")");
+    this->_chunks[chunkPos] = ChunkState::Loaded;
+
+    LDEBUG("Sent a chunk data and light update packet ", chunkPos, ")");
     delete motionBlockingList;
     delete worldSurfaceList;
+}
+
+void Player::sendUnloadChunk(int32_t x, int32_t z)
+{
+    if (!this->_chunks.contains({x, z}))
+        return;
+    else if (this->_chunks[{x, z}] == ChunkState::Loading) {
+        this->_dim->removePlayerFromLoadingChunk({x, z}, this);
+        this->_chunks.erase({x, z});
+        return;
+    }
+
+    auto pck = protocol::createUnloadChunk({x, z});
+    this->_cli->_sendData(*pck);
+    this->_chunks.erase({x, z});
+    LDEBUG("Sent an unload chunk packet (", x, ", ", z, ")");
 }
 
 void Player::sendRemoveEntities(const std::vector<int32_t> &entities)
@@ -486,7 +669,7 @@ void Player::sendRemoveEntities(const std::vector<int32_t> &entities)
 
 void Player::sendSwingArm(bool main_hand, int32_t swinger_id)
 {
-    auto pck = protocol::createEntityAnimationClient(
+    auto pck = protocol::createEntityAnimation(
         main_hand ? protocol::EntityAnimationID::SwingMainArm : protocol::EntityAnimationID::SwingOffHand,
         swinger_id
     );
@@ -535,7 +718,19 @@ void Player::_onChatMessage(const std::shared_ptr<protocol::ChatMessage> &pck)
 {
     // TODO: verify that the message is valid (signature, etc.)
     _dim->getWorld()->getChat()->sendPlayerMessage(pck->message, this);
-    _log->debug("Got a Chat Message");
+    LDEBUG("Got a Chat Message");
+}
+
+/**
+ * @brief This function is called when a client sends a command in the chat.
+ *
+ * @param pck The packet recieved from the client.
+ */
+void Player::_onChatCommand(const std::shared_ptr<protocol::ChatCommand> &pck)
+{
+    LDEBUG("Got a Chat Command");
+    LDEBUG("The command is :\"" + pck->command + "\"");
+    command_parser::parseCommand(pck->command, this);
 }
 
 void Player::_onClientCommand(const std::shared_ptr<protocol::ClientCommand> &pck)
@@ -600,7 +795,7 @@ void Player::_onJigsawGenerate(const std::shared_ptr<protocol::JigsawGenerate> &
 void Player::_onKeepAliveResponse(const std::shared_ptr<protocol::KeepAliveResponse> &pck)
 {
     if (pck->keep_alive_id != _keepAliveId) {
-        LERROR("Got a Keep Alive Response with a wrong ID: " + std::to_string(pck->keep_alive_id) + " (expected " + std::to_string(_keepAliveId) + ")");
+        LERROR("Got a Keep Alive Response with a wrong ID: ", pck->keep_alive_id, " (expected ",_keepAliveId, ")");
         this->disconnect("Wrong Keep Alive ID");
         return;
     }
@@ -616,13 +811,15 @@ void Player::_onLockDifficulty(const std::shared_ptr<protocol::LockDifficulty> &
 
 void Player::_onSetPlayerPosition(const std::shared_ptr<protocol::SetPlayerPosition> &pck)
 {
-    LDEBUG("Got a Set Player Position (" + std::to_string(pck->x) + ", " + std::to_string(pck->feet_y) + ", " + std::to_string(pck->z) + ")");
+    LDEBUG("Got a Set Player Position (", pck->x, ", ", pck->feet_y, ", ", pck->z, ")");
+    // TODO: Validate the position
     this->setPosition(pck->x, pck->feet_y, pck->z);
 }
 
 void Player::_onSetPlayerPositionAndRotation(const std::shared_ptr<protocol::SetPlayerPositionAndRotation> &pck)
 {
-    LDEBUG("Got a Set Player Position And Rotation (" + std::to_string(pck->x) + ", " + std::to_string(pck->feet_y) + ", " + std::to_string(pck->z) + ")");
+    LDEBUG("Got a Set Player Position And Rotation (", pck->x, ", ", pck->feet_y, ", ", pck->z, ")");
+    // TODO: Validate the position
     this->setPosition(pck->x, pck->feet_y, pck->z);
     float yaw_tmp = pck->yaw;
     while (yaw_tmp < 0)
@@ -678,8 +875,8 @@ void Player::_onPlayerAbilities(const std::shared_ptr<protocol::PlayerAbilities>
 
 void Player::_onPlayerAction(const std::shared_ptr<protocol::PlayerAction> &pck)
 {
-    // LINFO("Got a Player Action " + std::to_string(pck->status) + " at (" + std::to_string(pck->location.x) + ", " + std::to_string(pck->location.y) + ", " + std::to_string(pck->location.z) + ")");
-    LDEBUG("Got a Player Action and player is in gamemode " + std::to_string(this->getGamemode()) + " and status is " + std::to_string(pck->status));
+    // LINFO("Got a Player Action ", pck->status, " at ", pck->location);
+    LDEBUG("Got a Player Action and player is in gamemode ", this->getGamemode(), " and status is ", pck->status);
     if (pck->status == 0 && this->getGamemode() == 1) {
         this->getDimension()->blockUpdate(pck->location, 0);
     } else if (pck->status == 2) {
@@ -785,7 +982,7 @@ void Player::_onTeleportToEntity(const std::shared_ptr<protocol::TeleportToEntit
 
 void Player::_onUseItemOn(const std::shared_ptr<protocol::UseItemOn> &pck)
 {
-    LDEBUG("Got a Use Item On (" + std::to_string(pck->location.x) + ", " + std::to_string(pck->location.y) + ", " + std::to_string(pck->location.z) + ") -> " + std::to_string(this->_heldItem));
+    LDEBUG("Got a Use Item On ", pck->location, " -> ", this->_heldItem);
     switch (pck->face)
     {
         case 0: pck->location.y--; break;
@@ -796,15 +993,18 @@ void Player::_onUseItemOn(const std::shared_ptr<protocol::UseItemOn> &pck)
         case 5: pck->location.x++; break;
     }
     switch (this->_heldItem) {
-        case 0: this->getDimension()->blockUpdate(pck->location, world_storage::getGlobalPaletteIdFromBlockName("minecraft:grass_block")); break;
-        case 1: this->getDimension()->blockUpdate(pck->location, world_storage::getGlobalPaletteIdFromBlockName("minecraft:dirt")); break;
-        case 2: this->getDimension()->blockUpdate(pck->location, world_storage::getGlobalPaletteIdFromBlockName("minecraft:bedrock")); break;
-        case 3: this->getDimension()->blockUpdate(pck->location, world_storage::getGlobalPaletteIdFromBlockName("minecraft:oak_log")); break;
-        case 4: this->getDimension()->blockUpdate(pck->location, world_storage::getGlobalPaletteIdFromBlockName("minecraft:oak_leaves")); break;
-        case 5: this->getDimension()->blockUpdate(pck->location, world_storage::getGlobalPaletteIdFromBlockName("minecraft:glass")); break;
-        case 6: this->getDimension()->blockUpdate(pck->location, world_storage::getGlobalPaletteIdFromBlockName("minecraft:cobblestone")); break;
-        case 7: this->getDimension()->blockUpdate(pck->location, world_storage::getGlobalPaletteIdFromBlockName("minecraft:pink_terracotta")); break;
-        case 8: this->getDimension()->blockUpdate(pck->location, world_storage::getGlobalPaletteIdFromBlockName("minecraft:purple_carpet")); break;
+        case 0: this->getDimension()->blockUpdate(pck->location, Blocks::GrassBlock::toProtocol(Blocks::GrassBlock::Properties::Snowy::FALSE)); break;
+        case 1: this->getDimension()->blockUpdate(pck->location, Blocks::Dirt::toProtocol()); break;
+        case 2: this->getDimension()->blockUpdate(pck->location, Blocks::Bedrock::toProtocol()); break;
+        case 3: this->getDimension()->blockUpdate(pck->location, Blocks::OakLog::toProtocol(Blocks::OakLog::Properties::Axis::Y)); break;
+        case 4: this->getDimension()->blockUpdate(pck->location, Blocks::OakLeaves::toProtocol(
+                                    Blocks::OakLeaves::Properties::Distance::ONE,
+                                    Blocks::OakLeaves::Properties::Persistent::FALSE,
+                                    Blocks::OakLeaves::Properties::Waterlogged::FALSE)); break;
+        case 5: this->getDimension()->blockUpdate(pck->location, Blocks::Glass::toProtocol()); break;
+        case 6: this->getDimension()->blockUpdate(pck->location, Blocks::Cobblestone::toProtocol()); break;
+        case 7: this->getDimension()->blockUpdate(pck->location, Blocks::PinkTerracotta::toProtocol()); break;
+        case 8: this->getDimension()->blockUpdate(pck->location, Blocks::PurpleCarpet::toProtocol()); break;
     }
 }
 

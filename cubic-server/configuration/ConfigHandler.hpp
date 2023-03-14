@@ -31,8 +31,6 @@ namespace Configuration
         uint32_t _maxPlayers;
         std::string _motd;
         bool _enforceWhitelist;
-
-        logging::Logger *_log;
     };
 }
 

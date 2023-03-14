@@ -55,6 +55,14 @@ namespace protocol
             throw OutOfRangeEnum("Client Information Main Hand is not within the range of the enum");
         return static_cast<ClientInformationMainHand>(value);
     }
+
+    constexpr ArgumentSignature popArgumentSignature(uint8_t *&at, uint8_t *eof)
+    {
+        ArgumentSignature argumentSignature;
+        argumentSignature.argument = popString(at, eof);
+        argumentSignature.signature = popArray<uint8_t, popByte>(at, eof);
+        return argumentSignature;
+    }
 } // namespace protocol
 
 #endif

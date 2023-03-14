@@ -7,10 +7,11 @@
 #include <utility>
 #include <thread>
 
-WorldGroup::WorldGroup(std::shared_ptr<Chat> chat)
-    : _chat(std::move(chat)), _soundSystem(new SoundSystem(this)), _running(true)
+WorldGroup::WorldGroup(std::shared_ptr<Chat> chat):
+    _chat(std::move(chat)),
+    _soundSystem(new SoundSystem(this)),
+    _running(true)
 {
-    _log = logging::Logger::get_instance();
 }
 
 WorldGroup::~WorldGroup()
@@ -19,19 +20,24 @@ WorldGroup::~WorldGroup()
         delete _soundSystem;
 }
 
-void WorldGroup::run()
+void WorldGroup::initialize()
+{
+    this->_thread = std::thread(&WorldGroup::_run, this);
+}
+
+void WorldGroup::_run()
 {
     while (_running) {
         auto start_time = std::chrono::system_clock::now();
-        for (auto &world : _worlds) {
-            world.second->tick();
+        for (auto &[_, world] : _worlds) {
+            world->tick();
         }
         _soundSystem->tick();
         auto end_time = std::chrono::system_clock::now();
         auto compute_time = end_time - start_time;
         if (compute_time > std::chrono::milliseconds(MS_PER_TICK)) {// If this happens there is a serious problem
             auto nb_ticks = compute_time / std::chrono::milliseconds(MS_PER_TICK);
-            LWARN("Can't keep up! Did the system time change, or is the server overloaded? Running " + std::to_string(std::chrono::duration_cast<std::chrono::milliseconds>(compute_time).count()) + "ms behind, skipping " + std::to_string(nb_ticks) + " tick(s)");
+            LWARN("Can't keep up! Did the system time change, or is the server overloaded? Running ", std::chrono::duration_cast<std::chrono::milliseconds>(compute_time).count(), "ms behind, skipping ", nb_ticks, " tick(s)");
             continue;
         }
         std::this_thread::sleep_for(std::chrono::milliseconds(MS_PER_TICK) - compute_time);
@@ -41,6 +47,13 @@ void WorldGroup::run()
 void WorldGroup::stop()
 {
     _running = false;
+
+    if (_thread.joinable())
+        _thread.join();
+
+    // Stop all worlds
+    for (auto &[_, world] : _worlds)
+        world->stop();
 }
 
 std::shared_ptr<Chat> WorldGroup::getChat() const
@@ -76,3 +89,10 @@ void WorldGroup::forEachWorldIf(std::function<void(World &)> callback, std::func
 //{
 //    LWARN("Initialized empty world group");
 //}
+bool WorldGroup::isInitialized() const
+{
+    for (auto &[_, world] : _worlds)
+        if (!world->isInitialized())
+            return false;
+    return true;
+}
