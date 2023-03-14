@@ -19,10 +19,10 @@ namespace WhitelistHandling
             Whitelist();
             ~Whitelist();
 
+            nlohmann::json parseWhitelist(const std::string &path);
             void addPlayer(u128 uuid, std::string playerName);
             void removePlayer(u128 uuid, std::string playerName);
             std::pair<bool, int> isPlayer(u128 uuid, std::string playerName, nlohmann::json whitelistData);
-            nlohmann::json parseWhitelist(const std::string &path);
 
             const std::string &getFilename() const {
                 return _filename;
