@@ -3,30 +3,35 @@
 
 using namespace command_parser;
 
-void Deop::autocomplete(std::vector<std::string>& args) const {
-    logging::Logger::get_instance()->info("autocomplete help");
+void Deop::autocomplete(std::vector<std::string>& args, Player *invoker) const {
 }
 
-void Deop::execute(std::vector<std::string>& args) const {
+void Deop::execute(std::vector<std::string>& args, Player *invoker) const {
+    if (invoker && !invoker->isOperator())
+        return;
     if (args.empty()) {
-        logging::Logger::get_instance()->info("Need a player name.");
+        LINFO("Need a player name.");
     } else {
         if (args.size() != 1)
-            logging::Logger::get_instance()->info("Too many arguments");
+            LINFO("Too many arguments");
         else {
             Server *server = Server::getInstance();
 
             // do nothing if operator with that name not found, otherwise, removes operator privilege
             if (!server->permissions.isOperator(args[0]))
-                logging::Logger::get_instance()->info(args[0] + " is not an operator.");
+                LINFO(args[0] + " is not an operator.");
             else {
                 server->permissions.removeOperator(args[0]);
-                logging::Logger::get_instance()->info(args[0] + " deopped.");
+                LINFO(args[0] + " deopped.");
             }
         }
     }
 }
 
-void Deop::help(std::vector<std::string>& args) const {
-    logging::Logger::get_instance()->info("/help [<command>]");
+void Deop::help(std::vector<std::string>& args, Player *invoker) const {
+    if (invoker) {
+        //invoker->sendMessage("Usage: /deop <player>");
+    } else {
+        LINFO("Usage: /deop <player>");
+    }
 }
