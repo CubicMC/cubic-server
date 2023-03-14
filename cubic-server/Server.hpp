@@ -12,6 +12,7 @@
 #include "protocol/ServerPackets.hpp"
 
 #include "configuration/ConfigHandler.hpp"
+#include "whitelist/Whitelist.hpp"
 #include "logging/Logger.hpp"
 #include "WorldGroup.hpp"
 
@@ -45,8 +46,22 @@ public:
 
     void stop();
 
+    void enforceWhitelistOnReload();
+
     const Configuration::ConfigHandler &getConfig() const {
         return _config;
+    }
+
+    WhitelistHandling::Whitelist &getWhitelistHandler() {
+        return _whitelistHandler;
+    }
+
+    const nlohmann::json &getWhitelistData() const {
+        return _whitelistData;
+    }
+
+    const bool getWhitelist() const {
+        return _whitelist;
     }
 
     const bool getEnforceWhitelist() const {
@@ -93,6 +108,7 @@ private:
     uint16_t _port;
     uint32_t _maxPlayer;
     std::string _motd;
+    bool _whitelist;
     bool _enforceWhitelist;
     std::atomic<bool> _running;
 
@@ -103,6 +119,8 @@ private:
     struct sockaddr_in6 _addr;
 
     Configuration::ConfigHandler _config;
+    WhitelistHandling::Whitelist _whitelistHandler;
+    nlohmann::json _whitelistData;
     std::unordered_map<std::string_view, WorldGroup *> _worldGroups;
     std::vector<CommandBase *> _commands = {
         new command_parser::Help,
