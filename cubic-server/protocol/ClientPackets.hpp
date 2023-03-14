@@ -103,7 +103,7 @@ namespace protocol
     };
     std::shared_ptr<std::vector<uint8_t>> createSpawnPlayer(const SpawnPlayer &);
 
-    enum class EntityAnimationID : int32_t {
+    enum class EntityAnimationID : uint8_t {
         SwingMainArm = 0x00,
         TakeDamage = 0x01,
         LeaveBed = 0x02,
