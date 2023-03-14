@@ -3,13 +3,12 @@
 void TheNether::initialize()
 {
     Dimension::initialize();
+    this->_isInitialized = true;
 }
 
 void TheNether::tick()
 {
-    _numThreadsWaiting++;
     _processingMutex.lock();
-    _numThreadsWaiting--;
 
     auto startProcessing = std::chrono::system_clock::now();
 

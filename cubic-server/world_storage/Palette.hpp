@@ -7,32 +7,32 @@
 #include <map>
 
 #include "world_storage/Block.hpp"
-#include "globalPalette_TEMP.hpp"
+
 namespace world_storage {
+
+// https://stackoverflow.com/a/23784921
+constexpr uint8_t bitsNeeded(int32_t n)
+{
+    return n <= 1 ? 0 : 1 + bitsNeeded((n + 1) / 2);
+}
 
 class Palette
 {
 public:
-    constexpr Palette(uint8_t bytePerBlock = 4): _bytePerBlock(bytePerBlock) {}
+    constexpr Palette() = default;
     constexpr ~Palette() = default;
 
-    // Can't be constexpr because of Block
-    void addBlock(const Block &block);
-    uint64_t getBlockId(const Block &block) const;
-    Block getBlock(uint64_t id) const;
-
-    constexpr void addBlock(const std::string &name)
+    constexpr void add(int32_t globalId)
     {
-        this->addBlock(getGlobalPaletteIdFromBlockName(name));
+        if (std::find(_nameToId.begin(), _nameToId.end(), globalId) == _nameToId.end()) {
+            if (globalId == 0)
+                _nameToId.insert(_nameToId.begin(), globalId);
+            else
+                _nameToId.push_back(globalId);
+        }
     }
 
-    constexpr void addBlock(uint32_t globalId)
-    {
-        if (std::find(_nameToId.begin(), _nameToId.end(), globalId) == _nameToId.end())
-            _nameToId.push_back(globalId);
-    }
-
-    constexpr uint64_t getBlockId(uint32_t globalId) const
+    constexpr uint64_t getId(int32_t globalId) const
     {
         auto it = std::find(_nameToId.begin(), _nameToId.end(), globalId);
         if (it == _nameToId.end())
@@ -40,34 +40,71 @@ public:
         return std::distance(_nameToId.begin(), it);
     }
 
-    constexpr uint64_t getBlockId(const std::string &name) const
-    {
-        return this->getBlockId(getGlobalPaletteIdFromBlockName(name));
-    }
-
-    constexpr uint8_t getBytePerBlock() const
-    {
-        return _bytePerBlock;
-    }
+    virtual uint8_t getBytePerEntry() const = 0;
 
     constexpr uint64_t size() const
     {
         return _nameToId.size();
     }
 
-    constexpr std::vector<uint32_t>::const_iterator begin() const
+    constexpr std::vector<int32_t>::const_iterator begin() const
     {
         return _nameToId.begin();
     }
 
-    constexpr std::vector<uint32_t>::const_iterator end() const
+    constexpr std::vector<int32_t>::const_iterator end() const
     {
         return _nameToId.end();
     }
 
-private:
-    std::vector<uint32_t> _nameToId;
-    const uint8_t _bytePerBlock;
+    constexpr const std::vector<int32_t> &data() const
+    {
+        return _nameToId;
+    }
+
+protected:
+    std::vector<int32_t> _nameToId;
+};
+
+class BlockPalette : public Palette
+{
+public:
+    constexpr BlockPalette() = default;
+    constexpr ~BlockPalette() = default;
+
+    constexpr uint8_t getBytePerEntry() const override
+    {
+        // No palette or single value palette
+        if (_nameToId.size() <= 1)
+            return 0;
+        // Byte per block
+        uint8_t bytePerBlock = world_storage::bitsNeeded(_nameToId.size());
+        if (bytePerBlock <= 4)
+            return 4;
+        else if (bytePerBlock <= 8)
+            return bytePerBlock;
+
+        // Hard coded cause I don't know the total number of block
+        // std::ceil(std::log2(blocks.size()));
+        return 15;
+    }
+};
+
+class BiomePalette : public Palette
+{
+public:
+    constexpr BiomePalette() = default;
+    constexpr ~BiomePalette() = default;
+
+    constexpr uint8_t getBytePerEntry() const override
+    {
+        if (_nameToId.size() <= 1)
+            return 0;
+        auto bytePerBlock = world_storage::bitsNeeded(_nameToId.size());
+        if (bytePerBlock <= 3)
+            return bytePerBlock;
+        return 3;
+    }
 };
 
 } // namespace world_storage

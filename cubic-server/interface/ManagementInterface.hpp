@@ -2,6 +2,8 @@
 #define MANAGEMENTINTERFACE_HPP
 
 #include <gtkmm.h>
+#include <thread>
+#include <memory>
 
 #include "LogsInterface.hpp"
 #include "PlayersInterface.hpp"
@@ -12,7 +14,11 @@ class ManagementInterface : public Gtk::Window {
         virtual ~ManagementInterface();
 
         bool on_timeout();
-        static int launch(int argc, char **argv);
+        void stop();
+
+    protected:
+        virtual bool on_delete_event(GdkEventAny *event) override;
+
     protected:
         Gtk::Paned m_content;
         Gtk::Paned m_sections;

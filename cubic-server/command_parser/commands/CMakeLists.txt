@@ -8,6 +8,10 @@ target_sources (${CMAKE_PROJECT_NAME} PRIVATE
     Stop.cpp
     Seed.hpp
     Seed.cpp
+    DumpChunk.hpp
+    DumpChunk.cpp
+    Log.hpp
+    Log.cpp
     Deop.hpp
     Deop.cpp
 )

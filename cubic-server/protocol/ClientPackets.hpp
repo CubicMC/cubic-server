@@ -11,41 +11,52 @@
 
 #include "Structures.hpp"
 #include "typeSerialization.hpp"
+#include "types.hpp"
 #include "world_storage/ChunkColumn.hpp"
 
 namespace protocol
 {
 
     enum class ClientPacketID : int32_t {
-        Status = 0x00,
+        // Login State
         DisconnectLogin = 0x00,
-        Ping = 0x01,
-        SpawnPlayer = 0x02,
-        EntityAnimationClient = 0x03,
         LoginSuccess = 0x02,
+
+        // Status State
+        Status = 0x00,
+        Ping = 0x01,
+        
+        // Play State
+        SpawnPlayer = 0x02,
+        EntityAnimation = 0x03,
         BlockUpdate = 0x09,
         PluginMessage = 0x15,
-        CustomSoundEffect = 0x16,
-        WorldEvent = 0x20,
-        LoginPlay = 0x23,
-        UpdateEntityPosition = 0x26,
-        UpdateEntityPositionRotation = 0x27,
-        UpdateEntityRotation = 0x28,
-        PlayerChatMessage = 0x30,
-        PlayerInfo = 0x34,
-        SynchronizePlayerPosition = 0x36,
-        RemoveEntities = 0x38,
-        HeadRotation = 0x3C,
-        UpdateTime = 0x59,
-        TeleportEntity = 0x63,
-        EntitySoundEffect = 0x5c,
-        SoundEffect = 0x5d,
         DisconnectPlay = 0x17,
-        KeepAlive = 0x1e,
-        ChunkDataAndLightUpdate = 0x1F,
-        StopSound = 0x5e,
-        PlayerAbilities = 0x2f,
-        SystemChatMessage = 0x5f
+        // CustomSoundEffect = 0x16, TODO: This is removed in the last revision of wiki.vg
+        UnloadChunk = 0x1b,
+        KeepAlive = 0x1F,
+        ChunkDataAndLightUpdate = 0x20,
+        WorldEvent = 0x21,
+        LoginPlay = 0x24,
+        UpdateEntityPosition = 0x27,
+        UpdateEntityPositionRotation = 0x28,
+        UpdateEntityRotation = 0x29,
+        PlayerAbilities = 0x30,
+        PlayerChatMessage = 0x31,
+        PlayerInfoRemove = 0x35,
+        PlayerInfoUpdate = 0x36,
+        SynchronizePlayerPosition = 0x38,
+        RemoveEntities = 0x3A,
+        HeadRotation = 0x3E,
+        ServerData = 0x41,
+        CenterChunk = 0x4a,
+        UpdateTime = 0x5A,
+        EntitySoundEffect = 0x5D,
+        SoundEffect = 0x5E,
+        StopSound = 0x5F,
+        SystemChatMessage = 0x60,
+        TeleportEntity = 0x64,
+        FeatureFlags = 0x67,
     };
     struct PingResponse
     {
@@ -152,13 +163,15 @@ namespace protocol
 
     std::shared_ptr<std::vector<uint8_t>> createPlayerChatMessage(const PlayerChatMessage &);
 
+    struct PlayerInfoRemove {
+        std::vector<u128> uuids;
+    };
+    std::shared_ptr<std::vector<uint8_t>> createPlayerInfoRemove(const PlayerInfoRemove &);
+
     struct _AddPlayer {
         std::string name;
         int32_t numberOfProperties;
         // properties lol
-        int32_t gamemode;
-        int32_t ping;
-        bool hasDisplayName;
     };
 
     struct _UpdateGamemode {
@@ -174,34 +187,52 @@ namespace protocol
         std::string displayName;
     };
 
-    struct _RemovePlayer {
+    struct _InitializeChat {
+        // TODO: Let Miki do it xd
+        bool has_sig_data;
     };
 
-    struct _Player {
+    struct _UpdateListed {
+        bool listed;
+    };
+
+    struct _Actions {
         u128 uuid;
         // AddPlayer
         _AddPlayer addPlayer;
 
+        // InitializeChat
+        _InitializeChat initializeChat;
+
         // UpdateGamemode
         _UpdateGamemode updateGamemode;
+
+        // UpdateListed
+        _UpdateListed updateListed;
 
         // UpdateLatency
         _UpdateLatency updateLatency;
 
         // UpdateDisplayName
         _UpdateDisplayName updateDisplayName;
-
-        // RemovePlayer
-        _RemovePlayer removePlayer;
     };
 
-    struct PlayerInfo
+    enum class PlayerInfoUpdateActions : uint8_t {
+        AddPlayer = 0b00000001,
+        InitializeChat = 0b00000010,
+        UpdateGamemode = 0b00000100,
+        UpdateListed = 0b00001000,
+        UpdateLatency = 0b00010000,
+        UpdateDisplayName = 0b00100000,
+    };
+
+    struct PlayerInfoUpdate
     {
-        int32_t action;
-        int32_t numberOfPlayers;
-        std::vector<_Player> players;
+        uint8_t actions;
+        int32_t numberOfActions;
+        std::vector<_Actions> actionSets;
     };
-    std::shared_ptr<std::vector<uint8_t>> createPlayerInfo(const PlayerInfo &);
+    std::shared_ptr<std::vector<uint8_t>> createPlayerInfoUpdate(const PlayerInfoUpdate &);
 
     struct WorldEvent
     {
@@ -242,6 +273,17 @@ namespace protocol
 
     std::shared_ptr<std::vector<uint8_t>> createHeadRotation(const HeadRotation &in);
 
+    struct ServerData
+    {
+        bool has_motd;
+        std::string motd;
+        bool has_icon;
+        std::string icon;
+        bool enforce_secure_chat;
+    };
+
+    std::shared_ptr<std::vector<uint8_t>> createServerData(const ServerData &in);
+
     struct CustomSoundEffect
     {
         std::string name;
@@ -253,6 +295,8 @@ namespace protocol
         float pitch;
         long seed;
     };
+
+    std::shared_ptr<std::vector<uint8_t>> createCenterChunk(const Position2D &in);
 
     std::shared_ptr<std::vector<uint8_t>> createCustomSoundEffect(const CustomSoundEffect &);
 
@@ -315,6 +359,8 @@ namespace protocol
         std::vector<std::array<uint8_t, LIGHT_ARRAY_SIZE>> blockLight;
     };
     std::shared_ptr<std::vector<uint8_t>> createChunkDataAndLightUpdate(const ChunkDataAndLightUpdate &);
+
+    std::shared_ptr<std::vector<uint8_t>> createUnloadChunk(const Position2D &);
 
     struct SpawnPlayer
     {
@@ -384,7 +430,7 @@ namespace protocol
         MagicCriticalEffect = 0x05,
     };
 
-    std::shared_ptr<std::vector<uint8_t>> createEntityAnimationClient(EntityAnimationID animId, int32_t entityID);
+    std::shared_ptr<std::vector<uint8_t>> createEntityAnimation(EntityAnimationID animId, int32_t entityID);
 
     enum PlayerAbilitiesFlags : uint8_t {
         Invulnerable = 0x01,
@@ -400,6 +446,13 @@ namespace protocol
     };
 
     std::shared_ptr<std::vector<uint8_t>> createPlayerAbilities(const PlayerAbilitiesClient &in);
+
+    struct FeatureFlags
+    {
+        std::vector<std::string> flags;
+    };
+
+    std::shared_ptr<std::vector<uint8_t>> createFeatureFlags(const FeatureFlags &in);
 }
 
 #endif /* A7ADDD9E_6961_4A3D_AAB2_DF37DB6915F0 */

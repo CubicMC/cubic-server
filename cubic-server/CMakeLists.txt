@@ -29,26 +29,30 @@ target_sources (${CMAKE_PROJECT_NAME} PRIVATE
         allCommands.hpp
         Operator.hpp
         Operator.cpp
+        types.hpp
+        types.cpp
+        blocks.hpp
 )
 
 if (GTEST)
     enable_testing()
 
     add_executable(
-            nbt_test
-            nbt.hpp
-            nbt_unittest.cpp
+        nbt_test
+        nbt.hpp
+        nbt_unittest.cpp
     )
 
     target_link_libraries(
-            nbt_test
-            GTest::gtest_main
+        nbt_test
+        GTest::gtest_main
     )
 
     include(GoogleTest)
     gtest_discover_tests(nbt_test)
 endif()
 
+add_subdirectory (protocol_id_converter)
 add_subdirectory (protocol)
 add_subdirectory (default)
 add_subdirectory (math)
@@ -58,3 +62,6 @@ add_subdirectory (interface)
 add_subdirectory (world_storage)
 add_subdirectory (command_parser)
 add_subdirectory (whitelist)
+add_subdirectory (generation)
+add_subdirectory (thread_pool)
+add_subdirectory (blocks)
