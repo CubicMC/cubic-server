@@ -43,6 +43,7 @@ Player::Player(std::weak_ptr<Client> cli, std::shared_ptr<Dimension> dim, u128 u
     _keepAliveIgnored(0),
     _gamemode(player_attributes::gamemodeFromString(CONFIG["gamemode"].as<std::string>())),
     _keepAliveClock(200, std::bind(&Player::_processKeepAlive, this)), // 5 seconds for keep-alives
+    _synchronizeClock(20, std::bind(&Player::synchronize, this)), // 1 seconds for synchronization
     _inventory(std::make_shared<protocol::container::Inventory>()),
     _foodLevel(player_attributes::MAX_FOOD_LEVEL - 4), // TODO: Take this from the saved data
     _foodSaturationLevel(player_attributes::DEFAULT_FOOD_SATURATION_LEVEL), // TODO: Take this from the saved data
@@ -80,6 +81,7 @@ Player::~Player()
 void Player::tick()
 {
     _keepAliveClock.tick();
+    _synchronizeClock.tick();
 
     _tickPosition();
     _foodTick();
@@ -129,6 +131,12 @@ void Player::_tickPosition()
     if (_pos.y < -100) // TODO: Change that
         teleport({_pos.x, -58, _pos.z});
 }
+
+void Player::synchronize() {
+    // TODO: synchronize further data (for example other entities)
+    this->sendSynchronizePlayerPosition();
+}
+
 
 std::weak_ptr<Client> Player::getClient() const { return _cli; }
 
@@ -488,6 +496,29 @@ void Player::sendSynchronizePosition(const Vector3<double> &pos)
     });
     client->doWrite(std::move(pck));
     N_LDEBUG("Sent a synchronize position packet");
+}
+
+void Player::sendSynchronizePlayerPosition(const protocol::SynchronizePlayerPosition &data)
+{
+    auto pck = protocol::createSynchronizePlayerPosition(data);
+    this->_cli->_sendData(*pck);
+    LDEBUG("Synchronized player position");
+}
+
+void Player::sendSynchronizePlayerPosition(void)
+{
+    auto pck = protocol::createSynchronizePlayerPosition({
+        this->_pos.x,
+        this->_pos.y,
+        this->_pos.z,
+        static_cast<float>(this->_rot.x),
+        static_cast<float>(this->_rot.y),
+        0,
+        0,
+        false,
+        });
+    this->_cli->_sendData(*pck);
+    LDEBUG("Synchronized player position");
 }
 
 void Player::sendChunkAndLightUpdate(const Position2D &pos) { this->sendChunkAndLightUpdate(pos.x, pos.z); }
