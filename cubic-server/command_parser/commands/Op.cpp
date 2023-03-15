@@ -3,31 +3,32 @@
 
 using namespace command_parser;
 
-void Op::autocomplete(std::vector<std::string>& args) const {
-    logging::Logger::get_instance()->info("autocomplete op");
+void Op::autocomplete(std::vector<std::string>& args, Player *invoker) const {
 }
 
-void Op::execute(std::vector<std::string>& args) const {
+void Op::execute(std::vector<std::string>& args, Player *invoker) const {
+    if (invoker && !invoker->isOperator())
+        return;
     if (args.empty()) {
-        logging::Logger::get_instance()->info("Need a player name");
+        LINFO("Need a player name");
     } else {
         if (args.size() != 1)
-            logging::Logger::get_instance()->info("Too many arguments");
+            LINFO("Too many arguments");
         else {
             // do nothing if operator found with that name, otherwise, promote player to operator
             Server *server = Server::getInstance();
 
             if (server->permissions.isOperator(args[0]))
-                logging::Logger::get_instance()->info(args[0] + " is already opped.");
+                LINFO(args[0] + " is already opped.");
             else {
                 server->permissions.addOperator(args[0]);
-                logging::Logger::get_instance()->info(args[0] + " opped.");
+                LINFO(args[0] + " opped.");
             }
                 
         }
     }
 }
 
-void Op::help(std::vector<std::string>& args) const {
-    logging::Logger::get_instance()->info("/op [<player>]");
+void Op::help(std::vector<std::string>& args, Player *invoker) const {
+    LINFO("/op [<player>]");
 }
