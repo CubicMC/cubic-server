@@ -8,7 +8,8 @@
 Dimension::Dimension(World *world):
     _world(world),
     _dimensionLock(std::counting_semaphore<1000>(0)),
-    _isInitialized(false)
+    _isInitialized(false),
+    _isRunning(false)
 {
 }
 
@@ -30,6 +31,7 @@ void Dimension::stop()
 
 void Dimension::initialize()
 {
+    this->_isRunning = true;
     this->_processingThread = std::thread(&Dimension::_run, this);
 }
 
@@ -155,6 +157,9 @@ std::shared_ptr<thread_pool::Task> Dimension::loadOrGenerateChunk(int x, int z, 
 
 void Dimension::_run()
 {
+    while (this->_isRunning && !this->_isInitialized)
+        std::this_thread::sleep_for(std::chrono::milliseconds(100));
+
     while (this->_isRunning) {
         this->_dimensionLock.acquire();
         this->tick();
