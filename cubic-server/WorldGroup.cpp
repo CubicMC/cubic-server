@@ -10,7 +10,7 @@
 WorldGroup::WorldGroup(std::shared_ptr<Chat> chat):
     _chat(std::move(chat)),
     _soundSystem(new SoundSystem(this)),
-    _running(true)
+    _running(false)
 {
 }
 
@@ -22,6 +22,7 @@ WorldGroup::~WorldGroup()
 
 void WorldGroup::initialize()
 {
+    this->_running = true;
     this->_thread = std::thread(&WorldGroup::_run, this);
 }
 
