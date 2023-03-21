@@ -7,6 +7,8 @@ target_sources (${CMAKE_PROJECT_NAME} PRIVATE
     Block.hpp
     Block.cpp
     Palette.hpp
+    Persistence.cpp
+    Persistence.hpp
 )
 
 if (GTEST)

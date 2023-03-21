@@ -75,6 +75,7 @@ target_include_directories(${CMAKE_PROJECT_NAME} PUBLIC cubic-server)
 target_link_libraries (${CMAKE_PROJECT_NAME} PRIVATE
     Threads::Threads
     nlohmann_json::nlohmann_json
+    z
     ${GTKMM_LIBRARIES}
     argparse
     curl
