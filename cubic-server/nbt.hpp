@@ -497,18 +497,18 @@ public:
     }
 };
 
-Byte *parseByte(uint8_t *&at, const uint8_t *end, bool include_name = true);
-Short *parseShort(uint8_t *&at, const uint8_t *end, bool include_name = true);
-Int *parseInt(uint8_t *&at, const uint8_t *end, bool include_name = true);
-Long *parseLong(uint8_t *&at, const uint8_t *end, bool include_name = true);
-Float *parseFloat(uint8_t *&at, const uint8_t *end, bool include_name = true);
-Double *parseDouble(uint8_t *&at, const uint8_t *end, bool include_name = true);
-ByteArray *parseByteArray(uint8_t *&at, const uint8_t *end, bool include_name = true);
-String *parseString(uint8_t *&at, const uint8_t *end, bool include_name = true);
-List *parseList(uint8_t *&at, const uint8_t *end, bool include_name = true);
-Compound *parseCompound(uint8_t *&at, const uint8_t *end, bool include_name = true);
-IntArray *parseIntArray(uint8_t *&at, const uint8_t *end, bool include_name = true);
-LongArray *parseLongArray(uint8_t *&at, const uint8_t *end, bool include_name = true);
+Byte *parseByte(uint8_t *&at, const uint8_t *end, bool include_name = true, bool in_list = false);
+Short *parseShort(uint8_t *&at, const uint8_t *end, bool include_name = true, bool in_list = false);
+Int *parseInt(uint8_t *&at, const uint8_t *end, bool include_name = true, bool in_list = false);
+Long *parseLong(uint8_t *&at, const uint8_t *end, bool include_name = true, bool in_list = false);
+Float *parseFloat(uint8_t *&at, const uint8_t *end, bool include_name = true, bool in_list = false);
+Double *parseDouble(uint8_t *&at, const uint8_t *end, bool include_name = true, bool in_list = false);
+ByteArray *parseByteArray(uint8_t *&at, const uint8_t *end, bool include_name = true, bool in_list = false);
+String *parseString(uint8_t *&at, const uint8_t *end, bool include_name = true, bool in_list = false);
+List *parseList(uint8_t *&at, const uint8_t *end, bool include_name = true, bool in_list = false);
+Compound *parseCompound(uint8_t *&at, const uint8_t *end, bool include_name = true, bool in_list = false);
+IntArray *parseIntArray(uint8_t *&at, const uint8_t *end, bool include_name = true, bool in_list = false);
+LongArray *parseLongArray(uint8_t *&at, const uint8_t *end, bool include_name = true, bool in_list = false);
 
 Base *parse(uint8_t *&at, const uint8_t *end);
 
