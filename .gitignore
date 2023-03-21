@@ -39,3 +39,4 @@ cmake-build-release
 logs
 config.yml
 .cache
+debug
