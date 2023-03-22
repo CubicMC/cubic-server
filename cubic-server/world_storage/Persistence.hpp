@@ -1,6 +1,7 @@
 #ifndef D3EBB5BA_3F3F_4BBD_A2B5_05FD6729E432
 #define D3EBB5BA_3F3F_4BBD_A2B5_05FD6729E432
 
+#include <mutex>
 #include <string>
 
 #include "LevelData.hpp"
@@ -15,6 +16,7 @@ class Persistence
 {
 private:
     const std::string level_name;
+    std::mutex accessMutex;
 
 public:
     /**
