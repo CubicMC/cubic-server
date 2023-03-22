@@ -4,6 +4,7 @@
 #include <cstdint>
 #include <mutex>
 #include <stdexcept>
+#include <string_view>
 #include <vector>
 #include <zlib.h>
 #include <filesystem>
@@ -17,8 +18,22 @@
         dest-> dst = ((nbt::type *)__tmp)->get_value(); \
     } while (0)
 
-using namespace world_storage;
+#define GET_VALUE_TO(type, dst, src, root, dstroot) do { \
+        auto __tmp = root->getValue(src); \
+        if (!__tmp || __tmp->getType() != nbt::TagType::type) \
+            throw std::runtime_error(""); \
+        dstroot . dst = ((nbt::type *)__tmp)->get_value(); \
+    } while (0)
 
+static inline const nbt::Compound *getConstCompound(const nbt::Compound *root, const std::string &name)
+{
+    auto __tmp = root->getValue(name);
+    if (!__tmp || __tmp->getType() != nbt::TagType::Compound)
+        throw std::runtime_error(""); // TODO(huntears): Better error message
+    return (const nbt::Compound *) __tmp;
+}
+
+using namespace world_storage;
 
 namespace world_storage {
 
@@ -66,6 +81,8 @@ void Persistence::loadLevelData(LevelData *dest)
     auto data = (nbt::Compound *)root->getValue("Data");
     if (!data)
         throw std::runtime_error(""); //TODO(huntears): Better error message
+    
+    // TODO(huntears): Find a better way to map the values
     GET_VALUE(Double, borderCenterX, "BorderCenterX");
     GET_VALUE(Double, borderCenterZ, "BorderCenterZ");
     GET_VALUE(Double, borderDamagePerBlock, "BorderDamagePerBlock");
@@ -75,7 +92,43 @@ void Persistence::loadLevelData(LevelData *dest)
     GET_VALUE(Long, borderSizeLerpTime, "BorderSizeLerpTime");
     GET_VALUE(Double, borderWarningBlocks, "BorderWarningBlocks");
     GET_VALUE(Double, borderWarningTime, "BorderWarningTime");
-    // TODO(huntears): The rest of the fields
+    GET_VALUE(Int, dataVersion, "DataVersion");
+    GET_VALUE(Long, dayTime, "DayTime");
+    GET_VALUE(Byte, difficulty, "Difficulty");
+    GET_VALUE(Byte, difficultyLocked, "DifficultyLocked");
+    GET_VALUE(Int, gameType, "GameType");
+    GET_VALUE(Long, lastPlayed, "LastPlayed");
+    GET_VALUE(String, levelName, "LevelName");
+    GET_VALUE(Float, spawnAngle, "SpawnAngle");
+    GET_VALUE(Int, spawnX, "SpawnX");
+    GET_VALUE(Int, spawnY, "SpawnY");
+    GET_VALUE(Int, spawnZ, "SpawnZ");
+    GET_VALUE(Long, time, "Time");
+
+    const nbt::Compound *__tmpCompound = getConstCompound(data, "Version");
+    GET_VALUE_TO(Int, id, "Id", __tmpCompound, dest->mcVersion);
+    GET_VALUE_TO(String, name, "Name", __tmpCompound, dest->mcVersion);
+    GET_VALUE_TO(String, series, "Series", __tmpCompound, dest->mcVersion);
+    GET_VALUE_TO(Byte, snapshot, "Snapshot", __tmpCompound, dest->mcVersion);
+
+    GET_VALUE(Int, wanderingTraderSpawnChance, "WanderingTraderSpawnChance");
+    GET_VALUE(Int, wanderingTraderSpawnDelay, "WanderingTraderSpawnDelay");
+    GET_VALUE(Byte, wasModded, "WasModded");
+
+    __tmpCompound = getConstCompound(data, "WorldGenSettings");
+    GET_VALUE_TO(Byte, bonus_chest, "bonus_chest", __tmpCompound, dest->worldGenSettings);
+    GET_VALUE_TO(Byte, generateFeatures, "generate_features", __tmpCompound, dest->worldGenSettings);
+    GET_VALUE_TO(Long, seed, "seed", __tmpCompound, dest->worldGenSettings);
+
+    GET_VALUE(Byte, allowCommands, "allowCommands");
+    GET_VALUE(Int, clearWeatherTime, "clearWeatherTime");
+    GET_VALUE(Byte, hardcore, "hardcore");
+    GET_VALUE(Byte, initialized, "initialized");
+    GET_VALUE(Int, rainTime, "rainTime");
+    GET_VALUE(Byte, raining, "raining");
+    GET_VALUE(Int, thunderTime, "thunderTime");
+    GET_VALUE(Byte, thundering, "thundering");
+    GET_VALUE(Int, version, "version");
 
     // Clean temporary data
     root->destroy();
