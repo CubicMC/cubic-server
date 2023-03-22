@@ -163,9 +163,9 @@ Double *nbt::parseDouble(uint8_t *&at, const uint8_t *end, bool include_name, bo
     if (end - at < 7)
         return nullptr;
     
-    int64_t value = 0;
-    for (int i = 0; i < 8; i++)
-        value |= (*at++) << (i * 8);
+    uint64_t value = 0;
+    for (int i = 7; i >= 0; i--)
+        value |= ((uint64_t) (*at++)) << (i * 8);
 
     return new Double(name, *((double *)(&value)));
 }
