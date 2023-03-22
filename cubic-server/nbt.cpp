@@ -336,8 +336,10 @@ Compound *nbt::parseCompound(uint8_t *&at, const uint8_t *end, bool include_name
     for (auto i = 0; 1; i++) {
         if (at > end)
             return nullptr;
-        if (*at == (uint8_t)TagType::End)
+        if (*at == (uint8_t)TagType::End) {
+            at++;
             break;
+        }
         Base *val = parse(at, end);
         if (!val) {
             for (int y = i - 1; y >= 0; y--) {
