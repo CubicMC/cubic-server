@@ -194,6 +194,19 @@ public:
         return nullptr;
     }
 
+    /**
+     * @brief Get an NBT Tag from name
+     * 
+     * @param str Name of the wanted NBT Tag
+     * @return const Base* The wanted NBT Tag (nullptr if not found)
+     */
+    constexpr const Base *getValue(const std::string &str) const {
+        for (auto i : _value)
+            if (i->getName() == str)
+                return i;
+        return nullptr;
+    }
+
     constexpr std::vector<Base *> &getValues() {
         return _value;
     }
