@@ -3,6 +3,7 @@
 
 #include <mutex>
 #include <string>
+#include <vector>
 
 #include "LevelData.hpp"
 
@@ -17,6 +18,14 @@ class Persistence
 private:
     const std::string level_name;
     std::mutex accessMutex;
+
+    /**
+     * @brief Opens a gz compressed file and uncompresses it
+     * 
+     * @param filepath File to read from
+     * @param data Output data vector
+     */
+    void uncompressFile(const std::string &filepath, std::vector<uint8_t> &data);
 
 public:
     /**

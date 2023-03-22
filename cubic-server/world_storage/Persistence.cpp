@@ -27,31 +27,36 @@ Persistence::Persistence(const std::string &level_folder_name)
 {
 }
 
-void Persistence::loadLevelData(LevelData *dest)
+void Persistence::uncompressFile(const std::string &filepath, std::vector<uint8_t> &data)
 {
-    std::unique_lock<std::mutex> lock(accessMutex);
-
     // Thanks StackOverflow
     // https://stackoverflow.com/a/17062022
-    const std::filesystem::path file = std::filesystem::path(level_name) / "level.dat";
-    // TODO(huntears): Put that somewhere else to make it reusable
-    gzFile inFileZ = gzopen(file.c_str(), "rb");
-    if (inFileZ == NULL)
-        throw std::runtime_error("Error: Failed to gzopen " + std::string(file));
-
     constexpr uint64_t readBufferSize = 8192;
+
+    gzFile inFileZ = gzopen(filepath.c_str(), "rb");
+    if (inFileZ == NULL)
+        throw std::runtime_error("Error: Failed to gzopen " + filepath);
+
     uint8_t unzipBuffer[readBufferSize];
     unsigned int unzippedBytes;
-    std::vector<uint8_t> unzippedData;
     while (true) {
         unzippedBytes = gzread(inFileZ, unzipBuffer, readBufferSize);
         if (unzippedBytes > 0) {
-            unzippedData.insert(unzippedData.end(), unzipBuffer, unzipBuffer + unzippedBytes);
+            data.insert(data.end(), unzipBuffer, unzipBuffer + unzippedBytes);
         } else {
             break;
         }
     }
     gzclose(inFileZ);
+}
+
+void Persistence::loadLevelData(LevelData *dest)
+{
+    std::unique_lock<std::mutex> lock(accessMutex);
+
+    const std::filesystem::path file = std::filesystem::path(level_name) / "level.dat";
+    std::vector<uint8_t> unzippedData;
+    this->uncompressFile(file, unzippedData);
 
     // Parse data
     uint8_t *start = unzippedData.data();
