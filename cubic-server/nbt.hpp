@@ -167,6 +167,33 @@ public:
     Compound(std::string name, std::initializer_list<Base *> value) : Base(std::move(name), TagType::Compound), _value(value) {};
     ~Compound() override = default;
 
+    /**
+     * @brief Checks if an NBT Tag exists
+     * 
+     * @param str The name of the wanted NBT Tag
+     * @return true The wanted NBT Tag exists in the Compound
+     * @return false The wanted NBT Tag does not exist in the Compound
+     */
+    constexpr bool hasValue(const std::string &str) const {
+        for (const auto &i : _value)
+            if (i->getName() == str)
+                return true;
+        return false;
+    }
+
+    /**
+     * @brief Get an NBT Tag from name
+     * 
+     * @param str Name of the wanted NBT Tag
+     * @return Base* The wanted NBT Tag (nullptr if not found)
+     */
+    constexpr Base *getValue(const std::string &str) {
+        for (auto i : _value)
+            if (i->getName() == str)
+                return i;
+        return nullptr;
+    }
+
     constexpr std::vector<Base *> &getValues() {
         return _value;
     }
