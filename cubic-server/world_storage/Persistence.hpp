@@ -16,7 +16,16 @@ namespace world_storage {
 class Persistence
 {
 private:
+    /**
+     * @brief Name of the world folder
+     * 
+     */
     const std::string level_name;
+
+    /**
+     * @brief Global lock for any persistence actions
+     * 
+     */
     std::mutex accessMutex;
 
     /**
