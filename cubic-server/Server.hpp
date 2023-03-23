@@ -53,16 +53,12 @@ public:
         return _config;
     }
 
-    WhitelistHandling::Whitelist &getWhitelistHandler() {
-        return _whitelistHandler;
-    }
-
-    const nlohmann::json &getWhitelistData() const {
-        return _whitelistData;
-    }
-
-    const bool getWhitelist() const {
+    WhitelistHandling::Whitelist getWhitelist() const {
         return _whitelist;
+    }
+
+    const bool isWhitelistEnabled() const {
+        return _whitelistEnabled;
     }
 
     const bool getEnforceWhitelist() const {
@@ -114,7 +110,7 @@ private:
     uint16_t _port;
     uint32_t _maxPlayer;
     std::string _motd;
-    bool _whitelist;
+    bool _whitelistEnabled;
     bool _enforceWhitelist;
     std::atomic<bool> _running;
 
@@ -125,8 +121,7 @@ private:
     struct sockaddr_in6 _addr;
 
     Configuration::ConfigHandler _config;
-    WhitelistHandling::Whitelist _whitelistHandler;
-    nlohmann::json _whitelistData;
+    WhitelistHandling::Whitelist _whitelist;
     std::unordered_map<std::string_view, WorldGroup *> _worldGroups;
     std::vector<CommandBase *> _commands = {
         new command_parser::Help,

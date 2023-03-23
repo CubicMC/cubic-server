@@ -366,7 +366,7 @@ void Client::_onLoginStart(const std::shared_ptr<protocol::LoginStart> &pck)
     if (!Server::getInstance()->getWorldGroup("default")->isInitialized()) {
         this->disconnect("Server is not initialized yet.");
         return;
-    } else if (Server::getInstance()->getWhitelist() && !Server::getInstance()->getWhitelistHandler().isPlayer(resPck.uuid, resPck.username, Server::getInstance()->getWhitelistData()).first) {
+    } else if (Server::getInstance()->isWhitelistEnabled() && !Server::getInstance()->getWhitelist().isPlayerWhitelisted(resPck.uuid, resPck.username).first) {
         this->disconnect("You are not whitelisted on this server.");
         return;
     }
