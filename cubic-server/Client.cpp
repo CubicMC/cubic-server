@@ -136,6 +136,7 @@ void Client::_tryFlushAllSendData()
 void Client::switchToPlayState(u128 playerUuid, const std::string &username)
 {
     this->setStatus(protocol::ClientStatus::Play);
+    LDEBUG("Switched to play state");
     // TODO: get the player dimension from the world by his uuid
     this->_player = new Player(
         this,
@@ -143,6 +144,7 @@ void Client::switchToPlayState(u128 playerUuid, const std::string &username)
         playerUuid,
         username
     );
+    LDEBUG("Created player");
 }
 
 void Client::handleParsedClientPacket(const std::shared_ptr<protocol::BaseServerPacket> &packet,
@@ -233,7 +235,7 @@ void Client::handleParsedClientPacket(const std::shared_ptr<protocol::BaseServer
         }
         break;
     }
-    LERROR("Unhandled packet: ", static_cast<int>(packetID) +
+    LERROR("Unhandled packet: ", static_cast<int>(packetID),
         " in status ", static_cast<int>(_status)); // TODO: Properly handle the unknown packet
 }
 
@@ -373,7 +375,7 @@ void Client::_onLoginStart(const std::shared_ptr<protocol::LoginStart> &pck)
         this->disconnect("You are not whitelisted on this server.");
         return;
     }
-    sendLoginSuccess(resPck);
+    this->_loginSequence(resPck);
 }
 
 void Client::_onEncryptionResponse(const std::shared_ptr<protocol::EncryptionResponse> &pck)
@@ -406,10 +408,9 @@ void Client::sendLoginSuccess(const protocol::LoginSuccess &packet)
     auto pck = protocol::createLoginSuccess(packet);
     _sendData(*pck);
     LDEBUG("Sent a login success");
+}
 
-    switchToPlayState(packet.uuid, packet.username);
-    LDEBUG("Switched to play state");
-
+void Client::sendLoginPlay() {
     protocol::LoginPlay resPck = {
             .entityID = _player->getId(), // TODO: figure out what is this
             .isHardcore = false, // TODO: something like this this->_player->_dim->getWorld()->getDifficulty(); Thats not difficulty tho (peaceful, easy, normal, hard)
@@ -552,4 +553,13 @@ void Client::stop(const chat::Message &reason)
     this->disconnect(reason);
     if (this->_networkThread.joinable())
         this->_networkThread.join();
+}
+
+void Client::_loginSequence(const protocol::LoginSuccess &pck)
+{
+    // Encryption request
+    // Set Compression
+    this->sendLoginSuccess(pck);
+    this->switchToPlayState(pck.uuid, pck.username);
+    this->sendLoginPlay();
 }
