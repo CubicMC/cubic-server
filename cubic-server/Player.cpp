@@ -30,7 +30,7 @@ Player::Player(Client *cli, std::shared_ptr<Dimension> dim, u128 uuid, const std
 
     uuidsstr << std::setfill('0') << std::setw(16) << std::hex << this->getUuid().most << std::setfill('0') << std::setw(16) << this->getUuid().least;
     uuidstr = uuidsstr.str();
-    LINFO(uuidstr);
+    LINFO("Player with uuid", uuidstr, " just logged in");
     uuidstr.insert(8, "-");
     uuidstr.insert(13, "-");
     uuidstr.insert(18, "-");
@@ -223,55 +223,7 @@ void Player::setPosition(const Vector3<double> &pos)
 
     Entity::setPosition(pos);
 
-    if (newChunkPos == oldChunkPos)
-        return;
-
-    auto renderDistance = this->getDimension()->getWorld()->getRenderDistance();
-
-    // Load and unload chunks
-    this->sendSetCenterChunk(newChunkPos);
-
-    //* Old chunks
-    // Positive changes
-	for (int32_t x = oldChunkPos.x - renderDistance; x < std::min(newChunkPos.x - renderDistance, oldChunkPos.x + renderDistance + 1); x++) {
-        for (int32_t z = oldChunkPos.z - renderDistance; z < oldChunkPos.z + renderDistance + 1; z++)
-            this->sendUnloadChunk(x, z);
-	}
-    for (int32_t z = oldChunkPos.z - renderDistance; z < std::min(newChunkPos.z - renderDistance, oldChunkPos.z + renderDistance + 1); z++) {
-        for (int32_t x = oldChunkPos.x - renderDistance + (newChunkPos.x - oldChunkPos.x); x < oldChunkPos.x + renderDistance + 1; x++)
-            this->sendUnloadChunk(x, z);
-    }
-
-    // Negative changes
-    for (int32_t x = oldChunkPos.x + renderDistance; x >= std::max(newChunkPos.x + renderDistance + 1, oldChunkPos.x - renderDistance); x--) {
-        for (int32_t z = oldChunkPos.z - renderDistance; z < oldChunkPos.z + renderDistance + 1; z++)
-            this->sendUnloadChunk(x, z);
-    }
-    for (int32_t z = oldChunkPos.z + renderDistance; z >= std::max(newChunkPos.z + renderDistance + 1, oldChunkPos.z - renderDistance); z--) {
-        for (int32_t x = oldChunkPos.x - renderDistance ; x < oldChunkPos.x + renderDistance + 1 + (newChunkPos.x - oldChunkPos.x); x++)
-            this->sendUnloadChunk(x, z);
-    }
-
-    //* New chunks
-    // Positive changes
-    for (int32_t x = newChunkPos.x + renderDistance; x >= std::max(oldChunkPos.x + renderDistance + 1, newChunkPos.x - renderDistance); x--) {
-        for (int32_t z = newChunkPos.z - renderDistance; z < newChunkPos.z + renderDistance + 1; z++)
-            this->sendChunkAndLightUpdate(x, z);
-    }
-    for (int32_t z = newChunkPos.z + renderDistance; z >= std::max(oldChunkPos.z + renderDistance + 1, newChunkPos.z - renderDistance); z--) {
-        for (int32_t x = newChunkPos.x - renderDistance; x < newChunkPos.x + renderDistance + 1 - (newChunkPos.x - oldChunkPos.x); x++)
-            this->sendChunkAndLightUpdate(x, z);
-    }
-
-    // Negative changes
-    for (int32_t x = newChunkPos.x - renderDistance; x < std::min(oldChunkPos.x - renderDistance, newChunkPos.x + renderDistance + 1); x++) {
-        for (int32_t z = newChunkPos.z - renderDistance; z < newChunkPos.z + renderDistance + 1; z++)
-            this->sendChunkAndLightUpdate(x, z);
-    }
-    for (int32_t z = newChunkPos.z - renderDistance; z < std::min(oldChunkPos.z - renderDistance, newChunkPos.z + renderDistance + 1); z++) {
-        for (int32_t x = newChunkPos.x - renderDistance - (newChunkPos.x - oldChunkPos.x); x < newChunkPos.x + renderDistance + 1; x++)
-            this->sendChunkAndLightUpdate(x, z);
-    }
+    _updateRenderedChunks(oldChunkPos, newChunkPos);
 }
 
 void Player::setPosition(double x, double y, double z)
@@ -363,75 +315,6 @@ void Player::sendLoginPlay(const protocol::LoginPlay &packet)
     auto pck = protocol::createLoginPlay(packet);
     _cli->_sendData(*pck);
     LDEBUG("Sent a login play");
-
-    this->sendFeatureFlags({
-        {"minecraft:vanilla"}
-    });
-
-    this->sendPlayerAbilities({
-        (uint8_t)protocol::PlayerAbilitiesFlags::Invulnerable |
-            (uint8_t)protocol::PlayerAbilitiesFlags::Flying |
-            (uint8_t)protocol::PlayerAbilitiesFlags::AllowFlying |
-            (uint8_t)protocol::PlayerAbilitiesFlags::CreativeMode,
-        0.05,
-        0.1
-    });
-
-    this->sendServerData({
-        false,
-        "",
-        false,
-        "",
-        false
-    });
-
-    auto renderDistance = this->getDimension()->getWorld()->getRenderDistance();
-    // Send all chunks around the player
-    // TODO: send chunk closer to the player first
-    sendChunkAndLightUpdate(0, 0);
-    for (int32_t x = -renderDistance; x < renderDistance + 1; x++) {
-        for (int32_t z = -renderDistance; z < renderDistance + 1; z++) {
-            if (x == 0 && z == 0)
-                continue;
-            sendChunkAndLightUpdate(x, z);
-        }
-    }
-    // for (auto &player : this->_player->getDimension()->getPlayerList())
-    //     player->sendSynchronizePosition({0, -58, 0});
-    // this->_player->sendChunkAndLightUpdate(0, 0);
-    _dim->addEntity(this);
-    LDEBUG("Added entity player to dimension");
-    getDimension()->getWorld()->sendPlayerInfoAddPlayer(this);
-    getDimension()->spawnPlayer(this);
-    sendSynchronizePosition({8.5, 100, 8.5});
-
-    // Send login message
-    chat::Message connectionMsg = chat::Message("", {
-        .color = "yellow",
-        .translate = "multiplayer.player.joined",
-        .with = std::vector<chat::Message>({
-            chat::Message(
-                this->getUsername(),
-                {
-                    .insertion = this->getUsername(),
-                },
-                chat::message::ClickEvent(
-                    chat::message::ClickEvent::Action::SuggestCommand,
-                    "/tell " + this->getUsername() + " "
-                ),
-                chat::message::HoverEvent(
-                    chat::message::HoverEvent::Action::ShowEntity,
-                    "{\"type\": \"minecraft:player\", \"id\": \"" + this->getUuidString() + "\", \"name\": \"" + this->getUsername() + "\"}"
-                )
-            )
-        })
-    });
-
-    this->getDimension()->getWorld()->getChat()->sendSystemMessage(
-        connectionMsg,
-        false,
-        this->getDimension()->getWorld()->getWorldGroup()
-    );
 }
 
 void Player::sendPlayerInfoUpdate(const protocol::PlayerInfoUpdate &data)
@@ -479,9 +362,8 @@ void Player::sendSystemChatMessage(const protocol::SystemChatMessage &packet)
     auto pck = protocol::createSystemChatMessage(packet);
     this->_cli->_sendData(*pck);
 
-    LDEBUG("Sent a system chat message to " + this->getUsername());
-    LDEBUG("message: ");
-    LDEBUG(packet.JSONData);
+    LDEBUG("Sent a system chat message to ", this->getUsername());
+    LDEBUG("message: ", packet.JSONData);
 }
 
 void Player::sendWorldEvent(const protocol::WorldEvent &packet)
@@ -1014,4 +896,152 @@ void Player::_processKeepAlive()
     }
     this->setKeepAliveId(id);
     this->sendKeepAlive(id);
+}
+
+void Player::_updateRenderedChunks(const Position2D &oldChunkPos, const Position2D &newChunkPos)
+{
+    if (newChunkPos == oldChunkPos)
+        return;
+
+    auto renderDistance = this->getDimension()->getWorld()->getRenderDistance();
+
+    // Load and unload chunks
+    this->sendSetCenterChunk(newChunkPos);
+
+    //* Old chunks
+    // Positive changes
+	for (int32_t x = oldChunkPos.x - renderDistance; x < std::min(newChunkPos.x - renderDistance, oldChunkPos.x + renderDistance + 1); x++) {
+        for (int32_t z = oldChunkPos.z - renderDistance; z < oldChunkPos.z + renderDistance + 1; z++)
+            this->sendUnloadChunk(x, z);
+	}
+    for (int32_t z = oldChunkPos.z - renderDistance; z < std::min(newChunkPos.z - renderDistance, oldChunkPos.z + renderDistance + 1); z++) {
+        for (int32_t x = oldChunkPos.x - renderDistance + (newChunkPos.x - oldChunkPos.x); x < oldChunkPos.x + renderDistance + 1; x++)
+            this->sendUnloadChunk(x, z);
+    }
+
+    // Negative changes
+    for (int32_t x = oldChunkPos.x + renderDistance; x >= std::max(newChunkPos.x + renderDistance + 1, oldChunkPos.x - renderDistance); x--) {
+        for (int32_t z = oldChunkPos.z - renderDistance; z < oldChunkPos.z + renderDistance + 1; z++)
+            this->sendUnloadChunk(x, z);
+    }
+    for (int32_t z = oldChunkPos.z + renderDistance; z >= std::max(newChunkPos.z + renderDistance + 1, oldChunkPos.z - renderDistance); z--) {
+        for (int32_t x = oldChunkPos.x - renderDistance ; x < oldChunkPos.x + renderDistance + 1 + (newChunkPos.x - oldChunkPos.x); x++)
+            this->sendUnloadChunk(x, z);
+    }
+
+    //* New chunks
+    // Positive changes
+    for (int32_t x = newChunkPos.x + renderDistance; x >= std::max(oldChunkPos.x + renderDistance + 1, newChunkPos.x - renderDistance); x--) {
+        for (int32_t z = newChunkPos.z - renderDistance; z < newChunkPos.z + renderDistance + 1; z++)
+            this->sendChunkAndLightUpdate(x, z);
+    }
+    for (int32_t z = newChunkPos.z + renderDistance; z >= std::max(oldChunkPos.z + renderDistance + 1, newChunkPos.z - renderDistance); z--) {
+        for (int32_t x = newChunkPos.x - renderDistance; x < newChunkPos.x + renderDistance + 1 - (newChunkPos.x - oldChunkPos.x); x++)
+            this->sendChunkAndLightUpdate(x, z);
+    }
+
+    // Negative changes
+    for (int32_t x = newChunkPos.x - renderDistance; x < std::min(oldChunkPos.x - renderDistance, newChunkPos.x + renderDistance + 1); x++) {
+        for (int32_t z = newChunkPos.z - renderDistance; z < newChunkPos.z + renderDistance + 1; z++)
+            this->sendChunkAndLightUpdate(x, z);
+    }
+    for (int32_t z = newChunkPos.z - renderDistance; z < std::min(oldChunkPos.z - renderDistance, newChunkPos.z + renderDistance + 1); z++) {
+        for (int32_t x = newChunkPos.x - renderDistance - (newChunkPos.x - oldChunkPos.x); x < newChunkPos.x + renderDistance + 1; x++)
+            this->sendChunkAndLightUpdate(x, z);
+    }
+}
+
+void Player::_continueLoginSequence() {
+    this->sendFeatureFlags({
+        {"minecraft:vanilla"}
+    });
+
+    this->sendPlayerAbilities({
+        (uint8_t)protocol::PlayerAbilitiesFlags::Invulnerable |
+            (uint8_t)protocol::PlayerAbilitiesFlags::Flying |
+            (uint8_t)protocol::PlayerAbilitiesFlags::AllowFlying |
+            (uint8_t)protocol::PlayerAbilitiesFlags::CreativeMode,
+        0.05,
+        0.1
+    });
+
+    // set Held Item
+
+    // update recipes
+
+    // update tags
+
+    // entity event ?
+
+    // command list
+
+    // update recipes book
+
+    // Synchronize position
+
+    this->sendServerData({
+        false,
+        "",
+        false,
+        "",
+        false
+    });
+
+    _dim->addEntity(this);
+    LDEBUG("Added entity player to dimension");
+    getDimension()->getWorld()->sendPlayerInfoAddPlayer(this);
+
+    // player info update
+
+    // send center chunk
+
+    auto renderDistance = this->getDimension()->getWorld()->getRenderDistance();
+    // Send all chunks around the player
+    // TODO: send chunk closer to the player first
+    sendChunkAndLightUpdate(0, 0);
+    for (int32_t x = -renderDistance; x < renderDistance + 1; x++) {
+        for (int32_t z = -renderDistance; z < renderDistance + 1; z++) {
+            if (x == 0 && z == 0)
+                continue;
+            sendChunkAndLightUpdate(x, z);
+        }
+    }
+    // for (auto &player : this->_player->getDimension()->getPlayerList())
+    //     player->sendSynchronizePosition({0, -58, 0});
+    // this->_player->sendChunkAndLightUpdate(0, 0);
+    getDimension()->spawnPlayer(this);
+    sendSynchronizePosition({8.5, 100, 8.5});
+
+    this->_sendLoginMessage();
+}
+
+void Player::_sendLoginMessage(void)
+{
+    // Send login message
+    chat::Message connectionMsg = chat::Message("", {
+        .color = "yellow",
+        .translate = "multiplayer.player.joined",
+        .with = std::vector<chat::Message>({
+            chat::Message(
+                this->getUsername(),
+                {
+                    .insertion = this->getUsername(),
+                },
+                chat::message::ClickEvent(
+                    chat::message::ClickEvent::Action::SuggestCommand,
+                    "/tell " + this->getUsername() + " "
+                ),
+                chat::message::HoverEvent(
+                    chat::message::HoverEvent::Action::ShowEntity,
+                    "{\"type\": \"minecraft:player\", \"id\": \"" + this->getUuidString() + "\", \"name\": \"" + this->getUsername() + "\"}"
+                )
+            )
+        })
+    });
+
+    this->getDimension()->getWorld()->getChat()->sendSystemMessage(
+        connectionMsg,
+        false,
+        this->getDimension()->getWorld()->getWorldGroup()
+    );
 }

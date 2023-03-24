@@ -562,4 +562,5 @@ void Client::_loginSequence(const protocol::LoginSuccess &pck)
     this->sendLoginSuccess(pck);
     this->switchToPlayState(pck.uuid, pck.username);
     this->sendLoginPlay();
+    this->_player->_continueLoginSequence();
 }
