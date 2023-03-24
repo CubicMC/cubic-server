@@ -52,7 +52,7 @@ public:
         return _config;
     }
 
-    WhitelistHandling::Whitelist getWhitelist() const {
+    const WhitelistHandling::Whitelist getWhitelist() const {
         return _whitelist;
     }
 
