@@ -93,13 +93,13 @@ namespace WhitelistHandling
         }
     }
 
-    std::pair<bool, int> Whitelist::isPlayerWhitelisted(u128 uuid, std::string playerName)
+    std::pair<bool, int> Whitelist::isPlayerWhitelisted(u128 uuid, std::string playerName) const
     {
         bool check = false;
         int playerPos = 0;
         int pos = 0;
 
-        for (nlohmann::json::iterator it = _whitelistData.begin(); it != _whitelistData.end(); ++it) {
+        for (auto it = _whitelistData.begin(); it != _whitelistData.end(); ++it) {
             ++pos;
             if (it.value()["uuid"] == u128_to_uuidString(uuid) || it.value()["name"] == playerName) {
                 check = true;

@@ -21,7 +21,7 @@ namespace WhitelistHandling
 
             void addPlayer(u128 uuid, std::string playerName);
             void removePlayer(u128 uuid, std::string playerName);
-            std::pair<bool, int> isPlayerWhitelisted(u128 uuid, std::string playerName);
+            std::pair<bool, int> isPlayerWhitelisted(u128 uuid, std::string playerName) const;
 
             const std::string &getFilename() const {
                 return _filename;
