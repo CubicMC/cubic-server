@@ -3,6 +3,7 @@
 
 #include "Client.hpp"
 #include "Entity.hpp"
+#include "math/Vector3.hpp"
 #include "protocol/ServerPackets.hpp"
 #include "logging/Logger.hpp"
 #include "SoundList.hpp"
@@ -135,6 +136,8 @@ private:
     void _updateRenderedChunks(const Position2D &oldChunkPos, const Position2D &newChunkPos);
     void _continueLoginSequence();
     void _sendLoginMessage();
+    void _unloadChunk(int32_t x, int32_t z);
+    void _synchronizePostion(Vector3<double> pos);
 
     Client *_cli;
     std::string _username;

@@ -30,7 +30,7 @@ Player::Player(Client *cli, std::shared_ptr<Dimension> dim, u128 uuid, const std
 
     uuidsstr << std::setfill('0') << std::setw(16) << std::hex << this->getUuid().most << std::setfill('0') << std::setw(16) << this->getUuid().least;
     uuidstr = uuidsstr.str();
-    LINFO("Player with uuid", uuidstr, " just logged in");
+    LINFO("Player with uuid ", uuidstr, " just logged in");
     uuidstr.insert(8, "-");
     uuidstr.insert(13, "-");
     uuidstr.insert(18, "-");
@@ -146,7 +146,7 @@ void Player::tick()
     }
 
     if (_pos.y < -100)
-        sendSynchronizePosition({_pos.x, -58, _pos.z});
+        _synchronizePostion({_pos.x, -58, _pos.z});
 }
 
 Client *Player::getClient() const
@@ -430,14 +430,6 @@ void Player::sendSynchronizePosition(Vector3<double> pos)
 
     });
     this->_cli->_sendData(*pck);
-    this->forceSetPosition(pos);
-    LDEBUG("Synchronized player position");
-
-    for (auto i : this->getDimension()->getPlayerList()) {
-        if (i->getId() == this->getId())
-            continue;
-        i->sendTeleportEntity(this->getId(), pos);
-    }
 }
 
 void Player::sendChunkAndLightUpdate(const Position2D &pos)
@@ -516,17 +508,8 @@ void Player::sendChunkAndLightUpdate(const world_storage::ChunkColumn &chunk)
 
 void Player::sendUnloadChunk(int32_t x, int32_t z)
 {
-    if (!this->_chunks.contains({x, z}))
-        return;
-    else if (this->_chunks[{x, z}] == ChunkState::Loading) {
-        this->_dim->removePlayerFromLoadingChunk({x, z}, this);
-        this->_chunks.erase({x, z});
-        return;
-    }
-
     auto pck = protocol::createUnloadChunk({x, z});
     this->_cli->_sendData(*pck);
-    this->_chunks.erase({x, z});
     LDEBUG("Sent an unload chunk packet (", x, ", ", z, ")");
 }
 
@@ -912,21 +895,21 @@ void Player::_updateRenderedChunks(const Position2D &oldChunkPos, const Position
     // Positive changes
 	for (int32_t x = oldChunkPos.x - renderDistance; x < std::min(newChunkPos.x - renderDistance, oldChunkPos.x + renderDistance + 1); x++) {
         for (int32_t z = oldChunkPos.z - renderDistance; z < oldChunkPos.z + renderDistance + 1; z++)
-            this->sendUnloadChunk(x, z);
+            this->_unloadChunk(x, z);
 	}
     for (int32_t z = oldChunkPos.z - renderDistance; z < std::min(newChunkPos.z - renderDistance, oldChunkPos.z + renderDistance + 1); z++) {
         for (int32_t x = oldChunkPos.x - renderDistance + (newChunkPos.x - oldChunkPos.x); x < oldChunkPos.x + renderDistance + 1; x++)
-            this->sendUnloadChunk(x, z);
+            this->_unloadChunk(x, z);
     }
 
     // Negative changes
     for (int32_t x = oldChunkPos.x + renderDistance; x >= std::max(newChunkPos.x + renderDistance + 1, oldChunkPos.x - renderDistance); x--) {
         for (int32_t z = oldChunkPos.z - renderDistance; z < oldChunkPos.z + renderDistance + 1; z++)
-            this->sendUnloadChunk(x, z);
+            this->_unloadChunk(x, z);
     }
     for (int32_t z = oldChunkPos.z + renderDistance; z >= std::max(newChunkPos.z + renderDistance + 1, oldChunkPos.z - renderDistance); z--) {
         for (int32_t x = oldChunkPos.x - renderDistance ; x < oldChunkPos.x + renderDistance + 1 + (newChunkPos.x - oldChunkPos.x); x++)
-            this->sendUnloadChunk(x, z);
+            this->_unloadChunk(x, z);
     }
 
     //* New chunks
@@ -965,19 +948,19 @@ void Player::_continueLoginSequence() {
         0.1
     });
 
-    // set Held Item
+    // TODO: set Held Item
 
-    // update recipes
+    // TODO: update recipes
 
-    // update tags
+    // TODO: update tags
 
-    // entity event ?
+    // TODO: entity event ?
 
-    // command list
+    // TODO: command list
 
-    // update recipes book
+    // TODO: update recipes book
 
-    // Synchronize position
+    this->_synchronizePostion({8.5, 100, 8.5});
 
     this->sendServerData({
         false,
@@ -991,9 +974,7 @@ void Player::_continueLoginSequence() {
     LDEBUG("Added entity player to dimension");
     getDimension()->getWorld()->sendPlayerInfoAddPlayer(this);
 
-    // player info update
-
-    // send center chunk
+    this->sendSetCenterChunk({0, 0});
 
     auto renderDistance = this->getDimension()->getWorld()->getRenderDistance();
     // Send all chunks around the player
@@ -1007,10 +988,10 @@ void Player::_continueLoginSequence() {
         }
     }
     // for (auto &player : this->_player->getDimension()->getPlayerList())
-    //     player->sendSynchronizePosition({0, -58, 0});
+    //     player->_synchronizePostion({0, -58, 0});
     // this->_player->sendChunkAndLightUpdate(0, 0);
     getDimension()->spawnPlayer(this);
-    sendSynchronizePosition({8.5, 100, 8.5});
+    this->_synchronizePostion({8.5, 100, 8.5});
 
     this->_sendLoginMessage();
 }
@@ -1044,4 +1025,30 @@ void Player::_sendLoginMessage(void)
         false,
         this->getDimension()->getWorld()->getWorldGroup()
     );
+}
+
+void Player::_unloadChunk(int32_t x, int32_t z) {
+    if (!this->_chunks.contains({x, z}))
+        return;
+    else if (this->_chunks[{x, z}] == ChunkState::Loading) {
+        this->_dim->removePlayerFromLoadingChunk({x, z}, this);
+        this->_chunks.erase({x, z});
+        return;
+    }
+
+    this->sendUnloadChunk(x, z);
+    this->_chunks.erase({x, z});
+}
+
+void Player::_synchronizePostion(Vector3<double> pos)
+{
+    this->sendSynchronizePosition(pos);
+    this->forceSetPosition(pos);
+    LDEBUG("Synchronized player position");
+
+    for (auto i : this->getDimension()->getPlayerList()) {
+        if (i->getId() == this->getId())
+            continue;
+        i->sendTeleportEntity(this->getId(), pos);
+    }
 }
