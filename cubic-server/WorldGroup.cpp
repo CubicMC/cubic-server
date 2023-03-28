@@ -80,7 +80,7 @@ void WorldGroup::forEachWorld(std::function<void(World &)> callback)
 
 void WorldGroup::forEachWorldIf(std::function<void(World &)> callback, std::function<bool(const World &)> predicate)
 {
-    for (auto &world : this->_worlds) {
+    for (auto &[_ ,world] : this->_worlds) {
         if (predicate(*world.second))
             callback(*world.second.get());
     }
