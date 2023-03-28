@@ -43,9 +43,8 @@ public:
     void setKeepAliveId(long id);
     uint8_t keepAliveIgnored() const;
     void setKeepAliveIgnored(uint8_t ign);
-    const bool hasPermission(uint8_t requiredLevel) const;
     void setOperator(const bool isOp);
-    const bool isOperator() const;
+    bool isOperator() const;
     
 public:
     virtual void setPosition(const Vector3<double> &pos) override;

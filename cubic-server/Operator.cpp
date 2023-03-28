@@ -14,7 +14,7 @@ Permissions::Permissions(const std::string &filename):
     std::ifstream filestream(filename, std::ifstream::in);
     std::string line;
 
-    if (!!filestream) {
+    if (filestream.is_open()) {
         while (!filestream.eof()) {
             std::getline(filestream, line);
             this->_operatorSet.insert(line);
@@ -28,7 +28,7 @@ Permissions::~Permissions()
     // writes every operator name in the operator file
     std::ofstream filestream(this->_operatorFileName);
 
-    if (!!filestream) {
+    if (filestream.is_open()) {
         for (const auto &op : this->_operatorSet) {
             filestream << op << '\n';
         }
