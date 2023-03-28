@@ -36,7 +36,7 @@ static const std::unordered_map<std::string, std::uint32_t> _checksums = {
 Server::Server():
     _sockfd(-1),
     _config(),
-    _running(true)
+    _running(false)
 {
     _config.parse("./config.yml");
     _host = _config.getIP();
@@ -93,6 +93,8 @@ void Server::launch()
     auto defaultChat = std::make_shared<Chat>();
     _worldGroups.emplace("default", new DefaultWorldGroup(defaultChat));
     _worldGroups.at("default")->initialize();
+
+    this->_running = true;
 
     _acceptLoop();
 

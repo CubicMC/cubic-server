@@ -25,14 +25,14 @@ namespace protocol
         // Status State
         Status = 0x00,
         Ping = 0x01,
-        
+
         // Play State
         SpawnPlayer = 0x02,
         EntityAnimation = 0x03,
         BlockUpdate = 0x09,
         PluginMessage = 0x15,
-        DisconnectPlay = 0x17,
         // CustomSoundEffect = 0x16, TODO: This is removed in the last revision of wiki.vg
+        DisconnectPlay = 0x17,
         UnloadChunk = 0x1b,
         KeepAlive = 0x1F,
         ChunkDataAndLightUpdate = 0x20,
@@ -58,19 +58,12 @@ namespace protocol
         TeleportEntity = 0x64,
         FeatureFlags = 0x67,
     };
-    struct PingResponse
+
+    struct Disconnect
     {
-        int64_t payload;
+        std::string reason;
     };
-
-    std::shared_ptr<std::vector<uint8_t>> createPingResponse(const PingResponse &);
-
-    struct StatusResponse
-    {
-        std::string payload;
-    };
-
-    std::shared_ptr<std::vector<uint8_t>> createStatusResponse(const StatusResponse &);
+    std::shared_ptr<std::vector<uint8_t>> createLoginDisconnect(const Disconnect &);
 
     struct LoginSuccess
     {
@@ -84,8 +77,101 @@ namespace protocol
         bool isSigned;
         std::optional<std::string> signature;
     };
-
     std::shared_ptr<std::vector<uint8_t>> createLoginSuccess(const LoginSuccess &);
+
+    struct StatusResponse
+    {
+        std::string payload;
+    };
+    std::shared_ptr<std::vector<uint8_t>> createStatusResponse(const StatusResponse &);
+
+    struct PingResponse
+    {
+        int64_t payload;
+    };
+    std::shared_ptr<std::vector<uint8_t>> createPingResponse(const PingResponse &);
+
+    struct SpawnPlayer
+    {
+        int32_t entity_id;
+        u128 player_uuid;
+        double x;
+        double y;
+        double z;
+        uint8_t yaw;
+        uint8_t pitch;
+    };
+    std::shared_ptr<std::vector<uint8_t>> createSpawnPlayer(const SpawnPlayer &);
+
+    enum class EntityAnimationID : uint8_t {
+        SwingMainArm = 0x00,
+        TakeDamage = 0x01,
+        LeaveBed = 0x02,
+        SwingOffHand = 0x03,
+        CriticalEffect = 0x04,
+        MagicCriticalEffect = 0x05,
+    };
+    std::shared_ptr<std::vector<uint8_t>> createEntityAnimation(EntityAnimationID animId, int32_t entityID);
+
+    struct BlockUpdate
+    {
+        Position location;
+        int32_t block_id;
+    };
+    std::shared_ptr<std::vector<uint8_t>> createBlockUpdate(const BlockUpdate &);
+
+    struct PluginMessageResponse
+    {
+        std::string channel;
+        std::vector<uint8_t> data;
+    };
+    std::shared_ptr<std::vector<uint8_t>> createPluginMessageResponse(const PluginMessageResponse &);
+
+    struct CustomSoundEffect
+    {
+        std::string name;
+        int32_t category;
+        int32_t x;
+        int32_t y;
+        int32_t z;
+        float volume;
+        float pitch;
+        long seed;
+    };
+    std::shared_ptr<std::vector<uint8_t>> createCustomSoundEffect(const CustomSoundEffect &);
+
+    std::shared_ptr<std::vector<uint8_t>> createPlayDisconnect(const Disconnect &);
+
+    std::shared_ptr<std::vector<uint8_t>> createUnloadChunk(const Position2D &);
+
+    std::shared_ptr<std::vector<uint8_t>> createKeepAlive(long id);
+
+    // Only for chunk data and light update packet
+    struct ChunkDataAndLightUpdate
+    {
+        int32_t chunkX;
+        int32_t chunkZ;
+        nbt::Compound heightmaps;
+        const world_storage::ChunkColumn &data;
+        std::vector<BlockEntity> blockEntities;
+        bool trustEdges;
+        std::vector<long> skyLightMask;
+        std::vector<long> blockLightMask;
+        std::vector<long> emptySkyLightMask;
+        std::vector<long> emptyBlockLightMask;
+        std::vector<std::array<uint8_t, LIGHT_ARRAY_SIZE>> skyLight;
+        std::vector<std::array<uint8_t, LIGHT_ARRAY_SIZE>> blockLight;
+    };
+    std::shared_ptr<std::vector<uint8_t>> createChunkDataAndLightUpdate(const ChunkDataAndLightUpdate &);
+
+    struct WorldEvent
+    {
+        int32_t event;
+        Position position;
+        int32_t data;
+        bool disableRelativeVolume;
+    };
+    std::shared_ptr<std::vector<uint8_t>> createWorldEvent(const WorldEvent &);
 
     struct LoginPlay
     {
@@ -109,7 +195,6 @@ namespace protocol
         std::optional<std::string> deathDimensionName;
         std::optional<Position> deathLocation;
     };
-
     std::shared_ptr<std::vector<uint8_t>> createLoginPlay(const LoginPlay &);
 
     struct UpdateEntityPosition
@@ -120,7 +205,6 @@ namespace protocol
         int16_t deltaZ;
         bool onGround;
     };
-
     std::shared_ptr<std::vector<uint8_t>> createUpdateEntityPosition(const UpdateEntityPosition &);
 
     struct UpdateEntityPositionRotation
@@ -133,7 +217,6 @@ namespace protocol
         uint8_t pitch;
         bool onGround;
     };
-
     std::shared_ptr<std::vector<uint8_t>> createUpdateEntityPositionRotation(const UpdateEntityPositionRotation &);
 
     struct UpdateEntityRotation
@@ -143,8 +226,21 @@ namespace protocol
         uint8_t pitch;
         bool onGround;
     };
-
     std::shared_ptr<std::vector<uint8_t>> createUpdateEntityRotation(const UpdateEntityRotation &);
+
+    enum PlayerAbilitiesFlags : uint8_t {
+        Invulnerable = 0x01,
+        Flying = 0x02,
+        AllowFlying = 0x04,
+        CreativeMode = 0x08
+    };
+    struct PlayerAbilitiesClient
+    {
+        uint8_t flags;
+        float flyingSpeed;
+        float fieldOfViewModifier;
+    };
+    std::shared_ptr<std::vector<uint8_t>> createPlayerAbilities(const PlayerAbilitiesClient &in);
 
     struct PlayerChatMessage
     {
@@ -160,7 +256,6 @@ namespace protocol
         long salt;
         std::vector<uint8_t> signature;
     };
-
     std::shared_ptr<std::vector<uint8_t>> createPlayerChatMessage(const PlayerChatMessage &);
 
     struct PlayerInfoRemove {
@@ -234,16 +329,6 @@ namespace protocol
     };
     std::shared_ptr<std::vector<uint8_t>> createPlayerInfoUpdate(const PlayerInfoUpdate &);
 
-    struct WorldEvent
-    {
-        int32_t event;
-        Position position;
-        int32_t data;
-        bool disableRelativeVolume;
-    };
-
-    std::shared_ptr<std::vector<uint8_t>> createWorldEvent(const WorldEvent &);
-
     struct SynchronizePlayerPosition
     {
         double x;
@@ -255,14 +340,12 @@ namespace protocol
         int32_t teleportId;
         bool dismountVehicle;
     };
-
     std::shared_ptr<std::vector<uint8_t>> createSynchronizePlayerPosition(const SynchronizePlayerPosition &);
 
     struct RemoveEntities
     {
         std::vector<int32_t> entities;
     };
-
     std::shared_ptr<std::vector<uint8_t>> createRemoveEntities(const RemoveEntities &in);
 
     struct HeadRotation
@@ -270,7 +353,6 @@ namespace protocol
         int32_t entityID;
         uint8_t headYaw;
     };
-
     std::shared_ptr<std::vector<uint8_t>> createHeadRotation(const HeadRotation &in);
 
     struct ServerData
@@ -281,24 +363,16 @@ namespace protocol
         std::string icon;
         bool enforce_secure_chat;
     };
-
     std::shared_ptr<std::vector<uint8_t>> createServerData(const ServerData &in);
-
-    struct CustomSoundEffect
-    {
-        std::string name;
-        int32_t category;
-        int32_t x;
-        int32_t y;
-        int32_t z;
-        float volume;
-        float pitch;
-        long seed;
-    };
 
     std::shared_ptr<std::vector<uint8_t>> createCenterChunk(const Position2D &in);
 
-    std::shared_ptr<std::vector<uint8_t>> createCustomSoundEffect(const CustomSoundEffect &);
+    struct UpdateTime
+    {
+        long world_age;
+        long time_of_day;
+    };
+    std::shared_ptr<std::vector<uint8_t>> createUpdateTime(const UpdateTime &);
 
     struct EntitySoundEffect
     {
@@ -309,7 +383,6 @@ namespace protocol
         float pitch;
         long seed;
     };
-
     std::shared_ptr<std::vector<uint8_t>> createEntitySoundEffect(const EntitySoundEffect &);
 
     struct SoundEffect
@@ -323,7 +396,6 @@ namespace protocol
         float pitch;
         long seed;
     };
-
     std::shared_ptr<std::vector<uint8_t>> createSoundEffect(const SoundEffect &);
 
     struct StopSound
@@ -332,56 +404,14 @@ namespace protocol
         int32_t source;
         std::string sound;
     };
-
     std::shared_ptr<std::vector<uint8_t>> createStopSound(const StopSound &);
 
-    struct Disconnect
+    struct SystemChatMessage
     {
-        std::string reason;
+        std::string JSONData;
+        bool overlay;
     };
-
-    std::shared_ptr<std::vector<uint8_t>> createLoginDisconnect(const Disconnect &);
-    std::shared_ptr<std::vector<uint8_t>> createPlayDisconnect(const Disconnect &);
-    // Only for chunk data and light update packet
-    struct ChunkDataAndLightUpdate
-    {
-        int32_t chunkX;
-        int32_t chunkZ;
-        nbt::Compound heightmaps;
-        const world_storage::ChunkColumn &data;
-        std::vector<BlockEntity> blockEntities;
-        bool trustEdges;
-        std::vector<long> skyLightMask;
-        std::vector<long> blockLightMask;
-        std::vector<long> emptySkyLightMask;
-        std::vector<long> emptyBlockLightMask;
-        std::vector<std::array<uint8_t, LIGHT_ARRAY_SIZE>> skyLight;
-        std::vector<std::array<uint8_t, LIGHT_ARRAY_SIZE>> blockLight;
-    };
-    std::shared_ptr<std::vector<uint8_t>> createChunkDataAndLightUpdate(const ChunkDataAndLightUpdate &);
-
-    std::shared_ptr<std::vector<uint8_t>> createUnloadChunk(const Position2D &);
-
-    struct SpawnPlayer
-    {
-        int32_t entity_id;
-        u128 player_uuid;
-        double x;
-        double y;
-        double z;
-        uint8_t yaw;
-        uint8_t pitch;
-    };
-
-    std::shared_ptr<std::vector<uint8_t>> createSpawnPlayer(const SpawnPlayer &);
-
-    struct UpdateTime
-    {
-        long world_age;
-        long time_of_day;
-    };
-
-    std::shared_ptr<std::vector<uint8_t>> createUpdateTime(const UpdateTime &);
+    std::shared_ptr<std::vector<uint8_t>> createSystemChatMessage(const SystemChatMessage &);
 
     struct TeleportEntity
     {
@@ -393,65 +423,12 @@ namespace protocol
         uint8_t pitch;
         bool onGround;
     };
-
     std::shared_ptr<std::vector<uint8_t>> createTeleportEntity(const TeleportEntity &);
-
-    struct PluginMessageResponse
-    {
-        std::string channel;
-        std::vector<uint8_t> data;
-    };
-
-    std::shared_ptr<std::vector<uint8_t>> createPluginMessageResponse(const PluginMessageResponse &);
-
-    std::shared_ptr<std::vector<uint8_t>> createKeepAlive(long id);
-
-    struct BlockUpdate
-    {
-        Position location;
-        int32_t block_id;
-    };
-
-    std::shared_ptr<std::vector<uint8_t>> createBlockUpdate(const BlockUpdate &);
-
-    struct SystemChatMessage
-    {
-        std::string JSONData;
-        bool overlay;
-    };
-    std::shared_ptr<std::vector<uint8_t>> createSystemChatMessage(const SystemChatMessage &);
-
-    enum class EntityAnimationID : int32_t {
-        SwingMainArm = 0x00,
-        TakeDamage = 0x01,
-        LeaveBed = 0x02,
-        SwingOffHand = 0x03,
-        CriticalEffect = 0x04,
-        MagicCriticalEffect = 0x05,
-    };
-
-    std::shared_ptr<std::vector<uint8_t>> createEntityAnimation(EntityAnimationID animId, int32_t entityID);
-
-    enum PlayerAbilitiesFlags : uint8_t {
-        Invulnerable = 0x01,
-        Flying = 0x02,
-        AllowFlying = 0x04,
-        CreativeMode = 0x08
-    };
-    struct PlayerAbilitiesClient
-    {
-        uint8_t flags;
-        float flyingSpeed;
-        float fieldOfViewModifier;
-    };
-
-    std::shared_ptr<std::vector<uint8_t>> createPlayerAbilities(const PlayerAbilitiesClient &in);
 
     struct FeatureFlags
     {
         std::vector<std::string> flags;
     };
-
     std::shared_ptr<std::vector<uint8_t>> createFeatureFlags(const FeatureFlags &in);
 }
 
