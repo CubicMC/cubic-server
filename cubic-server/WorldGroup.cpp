@@ -74,7 +74,7 @@ std::unordered_map<std::string_view, std::shared_ptr<World>> WorldGroup::getWorl
 
 void WorldGroup::forEachWorld(std::function<void(World &)> callback)
 {
-    for (auto &world : this->_worlds)
+    for (auto &[_, world]: this->_worlds)
         callback(*world.second);
 }
 
