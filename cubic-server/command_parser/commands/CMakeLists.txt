@@ -12,4 +12,6 @@ target_sources (${CMAKE_PROJECT_NAME} PRIVATE
     DumpChunk.cpp
     Log.hpp
     Log.cpp
+    Loot.hpp
+    Loot.cpp
 )

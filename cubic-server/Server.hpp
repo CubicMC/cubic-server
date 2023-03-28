@@ -21,6 +21,7 @@
 #include "protocol_id_converter/blockStates.hpp"
 #include "protocol_id_converter/itemConverter.hpp"
 
+#include "LootTables.hpp"
 
 #ifndef MC_VERSION
 #define MC_VERSION "1.19.3"
@@ -82,6 +83,8 @@ public:
         return _itemConverter;
     }
 
+    LootTables lootTables;
+
 private:
     Server();
     void _acceptLoop();
@@ -111,6 +114,7 @@ private:
         new command_parser::Seed,
         new command_parser::DumpChunk,
         new command_parser::Log,
+        new command_parser::Loot,
     };
     Blocks::GlobalPalette _globalPalette;
     Items::ItemConverter _itemConverter;

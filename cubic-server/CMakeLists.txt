@@ -30,6 +30,8 @@ target_sources (${CMAKE_PROJECT_NAME} PRIVATE
     types.hpp
     types.cpp
     blocks.hpp
+    LootTables.hpp
+    LootTables.cpp
 )
 
 if (GTEST)
