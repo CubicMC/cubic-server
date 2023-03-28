@@ -31,7 +31,7 @@ namespace protocol
         ConfirmTeleportation = 0x00,
         QueryBlockEntityTag = 0x01,
         ChangeDifficulty = 0x02,
-        MessageAcknowledgement = 0x03,
+        MessageAcknowledgement = 0x03, // TODO: Implement
         ChatCommand = 0x04,
         ChatMessage = 0x05,
         ClientCommand = 0x06,
@@ -97,6 +97,12 @@ namespace protocol
     {};
     std::shared_ptr<StatusRequest> parseStatusRequest(std::vector<uint8_t> &buffer);
 
+    struct PingRequest : BaseServerPacket
+    {
+        int64_t payload;
+    };
+    std::shared_ptr<PingRequest> parsePingRequest(std::vector<uint8_t> &buffer);
+
     struct LoginStart : BaseServerPacket
     {
         std::string name;
@@ -104,18 +110,6 @@ namespace protocol
         u128 player_uuid;
     };
     std::shared_ptr<LoginStart> parseLoginStart(std::vector<uint8_t> &buffer);
-
-    struct PingRequest : BaseServerPacket
-    {
-        int64_t payload;
-    };
-    std::shared_ptr<PingRequest> parsePingRequest(std::vector<uint8_t> &buffer);
-
-    struct ConfirmTeleportation : BaseServerPacket
-    {
-        int32_t teleport_id;
-    };
-    std::shared_ptr<ConfirmTeleportation> parseConfirmTeleportation(std::vector<uint8_t> &buffer);
 
     struct EncryptionResponse : BaseServerPacket
     {
@@ -126,6 +120,12 @@ namespace protocol
         std::vector<uint8_t> message_signature;
     };
     std::shared_ptr<EncryptionResponse> parseEncryptionResponse(std::vector<uint8_t> &buffer);
+
+    struct ConfirmTeleportation : BaseServerPacket
+    {
+        int32_t teleport_id;
+    };
+    std::shared_ptr<ConfirmTeleportation> parseConfirmTeleportation(std::vector<uint8_t> &buffer);
 
     struct QueryBlockEntityTag : BaseServerPacket
     {
@@ -139,18 +139,6 @@ namespace protocol
         uint8_t new_difficulty;
     };
     std::shared_ptr<ChangeDifficulty> parseChangeDifficulty(std::vector<uint8_t> &buffer);
-
-    struct ChatMessage : BaseServerPacket
-    {
-        std::string message;
-        // I think this is a string, it is marked as an 'Instant' in the protocol
-        // https://wiki.vg/index.php?title=Protocol&oldid=17753#Chat_Command
-        Instant timestamp;
-        long salt;
-        std::vector<uint8_t> signature;
-        bool isSigned;
-    };
-    std::shared_ptr<ChatMessage> parseChatMessage(std::vector<uint8_t> &buffer);
 
     /**
      * @brief this is the link to the packet: https://wiki.vg/Protocol#Chat_Command
@@ -173,6 +161,18 @@ namespace protocol
      * @return std::shared_ptr<ChatCommand>
      */
     std::shared_ptr<ChatCommand> parseChatCommand(std::vector<uint8_t> &buffer);
+
+    struct ChatMessage : BaseServerPacket
+    {
+        std::string message;
+        // I think this is a string, it is marked as an 'Instant' in the protocol
+        // https://wiki.vg/index.php?title=Protocol&oldid=17753#Chat_Command
+        Instant timestamp;
+        long salt;
+        std::vector<uint8_t> signature;
+        bool isSigned;
+    };
+    std::shared_ptr<ChatMessage> parseChatMessage(std::vector<uint8_t> &buffer);
 
     struct ClientCommand : BaseServerPacket
     {
@@ -535,8 +535,8 @@ namespace protocol
             {ServerPacketsID::ConfirmTeleportation, &parseConfirmTeleportation},
             {ServerPacketsID::QueryBlockEntityTag, &parseQueryBlockEntityTag},
             {ServerPacketsID::ChangeDifficulty, &parseChangeDifficulty},
-            {ServerPacketsID::ChatMessage, &parseChatMessage},
             {ServerPacketsID::ChatCommand, &parseChatCommand},
+            {ServerPacketsID::ChatMessage, &parseChatMessage},
             {ServerPacketsID::ClientCommand, &parseClientCommand},
             {ServerPacketsID::ClientInformation, &parseClientInformation},
             {ServerPacketsID::CommandSuggestionRequest, &parseCommandSuggestionRequest},
