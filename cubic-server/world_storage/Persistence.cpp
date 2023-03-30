@@ -9,6 +9,7 @@
 #include <zlib.h>
 #include <filesystem>
 #include "logging/Logger.hpp"
+#include "world_storage/PlayerData.hpp"
 
 // TODO(huntears): Add better error messages
 #define GET_VALUE(type, dst, src) do { \
@@ -142,6 +143,41 @@ LevelData Persistence::loadLevelData()
     this->loadLevelData(&data);
     // I sure do hope this gets inlined T_T
     return data;
+}
+
+void Persistence::loadPlayerData(u128 uuid, PlayerData *dest)
+{
+    std::unique_lock<std::mutex> lock(accessMutex);
+
+    // TODO
+    const std::filesystem::path file = std::filesystem::path(level_name) / "playerdata" / (uuid.toString() + ".dat");
+    std::vector<uint8_t> unzippedData;
+    this->uncompressFile(file, unzippedData);
+
+    // Parse data
+    uint8_t *start = unzippedData.data();
+    nbt::Compound *root = nbt::parseCompound(start, start + unzippedData.size() - 1);
+
+    // TODO(huntears): Map the values to the destination object
+
+}
+
+PlayerData Persistence::loadPlayerData(u128 uuid)
+{
+    PlayerData data;
+
+    this->loadPlayerData(uuid, &data);
+    return data;
+}
+
+void Persistence::loadPlayerData(const Player *player, PlayerData *dest)
+{
+    loadPlayerData(player->getUuid(), dest);
+}
+
+PlayerData Persistence::loadPlayerData(const Player *player)
+{
+    return loadPlayerData(player->getUuid());
 }
 
 }

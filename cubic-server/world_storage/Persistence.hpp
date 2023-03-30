@@ -6,6 +6,9 @@
 #include <vector>
 
 #include "LevelData.hpp"
+#include "Player.hpp"
+#include "world_storage/PlayerData.hpp"
+#include "types.hpp"
 
 namespace world_storage {
 
@@ -66,6 +69,46 @@ public:
      * @return LevelData The whole level.dat file content
      */
     LevelData loadLevelData();
+
+    /**
+     * @brief Loads player data from disk
+     * 
+     * @param uuid Player to load data from
+     * @param dest The PlayerData object to fill
+     */
+    void loadPlayerData(u128 uuid, PlayerData *dest);
+
+    /**
+     * @brief Loads player data from disk
+     *
+     * loadPlayerData(u128 uuid, PlayerData *dest) is preferred over this
+     * method, as it copies over the whole data instead of
+     * just filling an existing object;
+     * 
+     * @param uuid Player to load data from
+     * @return PlayerData The loaded player data
+     */
+    PlayerData loadPlayerData(u128 uuid);
+
+    /**
+     * @brief Loads player data from disk
+     * 
+     * @param player Player to load data from
+     * @param dest The PlayerData object to fill
+     */
+    void loadPlayerData(const Player *player, PlayerData *dest);
+
+    /**
+     * @brief Loads player data from disk
+     *
+     * loadPlayerData(const Player *player, PlayerData *dest) is preferred over this
+     * method, as it copies over the whole data instead of
+     * just filling an existing object;
+     * 
+     * @param player Player to load data from
+     * @return PlayerData The loaded player data
+     */
+    PlayerData loadPlayerData(const Player *player);
 
 };
 
