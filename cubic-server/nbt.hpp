@@ -422,6 +422,10 @@ public:
         return _value;
     }
 
+    [[nodiscard]] constexpr const std::vector<int32_t> &getValues() const {
+        return _value;
+    }
+
     [[nodiscard]] constexpr std::vector<uint8_t> serialize() const override {
         std::vector<uint8_t> data;
         serialize(data);
@@ -483,6 +487,10 @@ public:
     ~List() override = default;
 
     [[nodiscard]] constexpr std::vector<Base *> &getValues() {
+        return _value;
+    }
+
+    [[nodiscard]] constexpr const std::vector<Base *> &getValues() const {
         return _value;
     }
 

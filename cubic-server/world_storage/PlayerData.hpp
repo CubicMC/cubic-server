@@ -25,7 +25,7 @@ struct PlayerData
     std::string dimension;
     // TODO(huntears): EnderItems
     float fallDistance;
-    int8_t ballFlying; // What is this ???
+    int8_t fallFlying;
     int32_t fire;
     float health;
     int32_t hurtByTimestamp;
