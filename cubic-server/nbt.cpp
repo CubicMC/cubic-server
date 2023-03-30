@@ -385,7 +385,7 @@ IntArray *nbt::parseIntArray(uint8_t *&at, const uint8_t *end, bool include_name
         data.push_back(val);
     }
 
-    at += size;
+    // at += size;
 
     return new IntArray(name, data);
 }
@@ -421,7 +421,7 @@ LongArray *nbt::parseLongArray(uint8_t *&at, const uint8_t *end, bool include_na
         data.push_back(val);
     }
 
-    at += size;
+    // at += size;
 
     return new LongArray(name, data);
 }
