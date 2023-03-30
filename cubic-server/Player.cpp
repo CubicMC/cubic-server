@@ -24,18 +24,8 @@ Player::Player(Client *cli, std::shared_ptr<Dimension> dim, u128 uuid, const std
     _keepAliveClock.start();
     _heldItem = 0;
 
-    // Generate uuid string
-    std::stringstream uuidsstr;
-    std::string uuidstr;
-
-    uuidsstr << std::setfill('0') << std::setw(16) << std::hex << this->getUuid().most << std::setfill('0') << std::setw(16) << this->getUuid().least;
-    uuidstr = uuidsstr.str();
-    LINFO(uuidstr);
-    uuidstr.insert(8, "-");
-    uuidstr.insert(13, "-");
-    uuidstr.insert(18, "-");
-    uuidstr.insert(23, "-");
-    this->_uuidString = uuidstr;
+    this->_uuidString = this->getUuid().toString();
+    LDEBUG("Player created with uuid: ", this->_uuidString);
 }
 
 Player::~Player()

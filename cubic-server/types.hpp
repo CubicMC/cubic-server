@@ -4,10 +4,14 @@
 #include <cstdint>
 #include <string>
 #include <iostream>
+#include <sstream>
+#include <iomanip>
 
 struct u128 {
     uint64_t most;
     uint64_t least;
+
+    std::string toString() const;
 };
 
 typedef int64_t Seed;
