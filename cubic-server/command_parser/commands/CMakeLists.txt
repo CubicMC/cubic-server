@@ -14,4 +14,6 @@ target_sources (${CMAKE_PROJECT_NAME} PRIVATE
     Log.cpp
     Op.hpp
     Op.cpp
+    Deop.hpp
+    Deop.cpp
 )

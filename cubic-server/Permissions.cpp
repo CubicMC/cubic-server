@@ -37,79 +37,75 @@ Permissions::~Permissions()
 
 void Permissions::addOperator(const std::string &name)
 {
-    if (!this->_operatorSet.contains(name)) { // cannot find operator with this name
+    if (this->_operatorSet.contains(name)) // find an operator with this name, exit
+        return;
 
-        // searches for the player with the right name
-        Server *server = Server::getInstance();
-        Player *selectedPlayer = nullptr;
+    // searches for the player with the right name
+    Server *server = Server::getInstance();
+    Player *selectedPlayer = nullptr;
 
-        server->forEachWorldGroup(
-            [&name, &selectedPlayer](WorldGroup &worldGroup)
-            {
-                worldGroup.forEachWorld(
-                    [&name, &selectedPlayer](World &world)
-                    {
-                        world.forEachPlayer(
-                            [&name, &selectedPlayer](Player *player)
-                            {
-                                if (player && player->getUsername() == name)
-                                    selectedPlayer = player;
-                            }
-                        );
-                    }
-                ); 
-            }
-        );
-
-        
-        // adds operator to the set
-        this->_operatorSet.insert(name);
-
-        if (selectedPlayer) { // player is connected
-            // set players own operator variable for rapid access
-            selectedPlayer->setOperator(true);
+    server->forEachWorldGroup(
+        [&name, &selectedPlayer](WorldGroup &worldGroup)
+        {
+            worldGroup.forEachWorld(
+                [&name, &selectedPlayer](World &world)
+                {
+                    world.forEachPlayer(
+                        [&name, &selectedPlayer](Player *player)
+                        {
+                            if (player && player->getUsername() == name)
+                                selectedPlayer = player;
+                        }
+                    );
+                }
+            ); 
         }
-    } else { // player already an operator
+    );
+
+    // adds operator to the set
+    this->_operatorSet.insert(name);
+
+    if (selectedPlayer) { // player is connected
+        // set players own operator variable for rapid access
+        selectedPlayer->setOperator(true);
     }
 }
 
 bool Permissions::removeOperator(const std::string &name)
 {
-    if (this->_operatorSet.contains(name)) { // cannot find operator with this name
-
-        // searches for the player with the right name
-        Server *server = Server::getInstance();
-        Player *selectedPlayer = nullptr;
-
-        server->forEachWorldGroup(
-            [&name, &selectedPlayer](WorldGroup &worldGroup)
-            {
-                worldGroup.forEachWorld(
-                    [&name, &selectedPlayer](World &world)
-                    {
-                        world.forEachPlayer(
-                            [&name, &selectedPlayer](Player *player)
-                            {
-                                if (player && player->getUsername() == name)
-                                    selectedPlayer = player;
-                            }
-                        );
-                    }
-                );
-            }
-        );
-
-        // remove operator from the set
-        this->_operatorSet.erase(name);
-
-        if (selectedPlayer) { // operator is connected
-            // set players own operator variable for rapid access
-            selectedPlayer->setOperator(false);
-        }
-        return (true);
-    } else { // already not operator
+    if (!this->_operatorSet.contains(name)) // cannot find operator with this name, exit
         return (false);
+
+    // searches for the player with the right name
+    Server *server = Server::getInstance();
+    Player *selectedPlayer = nullptr;
+
+    server->forEachWorldGroup(
+        [&name, &selectedPlayer](WorldGroup &worldGroup)
+        {
+            worldGroup.forEachWorld(
+                [&name, &selectedPlayer](World &world)
+                {
+                    world.forEachPlayer(
+                        [&name, &selectedPlayer](Player *player)
+                        {
+                            if (player && player->getUsername() == name)
+                                selectedPlayer = player;
+                        }
+                    );
+                }
+            );
+        }
+    );
+
+    // remove operator from the set
+    this->_operatorSet.erase(name);
+
+    if (selectedPlayer) { // operator is connected
+        // set players own operator variable for rapid access
+        selectedPlayer->setOperator(false);
     }
+    return (true);
     // returned true if operator successfuly removed, false otherwise
 }
 

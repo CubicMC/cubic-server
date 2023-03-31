@@ -5,3 +5,4 @@
 #include "command_parser/commands/DumpChunk.hpp"
 #include "command_parser/commands/Log.hpp"
 #include "command_parser/commands/Op.hpp"
+#include "command_parser/commands/Deop.hpp"
