@@ -122,15 +122,15 @@ void World::forEachPlayerIf(std::function<void(Player *)> callback, std::functio
 
 void World::forEachDimension(std::function<void(Dimension &)> callback)
 {
-    for (auto & _dimension : _dimensions)
-        callback(*_dimension.second.get());
+    for (auto &[_, dimension] : _dimensions)
+        callback(*dimension);
 }
 
 void World::forEachDimensionIf(std::function<void(Dimension &)> callback, std::function<bool(const Dimension &)> predicate)
 {
-    for (auto & _dimension : _dimensions) {
-        if (predicate(*_dimension.second.get()))
-            callback(*_dimension.second.get());
+    for (auto &[_, dimension] : _dimensions) {
+        if (predicate(*dimension))
+            callback(*dimension);
     }
 }
 

@@ -107,15 +107,15 @@ void Server::stop()
 
 void Server::forEachWorldGroup(std::function<void(WorldGroup &)> callback)
 {
-    for (auto &worldGroup : this->_worldGroups)
-        callback(*worldGroup.second);
+    for (auto &[_, worldGroup] : this->_worldGroups)
+        callback(*worldGroup);
 }
 
 void Server::forEachWorldGroupIf(std::function<void(WorldGroup &)> callback, std::function<bool(const WorldGroup &)> predicate)
 {
-    for (auto &worldGroup : this->_worldGroups) {
-        if (predicate(*worldGroup.second))
-            callback(*worldGroup.second);
+    for (auto &[_, worldGroup] : this->_worldGroups) {
+        if (predicate(*worldGroup))
+            callback(*worldGroup);
     }
 }
 
