@@ -105,19 +105,19 @@ void World::forEachEntityIf(std::function<void(Entity *)> callback, std::functio
 
 void World::forEachPlayer(std::function<void(Player *)> callback)
 {
-    std::vector<Player *> _players = this->getPlayers();
+    std::vector<Player *> players = this->getPlayers();
 
-    for (auto _player : _players)
-        callback(_player);
+    for (auto player : players)
+        callback(player);
 }
 
 void World::forEachPlayerIf(std::function<void(Player *)> callback, std::function<bool(const Entity *)> predicate)
 {
-    std::vector<Player *> _players = this->getPlayers();
+    std::vector<Player *> players = this->getPlayers();
 
-    for (auto _player : _players)
-        if (predicate(_player))
-            callback(_player);
+    for (auto player : players)
+        if (predicate(player))
+            callback(player);
 }
 
 void World::forEachDimension(std::function<void(Dimension &)> callback)
