@@ -55,7 +55,7 @@ std::vector<Entity *> &Dimension::getEntities()
     return _entities;
 }
 
-Entity * &Dimension::getEntityByID(int32_t id)
+Entity * Dimension::getEntityByID(int32_t id)
 {
     for (auto &entity : _entities)
         if (entity->getId() == id)

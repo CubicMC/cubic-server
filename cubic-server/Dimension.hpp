@@ -41,7 +41,7 @@ public:
     [[nodiscard]] virtual std::counting_semaphore<SEMAPHORE_MAX> &getDimensionLock();
     [[nodiscard]] virtual std::vector<Player *> getPlayerList() const;
     [[nodiscard]] virtual std::vector<Entity *> &getEntities();
-    [[nodiscard]] virtual Entity * &getEntityByID(int32_t id);
+    [[nodiscard]] virtual Entity * getEntityByID(int32_t id);
 
     virtual void removeEntity(Entity *entity);
     virtual void addEntity(Entity *entity);
