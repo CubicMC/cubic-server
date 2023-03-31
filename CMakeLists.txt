@@ -5,13 +5,16 @@ set(CMAKE_CXX_STANDARD 20)
 
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
+include(CheckIPOSupported)
+
 # if debug mode is enabled, add -g3 flag
 if (CMAKE_BUILD_TYPE MATCHES Debug)
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g3")
 endif()
 
 if (CMAKE_BUILD_TYPE MATCHES Release)
-    set(CMAKE_INTERPROCEDURAL_OPTIMIZATION TRUE)
+    check_ipo_supported()
+    set_property(GLOBAL PROPERTY INTERPROCEDURAL_OPTIMIZATION TRUE)
 endif()
 
 include(FetchContent)
