@@ -10,10 +10,10 @@ void command_parser::Stop::autocomplete(std::vector<std::string>& args, Player *
 
 void command_parser::Stop::execute(std::vector<std::string>& args, Player *invoker) const {
     if (invoker) {
-        // if (invoker->isOperator()) { // TODO: uncomment this when permissions are implemented
+        if (invoker->isOperator()) { // TODO: uncomment this when permissions are implemented
             // invoker->sendSystemChatMessage("Stopping server..."); // TODO: Know what this will do, and then change this to the correct thing
-            // Server::getInstance()->stop();
-        // }
+            Server::getInstance()->stop();
+        }
     } else
         Server::getInstance()->stop();
 }

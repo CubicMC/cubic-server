@@ -8,7 +8,6 @@
 #include <exception>
 #include <cstring>
 #include <algorithm>
-#include <unordered_map>
 
 #include <curl/curl.h>
 
