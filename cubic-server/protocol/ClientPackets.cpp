@@ -435,21 +435,6 @@ std::shared_ptr<std::vector<uint8_t>> protocol::createCenterChunk(const Position
     return packet;
 }
 
-std::shared_ptr<std::vector<uint8_t>> protocol::createUpdateTime(const UpdateTime &in)
-{
-    std::vector<uint8_t> payload;
-
-    serialize(payload,
-        in.world_age, addLong,
-        in.time_of_day, addLong
-    );
-
-    auto packet = std::make_shared<std::vector<uint8_t>>();
-    finalize(*packet, payload, (int32_t)ClientPacketID::UpdateTime);
-
-    return packet;
-}
-
 std::shared_ptr<std::vector<uint8_t>> protocol::createEntitySoundEffect(const EntitySoundEffect &in)
 {
     std::vector<uint8_t> payload;
