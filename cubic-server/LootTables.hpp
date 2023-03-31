@@ -38,7 +38,12 @@ public:
     void snitchTables(void) const;
 
 private:
+    bool pollRollsTypeConstant(LootTablePoll &result, nlohmann::json pool);
     bool pollRollsTypeUniform(LootTablePoll &result, nlohmann::json pool);
+    bool pollRollsTypeBinomial(LootTablePoll &result, nlohmann::json pool);
+    bool pollRollsTypeScore(LootTablePoll &result, nlohmann::json pool);
+
+    bool pollXPool(LootTablePoll &result, int x, nlohmann::json entries);
 
     // stores all tables; call "minecraft:chests/end_city_treasure" with _lootTables["minecraft"]["chests/end_city_treasure"]
     std::unordered_map<std::string, std::unordered_map<std::string, nlohmann::json>> _lootTables;

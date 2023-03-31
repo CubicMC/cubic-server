@@ -65,85 +65,108 @@ bool LootTables::exists(const std::string &_namespace, const std::string &table)
 
 bool LootTables::poll(LootTablePoll &result, const std::string &_namespace, const std::string &table)
 {
-    std::cout << "trying to poll table " << _namespace << ":" << table << std::endl;
-
     if (this->exists(_namespace, table)) {
         const auto selectedTable = this->_lootTables[_namespace][table];
-        std::cout << "table exists:" << std::endl;
-        std::cout << this->_lootTables[_namespace][table] << std::endl;;
 
-        std::cout << "table contains \"pools\" ? : " << selectedTable.contains("pools") << std::endl;
-        std::cout << "table contains \"pools\" ? : " << selectedTable["pools"].is_array() << std::endl;
         if (selectedTable.contains("pools") && selectedTable["pools"].is_array()) { 
-            std::cout << "table looks like a valid table" << std::endl;
-
             for (const auto &pool_entry : selectedTable["pools"].items()) {
-                std::cout << pool_entry.value() << std::endl;
-                //
-                if (pool_entry.value()["rolls"].is_number_integer() ||
+                
+                if (pool_entry.value()["rolls"].is_number_integer() || // roll type constant
                     (pool_entry.value()["rolls"].is_object() && pool_entry.value()["rools"]["type"] == "minecraft:constant"))
-                    std::cout << "   ---   poll of type Uniform:   ---" << std::endl;
+                    this->pollRollsTypeConstant(result, pool_entry.value());
+                else if (pool_entry.value()["rolls"].is_object() && // roll type uniform
+                         (pool_entry.value()["rolls"]["type"] == "minecraft:uniform" || \
+                          (pool_entry.value()["rolls"]["min"].is_number_integer() && pool_entry.value()["rolls"]["max"].is_number_integer())))
                     this->pollRollsTypeUniform(result, pool_entry.value());
+                else if (pool_entry.value()["rolls"].is_object() && // roll type binomial
+                         (pool_entry.value()["rolls"]["type"] == "minecraft:binomial"))
+                    this->pollRollsTypeBinomial(result, pool_entry.value());
             }
-            return (false);
         }
-        else
-            std::cout << "table is not valid" << std::endl;
         return (true);
-    } else {
-        std::cout << "table does not exist" << std::endl;
+    } else
         return (false);
+}
+
+bool LootTables::pollRollsTypeConstant(LootTablePoll &result, nlohmann::json pool)
+{
+    int roll_number = 0;
+
+    if (pool["rolls"].is_number_integer()) {
+        roll_number = pool["rolls"].get<nlohmann::json::number_integer_t>();
+    } else {
+        roll_number = pool["rools"]["value"].get<nlohmann::json::number_integer_t>();
     }
+
+    return (this->pollXPool(result, roll_number, pool["entries"]));
 }
 
 bool LootTables::pollRollsTypeUniform(LootTablePoll &result, nlohmann::json pool)
 {
-    int max_weight = 0;
+    int min_roll = 0;
+    int max_roll = 0;
     int roll_number = 0;
 
-    std::cout << "enter rool type uniform" << std::endl;
-    if (pool["rolls"].is_number_integer()) {
-        std::cout << "roll variable is a number" << std::endl;
-        roll_number = pool["rolls"].get<nlohmann::json::number_integer_t>();
-    } else {
-        std::cout << "roll variable is an object" << std::endl;
-        roll_number = pool["rools"]["value"].get<nlohmann::json::number_integer_t>();
-    }
-    std::cout << "roll_number " << roll_number << std::endl;
+    min_roll = pool["rolls"]["min"].get<nlohmann::json::number_integer_t>();
+    max_roll = pool["rolls"]["max"].get<nlohmann::json::number_integer_t>();
 
-    for (const auto &entry : pool["entries"].items()) {
+    if (min_roll > max_roll)
+        roll_number = min_roll;
+    else
+        roll_number = rand() % (max_roll - min_roll + 1) + min_roll;
+
+    return (this->pollXPool(result, roll_number, pool["entries"]));
+}
+
+bool LootTables::pollRollsTypeBinomial(LootTablePoll &result, nlohmann::json pool)
+{
+    int n = 0;
+    float p = 0;
+    int roll_number = 0;
+
+    n = pool["rolls"]["min"].get<nlohmann::json::number_integer_t>();
+    p = pool["rolls"]["max"].get<nlohmann::json::number_float_t>();
+    roll_number = n;
+
+    if (p < 1.0) {
+        for (int i = 0; i < n; i++) {
+            if ((int)(p * 100000.0) < rand() % 100000)
+                roll_number--;
+        }
+    }
+
+    return (this->pollXPool(result, roll_number, pool["entries"]));
+}
+
+bool LootTables::pollXPool(LootTablePoll &result, int x, nlohmann::json entries)
+{
+    int max_weight = 0;
+
+    for (const auto &entry : entries.items()) {
         if (entry.value().contains("weight") && entry.value()["weight"].is_number_integer())
             max_weight += entry.value()["weight"].get<nlohmann::json::number_integer_t>();
         else
             max_weight += 1;
     }
 
-    std::cout << "max_weight " << max_weight << std::endl;
-    for (int n = 0; n < roll_number; n++) {
+    for (int n = 0; n < x; n++) {
         int choice = rand() % max_weight;
 
         int elapsed_weight = 0;
         int position = 1;
 
-        std::cout << "go to weight " << choice << std::endl;
-        std::cout << "entry: " << std::endl << pool["entries"].at(0) << std::endl;
-        if (pool["entries"].at(0).contains("weight"))
-            elapsed_weight += pool["entries"].at(0)["weight"].get<nlohmann::json::number_integer_t>();
+        if (entries.at(0).contains("weight"))
+            elapsed_weight += entries.at(0)["weight"].get<nlohmann::json::number_integer_t>();
         else
             elapsed_weight += 1;
         while (elapsed_weight < choice) {
-            std::cout << "entry: " << std::endl << pool["entries"].at(position) << std::endl;
-            std::cout << "elapsed weight: " << elapsed_weight << " from position " << position << std::endl;
-            if (pool["entries"].at(position).contains("weight"))
-                elapsed_weight += pool["entries"].at(position)["weight"].get<nlohmann::json::number_integer_t>();
+            if (entries.at(position).contains("weight"))
+                elapsed_weight += entries.at(position)["weight"].get<nlohmann::json::number_integer_t>();
             else
                 elapsed_weight += 1;
             position++;
         }
-        result.push_back(std::pair<ItemId, uint8_t>(Server::getInstance()->getItemConverter().fromItemToProtocolId(pool["entries"].at(position - 1)["name"]), 1));
-    }
-    for (const auto &item : result) {
-        std::cout << std::to_string(item.second) << " " << Server::getInstance()->getItemConverter().fromProtocolIdToItem(item.first) << std::endl;
+        result.push_back(std::pair<ItemId, uint8_t>(Server::getInstance()->getItemConverter().fromItemToProtocolId(entries.at(position - 1)["name"]), 1));
     }
     return (true);
 }
