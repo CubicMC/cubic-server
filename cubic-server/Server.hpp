@@ -21,7 +21,7 @@
 #include "protocol_id_converter/blockStates.hpp"
 #include "protocol_id_converter/itemConverter.hpp"
 
-#include "Operator.hpp"
+#include "Permissions.hpp"
 
 #ifndef MC_VERSION
 #define MC_VERSION "1.19.3"
