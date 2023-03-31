@@ -664,7 +664,6 @@ void Player::_onQueryEntityTag(const std::shared_ptr<protocol::QueryEntityTag> &
     LDEBUG("Got a Query Entity Tag");
 }
 
-
 /*
  * @brief Handle a player's interaction with an entity.
  */
