@@ -11,20 +11,20 @@ void Deop::execute(std::vector<std::string>& args, Player *invoker) const {
         return;
     if (args.empty()) {
         LINFO("Need a player name.");
-    } else {
-        if (args.size() != 1)
-            LINFO("Too many arguments");
-        else {
-            Server *server = Server::getInstance();
+        return;
+    }
+    if (args.size() != 1) {
+        LINFO("Too many arguments");
+        return;
+    }
+    Server *server = Server::getInstance();
 
-            // do nothing if operator with that name not found, otherwise, removes operator privilege
-            if (!server->permissions.isOperator(args[0]))
-                LINFO(args[0] + " is not an operator.");
-            else {
-                server->permissions.removeOperator(args[0]);
-                LINFO(args[0] + " deopped.");
-            }
-        }
+    // do nothing if operator with that name not found, otherwise, removes operator privilege
+    if (!server->permissions.isOperator(args[0]))
+        LINFO(args[0] + " is not an operator.");
+    else {
+        server->permissions.removeOperator(args[0]);
+        LINFO(args[0] + " deopped.");
     }
 }
 
