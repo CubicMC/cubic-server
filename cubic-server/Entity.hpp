@@ -49,6 +49,8 @@ public:
     [[nodiscard]] virtual Vector3<double> &getLastPosition();
     [[nodiscard]] virtual Vector2<uint8_t> &getLastRotation();
 
+    virtual void teleport(const Vector3<double> &pos);
+
 protected:
     std::shared_ptr<Dimension> _dim;
     bool _onFire;

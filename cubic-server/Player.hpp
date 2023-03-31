@@ -3,6 +3,7 @@
 
 #include "Client.hpp"
 #include "Entity.hpp"
+#include "math/Vector3.hpp"
 #include "protocol/ServerPackets.hpp"
 #include "logging/Logger.hpp"
 #include "SoundList.hpp"
@@ -47,8 +48,9 @@ public:
     bool isOperator() const;
     
 public:
-    virtual void setPosition(const Vector3<double> &pos) override;
-    virtual void setPosition(double x, double y, double z) override;
+    void setPosition(const Vector3<double> &pos) override;
+    void setPosition(double x, double y, double z) override;
+    void teleport(const Vector3<double> &pos) override;
 
 public:
     void disconnect(const chat::Message &reason = "Disconnected");
@@ -134,6 +136,10 @@ private:
 
 private:
     void _processKeepAlive();
+    void _updateRenderedChunks(const Position2D &oldChunkPos, const Position2D &newChunkPos);
+    void _continueLoginSequence();
+    void _sendLoginMessage();
+    void _unloadChunk(int32_t x, int32_t z);
 
     Client *_cli;
     std::string _username;

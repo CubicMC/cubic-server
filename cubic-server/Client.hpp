@@ -68,6 +68,7 @@ public:
     void sendStatusResponse(const std::string &json);
     void sendPingResponse(int64_t payload);
     void sendLoginSuccess(const protocol::LoginSuccess &packet);
+    void sendLoginPlay(void);
 
     // Disconnect the client
     void disconnect(const chat::Message &reason = "Disconnected");
@@ -87,6 +88,7 @@ private:
     void _onLoginStart(const std::shared_ptr<protocol::LoginStart> &pck);
     void _onPingRequest(const std::shared_ptr<protocol::PingRequest>& pck);
     void _onEncryptionResponse(const std::shared_ptr<protocol::EncryptionResponse> &pck);
+    void _loginSequence(const protocol::LoginSuccess &packet);
 
     const int _sockfd;
     const struct sockaddr_in6 _addr;
