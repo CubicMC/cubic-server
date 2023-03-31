@@ -117,6 +117,7 @@ private:
         new command_parser::Seed,
         new command_parser::DumpChunk,
         new command_parser::Log,
+        new command_parser::Op,
     };
     Blocks::GlobalPalette _globalPalette;
     Items::ItemConverter _itemConverter;
