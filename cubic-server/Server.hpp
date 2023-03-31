@@ -21,6 +21,7 @@
 #include "protocol_id_converter/blockStates.hpp"
 #include "protocol_id_converter/itemConverter.hpp"
 
+#include "Permissions.hpp"
 
 #ifndef MC_VERSION
 #define MC_VERSION "1.19.3"
@@ -81,6 +82,11 @@ public:
     const Items::ItemConverter &getItemConverter() const {
         return _itemConverter;
     }
+
+    void forEachWorldGroup(std::function<void(WorldGroup &)> callback);
+    void forEachWorldGroupIf(std::function<void(WorldGroup &)> callback, std::function<bool(const WorldGroup &)> predicate);
+
+    Permissions permissions;
 
 private:
     Server();

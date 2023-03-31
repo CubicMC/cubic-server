@@ -12,6 +12,7 @@
 class World;
 
 class SoundSystem;
+
 class WorldGroup
 {
 public:
@@ -23,12 +24,14 @@ public:
     virtual std::shared_ptr<Chat> getChat() const;
     virtual std::shared_ptr<World> getWorld(const std::string_view &name) const;
     virtual std::unordered_map<std::string_view, std::shared_ptr<World>> getWorlds() const;
+    virtual void forEachWorld(std::function<void(World &)> callback);
+    virtual void forEachWorldIf(std::function<void(World &)> callback, std::function<bool(const World &)> predicate);
+
     virtual bool isInitialized() const;
 
 protected:
     virtual void _run();
 
-protected:
     std::shared_ptr<Chat> _chat;
     std::unordered_map<std::string_view, std::shared_ptr<World>> _worlds;
     SoundSystem *_soundSystem;

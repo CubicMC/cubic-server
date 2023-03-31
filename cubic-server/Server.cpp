@@ -105,6 +105,20 @@ void Server::stop()
     this->_running = false;
 }
 
+void Server::forEachWorldGroup(std::function<void(WorldGroup &)> callback)
+{
+    for (auto &[_, worldGroup] : this->_worldGroups)
+        callback(*worldGroup);
+}
+
+void Server::forEachWorldGroupIf(std::function<void(WorldGroup &)> callback, std::function<bool(const WorldGroup &)> predicate)
+{
+    for (auto &[_, worldGroup] : this->_worldGroups) {
+        if (predicate(*worldGroup))
+            callback(*worldGroup);
+    }
+}
+
 void Server::_acceptLoop()
 {
     struct pollfd poll_set[1];
