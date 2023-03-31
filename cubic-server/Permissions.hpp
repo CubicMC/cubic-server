@@ -1,5 +1,5 @@
-#ifndef CUBICSERVER_OPERATOR_HPP
-#define CUBICSERVER_OPERATOR_HPP
+#ifndef CUBICSERVER_PERMISSIONS_HPP
+#define CUBICSERVER_PERMISSIONS_HPP
 
 #include <unordered_set>
 
@@ -18,4 +18,4 @@ private:
     std::unordered_set<std::string> _operatorSet;
 };
 
-#endif /* CUBICSERVER_OPERATOR_HPP */
+#endif /* CUBICSERVER_PERMISSIONS_HPP */
