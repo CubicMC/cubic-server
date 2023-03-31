@@ -7,19 +7,35 @@
  * @param damage The damage to deal
  * @param source The source of the damage
  */
-void LivingEntity::attack(float damage, Vector3<double> source)
+void LivingEntity::attack(Vector3<double> source, float damage)
 {
-    std::vector<Player *> players =  _dim->getPlayerList();
+    this->damage(damage);
+    this->knockback(source, 1000);
+}
 
+/*
+ * @brief Inflict damage to the entity
+ *
+ * @param damage The damage to deal
+ */
+void LivingEntity::damage(float damage) {
+    _health -= damage;
+}
+
+/*
+ * @brief Inflict knockback to the entity
+ *
+ * @param source The source of the knockback
+ * @param force The force of the knockback
+ */
+void LivingEntity::knockback(Vector3<double> source, float force) {
     // compute knockback
-    double knockback = 1000;
-    Vector3<double> direction = (source - _pos) * knockback;
+    Vector3<double> direction = (source - _pos) * force;
 
     direction.normalize();
-    _health -= damage;
 
     // send entity velocity too connected players (should be optimized)
-    for (auto &player : players) {
+    for (auto &player : _dim->getPlayerList()) {
         player->sendEntityVelocity({
             _id,
             static_cast<int16_t>(direction.x),

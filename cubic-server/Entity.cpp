@@ -1,5 +1,4 @@
 #include "Entity.hpp"
-#include "Player.hpp"
 
 Entity::Entity(std::shared_ptr<Dimension> dim) : _dim(dim)
 {
