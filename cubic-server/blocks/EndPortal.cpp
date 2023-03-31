@@ -2,10 +2,8 @@
 #include <stdexcept>
 
 namespace Blocks {
-    namespace EndPortal {
-        BlockId toProtocol() {
-            return 7176;
-        }
-    }
+namespace EndPortal {
+BlockId toProtocol() { return 7176; }
+}
 
 }

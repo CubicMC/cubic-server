@@ -1,17 +1,15 @@
 #ifndef CUBICSERVER_ENTITY_HPP
 #define CUBICSERVER_ENTITY_HPP
 
-#include <memory>
 #include "Dimension.hpp"
-#include "math/Vector3.hpp"
 #include "math/Vector2.hpp"
+#include "math/Vector3.hpp"
+#include <memory>
 
 class Dimension;
 
-class Entity
-{
-    enum class Pose
-    {
+class Entity {
+    enum class Pose {
         Standing,
         FallFlying,
         Sleeping,
@@ -75,5 +73,4 @@ protected:
     Vector2<uint8_t> _lastRot;
 };
 
-
-#endif //CUBICSERVER_ENTITY_HPP
+#endif // CUBICSERVER_ENTITY_HPP

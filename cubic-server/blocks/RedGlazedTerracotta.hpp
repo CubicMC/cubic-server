@@ -1,22 +1,22 @@
-#include <string>
 #include <cstdint>
-#include <vector>
-#include <unordered_map>
 #include <functional>
+#include <string>
+#include <unordered_map>
+#include <vector>
 
 namespace Blocks {
-    typedef int32_t BlockId;
+typedef int32_t BlockId;
 
-    namespace RedGlazedTerracotta {
-        namespace Properties {
-            enum class Facing {
-                NORTH,
-                SOUTH,
-                WEST,
-                EAST
-            };
-        }
-        BlockId toProtocol(Properties::Facing facing);
-    }
+namespace RedGlazedTerracotta {
+namespace Properties {
+enum class Facing {
+    NORTH,
+    SOUTH,
+    WEST,
+    EAST
+};
+}
+BlockId toProtocol(Properties::Facing facing);
+}
 
 }

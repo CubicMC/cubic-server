@@ -2,10 +2,8 @@
 #include <stdexcept>
 
 namespace Blocks {
-    namespace Lodestone {
-        BlockId toProtocol() {
-            return 18831;
-        }
-    }
+namespace Lodestone {
+BlockId toProtocol() { return 18831; }
+}
 
 }

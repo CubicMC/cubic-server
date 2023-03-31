@@ -3,13 +3,14 @@
 
 #include "../Dimension.hpp"
 
-class TheNether : public Dimension
-{
+class TheNether : public Dimension {
 public:
-    TheNether(World *world): Dimension(world) {}
+    TheNether(World *world):
+        Dimension(world)
+    {
+    }
     void tick() override;
     void initialize() override;
 };
 
-
-#endif //CUBICSERVER_THENETHER_HPP
+#endif // CUBICSERVER_THENETHER_HPP

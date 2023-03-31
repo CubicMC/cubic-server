@@ -2,10 +2,8 @@
 #include <stdexcept>
 
 namespace Blocks {
-    namespace CrackedPolishedBlackstoneBricks {
-        BlockId toProtocol() {
-            return 19245;
-        }
-    }
+namespace CrackedPolishedBlackstoneBricks {
+BlockId toProtocol() { return 19245; }
+}
 
 }

@@ -2,10 +2,8 @@
 #include <stdexcept>
 
 namespace Blocks {
-    namespace PurpleWool {
-        BlockId toProtocol() {
-            return 2006;
-        }
-    }
+namespace PurpleWool {
+BlockId toProtocol() { return 2006; }
+}
 
 }

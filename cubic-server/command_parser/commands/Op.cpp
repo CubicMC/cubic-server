@@ -3,10 +3,10 @@
 
 using namespace command_parser;
 
-void Op::autocomplete(std::vector<std::string>& args, Player *invoker) const {
-}
+void Op::autocomplete(std::vector<std::string> &args, Player *invoker) const { }
 
-void Op::execute(std::vector<std::string>& args, Player *invoker) const {
+void Op::execute(std::vector<std::string> &args, Player *invoker) const
+{
     if (invoker && !invoker->isOperator())
         return;
     if (args.empty()) {
@@ -28,6 +28,4 @@ void Op::execute(std::vector<std::string>& args, Player *invoker) const {
     }
 }
 
-void Op::help(std::vector<std::string>& args, Player *invoker) const {
-    LINFO("/op [<player>]");
-}
+void Op::help(std::vector<std::string> &args, Player *invoker) const { LINFO("/op [<player>]"); }

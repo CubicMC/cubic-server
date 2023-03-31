@@ -1,23 +1,23 @@
 #ifndef F43D56DD_C750_470F_A7C9_27CE21D37FC3
 #define F43D56DD_C750_470F_A7C9_27CE21D37FC3
 
-#include <cstdint>
-#include <string>
-#include <vector>
 #include <arpa/inet.h>
+#include <cstdint>
 #include <memory>
 #include <netinet/in.h>
+#include <string>
+#include <vector>
 
 #include "Client.hpp"
 #include "protocol/ServerPackets.hpp"
 
-#include "configuration/ConfigHandler.hpp"
-#include "whitelist/Whitelist.hpp"
-#include "logging/Logger.hpp"
 #include "WorldGroup.hpp"
+#include "configuration/ConfigHandler.hpp"
+#include "logging/Logger.hpp"
+#include "whitelist/Whitelist.hpp"
 
-#include "command_parser/commands/CommandBase.hpp"
 #include "allCommands.hpp"
+#include "command_parser/commands/CommandBase.hpp"
 
 #include "protocol_id_converter/blockStates.hpp"
 #include "protocol_id_converter/itemConverter.hpp"
@@ -38,8 +38,7 @@
 
 #define GLOBAL_PALETTE Server::getInstance()->getGlobalPalette()
 
-class Server
-{
+class Server {
 public:
     ~Server();
 
@@ -49,50 +48,31 @@ public:
 
     void enforceWhitelistOnReload();
 
-    const Configuration::ConfigHandler &getConfig() const {
-        return _config;
-    }
+    const Configuration::ConfigHandler &getConfig() const { return _config; }
 
-    const WhitelistHandling::Whitelist &getWhitelist() const {
-        return _whitelist;
-    }
+    const WhitelistHandling::Whitelist &getWhitelist() const { return _whitelist; }
 
-    const bool isWhitelistEnabled() const {
-        return _whitelistEnabled;
-    }
+    const bool isWhitelistEnabled() const { return _whitelistEnabled; }
 
-    const bool getEnforceWhitelist() const {
-        return _enforceWhitelist;
-    }
+    const bool getEnforceWhitelist() const { return _enforceWhitelist; }
 
-    static Server *getInstance() {
+    static Server *getInstance()
+    {
         static Server srv;
         return &srv;
     }
 
-    const std::vector<std::shared_ptr<Client>> &getClients() const {
-        return _clients;
-    }
+    const std::vector<std::shared_ptr<Client>> &getClients() const { return _clients; }
 
-    const WorldGroup *getWorldGroup(const std::string_view &name) const {
-        return this->_worldGroups.at(name);
-    }
+    const WorldGroup *getWorldGroup(const std::string_view &name) const { return this->_worldGroups.at(name); }
 
-    const std::vector<CommandBase *> &getCommands() const {
-        return _commands;
-    }
+    const std::vector<CommandBase *> &getCommands() const { return _commands; }
 
-    bool isRunning() const {
-        return _running;
-    }
+    bool isRunning() const { return _running; }
 
-    const Blocks::GlobalPalette &getGlobalPalette() const {
-        return _globalPalette;
-    }
+    const Blocks::GlobalPalette &getGlobalPalette() const { return _globalPalette; }
 
-    const Items::ItemConverter &getItemConverter() const {
-        return _itemConverter;
-    }
+    const Items::ItemConverter &getItemConverter() const { return _itemConverter; }
 
     void forEachWorldGroup(std::function<void(WorldGroup &)> callback);
     void forEachWorldGroupIf(std::function<void(WorldGroup &)> callback, std::function<bool(const WorldGroup &)> predicate);
@@ -124,14 +104,8 @@ private:
     WhitelistHandling::Whitelist _whitelist;
     std::unordered_map<std::string_view, WorldGroup *> _worldGroups;
     std::vector<CommandBase *> _commands = {
-        new command_parser::Help,
-        new command_parser::QuestionMark,
-        new command_parser::Stop,
-        new command_parser::Seed,
-        new command_parser::DumpChunk,
-        new command_parser::Log,
-        new command_parser::Op,
-        new command_parser::Deop,
+        new command_parser::Help,      new command_parser::QuestionMark, new command_parser::Stop, new command_parser::Seed,
+        new command_parser::DumpChunk, new command_parser::Log,          new command_parser::Op,   new command_parser::Deop,
     };
     Blocks::GlobalPalette _globalPalette;
     Items::ItemConverter _itemConverter;

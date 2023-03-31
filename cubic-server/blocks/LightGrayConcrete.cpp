@@ -2,10 +2,8 @@
 #include <stdexcept>
 
 namespace Blocks {
-    namespace LightGrayConcrete {
-        BlockId toProtocol() {
-            return 12111;
-        }
-    }
+namespace LightGrayConcrete {
+BlockId toProtocol() { return 12111; }
+}
 
 }

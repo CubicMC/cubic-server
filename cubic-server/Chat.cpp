@@ -1,13 +1,11 @@
 #include "Chat.hpp"
 #include "Server.hpp"
-#include "logging/Logger.hpp"
-#include "WorldGroup.hpp"
-#include "nlohmann/json.hpp"
 #include "World.hpp"
+#include "WorldGroup.hpp"
+#include "logging/Logger.hpp"
+#include "nlohmann/json.hpp"
 
-Chat::Chat()
-{
-}
+Chat::Chat() { }
 
 void Chat::sendPlayerMessage(const chat::Message &message, const Player *sender)
 {
@@ -25,23 +23,16 @@ void Chat::sendPlayerMessage(const chat::Message &message, const Player *sender)
     // TODO: Filter client by chat visibility
     for (auto &world : sender->getDimension()->getWorld()->getWorldGroup()->getWorlds()) {
         for (auto &entity : world.second->getEntities()) {
-            auto player = dynamic_cast<Player*>(entity);
+            auto player = dynamic_cast<Player *>(entity);
             if (player == nullptr)
                 continue;
-            player->sendChatMessageResponse({
-                "",
-                true,
-                response.dump(),
-                // (int32_t) chat::message::Type::System,
-                (int32_t) chat::message::Type::Chat,
-                sender->getUuid(),
-                "{\"text\": \"\"}", // sender->getName();
-                false,
-                "",
-                std::time(nullptr),
-                0,
-                std::vector<uint8_t>()
-            });
+            player->sendChatMessageResponse(
+                {"", true, response.dump(),
+                 // (int32_t) chat::message::Type::System,
+                 (int32_t) chat::message::Type::Chat, sender->getUuid(),
+                 "{\"text\": \"\"}", // sender->getName();
+                 false, "", std::time(nullptr), 0, std::vector<uint8_t>()}
+            );
         }
     }
 }
@@ -57,13 +48,10 @@ void Chat::sendSystemMessage(const chat::Message &message, bool overlay, const W
     // TODO: Filter client by chat visibility
     for (const auto &world : worldGroup->getWorlds()) {
         for (auto &entity : world.second->getEntities()) {
-            auto player = dynamic_cast<Player*>(entity);
+            auto player = dynamic_cast<Player *>(entity);
             if (player == nullptr)
                 continue;
-            player->sendSystemChatMessage({
-                message.serialize(),
-                overlay
-            });
+            player->sendSystemChatMessage({message.serialize(), overlay});
         }
     }
 }
@@ -78,22 +66,12 @@ void Chat::sendSayMessage(const chat::Message &message, const Player *sender)
     // TODO: Filter client by chat visibility
     for (auto &world : sender->getDimension()->getWorld()->getWorldGroup()->getWorlds()) {
         for (auto &entity : world.second->getEntities()) {
-            auto player = dynamic_cast<Player*>(entity);
+            auto player = dynamic_cast<Player *>(entity);
             if (player == nullptr)
                 continue;
-            player->sendChatMessageResponse({
-                "",
-                true,
-                message.serialize(),
-                (int32_t) chat::message::Type::Say,
-                {0, 0},
-                "",
-                false,
-                "",
-                std::time(nullptr),
-                0,
-                std::vector<uint8_t>()
-            });
+            player->sendChatMessageResponse(
+                {"", true, message.serialize(), (int32_t) chat::message::Type::Say, {0, 0}, "", false, "", std::time(nullptr), 0, std::vector<uint8_t>()}
+            );
         }
     }
 }
@@ -108,60 +86,55 @@ void Chat::sendMsgMessage(const chat::Message &message, Player *sender, Player *
         return;
     }
 
-    sender->sendChatMessageResponse({
-        "",
-        true,
-        message.serialize(),
-        (int32_t) chat::message::Type::Whisper,
-        {0, 0}, // sender->getUUID(),
-        "{\"text\": \"PlayerName\"}", // sender->getName();
-        false,
-        "",
-        std::time(nullptr),
-        0,
-        std::vector<uint8_t>()
-    });
-    to->sendChatMessageResponse({
-        "",
-        true,
-        message.serialize(),
-        (int32_t) chat::message::Type::Whisper,
-        {0, 0}, // sender->getUUID(),
-        "{\"text\": \"PlayerName\"}", // sender->getName();
-        false,
-        "",
-        std::time(nullptr),
-        0,
-        std::vector<uint8_t>()
-    });
+    sender->sendChatMessageResponse(
+        {"",
+         true,
+         message.serialize(),
+         (int32_t) chat::message::Type::Whisper,
+         {0, 0}, // sender->getUUID(),
+         "{\"text\": \"PlayerName\"}", // sender->getName();
+         false,
+         "",
+         std::time(nullptr),
+         0,
+         std::vector<uint8_t>()}
+    );
+    to->sendChatMessageResponse(
+        {"",
+         true,
+         message.serialize(),
+         (int32_t) chat::message::Type::Whisper,
+         {0, 0}, // sender->getUUID(),
+         "{\"text\": \"PlayerName\"}", // sender->getName();
+         false,
+         "",
+         std::time(nullptr),
+         0,
+         std::vector<uint8_t>()}
+    );
 }
 
 chat::Message::Message(
-    const std::string &message,
-    chat::Message::Options options,
-    std::optional<chat::message::ClickEvent> clickEvent,
-    std::optional<chat::message::HoverEvent> hoverEvent)
-    : _message(message),
+    const std::string &message, chat::Message::Options options, std::optional<chat::message::ClickEvent> clickEvent, std::optional<chat::message::HoverEvent> hoverEvent
+):
+    _message(message),
     _options(options),
     _clickEvent(clickEvent),
     _hoverEvent(hoverEvent)
-{}
-
-chat::Message::Message(
-    const char message[],
-    chat::Message::Options options,
-    std::optional<chat::message::ClickEvent> clickEvent,
-    std::optional<chat::message::HoverEvent> hoverEvent)
-    : _message(message),
-    _options(options),
-    _clickEvent(clickEvent),
-    _hoverEvent(hoverEvent)
-{}
-
-std::string chat::Message::serialize() const
 {
-    return toJson().dump();
 }
+
+chat::Message::Message(
+    const char message[], chat::Message::Options options, std::optional<chat::message::ClickEvent> clickEvent, std::optional<chat::message::HoverEvent> hoverEvent
+):
+    _message(message),
+    _options(options),
+    _clickEvent(clickEvent),
+    _hoverEvent(hoverEvent)
+{
+}
+
+std::string chat::Message::serialize() const { return toJson().dump(); }
 
 nlohmann::json chat::Message::toJson() const
 {
@@ -214,20 +187,27 @@ nlohmann::json chat::message::ClickEvent::toJson() const
     nlohmann::json response;
 
     switch (action) {
-        case Action::OpenURL:
-            response["action"] = "open_url"; break;
-        case Action::OpenFile:
-            response["action"] = "open_file"; break;
-        case Action::RunCommand:
-            response["action"] = "run_command"; break;
-        case Action::SuggestCommand:
-            response["action"] = "suggest_command"; break;
-        case Action::ChangePage:
-            response["action"] = "change_page"; break;
-        case Action::CopyToClipboard:
-            response["action"] = "copy_to_clipboard"; break;
-        default:
-            LERROR("Unknown click event action: ", static_cast<int32_t>(action)); break;
+    case Action::OpenURL:
+        response["action"] = "open_url";
+        break;
+    case Action::OpenFile:
+        response["action"] = "open_file";
+        break;
+    case Action::RunCommand:
+        response["action"] = "run_command";
+        break;
+    case Action::SuggestCommand:
+        response["action"] = "suggest_command";
+        break;
+    case Action::ChangePage:
+        response["action"] = "change_page";
+        break;
+    case Action::CopyToClipboard:
+        response["action"] = "copy_to_clipboard";
+        break;
+    default:
+        LERROR("Unknown click event action: ", static_cast<int32_t>(action));
+        break;
     }
 
     response["value"] = value;
@@ -240,14 +220,18 @@ nlohmann::json chat::message::HoverEvent::toJson() const
     nlohmann::json response;
 
     switch (action) {
-        case Action::ShowText:
-            response["action"] = "show_text"; break;
-        case Action::ShowItem:
-            response["action"] = "show_item"; break;
-        case Action::ShowEntity:
-            response["action"] = "show_entity"; break;
-        default:
-            LERROR("Unknown hover event action: ", static_cast<int32_t>(action)); break;
+    case Action::ShowText:
+        response["action"] = "show_text";
+        break;
+    case Action::ShowItem:
+        response["action"] = "show_item";
+        break;
+    case Action::ShowEntity:
+        response["action"] = "show_entity";
+        break;
+    default:
+        LERROR("Unknown hover event action: ", static_cast<int32_t>(action));
+        break;
     }
 
     response["contents"] == value;
@@ -349,52 +333,22 @@ chat::message::HoverEvent chat::message::HoverEvent::fromJson(const nlohmann::js
     return event;
 }
 
-std::string chat::Message::getMessage() const
-{
-    return _message;
-}
+std::string chat::Message::getMessage() const { return _message; }
 
-chat::Message::Options chat::Message::getOptions() const
-{
-    return _options;
-}
+chat::Message::Options chat::Message::getOptions() const { return _options; }
 
-std::optional<chat::message::ClickEvent> chat::Message::getClickEvent() const
-{
-    return _clickEvent;
-}
+std::optional<chat::message::ClickEvent> chat::Message::getClickEvent() const { return _clickEvent; }
 
-std::optional<chat::message::HoverEvent> chat::Message::getHoverEvent() const
-{
-    return _hoverEvent;
-}
+std::optional<chat::message::HoverEvent> chat::Message::getHoverEvent() const { return _hoverEvent; }
 
-std::vector<chat::Message> chat::Message::getExtra() const
-{
-    return _extra;
-}
+std::vector<chat::Message> chat::Message::getExtra() const { return _extra; }
 
-std::string &chat::Message::message()
-{
-    return _message;
-}
+std::string &chat::Message::message() { return _message; }
 
-chat::Message::Options &chat::Message::options()
-{
-    return _options;
-}
+chat::Message::Options &chat::Message::options() { return _options; }
 
-std::optional<chat::message::ClickEvent> &chat::Message::clickEvent()
-{
-    return _clickEvent;
-}
+std::optional<chat::message::ClickEvent> &chat::Message::clickEvent() { return _clickEvent; }
 
-std::optional<chat::message::HoverEvent> &chat::Message::hoverEvent()
-{
-    return _hoverEvent;
-}
+std::optional<chat::message::HoverEvent> &chat::Message::hoverEvent() { return _hoverEvent; }
 
-std::vector<chat::Message> &chat::Message::extra()
-{
-    return _extra;
-}
+std::vector<chat::Message> &chat::Message::extra() { return _extra; }

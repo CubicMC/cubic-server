@@ -2,10 +2,8 @@
 #include <stdexcept>
 
 namespace Blocks {
-    namespace PottedMangrovePropagule {
-        BlockId toProtocol() {
-            return 8344;
-        }
-    }
+namespace PottedMangrovePropagule {
+BlockId toProtocol() { return 8344; }
+}
 
 }

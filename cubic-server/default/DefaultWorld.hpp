@@ -3,11 +3,10 @@
 
 #include "../World.hpp"
 #include "Overworld.hpp"
-#include "TheNether.hpp"
 #include "TheEnd.hpp"
+#include "TheNether.hpp"
 
-class DefaultWorld : public World
-{
+class DefaultWorld : public World {
 public:
     DefaultWorld(WorldGroup *worldGroup);
     void tick() override;
@@ -15,5 +14,4 @@ public:
     void stop() override;
 };
 
-
-#endif //CUBICSERVER_DEFAULTWORLD_HPP
+#endif // CUBICSERVER_DEFAULTWORLD_HPP

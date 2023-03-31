@@ -2,10 +2,8 @@
 #include <stdexcept>
 
 namespace Blocks {
-    namespace PottedAzureBluet {
-        BlockId toProtocol() {
-            return 8350;
-        }
-    }
+namespace PottedAzureBluet {
+BlockId toProtocol() { return 8350; }
+}
 
 }

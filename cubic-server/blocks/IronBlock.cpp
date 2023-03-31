@@ -2,10 +2,8 @@
 #include <stdexcept>
 
 namespace Blocks {
-    namespace IronBlock {
-        BlockId toProtocol() {
-            return 2040;
-        }
-    }
+namespace IronBlock {
+BlockId toProtocol() { return 2040; }
+}
 
 }

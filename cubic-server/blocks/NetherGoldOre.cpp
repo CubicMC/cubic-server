@@ -2,10 +2,8 @@
 #include <stdexcept>
 
 namespace Blocks {
-    namespace NetherGoldOre {
-        BlockId toProtocol() {
-            return 118;
-        }
-    }
+namespace NetherGoldOre {
+BlockId toProtocol() { return 118; }
+}
 
 }

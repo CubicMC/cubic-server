@@ -2,10 +2,8 @@
 #include <stdexcept>
 
 namespace Blocks {
-    namespace PowderSnow {
-        BlockId toProtocol() {
-            return 20456;
-        }
-    }
+namespace PowderSnow {
+BlockId toProtocol() { return 20456; }
+}
 
 }

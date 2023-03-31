@@ -1,16 +1,16 @@
 #ifndef WORLD_STORAGE_CHUNKCOLUMN_HPP
 #define WORLD_STORAGE_CHUNKCOLUMN_HPP
 
-#include <cstdint>
 #include <array>
-#include <vector>
-#include <unordered_map>
 #include <cmath>
+#include <cstdint>
+#include <unordered_map>
+#include <vector>
 
 // #include "Entity.hpp"
-#include "protocol/Structures.hpp"
 #include "Block.hpp"
 #include "Palette.hpp"
+#include "protocol/Structures.hpp"
 #include "types.hpp"
 
 namespace world_storage {
@@ -35,9 +35,9 @@ constexpr int BIOME_SECTION_WIDTH = 4;
 constexpr int BIOME_HEIGHT_MIN = CHUNK_HEIGHT_MIN / 4;
 constexpr int BIOME_HEIGHT_MAX = CHUNK_HEIGHT_MAX / 4;
 constexpr int BIOME_HEIGHT = BIOME_HEIGHT_MAX - BIOME_HEIGHT_MIN;
-constexpr int BIOME_SECTION_2D_SIZE = BIOME_SECTION_WIDTH*BIOME_SECTION_WIDTH;
-constexpr int BIOME_SECTION_3D_SIZE = BIOME_SECTION_2D_SIZE*BIOME_SECTION_WIDTH;
-constexpr int BIOME_PER_CHUNK = BIOME_SECTION_3D_SIZE*NB_OF_SECTIONS;
+constexpr int BIOME_SECTION_2D_SIZE = BIOME_SECTION_WIDTH * BIOME_SECTION_WIDTH;
+constexpr int BIOME_SECTION_3D_SIZE = BIOME_SECTION_2D_SIZE * BIOME_SECTION_WIDTH;
+constexpr int BIOME_PER_CHUNK = BIOME_SECTION_3D_SIZE * NB_OF_SECTIONS;
 
 // Heightmap
 constexpr int HEIGHTMAP_BITS = bitsNeeded(CHUNK_HEIGHT + 1);
@@ -61,8 +61,7 @@ constexpr uint64_t calculateBiomeIdx(const Position &pos)
     return pos.x + (pos.z * BIOME_SECTION_WIDTH) + (y * BIOME_SECTION_2D_SIZE);
 }
 
-struct BlockEntity {
-};
+struct BlockEntity { };
 
 struct HeightMap {
     // https://wiki.vg/index.php?title=Protocol&oldid=17753#Chunk_Data_and_Update_Light
@@ -77,8 +76,7 @@ enum class WorldType {
     FLAT
 };
 
-class ChunkColumn
-{
+class ChunkColumn {
 public:
     ChunkColumn(const Position2D &chunkPos);
     ~ChunkColumn();

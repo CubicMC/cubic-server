@@ -1,14 +1,14 @@
-#include <string>
 #include <cstdint>
-#include <vector>
-#include <unordered_map>
 #include <functional>
+#include <string>
+#include <unordered_map>
+#include <vector>
 
 namespace Blocks {
-    typedef int32_t BlockId;
+typedef int32_t BlockId;
 
-    namespace GildedBlackstone {
-        BlockId toProtocol();
-    }
+namespace GildedBlackstone {
+BlockId toProtocol();
+}
 
 }

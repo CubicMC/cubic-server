@@ -2,10 +2,8 @@
 #include <stdexcept>
 
 namespace Blocks {
-    namespace BambooSapling {
-        BlockId toProtocol() {
-            return 12316;
-        }
-    }
+namespace BambooSapling {
+BlockId toProtocol() { return 12316; }
+}
 
 }

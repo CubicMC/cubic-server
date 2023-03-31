@@ -2,10 +2,8 @@
 #include <stdexcept>
 
 namespace Blocks {
-    namespace WhiteWool {
-        BlockId toProtocol() {
-            return 1996;
-        }
-    }
+namespace WhiteWool {
+BlockId toProtocol() { return 1996; }
+}
 
 }
