@@ -128,7 +128,7 @@ void World::forEachDimension(std::function<void(Dimension &)> callback)
 
 void World::forEachDimensionIf(std::function<void(Dimension &)> callback, std::function<bool(const Dimension &)> predicate)
 {
-    for (auto & _dimension : _dimensions) {
+    for (auto &[_, dimension] : _dimensions) {
         if (predicate(*_dimension.second.get()))
             callback(*_dimension.second.get());
     }
