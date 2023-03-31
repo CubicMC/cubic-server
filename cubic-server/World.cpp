@@ -122,7 +122,7 @@ void World::forEachPlayerIf(std::function<void(Player *)> callback, std::functio
 
 void World::forEachDimension(std::function<void(Dimension &)> callback)
 {
-    for (auto & _dimension : _dimensions)
+    for (auto &[_, dimension] : _dimensions)
         callback(*_dimension.second.get());
 }
 
