@@ -38,10 +38,12 @@ Server::Server():
     _running(false)
 {
     _config.parse("./config.yml");
+    _whitelist = WhitelistHandling::Whitelist();
     _host = _config.getIP();
     _port = _config.getPort();
     _maxPlayer = _config.getMaxPlayers();
     _motd = _config.getMotd();
+    _whitelistEnabled = _config.getWhitelist();
     _enforceWhitelist = _config.getEnforceWhitelist();
 
     LINFO("Server created with host: ", _host, " and port: ", _port);
@@ -223,4 +225,21 @@ void Server::_downloadFile(const std::string &url, const std::string &path)
         this->stop();
         return;
     }
+}
+
+/*
+** If the server gets a /reload, players not on the whitelist
+** must be kicked from the server if enforce-whitelist is true
+** & the whitelist is in effect
+*/
+void Server::enforceWhitelistOnReload() {
+    if (_whitelistEnabled && _enforceWhitelist) {
+        for (auto &client : _clients) {
+            if (!_whitelist.isPlayerWhitelisted(client->getPlayer()->getUuid(), client->getPlayer()->getUsername()).first) {
+                client->disconnect("You are not whitelisted on this server.");
+                return;
+            }
+        }
+    }
+    return;
 }

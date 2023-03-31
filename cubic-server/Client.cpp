@@ -355,9 +355,6 @@ void Client::_onLoginStart(const std::shared_ptr<protocol::LoginStart> &pck)
 {
     LDEBUG("Got a Login Start");
     protocol::LoginSuccess resPck;
-    WhitelistHandling::Whitelist whitelist;
-    // TODO: Move this to the server
-    nlohmann::json whitelistData = whitelist.parseWhitelist(whitelist.getFilename());
 
     resPck.uuid = pck->has_player_uuid ? pck->player_uuid : u128{std::hash<std::string>{}("OfflinePlayer:"), std::hash<std::string>{}(pck->name)};
     resPck.username = pck->name;
@@ -369,7 +366,7 @@ void Client::_onLoginStart(const std::shared_ptr<protocol::LoginStart> &pck)
     if (!Server::getInstance()->getWorldGroup("default")->isInitialized()) {
         this->disconnect("Server is not initialized yet.");
         return;
-    } else if (Server::getInstance()->getEnforceWhitelist() && !whitelist.isPlayer(resPck.uuid, resPck.username, whitelistData).first) {
+    } else if (Server::getInstance()->isWhitelistEnabled() && !Server::getInstance()->getWhitelist().isPlayerWhitelisted(resPck.uuid, resPck.username).first) {
         this->disconnect("You are not whitelisted on this server.");
         return;
     }
@@ -552,4 +549,9 @@ void Client::stop(const chat::Message &reason)
     this->disconnect(reason);
     if (this->_networkThread.joinable())
         this->_networkThread.join();
+}
+
+Player *Client::getPlayer() const
+{
+    return _player;
 }
