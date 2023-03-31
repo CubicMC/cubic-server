@@ -117,6 +117,7 @@ private:
         new command_parser::Seed,
         new command_parser::DumpChunk,
         new command_parser::Log,
+        new command_parser::Op,
         new command_parser::Deop,
     };
     Blocks::GlobalPalette _globalPalette;
