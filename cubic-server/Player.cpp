@@ -673,9 +673,9 @@ void Player::_onInteract(const std::shared_ptr<protocol::Interact> &pck)
     Player *player = dynamic_cast<Player *>(target);
 
     switch (pck->type) {
-        case 0:
+        case 0: // interact type
             break;
-        case 1:
+        case 1: // attack type
             if (player != nullptr && player->_gamemode != 1) {
                 player->attack(_pos);
                 player->sendHealth();
@@ -683,7 +683,7 @@ void Player::_onInteract(const std::shared_ptr<protocol::Interact> &pck)
                 target->attack(_pos);
             }
             break;
-        case 2:
+        case 2: // interact at type
             break;
     }
     LDEBUG("Got a Interact");
