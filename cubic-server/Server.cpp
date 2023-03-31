@@ -107,7 +107,7 @@ void Server::stop()
 
 void Server::forEachWorldGroup(std::function<void(WorldGroup &)> callback)
 {
-    for (auto &worldGroup : this->_worldGroups)
+    for (auto &[_, worldGroup] : this->_worldGroups)
         callback(*worldGroup.second);
 }
 
