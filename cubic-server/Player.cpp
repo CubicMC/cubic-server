@@ -191,7 +191,7 @@ void Player::setOperator(const bool isOp)
     this->_isOperator = isOp;
 }
 
-const bool Player::isOperator() const
+bool Player::isOperator() const
 {
     return this->_isOperator;
 }

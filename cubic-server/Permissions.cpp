@@ -2,7 +2,7 @@
 #include <iostream>
 #include <fstream>
 
-#include "Operator.hpp"
+#include "Permissions.hpp"
 #include "Server.hpp"
 #include "World.hpp"
 
