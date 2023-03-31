@@ -677,10 +677,10 @@ void Player::_onInteract(const std::shared_ptr<protocol::Interact> &pck)
             break;
         case 1:
             if (player != nullptr && player->_gamemode != 1) {
-                player->attack(_pos, 1);
+                player->attack(_pos);
                 player->sendHealth();
             } else if (target != nullptr) {
-                target->attack(_pos, 1);
+                target->attack(_pos);
             }
             break;
         case 2:

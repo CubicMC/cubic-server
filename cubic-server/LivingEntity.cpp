@@ -7,9 +7,10 @@
  * @param damage The damage to deal
  * @param source The source of the damage
  */
-void LivingEntity::attack(Vector3<double> source, float damage)
+void LivingEntity::attack(Vector3<double> source)
 {
-    this->damage(damage);
+    //  TODO : think about how to deal with damage calculation later
+    this->damage(1);
     this->knockback(source, 1000);
 }
 
