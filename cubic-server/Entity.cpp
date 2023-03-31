@@ -1,4 +1,5 @@
 #include "Entity.hpp"
+#include "Player.hpp"
 
 Entity::Entity(std::shared_ptr<Dimension> dim) : _dim(dim)
 {
@@ -94,4 +95,14 @@ Vector3<double> &Entity::getLastPosition() {
 
 Vector2<uint8_t> &Entity::getLastRotation() {
     return _lastRot;
+}
+
+void Entity::teleport(const Vector3<double> &pos) {
+    this->forceSetPosition(pos);
+
+    for (auto i : this->getDimension()->getPlayerList()) {
+        if (i->getId() == this->getId())
+            continue;
+        i->sendTeleportEntity(this->getId(), pos);
+    }
 }

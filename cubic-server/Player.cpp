@@ -146,7 +146,7 @@ void Player::tick()
     }
 
     if (_pos.y < -100)
-        _synchronizePostion({_pos.x, -58, _pos.z});
+        teleport({_pos.x, -58, _pos.z});
 }
 
 Client *Player::getClient() const
@@ -960,7 +960,7 @@ void Player::_continueLoginSequence() {
 
     // TODO: update recipes book
 
-    this->_synchronizePostion({8.5, 100, 8.5});
+    this->teleport({8.5, 100, 8.5});
 
     this->sendServerData({
         false,
@@ -991,7 +991,7 @@ void Player::_continueLoginSequence() {
     //     player->_synchronizePostion({0, -58, 0});
     // this->_player->sendChunkAndLightUpdate(0, 0);
     getDimension()->spawnPlayer(this);
-    this->_synchronizePostion({8.5, 100, 8.5});
+    this->teleport({8.5, 100, 8.5});
 
     this->_sendLoginMessage();
 }
@@ -1040,15 +1040,9 @@ void Player::_unloadChunk(int32_t x, int32_t z) {
     this->_chunks.erase({x, z});
 }
 
-void Player::_synchronizePostion(Vector3<double> pos)
+void Player::teleport(const Vector3<double> &pos)
 {
     this->sendSynchronizePosition(pos);
-    this->forceSetPosition(pos);
     LDEBUG("Synchronized player position");
-
-    for (auto i : this->getDimension()->getPlayerList()) {
-        if (i->getId() == this->getId())
-            continue;
-        i->sendTeleportEntity(this->getId(), pos);
-    }
+    Entity::teleport(pos);
 }
