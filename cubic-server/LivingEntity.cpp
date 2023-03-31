@@ -11,7 +11,7 @@ void LivingEntity::attack(Vector3<double> source)
 {
     //  TODO : think about how to deal with damage calculation later
     this->damage(1);
-    this->knockback(source, 1000);
+    this->knockback(source);
 }
 
 /*

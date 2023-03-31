@@ -4,7 +4,7 @@
 #include "Entity.hpp"
 #include "Dimension.hpp"
 
-constexpr float KNOCKBACK_DEFAULT_FORCE = 1.0f;
+constexpr float KNOCKBACK_DEFAULT_FORCE = 1000.0f;
 
 class LivingEntity : public Entity {
 public :
