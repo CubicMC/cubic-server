@@ -53,7 +53,7 @@ public:
         return _config;
     }
 
-    const WhitelistHandling::Whitelist getWhitelist() const {
+    const WhitelistHandling::Whitelist &getWhitelist() const {
         return _whitelist;
     }
 
