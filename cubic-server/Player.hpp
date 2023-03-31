@@ -44,7 +44,9 @@ public:
     void setKeepAliveId(long id);
     uint8_t keepAliveIgnored() const;
     void setKeepAliveIgnored(uint8_t ign);
-
+    void setOperator(const bool isOp);
+    bool isOperator() const;
+    
 public:
     void setPosition(const Vector3<double> &pos) override;
     void setPosition(double x, double y, double z) override;
@@ -149,6 +151,7 @@ private:
     uint8_t _gamemode;
     TickClock _keepAliveClock;
     bool _isFlying;
+    bool _isOperator;
     std::unordered_map<Position2D, ChunkState> _chunks;
 };
 

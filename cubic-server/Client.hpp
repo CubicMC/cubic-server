@@ -76,6 +76,8 @@ public:
     // Stop the client (called by the server on shutdown)
     void stop(const chat::Message &reason = "Disconnected");
 
+    Player *getPlayer() const;
+
 private:
     void _handlePacket();
     void _flushSendData();

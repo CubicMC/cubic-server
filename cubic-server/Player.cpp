@@ -36,6 +36,8 @@ Player::Player(Client *cli, std::shared_ptr<Dimension> dim, u128 uuid, const std
     uuidstr.insert(18, "-");
     uuidstr.insert(23, "-");
     this->_uuidString = uuidstr;
+
+    this->setOperator(Server::getInstance()->permissions.isOperator(username));
 }
 
 Player::~Player()
@@ -182,6 +184,16 @@ uint8_t Player::getGamemode() const
 void Player::setGamemode(uint8_t gamemode)
 {
     _gamemode = gamemode;
+}
+
+void Player::setOperator(const bool isOp)
+{
+    this->_isOperator = isOp;
+}
+
+bool Player::isOperator() const
+{
+    return this->_isOperator;
 }
 
 void Player::disconnect(const chat::Message &reason)

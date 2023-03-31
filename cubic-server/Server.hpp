@@ -12,6 +12,7 @@
 #include "protocol/ServerPackets.hpp"
 
 #include "configuration/ConfigHandler.hpp"
+#include "whitelist/Whitelist.hpp"
 #include "logging/Logger.hpp"
 #include "WorldGroup.hpp"
 
@@ -21,6 +22,7 @@
 #include "protocol_id_converter/blockStates.hpp"
 #include "protocol_id_converter/itemConverter.hpp"
 
+#include "Permissions.hpp"
 
 #ifndef MC_VERSION
 #define MC_VERSION "1.19.3"
@@ -45,8 +47,18 @@ public:
 
     void stop();
 
+    void enforceWhitelistOnReload();
+
     const Configuration::ConfigHandler &getConfig() const {
         return _config;
+    }
+
+    const WhitelistHandling::Whitelist &getWhitelist() const {
+        return _whitelist;
+    }
+
+    const bool isWhitelistEnabled() const {
+        return _whitelistEnabled;
     }
 
     const bool getEnforceWhitelist() const {
@@ -82,6 +94,11 @@ public:
         return _itemConverter;
     }
 
+    void forEachWorldGroup(std::function<void(WorldGroup &)> callback);
+    void forEachWorldGroupIf(std::function<void(WorldGroup &)> callback, std::function<bool(const WorldGroup &)> predicate);
+
+    Permissions permissions;
+
 private:
     Server();
     void _acceptLoop();
@@ -93,6 +110,7 @@ private:
     uint16_t _port;
     uint32_t _maxPlayer;
     std::string _motd;
+    bool _whitelistEnabled;
     bool _enforceWhitelist;
     std::atomic<bool> _running;
 
@@ -103,6 +121,7 @@ private:
     struct sockaddr_in6 _addr;
 
     Configuration::ConfigHandler _config;
+    WhitelistHandling::Whitelist _whitelist;
     std::unordered_map<std::string_view, WorldGroup *> _worldGroups;
     std::vector<CommandBase *> _commands = {
         new command_parser::Help,
@@ -111,6 +130,8 @@ private:
         new command_parser::Seed,
         new command_parser::DumpChunk,
         new command_parser::Log,
+        new command_parser::Op,
+        new command_parser::Deop,
     };
     Blocks::GlobalPalette _globalPalette;
     Items::ItemConverter _itemConverter;

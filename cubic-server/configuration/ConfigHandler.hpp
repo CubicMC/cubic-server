@@ -21,6 +21,7 @@ namespace Configuration
         uint16_t getPort() const;
         uint32_t getMaxPlayers() const;
         const std::string &getMotd() const;
+        bool getWhitelist() const;
         bool getEnforceWhitelist() const;
         void parse(const std::string &path);
 
@@ -30,6 +31,7 @@ namespace Configuration
         uint16_t _port;
         uint32_t _maxPlayers;
         std::string _motd;
+        bool _whitelist;
         bool _enforceWhitelist;
     };
 }

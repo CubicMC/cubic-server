@@ -103,6 +103,37 @@ void World::forEachEntityIf(std::function<void(Entity *)> callback, std::functio
         _dimension.second->forEachEntityIf(callback, predicate);
 }
 
+void World::forEachPlayer(std::function<void(Player *)> callback)
+{
+    std::vector<Player *> players = this->getPlayers();
+
+    for (auto player : players)
+        callback(player);
+}
+
+void World::forEachPlayerIf(std::function<void(Player *)> callback, std::function<bool(const Entity *)> predicate)
+{
+    std::vector<Player *> players = this->getPlayers();
+
+    for (auto player : players)
+        if (predicate(player))
+            callback(player);
+}
+
+void World::forEachDimension(std::function<void(Dimension &)> callback)
+{
+    for (auto &[_, dimension] : _dimensions)
+        callback(*dimension);
+}
+
+void World::forEachDimensionIf(std::function<void(Dimension &)> callback, std::function<bool(const Dimension &)> predicate)
+{
+    for (auto &[_, dimension] : _dimensions) {
+        if (predicate(*dimension))
+            callback(*dimension);
+    }
+}
+
 const world_storage::LevelData &World::getLevelData() const
 {
     return _levelData;
