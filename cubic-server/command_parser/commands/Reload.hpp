@@ -1,13 +1,40 @@
 #ifndef RELOAD_HPP_
 #define RELOAD_HPP_
 
-class Reload {
-    public:
-        Reload();
-        ~Reload();
+#include "CommandBase.hpp"
 
-    protected:
-    private:
+/*
+**  Reload command always success and displays
+**  "Successfully reloaded loot tables, advancements
+**  and functions".
+**
+**  If one of the reloaded file contain an error,
+**  the file is skipped and the last working version
+**  of the file is loaded instead.
+**  If no file was loaded before, the file containing
+**  the error is skipped without being replaced.
+**
+**  The command is supposed to reload the server
+**  without stopping it nor affecting the players
+**  except if the whitelist is to be enforced.
+**
+**  Files to be reloaded:
+**
+**   - config.yml
+**   - whitelist.txt
+**   - .minecraft/saves/(world)/datapacks
+**   - level.dat
+**   - plugins
+*/
+
+namespace command_parser {
+struct Reload : public CommandBase {
+    Reload() : CommandBase("reload", "/reload", true) {}
+
+    void autocomplete(std::vector<std::string>& args, Player *invoker) const override;
+    void execute(std::vector<std::string>& args, Player *invoker) const override;
+    void help(std::vector<std::string>& args, Player *invoker) const override;
 };
+}
 
 #endif /* !RELOAD_HPP_ */

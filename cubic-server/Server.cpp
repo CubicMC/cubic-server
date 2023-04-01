@@ -216,9 +216,30 @@ void Server::_downloadFile(const std::string &url, const std::string &path)
 }
 
 /*
-** If the server gets a /reload, players not on the whitelist
-** must be kicked from the server if enforce-whitelist is true
-** & the whitelist is in effect
+**  Reload the server. Used in the /reload command.
+**  More details in *Reload.hpp*.
+*/
+void Server::reload() {
+    _config.parse("./config.yml");
+    _maxPlayer = _config.getMaxPlayers();
+    _motd = _config.getMotd();
+    _whitelistEnabled = _config.getWhitelist();
+    _enforceWhitelist = _config.getEnforceWhitelist();
+    if (_whitelistEnabled) {
+        WhitelistHandling::Whitelist whitelistReloaded = WhitelistHandling::Whitelist();
+        _whitelist = whitelistReloaded;
+    }
+    if (_enforceWhitelist) {
+        enforceWhitelistOnReload();
+    }
+    /* Reload level.dat + datapacks + plugins */
+    return;
+}
+
+/*
+**  If the server gets a /reload, players not on the whitelist
+**  must be kicked from the server if enforce-whitelist is true
+**  & the whitelist is in effect
 */
 void Server::enforceWhitelistOnReload()
 {
