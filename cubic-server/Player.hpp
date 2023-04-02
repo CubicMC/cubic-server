@@ -3,6 +3,7 @@
 
 #include "Client.hpp"
 #include "Entity.hpp"
+#include "LivingEntity.hpp"
 #include "math/Vector3.hpp"
 #include "protocol/ServerPackets.hpp"
 #include "logging/Logger.hpp"
@@ -16,7 +17,7 @@
 class Client;
 class Entity;
 
-class Player : public Entity
+class Player : public LivingEntity
 {
     friend class Client;
 public:
@@ -46,7 +47,7 @@ public:
     void setKeepAliveIgnored(uint8_t ign);
     void setOperator(const bool isOp);
     bool isOperator() const;
-    
+
 public:
     void setPosition(const Vector3<double> &pos) override;
     void setPosition(double x, double y, double z) override;
@@ -58,6 +59,8 @@ public:
     void sendPlayerInfoUpdate(const protocol::PlayerInfoUpdate &data);
     void sendPlayerInfoRemove(const protocol::PlayerInfoRemove &data);
     void sendSpawnPlayer(const protocol::SpawnPlayer &data);
+    void sendEntityVelocity(const protocol::EntityVelocity &data);
+    void sendHealth(void);
     void sendUpdateTime(const protocol::UpdateTime &data);
     void sendChatMessageResponse(const protocol::PlayerChatMessage &packet);
     void sendSystemChatMessage(const protocol::SystemChatMessage &packet);

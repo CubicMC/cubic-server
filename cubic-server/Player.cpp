@@ -13,7 +13,7 @@
 
 Player::Player(Client *cli, std::shared_ptr<Dimension> dim, u128 uuid, const std::string &username):
     _cli(cli),
-    Entity(dim),
+    LivingEntity(dim),
     _uuid(uuid),
     _username(username),
     _keepAliveId(0),
@@ -36,6 +36,7 @@ Player::Player(Client *cli, std::shared_ptr<Dimension> dim, u128 uuid, const std
     uuidstr.insert(18, "-");
     uuidstr.insert(23, "-");
     this->_uuidString = uuidstr;
+    this->setHealth(20);
 
     this->setOperator(Server::getInstance()->permissions.isOperator(username));
 }
@@ -353,6 +354,22 @@ void Player::sendSpawnPlayer(const protocol::SpawnPlayer &data)
     LDEBUG("Sent a Spawn Player packet on coords: ", data.x, " ", data.y, " ", data.z);
 }
 
+void Player::sendEntityVelocity(const protocol::EntityVelocity &data)
+{
+    auto pck = protocol::createEntityVelocity(data);
+    this->_cli->_sendData(*pck);
+
+    LDEBUG("Sent an Entity Velocity packet with velocity: x -> ", data.velocity_x, " | ",  "y -> ",data.velocity_y, " | ",  "z -> ", data.velocity_z);
+}
+
+void Player::sendHealth(void)
+{
+    auto pck = protocol::createHealth({_health, 20, 0.0f});
+    this->_cli->_sendData(*pck);
+
+    LDEBUG("Sent a Health packet");
+}
+
 void Player::sendUpdateTime(const protocol::UpdateTime &data)
 {
     auto pck = protocol::createUpdateTime(data);
@@ -647,8 +664,28 @@ void Player::_onQueryEntityTag(const std::shared_ptr<protocol::QueryEntityTag> &
     LDEBUG("Got a Query Entity Tag");
 }
 
+/*
+ * @brief Handle a player's interaction with an entity.
+ */
 void Player::_onInteract(const std::shared_ptr<protocol::Interact> &pck)
 {
+    LivingEntity *target = dynamic_cast<LivingEntity *>(_dim->getEntityByID(pck->entity_id));
+    Player *player = dynamic_cast<Player *>(target);
+
+    switch (pck->type) {
+        case 0: // interact type
+            break;
+        case 1: // attack type
+            if (player != nullptr && player->_gamemode != 1) {
+                player->attack(_pos);
+                player->sendHealth();
+            } else if (target != nullptr) {
+                target->attack(_pos);
+            }
+            break;
+        case 2: // interact at type
+            break;
+    }
     LDEBUG("Got a Interact");
 }
 
