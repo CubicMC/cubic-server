@@ -1,4 +1,5 @@
 #include <gtest/gtest.h>
+#include <rapidcheck/gtest.h>
 #include "nbt.hpp"
 
 namespace Nbt_Testing
@@ -12,6 +13,70 @@ namespace Nbt_Testing
      * @note I choose to use EXPECT instead of ASSERT because I want to test all the cases and not to stop at the first error
      *
      */
+
+    RC_GTEST_PROP(RapidCheckTest, NbtByteChecker, (int8_t value))
+    {
+        auto to_serialize = nbt::Byte("test", value);
+        auto serialized = to_serialize.serialize();
+        auto at = serialized.data();
+        auto parsed = nbt::parseByte(at, at + serialized.size());
+        RC_ASSERT(value == parsed->get_value());
+    }
+
+    RC_GTEST_PROP(RapidCheckTest, NbtShortChecker, (int16_t value))
+    {
+        auto to_serialize = nbt::Short("test", value);
+        auto serialized = to_serialize.serialize();
+        auto at = serialized.data();
+        auto parsed = nbt::parseShort(at, at + serialized.size());
+        RC_ASSERT(value == parsed->get_value());
+    }
+
+    RC_GTEST_PROP(RapidCheckTest, NbtIntChecker, (int32_t value))
+    {
+        auto to_serialize = nbt::Int("test", value);
+        auto serialized = to_serialize.serialize();
+        auto at = serialized.data();
+        auto parsed = nbt::parseInt(at, at + serialized.size());
+        RC_ASSERT(value == parsed->get_value());
+    }
+
+    RC_GTEST_PROP(RapidCheckTest, NbtLongChecker, (int64_t value))
+    {
+        auto to_serialize = nbt::Long("test", value);
+        auto serialized = to_serialize.serialize();
+        auto at = serialized.data();
+        auto parsed = nbt::parseLong(at, at + serialized.size());
+        RC_ASSERT(value == parsed->get_value());
+    }
+
+    RC_GTEST_PROP(RapidCheckTest, NbtFloatChecker, (float value))
+    {
+        auto to_serialize = nbt::Float("test", value);
+        auto serialized = to_serialize.serialize();
+        auto at = serialized.data();
+        auto parsed = nbt::parseFloat(at, at + serialized.size());
+        RC_ASSERT(value == parsed->get_value());
+    }
+
+    RC_GTEST_PROP(RapidCheckTest, NbtDoubleChecker, (double value))
+    {
+        auto to_serialize = nbt::Double("test", value);
+        auto serialized = to_serialize.serialize();
+        auto at = serialized.data();
+        auto parsed = nbt::parseDouble(at, at + serialized.size());
+        RC_ASSERT(value == parsed->get_value());
+    }
+
+    RC_GTEST_PROP(RapidCheckTest, NbtStringChecker, (const std::string value))
+    {
+        auto to_serialize = nbt::String("test", value);
+        auto serialized = to_serialize.serialize();
+        auto at = serialized.data();
+        auto parsed = nbt::parseString(at, at + serialized.size());
+        RC_ASSERT(value == parsed->get_value());
+    }
+
     TEST(NbtTest, TestNbt)
     {
         auto to_serialize = nbt::Compound("hello world", {
