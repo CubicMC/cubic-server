@@ -3,15 +3,13 @@
 #include <optional>
 #include <vector>
 
-using namespace nbt;
-
 static std::optional<std::string> parseName(uint8_t *&at, const uint8_t *end)
 {
     std::string value = "";
 
     if (at + 1 > end)
         return std::nullopt;
-    
+
     uint16_t name_size = (*at << 8) | at[1];
     at += 2;
 
@@ -32,7 +30,7 @@ static std::optional<std::string> parseName(uint8_t *&at, const uint8_t *end)
         name = tmp.value(); \
     }
 
-Byte *nbt::parseByte(uint8_t *&at, const uint8_t *end, bool include_name)
+nbt::Byte *nbt::parseByte(uint8_t *&at, const uint8_t *end, bool include_name)
 {
     if (at > end)
         return nullptr;
@@ -45,13 +43,13 @@ Byte *nbt::parseByte(uint8_t *&at, const uint8_t *end, bool include_name)
 
     if (end - at < 0)
         return nullptr;
-    
+
     int8_t value = *at++;
 
     return new Byte(name, value);
 }
 
-Short *nbt::parseShort(uint8_t *&at, const uint8_t *end, bool include_name)
+nbt::Short *nbt::parseShort(uint8_t *&at, const uint8_t *end, bool include_name)
 {
     if (at > end)
         return nullptr;
@@ -64,7 +62,7 @@ Short *nbt::parseShort(uint8_t *&at, const uint8_t *end, bool include_name)
 
     if (end - at < 1)
         return nullptr;
-    
+
     int16_t value = 0;
     for (int i = 0; i < 2; i++)
         value = (value << 8) | *at++;
@@ -72,7 +70,7 @@ Short *nbt::parseShort(uint8_t *&at, const uint8_t *end, bool include_name)
     return new Short(name, value);
 }
 
-Int *nbt::parseInt(uint8_t *&at, const uint8_t *end, bool include_name)
+nbt::Int *nbt::parseInt(uint8_t *&at, const uint8_t *end, bool include_name)
 {
     if (at > end)
         return nullptr;
@@ -85,7 +83,7 @@ Int *nbt::parseInt(uint8_t *&at, const uint8_t *end, bool include_name)
 
     if (end - at < 3)
         return nullptr;
-    
+
     int32_t value = 0;
     for (int i = 0; i < 4; i++)
         value = (value << 8) | *at++;
@@ -93,7 +91,7 @@ Int *nbt::parseInt(uint8_t *&at, const uint8_t *end, bool include_name)
     return new Int(name, value);
 }
 
-Long *nbt::parseLong(uint8_t *&at, const uint8_t *end, bool include_name)
+nbt::Long *nbt::parseLong(uint8_t *&at, const uint8_t *end, bool include_name)
 {
     if (at > end)
         return nullptr;
@@ -106,7 +104,7 @@ Long *nbt::parseLong(uint8_t *&at, const uint8_t *end, bool include_name)
 
     if (end - at < 7)
         return nullptr;
-    
+
     int64_t value = 0;
     for (int i = 0; i < 8; i++)
         value = (value << 8) | *at++;
@@ -114,7 +112,7 @@ Long *nbt::parseLong(uint8_t *&at, const uint8_t *end, bool include_name)
     return new Long(name, value);
 }
 
-Float *nbt::parseFloat(uint8_t *&at, const uint8_t *end, bool include_name)
+nbt::Float *nbt::parseFloat(uint8_t *&at, const uint8_t *end, bool include_name)
 {
     if (at > end)
         return nullptr;
@@ -127,7 +125,7 @@ Float *nbt::parseFloat(uint8_t *&at, const uint8_t *end, bool include_name)
 
     if (end - at < 3)
         return nullptr;
-    
+
     int32_t value = 0;
     for (int i = 0; i < 4; i++)
         value |= (*at++) << (i * 8);
@@ -135,7 +133,7 @@ Float *nbt::parseFloat(uint8_t *&at, const uint8_t *end, bool include_name)
     return new Float(name, *((float *)(&value)));
 }
 
-Double *nbt::parseDouble(uint8_t *&at, const uint8_t *end, bool include_name)
+nbt::Double *nbt::parseDouble(uint8_t *&at, const uint8_t *end, bool include_name)
 {
     if (at > end)
         return nullptr;
@@ -148,7 +146,7 @@ Double *nbt::parseDouble(uint8_t *&at, const uint8_t *end, bool include_name)
 
     if (end - at < 7)
         return nullptr;
-    
+
     int64_t value = 0;
     for (int i = 0; i < 8; i++)
         value |= (*at++) << (i * 8);
@@ -156,7 +154,7 @@ Double *nbt::parseDouble(uint8_t *&at, const uint8_t *end, bool include_name)
     return new Double(name, *((double *)(&value)));
 }
 
-ByteArray *nbt::parseByteArray(uint8_t *&at, const uint8_t *end, bool include_name)
+nbt::ByteArray *nbt::parseByteArray(uint8_t *&at, const uint8_t *end, bool include_name)
 {
     if (at > end)
         return nullptr;
@@ -169,7 +167,7 @@ ByteArray *nbt::parseByteArray(uint8_t *&at, const uint8_t *end, bool include_na
 
     if (end - at < 3)
         return nullptr;
-    
+
     int32_t size = 0;
     for (int i = 0; i < 4; i++)
         size = (size << 8) | *at++;
@@ -188,7 +186,7 @@ ByteArray *nbt::parseByteArray(uint8_t *&at, const uint8_t *end, bool include_na
     return new ByteArray(name, data);
 }
 
-String *nbt::parseString(uint8_t *&at, const uint8_t *end, bool include_name)
+nbt::String *nbt::parseString(uint8_t *&at, const uint8_t *end, bool include_name)
 {
     if (at > end)
         return nullptr;
@@ -201,7 +199,7 @@ String *nbt::parseString(uint8_t *&at, const uint8_t *end, bool include_name)
 
     if (end - at < 3)
         return nullptr;
-    
+
     int32_t size = 0;
     for (int i = 0; i < 4; i++)
         size = (size << 8) | *at++;
@@ -220,7 +218,7 @@ String *nbt::parseString(uint8_t *&at, const uint8_t *end, bool include_name)
     return new String(name, data);
 }
 
-List *nbt::parseList(uint8_t *&at, const uint8_t *end, bool include_name)
+nbt::List *nbt::parseList(uint8_t *&at, const uint8_t *end, bool include_name)
 {
     if (at > end)
         return nullptr;
@@ -233,12 +231,12 @@ List *nbt::parseList(uint8_t *&at, const uint8_t *end, bool include_name)
 
     if (at > end)
         return nullptr;
-    
+
     uint8_t type = *at++;
 
     if (end - at < 3)
         return nullptr;
-    
+
     int32_t size = 0;
     for (int i = 0; i < 4; i++)
         size = (size << 8) | *at++;
@@ -288,7 +286,7 @@ List *nbt::parseList(uint8_t *&at, const uint8_t *end, bool include_name)
     return new List(name, data);
 }
 
-Compound *nbt::parseCompound(uint8_t *&at, const uint8_t *end, bool include_name)
+nbt::Compound *nbt::parseCompound(uint8_t *&at, const uint8_t *end, bool include_name)
 {
     if (at > end)
         return nullptr;
@@ -319,7 +317,7 @@ Compound *nbt::parseCompound(uint8_t *&at, const uint8_t *end, bool include_name
     return new Compound(name, data);
 }
 
-IntArray *nbt::parseIntArray(uint8_t *&at, const uint8_t *end, bool include_name)
+nbt::IntArray *nbt::parseIntArray(uint8_t *&at, const uint8_t *end, bool include_name)
 {
     if (at > end)
         return nullptr;
@@ -332,7 +330,7 @@ IntArray *nbt::parseIntArray(uint8_t *&at, const uint8_t *end, bool include_name
 
     if (end - at < 3)
         return nullptr;
-    
+
     int32_t size = 0;
     for (int i = 0; i < 4; i++)
         size = (size << 8) | *at++;
@@ -353,7 +351,7 @@ IntArray *nbt::parseIntArray(uint8_t *&at, const uint8_t *end, bool include_name
     return new IntArray(name, data);
 }
 
-LongArray *nbt::parseLongArray(uint8_t *&at, const uint8_t *end, bool include_name)
+nbt::LongArray *nbt::parseLongArray(uint8_t *&at, const uint8_t *end, bool include_name)
 {
     if (at > end)
         return nullptr;
@@ -366,7 +364,7 @@ LongArray *nbt::parseLongArray(uint8_t *&at, const uint8_t *end, bool include_na
 
     if (end - at < 3)
         return nullptr;
-    
+
     int32_t size = 0;
     for (int i = 0; i < 4; i++)
         size = (size << 8) | *at++;
@@ -387,11 +385,11 @@ LongArray *nbt::parseLongArray(uint8_t *&at, const uint8_t *end, bool include_na
     return new LongArray(name, data);
 }
 
-Base *nbt::parse(uint8_t *&at, const uint8_t *end)
+nbt::Base *nbt::parse(uint8_t *&at, const uint8_t *end)
 {
     if (at > end)
         return nullptr;
-    
+
     uint8_t type = *at;
     switch (type) {
     case (uint8_t)TagType::Byte:

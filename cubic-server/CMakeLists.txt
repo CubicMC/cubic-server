@@ -42,12 +42,15 @@ if (GTEST)
     add_executable(
         nbt_test
         nbt.hpp
+        nbt.cpp
         nbt_unittest.cpp
     )
 
     target_link_libraries(
         nbt_test
         GTest::gtest_main
+        rapidcheck
+        rapidcheck_gtest
     )
 
     include(GoogleTest)
