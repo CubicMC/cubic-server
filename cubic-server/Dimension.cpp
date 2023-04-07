@@ -43,6 +43,14 @@ std::counting_semaphore<1000> &Dimension::getDimensionLock() { return _dimension
 
 std::vector<Entity *> &Dimension::getEntities() { return _entities; }
 
+Entity *Dimension::getEntityByID(int32_t id)
+{
+    for (auto &entity : _entities)
+        if (entity->getId() == id)
+            return entity;
+    throw std::runtime_error("Entity not found");
+}
+
 void Dimension::removeEntity(Entity *entity)
 {
     LINFO("In remove entity in dimension");

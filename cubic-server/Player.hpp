@@ -4,6 +4,7 @@
 #include "Chat.hpp"
 #include "Client.hpp"
 #include "Entity.hpp"
+#include "LivingEntity.hpp"
 #include "SoundList.hpp"
 #include "TickClock.hpp"
 #include "logging/Logger.hpp"
@@ -16,7 +17,7 @@
 class Client;
 class Entity;
 
-class Player : public Entity {
+class Player : public LivingEntity {
     friend class Client;
 
 public:
@@ -57,6 +58,8 @@ public:
     void sendPlayerInfoUpdate(const protocol::PlayerInfoUpdate &data);
     void sendPlayerInfoRemove(const protocol::PlayerInfoRemove &data);
     void sendSpawnPlayer(const protocol::SpawnPlayer &data);
+    void sendEntityVelocity(const protocol::EntityVelocity &data);
+    void sendHealth(void);
     void sendUpdateTime(const protocol::UpdateTime &data);
     void sendChatMessageResponse(const protocol::PlayerChatMessage &packet);
     void sendSystemChatMessage(const protocol::SystemChatMessage &packet);

@@ -13,7 +13,7 @@ requires(std::ostream &os, const T &value) {
 
 // clang-format on
 
-template<typename T>
+template <typename T>
 concept is_nbt = std::is_base_of_v<nbt::Base, T>;
 
 #endif // CONCEPT_HPP

@@ -8,6 +8,8 @@ target_sources (${CMAKE_PROJECT_NAME} PRIVATE
     Player.hpp
     Entity.cpp
     Entity.hpp
+    LivingEntity.cpp
+    LivingEntity.hpp
     Chat.cpp
     Chat.hpp
     WorldGroup.cpp

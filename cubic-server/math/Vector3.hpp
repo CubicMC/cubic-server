@@ -38,6 +38,8 @@ public:
 
     Vector3 operator+(const Vector3 &other) noexcept { return Vector3<T>(other.x + this->x, other.y + this->y, other.z + this->z); }
 
+    Vector3 operator+(const T &other) noexcept { return Vector3<T>(other + this->x, other + this->y, other + this->z); }
+
     Vector3 operator+=(const Vector3 &other) noexcept
     {
         this->x += other.x;
@@ -47,7 +49,18 @@ public:
         return *this;
     }
 
+    Vector3 operator+=(const T &other) noexcept
+    {
+        this->x += other;
+        this->y += other;
+        this->z += other;
+
+        return *this;
+    }
+
     Vector3 operator-(const Vector3 &other) noexcept { return Vector3<T>(other.x - this->x, other.y - this->y, other.z - this->z); }
+
+    Vector3 operator-(const T &other) noexcept { return Vector3<T>(other - this->x, other - this->y, other - this->z); }
 
     Vector3 operator-=(const Vector3 &other) noexcept
     {
@@ -58,7 +71,18 @@ public:
         return *this;
     }
 
+    Vector3 operator-=(const T &other) noexcept
+    {
+        this->x -= other;
+        this->y -= other;
+        this->z -= other;
+
+        return *this;
+    }
+
     Vector3 operator*(const Vector3 &other) noexcept { return Vector3<T>(other.x * this->x, other.y * this->y, other.z * this->z); }
+
+    Vector3 operator*(const T &other) noexcept { return Vector3<T>(other * this->x, other * this->y, other * this->z); }
 
     Vector3 operator*=(const Vector3 &other) noexcept
     {
@@ -69,7 +93,18 @@ public:
         return *this;
     }
 
+    Vector3 operator*=(const T &other) noexcept
+    {
+        this->x *= other;
+        this->y *= other;
+        this->z *= other;
+
+        return *this;
+    }
+
     Vector3 operator/(const Vector3 &other) noexcept { return Vector3<T>(other.x / this->x, other.y / this->y, other.z / this->z); }
+
+    Vector3 operator/(const T &other) noexcept { return Vector3<T>(other / this->x, other / this->y, other / this->z); }
 
     Vector3 operator/=(const Vector3 &other) noexcept
     {
@@ -80,7 +115,18 @@ public:
         return *this;
     }
 
+    Vector3 operator/=(const T &other) noexcept
+    {
+        this->x /= other;
+        this->y /= other;
+        this->z /= other;
+
+        return *this;
+    }
+
     Vector3 operator%(const Vector3 &other) noexcept { return Vector3<T>(other.x % this->x, other.y % this->y, other.z % this->z); }
+
+    Vector3 operator%(const T &other) noexcept { return Vector3<T>(other % this->x, other % this->y, other % this->z); }
 
     Vector3 operator%=(const Vector3 &other) noexcept
     {
@@ -91,7 +137,16 @@ public:
         return *this;
     }
 
-    Vector3 operator=(const Vector3 &other) noexcept
+    Vector3 operator%=(const T &other) noexcept
+    {
+        this->x %= other;
+        this->y %= other;
+        this->z %= other;
+
+        return *this;
+    }
+
+    Vector3 &operator=(const Vector3 &other) noexcept
     {
         this->x = other.x;
         this->y = other.y;
@@ -100,7 +155,22 @@ public:
         return *this;
     }
 
+    Vector3 &operator=(const T &other) noexcept
+    {
+        this->x = other;
+        this->y = other;
+        this->z = other;
+
+        return *this;
+    }
+
     bool operator==(const Vector3 &other) const noexcept { return this->x == other.x && this->y == other.y && this->z == other.z; }
+
+    bool operator==(const T &other) noexcept { return this->x == other && this->y == other && this->z == other; }
+
+    bool operator!=(const Vector3 &other) noexcept { return this->x != other.x || this->y != other.y || this->z != other.z; }
+
+    bool operator!=(const T &other) noexcept { return this->x != other || this->y != other || this->z != other; }
 
     T x;
     T y;
