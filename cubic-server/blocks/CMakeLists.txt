@@ -1,4 +1,4 @@
-target_sources (${CMAKE_PROJECT_NAME} PRIVATE
+add_library(Blocks
 Air.cpp
 Air.hpp
 Stone.cpp
@@ -1944,3 +1944,5 @@ Frogspawn.hpp
 ReinforcedDeepslate.cpp
 ReinforcedDeepslate.hpp
 )
+
+target_include_directories (Blocks PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
