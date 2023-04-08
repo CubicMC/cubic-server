@@ -220,14 +220,24 @@ void Server::_downloadFile(const std::string &url, const std::string &path)
 **  More details in *Reload.hpp*.
 */
 void Server::reload() {
-    _config.parse("./config.yml");
-    _maxPlayer = _config.getMaxPlayers();
-    _motd = _config.getMotd();
-    _whitelistEnabled = _config.getWhitelist();
-    _enforceWhitelist = _config.getEnforceWhitelist();
-    if (_whitelistEnabled) {
-        WhitelistHandling::Whitelist whitelistReloaded = WhitelistHandling::Whitelist();
-        _whitelist = whitelistReloaded;
+    try {
+        _config.parse("./config.yml");
+        _maxPlayer = _config.getMaxPlayers();
+        _motd = _config.getMotd();
+        _whitelistEnabled = _config.getWhitelist();
+        _enforceWhitelist = _config.getEnforceWhitelist();
+    } catch (const std::exception &e) {
+        LINFO("One reloaded file or more failed. ERROR: " << e.what());
+        return;
+    }
+    try {
+        if (_whitelistEnabled) {
+            WhitelistHandling::Whitelist whitelistReloaded = WhitelistHandling::Whitelist();
+            _whitelist = whitelistReloaded;
+        }
+    } catch (const std::exception &e) {
+        LINFO("One reloaded file or more failed. ERROR: " << e.what());
+        return;
     }
     if (_enforceWhitelist) {
         enforceWhitelistOnReload();
