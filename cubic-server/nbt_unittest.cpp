@@ -1,3 +1,5 @@
+#include <fstream>
+#include <vector>
 #include <gtest/gtest.h>
 #include <rapidcheck/gtest.h>
 #include "nbt.hpp"
@@ -68,6 +70,15 @@ namespace Nbt_Testing
         RC_ASSERT(value == parsed->get_value());
     }
 
+    RC_GTEST_PROP(RapidCheckTest, NbtByteArrayChecker, (const std::vector<int8_t> value))
+    {
+        auto to_serialize = nbt::ByteArray("test", value);
+        auto serialized = to_serialize.serialize();
+        auto at = serialized.data();
+        auto parsed = nbt::parseByteArray(at, at + serialized.size());
+        RC_ASSERT(value == parsed->getValues());
+    }
+
     RC_GTEST_PROP(RapidCheckTest, NbtStringChecker, (const std::string value))
     {
         auto to_serialize = nbt::String("test", value);
@@ -75,6 +86,24 @@ namespace Nbt_Testing
         auto at = serialized.data();
         auto parsed = nbt::parseString(at, at + serialized.size());
         RC_ASSERT(value == parsed->get_value());
+    }
+
+    RC_GTEST_PROP(RapidCheckTest, NbtIntArrayChecker, (const std::vector<int> value))
+    {
+        auto to_serialize = nbt::IntArray("test", value);
+        auto serialized = to_serialize.serialize();
+        auto at = serialized.data();
+        auto parsed = nbt::parseIntArray(at, at + serialized.size());
+        RC_ASSERT(value == parsed->getValues());
+    }
+
+    RC_GTEST_PROP(RapidCheckTest, NbtLongArrayChecker, (const std::vector<int64_t> value))
+    {
+        auto to_serialize = nbt::LongArray("test", value);
+        auto serialized = to_serialize.serialize();
+        auto at = serialized.data();
+        auto parsed = nbt::parseLongArray(at, at + serialized.size());
+        RC_ASSERT(value == parsed->getValues());
     }
 
     TEST(NbtTest, TestNbt)
@@ -90,5 +119,31 @@ namespace Nbt_Testing
                                         0x61, 0x6e, 0x61, 0x6e, 0x72, 0x61, 0x6d, 0x61, 0x00});
         EXPECT_EQ(serialized.size(), to_get.size());
         EXPECT_EQ(serialized, to_get);
+    }
+
+    TEST(NbtTest, hello_world)
+    {
+        std::ifstream file("hello_world.nbt", std::ios::binary);
+        EXPECT_TRUE(testing::AssertionResult(file.is_open() ? testing::AssertionSuccess() : testing::AssertionFailure()) << "Failed to open file");
+        std::vector<uint8_t> buffer(std::istreambuf_iterator<char>(file), {});
+        auto at = buffer.data();
+        auto content = nbt::parse(at, at + buffer.size());
+        EXPECT_TRUE(testing::AssertionResult(content == nullptr ? testing::AssertionFailure() : testing::AssertionSuccess()) << "Failed to parse file");
+        auto result = content->serialize();
+        EXPECT_EQ(result.size(), buffer.size());
+        EXPECT_EQ(result, buffer);
+    }
+
+    TEST(NbtTest, bigtest)
+    {
+        std::ifstream file("bigtest.nbt", std::ios::binary);
+        EXPECT_TRUE(testing::AssertionResult(file.is_open() ? testing::AssertionSuccess() : testing::AssertionFailure()) << "Failed to open file");
+        std::vector<uint8_t> buffer(std::istreambuf_iterator<char>(file), {});
+        auto at = buffer.data();
+        auto content = nbt::parse(at, at + buffer.size());
+        EXPECT_TRUE(testing::AssertionResult(content == nullptr ? testing::AssertionFailure() : testing::AssertionSuccess()) << "Failed to parse file");
+        auto result = content->serialize();
+        EXPECT_EQ(result.size(), buffer.size());
+        EXPECT_EQ(result, buffer);
     }
 }

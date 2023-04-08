@@ -53,6 +53,12 @@ if (GTEST)
         rapidcheck_gtest
     )
 
+    # file(DOWNLOAD https://raw.github.com/Dav1dde/nbd/master/test/hello_world.nbt, ${CMAKE_CURRENT_BINARY_DIR}/hello_world.nbt SHOW_PROGRESS)
+    # file(DOWNLOAD https://raw.github.com/Dav1dde/nbd/master/test/bigtest.nbt, ${CMAKE_CURRENT_BINARY_DIR}/bigtest.nbt SHOW_PROGRESS)
+
+    # execute_process(COMMAND curl -o ${CMAKE_CURRENT_BINARY_DIR}/hello_world.nbt https://raw.github.com/Dav1dde/nbd/master/test/hello_world.nbt)
+    # execute_process(COMMAND curl -o ${CMAKE_CURRENT_BINARY_DIR}/bigtest.nbt https://raw.github.com/Dav1dde/nbd/master/test/bigtest.nbt)
+
     include(GoogleTest)
     gtest_discover_tests(nbt_test)
 endif()
