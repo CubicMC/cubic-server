@@ -5,8 +5,7 @@
 #include <functional>
 #include <vector>
 
-class TickClock
-{
+class TickClock {
 public:
     TickClock() = default;
     ~TickClock() = default;

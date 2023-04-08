@@ -22,12 +22,13 @@ static std::optional<std::string> parseName(uint8_t *&at, const uint8_t *end)
 }
 
 // Yeah that is bad I know, but it's that or I copy paste :)
-#define GET_NAME() std::string name = ""; \
-    if (include_name) { \
+#define GET_NAME()                     \
+    std::string name = "";             \
+    if (include_name) {                \
         auto tmp = parseName(at, end); \
-        if (!tmp) \
-            return nullptr; \
-        name = tmp.value(); \
+        if (!tmp)                      \
+            return nullptr;            \
+        name = tmp.value();            \
     }
 
 nbt::Byte *nbt::parseByte(uint8_t *&at, const uint8_t *end, bool include_name)
@@ -130,7 +131,7 @@ nbt::Float *nbt::parseFloat(uint8_t *&at, const uint8_t *end, bool include_name)
     for (int i = 0; i < 4; i++)
         value |= (*at++) << (i * 8);
 
-    return new Float(name, *((float *)(&value)));
+    return new Float(name, *((float *) (&value)));
 }
 
 nbt::Double *nbt::parseDouble(uint8_t *&at, const uint8_t *end, bool include_name)
@@ -151,7 +152,7 @@ nbt::Double *nbt::parseDouble(uint8_t *&at, const uint8_t *end, bool include_nam
     for (int i = 0; i < 8; i++)
         value |= (*at++) << (i * 8);
 
-    return new Double(name, *((double *)(&value)));
+    return new Double(name, *((double *) (&value)));
 }
 
 nbt::ByteArray *nbt::parseByteArray(uint8_t *&at, const uint8_t *end, bool include_name)
@@ -246,29 +247,29 @@ nbt::List *nbt::parseList(uint8_t *&at, const uint8_t *end, bool include_name)
         Base *val = nullptr;
         // AUGH
         switch (type) {
-        case (uint8_t)TagType::Byte:
+        case (uint8_t) TagType::Byte:
             val = parseByte(at, end, false);
-        case (uint8_t)TagType::Short:
+        case (uint8_t) TagType::Short:
             val = parseShort(at, end, false);
-        case (uint8_t)TagType::Int:
+        case (uint8_t) TagType::Int:
             val = parseInt(at, end, false);
-        case (uint8_t)TagType::Long:
+        case (uint8_t) TagType::Long:
             val = parseLong(at, end, false);
-        case (uint8_t)TagType::Float:
+        case (uint8_t) TagType::Float:
             val = parseFloat(at, end, false);
-        case (uint8_t)TagType::Double:
+        case (uint8_t) TagType::Double:
             val = parseDouble(at, end, false);
-        case (uint8_t)TagType::ByteArray:
+        case (uint8_t) TagType::ByteArray:
             val = parseByteArray(at, end, false);
-        case (uint8_t)TagType::String:
+        case (uint8_t) TagType::String:
             val = parseString(at, end, false);
-        case (uint8_t)TagType::List:
+        case (uint8_t) TagType::List:
             val = parseList(at, end, false);
-        case (uint8_t)TagType::Compound:
+        case (uint8_t) TagType::Compound:
             val = parseCompound(at, end, false);
-        case (uint8_t)TagType::IntArray:
+        case (uint8_t) TagType::IntArray:
             val = parseIntArray(at, end, false);
-        case (uint8_t)TagType::LongArray:
+        case (uint8_t) TagType::LongArray:
             val = parseLongArray(at, end, false);
         default:
             return nullptr;
@@ -301,7 +302,7 @@ nbt::Compound *nbt::parseCompound(uint8_t *&at, const uint8_t *end, bool include
     for (auto i = 0; 1; i++) {
         if (at > end)
             return nullptr;
-        if (*at == (uint8_t)TagType::End)
+        if (*at == (uint8_t) TagType::End)
             break;
         Base *val = parse(at, end);
         if (!val) {
@@ -392,29 +393,29 @@ nbt::Base *nbt::parse(uint8_t *&at, const uint8_t *end)
 
     uint8_t type = *at;
     switch (type) {
-    case (uint8_t)TagType::Byte:
+    case (uint8_t) TagType::Byte:
         return parseByte(at, end);
-    case (uint8_t)TagType::Short:
+    case (uint8_t) TagType::Short:
         return parseShort(at, end);
-    case (uint8_t)TagType::Int:
+    case (uint8_t) TagType::Int:
         return parseInt(at, end);
-    case (uint8_t)TagType::Long:
+    case (uint8_t) TagType::Long:
         return parseLong(at, end);
-    case (uint8_t)TagType::Float:
+    case (uint8_t) TagType::Float:
         return parseFloat(at, end);
-    case (uint8_t)TagType::Double:
+    case (uint8_t) TagType::Double:
         return parseDouble(at, end);
-    case (uint8_t)TagType::ByteArray:
+    case (uint8_t) TagType::ByteArray:
         return parseByteArray(at, end);
-    case (uint8_t)TagType::String:
+    case (uint8_t) TagType::String:
         return parseString(at, end);
-    case (uint8_t)TagType::List:
+    case (uint8_t) TagType::List:
         return parseList(at, end);
-    case (uint8_t)TagType::Compound:
+    case (uint8_t) TagType::Compound:
         return parseCompound(at, end);
-    case (uint8_t)TagType::IntArray:
+    case (uint8_t) TagType::IntArray:
         return parseIntArray(at, end);
-    case (uint8_t)TagType::LongArray:
+    case (uint8_t) TagType::LongArray:
         return parseLongArray(at, end);
     default:
         throw UnknownType("Could not parse unknown NBT type");

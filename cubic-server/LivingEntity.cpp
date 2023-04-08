@@ -19,9 +19,7 @@ void LivingEntity::attack(Vector3<double> source)
  *
  * @param damage The damage to deal
  */
-void LivingEntity::damage(float damage) {
-    _health -= damage;
-}
+void LivingEntity::damage(float damage) { _health -= damage; }
 
 /*
  * @brief Inflict knockback to the entity
@@ -29,7 +27,8 @@ void LivingEntity::damage(float damage) {
  * @param source The source of the knockback
  * @param force The force of the knockback
  */
-void LivingEntity::knockback(Vector3<double> source, float force) {
+void LivingEntity::knockback(Vector3<double> source, float force)
+{
     // compute knockback
     Vector3<double> direction = (source - _pos) * force;
 
@@ -37,23 +36,12 @@ void LivingEntity::knockback(Vector3<double> source, float force) {
 
     // send entity velocity too connected players (should be optimized)
     for (auto &player : _dim->getPlayerList()) {
-        player->sendEntityVelocity({
-            _id,
-            static_cast<int16_t>(direction.x),
-            static_cast<int16_t>(direction.y),
-            static_cast<int16_t>(direction.z)
-        });
+        player->sendEntityVelocity({_id, static_cast<int16_t>(direction.x), static_cast<int16_t>(direction.y), static_cast<int16_t>(direction.z)});
     }
 }
 
-void LivingEntity::setHealth(float health) {
-    _health = health;
-}
+void LivingEntity::setHealth(float health) { _health = health; }
 
-float &LivingEntity::getHealth() {
-    return _health;
-}
+float &LivingEntity::getHealth() { return _health; }
 
-const float &LivingEntity::getHealth() const {
-    return _health;
-}
+const float &LivingEntity::getHealth() const { return _health; }

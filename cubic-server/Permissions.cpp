@@ -1,5 +1,5 @@
-#include <iostream>
 #include <fstream>
+#include <iostream>
 
 #include "Permissions.hpp"
 #include "Server.hpp"
@@ -44,23 +44,14 @@ void Permissions::addOperator(const std::string &name)
     Server *server = Server::getInstance();
     Player *selectedPlayer = nullptr;
 
-    server->forEachWorldGroup(
-        [&name, &selectedPlayer](WorldGroup &worldGroup)
-        {
-            worldGroup.forEachWorld(
-                [&name, &selectedPlayer](World &world)
-                {
-                    world.forEachPlayer(
-                        [&name, &selectedPlayer](Player *player)
-                        {
-                            if (player && player->getUsername() == name)
-                                selectedPlayer = player;
-                        }
-                    );
-                }
-            ); 
-        }
-    );
+    server->forEachWorldGroup([&name, &selectedPlayer](WorldGroup &worldGroup) {
+        worldGroup.forEachWorld([&name, &selectedPlayer](World &world) {
+            world.forEachPlayer([&name, &selectedPlayer](Player *player) {
+                if (player && player->getUsername() == name)
+                    selectedPlayer = player;
+            });
+        });
+    });
 
     // adds operator to the set
     this->_operatorSet.insert(name);
@@ -80,23 +71,14 @@ bool Permissions::removeOperator(const std::string &name)
     Server *server = Server::getInstance();
     Player *selectedPlayer = nullptr;
 
-    server->forEachWorldGroup(
-        [&name, &selectedPlayer](WorldGroup &worldGroup)
-        {
-            worldGroup.forEachWorld(
-                [&name, &selectedPlayer](World &world)
-                {
-                    world.forEachPlayer(
-                        [&name, &selectedPlayer](Player *player)
-                        {
-                            if (player && player->getUsername() == name)
-                                selectedPlayer = player;
-                        }
-                    );
-                }
-            );
-        }
-    );
+    server->forEachWorldGroup([&name, &selectedPlayer](WorldGroup &worldGroup) {
+        worldGroup.forEachWorld([&name, &selectedPlayer](World &world) {
+            world.forEachPlayer([&name, &selectedPlayer](Player *player) {
+                if (player && player->getUsername() == name)
+                    selectedPlayer = player;
+            });
+        });
+    });
 
     // remove operator from the set
     this->_operatorSet.erase(name);
@@ -109,7 +91,4 @@ bool Permissions::removeOperator(const std::string &name)
     // returned true if operator successfuly removed, false otherwise
 }
 
-const bool Permissions::isOperator(const std::string &name) const
-{
-    return (this->_operatorSet.contains(name));
-}
+const bool Permissions::isOperator(const std::string &name) const { return (this->_operatorSet.contains(name)); }

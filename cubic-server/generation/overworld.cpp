@@ -1,14 +1,14 @@
 #include <PerlinNoise.hpp>
 
+#include "generator.hpp"
+#include "logging/Logger.hpp"
+#include "overworld.hpp"
 #include "protocol/Structures.hpp"
 #include "types.hpp"
-#include "overworld.hpp"
-#include "generator.hpp"
 #include "world_storage/ChunkColumn.hpp"
-#include "logging/Logger.hpp"
 
-generation::Overworld::Overworld(Seed seed)
-    : Generator(seed)
+generation::Overworld::Overworld(Seed seed):
+    Generator(seed)
 {
 }
 
@@ -73,19 +73,16 @@ BlockId generation::Overworld::getBlock(position_type x, position_type y, positi
         density *= 1.5;
     if (y >= 100)
         density *= 100.0;
-    if (blockId == 1 && density >= -.15 &&  density <= .05)
+    if (blockId == 1 && density >= -.15 && density <= .05)
         blockId = 0;
     // Trying to repair caves surface
-    if (blockId == 0 && noise.noise3D.density >= -.4 &&  noise.noise3D.density <= .4 && y < surfaceLevel && y > heightOffset - 10)
+    if (blockId == 0 && noise.noise3D.density >= -.4 && noise.noise3D.density <= .4 && y < surfaceLevel && y > heightOffset - 10)
         blockId = 1;
 
     return blockId;
 }
 
-BlockId generation::Overworld::getBlock(const Position &pos)
-{
-    return getBlock(pos.x, pos.y, pos.z);
-}
+BlockId generation::Overworld::getBlock(const Position &pos) { return getBlock(pos.x, pos.y, pos.z); }
 
 BiomeId generation::Overworld::getBiome(position_type x, position_type y, position_type z)
 {
@@ -93,7 +90,4 @@ BiomeId generation::Overworld::getBiome(position_type x, position_type y, positi
     return getNoise(x, y, z).noise2D.weirdness > 0.0 ? 0 : 1;
 }
 
-BiomeId generation::Overworld::getBiome(const Position &pos)
-{
-    return getBiome(pos.x, pos.y, pos.z);
-}
+BiomeId generation::Overworld::getBiome(const Position &pos) { return getBiome(pos.x, pos.y, pos.z); }

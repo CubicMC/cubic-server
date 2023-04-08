@@ -5,12 +5,15 @@
 
 namespace command_parser {
 struct Log : public CommandBase {
-    Log() : CommandBase("log", "/log <on|off> (type)", false) {}
+    Log():
+        CommandBase("log", "/log <on|off> (type)", false)
+    {
+    }
 
-    void autocomplete(std::vector<std::string>& args, Player *invoker) const override;
-    void execute(std::vector<std::string>& args, Player *invoker) const override;
-    void help(std::vector<std::string>& args, Player *invoker) const override;
+    void autocomplete(std::vector<std::string> &args, Player *invoker) const override;
+    void execute(std::vector<std::string> &args, Player *invoker) const override;
+    void help(std::vector<std::string> &args, Player *invoker) const override;
 };
 }
 
-#endif //CUBICSERVER_COMMANDPARSER_COMMANDS_LOG_HPP
+#endif // CUBICSERVER_COMMANDPARSER_COMMANDS_LOG_HPP

@@ -2,10 +2,8 @@
 #include <stdexcept>
 
 namespace Blocks {
-    namespace SprucePlanks {
-        BlockId toProtocol() {
-            return 16;
-        }
-    }
+namespace SprucePlanks {
+BlockId toProtocol() { return 16; }
+}
 
 }

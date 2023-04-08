@@ -5,10 +5,12 @@
 
 #include "../Dimension.hpp"
 
-class Overworld : public Dimension
-{
+class Overworld : public Dimension {
 public:
-    Overworld(World *world): Dimension(world) {}
+    Overworld(World *world):
+        Dimension(world)
+    {
+    }
     void tick() override;
     void initialize() override;
     void stop() override;
@@ -18,5 +20,4 @@ private:
     std::future<void> _worldGenFuture;
 };
 
-
-#endif //CUBICSERVER_OVERWORLD_HPP
+#endif // CUBICSERVER_OVERWORLD_HPP

@@ -4,13 +4,9 @@
 
 #include <iostream>
 
+void command_parser::DumpChunk::autocomplete(std::vector<std::string> &args, Player *invoker) const { return; }
 
-void command_parser::DumpChunk::autocomplete(std::vector<std::string>& args, Player *invoker) const
-{
-    return;
-}
-
-void command_parser::DumpChunk::execute(std::vector<std::string>& args, Player *invoker) const
+void command_parser::DumpChunk::execute(std::vector<std::string> &args, Player *invoker) const
 {
     if (args.size() != 2 && !invoker) {
         LDEBUG("Usage: /dumpChunk <x> <z>");
@@ -44,7 +40,7 @@ void command_parser::DumpChunk::execute(std::vector<std::string>& args, Player *
         auto sectionStart = blocks.begin();
         for (uint8_t sectionID = 0; sectionID < world_storage::NB_OF_SECTIONS; sectionID++) {
             auto section = sectionStart + (sectionID * world_storage::SECTION_3D_SIZE);
-            LDEBUG("Section " << (int)sectionID);
+            LDEBUG("Section " << (int) sectionID);
 
             world_storage::BlockPalette blockPalette;
             uint16_t blockInsideSection = 0;
@@ -71,13 +67,13 @@ void command_parser::DumpChunk::execute(std::vector<std::string>& args, Player *
     LDEBUG("Chunk data size: " << protocol::popVarInt(at, eof));
 
     for (uint8_t sectionID = 0; sectionID < world_storage::NB_OF_SECTIONS; sectionID++) {
-        LDEBUG("Section " << std::dec << (int)sectionID);
+        LDEBUG("Section " << std::dec << (int) sectionID);
         auto blockCount = protocol::popShort(at, eof);
         LDEBUG('\t' << "Block count: " << blockCount);
 
         // Block palette parsing
         auto bytePerBlock = protocol::popByte(at, eof);
-        LDEBUG('\t' << "Palette bit per block: " << (int)bytePerBlock);
+        LDEBUG('\t' << "Palette bit per block: " << (int) bytePerBlock);
         if (bytePerBlock == 0)
             LDEBUG('\t' << "Single value palette: " << protocol::popVarInt(at, eof));
         else if (bytePerBlock <= 8) {
@@ -105,7 +101,7 @@ void command_parser::DumpChunk::execute(std::vector<std::string>& args, Player *
 
         // Biome palette parsing
         auto bytePerBiome = protocol::popByte(at, eof);
-        LDEBUG('\t' << "Palette bit per biome: " << (int)bytePerBiome);
+        LDEBUG('\t' << "Palette bit per biome: " << (int) bytePerBiome);
         if (bytePerBiome == 0)
             LDEBUG('\t' << "Single value palette: " << protocol::popVarInt(at, eof));
         else if (bytePerBiome <= 8) {
@@ -138,10 +134,10 @@ void command_parser::DumpChunk::execute(std::vector<std::string>& args, Player *
     LDEBUG("Done");
 }
 
-void command_parser::DumpChunk::help(std::vector<std::string>& args, Player *invoker) const
+void command_parser::DumpChunk::help(std::vector<std::string> &args, Player *invoker) const
 {
     if (invoker) {
-        //invoker->sendMessage("Usage: /dumpchunk <x> <z>");
+        // invoker->sendMessage("Usage: /dumpchunk <x> <z>");
     } else {
         LINFO("Usage: /dumpchunk <x> <z>");
     }

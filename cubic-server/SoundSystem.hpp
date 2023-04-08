@@ -5,8 +5,7 @@
 
 #include "WorldGroup.hpp"
 
-class SoundSystem
-{
+class SoundSystem {
 public:
     SoundSystem(const WorldGroup *group);
     ~SoundSystem() = default;

@@ -2,10 +2,8 @@
 #include <stdexcept>
 
 namespace Blocks {
-    namespace BlueIce {
-        BlockId toProtocol() {
-            return 12313;
-        }
-    }
+namespace BlueIce {
+BlockId toProtocol() { return 12313; }
+}
 
 }

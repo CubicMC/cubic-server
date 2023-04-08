@@ -2,10 +2,8 @@
 #include <stdexcept>
 
 namespace Blocks {
-    namespace DriedKelpBlock {
-        BlockId toProtocol() {
-            return 12162;
-        }
-    }
+namespace DriedKelpBlock {
+BlockId toProtocol() { return 12162; }
+}
 
 }

@@ -8,17 +8,8 @@ DefaultWorld::DefaultWorld(WorldGroup *worldGroup):
     this->_dimensions.emplace("overworld", std::make_shared<Overworld>(reinterpret_cast<World *>(this)));
 }
 
-void DefaultWorld::tick()
-{
-    World::tick();
-}
+void DefaultWorld::tick() { World::tick(); }
 
-void DefaultWorld::initialize()
-{
-    World::initialize();
-}
+void DefaultWorld::initialize() { World::initialize(); }
 
-void DefaultWorld::stop()
-{
-    World::stop();
-}
+void DefaultWorld::stop() { World::stop(); }

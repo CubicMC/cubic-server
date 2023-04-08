@@ -2,10 +2,8 @@
 #include <stdexcept>
 
 namespace Blocks {
-    namespace BlackStainedGlass {
-        BlockId toProtocol() {
-            return 5795;
-        }
-    }
+namespace BlackStainedGlass {
+BlockId toProtocol() { return 5795; }
+}
 
 }

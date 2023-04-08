@@ -1,10 +1,10 @@
 #ifndef CUBICSERVER_WORLDGROUP_HPP
 #define CUBICSERVER_WORLDGROUP_HPP
 
-#include <memory>
-#include <unordered_map>
 #include <atomic>
+#include <memory>
 #include <thread>
+#include <unordered_map>
 
 #include "Chat.hpp"
 #include "logging/Logger.hpp"
@@ -13,8 +13,7 @@ class World;
 
 class SoundSystem;
 
-class WorldGroup
-{
+class WorldGroup {
 public:
     WorldGroup(std::shared_ptr<Chat> chat);
     virtual ~WorldGroup();
@@ -39,5 +38,4 @@ protected:
     std::thread _thread;
 };
 
-
-#endif //CUBICSERVER_WORLDGROUP_HPP
+#endif // CUBICSERVER_WORLDGROUP_HPP

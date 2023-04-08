@@ -3,10 +3,10 @@
 
 using namespace command_parser;
 
-void Deop::autocomplete(std::vector<std::string>& args, Player *invoker) const {
-}
+void Deop::autocomplete(std::vector<std::string> &args, Player *invoker) const { }
 
-void Deop::execute(std::vector<std::string>& args, Player *invoker) const {
+void Deop::execute(std::vector<std::string> &args, Player *invoker) const
+{
     if (invoker && !invoker->isOperator())
         return;
     if (args.empty()) {
@@ -28,9 +28,10 @@ void Deop::execute(std::vector<std::string>& args, Player *invoker) const {
     }
 }
 
-void Deop::help(std::vector<std::string>& args, Player *invoker) const {
+void Deop::help(std::vector<std::string> &args, Player *invoker) const
+{
     if (invoker) {
-        //invoker->sendMessage("Usage: /deop <player>");
+        // invoker->sendMessage("Usage: /deop <player>");
     } else {
         LINFO("Usage: /deop <player>");
     }

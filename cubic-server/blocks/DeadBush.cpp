@@ -2,10 +2,8 @@
 #include <stdexcept>
 
 namespace Blocks {
-    namespace DeadBush {
-        BlockId toProtocol() {
-            return 1956;
-        }
-    }
+namespace DeadBush {
+BlockId toProtocol() { return 1956; }
+}
 
 }

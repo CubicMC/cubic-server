@@ -320,11 +320,12 @@ def create_blockStates_files(filename, blocks):
         writer("add_subdirectory (blocks)\n", f)
 
     with open(os.path.dirname(filename) + "/blocks/CMakeLists.txt", "w") as f:
-        writer("target_sources (${CMAKE_PROJECT_NAME} PRIVATE\n", f)
+        writer("add_library(Blocks\n", f)
         for block in blocks:
             writer(block.name.split(":")[1].title().replace("_", "") + ".cpp\n", f)
             writer(block.name.split(":")[1].title().replace("_", "") + ".hpp\n", f)
         writer(")\n", f)
+        writer("target_include_directories (ConfigHandler PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})\n", f)
 
 # write the header file
 def write_header_file(filename, blocks):

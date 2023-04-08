@@ -2,10 +2,8 @@
 #include <stdexcept>
 
 namespace Blocks {
-    namespace SlimeBlock {
-        BlockId toProtocol() {
-            return 9888;
-        }
-    }
+namespace SlimeBlock {
+BlockId toProtocol() { return 9888; }
+}
 
 }

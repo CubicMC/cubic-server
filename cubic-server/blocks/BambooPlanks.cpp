@@ -2,10 +2,8 @@
 #include <stdexcept>
 
 namespace Blocks {
-    namespace BambooPlanks {
-        BlockId toProtocol() {
-            return 22;
-        }
-    }
+namespace BambooPlanks {
+BlockId toProtocol() { return 22; }
+}
 
 }
