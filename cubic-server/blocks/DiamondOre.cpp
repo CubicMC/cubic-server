@@ -2,10 +2,8 @@
 #include <stdexcept>
 
 namespace Blocks {
-    namespace DiamondOre {
-        BlockId toProtocol() {
-            return 4222;
-        }
-    }
+namespace DiamondOre {
+BlockId toProtocol() { return 4222; }
+}
 
 }

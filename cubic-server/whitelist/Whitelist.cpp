@@ -39,75 +39,72 @@ std::string u128_to_uuidString(u128 u)
 //     return u;
 // }
 
-namespace WhitelistHandling
+namespace WhitelistHandling {
+static void defaultWhitelistContent(const std::string &path)
 {
-    static void defaultWhitelistContent(const std::string &path)
-    {
-        if (!std::filesystem::exists(path)) {
-            std::ofstream whitelistFile(path);
-            whitelistFile << nlohmann::json::array() << std::endl;
-            whitelistFile.close();
-        }
-    }
-
-    void Whitelist::_parseWhitelist(const std::string &path)
-    {
-        std::ifstream whitelistFile(path);
-        _whitelistData = nlohmann::json::parse(whitelistFile);
+    if (!std::filesystem::exists(path)) {
+        std::ofstream whitelistFile(path);
+        whitelistFile << nlohmann::json::array() << std::endl;
         whitelistFile.close();
     }
+}
 
-    Whitelist::Whitelist()
-    {
-        _filename = "./whitelist.json";
-        defaultWhitelistContent(_filename);
-        _parseWhitelist(_filename);
+void Whitelist::_parseWhitelist(const std::string &path)
+{
+    std::ifstream whitelistFile(path);
+    _whitelistData = nlohmann::json::parse(whitelistFile);
+    whitelistFile.close();
+}
+
+Whitelist::Whitelist()
+{
+    _filename = "./whitelist.json";
+    defaultWhitelistContent(_filename);
+    _parseWhitelist(_filename);
+}
+
+Whitelist::~Whitelist() { }
+
+void Whitelist::addPlayer(u128 uuid, std::string playerName)
+{
+    bool check = isPlayerWhitelisted(uuid, playerName).first;
+
+    if (!check) {
+        _whitelistData.push_back({{"name", playerName}, {"uuid", u128_to_uuidString(uuid)}});
+        std::ofstream whitelistFile(this->_filename);
+        whitelistFile << std::setw(4) << _whitelistData << std::endl;
+        whitelistFile.close();
     }
+}
 
-    Whitelist::~Whitelist()
-    {
+void Whitelist::removePlayer(u128 uuid, std::string playerName)
+{
+    bool check = isPlayerWhitelisted(uuid, playerName).first;
+    int playerPos = isPlayerWhitelisted(uuid, playerName).second;
+
+    if (check) {
+        _whitelistData.erase(playerPos);
+        std::ofstream whitelistFile(this->_filename);
+        whitelistFile << std::setw(4) << _whitelistData << std::endl;
+        whitelistFile.close();
     }
+}
 
-    void Whitelist::addPlayer(u128 uuid, std::string playerName)
-    {
-        bool check = isPlayerWhitelisted(uuid, playerName).first;
+std::pair<bool, int> Whitelist::isPlayerWhitelisted(u128 uuid, std::string playerName) const
+{
+    bool check = false;
+    int playerPos = 0;
+    int pos = 0;
 
-        if (!check) {
-            _whitelistData.push_back({{"name", playerName}, {"uuid", u128_to_uuidString(uuid)}});
-            std::ofstream whitelistFile(this->_filename);
-            whitelistFile << std::setw(4) << _whitelistData << std::endl;
-            whitelistFile.close();
+    for (auto it = _whitelistData.begin(); it != _whitelistData.end(); ++it) {
+        ++pos;
+        if (it.value()["uuid"] == u128_to_uuidString(uuid) || it.value()["name"] == playerName) {
+            check = true;
+            playerPos = pos - 1;
         }
     }
 
-    void Whitelist::removePlayer(u128 uuid, std::string playerName)
-    {
-        bool check = isPlayerWhitelisted(uuid, playerName).first;
-        int playerPos = isPlayerWhitelisted(uuid, playerName).second;
-
-        if (check) {
-            _whitelistData.erase(playerPos);
-            std::ofstream whitelistFile(this->_filename);
-            whitelistFile << std::setw(4) << _whitelistData << std::endl;
-            whitelistFile.close();
-        }
-    }
-
-    std::pair<bool, int> Whitelist::isPlayerWhitelisted(u128 uuid, std::string playerName) const
-    {
-        bool check = false;
-        int playerPos = 0;
-        int pos = 0;
-
-        for (auto it = _whitelistData.begin(); it != _whitelistData.end(); ++it) {
-            ++pos;
-            if (it.value()["uuid"] == u128_to_uuidString(uuid) || it.value()["name"] == playerName) {
-                check = true;
-                playerPos = pos - 1;
-            }
-        }
-
-        std::pair<bool, int> p = std::make_pair(check, playerPos);
-        return p;
-    }
+    std::pair<bool, int> p = std::make_pair(check, playerPos);
+    return p;
+}
 }

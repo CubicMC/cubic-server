@@ -2,25 +2,19 @@
 
 #include "generator.hpp"
 
-generation::Generator::Generator(Seed seed)
-    : _noiseMaker(seed)
+generation::Generator::Generator(Seed seed):
+    _noiseMaker(seed)
 {
 }
 
-bool generation::Generator::isCached(position_type x, position_type y, position_type z)
-{
-    return isCached2D(x, z) && _noiseCache[x][z].second.contains(y);
-}
+bool generation::Generator::isCached(position_type x, position_type y, position_type z) { return isCached2D(x, z) && _noiseCache[x][z].second.contains(y); }
 
-bool generation::Generator::isCached2D(position_type x, position_type z)
-{
-    return _noiseCache.contains(x) && _noiseCache[x].contains(z);
-}
+bool generation::Generator::isCached2D(position_type x, position_type z) { return _noiseCache.contains(x) && _noiseCache[x].contains(z); }
 
 generation::Generator::GenerationNoise generation::Generator::getNoise(position_type x, position_type y, position_type z, double frequency, uint8_t octaves)
 {
     if (isCached(x, y, z))
-        return { _noiseCache[x][z].first, _noiseCache[x][z].second[y] };
+        return {_noiseCache[x][z].first, _noiseCache[x][z].second[y]};
 
     GenerationNoise noise;
 

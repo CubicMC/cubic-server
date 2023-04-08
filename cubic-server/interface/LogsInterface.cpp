@@ -1,22 +1,22 @@
-#include <string>
-#include <iostream>
 #include <fstream>
+#include <iostream>
 #include <queue>
+#include <string>
 #include <unistd.h>
 
 #include "LogsInterface.hpp"
 
-LogsInterface::LogsInterface() :
-  m_VBox_main(Gtk::ORIENTATION_VERTICAL),
-  m_VBox_logs(Gtk::ORIENTATION_VERTICAL),
-  m_HBox_filters(Gtk::ORIENTATION_HORIZONTAL),
-  m_Info("Info"),
-  m_Warn("Warning"),
-  m_Error("Error"),
-  m_Fatal("Fatal"),
-  m_Debug("Debug"),
-  m_Reset("↺"),
-  m_Selected_logLevel(logging::LogLevel::NONE)
+LogsInterface::LogsInterface():
+    m_VBox_main(Gtk::ORIENTATION_VERTICAL),
+    m_VBox_logs(Gtk::ORIENTATION_VERTICAL),
+    m_HBox_filters(Gtk::ORIENTATION_HORIZONTAL),
+    m_Info("Info"),
+    m_Warn("Warning"),
+    m_Error("Error"),
+    m_Fatal("Fatal"),
+    m_Debug("Debug"),
+    m_Reset("↺"),
+    m_Selected_logLevel(logging::LogLevel::NONE)
 {
     pack_start(m_VBox_main, Gtk::PACK_EXPAND_WIDGET);
 
@@ -73,15 +73,14 @@ LogsInterface::LogsInterface() :
 
     m_VBox_main.pack_end(m_Entry);
 
-    int timeout_value = 400; //in ms
-    sigc::slot<bool>my_slot = sigc::mem_fun(*this, &LogsInterface::on_log_to_display);
+    int timeout_value = 400; // in ms
+    sigc::slot<bool> my_slot = sigc::mem_fun(*this, &LogsInterface::on_log_to_display);
     Glib::signal_timeout().connect(my_slot, timeout_value);
 }
 
-bool LogsInterface::on_key_press_event(GdkEventKey* event)
+bool LogsInterface::on_key_press_event(GdkEventKey *event)
 {
-    if (event->keyval == GDK_KEY_KP_Enter)
-    {
+    if (event->keyval == GDK_KEY_KP_Enter) {
         // Supposed to add the input to the logs (interface side only) when 'ENTER'
         // is pressed. /!\ To do when handling command parsing.
         m_Logs->set_text(m_Logs->get_text() + "\n" + m_Entry.get_text());
@@ -91,8 +90,7 @@ bool LogsInterface::on_key_press_event(GdkEventKey* event)
         return true;
     }
 
-    if(event->keyval == GDK_KEY_Escape)
-    {
+    if (event->keyval == GDK_KEY_Escape) {
         // Add the input to the logs (interface side only) when 'ESC' pressed
         m_Logs->set_text(m_Logs->get_text() + "\n" + m_Entry.get_text());
         m_endMark = m_Logs->create_mark(m_Logs->end());
@@ -112,8 +110,7 @@ bool LogsInterface::on_log_to_display()
     std::queue<logging::LogMessage> q_copy = logging::Logger::get_instance()->get_logs();
 
     if (m_Selected_logLevel == logging::LogLevel::NONE) {
-        while (!q_copy.empty())
-        {
+        while (!q_copy.empty()) {
             logging::LogMessage front = q_copy.front();
             logLevel = front.get_level();
             ss << front << std::endl;
@@ -121,8 +118,7 @@ bool LogsInterface::on_log_to_display()
             q_copy.pop();
         }
     } else {
-        while (!q_copy.empty())
-        {
+        while (!q_copy.empty()) {
             logging::LogMessage front = q_copy.front();
             logLevel = front.get_level();
             if (logLevel == m_Selected_logLevel) {
@@ -135,8 +131,8 @@ bool LogsInterface::on_log_to_display()
 
     if (m_Logs->get_text().raw() != temp) {
         m_Logs->set_text(temp.c_str());
-        int timeout_value = 200; //in ms
-        sigc::slot<void>slot = sigc::mem_fun(*this, &LogsInterface::scroll_to_end);
+        int timeout_value = 200; // in ms
+        sigc::slot<void> slot = sigc::mem_fun(*this, &LogsInterface::scroll_to_end);
         Glib::signal_timeout().connect_once(slot, timeout_value);
     }
     return true;
@@ -161,9 +157,6 @@ void LogsInterface::on_reset_filters()
     m_Selected_logLevel = logging::LogLevel::NONE;
     m_Selected_filter.set_text("No filter selected.");
     m_Reset.set_sensitive(false);
-
 }
 
-LogsInterface::~LogsInterface()
-{
-}
+LogsInterface::~LogsInterface() { }

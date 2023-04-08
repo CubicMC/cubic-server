@@ -2,10 +2,8 @@
 #include <stdexcept>
 
 namespace Blocks {
-    namespace CutSandstone {
-        BlockId toProtocol() {
-            return 486;
-        }
-    }
+namespace CutSandstone {
+BlockId toProtocol() { return 486; }
+}
 
 }

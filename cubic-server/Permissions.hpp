@@ -3,12 +3,11 @@
 
 #include <unordered_set>
 
-class Permissions
-{
+class Permissions {
 public:
     Permissions(const std::string &filename = "ops.json");
     ~Permissions();
-    
+
     void addOperator(const std::string &name);
     bool removeOperator(const std::string &name);
     const bool isOperator(const std::string &name) const;

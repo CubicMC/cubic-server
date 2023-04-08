@@ -1,30 +1,30 @@
-#include <string>
 #include <cstdint>
-#include <vector>
-#include <unordered_map>
 #include <functional>
+#include <string>
+#include <unordered_map>
+#include <vector>
 
 namespace Blocks {
-    typedef int32_t BlockId;
+typedef int32_t BlockId;
 
-    namespace RedBed {
-        namespace Properties {
-            enum class Facing {
-                NORTH,
-                SOUTH,
-                WEST,
-                EAST
-            };
-            enum class Occupied {
-                TRUE,
-                FALSE
-            };
-            enum class Part {
-                HEAD,
-                FOOT
-            };
-        }
-        BlockId toProtocol(Properties::Facing facing, Properties::Occupied occupied, Properties::Part part);
-    }
+namespace RedBed {
+namespace Properties {
+enum class Facing {
+    NORTH,
+    SOUTH,
+    WEST,
+    EAST
+};
+enum class Occupied {
+    TRUE,
+    FALSE
+};
+enum class Part {
+    HEAD,
+    FOOT
+};
+}
+BlockId toProtocol(Properties::Facing facing, Properties::Occupied occupied, Properties::Part part);
+}
 
 }

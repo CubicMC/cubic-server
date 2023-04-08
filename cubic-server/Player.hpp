@@ -1,28 +1,27 @@
 #ifndef CUBICSERVER_PLAYER_HPP
 #define CUBICSERVER_PLAYER_HPP
 
+#include "Chat.hpp"
 #include "Client.hpp"
 #include "Entity.hpp"
 #include "LivingEntity.hpp"
-#include "math/Vector3.hpp"
-#include "protocol/ServerPackets.hpp"
-#include "logging/Logger.hpp"
 #include "SoundList.hpp"
-#include "types.hpp"
-#include "Chat.hpp"
 #include "TickClock.hpp"
+#include "logging/Logger.hpp"
+#include "math/Vector3.hpp"
 #include "protocol/ClientPackets.hpp"
+#include "protocol/ServerPackets.hpp"
+#include "types.hpp"
 #include "world_storage/ChunkColumn.hpp"
 
 class Client;
 class Entity;
 
-class Player : public LivingEntity
-{
+class Player : public LivingEntity {
     friend class Client;
+
 public:
-    enum ChunkState
-    {
+    enum ChunkState {
         Unloaded,
         Loading,
         Loaded
@@ -149,7 +148,7 @@ private:
     std::string _uuidString;
     u128 _uuid;
     long _keepAliveId;
-    uint8_t  _keepAliveIgnored;
+    uint8_t _keepAliveIgnored;
     uint16_t _heldItem;
     uint8_t _gamemode;
     TickClock _keepAliveClock;
@@ -158,4 +157,4 @@ private:
     std::unordered_map<Position2D, ChunkState> _chunks;
 };
 
-#endif //CUBICSERVER_PLAYER_HPP
+#endif // CUBICSERVER_PLAYER_HPP

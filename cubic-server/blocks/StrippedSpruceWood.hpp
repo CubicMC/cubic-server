@@ -1,21 +1,21 @@
-#include <string>
 #include <cstdint>
-#include <vector>
-#include <unordered_map>
 #include <functional>
+#include <string>
+#include <unordered_map>
+#include <vector>
 
 namespace Blocks {
-    typedef int32_t BlockId;
+typedef int32_t BlockId;
 
-    namespace StrippedSpruceWood {
-        namespace Properties {
-            enum class Axis {
-                X,
-                Y,
-                Z
-            };
-        }
-        BlockId toProtocol(Properties::Axis axis);
-    }
+namespace StrippedSpruceWood {
+namespace Properties {
+enum class Axis {
+    X,
+    Y,
+    Z
+};
+}
+BlockId toProtocol(Properties::Axis axis);
+}
 
 }

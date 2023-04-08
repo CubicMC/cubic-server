@@ -2,10 +2,8 @@
 #include <stdexcept>
 
 namespace Blocks {
-    namespace PottedWarpedRoots {
-        BlockId toProtocol() {
-            return 18830;
-        }
-    }
+namespace PottedWarpedRoots {
+BlockId toProtocol() { return 18830; }
+}
 
 }

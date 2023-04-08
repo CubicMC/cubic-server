@@ -2,10 +2,8 @@
 #include <stdexcept>
 
 namespace Blocks {
-    namespace CraftingTable {
-        BlockId toProtocol() {
-            return 4225;
-        }
-    }
+namespace CraftingTable {
+BlockId toProtocol() { return 4225; }
+}
 
 }

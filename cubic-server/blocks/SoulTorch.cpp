@@ -2,10 +2,8 @@
 #include <stdexcept>
 
 namespace Blocks {
-    namespace SoulTorch {
-        BlockId toProtocol() {
-            return 5693;
-        }
-    }
+namespace SoulTorch {
+BlockId toProtocol() { return 5693; }
+}
 
 }

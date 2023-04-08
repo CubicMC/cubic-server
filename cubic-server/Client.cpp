@@ -1,17 +1,17 @@
-#include <iostream>
-#include <stdexcept>
-#include <unistd.h>
-#include <poll.h>
 #include <cstring>
-#include <string>
+#include <iostream>
 #include <memory>
+#include <poll.h>
+#include <stdexcept>
+#include <string>
+#include <unistd.h>
 
 #include "Client.hpp"
-#include "protocol/ServerPackets.hpp"
-#include "nlohmann/json.hpp"
-#include "protocol/ClientPackets.hpp"
 #include "Server.hpp"
 #include "World.hpp"
+#include "nlohmann/json.hpp"
+#include "protocol/ClientPackets.hpp"
+#include "protocol/ServerPackets.hpp"
 #include "whitelist/Whitelist.hpp"
 
 Client::Client(int sockfd, struct sockaddr_in6 addr):
@@ -54,39 +54,32 @@ void Client::networkLoop()
     uint8_t in_buffer[2048];
 
     poll_set[0].fd = _sockfd;
-    while (_is_running)
-    {
+    while (_is_running) {
         poll_set[0].events = POLLIN;
         if (!_send_buffer.empty())
             poll_set[0].events |= POLLOUT;
         poll(poll_set, 1, 50); // TODO: Check how this can be changed
-        if (poll_set[0].revents & POLLIN)
-        {
+        if (poll_set[0].revents & POLLIN) {
             int read_size = read(_sockfd, in_buffer, 2048);
             if (read_size == -1)
                 LERROR("Read error", strerror(errno));
             else if (read_size == 0)
                 break;
-            else
-            {
+            else {
                 // TODO: This is extremely inefficient but it will do for now
                 for (int i = 0; i < read_size; i++)
                     _recv_buffer.push_back(in_buffer[i]);
                 _handlePacket();
             }
         }
-        if (poll_set[0].revents & POLLOUT)
-        {
+        if (poll_set[0].revents & POLLOUT) {
             _flushSendData();
         }
     }
     _is_running = false;
 }
 
-bool Client::isDisconnected() const
-{
-    return !_is_running;
-}
+bool Client::isDisconnected() const { return !_is_running; }
 
 void Client::_sendData(const std::vector<uint8_t> &data)
 {
@@ -101,7 +94,7 @@ void Client::_flushSendData()
 {
     _write_mutex.lock();
     char send_buffer[2048];
-    size_t to_send = std::min(_send_buffer.size(), (size_t)2048);
+    size_t to_send = std::min(_send_buffer.size(), (size_t) 2048);
     std::copy(_send_buffer.begin(), _send_buffer.begin() + to_send, send_buffer);
 
     ssize_t write_return = write(_sockfd, send_buffer, to_send);
@@ -138,17 +131,11 @@ void Client::switchToPlayState(u128 playerUuid, const std::string &username)
     this->setStatus(protocol::ClientStatus::Play);
     LDEBUG("Switched to play state");
     // TODO: get the player dimension from the world by his uuid
-    this->_player = new Player(
-        this,
-        Server::getInstance()->getWorldGroup("default")->getWorld("default")->getDimension("overworld"),
-        playerUuid,
-        username
-    );
+    this->_player = new Player(this, Server::getInstance()->getWorldGroup("default")->getWorld("default")->getDimension("overworld"), playerUuid, username);
     LDEBUG("Created player");
 }
 
-void Client::handleParsedClientPacket(const std::shared_ptr<protocol::BaseServerPacket> &packet,
-                                      protocol::ServerPacketsID packetID)
+void Client::handleParsedClientPacket(const std::shared_ptr<protocol::BaseServerPacket> &packet, protocol::ServerPacketsID packetID)
 {
     using namespace protocol;
 
@@ -235,8 +222,7 @@ void Client::handleParsedClientPacket(const std::shared_ptr<protocol::BaseServer
         }
         break;
     }
-    LERROR("Unhandled packet: ", static_cast<int>(packetID),
-        " in status ", static_cast<int>(_status)); // TODO: Properly handle the unknown packet
+    LERROR("Unhandled packet: ", static_cast<int>(packetID), " in status ", static_cast<int>(_status)); // TODO: Properly handle the unknown packet
 }
 
 void Client::_handlePacket()
@@ -289,8 +275,7 @@ void Client::_handlePacket()
         std::shared_ptr<protocol::BaseServerPacket> packet;
         try {
             packet = parser(to_parse);
-        }
-        catch (std::runtime_error &error) {
+        } catch (std::runtime_error &error) {
             LERROR("Error during packet parsing :");
             LERROR(error.what());
             return;
@@ -300,7 +285,7 @@ void Client::_handlePacket()
     }
 }
 
-void Client::_onHandshake(const std::shared_ptr<protocol::Handshake>& pck)
+void Client::_onHandshake(const std::shared_ptr<protocol::Handshake> &pck)
 {
     LDEBUG("Got an handshake");
     if (pck->next_state == 1)
@@ -335,13 +320,9 @@ void Client::_onStatusRequest(const std::shared_ptr<protocol::StatusRequest> &pc
     json["version"]["name"] = MC_VERSION;
     json["version"]["protocol"] = MC_PROTOCOL;
     json["players"]["max"] = conf.getMaxPlayers();
-    json["players"]["online"] = std::count_if(
-            cli.begin(),
-            cli.end(),
-            [](std::shared_ptr<Client> &each) {
-                return each->getStatus() == protocol::ClientStatus::Play;
-            }
-    );
+    json["players"]["online"] = std::count_if(cli.begin(), cli.end(), [](std::shared_ptr<Client> &each) {
+        return each->getStatus() == protocol::ClientStatus::Play;
+    });
 
     sendStatusResponse(json.dump());
 }
@@ -358,7 +339,7 @@ void Client::_onLoginStart(const std::shared_ptr<protocol::LoginStart> &pck)
     LDEBUG("Got a Login Start");
     protocol::LoginSuccess resPck;
 
-    resPck.uuid = pck->has_player_uuid ? pck->player_uuid : u128{std::hash<std::string>{}("OfflinePlayer:"), std::hash<std::string>{}(pck->name)};
+    resPck.uuid = pck->has_player_uuid ? pck->player_uuid : u128 {std::hash<std::string> {}("OfflinePlayer:"), std::hash<std::string> {}(pck->name)};
     resPck.username = pck->name;
     resPck.numberOfProperties = 0;
     resPck.name = ""; // TODO: figure out what to put there
@@ -375,16 +356,11 @@ void Client::_onLoginStart(const std::shared_ptr<protocol::LoginStart> &pck)
     this->_loginSequence(resPck);
 }
 
-void Client::_onEncryptionResponse(const std::shared_ptr<protocol::EncryptionResponse> &pck)
-{
-    LDEBUG("Got a Encryption Response");
-}
+void Client::_onEncryptionResponse(const std::shared_ptr<protocol::EncryptionResponse> &pck) { LDEBUG("Got a Encryption Response"); }
 
 void Client::sendStatusResponse(const std::string &json)
 {
-    auto pck = protocol::createStatusResponse({
-        json
-    });
+    auto pck = protocol::createStatusResponse({json});
     _sendData(*pck);
 
     LDEBUG("Sent status response");
@@ -392,9 +368,7 @@ void Client::sendStatusResponse(const std::string &json)
 
 void Client::sendPingResponse(int64_t payload)
 {
-    auto pck = protocol::createPingResponse({
-        payload
-    });
+    auto pck = protocol::createPingResponse({payload});
     _sendData(*pck);
 
     LDEBUG("Sent a ping response");
@@ -407,13 +381,15 @@ void Client::sendLoginSuccess(const protocol::LoginSuccess &packet)
     LDEBUG("Sent a login success");
 }
 
-void Client::sendLoginPlay() {
+void Client::sendLoginPlay()
+{
     protocol::LoginPlay resPck = {
-            .entityID = _player->getId(), // TODO: figure out what is this
-            .isHardcore = false, // TODO: something like this this->_player->_dim->getWorld()->getDifficulty(); Thats not difficulty tho (peaceful, easy, normal, hard)
-            .gamemode = this->_player->getGamemode(),
-            .previousGamemode = 0, // TODO: something like this this->_player->getPreviousGamemode().has_value() ? this->_player->getPreviousGamemode() : -1;
-            .dimensionNames = std::vector<std::string>({"minecraft:overworld"}), // TODO: something like this this->_player->_dim->getWorld()->getDimensions();
+        .entityID = _player->getId(), // TODO: figure out what is this
+        .isHardcore = false, // TODO: something like this this->_player->_dim->getWorld()->getDifficulty(); Thats not difficulty tho (peaceful, easy, normal, hard)
+        .gamemode = this->_player->getGamemode(),
+        .previousGamemode = 0, // TODO: something like this this->_player->getPreviousGamemode().has_value() ? this->_player->getPreviousGamemode() : -1;
+        .dimensionNames = std::vector<std::string>({"minecraft:overworld"}), // TODO: something like this this->_player->_dim->getWorld()->getDimensions();
+        // clang-format off
             .registryCodec = nbt::Compound("", {
                 new nbt::Compound("minecraft:dimension_type", {
                     new nbt::String("type", "minecraft:dimension_type"),
@@ -510,17 +486,18 @@ void Client::sendLoginPlay() {
                     })
                 })
             }),
-            .dimensionType = "minecraft:overworld", // TODO: something like this this->_player->_dim->getDimensionType();
-            .dimensionName = "overworld", // TODO: something like this this->_player->getDimension()->name;
-            .hashedSeed = 0, // TODO: something like this this->_player->_dim->getWorld()->getHashedSeed();
-            .maxPlayers = 20, // TODO: something like this this->_player->_dim->getWorld()->maxPlayers;
-            .viewDistance = 16, // TODO: something like this->_player->_dim->getWorld()->getViewDistance();
-            .simulationDistance = 16, // TODO: something like this->_player->_dim->getWorld()->getSimulationDistance();
-            .reducedDebugInfo = false, // false for developpment only
-            .enableRespawnScreen = true, // TODO: implement gamerules !this->_player->_dim->getWorld()->getGamerules()["doImmediateRespawn"];
-            .isDebug = false, // TODO: something like this->_player->_dim->getWorld()->isDebugModeWorld;
-            .isFlat = false, // TODO: something like this->_player->_dim->isFlat;
-            .hasDeathLocation = false // TODO: something like this->_player->hasDeathLocation;
+        // clang-format on
+        .dimensionType = "minecraft:overworld", // TODO: something like this this->_player->_dim->getDimensionType();
+        .dimensionName = "overworld", // TODO: something like this this->_player->getDimension()->name;
+        .hashedSeed = 0, // TODO: something like this this->_player->_dim->getWorld()->getHashedSeed();
+        .maxPlayers = 20, // TODO: something like this this->_player->_dim->getWorld()->maxPlayers;
+        .viewDistance = 16, // TODO: something like this->_player->_dim->getWorld()->getViewDistance();
+        .simulationDistance = 16, // TODO: something like this->_player->_dim->getWorld()->getSimulationDistance();
+        .reducedDebugInfo = false, // false for developpment only
+        .enableRespawnScreen = true, // TODO: implement gamerules !this->_player->_dim->getWorld()->getGamerules()["doImmediateRespawn"];
+        .isDebug = false, // TODO: something like this->_player->_dim->getWorld()->isDebugModeWorld;
+        .isFlat = false, // TODO: something like this->_player->_dim->isFlat;
+        .hasDeathLocation = false // TODO: something like this->_player->hasDeathLocation;
     };
     if (resPck.hasDeathLocation) {
         resPck.deathDimensionName = ""; // TODO: something like this->_player->deathDimensionName;
@@ -537,9 +514,7 @@ void Client::disconnect(const chat::Message &reason)
         return;
     }
 
-    auto pck = protocol::createLoginDisconnect({
-        reason.serialize()
-    });
+    auto pck = protocol::createLoginDisconnect({reason.serialize()});
     _sendData(*pck);
     _is_running = false;
     LDEBUG("Sent a disconnect login packet");
@@ -562,7 +537,4 @@ void Client::_loginSequence(const protocol::LoginSuccess &pck)
     this->_player->_continueLoginSequence();
 }
 
-Player *Client::getPlayer() const
-{
-    return _player;
-}
+Player *Client::getPlayer() const { return _player; }

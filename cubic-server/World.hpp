@@ -1,27 +1,26 @@
 #ifndef CUBICSERVER_WORLD_HPP
 #define CUBICSERVER_WORLD_HPP
 
-#include <vector>
 #include <algorithm>
-#include <thread>
-#include <memory>
 #include <functional>
+#include <memory>
+#include <thread>
+#include <vector>
 
-#include "Entity.hpp"
 #include "Chat.hpp"
-#include "logging/Logger.hpp"
-#include "world_storage/LevelData.hpp"
+#include "Entity.hpp"
 #include "TickClock.hpp"
+#include "logging/Logger.hpp"
 #include "thread_pool/Pool.hpp"
 #include "types.hpp"
+#include "world_storage/LevelData.hpp"
 
 class WorldGroup;
 class Dimension;
 
 constexpr int NB_SPAWN_CHUNKS = 19;
 
-class World
-{
+class World {
 public:
     World(WorldGroup *worldGroup);
 
@@ -66,5 +65,4 @@ protected:
     thread_pool::Pool _generationPool;
 };
 
-
-#endif //CUBICSERVER_WORLD_HPP
+#endif // CUBICSERVER_WORLD_HPP

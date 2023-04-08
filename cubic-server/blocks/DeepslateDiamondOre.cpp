@@ -2,10 +2,8 @@
 #include <stdexcept>
 
 namespace Blocks {
-    namespace DeepslateDiamondOre {
-        BlockId toProtocol() {
-            return 4223;
-        }
-    }
+namespace DeepslateDiamondOre {
+BlockId toProtocol() { return 4223; }
+}
 
 }

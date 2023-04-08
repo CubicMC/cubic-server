@@ -2,10 +2,8 @@
 #include <stdexcept>
 
 namespace Blocks {
-    namespace CrimsonRoots {
-        BlockId toProtocol() {
-            return 18037;
-        }
-    }
+namespace CrimsonRoots {
+BlockId toProtocol() { return 18037; }
+}
 
 }

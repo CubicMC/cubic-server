@@ -2,10 +2,8 @@
 #include <stdexcept>
 
 namespace Blocks {
-    namespace DragonEgg {
-        BlockId toProtocol() {
-            return 7186;
-        }
-    }
+namespace DragonEgg {
+BlockId toProtocol() { return 7186; }
+}
 
 }

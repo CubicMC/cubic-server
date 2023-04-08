@@ -2,10 +2,8 @@
 #include <stdexcept>
 
 namespace Blocks {
-    namespace WeatheredCopper {
-        BlockId toProtocol() {
-            return 20693;
-        }
-    }
+namespace WeatheredCopper {
+BlockId toProtocol() { return 20693; }
+}
 
 }

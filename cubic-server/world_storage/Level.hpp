@@ -1,22 +1,18 @@
 #ifndef LEVEL_HPP
 #define LEVEL_HPP
 
-#include <unordered_map>
 #include <functional>
 #include <mutex>
+#include <unordered_map>
 
 #include "ChunkColumn.hpp"
 #include "types.hpp"
 
-constexpr int transformBlockPosToChunkPos(int64_t x)
-{
-    return x < 0 ? -1 + int64_t((x + 1) / 16) : int64_t(x / 16);
-}
+constexpr int transformBlockPosToChunkPos(int64_t x) { return x < 0 ? -1 + int64_t((x + 1) / 16) : int64_t(x / 16); }
 
 namespace world_storage {
 
-class Level
-{
+class Level {
 public:
     Level() = default;
     ~Level();

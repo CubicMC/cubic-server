@@ -1,9 +1,9 @@
 #include "Dimension.hpp"
 #include "Player.hpp"
+#include "Server.hpp"
 #include "World.hpp"
 #include "logging/Logger.hpp"
 #include "world_storage/ChunkColumn.hpp"
-#include "Server.hpp"
 
 Dimension::Dimension(World *world):
     _world(world),
@@ -15,7 +15,7 @@ Dimension::Dimension(World *world):
 
 void Dimension::tick()
 {
-    forEachEntity([](Entity *ent){
+    forEachEntity([](Entity *ent) {
         ent->tick();
     });
 }
@@ -35,27 +35,15 @@ void Dimension::initialize()
     this->_processingThread = std::thread(&Dimension::_run, this);
 }
 
-bool Dimension::isInitialized() const
-{
-    return _isInitialized;
-}
+bool Dimension::isInitialized() const { return _isInitialized; }
 
-World *Dimension::getWorld() const
-{
-    return _world;
-}
+World *Dimension::getWorld() const { return _world; }
 
-std::counting_semaphore<1000> &Dimension::getDimensionLock()
-{
-    return _dimensionLock;
-}
+std::counting_semaphore<1000> &Dimension::getDimensionLock() { return _dimensionLock; }
 
-std::vector<Entity *> &Dimension::getEntities()
-{
-    return _entities;
-}
+std::vector<Entity *> &Dimension::getEntities() { return _entities; }
 
-Entity * Dimension::getEntityByID(int32_t id)
+Entity *Dimension::getEntityByID(int32_t id)
 {
     for (auto &entity : _entities)
         if (entity->getId() == id)
@@ -71,10 +59,7 @@ void Dimension::removeEntity(Entity *entity)
         player->sendRemoveEntities({entity->getId()});
 }
 
-void Dimension::addEntity(Entity *entity)
-{
-    _entities.push_back(entity);
-}
+void Dimension::addEntity(Entity *entity) { _entities.push_back(entity); }
 
 void Dimension::forEachEntity(std::function<void(Entity *)> callback)
 {
@@ -106,56 +91,44 @@ void Dimension::forEachPlayerIf(std::function<void(Player *)> callback, std::fun
             callback(_player);
 }
 
-const world_storage::Level &Dimension::getLevel() const
-{
-    return _level;
-}
+const world_storage::Level &Dimension::getLevel() const { return _level; }
 
-world_storage::Level &Dimension::getEditableLevel()
-{
-    return _level;
-}
+world_storage::Level &Dimension::getEditableLevel() { return _level; }
 
-void Dimension::generateChunk(int x, int z)
-{
-}
+void Dimension::generateChunk(int x, int z) { }
 
 std::shared_ptr<thread_pool::Task> Dimension::loadOrGenerateChunk(int x, int z, Player *player)
 {
     this->_loadingChunksMutex.lock();
     if (this->_loadingChunks.contains({x, z})) {
-        if (std::find(this->_loadingChunks[{x, z}].players.begin(), this->_loadingChunks[{x, z}].players.end(), player)
-            == this->_loadingChunks[{x, z}].players.end()
-        ) { this->_loadingChunks[{x, z}].players.push_back(player); }
+        if (std::find(this->_loadingChunks[{x, z}].players.begin(), this->_loadingChunks[{x, z}].players.end(), player) == this->_loadingChunks[{x, z}].players.end()) {
+            this->_loadingChunks[{x, z}].players.push_back(player);
+        }
         this->_loadingChunksMutex.unlock();
         return this->_loadingChunks[{x, z}].task;
     }
 
-    auto request = ChunkRequest{
-        this->_world->getGenerationPool().add([this, x, z]{
-            // TODO: load chunk from disk if it exists
-            this->generateChunk(x, z);
+    auto task = this->_world->getGenerationPool().add([this, x, z] {
+        // TODO: load chunk from disk if it exists
+        this->generateChunk(x, z);
 
-            // This send the chunk to the players that are loading it
-            this->_loadingChunksMutex.lock();
-            for (auto &entity: this->_entities) {
-                // pls don't kill me
-                // this is a hack to check if the client is still connected
-                // And the best part ? I don't even know if it works
-                if (
-                    std::find_if(
-                        this->_loadingChunks[{x, z}].players.begin(),
-                        this->_loadingChunks[{x, z}].players.end(),
-                        [entity](const Player *player) { return player == entity; }
-                    ) == this->_loadingChunks[{x, z}].players.end()
-                ) continue;
-                reinterpret_cast<Player *>(entity)->sendChunkAndLightUpdate(this->_level.getChunkColumn(x, z));
-            }
-            this->_loadingChunks.erase({x, z});
-            this->_loadingChunksMutex.unlock();
-        }),
-        {player}
-    };
+        // This send the chunk to the players that are loading it
+        this->_loadingChunksMutex.lock();
+        for (auto &entity : this->_entities) {
+            // pls don't kill me
+            // this is a hack to check if the client is still connected
+            // And the best part ? I don't even know if it works
+            if (std::find_if(this->_loadingChunks[{x, z}].players.begin(), this->_loadingChunks[{x, z}].players.end(), [entity](const Player *player) {
+                    return player == entity;
+                }) == this->_loadingChunks[{x, z}].players.end())
+                continue;
+            reinterpret_cast<Player *>(entity)->sendChunkAndLightUpdate(this->_level.getChunkColumn(x, z));
+        }
+        this->_loadingChunks.erase({x, z});
+        this->_loadingChunksMutex.unlock();
+    });
+
+    auto request = ChunkRequest {task, {player}};
 
     this->_loadingChunks[{x, z}] = request;
     this->_loadingChunksMutex.unlock();
@@ -188,10 +161,7 @@ std::vector<Player *> Dimension::getPlayerList() const
     return player_list;
 }
 
-bool Dimension::hasChunkLoaded(int x, int z) const
-{
-    return this->_level.hasChunkColumn(x, z);
-}
+bool Dimension::hasChunkLoaded(int x, int z) const { return this->_level.hasChunkColumn(x, z); }
 
 void Dimension::removePlayerFromLoadingChunk(const Position2D &pos, Player *player)
 {
@@ -202,8 +172,7 @@ void Dimension::removePlayerFromLoadingChunk(const Position2D &pos, Player *play
     }
 
     this->_loadingChunks[pos].players.erase(
-        std::remove(this->_loadingChunks[pos].players.begin(), this->_loadingChunks[pos].players.end(), player),
-        this->_loadingChunks[pos].players.end()
+        std::remove(this->_loadingChunks[pos].players.begin(), this->_loadingChunks[pos].players.end(), player), this->_loadingChunks[pos].players.end()
     );
 
     if (this->_loadingChunks[pos].players.empty()) {
@@ -213,10 +182,7 @@ void Dimension::removePlayerFromLoadingChunk(const Position2D &pos, Player *play
     this->_loadingChunksMutex.unlock();
 }
 
-world_storage::ChunkColumn &Dimension::getChunk(int x, int z)
-{
-    return this->_level.getChunkColumn(x, z);
-}
+world_storage::ChunkColumn &Dimension::getChunk(int x, int z) { return this->_level.getChunkColumn(x, z); }
 
 void Dimension::spawnPlayer(Player *current)
 {
@@ -225,29 +191,18 @@ void Dimension::spawnPlayer(Player *current)
     for (auto &player : player_list) {
         LDEBUG("player is : ", player->getUsername());
         LDEBUG("current is : ", current->getUsername());
-        //if (current->getPos().distance(player->getPos()) <= 12) {
+        // if (current->getPos().distance(player->getPos()) <= 12) {
         if (player->getId() != current->getId()) {
-            player->sendSpawnPlayer({
-                current->getId(),
-                current->getUuid(),
-                current->getPosition().x,
-                current->getPosition().y,
-                current->getPosition().z,
-                current->getRotation().x,
-                current->getRotation().y
-            });
+            player->sendSpawnPlayer(
+                {current->getId(), current->getUuid(), current->getPosition().x, current->getPosition().y, current->getPosition().z, current->getRotation().x,
+                 current->getRotation().y}
+            );
             LDEBUG("send spawn player to ", player->getUsername());
-            current->sendSpawnPlayer({
-                player->getId(),
-                player->getUuid(),
-                player->getPosition().x,
-                player->getPosition().y,
-                player->getPosition().z,
-                player->getRotation().x,
-                player->getRotation().y
-            });
+            current->sendSpawnPlayer(
+                {player->getId(), player->getUuid(), player->getPosition().x, player->getPosition().y, player->getPosition().z, player->getRotation().x, player->getRotation().y}
+            );
             LDEBUG("send spawn player to ", current->getUsername());
-        //}
+            //}
         }
     }
 }
@@ -260,13 +215,13 @@ void Dimension::blockUpdate(Position position, int32_t id)
     // Weird ass modulo to get the correct block position in the chunk
     auto x = position.x % 16;
     auto z = position.z % 16;
-    if (x < 0) x += 16;
-    if (z < 0) z += 16;
+    if (x < 0)
+        x += 16;
+    if (z < 0)
+        z += 16;
 
     chunk.updateBlock({x, position.y, z}, id);
-    this->forEachPlayer([&position, &id](Player *player)
-        {
-            player->sendBlockUpdate({position, id});
-        }
-    );
+    this->forEachPlayer([&position, &id](Player *player) {
+        player->sendBlockUpdate({position, id});
+    });
 }

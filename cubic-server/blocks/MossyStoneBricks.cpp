@@ -2,10 +2,8 @@
 #include <stdexcept>
 
 namespace Blocks {
-    namespace MossyStoneBricks {
-        BlockId toProtocol() {
-            return 6309;
-        }
-    }
+namespace MossyStoneBricks {
+BlockId toProtocol() { return 6309; }
+}
 
 }
