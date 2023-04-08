@@ -48,8 +48,6 @@ public:
 
     void reload();
 
-    void enforceWhitelistOnReload();
-
     const Configuration::ConfigHandler &getConfig() const { return _config; }
 
     const WhitelistHandling::Whitelist &getWhitelist() const { return _whitelist; }
@@ -86,6 +84,9 @@ private:
     void _acceptLoop();
     void _stop();
     void _downloadFile(const std::string &url, const std::string &path);
+    void _reloadWhitelist();
+    void _reloadConfig();
+    void _enforceWhitelistOnReload();
 
 private:
     std::string _host;

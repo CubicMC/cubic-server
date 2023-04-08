@@ -218,7 +218,7 @@ void Server::_downloadFile(const std::string &url, const std::string &path)
 /*
 **  Reloads the config if no error within the new file
 */
-void reloadConfig() {
+void Server::_reloadConfig() {
     try {
         _config.parse("./config.yml");
     } catch (const std::exception &e) {
@@ -235,7 +235,7 @@ void reloadConfig() {
 /*
 **  Reloads the whitelist if no error within the new file
 */
-void reloadWhitelist() {
+void Server::_reloadWhitelist() {
     try {
         if (_whitelistEnabled) {
             WhitelistHandling::Whitelist whitelistReloaded = WhitelistHandling::Whitelist();
@@ -253,9 +253,9 @@ void reloadWhitelist() {
 **  More details in *Reload.hpp*.
 */
 void Server::reload() {
-    reloadConfig();
-    reloadWhitelist();
-    enforceWhitelistOnReload();
+    _reloadConfig();
+    _reloadWhitelist();
+    _enforceWhitelistOnReload();
     /* Reload level.dat + datapacks + plugins */
     return;
 }
@@ -265,7 +265,7 @@ void Server::reload() {
 **  must be kicked out from the server if enforce-whitelist is
 **   true & the whitelist is in effect
 */
-void Server::enforceWhitelistOnReload()
+void Server::_enforceWhitelistOnReload()
 {
     if (_whitelistEnabled && _enforceWhitelist) {
         for (auto &client : _clients) {

@@ -2,6 +2,7 @@
 #define WHITELIST_HPP_
 
 #include <string>
+#include "logging/Logger.hpp"
 
 #include "nlohmann/json.hpp"
 #include "types.hpp"
