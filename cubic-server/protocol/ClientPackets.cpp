@@ -336,8 +336,6 @@ std::shared_ptr<std::vector<uint8_t>> protocol::createUpdateTime(const UpdateTim
 
     auto packet = std::make_shared<std::vector<uint8_t>>();
     finalize(*packet, payload, (int32_t) ClientPacketID::UpdateTime);
-
-    finalize(*packet, payload, (int32_t) ClientPacketID::SystemChatMessage);
     return packet;
 }
 
@@ -378,7 +376,7 @@ std::shared_ptr<std::vector<uint8_t>> protocol::createSystemChatMessage(const Sy
     std::vector<uint8_t> payload;
     serialize(payload, in.JSONData, addChat, in.overlay, addBoolean);
     auto packet = std::make_shared<std::vector<uint8_t>>();
-    finalize(*packet, payload, (int32_t) ClientPacketID::SpawnPlayer);
+    finalize(*packet, payload, (int32_t) ClientPacketID::SystemChatMessage);
 
     return packet;
 }
