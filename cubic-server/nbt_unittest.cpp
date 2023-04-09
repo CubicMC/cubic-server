@@ -20,7 +20,7 @@ RC_GTEST_PROP(RapidCheckTest, NbtByteChecker, (int8_t value))
     auto to_serialize = nbt::Byte("test", value);
     auto serialized = to_serialize.serialize();
     auto at = serialized.data();
-    auto parsed = nbt::parseByte(at, at + serialized.size());
+    auto parsed = nbt::parseByte(at, at + serialized.size() - 1);
     RC_ASSERT(value == parsed->get_value());
 }
 
@@ -29,7 +29,7 @@ RC_GTEST_PROP(RapidCheckTest, NbtShortChecker, (int16_t value))
     auto to_serialize = nbt::Short("test", value);
     auto serialized = to_serialize.serialize();
     auto at = serialized.data();
-    auto parsed = nbt::parseShort(at, at + serialized.size());
+    auto parsed = nbt::parseShort(at, at + serialized.size() - 1);
     RC_ASSERT(value == parsed->get_value());
 }
 
@@ -38,7 +38,7 @@ RC_GTEST_PROP(RapidCheckTest, NbtIntChecker, (int32_t value))
     auto to_serialize = nbt::Int("test", value);
     auto serialized = to_serialize.serialize();
     auto at = serialized.data();
-    auto parsed = nbt::parseInt(at, at + serialized.size());
+    auto parsed = nbt::parseInt(at, at + serialized.size() - 1);
     RC_ASSERT(value == parsed->get_value());
 }
 
@@ -47,7 +47,7 @@ RC_GTEST_PROP(RapidCheckTest, NbtLongChecker, (int64_t value))
     auto to_serialize = nbt::Long("test", value);
     auto serialized = to_serialize.serialize();
     auto at = serialized.data();
-    auto parsed = nbt::parseLong(at, at + serialized.size());
+    auto parsed = nbt::parseLong(at, at + serialized.size() - 1);
     RC_ASSERT(value == parsed->get_value());
 }
 
@@ -56,7 +56,7 @@ RC_GTEST_PROP(RapidCheckTest, NbtFloatChecker, (float value))
     auto to_serialize = nbt::Float("test", value);
     auto serialized = to_serialize.serialize();
     auto at = serialized.data();
-    auto parsed = nbt::parseFloat(at, at + serialized.size());
+    auto parsed = nbt::parseFloat(at, at + serialized.size() - 1);
     RC_ASSERT(value == parsed->get_value());
 }
 
@@ -65,7 +65,7 @@ RC_GTEST_PROP(RapidCheckTest, NbtDoubleChecker, (double value))
     auto to_serialize = nbt::Double("test", value);
     auto serialized = to_serialize.serialize();
     auto at = serialized.data();
-    auto parsed = nbt::parseDouble(at, at + serialized.size());
+    auto parsed = nbt::parseDouble(at, at + serialized.size() - 1);
     RC_ASSERT(value == parsed->get_value());
 }
 
@@ -74,7 +74,7 @@ RC_GTEST_PROP(RapidCheckTest, NbtByteArrayChecker, (const std::vector<int8_t> va
     auto to_serialize = nbt::ByteArray("test", value);
     auto serialized = to_serialize.serialize();
     auto at = serialized.data();
-    auto parsed = nbt::parseByteArray(at, at + serialized.size());
+    auto parsed = nbt::parseByteArray(at, at + serialized.size() - 1);
     RC_ASSERT(value == parsed->getValues());
 }
 
@@ -83,7 +83,7 @@ RC_GTEST_PROP(RapidCheckTest, NbtStringChecker, (const std::string value))
     auto to_serialize = nbt::String("test", value);
     auto serialized = to_serialize.serialize();
     auto at = serialized.data();
-    auto parsed = nbt::parseString(at, at + serialized.size());
+    auto parsed = nbt::parseString(at, at + serialized.size() - 1);
     RC_ASSERT(value == parsed->get_value());
 }
 
@@ -92,7 +92,7 @@ RC_GTEST_PROP(RapidCheckTest, NbtIntArrayChecker, (const std::vector<int> value)
     auto to_serialize = nbt::IntArray("test", value);
     auto serialized = to_serialize.serialize();
     auto at = serialized.data();
-    auto parsed = nbt::parseIntArray(at, at + serialized.size());
+    auto parsed = nbt::parseIntArray(at, at + serialized.size() - 1);
     RC_ASSERT(value == parsed->getValues());
 }
 
@@ -101,7 +101,7 @@ RC_GTEST_PROP(RapidCheckTest, NbtLongArrayChecker, (const std::vector<int64_t> v
     auto to_serialize = nbt::LongArray("test", value);
     auto serialized = to_serialize.serialize();
     auto at = serialized.data();
-    auto parsed = nbt::parseLongArray(at, at + serialized.size());
+    auto parsed = nbt::parseLongArray(at, at + serialized.size() - 1);
     RC_ASSERT(value == parsed->getValues());
 }
 
@@ -122,7 +122,7 @@ TEST(NbtTest, hello_world)
     ASSERT_TRUE(testing::AssertionResult(file.is_open() ? testing::AssertionSuccess() : testing::AssertionFailure()) << "Failed to open file");
     std::vector<uint8_t> buffer(std::istreambuf_iterator<char>(file), {});
     auto at = buffer.data();
-    auto content = nbt::parse(at, at + buffer.size());
+    auto content = nbt::parse(at, at + buffer.size() - 1);
     ASSERT_TRUE(testing::AssertionResult(content == nullptr ? testing::AssertionFailure() : testing::AssertionSuccess()) << "Failed to parse file");
     auto result = content->serialize();
     EXPECT_EQ(result.size(), buffer.size());
@@ -135,7 +135,7 @@ TEST(NbtTest, bigtest)
     ASSERT_TRUE(testing::AssertionResult(file.is_open() ? testing::AssertionSuccess() : testing::AssertionFailure()) << "Failed to open file");
     std::vector<uint8_t> buffer(std::istreambuf_iterator<char>(file), {});
     auto at = buffer.data();
-    auto content = nbt::parse(at, at + buffer.size());
+    auto content = nbt::parse(at, at + buffer.size() - 1);
     ASSERT_TRUE(testing::AssertionResult(content == nullptr ? testing::AssertionFailure() : testing::AssertionSuccess()) << "Failed to parse file");
     auto result = content->serialize();
     EXPECT_EQ(result.size(), buffer.size());
