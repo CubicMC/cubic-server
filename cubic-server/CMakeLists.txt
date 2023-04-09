@@ -53,11 +53,11 @@ if (GTEST)
         rapidcheck_gtest
     )
 
-    # file(DOWNLOAD https://raw.github.com/Dav1dde/nbd/master/test/hello_world.nbt, ${CMAKE_CURRENT_BINARY_DIR}/hello_world.nbt SHOW_PROGRESS)
-    # file(DOWNLOAD https://raw.github.com/Dav1dde/nbd/master/test/bigtest.nbt, ${CMAKE_CURRENT_BINARY_DIR}/bigtest.nbt SHOW_PROGRESS)
+    # file(DOWNLOAD https://cdn.cubic-mc.com/tests/hello_world.nbt, ${CMAKE_CURRENT_BINARY_DIR}/hello_world.nbt SHOW_PROGRESS TLS_VERIFY ON)
+    # file(DOWNLOAD https://cdn.cubic-mc.com/tests/bigtest.nbt, ${CMAKE_CURRENT_BINARY_DIR}/bigtest.nbt SHOW_PROGRESS TLS_VERIFY ON)
 
-    # execute_process(COMMAND curl -o ${CMAKE_CURRENT_BINARY_DIR}/hello_world.nbt https://raw.github.com/Dav1dde/nbd/master/test/hello_world.nbt)
-    # execute_process(COMMAND curl -o ${CMAKE_CURRENT_BINARY_DIR}/bigtest.nbt https://raw.github.com/Dav1dde/nbd/master/test/bigtest.nbt)
+    execute_process(COMMAND curl -o ${CMAKE_CURRENT_BINARY_DIR}/hello_world.nbt https://cdn.cubic-mc.com/tests/hello_world.nbt)
+    execute_process(COMMAND curl -o ${CMAKE_CURRENT_BINARY_DIR}/bigtest.nbt https://cdn.cubic-mc.com/tests/bigtest.nbt)
 
     include(GoogleTest)
     gtest_discover_tests(nbt_test)
