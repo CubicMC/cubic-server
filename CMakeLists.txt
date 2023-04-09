@@ -59,6 +59,7 @@ if(GTEST) # if the flag GTEST is true
         rapidcheck
         GIT_REPOSITORY https://github.com/emil-e/rapidcheck.git
     )
+    option(RC_ENABLE_GTEST "Enable Google Test integration for RapidCheck library" ON)
     set(RC_ENABLE_GTEST TRUE)
     FetchContent_MakeAvailable(rapidcheck)
 endif()
