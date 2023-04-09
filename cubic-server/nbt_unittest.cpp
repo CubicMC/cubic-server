@@ -119,11 +119,11 @@ TEST(NbtTest, TestNbt)
 TEST(NbtTest, hello_world)
 {
     std::ifstream file("hello_world.nbt", std::ios::binary);
-    EXPECT_TRUE(testing::AssertionResult(file.is_open() ? testing::AssertionSuccess() : testing::AssertionFailure()) << "Failed to open file");
+    ASSERT_TRUE(testing::AssertionResult(file.is_open() ? testing::AssertionSuccess() : testing::AssertionFailure()) << "Failed to open file");
     std::vector<uint8_t> buffer(std::istreambuf_iterator<char>(file), {});
     auto at = buffer.data();
     auto content = nbt::parse(at, at + buffer.size());
-    EXPECT_TRUE(testing::AssertionResult(content == nullptr ? testing::AssertionFailure() : testing::AssertionSuccess()) << "Failed to parse file");
+    ASSERT_TRUE(testing::AssertionResult(content == nullptr ? testing::AssertionFailure() : testing::AssertionSuccess()) << "Failed to parse file");
     auto result = content->serialize();
     EXPECT_EQ(result.size(), buffer.size());
     EXPECT_EQ(result, buffer);
@@ -132,11 +132,11 @@ TEST(NbtTest, hello_world)
 TEST(NbtTest, bigtest)
 {
     std::ifstream file("bigtest.nbt", std::ios::binary);
-    EXPECT_TRUE(testing::AssertionResult(file.is_open() ? testing::AssertionSuccess() : testing::AssertionFailure()) << "Failed to open file");
+    ASSERT_TRUE(testing::AssertionResult(file.is_open() ? testing::AssertionSuccess() : testing::AssertionFailure()) << "Failed to open file");
     std::vector<uint8_t> buffer(std::istreambuf_iterator<char>(file), {});
     auto at = buffer.data();
     auto content = nbt::parse(at, at + buffer.size());
-    EXPECT_TRUE(testing::AssertionResult(content == nullptr ? testing::AssertionFailure() : testing::AssertionSuccess()) << "Failed to parse file");
+    ASSERT_TRUE(testing::AssertionResult(content == nullptr ? testing::AssertionFailure() : testing::AssertionSuccess()) << "Failed to parse file");
     auto result = content->serialize();
     EXPECT_EQ(result.size(), buffer.size());
     EXPECT_EQ(result, buffer);
