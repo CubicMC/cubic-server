@@ -10,7 +10,10 @@ void command_parser::Reload::autocomplete(std::vector<std::string>& args, Player
 
 void command_parser::Reload::execute(std::vector<std::string>& args, Player *invoker) const {
     if (invoker) {
-        return;
+        if (invoker->isOperator()) {
+            Server::getInstance()->reload();
+            LINFO("Successfully reloaded loot tables, advancements and functions");
+        }
     } else {
         Server::getInstance()->reload();
         LINFO("Successfully reloaded loot tables, advancements and functions");

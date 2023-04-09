@@ -222,7 +222,7 @@ void Server::_reloadConfig() {
     try {
         _config.parse("./config.yml");
     } catch (const std::exception &e) {
-        LINFO(e.what());
+        LERROR(e.what());
         return;
     }
     _maxPlayer = _config.getMaxPlayers();
@@ -242,7 +242,7 @@ void Server::_reloadWhitelist() {
             _whitelist = whitelistReloaded;
         }
     } catch (const std::exception &e) {
-        LINFO(e.what());
+        LERROR(e.what());
         return;
     }
     return;
