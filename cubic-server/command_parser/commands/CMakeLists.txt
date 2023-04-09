@@ -18,4 +18,6 @@ target_sources (${CMAKE_PROJECT_NAME} PRIVATE
     Seed.hpp
     Stop.cpp
     Stop.hpp
+    Time.cpp
+    Time.hpp
 )

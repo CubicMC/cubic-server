@@ -135,7 +135,7 @@ void World::updateTime()
     _age += 20;
     _time += 20;
     if (_time > 24000)
-        _time = 0;
+        _time -= 24000;
 
     // send packets to clients (missing clients in architecture)
     for (auto &entity : this->getEntities()) {
@@ -251,3 +251,34 @@ thread_pool::Pool &World::getGenerationPool() { return _generationPool; }
 Seed World::getSeed() const { return _seed; }
 
 uint8_t World::getRenderDistance() const { return _renderDistance; }
+
+long World::getTime() const { return _time; }
+
+long World::getAge() const { return _age; }
+
+/*
+**  Used in the /time command.
+**  Adds time to the current world time
+*/
+int World::addTime(int time)
+{
+    _time += time;
+    while (_time > 24000)
+        _time -= 24000;
+    _age += time;
+    return _time;
+}
+
+/*
+**  Used in the /time command.
+**  Sets the current world time to the given time
+*/
+void World::setTime(int time)
+{
+    if (_time <= time) {
+        _age += _time;
+    } else {
+        _age -= _time;
+    }
+    _time = time;
+}

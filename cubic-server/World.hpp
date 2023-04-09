@@ -51,6 +51,11 @@ public:
 
     virtual Seed getSeed() const;
     virtual uint8_t getRenderDistance() const;
+    virtual long getTime() const;
+    virtual long getAge() const;
+
+    virtual int addTime(int time);
+    virtual void setTime(int time);
 
 protected:
     std::shared_ptr<Chat> _chat;
