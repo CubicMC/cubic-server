@@ -188,8 +188,6 @@ constexpr std::string popString(uint8_t *&at, uint8_t *eof)
 
     if (size > eof - at + 1)
         throw PacketEOF("Not enough data in packet to parse a String");
-    if (size == 0)
-        throw ZeroLengthString("Zero length strings can't be parsed");
     std::string value(at, at + size);
     at += size;
     return value;
