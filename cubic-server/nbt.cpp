@@ -141,9 +141,9 @@ Float *nbt::parseFloat(uint8_t *&at, const uint8_t *end, bool include_name, bool
     if (end - at < 3)
         return nullptr;
 
-    int32_t value = 0;
-    for (int i = 0; i < 4; i++)
-        value |= (*at++) << (i * 8);
+    int64_t value = 0;
+    for (int i = 3; i >= 0; i--)
+        value |= ((uint64_t) (*at++)) << (i * 8);
 
     return new Float(name, *((float *) (&value)));
 }
@@ -200,8 +200,6 @@ ByteArray *nbt::parseByteArray(uint8_t *&at, const uint8_t *end, bool include_na
         data.push_back(val);
     }
 
-    at += size;
-
     return new ByteArray(name, data);
 }
 
@@ -218,7 +216,7 @@ String *nbt::parseString(uint8_t *&at, const uint8_t *end, bool include_name, bo
     }
     GET_NAME()
 
-    if (end - at < 3)
+    if (end - at < 1)
         return nullptr;
 
     uint16_t size = (*at << 8) | at[1];
