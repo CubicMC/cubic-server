@@ -2,10 +2,8 @@
 #include <stdexcept>
 
 namespace Blocks {
-    namespace JunglePlanks {
-        BlockId toProtocol() {
-            return 18;
-        }
-    }
+namespace JunglePlanks {
+BlockId toProtocol() { return 18; }
+}
 
 }

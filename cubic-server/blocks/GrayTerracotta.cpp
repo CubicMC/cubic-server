@@ -2,10 +2,8 @@
 #include <stdexcept>
 
 namespace Blocks {
-    namespace GrayTerracotta {
-        BlockId toProtocol() {
-            return 8967;
-        }
-    }
+namespace GrayTerracotta {
+BlockId toProtocol() { return 8967; }
+}
 
 }

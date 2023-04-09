@@ -7,8 +7,7 @@
 namespace world_storage {
 
 // TODO: PTDR
-class Block
-{
+class Block {
 public:
     Block();
     Block(const std::string &name, std::unordered_map<std::string, std::string> properties = {});

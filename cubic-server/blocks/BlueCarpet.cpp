@@ -2,10 +2,8 @@
 #include <stdexcept>
 
 namespace Blocks {
-    namespace BlueCarpet {
-        BlockId toProtocol() {
-            return 10262;
-        }
-    }
+namespace BlueCarpet {
+BlockId toProtocol() { return 10262; }
+}
 
 }

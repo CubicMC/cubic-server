@@ -1,17 +1,15 @@
 #ifndef CUBICSERVER_ENTITY_HPP
 #define CUBICSERVER_ENTITY_HPP
 
-#include <memory>
 #include "Dimension.hpp"
-#include "math/Vector3.hpp"
 #include "math/Vector2.hpp"
+#include "math/Vector3.hpp"
+#include <memory>
 
 class Dimension;
 
-class Entity
-{
-    enum class Pose
-    {
+class Entity {
+    enum class Pose {
         Standing,
         FallFlying,
         Sleeping,
@@ -49,6 +47,8 @@ public:
     [[nodiscard]] virtual Vector3<double> &getLastPosition();
     [[nodiscard]] virtual Vector2<uint8_t> &getLastRotation();
 
+    virtual void teleport(const Vector3<double> &pos);
+
 protected:
     std::shared_ptr<Dimension> _dim;
     bool _onFire;
@@ -73,5 +73,4 @@ protected:
     Vector2<uint8_t> _lastRot;
 };
 
-
-#endif //CUBICSERVER_ENTITY_HPP
+#endif // CUBICSERVER_ENTITY_HPP

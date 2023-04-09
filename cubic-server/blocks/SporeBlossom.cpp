@@ -2,10 +2,8 @@
 #include <stdexcept>
 
 namespace Blocks {
-    namespace SporeBlossom {
-        BlockId toProtocol() {
-            return 21497;
-        }
-    }
+namespace SporeBlossom {
+BlockId toProtocol() { return 21497; }
+}
 
 }

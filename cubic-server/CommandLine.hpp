@@ -3,10 +3,12 @@
 
 #include <thread>
 
-class CommandLine
-{
+class CommandLine {
 public:
-    CommandLine(): _running(true) {}
+    CommandLine():
+        _running(true)
+    {
+    }
     /**
      * @brief Launch a loop that will read stdin and parse the command
      */
@@ -21,4 +23,4 @@ private:
     std::thread _thread;
 };
 
-#endif //CUBIC_SERVER_COMMANDLINE_HPP
+#endif // CUBIC_SERVER_COMMANDLINE_HPP

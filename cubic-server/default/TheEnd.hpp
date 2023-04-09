@@ -3,13 +3,14 @@
 
 #include "../Dimension.hpp"
 
-class TheEnd : public Dimension
-{
+class TheEnd : public Dimension {
 public:
-    TheEnd(World *world): Dimension(world) {}
+    TheEnd(World *world):
+        Dimension(world)
+    {
+    }
     void tick() override;
     void initialize() override;
 };
 
-
-#endif //CUBICSERVER_THEEND_HPP
+#endif // CUBICSERVER_THEEND_HPP

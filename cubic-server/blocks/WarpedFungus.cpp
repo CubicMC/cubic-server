@@ -2,10 +2,8 @@
 #include <stdexcept>
 
 namespace Blocks {
-    namespace WarpedFungus {
-        BlockId toProtocol() {
-            return 17964;
-        }
-    }
+namespace WarpedFungus {
+BlockId toProtocol() { return 17964; }
+}
 
 }

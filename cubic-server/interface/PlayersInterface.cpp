@@ -1,5 +1,5 @@
-#include <iostream>
 #include <fstream>
+#include <iostream>
 #include <unistd.h>
 
 #include "Player.hpp"
@@ -23,8 +23,8 @@ PlayersInterface::PlayersInterface()
     m_Players_view.set_cursor_visible(false);
     m_Players_view.set_vscroll_policy(Gtk::SCROLL_MINIMUM);
 
-    int timeout_value = 1500; //in ms
-    sigc::slot<bool>my_slot = sigc::mem_fun(*this, &PlayersInterface::on_timeout);
+    int timeout_value = 1500; // in ms
+    sigc::slot<bool> my_slot = sigc::mem_fun(*this, &PlayersInterface::on_timeout);
     Glib::signal_timeout().connect(my_slot, timeout_value);
 
     show_all_children();
@@ -61,14 +61,9 @@ bool PlayersInterface::on_timeout()
         this->m_Nb_players = "Players : " + std::to_string(nb_players);
     }
 
- return true;
+    return true;
 }
 
-std::string PlayersInterface::get_nb_players()
-{
-    return this->m_Nb_players;
-}
+std::string PlayersInterface::get_nb_players() { return this->m_Nb_players; }
 
-PlayersInterface::~PlayersInterface()
-{
-}
+PlayersInterface::~PlayersInterface() { }

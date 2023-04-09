@@ -1,13 +1,13 @@
+#include <algorithm>
+#include <cerrno>
+#include <chrono>
+#include <cstring>
+#include <exception>
 #include <fstream>
 #include <iostream>
 #include <netdb.h>
-#include <cerrno>
-#include <sys/socket.h>
 #include <poll.h>
-#include <chrono>
-#include <exception>
-#include <cstring>
-#include <algorithm>
+#include <sys/socket.h>
 
 #include <curl/curl.h>
 
@@ -17,20 +17,19 @@
 
 #include "Server.hpp"
 
-#include "protocol/typeSerialization.hpp"
-#include "protocol/ServerPackets.hpp"
 #include "protocol/ClientPackets.hpp"
+#include "protocol/ServerPackets.hpp"
+#include "protocol/typeSerialization.hpp"
 
-#include "logging/Logger.hpp"
 #include "WorldGroup.hpp"
 #include "default/DefaultWorldGroup.hpp"
+#include "logging/Logger.hpp"
 
 static const std::unordered_map<std::string, std::uint32_t> _checksums = {
     {"https://cdn.cubic-mc.com/1.19/blocks-1.19.json", 0x8b138b58},
     {"https://cdn.cubic-mc.com/1.19/registries-1.19.json", 0x30407a82},
     {"https://cdn.cubic-mc.com/1.19.3/blocks-1.19.3.json", 0xb8a10fa2},
-    {"https://cdn.cubic-mc.com/1.19.3/registries-1.19.3.json", 0xdfabe75c}
-};
+    {"https://cdn.cubic-mc.com/1.19.3/registries-1.19.3.json", 0xdfabe75c}};
 
 Server::Server():
     _sockfd(-1),
@@ -38,19 +37,18 @@ Server::Server():
     _running(false)
 {
     _config.parse("./config.yml");
+    _whitelist = WhitelistHandling::Whitelist();
     _host = _config.getIP();
     _port = _config.getPort();
     _maxPlayer = _config.getMaxPlayers();
     _motd = _config.getMotd();
+    _whitelistEnabled = _config.getWhitelist();
     _enforceWhitelist = _config.getEnforceWhitelist();
 
     LINFO("Server created with host: ", _host, " and port: ", _port);
 }
 
-Server::~Server()
-{
-
-}
+Server::~Server() { }
 
 void Server::launch()
 {
@@ -61,8 +59,7 @@ void Server::launch()
     _sockfd = socket(AF_INET6, SOCK_STREAM, getprotobyname("TCP")->p_proto);
 
     // Create the addr for the server
-    if (!inet_pton(AF_INET, _host.c_str(), &(_addr.sin6_addr)))
-    {
+    if (!inet_pton(AF_INET, _host.c_str(), &(_addr.sin6_addr))) {
         throw std::runtime_error("Invalid host ip address");
     }
     _addr.sin6_family = AF_INET6;
@@ -100,9 +97,20 @@ void Server::launch()
     this->_stop();
 }
 
-void Server::stop()
+void Server::stop() { this->_running = false; }
+
+void Server::forEachWorldGroup(std::function<void(WorldGroup &)> callback)
 {
-    this->_running = false;
+    for (auto &[_, worldGroup] : this->_worldGroups)
+        callback(*worldGroup);
+}
+
+void Server::forEachWorldGroupIf(std::function<void(WorldGroup &)> callback, std::function<bool(const WorldGroup &)> predicate)
+{
+    for (auto &[_, worldGroup] : this->_worldGroups) {
+        if (predicate(*worldGroup))
+            callback(*worldGroup);
+    }
 }
 
 void Server::_acceptLoop()
@@ -113,16 +121,11 @@ void Server::_acceptLoop()
     poll_set[0].events = POLLIN;
     while (this->_running) {
         poll(poll_set, 1, 50);
-        if (poll_set[0].revents & POLLIN)
-        {
-            struct sockaddr_in6 client_addr{};
+        if (poll_set[0].revents & POLLIN) {
+            struct sockaddr_in6 client_addr { };
             socklen_t client_addr_size = sizeof(client_addr);
-            int client_fd = accept(
-                _sockfd,
-                reinterpret_cast<struct sockaddr *>(&client_addr),
-                &client_addr_size);
-            if (client_fd == -1)
-            {
+            int client_fd = accept(_sockfd, reinterpret_cast<struct sockaddr *>(&client_addr), &client_addr_size);
+            if (client_fd == -1) {
                 throw std::runtime_error(strerror(errno));
             }
             // Add accepted client to the vector of clients
@@ -142,9 +145,10 @@ void Server::_acceptLoop()
 
         _clients.erase(
             std::remove_if(
-                _clients.begin(),
-                _clients.end(),
-                [](const std::shared_ptr<Client> &cli){ return cli->isDisconnected(); }
+                _clients.begin(), _clients.end(),
+                [](const std::shared_ptr<Client> &cli) {
+                    return cli->isDisconnected();
+                }
             ),
             _clients.end()
         );
@@ -153,7 +157,7 @@ void Server::_acceptLoop()
 
 void Server::_stop()
 {
-    //Disconect all clients
+    // Disconect all clients
     for (auto &client : _clients)
         client->stop("Server Closed");
 
@@ -182,7 +186,7 @@ void Server::_downloadFile(const std::string &url, const std::string &path)
         CURLcode res;
         curl = curl_easy_init();
         if (curl) {
-            fp = fopen(path.c_str(),"wb");
+            fp = fopen(path.c_str(), "wb");
             curl_easy_setopt(curl, CURLOPT_URL, url.c_str());
             // curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, NULL);
             curl_easy_setopt(curl, CURLOPT_WRITEDATA, fp);
@@ -209,4 +213,22 @@ void Server::_downloadFile(const std::string &url, const std::string &path)
         this->stop();
         return;
     }
+}
+
+/*
+** If the server gets a /reload, players not on the whitelist
+** must be kicked from the server if enforce-whitelist is true
+** & the whitelist is in effect
+*/
+void Server::enforceWhitelistOnReload()
+{
+    if (_whitelistEnabled && _enforceWhitelist) {
+        for (auto &client : _clients) {
+            if (!_whitelist.isPlayerWhitelisted(client->getPlayer()->getUuid(), client->getPlayer()->getUsername()).first) {
+                client->disconnect("You are not whitelisted on this server.");
+                return;
+            }
+        }
+    }
+    return;
 }

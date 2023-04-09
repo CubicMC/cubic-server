@@ -1,19 +1,18 @@
 #ifndef CUBICSERVER_DIMENSION_HPP
 #define CUBICSERVER_DIMENSION_HPP
 
-
 #include <atomic>
-#include <thread>
-#include <vector>
 #include <functional>
 #include <semaphore>
+#include <thread>
+#include <vector>
 
-#include "logging/Logger.hpp"
 #include "Entity.hpp"
-#include "world_storage/Level.hpp"
+#include "logging/Logger.hpp"
 #include "math/Vector3.hpp"
-#include "world_storage/ChunkColumn.hpp"
 #include "thread_pool/Pool.hpp"
+#include "world_storage/ChunkColumn.hpp"
+#include "world_storage/Level.hpp"
 
 constexpr int SEMAPHORE_MAX = 1000;
 
@@ -21,11 +20,9 @@ class World;
 class Player;
 class Entity;
 
-class Dimension
-{
+class Dimension {
 private:
-    struct ChunkRequest
-    {
+    struct ChunkRequest {
         std::shared_ptr<thread_pool::Task> task;
         std::vector<Player *> players;
     };
@@ -40,7 +37,9 @@ public:
     [[nodiscard]] virtual World *getWorld() const;
     [[nodiscard]] virtual std::counting_semaphore<SEMAPHORE_MAX> &getDimensionLock();
     [[nodiscard]] virtual std::vector<Player *> getPlayerList() const;
-    virtual std::vector<Entity *> &getEntities();
+    [[nodiscard]] virtual std::vector<Entity *> &getEntities();
+    [[nodiscard]] virtual Entity *getEntityByID(int32_t id);
+
     virtual void removeEntity(Entity *entity);
     virtual void addEntity(Entity *entity);
     virtual void forEachEntity(std::function<void(Entity *)> callback);
@@ -111,5 +110,4 @@ protected:
     std::thread _processingThread;
 };
 
-
-#endif //CUBICSERVER_DIMENSION_HPP
+#endif // CUBICSERVER_DIMENSION_HPP

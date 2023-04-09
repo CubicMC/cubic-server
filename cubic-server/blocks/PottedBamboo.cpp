@@ -2,10 +2,8 @@
 #include <stdexcept>
 
 namespace Blocks {
-    namespace PottedBamboo {
-        BlockId toProtocol() {
-            return 12329;
-        }
-    }
+namespace PottedBamboo {
+BlockId toProtocol() { return 12329; }
+}
 
 }

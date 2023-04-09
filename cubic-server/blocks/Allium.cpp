@@ -2,10 +2,8 @@
 #include <stdexcept>
 
 namespace Blocks {
-    namespace Allium {
-        BlockId toProtocol() {
-            return 2027;
-        }
-    }
+namespace Allium {
+BlockId toProtocol() { return 2027; }
+}
 
 }

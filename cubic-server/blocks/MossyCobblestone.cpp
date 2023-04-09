@@ -2,10 +2,8 @@
 #include <stdexcept>
 
 namespace Blocks {
-    namespace MossyCobblestone {
-        BlockId toProtocol() {
-            return 2301;
-        }
-    }
+namespace MossyCobblestone {
+BlockId toProtocol() { return 2301; }
+}
 
 }

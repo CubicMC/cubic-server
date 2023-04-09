@@ -2,10 +2,8 @@
 #include <stdexcept>
 
 namespace Blocks {
-    namespace PurpleConcretePowder {
-        BlockId toProtocol() {
-            return 12129;
-        }
-    }
+namespace PurpleConcretePowder {
+BlockId toProtocol() { return 12129; }
+}
 
 }

@@ -1,27 +1,26 @@
 #ifndef CUBICSERVER_WORLD_HPP
 #define CUBICSERVER_WORLD_HPP
 
-#include <vector>
 #include <algorithm>
-#include <thread>
-#include <memory>
 #include <functional>
+#include <memory>
+#include <thread>
+#include <vector>
 
-#include "Entity.hpp"
 #include "Chat.hpp"
-#include "logging/Logger.hpp"
-#include "world_storage/LevelData.hpp"
+#include "Entity.hpp"
 #include "TickClock.hpp"
+#include "logging/Logger.hpp"
 #include "thread_pool/Pool.hpp"
 #include "types.hpp"
+#include "world_storage/LevelData.hpp"
 
 class WorldGroup;
 class Dimension;
 
 constexpr int NB_SPAWN_CHUNKS = 19;
 
-class World
-{
+class World {
 public:
     World(WorldGroup *worldGroup);
 
@@ -37,6 +36,10 @@ public:
     virtual std::shared_ptr<Dimension> getDimension(const std::string_view &name) const;
     virtual void forEachEntity(std::function<void(Entity *)> callback);
     virtual void forEachEntityIf(std::function<void(Entity *)> callback, std::function<bool(const Entity *)> predicate);
+    virtual void forEachPlayer(std::function<void(Player *)> callback);
+    virtual void forEachPlayerIf(std::function<void(Player *)> callback, std::function<bool(const Entity *)> predicate);
+    virtual void forEachDimension(std::function<void(Dimension &)> callback);
+    virtual void forEachDimensionIf(std::function<void(Dimension &)> callback, std::function<bool(const Dimension &)> predicate);
 
     virtual const world_storage::LevelData &getLevelData() const;
     virtual void setLevelData(const world_storage::LevelData &value);
@@ -62,5 +65,4 @@ protected:
     thread_pool::Pool _generationPool;
 };
 
-
-#endif //CUBICSERVER_WORLD_HPP
+#endif // CUBICSERVER_WORLD_HPP

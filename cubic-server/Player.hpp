@@ -1,26 +1,27 @@
 #ifndef CUBICSERVER_PLAYER_HPP
 #define CUBICSERVER_PLAYER_HPP
 
+#include "Chat.hpp"
 #include "Client.hpp"
 #include "Entity.hpp"
-#include "protocol/ServerPackets.hpp"
-#include "logging/Logger.hpp"
+#include "LivingEntity.hpp"
 #include "SoundList.hpp"
-#include "types.hpp"
-#include "Chat.hpp"
 #include "TickClock.hpp"
+#include "logging/Logger.hpp"
+#include "math/Vector3.hpp"
 #include "protocol/ClientPackets.hpp"
+#include "protocol/ServerPackets.hpp"
+#include "types.hpp"
 #include "world_storage/ChunkColumn.hpp"
 
 class Client;
 class Entity;
 
-class Player : public Entity
-{
+class Player : public LivingEntity {
     friend class Client;
+
 public:
-    enum ChunkState
-    {
+    enum ChunkState {
         Unloaded,
         Loading,
         Loaded
@@ -43,10 +44,13 @@ public:
     void setKeepAliveId(long id);
     uint8_t keepAliveIgnored() const;
     void setKeepAliveIgnored(uint8_t ign);
+    void setOperator(const bool isOp);
+    bool isOperator() const;
 
 public:
-    virtual void setPosition(const Vector3<double> &pos) override;
-    virtual void setPosition(double x, double y, double z) override;
+    void setPosition(const Vector3<double> &pos) override;
+    void setPosition(double x, double y, double z) override;
+    void teleport(const Vector3<double> &pos) override;
 
 public:
     void disconnect(const chat::Message &reason = "Disconnected");
@@ -54,6 +58,8 @@ public:
     void sendPlayerInfoUpdate(const protocol::PlayerInfoUpdate &data);
     void sendPlayerInfoRemove(const protocol::PlayerInfoRemove &data);
     void sendSpawnPlayer(const protocol::SpawnPlayer &data);
+    void sendEntityVelocity(const protocol::EntityVelocity &data);
+    void sendHealth(void);
     void sendUpdateTime(const protocol::UpdateTime &data);
     void sendChatMessageResponse(const protocol::PlayerChatMessage &packet);
     void sendSystemChatMessage(const protocol::SystemChatMessage &packet);
@@ -132,18 +138,23 @@ private:
 
 private:
     void _processKeepAlive();
+    void _updateRenderedChunks(const Position2D &oldChunkPos, const Position2D &newChunkPos);
+    void _continueLoginSequence();
+    void _sendLoginMessage();
+    void _unloadChunk(int32_t x, int32_t z);
 
     Client *_cli;
     std::string _username;
     std::string _uuidString;
     u128 _uuid;
     long _keepAliveId;
-    uint8_t  _keepAliveIgnored;
+    uint8_t _keepAliveIgnored;
     uint16_t _heldItem;
     uint8_t _gamemode;
     TickClock _keepAliveClock;
     bool _isFlying;
+    bool _isOperator;
     std::unordered_map<Position2D, ChunkState> _chunks;
 };
 
-#endif //CUBICSERVER_PLAYER_HPP
+#endif // CUBICSERVER_PLAYER_HPP

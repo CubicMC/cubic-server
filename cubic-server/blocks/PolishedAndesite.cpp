@@ -2,10 +2,8 @@
 #include <stdexcept>
 
 namespace Blocks {
-    namespace PolishedAndesite {
-        BlockId toProtocol() {
-            return 7;
-        }
-    }
+namespace PolishedAndesite {
+BlockId toProtocol() { return 7; }
+}
 
 }

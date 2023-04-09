@@ -1,14 +1,14 @@
-#include <memory>
 #include <PerlinNoise.hpp>
+#include <memory>
 
 #include "ChunkColumn.hpp"
 #include "Palette.hpp"
-#include "protocol/serialization/addPrimaryType.hpp"
-#include "logging/Logger.hpp"
-#include "generation/overworld.hpp"
-#include "types.hpp"
 #include "Server.hpp"
 #include "blocks.hpp"
+#include "generation/overworld.hpp"
+#include "logging/Logger.hpp"
+#include "protocol/serialization/addPrimaryType.hpp"
+#include "types.hpp"
 
 namespace world_storage {
 
@@ -16,15 +16,13 @@ ChunkColumn::ChunkColumn(const Position2D &chunkPos):
     _chunkPos(chunkPos),
     _ready(false)
 {
-    for (auto &block: this->_blocks)
+    for (auto &block : this->_blocks)
         block = 0;
-    for (auto &biome: this->_biomes)
+    for (auto &biome : this->_biomes)
         biome = 0;
 }
 
-ChunkColumn::~ChunkColumn()
-{
-}
+ChunkColumn::~ChunkColumn() { }
 
 void ChunkColumn::updateBlock(Position pos, BlockId id)
 {
@@ -46,30 +44,15 @@ void ChunkColumn::updateBlock(Position pos, BlockId id)
     _blocks.at(calculateBlockIdx(pos)) = id;
 }
 
-BlockId ChunkColumn::getBlock(Position pos) const
-{
-    return _blocks.at(calculateBlockIdx(pos));
-}
+BlockId ChunkColumn::getBlock(Position pos) const { return _blocks.at(calculateBlockIdx(pos)); }
 
-const std::array<BlockId, SECTION_3D_SIZE * NB_OF_SECTIONS> &ChunkColumn::getBlocks() const
-{
-    return _blocks;
-}
+const std::array<BlockId, SECTION_3D_SIZE * NB_OF_SECTIONS> &ChunkColumn::getBlocks() const { return _blocks; }
 
-void ChunkColumn::updateSkyLight(Position pos, uint8_t light)
-{
-    _skyLights.at(calculateBlockIdx(pos)) = light;
-}
+void ChunkColumn::updateSkyLight(Position pos, uint8_t light) { _skyLights.at(calculateBlockIdx(pos)) = light; }
 
-uint8_t ChunkColumn::getSkyLight(Position pos) const
-{
-    return _skyLights.at(calculateBlockIdx(pos));
-}
+uint8_t ChunkColumn::getSkyLight(Position pos) const { return _skyLights.at(calculateBlockIdx(pos)); }
 
-const std::array<uint8_t, SECTION_3D_SIZE * NB_OF_SECTIONS> &ChunkColumn::getSkyLights() const
-{
-    return _skyLights;
-}
+const std::array<uint8_t, SECTION_3D_SIZE * NB_OF_SECTIONS> &ChunkColumn::getSkyLights() const { return _skyLights; }
 
 void ChunkColumn::updateBlockLight(Position pos, uint8_t light)
 {
@@ -83,61 +66,35 @@ uint8_t ChunkColumn::getBlockLight(Position pos) const
     // return _blockLights.at(pos.x + pos.z * 16 + pos.y * 16*16);
 }
 
-const std::array<uint8_t, SECTION_3D_SIZE * NB_OF_SECTIONS> &ChunkColumn::getBlockLights() const
-{
-    return _blockLights;
-}
+const std::array<uint8_t, SECTION_3D_SIZE * NB_OF_SECTIONS> &ChunkColumn::getBlockLights() const { return _blockLights; }
 
-void ChunkColumn::updateBiome(Position pos, uint8_t biome)
-{
-    _biomes.at(calculateBiomeIdx(pos)) = biome;
-}
+void ChunkColumn::updateBiome(Position pos, uint8_t biome) { _biomes.at(calculateBiomeIdx(pos)) = biome; }
 
-uint8_t ChunkColumn::getBiome(Position pos) const
-{
-    return _biomes.at(calculateBiomeIdx(pos));
-}
+uint8_t ChunkColumn::getBiome(Position pos) const { return _biomes.at(calculateBiomeIdx(pos)); }
 
-const std::array<uint8_t, BIOME_SECTION_3D_SIZE * NB_OF_SECTIONS> &ChunkColumn::getBiomes() const {
-    return _biomes;
-}
+const std::array<uint8_t, BIOME_SECTION_3D_SIZE * NB_OF_SECTIONS> &ChunkColumn::getBiomes() const { return _biomes; }
 
-void ChunkColumn::updateBlockEntity(Position pos, BlockEntity *BlockEntity) {
-}
+void ChunkColumn::updateBlockEntity(Position pos, BlockEntity *BlockEntity) { }
 
-void ChunkColumn::addBlockEntity(Position pos, BlockEntity *BlockEntity) {// entity must be a pointer or a reference ?
-    _blockEntities.push_back(BlockEntity);// TODO: see which of emplace_back of emplace_front is better or push_back or push_front
+void ChunkColumn::addBlockEntity(Position pos, BlockEntity *BlockEntity)
+{ // entity must be a pointer or a reference ?
+    _blockEntities.push_back(BlockEntity); // TODO: see which of emplace_back of emplace_front is better or push_back or push_front
     // _blockEntities.emplace_back(std::make_shared<BlockEntity>(BlockEntity));
 }
 
-void ChunkColumn::removeBlockEntity(Position pos) {
-}
+void ChunkColumn::removeBlockEntity(Position pos) { }
 
-BlockEntity *ChunkColumn::getBlockEntity(Position pos) {
-    return _blockEntities.at(0);
-}
+BlockEntity *ChunkColumn::getBlockEntity(Position pos) { return _blockEntities.at(0); }
 
-const std::vector<BlockEntity *> &ChunkColumn::getBlockEntities() const {
-    return _blockEntities;
-}
+const std::vector<BlockEntity *> &ChunkColumn::getBlockEntities() const { return _blockEntities; }
 
-int64_t ChunkColumn::getTick() {
-    return _tickData;
-}
+int64_t ChunkColumn::getTick() { return _tickData; }
 
-void ChunkColumn::setTick(int64_t tick) {
-    _tickData = tick;
-}
+void ChunkColumn::setTick(int64_t tick) { _tickData = tick; }
 
-Position2D ChunkColumn::getChunkPos() const
-{
-    return _chunkPos;
-}
+Position2D ChunkColumn::getChunkPos() const { return _chunkPos; }
 
-bool ChunkColumn::isReady() const
-{
-    return this->_ready;
-}
+bool ChunkColumn::isReady() const { return this->_ready; }
 
 // void ChunkColumn::updateEntity(std::size_t id, Entity *e) {
 //     _entities.at(id) = e;
@@ -170,19 +127,13 @@ bool ChunkColumn::isReady() const
 //     return _entities;
 // }
 
-void ChunkColumn::updateHeightMap(void)
-{
-}
+void ChunkColumn::updateHeightMap(void) { }
 
-const HeightMap &ChunkColumn::getHeightMap() const
-{
-    return _heightMap;
-}
+const HeightMap &ChunkColumn::getHeightMap() const { return _heightMap; }
 
 void ChunkColumn::generate(WorldType worldType, Seed seed)
 {
-    switch (worldType)
-    {
+    switch (worldType) {
     case WorldType::NORMAL:
         _generateOverworld(seed);
         break;
@@ -221,7 +172,8 @@ void ChunkColumn::_generateOverworld(Seed seed)
     for (int z = 0; z < SECTION_WIDTH; z++) {
         for (int x = 0; x < SECTION_WIDTH; x++) {
             for (int y = waterLevel; 0 < y; y--) {
-                if (getBlock({x, y, z}) == 1) break;
+                if (getBlock({x, y, z}) == 1)
+                    break;
                 updateBlock({x, y, z}, Blocks::Water::toProtocol(Blocks::Water::Properties::Level::ZERO));
             }
         }
@@ -233,7 +185,8 @@ void ChunkColumn::_generateOverworld(Seed seed)
             auto lastBlock = 0;
             for (int y = CHUNK_HEIGHT_MAX - 2; CHUNK_HEIGHT_MIN <= y; y--) {
                 auto block = getBlock({x, y, z});
-                if (block == Blocks::Air::toProtocol()) continue;
+                if (block == Blocks::Air::toProtocol())
+                    continue;
                 if (block == Blocks::Water::toProtocol(Blocks::Water::Properties::Level::ZERO)) {
                     lastBlock = Blocks::Water::toProtocol(Blocks::Water::Properties::Level::ZERO);
                     continue;
@@ -274,13 +227,9 @@ void ChunkColumn::_generateOverworld(Seed seed)
     }
 }
 
-void ChunkColumn::_generateNether(Seed seed)
-{
-}
+void ChunkColumn::_generateNether(Seed seed) { }
 
-void ChunkColumn::_generateEnd(Seed seed)
-{
-}
+void ChunkColumn::_generateEnd(Seed seed) { }
 
 void ChunkColumn::_generateFlat(Seed seed)
 {
@@ -299,77 +248,83 @@ void ChunkColumn::_generateFlat(Seed seed)
                     updateBlock({x, y + CHUNK_HEIGHT_MIN, z}, Blocks::OakLog::toProtocol(Blocks::OakLog::Properties::Axis::Y));
                 } else if (y == 7 || y == 8) {
                     switch (x + (z * 16)) {
-                        case 6 + 6 * 16:
-                        case 7 + 6 * 16:
-                        case 8 + 6 * 16:
-                        case 9 + 6 * 16:
-                        case 10 + 6 * 16:
-                            updateBlock({x, y + CHUNK_HEIGHT_MIN, z},
-                                Blocks::OakLeaves::toProtocol(
-                                    Blocks::OakLeaves::Properties::Distance::ONE,
-                                    Blocks::OakLeaves::Properties::Persistent::FALSE,
-                                    Blocks::OakLeaves::Properties::Waterlogged::FALSE));
-                            break;
-                        case 6 + 7 * 16:
-                        case 7 + 7 * 16:
-                        case 8 + 7 * 16:
-                        case 9 + 7 * 16:
-                        case 10 + 7 * 16:
-                            updateBlock({x, y + CHUNK_HEIGHT_MIN, z},
-                                Blocks::OakLeaves::toProtocol(
-                                    Blocks::OakLeaves::Properties::Distance::ONE,
-                                    Blocks::OakLeaves::Properties::Persistent::FALSE,
-                                    Blocks::OakLeaves::Properties::Waterlogged::FALSE));
-                            break;
-                        case 6 + 8 * 16:
-                        case 7 + 8 * 16:
-                        case 9 + 8 * 16:
-                        case 10 + 8 * 16:
-                            updateBlock({x, y + CHUNK_HEIGHT_MIN, z},
-                                Blocks::OakLeaves::toProtocol(
-                                    Blocks::OakLeaves::Properties::Distance::ONE,
-                                    Blocks::OakLeaves::Properties::Persistent::FALSE,
-                                    Blocks::OakLeaves::Properties::Waterlogged::FALSE));
-                            break;
-                        case 6 + 9 * 16:
-                        case 7 + 9 * 16:
-                        case 8 + 9 * 16:
-                        case 9 + 9 * 16:
-                        case 10 + 9 * 16:
-                            updateBlock({x, y + CHUNK_HEIGHT_MIN, z},
-                                Blocks::OakLeaves::toProtocol(
-                                    Blocks::OakLeaves::Properties::Distance::ONE,
-                                    Blocks::OakLeaves::Properties::Persistent::FALSE,
-                                    Blocks::OakLeaves::Properties::Waterlogged::FALSE));
-                            break;
-                        case 6 + 10 * 16:
-                        case 7 + 10 * 16:
-                        case 8 + 10 * 16:
-                        case 9 + 10 * 16:
-                        case 10 + 10 * 16:
-                            updateBlock({x, y + CHUNK_HEIGHT_MIN, z},
-                                Blocks::OakLeaves::toProtocol(
-                                    Blocks::OakLeaves::Properties::Distance::ONE,
-                                    Blocks::OakLeaves::Properties::Persistent::FALSE,
-                                    Blocks::OakLeaves::Properties::Waterlogged::FALSE));
-                            break;
-                        case 8 + 8 * 16:
-                            updateBlock({x, y + CHUNK_HEIGHT_MIN, z}, Blocks::OakLog::toProtocol(Blocks::OakLog::Properties::Axis::Y));
-                            break;
+                    case 6 + 6 * 16:
+                    case 7 + 6 * 16:
+                    case 8 + 6 * 16:
+                    case 9 + 6 * 16:
+                    case 10 + 6 * 16:
+                        updateBlock(
+                            {x, y + CHUNK_HEIGHT_MIN, z},
+                            Blocks::OakLeaves::toProtocol(
+                                Blocks::OakLeaves::Properties::Distance::ONE, Blocks::OakLeaves::Properties::Persistent::FALSE, Blocks::OakLeaves::Properties::Waterlogged::FALSE
+                            )
+                        );
+                        break;
+                    case 6 + 7 * 16:
+                    case 7 + 7 * 16:
+                    case 8 + 7 * 16:
+                    case 9 + 7 * 16:
+                    case 10 + 7 * 16:
+                        updateBlock(
+                            {x, y + CHUNK_HEIGHT_MIN, z},
+                            Blocks::OakLeaves::toProtocol(
+                                Blocks::OakLeaves::Properties::Distance::ONE, Blocks::OakLeaves::Properties::Persistent::FALSE, Blocks::OakLeaves::Properties::Waterlogged::FALSE
+                            )
+                        );
+                        break;
+                    case 6 + 8 * 16:
+                    case 7 + 8 * 16:
+                    case 9 + 8 * 16:
+                    case 10 + 8 * 16:
+                        updateBlock(
+                            {x, y + CHUNK_HEIGHT_MIN, z},
+                            Blocks::OakLeaves::toProtocol(
+                                Blocks::OakLeaves::Properties::Distance::ONE, Blocks::OakLeaves::Properties::Persistent::FALSE, Blocks::OakLeaves::Properties::Waterlogged::FALSE
+                            )
+                        );
+                        break;
+                    case 6 + 9 * 16:
+                    case 7 + 9 * 16:
+                    case 8 + 9 * 16:
+                    case 9 + 9 * 16:
+                    case 10 + 9 * 16:
+                        updateBlock(
+                            {x, y + CHUNK_HEIGHT_MIN, z},
+                            Blocks::OakLeaves::toProtocol(
+                                Blocks::OakLeaves::Properties::Distance::ONE, Blocks::OakLeaves::Properties::Persistent::FALSE, Blocks::OakLeaves::Properties::Waterlogged::FALSE
+                            )
+                        );
+                        break;
+                    case 6 + 10 * 16:
+                    case 7 + 10 * 16:
+                    case 8 + 10 * 16:
+                    case 9 + 10 * 16:
+                    case 10 + 10 * 16:
+                        updateBlock(
+                            {x, y + CHUNK_HEIGHT_MIN, z},
+                            Blocks::OakLeaves::toProtocol(
+                                Blocks::OakLeaves::Properties::Distance::ONE, Blocks::OakLeaves::Properties::Persistent::FALSE, Blocks::OakLeaves::Properties::Waterlogged::FALSE
+                            )
+                        );
+                        break;
+                    case 8 + 8 * 16:
+                        updateBlock({x, y + CHUNK_HEIGHT_MIN, z}, Blocks::OakLog::toProtocol(Blocks::OakLog::Properties::Axis::Y));
+                        break;
                     }
                 } else if (y == 9 || y == 10) {
                     switch (x + (z * 16)) {
-                        case 8 + 7 * 16:
-                        case 7 + 8 * 16:
-                        case 9 + 8 * 16:
-                        case 8 + 9 * 16:
-                        case 8 + 8 * 16:
-                            updateBlock({x, y + CHUNK_HEIGHT_MIN, z},
-                                Blocks::OakLeaves::toProtocol(
-                                    Blocks::OakLeaves::Properties::Distance::ONE,
-                                    Blocks::OakLeaves::Properties::Persistent::FALSE,
-                                    Blocks::OakLeaves::Properties::Waterlogged::FALSE));
-                            break;
+                    case 8 + 7 * 16:
+                    case 7 + 8 * 16:
+                    case 9 + 8 * 16:
+                    case 8 + 9 * 16:
+                    case 8 + 8 * 16:
+                        updateBlock(
+                            {x, y + CHUNK_HEIGHT_MIN, z},
+                            Blocks::OakLeaves::toProtocol(
+                                Blocks::OakLeaves::Properties::Distance::ONE, Blocks::OakLeaves::Properties::Persistent::FALSE, Blocks::OakLeaves::Properties::Waterlogged::FALSE
+                            )
+                        );
+                        break;
                     }
                 }
             }

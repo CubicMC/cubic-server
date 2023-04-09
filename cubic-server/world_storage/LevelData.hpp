@@ -11,10 +11,9 @@ namespace world_storage {
  *
  * Some stuff is not implemented yet (Or I just don't know
  * how it works at all/what is the purpose of it).
- * 
+ *
  */
-struct LevelData
-{
+struct LevelData {
     double borderCenterX;
     double borderCenterZ;
     double borderDamagePerBlock;

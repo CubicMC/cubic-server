@@ -2,10 +2,8 @@
 #include <stdexcept>
 
 namespace Blocks {
-    namespace Sponge {
-        BlockId toProtocol() {
-            return 466;
-        }
-    }
+namespace Sponge {
+BlockId toProtocol() { return 466; }
+}
 
 }

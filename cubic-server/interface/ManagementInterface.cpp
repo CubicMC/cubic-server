@@ -1,7 +1,7 @@
-#include <string>
 #include <iostream>
-#include <unistd.h>
+#include <string>
 #include <thread>
+#include <unistd.h>
 
 #include "ManagementInterface.hpp"
 #include "Server.hpp"
@@ -26,8 +26,8 @@ ManagementInterface::ManagementInterface()
     this->m_content.add2(this->m_sections);
     this->m_content.set_position(25);
 
-    int timeout_value = 100; //in ms
-    sigc::slot<bool>my_slot = sigc::mem_fun(*this, &ManagementInterface::on_timeout);
+    int timeout_value = 100; // in ms
+    sigc::slot<bool> my_slot = sigc::mem_fun(*this, &ManagementInterface::on_timeout);
     Glib::signal_timeout().connect(my_slot, timeout_value);
 
     show_all_children();
@@ -61,9 +61,6 @@ bool ManagementInterface::on_timeout()
     return true;
 }
 
-void ManagementInterface::stop()
-{
-    this->close();
-}
+void ManagementInterface::stop() { this->close(); }
 
-ManagementInterface::~ManagementInterface() {}
+ManagementInterface::~ManagementInterface() { }

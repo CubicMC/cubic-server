@@ -3,12 +3,10 @@
 
 #include "../WorldGroup.hpp"
 
-class DefaultWorldGroup : public WorldGroup
-{
+class DefaultWorldGroup : public WorldGroup {
 public:
     DefaultWorldGroup(std::shared_ptr<Chat> chat);
     void initialize() override;
 };
 
-
-#endif //CUBICSERVER_DEFAULTWORLDGROUP_HPP
+#endif // CUBICSERVER_DEFAULTWORLDGROUP_HPP

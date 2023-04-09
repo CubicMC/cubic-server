@@ -2,13 +2,12 @@
 #define INTERFACE_CONTAINER_HPP
 
 #include <gtkmm.h>
-#include <thread>
 #include <memory>
+#include <thread>
 
 #include "ManagementInterface.hpp"
 
-class InterfaceContainer
-{
+class InterfaceContainer {
 public:
     void launch(int argc, char **argv);
     void stop();

@@ -1,13 +1,14 @@
 #include "Block.hpp"
 #include <regex>
 
-world_storage::Block::Block()
-    : name("minecraft:air")
+world_storage::Block::Block():
+    name("minecraft:air")
 {
 }
 
-world_storage::Block::Block(const std::string &name, std::unordered_map<std::string, std::string> properties)
-    : name(name), properties(properties)
+world_storage::Block::Block(const std::string &name, std::unordered_map<std::string, std::string> properties):
+    name(name),
+    properties(properties)
 {
     static auto regName = std::regex("([a-z0-9\\.\\-_]+:)?([a-z0-9\\.\\-_/]+)(?:\\[(?:([a-zA-Z_]+=[a-zA-Z0-9_]+),?)*\\])?");
 
@@ -16,11 +17,7 @@ world_storage::Block::Block(const std::string &name, std::unordered_map<std::str
 
     auto namePos = name.find(":");
     auto propertiesPos = name.find("[");
-    this->name = (
-        namePos != std::string::npos
-        ? name.substr(0, propertiesPos)
-        : "minecraft:" + name.substr(0, propertiesPos)
-    );
+    this->name = (namePos != std::string::npos ? name.substr(0, propertiesPos) : "minecraft:" + name.substr(0, propertiesPos));
 
     if (!properties.empty()) {
         this->properties = properties;

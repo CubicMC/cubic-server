@@ -5,12 +5,15 @@
 
 namespace command_parser {
 struct Help : public CommandBase {
-    Help() : CommandBase("help", "/help [<command>] (help)", false) {}
+    Help():
+        CommandBase("help", "/help [<command>] (help)", false)
+    {
+    }
 
-    void autocomplete(std::vector<std::string>& args, Player *invoker) const override;
-    void execute(std::vector<std::string>& args, Player *invoker) const override;
-    void help(std::vector<std::string>& args, Player *invoker) const override;
+    void autocomplete(std::vector<std::string> &args, Player *invoker) const override;
+    void execute(std::vector<std::string> &args, Player *invoker) const override;
+    void help(std::vector<std::string> &args, Player *invoker) const override;
 };
 }
 
-#endif //CUBICSERVER_COMMANDPARSER_COMMANDS_HELP_HPP
+#endif // CUBICSERVER_COMMANDPARSER_COMMANDS_HELP_HPP

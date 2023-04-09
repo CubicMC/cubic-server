@@ -1,6 +1,7 @@
 #include "CommandParser.hpp"
 
-void command_parser::parseCommand(std::string &command, Player *invoker) {
+void command_parser::parseCommand(std::string &command, Player *invoker)
+{
     std::vector<std::string> args;
     size_t pos = command.find(' ');
 
@@ -16,13 +17,9 @@ void command_parser::parseCommand(std::string &command, Player *invoker) {
         commandName = commandName.erase(0, 1);
     args.erase(args.begin());
 
-    auto result = std::find_if(
-        Server::getInstance()->getCommands().begin(),
-        Server::getInstance()->getCommands().end(),
-        [commandName] (CommandBase *command) {
-            return command->_name == commandName;
-        }
-    );
+    auto result = std::find_if(Server::getInstance()->getCommands().begin(), Server::getInstance()->getCommands().end(), [commandName](CommandBase *command) {
+        return command->_name == commandName;
+    });
     if (result != Server::getInstance()->getCommands().end())
         (*result)->execute(args, invoker);
     else {

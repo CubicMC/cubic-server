@@ -1,19 +1,16 @@
 #ifndef THREADPOOL_TASK_HPP
 #define THREADPOOL_TASK_HPP
 
-#include <functional>
 #include <cstdint>
+#include <functional>
 
-namespace thread_pool
-{
+namespace thread_pool {
 
 class Pool;
 
-class Task
-{
+class Task {
 public:
-    enum Status
-    {
+    enum Status {
         Canceled,
         Waiting,
         Running,
@@ -61,5 +58,4 @@ private:
 
 } // namespace thread_pool
 
-
-#endif //THREADPOOL_TASK_HPP
+#endif // THREADPOOL_TASK_HPP

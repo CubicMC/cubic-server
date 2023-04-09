@@ -1,14 +1,11 @@
-#include <string>
 #include <iostream>
 #include <poll.h>
+#include <string>
 
 #include "CommandLine.hpp"
 #include "command_parser/CommandParser.hpp"
 
-void CommandLine::launch()
-{
-    this->_thread = std::thread(&CommandLine::run, this);
-}
+void CommandLine::launch() { this->_thread = std::thread(&CommandLine::run, this); }
 
 void CommandLine::stop()
 {
