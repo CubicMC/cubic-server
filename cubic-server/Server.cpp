@@ -229,7 +229,6 @@ void Server::_reloadConfig() {
     _motd = _config.getMotd();
     _whitelistEnabled = _config.getWhitelist();
     _enforceWhitelist = _config.getEnforceWhitelist();
-    return;
 }
 
 /*
@@ -243,9 +242,7 @@ void Server::_reloadWhitelist() {
         }
     } catch (const std::exception &e) {
         LERROR(e.what());
-        return;
     }
-    return;
 }
 
 /*
@@ -256,8 +253,7 @@ void Server::reload() {
     _reloadConfig();
     _reloadWhitelist();
     _enforceWhitelistOnReload();
-    /* Reload level.dat + datapacks + plugins */
-    return;
+    /* Reload datapacks + plugins */
 }
 
 /*

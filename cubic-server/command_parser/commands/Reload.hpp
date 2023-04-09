@@ -23,7 +23,6 @@
 **   - config.yml
 **   - whitelist.txt
 **   - .minecraft/saves/(world)/datapacks
-**   - level.dat
 **   - plugins
 */
 
