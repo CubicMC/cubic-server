@@ -92,8 +92,3 @@ target_link_libraries (${CMAKE_PROJECT_NAME} PRIVATE
     curl
     CRCpp
 )
-
-# if(GTEST)
-#     target_link_libraries(${CMAKE_PROJECT_NAME} PRIVATE rapidcheck rapidcheck_gtest)
-#     target_include_directories(${CMAKE_PROJECT_NAME} PRIVATE ${rapidcheck_SOURCE_DIR}/extras/gtest/include)
-# endif()
