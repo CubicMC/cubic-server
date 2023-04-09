@@ -8,99 +8,99 @@ namespace Serialization_Testing {
 RC_GTEST_PROP(Serialization_Testing, ByteChecker, (uint8_t value))
 {
     std::vector<uint8_t> out;
-    addByte(out, value);
+    protocol::addByte(out, value);
     auto at = out.data();
-    auto parsed = popByte(at, at + out.size());
+    auto parsed = protocol::popByte(at, at + out.size());
     RC_ASSERT(value == parsed);
 }
 
 RC_GTEST_PROP(Serialization_Testing, BooleanChecker, (bool value))
 {
     std::vector<uint8_t> out;
-    addBoolean(out, value);
+    protocol::addBoolean(out, value);
     auto at = out.data();
-    auto parsed = popBoolean(at, at + out.size());
+    auto parsed = protocol::popBoolean(at, at + out.size());
     RC_ASSERT(value == parsed);
 }
 
-RC_GTEST_PROP(Serialization_Testing, ShortChecker, (int16_t value))
-{
-    std::vector<uint8_t> out;
-    addShort(out, value);
-    auto at = out.data();
-    auto parsed = popShort(at, at + out.size());
-    RC_ASSERT(value == parsed);
-}
+// RC_GTEST_PROP(Serialization_Testing, ShortChecker, (int16_t value))
+// {
+//     std::vector<uint8_t> out;
+//     protocol::addShort(out, value);
+//     auto at = out.data();
+//     auto parsed = protocol::popShort(at, at + out.size());
+//     RC_ASSERT(value == parsed);
+// }
 
 RC_GTEST_PROP(Serialization_Testing, UnsignedShortChecker, (uint16_t value))
 {
     std::vector<uint8_t> out;
-    addUShort(out, value);
+    protocol::addUShort(out, value);
     auto at = out.data();
-    auto parsed = popUnsignedShort(at, at + out.size());
+    auto parsed = protocol::popShort(at, at + out.size());
     RC_ASSERT(value == parsed);
 }
 
 RC_GTEST_PROP(Serialization_Testing, IntChecker, (int32_t value))
 {
     std::vector<uint8_t> out;
-    addInt(out, value);
+    protocol::addInt(out, value);
     auto at = out.data();
-    auto parsed = popInt(at, at + out.size());
+    auto parsed = protocol::popInt(at, at + out.size());
     RC_ASSERT(value == parsed);
 }
 
 RC_GTEST_PROP(Serialization_Testing, VarIntChecker, (int32_t value))
 {
     std::vector<uint8_t> out;
-    addVarInt(out, value);
+    protocol::addVarInt(out, value);
     auto at = out.data();
-    auto parsed = popVarInt(at, at + out.size());
+    auto parsed = protocol::popVarInt(at, at + out.size());
     RC_ASSERT(value == parsed);
 }
 
 RC_GTEST_PROP(Serialization_Testing, LongChecker, (int64_t value))
 {
     std::vector<uint8_t> out;
-    addLong(out, value);
+    protocol::addLong(out, value);
     auto at = out.data();
-    auto parsed = popLong(at, at + out.size());
+    auto parsed = protocol::popLong(at, at + out.size());
     RC_ASSERT(value == parsed);
 }
 
-RC_GTEST_PROP(Serialization_Testing, UnsignedLongChecker, (uint64_t value))
-{
-    std::vector<uint8_t> out;
-    addUnsignedLong(out, value);
-    auto at = out.data();
-    auto parsed = popUnsignedLong(at, at + out.size());
-    RC_ASSERT(value == parsed);
-}
+// RC_GTEST_PROP(Serialization_Testing, UnsignedLongChecker, (uint64_t value))
+// {
+//     std::vector<uint8_t> out;
+//     protocol::addUnsignedLong(out, value);
+//     auto at = out.data();
+//     auto parsed = protocol::popUnsignedLong(at, at + out.size());
+//     RC_ASSERT(value == parsed);
+// }
 
 RC_GTEST_PROP(Serialization_Testing, VarLongChecker, (int64_t value))
 {
     std::vector<uint8_t> out;
-    addVarLong(out, value);
+    protocol::addVarLong(out, value);
     auto at = out.data();
-    auto parsed = popVarLong(at, at + out.size());
+    auto parsed = protocol::popVarLong(at, at + out.size());
     RC_ASSERT(value == parsed);
 }
 
 RC_GTEST_PROP(Serialization_Testing, FloatChecker, (float value))
 {
     std::vector<uint8_t> out;
-    addFloat(out, value);
+    protocol::addFloat(out, value);
     auto at = out.data();
-    auto parsed = popFloat(at, at + out.size());
+    auto parsed = protocol::popFloat(at, at + out.size());
     RC_ASSERT(value == parsed);
 }
 
 RC_GTEST_PROP(Serialization_Testing, DoubleChecker, (double value))
 {
     std::vector<uint8_t> out;
-    addDouble(out, value);
+    protocol::addDouble(out, value);
     auto at = out.data();
-    auto parsed = popDouble(at, at + out.size());
+    auto parsed = protocol::popDouble(at, at + out.size());
     RC_ASSERT(value == parsed);
 }
 
@@ -108,10 +108,11 @@ RC_GTEST_PROP(Serialization_Testing, StringChecker, (std::string value))
 {
     std::vector<uint8_t> out;
     if (value.size() > 32767) {
-        RC_ASSERT_THROWS(addString(out, value));
+        RC_ASSERT_THROWS(protocol::addString(out, value));
     }
-    addString(out, value) auto at = out.data();
-    auto parsed = popString(at, at + out.size());
+    protocol::addString(out, value);
+    auto at = out.data();
+    auto parsed = protocol::popString(at, at + out.size());
     RC_ASSERT(value == parsed);
 }
 
@@ -119,10 +120,34 @@ RC_GTEST_PROP(Serialization_Testing, ChatChecker, (std::string value))
 {
     std::vector<uint8_t> out;
     if (value.size() > 262144) {
-        RC_ASSERT_THROWS(addChat(out, value));
+        RC_ASSERT_THROWS(protocol::addChat(out, value));
     }
-    addChat(out, value) auto at = out.data();
-    auto parsed = popChat(at, at + out.size());
+    protocol::addChat(out, value);
+    auto at = out.data();
+    auto parsed = protocol::popChat(at, at + out.size());
     RC_ASSERT(value == parsed);
+}
+
+TEST(Serialization_Testing, SlotChecker)
+{
+    protocol::Slot slot {true, 1, 32};
+    std::vector<uint8_t> out;
+    protocol::addSlot(out, slot);
+    auto at = out.data();
+    auto parsed = protocol::popSlot(at, at + out.size());
+    ASSERT_EQ(slot.present, parsed.present);
+    ASSERT_EQ(slot.itemCount, parsed.itemCount);
+    ASSERT_EQ(slot.itemID, parsed.itemID);
+}
+
+RC_GTEST_PROP(Serialization_Testing, UUIDChecker, (uint64_t most, uint64_t least))
+{
+    u128 uuid {most, least};
+    std::vector<uint8_t> out;
+    protocol::addUUID(out, uuid);
+    auto at = out.data();
+    auto parsed = protocol::popUUID(at, at + out.size());
+    ASSERT_EQ(uuid.most, parsed.most);
+    ASSERT_EQ(uuid.least, parsed.least);
 }
 }

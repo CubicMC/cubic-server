@@ -10,9 +10,7 @@ if (GTEST)
 
     add_executable(
         serialization_test
-        addPrimaryType.hpp
-        popPrimaryType.hpp
-        ../ParseExceptions.hpp
+        typeSerialization_unittest.cpp
     )
 
     target_link_libraries(
@@ -20,6 +18,12 @@ if (GTEST)
         GTest::gtest_main
         rapidcheck
         rapidcheck_gtest
+    )
+
+    target_include_directories(
+        serialization_test
+        PRIVATE
+        ${CMAKE_CURRENT_SOURCE_DIR}/../../
     )
 
     include(GoogleTest)
