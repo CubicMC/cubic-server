@@ -40,8 +40,8 @@ void ConfigHandler::parse(const std::string &path)
         _whitelist = _baseNode["general"]["whitelist"].as<bool>();
         _enforceWhitelist = _baseNode["general"]["enforce-whitelist"].as<bool>();
     } catch (const std::exception &e) {
-        LERROR("Config parsing failed, exiting now!" << std::endl << e.what());
-        exit(1); // TODO: Use an exception
+        LERROR("config parsing failed : " << e.what());
+        throw std::runtime_error("config parsing failed");
     }
 }
 

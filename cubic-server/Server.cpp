@@ -216,11 +216,52 @@ void Server::_downloadFile(const std::string &url, const std::string &path)
 }
 
 /*
-** If the server gets a /reload, players not on the whitelist
-** must be kicked from the server if enforce-whitelist is true
-** & the whitelist is in effect
+**  Reloads the config if no error within the new file
 */
-void Server::enforceWhitelistOnReload()
+void Server::_reloadConfig() {
+    try {
+        _config.parse("./config.yml");
+    } catch (const std::exception &e) {
+        LERROR(e.what());
+        return;
+    }
+    _maxPlayer = _config.getMaxPlayers();
+    _motd = _config.getMotd();
+    _whitelistEnabled = _config.getWhitelist();
+    _enforceWhitelist = _config.getEnforceWhitelist();
+}
+
+/*
+**  Reloads the whitelist if no error within the new file
+*/
+void Server::_reloadWhitelist() {
+    try {
+        if (_whitelistEnabled) {
+            WhitelistHandling::Whitelist whitelistReloaded = WhitelistHandling::Whitelist();
+            _whitelist = whitelistReloaded;
+        }
+    } catch (const std::exception &e) {
+        LERROR(e.what());
+    }
+}
+
+/*
+**  Reloads the server. Used in the /reload command.
+**  More details in *Reload.hpp*.
+*/
+void Server::reload() {
+    _reloadConfig();
+    _reloadWhitelist();
+    _enforceWhitelistOnReload();
+    /* Reload datapacks + plugins */
+}
+
+/*
+**  If the server gets a /reload, players not on the whitelist
+**  must be kicked out from the server if enforce-whitelist is
+**   true & the whitelist is in effect
+*/
+void Server::_enforceWhitelistOnReload()
 {
     if (_whitelistEnabled && _enforceWhitelist) {
         for (auto &client : _clients) {

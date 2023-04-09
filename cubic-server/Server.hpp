@@ -46,7 +46,7 @@ public:
 
     void stop();
 
-    void enforceWhitelistOnReload();
+    void reload();
 
     const Configuration::ConfigHandler &getConfig() const { return _config; }
 
@@ -84,6 +84,9 @@ private:
     void _acceptLoop();
     void _stop();
     void _downloadFile(const std::string &url, const std::string &path);
+    void _reloadWhitelist();
+    void _reloadConfig();
+    void _enforceWhitelistOnReload();
 
 private:
     std::string _host;
@@ -104,8 +107,15 @@ private:
     WhitelistHandling::Whitelist _whitelist;
     std::unordered_map<std::string_view, WorldGroup *> _worldGroups;
     std::vector<CommandBase *> _commands = {
-        new command_parser::Help,      new command_parser::QuestionMark, new command_parser::Stop, new command_parser::Seed,
-        new command_parser::DumpChunk, new command_parser::Log,          new command_parser::Op,   new command_parser::Deop,
+        new command_parser::Help,
+        new command_parser::QuestionMark,
+        new command_parser::Stop,
+        new command_parser::Seed,
+        new command_parser::DumpChunk,
+        new command_parser::Log,
+        new command_parser::Op,
+        new command_parser::Deop,
+        new command_parser::Reload,
     };
     Blocks::GlobalPalette _globalPalette;
     Items::ItemConverter _itemConverter;
