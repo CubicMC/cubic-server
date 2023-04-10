@@ -464,12 +464,25 @@ void Persistence::loadRegion(int x, int z)
                 chunk->_heightMap.worldSurface.at(i) = worldSurface.at(i);
             }
 
+            regionStore.at({x, z})[{cx, cz}] = chunk;
+
             data->destroy();
             delete data;
         }
     }
     free(buf);
     LINFO("Loaded region ", x, " ", z);
+}
+
+bool Persistence::isChunkLoaded(int x, int z)
+{
+    const int rx = x / 32;
+    const int rz = z / 32;
+
+    this->loadRegion(rx, rz);
+    if (!regionStore.contains({rx, rz}))
+        return false;
+    return regionStore.at({rz, rz}).contains({x - rx * 32, z - rz * 32});
 }
 
 }

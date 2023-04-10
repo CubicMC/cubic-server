@@ -28,7 +28,7 @@ void command_parser::DumpChunk::execute(std::vector<std::string> &args, Player *
     LDEBUG("Chunk is loaded");
 
     auto chunk = dim->getChunk(std::stoi(args[0]), std::stoi(args[1]));
-    auto blocks = chunk.getBlocks();
+    auto blocks = chunk->getBlocks();
 
     for (const auto &block : blocks) {
         auto name = GLOBAL_PALETTE.fromProtocolIdToBlock(block).name;
@@ -59,7 +59,7 @@ void command_parser::DumpChunk::execute(std::vector<std::string> &args, Player *
     LDEBUG("--- CHUNK PACKET DATA ---");
 
     std::vector<uint8_t> data;
-    protocol::addChunkColumn(data, chunk);
+    protocol::addChunkColumn(data, *chunk);
 
     auto at = data.data();
     auto eof = data.data() + data.size() - 1;

@@ -122,7 +122,7 @@ std::shared_ptr<thread_pool::Task> Dimension::loadOrGenerateChunk(int x, int z, 
                     return player == entity;
                 }) == this->_loadingChunks[{x, z}].players.end())
                 continue;
-            reinterpret_cast<Player *>(entity)->sendChunkAndLightUpdate(this->_level.getChunkColumn(x, z));
+            reinterpret_cast<Player *>(entity)->sendChunkAndLightUpdate(*this->_level.getChunkColumn(x, z));
         }
         this->_loadingChunks.erase({x, z});
         this->_loadingChunksMutex.unlock();
@@ -182,7 +182,7 @@ void Dimension::removePlayerFromLoadingChunk(const Position2D &pos, Player *play
     this->_loadingChunksMutex.unlock();
 }
 
-world_storage::ChunkColumn &Dimension::getChunk(int x, int z) { return this->_level.getChunkColumn(x, z); }
+world_storage::ChunkColumn *Dimension::getChunk(int x, int z) { return this->_level.getChunkColumn(x, z); }
 
 void Dimension::spawnPlayer(Player *current)
 {
@@ -210,7 +210,7 @@ void Dimension::spawnPlayer(Player *current)
 void Dimension::blockUpdate(Position position, int32_t id)
 {
     LDEBUG("Dimension block update ", position, " -> ", id, ")");
-    auto &chunk = this->_level.getChunkColumnFromBlockPos(position.x, position.z);
+    auto chunk = this->_level.getChunkColumnFromBlockPos(position.x, position.z);
 
     // Weird ass modulo to get the correct block position in the chunk
     auto x = position.x % 16;
@@ -220,7 +220,7 @@ void Dimension::blockUpdate(Position position, int32_t id)
     if (z < 0)
         z += 16;
 
-    chunk.updateBlock({x, position.y, z}, id);
+    chunk->updateBlock({x, position.y, z}, id);
     this->forEachPlayer([&position, &id](Player *player) {
         player->sendBlockUpdate({position, id});
     });

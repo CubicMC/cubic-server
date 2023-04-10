@@ -40,9 +40,8 @@ private:
      */
     void uncompressFile(const std::string &filepath, std::vector<uint8_t> &data);
 
-    std::unordered_map<Position2D, std::unordered_map<Position2D, ChunkColumn *>> regionStore;
-
 public:
+    std::unordered_map<Position2D, std::unordered_map<Position2D, ChunkColumn *>> regionStore; // TODO(huntears): Get proper getter/setter
     /**
      * @brief Construct a new Persistence object
      *
@@ -114,6 +113,8 @@ public:
     PlayerData loadPlayerData(const Player *player);
 
     void loadRegion(int x, int z);
+
+    bool isChunkLoaded(int x, int z);
 };
 
 }

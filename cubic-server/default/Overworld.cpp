@@ -48,8 +48,15 @@ void Overworld::stop()
 
 void Overworld::generateChunk(int x, int z)
 {
+    if (persistence.isChunkLoaded(x, z)) {
+        LINFO("Loading chunk ", x, " ", z);
+        _level.addChunkColumn({x, z}, persistence.regionStore.at({x / 32, z / 32}).at({x - ((x / 32) * 32), z - ((z / 32) * 32)}));
+        LINFO("Chunk loaded ", x, " ", z);
+        return;
+    }
+
     LDEBUG("Generate - Overworld (", x, ", ", z, ")");
     Position2D pos {x, z};
-    _level.addChunkColumn(pos).generate(world_storage::WorldType::NORMAL, this->getWorld()->getSeed());
+    _level.addChunkColumn(pos)->generate(world_storage::WorldType::NORMAL, this->getWorld()->getSeed());
     LDEBUG("Chunk generated (", x, ", ", z, ")");
 }

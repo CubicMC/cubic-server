@@ -4,11 +4,13 @@
 #include <future>
 
 #include "../Dimension.hpp"
+#include "world_storage/Persistence.hpp"
 
 class Overworld : public Dimension {
 public:
     Overworld(World *world):
-        Dimension(world)
+        Dimension(world),
+        persistence("world") // TODO(huntears): Make this changeable through the config
     {
     }
     void tick() override;
@@ -18,6 +20,7 @@ public:
 
 private:
     std::future<void> _worldGenFuture;
+    world_storage::Persistence persistence;
 };
 
 #endif // CUBICSERVER_OVERWORLD_HPP

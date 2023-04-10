@@ -387,7 +387,7 @@ void Player::sendChunkAndLightUpdate(int32_t x, int32_t z)
         return;
     }
 
-    this->sendChunkAndLightUpdate(this->_dim->getChunk(x, z));
+    this->sendChunkAndLightUpdate(*this->_dim->getChunk(x, z));
 }
 
 void Player::sendChunkAndLightUpdate(const world_storage::ChunkColumn &chunk)

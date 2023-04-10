@@ -35,14 +35,14 @@ void signalHandler(int sig)
 
 int main(int argc, char **argv)
 {
-    Server::getInstance()->_globalPalette.initialize(std::string("blocks-") + MC_VERSION + ".json");
-    LINFO("GlobalPalette initialized");
-    world_storage::Persistence augh("world");
+    // Server::getInstance()->_globalPalette.initialize(std::string("blocks-") + MC_VERSION + ".json");
+    // LINFO("GlobalPalette initialized");
+    // world_storage::Persistence augh("world");
     // u128 uuid = {0xbe74ad46b9c14fc3, 0xb63024159d0de399};
     // auto bruh = augh.loadPlayerData(uuid);
     // std::cout << bruh.uuid.toString() << std::endl;
-    augh.loadRegion(0, 0);
-    return 0;
+    // augh.loadRegion(0, 0);
+    // return 0;
     argparse::ArgumentParser program = argParser(argc, argv);
     auto srv = Server::getInstance();
 
