@@ -41,7 +41,7 @@ constexpr int BIOME_PER_CHUNK = BIOME_SECTION_3D_SIZE * NB_OF_SECTIONS;
 
 // Heightmap
 constexpr int HEIGHTMAP_BITS = bitsNeeded(CHUNK_HEIGHT + 1);
-constexpr int HEIGHTMAP_ARRAY_SIZE = SECTION_2D_SIZE * HEIGHTMAP_BITS / 64;
+constexpr int HEIGHTMAP_ARRAY_SIZE = (SECTION_2D_SIZE * HEIGHTMAP_BITS / 64) + 1; // TODO(huntears): Calculate this properly
 
 // TODO: Accept negative position for y
 constexpr uint64_t calculateBlockIdx(const Position &pos)
@@ -121,6 +121,8 @@ public:
     const HeightMap &getHeightMap() const;
 
     void generate(WorldType worldType, Seed seed);
+
+    friend class Persistence;
 
 private:
     std::array<BlockId, BLOCKS_PER_CHUNK> _blocks;

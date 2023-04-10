@@ -3,11 +3,13 @@
 
 #include <mutex>
 #include <string>
+#include <unordered_map>
 #include <vector>
 
 #include "LevelData.hpp"
 #include "Player.hpp"
 #include "types.hpp"
+#include "world_storage/ChunkColumn.hpp"
 #include "world_storage/PlayerData.hpp"
 
 namespace world_storage {
@@ -37,6 +39,8 @@ private:
      * @param data Output data vector
      */
     void uncompressFile(const std::string &filepath, std::vector<uint8_t> &data);
+
+    std::unordered_map<Position2D, std::unordered_map<Position2D, ChunkColumn *>> regionStore;
 
 public:
     /**

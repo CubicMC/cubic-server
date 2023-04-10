@@ -216,6 +216,8 @@ public:
 
     constexpr std::vector<Base *> &getValues() { return _value; }
 
+    constexpr const std::vector<Base *> &getValues() const { return _value; }
+
     [[nodiscard]] constexpr std::vector<uint8_t> serialize() const override
     {
         std::vector<uint8_t> data;
@@ -455,6 +457,8 @@ public:
     ~LongArray() override = default;
 
     [[nodiscard]] constexpr std::vector<int64_t> &getValues() { return _value; }
+
+    [[nodiscard]] constexpr const std::vector<int64_t> &getValues() const { return _value; }
 
     [[nodiscard]] constexpr std::vector<uint8_t> serialize() const override
     {

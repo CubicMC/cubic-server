@@ -1,6 +1,11 @@
 #include "Persistence.hpp"
+#include "Server.hpp"
+#include "World.hpp"
 #include "logging/Logger.hpp"
 #include "nbt.hpp"
+#include "types.hpp"
+#include "world_storage/Block.hpp"
+#include "world_storage/ChunkColumn.hpp"
 #include "world_storage/LevelData.hpp"
 #include "world_storage/PlayerData.hpp"
 #include <cstdint>
@@ -286,6 +291,13 @@ void Persistence::loadRegion(int x, int z)
 {
     std::unique_lock<std::mutex> lock(accessMutex);
 
+    if (regionStore.find({x, z}) != regionStore.end())
+        return; // TODO(huntears): Change this later when we can unload regions
+
+    LINFO("Loading region ", x, " ", z);
+
+    regionStore[{x, z}] = {};
+
     const std::string regionSlice = "r." + std::to_string(x) + "." + std::to_string(z) + ".mca";
     const std::filesystem::path file = std::filesystem::path(level_name) / "region" / regionSlice;
 
@@ -326,12 +338,14 @@ void Persistence::loadRegion(int x, int z)
 
     const RegionHeader *header = (const RegionHeader *) fileContents.data();
 
-    std::cout << "offset : 0x" << std::hex << header->locationTable[0].getOffset() << std::endl;
-    std::cout << "size : 0x" << std::hex << (int) header->locationTable[0].getSize() << std::endl;
+    // std::cout << "offset : 0x" << std::hex << header->locationTable[0].getOffset() << std::endl;
+    // std::cout << "size : 0x" << std::hex << (int) header->locationTable[0].getSize() << std::endl;
 
-    for (uint16_t x = 0; x < maxXPerRegion; x++) {
-        for (uint16_t z = 0; z < maxZPerRegion; z++) {
-            const uint16_t currentOffset = x + z * maxXPerRegion;
+    char *buf = (char *) malloc(100000);
+    const auto globalPalette = Server::getInstance()->getGlobalPalette();
+    for (uint16_t cx = 0; cx < maxXPerRegion; cx++) {
+        for (uint16_t cz = 0; cz < maxZPerRegion; cz++) {
+            const uint16_t currentOffset = cx + cz * maxXPerRegion;
 
             if (header->locationTable[currentOffset].isEmpty())
                 continue;
@@ -340,10 +354,12 @@ void Persistence::loadRegion(int x, int z)
 
             const ChunkHeader *cHeader = (const ChunkHeader *) (fileContents.data() + chunkOffset);
 
-            std::cout << "chunk length : 0x" << std::hex << cHeader->getLength() << std::endl;
-            std::cout << "chunk compression : 0x" << std::hex << (int) cHeader->getCompressionScheme() << std::endl;
+            // std::cout << "chunk x : " << std::dec << cx << std::endl;
+            // std::cout << "chunk z : " << std::dec << cz << std::endl;
+            // std::cout << "chunk offset : 0x" << std::hex << chunkOffset << std::endl;
+            // std::cout << "chunk length : 0x" << std::hex << cHeader->getLength() << std::endl;
+            // std::cout << "chunk compression : 0x" << std::hex << (int) cHeader->getCompressionScheme() << std::endl;
 
-            char *buf = (char *) malloc(100000);
             int ret = inflatebruh(((char *) cHeader) + sizeof(*cHeader), cHeader->getLength() - 1, buf, 100000);
 
             if (ret == Z_BUF_ERROR) {
@@ -353,19 +369,107 @@ void Persistence::loadRegion(int x, int z)
             } else if (ret == Z_DATA_ERROR) {
                 std::cout << "bruh3" << std::endl;
             }
-            std::cout << "xd : " << ret << std::endl;
+            // std::cout << "xd : " << ret << std::endl;
 
             uint8_t *at = (uint8_t *) buf;
             uint8_t *end = ((uint8_t *) buf) + ret - 1;
 
             auto data = nbt::parseCompound(at, end);
 
-            std::cout << std::hex << data << std::endl;
+            if (getConstElement<nbt::String, nbt::TagType::String>(data, "Status")->get_value() != "full")
+                continue; // TODO(huntears): Handle non complete chunk later somehow
 
-            std::cout << std::dec << ((nbt::Int *) data->getValue("DataVersion"))->get_value() << std::endl;
-            return;
+            // std::cout << std::hex << data << std::endl;
+
+            // Fill a chunk
+            const auto chunkX = cx + x * 32;
+            const auto chunkZ = cz + z * 32;
+            auto chunk = new ChunkColumn({chunkX, chunkZ});
+
+            // Section
+            const auto sections = getConstElement<nbt::List, nbt::TagType::List>(data, "sections");
+            for (const nbt::Base *i : sections->getValues()) {
+                if (i->getType() != nbt::TagType::Compound)
+                    throw std::runtime_error("");
+                const nbt::Compound *section = (const nbt::Compound *) i;
+                const auto blockStates = getConstElement<nbt::Compound, nbt::TagType::Compound>(section, "block_states");
+                const auto palette = getConstElement<nbt::List, nbt::TagType::List>(blockStates, "palette");
+                const auto sizePalette = palette->getValues().size();
+
+                BlockPalette paletteMapping;
+                for (const auto ii : palette->getValues()) {
+                    if (ii->getType() != nbt::TagType::Compound)
+                        throw std::runtime_error("");
+                    const nbt::Compound *pal = (const nbt::Compound *) ii;
+
+                    Blocks::Block __tmpBlock = {getConstElement<nbt::String, nbt::TagType::String>(pal, "Name")->get_value(), {}};
+
+                    if (pal->hasValue("Properties")) {
+                        for (const auto iii : getConstElement<nbt::Compound, nbt::TagType::Compound>(pal, "Properties")->getValues()) {
+                            if (iii->getType() != nbt::TagType::String)
+                                throw std::runtime_error("");
+                            __tmpBlock.properties.push_back({iii->getName(), ((const nbt::String *) iii)->get_value()});
+                        }
+                    }
+
+                    paletteMapping.add(globalPalette.fromBlockToProtocolId(__tmpBlock));
+                }
+
+                // for (const auto blk : getConstElement<nbt::LongArray, nbt::TagType::LongArray>(blockStates, "data")->getValues()) { }
+
+                if (!blockStates->hasValue("data"))
+                    continue; // TODO(huntears): Handle single value palettes properly
+
+                auto dataArray = getConstElement<nbt::LongArray, nbt::TagType::LongArray>(blockStates, "data")->getValues();
+
+                auto bitsPerBlock = paletteMapping.getBytePerEntry();
+
+                uint32_t individualValueMask = (uint32_t) ((1 << bitsPerBlock) - 1);
+
+                for (int ly = 0; ly < SECTION_HEIGHT; ly++) {
+                    for (int lz = 0; lz < SECTION_WIDTH; lz++) {
+                        for (int lx = 0; lx < SECTION_WIDTH; lx++) {
+                            int blockNumber = (((ly * SECTION_HEIGHT) + lz) * SECTION_WIDTH) + lx;
+                            int startLong = (blockNumber * bitsPerBlock) / 64;
+                            int startOffset = (blockNumber * bitsPerBlock) % 64;
+                            int endLong = ((blockNumber + 1) * bitsPerBlock - 1) / 64;
+
+                            uint16_t data;
+                            if (startLong == endLong) {
+                                data = (uint16_t) (dataArray[startLong] >> startOffset);
+                            } else {
+                                int endOffset = 64 - startOffset;
+                                data = (uint16_t) (dataArray[startLong] >> startOffset | dataArray[endLong] << endOffset);
+                            }
+                            data &= individualValueMask;
+
+                            auto sectionY = getConstElement<nbt::Byte, nbt::TagType::Byte>(section, "Y");
+
+                            chunk->_blocks.at(calculateBlockIdx({lx, ly + 16 * sectionY->get_value(), lz})) = paletteMapping.getGlobalId(data);
+                        }
+                    }
+                }
+            }
+
+            // Heightmaps
+            const auto heightmaps = getConstElement<nbt::Compound, nbt::TagType::Compound>(data, "Heightmaps");
+
+            const auto motionBlocking = getConstElement<nbt::LongArray, nbt::TagType::LongArray>(heightmaps, "MOTION_BLOCKING")->getValues();
+            for (auto i = 0; i < motionBlocking.size(); i++) {
+                chunk->_heightMap.motionBlocking.at(i) = motionBlocking.at(i);
+            }
+
+            const auto worldSurface = getConstElement<nbt::LongArray, nbt::TagType::LongArray>(heightmaps, "WORLD_SURFACE")->getValues();
+            for (auto i = 0; i < worldSurface.size(); i++) {
+                chunk->_heightMap.worldSurface.at(i) = worldSurface.at(i);
+            }
+
+            data->destroy();
+            delete data;
         }
     }
+    free(buf);
+    LINFO("Loaded region ", x, " ", z);
 }
 
 }

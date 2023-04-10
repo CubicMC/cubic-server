@@ -36,6 +36,13 @@ public:
         return std::distance(_nameToId.begin(), it);
     }
 
+    constexpr uint32_t getGlobalId(uint32_t localId) const
+    {
+        if (_nameToId.size() <= localId)
+            return 0;
+        return _nameToId.at(localId);
+    }
+
     virtual uint8_t getBytePerEntry() const = 0;
 
     constexpr uint64_t size() const { return _nameToId.size(); }

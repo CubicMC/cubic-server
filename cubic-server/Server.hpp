@@ -106,6 +106,7 @@ private:
     Configuration::ConfigHandler _config;
     WhitelistHandling::Whitelist _whitelist;
     std::unordered_map<std::string_view, WorldGroup *> _worldGroups;
+    // clang-format off
     std::vector<CommandBase *> _commands = {
         new command_parser::Help,
         new command_parser::QuestionMark,
@@ -117,6 +118,8 @@ private:
         new command_parser::Deop,
         new command_parser::Reload,
     };
+    // clang-format on
+public:
     Blocks::GlobalPalette _globalPalette;
     Items::ItemConverter _itemConverter;
 };
