@@ -110,7 +110,7 @@ constexpr int64_t popVarLong(uint8_t *&at, uint8_t *eof)
         if (at > eof)
             throw PacketEOF("Not enough data in packet to parse a VarInt");
         currentByte = *at++;
-        value |= (currentByte & SEGMENT_BITS) << position;
+        value |= ((uint64_t) (currentByte & SEGMENT_BITS)) << position;
 
         if ((currentByte & CONTINUE_BIT) == 0)
             return value;
@@ -118,7 +118,7 @@ constexpr int64_t popVarLong(uint8_t *&at, uint8_t *eof)
         position += 7;
 
         if (position >= 64)
-            throw VarIntOverflow("VarInt exceeds max length");
+            throw VarIntOverflow("VarLong exceeds max length"); // TOOO(huntears): Change this to its proper exception
     }
 }
 
@@ -188,8 +188,6 @@ constexpr std::string popString(uint8_t *&at, uint8_t *eof)
 
     if (size > eof - at + 1)
         throw PacketEOF("Not enough data in packet to parse a String");
-    if (size == 0)
-        throw ZeroLengthString("Zero length strings can't be parsed");
     std::string value(at, at + size);
     at += size;
     return value;

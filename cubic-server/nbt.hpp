@@ -434,8 +434,8 @@ public:
     {
         Base::pre_serialize(data, include_name);
         // Serialize the length of the data
-        data.push_back(_value.size() >> 8);
-        data.push_back(_value.size() & 0xFF);
+        for (int i = 0; i < 4; i++)
+            data.push_back((_value.size() >> (24 - i * 8)) & 0xFF);
         // Serialize the ints
         for (auto d : _value) {
             for (int i = 0; i < 4; i++)
@@ -467,8 +467,8 @@ public:
     {
         Base::pre_serialize(data, include_name);
         // Serialize the length of the data
-        data.push_back(_value.size() >> 8);
-        data.push_back(_value.size() & 0xFF);
+        for (int i = 0; i < 4; i++)
+            data.push_back((_value.size() >> (24 - i * 8)) & 0xFF);
         // Serialize the longs
         for (auto d : _value) {
             for (int i = 0; i < 8; i++)

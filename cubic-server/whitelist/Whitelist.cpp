@@ -20,25 +20,6 @@ std::string u128_to_uuidString(u128 u)
     return str;
 }
 
-// u128 uuidString_to_u128(std::string str)
-// {
-//     std::stringstream sstr;
-//     std::istringstream isstr;
-//     u128 u;
-//     uint64_t u_most;
-//     uint64_t u_least;
-
-//     str.erase(std::remove(str.begin(), str.end(), '-'), str.end());
-//     isstr.str(str);
-//     isstr >> std::hex >> sstr;
-//     u_most = strtoull(sstr.str().substr(0, 16));
-//     u_least = strtoull(sstr.str().substr(15, 16));
-//     u.most = u_most;
-//     u.least = u_least;
-
-//     return u;
-// }
-
 namespace WhitelistHandling {
 static void defaultWhitelistContent(const std::string &path)
 {
@@ -52,7 +33,12 @@ static void defaultWhitelistContent(const std::string &path)
 void Whitelist::_parseWhitelist(const std::string &path)
 {
     std::ifstream whitelistFile(path);
-    _whitelistData = nlohmann::json::parse(whitelistFile);
+    try {
+        _whitelistData = nlohmann::json::parse(whitelistFile);
+    } catch(const std::exception& e) {
+        LERROR("whitelist parsing failed : " << e.what());
+        throw std::runtime_error("whitelist parsing failed");
+    }
     whitelistFile.close();
 }
 
