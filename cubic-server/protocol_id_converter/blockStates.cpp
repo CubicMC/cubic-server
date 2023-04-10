@@ -1,5 +1,7 @@
 #include <filesystem>
 #include <fstream>
+#include <iterator>
+#include <type_traits>
 
 #include "blockStates.hpp"
 #include "logging/Logger.hpp"
@@ -16,16 +18,16 @@ void Blocks::GlobalPalette::initialize(const std::string &path)
         b.name = block.key();
         if (block.value().size() == 2) {
             int maxThingy = 0; // Sorry for the name I don't how to call it
-            int wheight = 1;
-            for (auto property : block.value()["properties"].items()) {
+            int weight = 1;
+
+            for (auto property = block.value()["properties"].rbegin(); property != block.value()["properties"].rend(); ++property) {
                 Blocks::InternalProperty p;
                 p.name = property.key();
-                p.baseWeight = wheight;
-                for (auto value : property.value()) {
+                p.baseWeight = weight;
+                for (auto value : property.value())
                     p.values.push_back(value);
-                }
-                maxThingy += wheight * (p.values.size() - 1);
-                wheight = maxThingy + 1;
+                maxThingy += weight * (p.values.size() - 1);
+                weight = maxThingy + 1;
                 b.properties.push_back(p);
             }
         }
