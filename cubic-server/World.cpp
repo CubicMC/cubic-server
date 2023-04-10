@@ -275,10 +275,5 @@ int World::addTime(int time)
 */
 void World::setTime(int time)
 {
-    if (_time <= time) {
-        _age += _time;
-    } else {
-        _age -= _time;
-    }
     _time = time;
 }
