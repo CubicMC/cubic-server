@@ -200,8 +200,6 @@ ByteArray *nbt::parseByteArray(uint8_t *&at, const uint8_t *end, bool include_na
         data.push_back(val);
     }
 
-    at += size;
-
     return new ByteArray(name, data);
 }
 

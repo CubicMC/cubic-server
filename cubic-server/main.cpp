@@ -9,6 +9,7 @@
 #include "interface/InterfaceContainer.hpp"
 #include "logging/Logger.hpp"
 #include "protocol/ServerPackets.hpp"
+#include "world_storage/Persistence.hpp"
 
 argparse::ArgumentParser argParser(int argc, char **argv)
 {
@@ -34,6 +35,12 @@ void signalHandler(int sig)
 
 int main(int argc, char **argv)
 {
+    world_storage::Persistence augh("world");
+    // u128 uuid = {0xbe74ad46b9c14fc3, 0xb63024159d0de399};
+    // auto bruh = augh.loadPlayerData(uuid);
+    // std::cout << bruh.uuid.toString() << std::endl;
+    augh.loadRegion(0, 0);
+    return 0;
     argparse::ArgumentParser program = argParser(argc, argv);
     auto srv = Server::getInstance();
 

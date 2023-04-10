@@ -1,33 +1,36 @@
 #include "Persistence.hpp"
+#include "logging/Logger.hpp"
 #include "nbt.hpp"
 #include "world_storage/LevelData.hpp"
+#include "world_storage/PlayerData.hpp"
 #include <cstdint>
+#include <filesystem>
 #include <mutex>
+#include <netinet/in.h>
 #include <stdexcept>
+#include <string>
 #include <string_view>
 #include <vector>
 #include <zlib.h>
-#include <filesystem>
-#include "logging/Logger.hpp"
-#include "world_storage/PlayerData.hpp"
 
 // TODO(huntears): Add better error messages
-#define GET_VALUE(type, dst, src, root) do { \
-        auto __tmp = root->getValue(src); \
+#define GET_VALUE(type, dst, src, root)                       \
+    do {                                                      \
+        auto __tmp = root->getValue(src);                     \
         if (!__tmp || __tmp->getType() != nbt::TagType::type) \
-            throw std::runtime_error(""); \
-        dest-> dst = ((nbt::type *)__tmp)->get_value(); \
+            throw std::runtime_error("");                     \
+        dest->dst = ((nbt::type *) __tmp)->get_value();       \
     } while (0)
 
-#define GET_VALUE_TO(type, dst, src, root, dstroot) do { \
-        auto __tmp = root->getValue(src); \
+#define GET_VALUE_TO(type, dst, src, root, dstroot)           \
+    do {                                                      \
+        auto __tmp = root->getValue(src);                     \
         if (!__tmp || __tmp->getType() != nbt::TagType::type) \
-            throw std::runtime_error(""); \
-        dstroot . dst = ((nbt::type *)__tmp)->get_value(); \
+            throw std::runtime_error("");                     \
+        dstroot.dst = ((nbt::type *) __tmp)->get_value();     \
     } while (0)
 
-template <typename T, nbt::TagType Tag>
-static inline const T *getConstElement(const nbt::Compound *root, const std::string &name)
+template <typename T, nbt::TagType Tag> static inline const T *getConstElement(const nbt::Compound *root, const std::string &name)
 {
     auto __tmp = root->getValue(name);
     if (!__tmp || __tmp->getType() != Tag)
@@ -39,8 +42,8 @@ using namespace world_storage;
 
 namespace world_storage {
 
-Persistence::Persistence(const std::string &level_folder_name)
-    : level_name(level_folder_name)
+Persistence::Persistence(const std::string &level_folder_name):
+    level_name(level_folder_name)
 {
 }
 
@@ -80,10 +83,10 @@ void Persistence::loadLevelData(LevelData *dest)
     nbt::Compound *root = nbt::parseCompound(start, start + unzippedData.size() - 1);
 
     // Map data
-    auto data = (nbt::Compound *)root->getValue("Data");
+    auto data = (nbt::Compound *) root->getValue("Data");
     if (!data)
-        throw std::runtime_error(""); //TODO(huntears): Better error message
-    
+        throw std::runtime_error(""); // TODO(huntears): Better error message
+
     // TODO(huntears): Find a better way to map the values
     GET_VALUE(Double, borderCenterX, "BorderCenterX", data);
     GET_VALUE(Double, borderCenterZ, "BorderCenterZ", data);
@@ -179,9 +182,9 @@ void Persistence::loadPlayerData(u128 uuid, PlayerData *dest)
         for (auto i : __tmpList->getValues())
             if (i->getType() != nbt::TagType::Double)
                 throw std::runtime_error(""); // TODO(huntears): Better error message
-        dest->motion.x = ((nbt::Double *)__tmpList->getValues().at(0))->get_value();
-        dest->motion.y = ((nbt::Double *)__tmpList->getValues().at(1))->get_value();
-        dest->motion.z = ((nbt::Double *)__tmpList->getValues().at(2))->get_value();
+        dest->motion.x = ((nbt::Double *) __tmpList->getValues().at(0))->get_value();
+        dest->motion.y = ((nbt::Double *) __tmpList->getValues().at(1))->get_value();
+        dest->motion.z = ((nbt::Double *) __tmpList->getValues().at(2))->get_value();
     }
     GET_VALUE(Byte, onGround, "OnGround", root);
     GET_VALUE(Int, portalCooldown, "PortalCooldown", root);
@@ -192,9 +195,9 @@ void Persistence::loadPlayerData(u128 uuid, PlayerData *dest)
         for (auto i : __tmpList->getValues())
             if (i->getType() != nbt::TagType::Double)
                 throw std::runtime_error(""); // TODO(huntears): Better error message
-        dest->pos.x = ((nbt::Double *)__tmpList->getValues().at(0))->get_value();
-        dest->pos.y = ((nbt::Double *)__tmpList->getValues().at(1))->get_value();
-        dest->pos.z = ((nbt::Double *)__tmpList->getValues().at(2))->get_value();
+        dest->pos.x = ((nbt::Double *) __tmpList->getValues().at(0))->get_value();
+        dest->pos.y = ((nbt::Double *) __tmpList->getValues().at(1))->get_value();
+        dest->pos.z = ((nbt::Double *) __tmpList->getValues().at(2))->get_value();
     }
     {
         auto __tmpList = getConstElement<nbt::List, nbt::TagType::List>(root, "Rotation");
@@ -203,8 +206,8 @@ void Persistence::loadPlayerData(u128 uuid, PlayerData *dest)
         for (auto i : __tmpList->getValues())
             if (i->getType() != nbt::TagType::Float)
                 throw std::runtime_error(""); // TODO(huntears): Better error message
-        dest->rotation.yaw = ((nbt::Float *)__tmpList->getValues().at(0))->get_value();
-        dest->rotation.pitch = ((nbt::Float *)__tmpList->getValues().at(1))->get_value();
+        dest->rotation.yaw = ((nbt::Float *) __tmpList->getValues().at(0))->get_value();
+        dest->rotation.pitch = ((nbt::Float *) __tmpList->getValues().at(1))->get_value();
     }
     GET_VALUE(Int, score, "Score", root);
     GET_VALUE(Int, selectedItemSlot, "SelectedItemSlot", root);
@@ -214,8 +217,8 @@ void Persistence::loadPlayerData(u128 uuid, PlayerData *dest)
         if (__tmpArray->getValues().size() != 4)
             throw std::runtime_error(""); // TODO(huntears): Better error message
         // I know this is really ugly but augh
-        dest->uuid.most = *(uint64_t *)&__tmpArray->getValues().at(0);
-        dest->uuid.least = *(uint64_t *)&__tmpArray->getValues().at(2);
+        dest->uuid.most = *(uint64_t *) &__tmpArray->getValues().at(0);
+        dest->uuid.least = *(uint64_t *) &__tmpArray->getValues().at(2);
         dest->uuid.swapEndianness();
     }
     GET_VALUE(Int, xpLevel, "XpLevel", root);
@@ -242,14 +245,127 @@ PlayerData Persistence::loadPlayerData(u128 uuid)
     return data;
 }
 
-void Persistence::loadPlayerData(const Player *player, PlayerData *dest)
+void Persistence::loadPlayerData(const Player *player, PlayerData *dest) { loadPlayerData(player->getUuid(), dest); }
+
+PlayerData Persistence::loadPlayerData(const Player *player) { return loadPlayerData(player->getUuid()); }
+
+int inflatebruh(const void *src, int srcLen, void *dst, int dstLen)
 {
-    loadPlayerData(player->getUuid(), dest);
+    z_stream strm = {0};
+    strm.total_in = strm.avail_in = srcLen;
+    strm.total_out = strm.avail_out = dstLen;
+    strm.next_in = (Bytef *) src;
+    strm.next_out = (Bytef *) dst;
+
+    strm.zalloc = Z_NULL;
+    strm.zfree = Z_NULL;
+    strm.opaque = Z_NULL;
+
+    int err = -1;
+    int ret = -1;
+
+    err = inflateInit2(&strm, (15 + 32)); // 15 window bits, and the +32 tells zlib to to detect if using gzip or zlib
+    if (err == Z_OK) {
+        err = inflate(&strm, Z_FINISH);
+        if (err == Z_STREAM_END) {
+            ret = strm.total_out;
+        } else {
+            inflateEnd(&strm);
+            return err;
+        }
+    } else {
+        inflateEnd(&strm);
+        return err;
+    }
+
+    inflateEnd(&strm);
+    return ret;
 }
 
-PlayerData Persistence::loadPlayerData(const Player *player)
+void Persistence::loadRegion(int x, int z)
 {
-    return loadPlayerData(player->getUuid());
+    std::unique_lock<std::mutex> lock(accessMutex);
+
+    const std::string regionSlice = "r." + std::to_string(x) + "." + std::to_string(z) + ".mca";
+    const std::filesystem::path file = std::filesystem::path(level_name) / "region" / regionSlice;
+
+    struct RegionLocation {
+        uint32_t data;
+
+        constexpr uint32_t getOffset() const { return ((data & 0x00FF0000) >> 16) | (data & 0x0000FF00) | ((data & 0x000000FF) << 16); }
+
+        constexpr uint8_t getSize() const { return data >> 24; }
+
+        constexpr bool isEmpty() const { return data == 0; }
+    };
+
+    struct RegionTimestamp {
+        uint32_t data;
+    };
+
+    constexpr uint32_t maxXPerRegion = 32;
+    constexpr uint32_t maxZPerRegion = 32;
+    constexpr uint32_t numChunksPerRegion = maxXPerRegion * maxZPerRegion;
+
+    struct __attribute__((__packed__)) RegionHeader {
+        RegionLocation locationTable[numChunksPerRegion];
+        RegionLocation timestampTable[numChunksPerRegion];
+    };
+
+    struct __attribute__((__packed__)) ChunkHeader {
+        uint32_t length;
+        uint8_t compressionScheme;
+
+        uint32_t getLength() const { return ntohl(length); }
+
+        uint8_t getCompressionScheme() const { return compressionScheme; }
+    };
+
+    std::ifstream testFile(file, std::ios::binary);
+    const std::vector<uint8_t> fileContents((std::istreambuf_iterator<char>(testFile)), std::istreambuf_iterator<char>());
+
+    const RegionHeader *header = (const RegionHeader *) fileContents.data();
+
+    std::cout << "offset : 0x" << std::hex << header->locationTable[0].getOffset() << std::endl;
+    std::cout << "size : 0x" << std::hex << (int) header->locationTable[0].getSize() << std::endl;
+
+    for (uint16_t x = 0; x < maxXPerRegion; x++) {
+        for (uint16_t z = 0; z < maxZPerRegion; z++) {
+            const uint16_t currentOffset = x + z * maxXPerRegion;
+
+            if (header->locationTable[currentOffset].isEmpty())
+                continue;
+
+            const uint64_t chunkOffset = header->locationTable[currentOffset].getOffset() * 0x1000;
+
+            const ChunkHeader *cHeader = (const ChunkHeader *) (fileContents.data() + chunkOffset);
+
+            std::cout << "chunk length : 0x" << std::hex << cHeader->getLength() << std::endl;
+            std::cout << "chunk compression : 0x" << std::hex << (int) cHeader->getCompressionScheme() << std::endl;
+
+            char *buf = (char *) malloc(100000);
+            int ret = inflatebruh(((char *) cHeader) + sizeof(*cHeader), cHeader->getLength() - 1, buf, 100000);
+
+            if (ret == Z_BUF_ERROR) {
+                std::cout << "bruh1" << std::endl;
+            } else if (ret == Z_MEM_ERROR) {
+                std::cout << "bruh2" << std::endl;
+            } else if (ret == Z_DATA_ERROR) {
+                std::cout << "bruh3" << std::endl;
+            }
+            std::cout << "xd : " << ret << std::endl;
+
+            uint8_t *at = (uint8_t *) buf;
+            uint8_t *end = ((uint8_t *) buf) + ret - 1;
+
+            auto data = nbt::parseCompound(at, end);
+
+            std::cout << std::hex << data << std::endl;
+
+            std::cout << std::dec << ((nbt::Int *) data->getValue("DataVersion"))->get_value() << std::endl;
+            return;
+        }
+    }
 }
 
 }
