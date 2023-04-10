@@ -171,6 +171,49 @@ public:
         _value(value) {};
     ~Compound() override = default;
 
+    /**
+     * @brief Checks if an NBT Tag exists
+     *
+     * @param str The name of the wanted NBT Tag
+     * @return true The wanted NBT Tag exists in the Compound
+     * @return false The wanted NBT Tag does not exist in the Compound
+     */
+    constexpr bool hasValue(const std::string &str) const
+    {
+        for (const auto &i : _value)
+            if (i->getName() == str)
+                return true;
+        return false;
+    }
+
+    /**
+     * @brief Get an NBT Tag from name
+     *
+     * @param str Name of the wanted NBT Tag
+     * @return Base* The wanted NBT Tag (nullptr if not found)
+     */
+    constexpr Base *getValue(const std::string &str)
+    {
+        for (auto i : _value)
+            if (i->getName() == str)
+                return i;
+        return nullptr;
+    }
+
+    /**
+     * @brief Get an NBT Tag from name
+     *
+     * @param str Name of the wanted NBT Tag
+     * @return const Base* The wanted NBT Tag (nullptr if not found)
+     */
+    constexpr const Base *getValue(const std::string &str) const
+    {
+        for (auto i : _value)
+            if (i->getName() == str)
+                return i;
+        return nullptr;
+    }
+
     constexpr std::vector<Base *> &getValues() { return _value; }
 
     [[nodiscard]] constexpr std::vector<uint8_t> serialize() const override
@@ -378,6 +421,8 @@ public:
 
     [[nodiscard]] constexpr std::vector<int32_t> &getValues() { return _value; }
 
+    [[nodiscard]] constexpr const std::vector<int32_t> &getValues() const { return _value; }
+
     [[nodiscard]] constexpr std::vector<uint8_t> serialize() const override
     {
         std::vector<uint8_t> data;
@@ -389,8 +434,8 @@ public:
     {
         Base::pre_serialize(data, include_name);
         // Serialize the length of the data
-        data.push_back(_value.size() >> 8);
-        data.push_back(_value.size() & 0xFF);
+        for (int i = 0; i < 4; i++)
+            data.push_back((_value.size() >> (24 - i * 8)) & 0xFF);
         // Serialize the ints
         for (auto d : _value) {
             for (int i = 0; i < 4; i++)
@@ -422,8 +467,8 @@ public:
     {
         Base::pre_serialize(data, include_name);
         // Serialize the length of the data
-        data.push_back(_value.size() >> 8);
-        data.push_back(_value.size() & 0xFF);
+        for (int i = 0; i < 4; i++)
+            data.push_back((_value.size() >> (24 - i * 8)) & 0xFF);
         // Serialize the longs
         for (auto d : _value) {
             for (int i = 0; i < 8; i++)
@@ -443,6 +488,8 @@ public:
     ~List() override = default;
 
     [[nodiscard]] constexpr std::vector<Base *> &getValues() { return _value; }
+
+    [[nodiscard]] constexpr const std::vector<Base *> &getValues() const { return _value; }
 
     [[nodiscard]] constexpr std::vector<uint8_t> serialize() const override
     {
@@ -496,18 +543,18 @@ public:
     }
 };
 
-Byte *parseByte(uint8_t *&at, const uint8_t *end, bool include_name = true);
-Short *parseShort(uint8_t *&at, const uint8_t *end, bool include_name = true);
-Int *parseInt(uint8_t *&at, const uint8_t *end, bool include_name = true);
-Long *parseLong(uint8_t *&at, const uint8_t *end, bool include_name = true);
-Float *parseFloat(uint8_t *&at, const uint8_t *end, bool include_name = true);
-Double *parseDouble(uint8_t *&at, const uint8_t *end, bool include_name = true);
-ByteArray *parseByteArray(uint8_t *&at, const uint8_t *end, bool include_name = true);
-String *parseString(uint8_t *&at, const uint8_t *end, bool include_name = true);
-List *parseList(uint8_t *&at, const uint8_t *end, bool include_name = true);
-Compound *parseCompound(uint8_t *&at, const uint8_t *end, bool include_name = true);
-IntArray *parseIntArray(uint8_t *&at, const uint8_t *end, bool include_name = true);
-LongArray *parseLongArray(uint8_t *&at, const uint8_t *end, bool include_name = true);
+Byte *parseByte(uint8_t *&at, const uint8_t *end, bool include_name = true, bool in_list = false);
+Short *parseShort(uint8_t *&at, const uint8_t *end, bool include_name = true, bool in_list = false);
+Int *parseInt(uint8_t *&at, const uint8_t *end, bool include_name = true, bool in_list = false);
+Long *parseLong(uint8_t *&at, const uint8_t *end, bool include_name = true, bool in_list = false);
+Float *parseFloat(uint8_t *&at, const uint8_t *end, bool include_name = true, bool in_list = false);
+Double *parseDouble(uint8_t *&at, const uint8_t *end, bool include_name = true, bool in_list = false);
+ByteArray *parseByteArray(uint8_t *&at, const uint8_t *end, bool include_name = true, bool in_list = false);
+String *parseString(uint8_t *&at, const uint8_t *end, bool include_name = true, bool in_list = false);
+List *parseList(uint8_t *&at, const uint8_t *end, bool include_name = true, bool in_list = false);
+Compound *parseCompound(uint8_t *&at, const uint8_t *end, bool include_name = true, bool in_list = false);
+IntArray *parseIntArray(uint8_t *&at, const uint8_t *end, bool include_name = true, bool in_list = false);
+LongArray *parseLongArray(uint8_t *&at, const uint8_t *end, bool include_name = true, bool in_list = false);
 
 Base *parse(uint8_t *&at, const uint8_t *end);
 
