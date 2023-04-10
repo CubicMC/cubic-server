@@ -9,6 +9,8 @@
 #include <vector>
 
 #include "Client.hpp"
+#include "command_parser/commands/Gamemode.hpp"
+#include "command_parser/commands/Help.hpp"
 #include "protocol/ServerPackets.hpp"
 
 #include "WorldGroup.hpp"
@@ -117,6 +119,7 @@ private:
         new command_parser::Op,
         new command_parser::Deop,
         new command_parser::Reload,
+        new command_parser::Gamemode,
     };
     // clang-format on
 public:

@@ -113,6 +113,7 @@ constexpr void addBiomeSection(std::vector<uint8_t> &out, const BiomeId *section
 constexpr void addBlockSection(std::vector<uint8_t> &out, const BlockId *section)
 {
     world_storage::BlockPalette blockPalette;
+    std::vector<uint64_t> longArray;
     uint16_t blockInsideSection = 0;
 
     for (uint16_t i = 0; i < world_storage::SECTION_3D_SIZE; i++) {
@@ -122,30 +123,33 @@ constexpr void addBlockSection(std::vector<uint8_t> &out, const BlockId *section
             blockInsideSection++;
     }
 
-    // Size of the long array
-    uint32_t longArraySize = world_storage::SECTION_3D_SIZE * blockPalette.getBytePerEntry() / 64;
-    std::vector<uint64_t> longArray;
-    longArray.resize(blockPalette.getBytePerEntry() == 0 ? 0 : longArraySize);
-
     // A bitmask that contains bitsPerBlock set bits
     uint32_t individualValueMask = (uint32_t) ((1 << blockPalette.getBytePerEntry()) - 1);
 
     if (blockPalette.getBytePerEntry() != 0) {
+        // Size of the long array
+        const uint32_t valuesPerLong = 64 / blockPalette.getBytePerEntry();
+        const uint32_t longArraySize = world_storage::SECTION_3D_SIZE / valuesPerLong + (world_storage::SECTION_3D_SIZE % valuesPerLong != 0 ? 1 : 0);
+        // const uint32_t longArraySize = world_storage::SECTION_3D_SIZE / valuesPerLong + (world_storage::SECTION_3D_SIZE % valuesPerLong != 0 ? 1 : 0) + 1;
+        longArray.resize(longArraySize);
+
         for (uint8_t y = 0; y < world_storage::SECTION_HEIGHT; y++) {
             for (uint8_t z = 0; z < world_storage::SECTION_WIDTH; z++) {
                 for (uint8_t x = 0; x < world_storage::SECTION_WIDTH; x++) {
                     int blockNumber = world_storage::calculateBlockIdx({x, y + world_storage::CHUNK_HEIGHT_MIN, z});
-                    int startLong = (blockNumber * blockPalette.getBytePerEntry()) / 64;
-                    int startOffset = (blockNumber * blockPalette.getBytePerEntry()) % 64;
-                    int endLong = ((blockNumber + 1) * blockPalette.getBytePerEntry() - 1) / 64;
+                    int startLong = blockNumber / valuesPerLong;
+                    // int startLong = (blockNumber * blockPalette.getBytePerEntry()) / 64;
+                    int startOffset = (blockNumber % valuesPerLong) * blockPalette.getBytePerEntry();
+                    // int startOffset = (blockNumber * blockPalette.getBytePerEntry()) % 64;
+                    // int endLong = ((blockNumber + 1) * blockPalette.getBytePerEntry() - 1) / 64;
 
                     uint64_t value = blockPalette.getId(section[blockNumber]);
                     value &= individualValueMask;
 
                     longArray.at(startLong) |= (value << startOffset);
 
-                    if (startLong != endLong)
-                        longArray[endLong] = (value >> (64 - startOffset));
+                    // if (startLong != endLong)
+                    //     longArray[endLong] = (value >> (64 - startOffset));
                 }
             }
         }

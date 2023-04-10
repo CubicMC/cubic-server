@@ -2,7 +2,6 @@
 #define CUBICSERVER_PLAYER_HPP
 
 #include "Chat.hpp"
-#include "Client.hpp"
 #include "Entity.hpp"
 #include "LivingEntity.hpp"
 #include "SoundList.hpp"
@@ -86,6 +85,7 @@ public:
     void sendPlayerAbilities(const protocol::PlayerAbilitiesClient &packet);
     void sendFeatureFlags(const protocol::FeatureFlags &packet);
     void sendServerData(const protocol::ServerData &packet);
+    void sendGameEvent(const protocol::GameEvent &packet);
 
 private:
     void _onConfirmTeleportation(const std::shared_ptr<protocol::ConfirmTeleportation> &pck);

@@ -1,6 +1,7 @@
 #include "DumpChunk.hpp"
 #include "Server.hpp"
 #include "World.hpp"
+#include "world_storage/Palette.hpp"
 
 #include <iostream>
 
@@ -17,7 +18,7 @@ void command_parser::DumpChunk::execute(std::vector<std::string> &args, Player *
         args.push_back(std::to_string(transformBlockPosToChunkPos(invoker->getPosition().x)));
         args.push_back(std::to_string(transformBlockPosToChunkPos(invoker->getPosition().z)));
     }
-    LDEBUG("Testing chunk...");
+    LDEBUG("Testing chunk ", args[0], " ", args[1]);
 
     auto dim = Server::getInstance()->getWorldGroup("default")->getWorld("default")->getDimension("overworld");
 
@@ -27,13 +28,21 @@ void command_parser::DumpChunk::execute(std::vector<std::string> &args, Player *
     }
     LDEBUG("Chunk is loaded");
 
+    LDEBUG("Dumping known global palette id");
+    LDEBUG("minecraft:air -> ", GLOBAL_PALETTE.fromBlockToProtocolId("minecraft:air"));
+    LDEBUG("minecraft:grass_block -> ", GLOBAL_PALETTE.fromBlockToProtocolId("minecraft:grass_block"));
+    LDEBUG("minecraft:dirt -> ", GLOBAL_PALETTE.fromBlockToProtocolId("minecraft:dirt"));
+    LDEBUG("minecraft:stone -> ", GLOBAL_PALETTE.fromBlockToProtocolId("minecraft:stone"));
+    LDEBUG("minecraft:bedrock -> ", GLOBAL_PALETTE.fromBlockToProtocolId("minecraft:bedrock"));
+    LDEBUG("minecraft:water -> ", GLOBAL_PALETTE.fromBlockToProtocolId("minecraft:water"));
+
     auto chunk = dim->getChunk(std::stoi(args[0]), std::stoi(args[1]));
     auto blocks = chunk->getBlocks();
 
     for (const auto &block : blocks) {
         auto name = GLOBAL_PALETTE.fromProtocolIdToBlock(block).name;
-        if (GLOBAL_PALETTE.fromBlockToProtocolId({name}) != block || (block == 0 && name != "minecraft:air"))
-            LDEBUG("ERROR: " << name << " has id " << block << " but should have id " << GLOBAL_PALETTE.fromBlockToProtocolId({name}));
+        if (GLOBAL_PALETTE.fromBlockToProtocolId(name) != block || (block == 0 && name != "minecraft:air"))
+            LDEBUG("ERROR: " << name << " has id " << block << " but should have id " << GLOBAL_PALETTE.fromBlockToProtocolId(name));
     }
     LDEBUG("--- CHUNK DATA ---");
     {
@@ -74,6 +83,7 @@ void command_parser::DumpChunk::execute(std::vector<std::string> &args, Player *
         // Block palette parsing
         auto bytePerBlock = protocol::popByte(at, eof);
         LDEBUG('\t' << "Palette bit per block: " << (int) bytePerBlock);
+        world_storage::BlockPalette localPalette;
         if (bytePerBlock == 0)
             LDEBUG('\t' << "Single value palette: " << protocol::popVarInt(at, eof));
         else if (bytePerBlock <= 8) {
@@ -83,11 +93,15 @@ void command_parser::DumpChunk::execute(std::vector<std::string> &args, Player *
             for (int32_t i = 0; i < paletteSize; i++) {
                 auto value = protocol::popVarInt(at, eof);
                 LDEBUG('\t' << '\t' << "Palette entry " << i << ": " << value << " -> " << GLOBAL_PALETTE.fromProtocolIdToBlock(value).name);
+                localPalette.add(value);
+                if (localPalette.getId(value) != i)
+                    LDEBUG('\t' << '\t' << "ERROR: Palette entry is not consistent");
             }
         } else
             LDEBUG('\t' << "Direct value palette");
 
         // Block data parsing
+        auto entryPerLong = bytePerBlock == 0 ? 0 : 64 / bytePerBlock;
         auto blockDataSize = protocol::popVarInt(at, eof);
         LDEBUG('\t' << "Block data size: " << blockDataSize);
         if ((blockDataSize > 0 && bytePerBlock == 0) || (blockDataSize == 0 && bytePerBlock > 0))
@@ -96,7 +110,16 @@ void command_parser::DumpChunk::execute(std::vector<std::string> &args, Player *
             LDEBUG('\t' << "ERROR: Block data size is too small");
         for (int32_t i = 0; i < blockDataSize; i++) {
             uint64_t value = protocol::popLong(at, eof);
-            LDEBUG('\t' << '\t' << "Block data entry " << i << ": " << std::hex << value);
+            std::stringstream valueStr;
+            std::string blockStr;
+            for (auto j = 0; j < entryPerLong; j++) {
+                auto block = (value >> (j * bytePerBlock)) & ((1 << bytePerBlock) - 1);
+                valueStr << block << " ";
+                blockStr += GLOBAL_PALETTE.fromProtocolIdToBlock(localPalette.getGlobalId(block)).name + " ";
+            }
+            if (entryPerLong == 0)
+                valueStr << std::hex << value;
+            LDEBUG('\t' << '\t' << "Block data entry " << i << ": " << valueStr.str() << " -> " << blockStr);
         }
 
         // Biome palette parsing

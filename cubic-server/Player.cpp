@@ -464,6 +464,13 @@ void Player::sendPlayerAbilities(const protocol::PlayerAbilitiesClient &packet)
     LDEBUG("Sent a Player Abilities packet");
 }
 
+void Player::sendGameEvent(const protocol::GameEvent &packet)
+{
+    auto pck = protocol::createGameEvent(packet);
+    _cli->_sendData(*pck);
+    LDEBUG("Sent a Game Event packet");
+}
+
 #pragma endregion
 #pragma region ServerBound
 

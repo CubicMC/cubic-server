@@ -10,7 +10,7 @@ class Overworld : public Dimension {
 public:
     Overworld(World *world):
         Dimension(world),
-        persistence("world") // TODO(huntears): Make this changeable through the config
+        persistence("world2") // TODO(huntears): Make this changeable through the config
     {
     }
     void tick() override;

@@ -1,5 +1,6 @@
 #include "Overworld.hpp"
 #include "World.hpp"
+#include "world_storage/Level.hpp"
 #include <future>
 #include <queue>
 
@@ -50,7 +51,13 @@ void Overworld::generateChunk(int x, int z)
 {
     if (persistence.isChunkLoaded(x, z)) {
         LINFO("Loading chunk ", x, " ", z);
-        _level.addChunkColumn({x, z}, persistence.regionStore.at({x / 32, z / 32}).at({x - ((x / 32) * 32), z - ((z / 32) * 32)}));
+        auto cx = x % 32;
+        auto cz = z % 32;
+        if (cx < 0)
+            cx += 32;
+        if (cz < 0)
+            cz += 32;
+        _level.addChunkColumn({x, z}, persistence.regionStore.at({transformChunkPosToRegionPos(x), transformChunkPosToRegionPos(z)}).at({cx, cz}));
         LINFO("Chunk loaded ", x, " ", z);
         return;
     }

@@ -6,6 +6,7 @@
 #include "types.hpp"
 #include "world_storage/Block.hpp"
 #include "world_storage/ChunkColumn.hpp"
+#include "world_storage/Level.hpp"
 #include "world_storage/LevelData.hpp"
 #include "world_storage/PlayerData.hpp"
 #include <cstdint>
@@ -334,6 +335,9 @@ void Persistence::loadRegion(int x, int z)
     };
 
     std::ifstream testFile(file, std::ios::binary);
+    if (!testFile.is_open()) {
+        return;
+    }
     const std::vector<uint8_t> fileContents((std::istreambuf_iterator<char>(testFile)), std::istreambuf_iterator<char>());
 
     const RegionHeader *header = (const RegionHeader *) fileContents.data();
@@ -341,7 +345,7 @@ void Persistence::loadRegion(int x, int z)
     // std::cout << "offset : 0x" << std::hex << header->locationTable[0].getOffset() << std::endl;
     // std::cout << "size : 0x" << std::hex << (int) header->locationTable[0].getSize() << std::endl;
 
-    char *buf = (char *) malloc(100000);
+    char *buf = (char *) malloc(1000000);
     const auto globalPalette = Server::getInstance()->getGlobalPalette();
     for (uint16_t cx = 0; cx < maxXPerRegion; cx++) {
         for (uint16_t cz = 0; cz < maxZPerRegion; cz++) {
@@ -360,7 +364,7 @@ void Persistence::loadRegion(int x, int z)
             // std::cout << "chunk length : 0x" << std::hex << cHeader->getLength() << std::endl;
             // std::cout << "chunk compression : 0x" << std::hex << (int) cHeader->getCompressionScheme() << std::endl;
 
-            int ret = inflatebruh(((char *) cHeader) + sizeof(*cHeader), cHeader->getLength() - 1, buf, 100000);
+            int ret = inflatebruh(((char *) cHeader) + sizeof(*cHeader), cHeader->getLength() - 1, buf, 1000000);
 
             if (ret == Z_BUF_ERROR) {
                 std::cout << "bruh1" << std::endl;
@@ -425,27 +429,34 @@ void Persistence::loadRegion(int x, int z)
                 auto bitsPerBlock = paletteMapping.getBytePerEntry();
 
                 uint32_t individualValueMask = (uint32_t) ((1 << bitsPerBlock) - 1);
+                const uint32_t valuesPerLong = (paletteMapping.getBytePerEntry() == 0 ? 4 : 64 / paletteMapping.getBytePerEntry());
 
                 for (int ly = 0; ly < SECTION_HEIGHT; ly++) {
                     for (int lz = 0; lz < SECTION_WIDTH; lz++) {
                         for (int lx = 0; lx < SECTION_WIDTH; lx++) {
                             int blockNumber = (((ly * SECTION_HEIGHT) + lz) * SECTION_WIDTH) + lx;
-                            int startLong = (blockNumber * bitsPerBlock) / 64;
-                            int startOffset = (blockNumber * bitsPerBlock) % 64;
-                            int endLong = ((blockNumber + 1) * bitsPerBlock - 1) / 64;
+                            int startLong = blockNumber / valuesPerLong;
+                            int startOffset = (blockNumber % valuesPerLong) * (paletteMapping.getBytePerEntry() == 0 ? 15 : paletteMapping.getBytePerEntry());
+                            // int startLong = (blockNumber * bitsPerBlock) / 64;
+                            // int startOffset = (blockNumber * bitsPerBlock) % 64;
+                            // int endLong = ((blockNumber + 1) * bitsPerBlock - 1) / 64;
 
                             uint16_t data;
-                            if (startLong == endLong) {
-                                data = (uint16_t) (dataArray[startLong] >> startOffset);
-                            } else {
-                                int endOffset = 64 - startOffset;
-                                data = (uint16_t) (dataArray[startLong] >> startOffset | dataArray[endLong] << endOffset);
-                            }
+                            data = (uint16_t) (dataArray[startLong] >> startOffset);
+                            // if (startLong == endLong)
+                            //     data = (uint16_t) (dataArray[startLong] >> startOffset);
+                            // else {
+                            //     int endOffset = 64 - startOffset;
+                            //     data = (uint16_t) (dataArray[startLong] >> startOffset | dataArray[endLong] << endOffset);
+                            // }
                             data &= individualValueMask;
 
                             auto sectionY = getConstElement<nbt::Byte, nbt::TagType::Byte>(section, "Y");
 
-                            chunk->_blocks.at(calculateBlockIdx({lx, ly + 16 * sectionY->get_value(), lz})) = paletteMapping.getGlobalId(data);
+                            if (paletteMapping.size() >= 1)
+                                chunk->_blocks.at(calculateBlockIdx({lx, ly + 16 * sectionY->get_value(), lz})) = paletteMapping.getGlobalId(data);
+                            else
+                                chunk->_blocks.at(calculateBlockIdx({lx, ly + 16 * sectionY->get_value(), lz})) = data;
                         }
                     }
                 }
@@ -466,6 +477,8 @@ void Persistence::loadRegion(int x, int z)
 
             regionStore.at({x, z})[{cx, cz}] = chunk;
 
+            chunk->_ready = true;
+
             data->destroy();
             delete data;
         }
@@ -476,13 +489,20 @@ void Persistence::loadRegion(int x, int z)
 
 bool Persistence::isChunkLoaded(int x, int z)
 {
-    const int rx = x / 32;
-    const int rz = z / 32;
+    const int rx = transformChunkPosToRegionPos(x);
+    const int rz = transformChunkPosToRegionPos(z);
 
     this->loadRegion(rx, rz);
     if (!regionStore.contains({rx, rz}))
         return false;
-    return regionStore.at({rz, rz}).contains({x - rx * 32, z - rz * 32});
+
+    auto cx = x % 32;
+    auto cz = z % 32;
+    if (cx < 0)
+        cx += 32;
+    if (cz < 0)
+        cz += 32;
+    return regionStore.at({rx, rz}).contains({cx, cz});
 }
 
 }

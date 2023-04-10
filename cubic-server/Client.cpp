@@ -491,7 +491,7 @@ void Client::sendLoginPlay()
         .dimensionName = "overworld", // TODO: something like this this->_player->getDimension()->name;
         .hashedSeed = 0, // TODO: something like this this->_player->_dim->getWorld()->getHashedSeed();
         .maxPlayers = 20, // TODO: something like this this->_player->_dim->getWorld()->maxPlayers;
-        .viewDistance = 16, // TODO: something like this->_player->_dim->getWorld()->getViewDistance();
+        .viewDistance = 32, // TODO: something like this->_player->_dim->getWorld()->getViewDistance();
         .simulationDistance = 16, // TODO: something like this->_player->_dim->getWorld()->getSimulationDistance();
         .reducedDebugInfo = false, // false for developpment only
         .enableRespawnScreen = true, // TODO: implement gamerules !this->_player->_dim->getWorld()->getGamerules()["doImmediateRespawn"];

@@ -33,6 +33,7 @@ enum class ClientPacketID : int32_t {
     // CustomSoundEffect = 0x16, TODO: This is removed in the last revision of wiki.vg
     DisconnectPlay = 0x17,
     UnloadChunk = 0x1b,
+    GameEvent = 0x1c,
     KeepAlive = 0x1F,
     ChunkDataAndLightUpdate = 0x20,
     WorldEvent = 0x21,
@@ -136,6 +137,26 @@ std::shared_ptr<std::vector<uint8_t>> createCustomSoundEffect(const CustomSoundE
 std::shared_ptr<std::vector<uint8_t>> createPlayDisconnect(const Disconnect &);
 
 std::shared_ptr<std::vector<uint8_t>> createUnloadChunk(const Position2D &);
+
+struct GameEvent {
+    enum class Event : uint8_t {
+        NoRespawnBlockAvailable,
+        EndRaining,
+        BeginRaining,
+        ChangeGamemode,
+        WinGame,
+        DemoEvent,
+        ArrowHitPlayer,
+        RainLevelChange,
+        ThunderLevelChange,
+        PlayPufferfishStingSound,
+        PlayElderGuardianMobAppearance,
+        EnableRespawnScreen
+    } event;
+    float value;
+};
+
+std::shared_ptr<std::vector<uint8_t>> createGameEvent(const GameEvent &);
 
 std::shared_ptr<std::vector<uint8_t>> createKeepAlive(long id);
 

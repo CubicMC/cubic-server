@@ -135,6 +135,15 @@ std::shared_ptr<std::vector<uint8_t>> protocol::createUnloadChunk(const Position
     return packet;
 }
 
+std::shared_ptr<std::vector<uint8_t>> protocol::createGameEvent(const GameEvent &in)
+{
+    std::vector<uint8_t> payload;
+    serialize(payload, (uint8_t) in.event, addByte, in.value, addFloat);
+    auto packet = std::make_shared<std::vector<uint8_t>>();
+    finalize(*packet, payload, (int32_t) ClientPacketID::GameEvent);
+    return packet;
+}
+
 std::shared_ptr<std::vector<uint8_t>> protocol::createKeepAlive(long id)
 {
     std::vector<uint8_t> payload;

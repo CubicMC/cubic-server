@@ -5,6 +5,7 @@
 
 #include "blockStates.hpp"
 #include "logging/Logger.hpp"
+#include "types.hpp"
 
 void Blocks::GlobalPalette::initialize(const std::string &path)
 {
@@ -33,8 +34,35 @@ void Blocks::GlobalPalette::initialize(const std::string &path)
         }
         b.baseProtocolId = block.value()["states"][0]["id"];
         b.maxProtocolId = block.value()["states"][block.value()["states"].size() - 1]["id"];
+
+        // Init default state
+        auto defaultState = std::find_if(block.value()["states"].begin(), block.value()["states"].end(), [](const nlohmann::json &state) {
+            return state.contains("default") && state["default"] == true;
+        });
+        if (defaultState == block.value()["states"].end()) {
+            LERROR("Default state not found for block " << block.key());
+            return;
+        }
+        if (defaultState.value().contains("properties")) {
+            for (auto property : defaultState.value()["properties"].items())
+                b.defaultProperties.push_back({property.key(), property.value()});
+        }
         this->_blocks.push_back(b);
     }
+}
+
+BlockId Blocks::GlobalPalette::fromBlockToProtocolId(const std::string &blockName) const
+{
+    Blocks::Block block = {blockName, {}};
+
+    auto internalBlock = std::find_if(this->_blocks.begin(), this->_blocks.end(), [&block](const Blocks::InternalBlock &b) {
+        return b.name == block.name;
+    });
+
+    for (auto property : internalBlock->defaultProperties)
+        block.properties.push_back({property.first, property.second});
+
+    return this->fromBlockToProtocolId(block);
 }
 
 BlockId Blocks::GlobalPalette::fromBlockToProtocolId(const Blocks::Block &block) const
@@ -82,7 +110,8 @@ Blocks::Block Blocks::GlobalPalette::fromProtocolIdToBlock(BlockId id) const
         if (b.properties.size() == 0)
             return block;
         id -= b.baseProtocolId;
-        for (auto property : b.properties) {
+        for (auto it = b.properties.rbegin(); it != b.properties.rend(); ++it) {
+            auto property = *it;
             block.properties.push_back({property.name, property.values[id / property.baseWeight]});
             id %= property.baseWeight;
         }
