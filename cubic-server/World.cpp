@@ -256,24 +256,22 @@ long World::getTime() const { return _time; }
 
 long World::getAge() const { return _age; }
 
-/*
-**  Used in the /time command.
-**  Adds time to the current world time
-*/
 int World::addTime(int time)
 {
-    _time += time;
-    while (_time > 24000)
-        _time -= 24000;
-    _age += time;
-    return _time;
+    if (time >= 0) {
+        _time += time;
+        while (_time > 24000)
+            _time -= 24000;
+        _age += time;
+        return _time;
+    } else {
+        LERROR("Tick count must be non-negative");
+        return -1;
+    }
 }
 
-/*
-**  Used in the /time command.
-**  Sets the current world time to the given time
-*/
 void World::setTime(int time)
 {
-    _time = time;
+    if (time >= 0)
+        _time = time;
 }
