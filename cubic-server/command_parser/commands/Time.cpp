@@ -52,7 +52,7 @@ int setTimeToAdd(std::string timeToAdd)
             time = setTimeFromArg(timeToAdd, setMultiplier(timeToAdd.back()));
             return time;
         } else if (timeToAdd.front() == '-') {
-            LERROR("Tick count must be non-negative")
+            LERROR("Tick count must be non-negative");
             // invoker->sendPlayerChatMessage("Tick count must be non-negative");
             return -1;
         }
@@ -82,8 +82,8 @@ int setTimeToSet(std::string timeToSet)
         if (timeToSet.back() == 'd' || timeToSet.back() == 's' || (timeToSet.back() == 't' && timeToSet != "midnight" && timeToSet != "night") && timeToSet.front() != '-') {
             time = setTimeFromArg(timeToSet, setMultiplier(timeToSet.back()));
             return time;
-        } else if (timeToAdd.front() == '-') {
-            LERROR("Tick count must be non-negative")
+        } else if (timeToSet.front() == '-') {
+            LERROR("Tick count must be non-negative");
             // invoker->sendPlayerChatMessage("Tick count must be non-negative");
             return -1;
         }
