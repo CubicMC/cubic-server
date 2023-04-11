@@ -1,6 +1,7 @@
 #include <cstdint>
 #include <iostream>
 #include <sstream>
+#include <cstdint>
 #include <string>
 
 #include "Entity.hpp"
@@ -9,6 +10,7 @@
 #include "Server.hpp"
 #include "World.hpp"
 #include "blocks.hpp"
+#include "chat/Message.hpp"
 #include "command_parser/CommandParser.hpp"
 #include "protocol/ClientPackets.hpp"
 #include "types.hpp"
@@ -50,22 +52,24 @@ Player::Player(Client *cli, std::shared_ptr<Dimension> dim, u128 uuid, const std
 Player::~Player()
 {
     // Send a disconnect message to the chat
-    chat::Message disconnectMsg = chat::Message(
-        "",
-        {.color = "yellow",
-         .translate = "multiplayer.player.left",
-         .with = std::vector<chat::Message>({chat::Message(
-             this->getUsername(),
-             {
-                 .insertion = this->getUsername(),
-             },
-             chat::message::ClickEvent(chat::message::ClickEvent::Action::SuggestCommand, "/tell " + this->getUsername()),
-             chat::message::HoverEvent(
-                 chat::message::HoverEvent::Action::ShowEntity,
-                 "{\"type\": \"minecraft:player\", \"id\": \"" + this->getUuidString() + "\", \"name\": \"" + this->getUsername() + "\"}"
-             )
-         )})}
-    );
+    // chat::Message disconnectMsg = chat::Message(
+    //     "",
+    //     {.color = "yellow",
+    //      .translate = "multiplayer.player.left",
+    //      .with = std::vector<chat::Message>({chat::Message(
+    //          this->getUsername(),
+    //          {
+    //              .insertion = this->getUsername(),
+    //          },
+    //          chat::message::ClickEvent(chat::message::ClickEvent::Action::SuggestCommand, "/tell " + this->getUsername()),
+    //          chat::message::HoverEvent(
+    //              chat::message::HoverEvent::Action::ShowEntity,
+    //              "{\"type\": \"minecraft:player\", \"id\": \"" + this->getUuidString() + "\", \"name\": \"" + this->getUsername() + "\"}"
+    //          )
+    //      )})}
+    // );
+
+    chat::Message disconnectMsg = chat::Message::fromTranslateKey<chat::TranslateKey::multiplayer_player_left>(*this);
 
     this->_dim->getWorld()->sendPlayerInfoRemovePlayer(this);
     this->_dim->removeEntity(this);
@@ -315,10 +319,10 @@ void Player::sendUpdateTime(const protocol::UpdateTime &data)
 
 void Player::sendChatMessageResponse(const protocol::PlayerChatMessage &packet)
 {
-    // auto pck = protocol::createPlayerChatMessage(packet);
-    // this->_cli->_sendData(*pck);
+    auto pck = protocol::createPlayerChatMessage(packet);
+    this->_cli->_sendData(*pck);
 
-    // LDEBUG("Sent a chat message response");
+    LINFO("Sent a chat message response", packet.unsignedContent);
 }
 
 void Player::sendSystemChatMessage(const protocol::SystemChatMessage &packet)
@@ -611,6 +615,11 @@ void Player::_onChatMessage(const std::shared_ptr<protocol::ChatMessage> &pck)
     // TODO: verify that the message is valid (signature, etc.)
     _dim->getWorld()->getChat()->sendPlayerMessage(pck->message, this);
     LDEBUG("Got a Chat Message");
+}
+
+void Player::_onMessageAcknowledgement(const std::shared_ptr<protocol::MessageAcknowledgement> &pck)
+{
+    LINFO("Got a Message Acknowledgement");
 }
 
 /**
@@ -1026,22 +1035,7 @@ void Player::_continueLoginSequence()
 void Player::_sendLoginMessage(void)
 {
     // Send login message
-    chat::Message connectionMsg = chat::Message(
-        "",
-        {.color = "yellow",
-         .translate = "multiplayer.player.joined",
-         .with = std::vector<chat::Message>({chat::Message(
-             this->getUsername(),
-             {
-                 .insertion = this->getUsername(),
-             },
-             chat::message::ClickEvent(chat::message::ClickEvent::Action::SuggestCommand, "/tell " + this->getUsername() + " "),
-             chat::message::HoverEvent(
-                 chat::message::HoverEvent::Action::ShowEntity,
-                 "{\"type\": \"minecraft:player\", \"id\": \"" + this->getUuidString() + "\", \"name\": \"" + this->getUsername() + "\"}"
-             )
-         )})}
-    );
+    chat::Message connectionMsg = chat::Message::fromTranslateKey<chat::TranslateKey::multiplayer_player_joined>(*this);
 
     this->getDimension()->getWorld()->getChat()->sendSystemMessage(connectionMsg, false, this->getDimension()->getWorld()->getWorldGroup());
 }

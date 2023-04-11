@@ -172,6 +172,13 @@ constexpr void addChunkColumn(std::vector<uint8_t> &out, const world_storage::Ch
     // Add the chunk data
     addArray<uint8_t, addByte>(out, chunkData);
 }
+
+constexpr void addRawMessage(std::vector<uint8_t> &out, const std::pair<int32_t, std::vector<uint8_t>> &rawMessage)
+{
+    addVarInt(out, rawMessage.first);
+    addArray<uint8_t, addByte>(out, rawMessage.second);
+}
+
 } // namespace protocol
 
 #endif
