@@ -22,7 +22,8 @@ int setTimeFromArg(std::string value, int multiplier)
         time = std::stod(value) * multiplier;
         return time;
     } catch (const std::exception &e) {
-        LERROR("Not a number");
+        LERROR("Expected float");
+        // invoker->sendPlayerChatMessage("Expected float");
         return -1;
     }
 }
@@ -47,11 +48,16 @@ int setTimeToAdd(std::string timeToAdd)
         }) == timeToAdd.end())
         time = setTimeFromArg(timeToAdd, 1);
     else {
-        if (timeToAdd.back() == 'd' || timeToAdd.back() == 's' || timeToAdd.back() == 't') {
+        if ((timeToAdd.back() == 'd' || timeToAdd.back() == 's' || timeToAdd.back() == 't') && timeToAdd.front() != '-') {
             time = setTimeFromArg(timeToAdd, setMultiplier(timeToAdd.back()));
             return time;
+        } else if (timeToAdd.front() == '-') {
+            LERROR("Tick count must be non-negative")
+            // invoker->sendPlayerChatMessage("Tick count must be non-negative");
+            return -1;
         }
-        LERROR("Usage : /time <add|query|set> (arg)");
+        LERROR("Expected float");
+        // invoker->sendPlayerChatMessage("Expected float");
         return -1;
     }
     return time;
@@ -73,11 +79,16 @@ int setTimeToSet(std::string timeToSet)
     else if (timeToSet == "midnight")
         time = 18000;
     else {
-        if (timeToSet.back() == 'd' || timeToSet.back() == 's' || (timeToSet.back() == 't' && timeToSet != "midnight" && timeToSet != "night")) {
+        if (timeToSet.back() == 'd' || timeToSet.back() == 's' || (timeToSet.back() == 't' && timeToSet != "midnight" && timeToSet != "night") && timeToSet.front() != '-') {
             time = setTimeFromArg(timeToSet, setMultiplier(timeToSet.back()));
             return time;
+        } else if (timeToAdd.front() == '-') {
+            LERROR("Tick count must be non-negative")
+            // invoker->sendPlayerChatMessage("Tick count must be non-negative");
+            return -1;
         }
-        LERROR("Usage : /time <add|query|set> (arg)");
+        LERROR("Expected float");
+        // invoker->sendPlayerChatMessage("Expected float");
         return -1;
     }
     return time;
@@ -108,7 +119,8 @@ void checkArgsTime(std::vector<std::string> &args)
         else if (args[1] == "day")
             time = (Server::getInstance()->getWorldGroup("default")->getWorld("default")->getTime() / 24000) % INT_MAX;
         else {
-            LERROR("Usage : /time <add|query|set> (arg)");
+            LERROR("Incorrect argument for command");
+            // invoker->sendPlayerChatMessage("Incorrect argument for command");
             return;
         }
         LINFO("The time is " << time);
@@ -119,7 +131,6 @@ void checkArgsTime(std::vector<std::string> &args)
 void Time::execute(std::vector<std::string> &args, Player *invoker) const
 {
     if (args.size() != 2) {
-        LERROR("Usage : /time <add|query|set> (arg)");
         return;
     }
 
