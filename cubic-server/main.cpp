@@ -31,7 +31,7 @@ void signalHandler(int sig)
     Server::getInstance()->stop();
 }
 
-int main(int argc, char **argv)
+int main(int argc, char **argv, char **env)
 {
     argparse::ArgumentParser program = argParser(argc, argv);
     auto srv = Server::getInstance();
