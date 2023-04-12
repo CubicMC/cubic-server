@@ -51,6 +51,20 @@ public:
 
     virtual Seed getSeed() const;
     virtual uint8_t getRenderDistance() const;
+    virtual long getTime() const;
+    virtual long getAge() const;
+
+    /*
+    **  Used in the /time command.
+    **  Adds time to the current world time
+    */
+    virtual int addTime(int time);
+
+    /*
+    **  Used in the /time command.
+    **  Sets the current world time to the given time
+    */
+    virtual void setTime(int time);
 
 protected:
     std::shared_ptr<Chat> _chat;

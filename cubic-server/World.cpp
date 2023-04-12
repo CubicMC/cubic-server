@@ -135,7 +135,7 @@ void World::updateTime()
     _age += 20;
     _time += 20;
     if (_time > 24000)
-        _time = 0;
+        _time -= 24000;
 
     // send packets to clients (missing clients in architecture)
     for (auto &entity : this->getEntities()) {
@@ -251,3 +251,27 @@ thread_pool::Pool &World::getGenerationPool() { return _generationPool; }
 Seed World::getSeed() const { return _seed; }
 
 uint8_t World::getRenderDistance() const { return _renderDistance; }
+
+long World::getTime() const { return _time; }
+
+long World::getAge() const { return _age; }
+
+int World::addTime(int time)
+{
+    if (time >= 0) {
+        _time += time;
+        while (_time > 24000)
+            _time -= 24000;
+        _age += time;
+        return _time;
+    } else {
+        LERROR("Tick count must be non-negative");
+        return -1;
+    }
+}
+
+void World::setTime(int time)
+{
+    if (time >= 0)
+        _time = time;
+}

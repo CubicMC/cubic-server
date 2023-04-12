@@ -116,6 +116,7 @@ private:
         new command_parser::Op,
         new command_parser::Deop,
         new command_parser::Reload,
+        new command_parser::Time,
     };
     Blocks::GlobalPalette _globalPalette;
     Items::ItemConverter _itemConverter;
