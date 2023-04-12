@@ -100,16 +100,21 @@ chat::Message chat::Message::fromJson(const nlohmann::json &json)
     return msg;
 }
 
-std::string chat::Message::getMessage() const { return _message; }
-chat::Message::Options chat::Message::getOptions() const { return _options; }
-std::optional<chat::message::ClickEvent> chat::Message::getClickEvent() const { return _clickEvent; }
-std::optional<chat::message::HoverEvent> chat::Message::getHoverEvent() const { return _hoverEvent; }
-std::vector<chat::Message> chat::Message::getExtra() const { return _extra; }
+// Getters
+const std::string &chat::Message::getMessage() const { return _message; }
+const chat::Message::Options &chat::Message::getOptions() const { return _options; }
+const std::optional<chat::message::ClickEvent> &chat::Message::getClickEvent() const { return _clickEvent; }
+const std::optional<chat::message::HoverEvent> &chat::Message::getHoverEvent() const { return _hoverEvent; }
+const std::vector<chat::Message> &chat::Message::getExtra() const { return _extra; }
+
+// Getters (mutable)
 std::string &chat::Message::message() { return _message; }
 chat::Message::Options &chat::Message::options() { return _options; }
 std::optional<chat::message::ClickEvent> &chat::Message::clickEvent() { return _clickEvent; }
 std::optional<chat::message::HoverEvent> &chat::Message::hoverEvent() { return _hoverEvent; }
 std::vector<chat::Message> &chat::Message::extra() { return _extra; }
+
+#pragma region Translation Keys
 
 template<>
 chat::Message chat::Message::fromTranslateKey<chat::TranslateKey::multiplayer_player_joined>(const Player &player)
@@ -159,3 +164,5 @@ chat::Message chat::Message::fromTranslateKey<chat::TranslateKey::multiplayer_pl
     );
     return message;
 }
+
+#pragma endregion

@@ -60,11 +60,11 @@ public:
         std::optional<chat::message::HoverEvent> hoverEvent = std::nullopt
     );
 
-    std::string getMessage() const;
-    Options getOptions() const;
-    std::optional<chat::message::ClickEvent> getClickEvent() const;
-    std::optional<chat::message::HoverEvent> getHoverEvent() const;
-    std::vector<Message> getExtra() const;
+    const std::string &getMessage() const;
+    const Options &getOptions() const;
+    const std::optional<chat::message::ClickEvent> &getClickEvent() const;
+    const std::optional<chat::message::HoverEvent> &getHoverEvent() const;
+    const std::vector<Message> &getExtra() const;
 
     std::string &message();
     Options &options();
