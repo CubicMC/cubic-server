@@ -70,17 +70,22 @@ bool LootTables::poll(LootTablePoll &result, const std::string &_namespace, cons
 
         if (selectedTable.contains("pools") && selectedTable["pools"].is_array()) { 
             for (const auto &pool_entry : selectedTable["pools"].items()) {
-                
+
                 if (pool_entry.value()["rolls"].is_number_integer() || // roll type constant
-                    (pool_entry.value()["rolls"].is_object() && pool_entry.value()["rools"]["type"] == "minecraft:constant"))
+                    (pool_entry.value()["rolls"].is_object() && pool_entry.value()["rolls"].contains("type") &&
+                     pool_entry.value()["rolls"]["type"].get<std::string>() == "minecraft:constant"))
                     this->pollRollsTypeConstant(result, pool_entry.value());
                 else if (pool_entry.value()["rolls"].is_object() && // roll type uniform
-                         (pool_entry.value()["rolls"]["type"] == "minecraft:uniform" || \
-                          (pool_entry.value()["rolls"]["min"].is_number_integer() && pool_entry.value()["rolls"]["max"].is_number_integer())))
+                         pool_entry.value()["rolls"].contains("min") && pool_entry.value()["rolls"].contains("max") &&
+                         pool_entry.value()["rolls"]["min"].is_number_integer() && pool_entry.value()["rolls"]["max"].is_number_integer())
                     this->pollRollsTypeUniform(result, pool_entry.value());
                 else if (pool_entry.value()["rolls"].is_object() && // roll type binomial
-                         (pool_entry.value()["rolls"]["type"] == "minecraft:binomial"))
+                         pool_entry.value()["rolls"].contains("n") && pool_entry.value()["rolls"].contains("p") &&
+                         pool_entry.value()["rolls"]["n"].is_number_integer() && pool_entry.value()["rolls"]["p"].is_number_float())
                     this->pollRollsTypeBinomial(result, pool_entry.value());
+//                else if (pool_entry.value()["rolls"].is_object() && // roll type score
+//                         (pool_entry.value()["rolls"]["type"] == "minecraft:score"))
+//                    this->pollRollsTypeScore(result, pool_entry.value());
             }
         }
         return (true);
@@ -124,10 +129,12 @@ bool LootTables::pollRollsTypeBinomial(LootTablePoll &result, nlohmann::json poo
     float p = 0;
     int roll_number = 0;
 
-    n = pool["rolls"]["min"].get<nlohmann::json::number_integer_t>();
-    p = pool["rolls"]["max"].get<nlohmann::json::number_float_t>();
+    n = pool["rolls"]["n"].get<nlohmann::json::number_integer_t>();
+    p = pool["rolls"]["p"].get<nlohmann::json::number_float_t>();
     roll_number = n;
-
+    
+    if (n < 0)
+        return (true);
     if (p < 1.0) {
         for (int i = 0; i < n; i++) {
             if ((int)(p * 100000.0) < rand() % 100000)
@@ -138,8 +145,20 @@ bool LootTables::pollRollsTypeBinomial(LootTablePoll &result, nlohmann::json poo
     return (this->pollXPool(result, roll_number, pool["entries"]));
 }
 
+bool LootTables::pollRollsTypeScore(LootTablePoll &result, nlohmann::json pool)
+{
+    /*
+      TO DO:
+      get number of rolls with target's score
+      targets can be constants by giving a name or "this", "killer", "direct_killer" and "killer_player"
+     */
+    return (false);
+}
+
 bool LootTables::pollXPool(LootTablePoll &result, int x, nlohmann::json entries)
 {
+    if (x < 1)
+        return (true);
     int max_weight = 0;
 
     for (const auto &entry : entries.items()) {
