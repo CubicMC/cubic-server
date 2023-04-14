@@ -165,10 +165,14 @@ void Player::setPosition(const Vector3<double> &pos)
 {
     auto newChunkPos = Position2D(transformBlockPosToChunkPos(pos.x), transformBlockPosToChunkPos(pos.z));
     auto oldChunkPos = Position2D(transformBlockPosToChunkPos(_pos.x), transformBlockPosToChunkPos(_pos.z));
-    if (_isSprinting)
-        _foodExhaustionLevel += _pos.distance(pos) * 0.1;
-    if (_isJumping)
+    auto _pos2d = Vector2<double>(_pos.x, _pos.z);
+    auto pos2d = Vector2<double>(pos.x, pos.z);
+    if (_isSprinting && !_isFlying)
+        _foodExhaustionLevel += _pos2d.distance(pos2d) * 0.1;
+    if (_isJumping) {
         _foodExhaustionLevel += _isSprinting ? 0.2 : 0.05;
+        _isJumping = false;
+    }
     Entity::setPosition(pos);
 
     _updateRenderedChunks(oldChunkPos, newChunkPos);
@@ -585,10 +589,12 @@ void Player::_onSetPlayerPosition(const std::shared_ptr<protocol::SetPlayerPosit
 {
     LDEBUG("Got a Set Player Position (", pck->x, ", ", pck->feet_y, ", ", pck->z, ")");
     // TODO: Validate the position
-    if (pck->on_ground && _isJumping)
-        _isJumping = false;
-    if (!pck->on_ground && !_isJumping)
+    if (pck->on_ground && _isFlying)
+        _isFlying = false;
+    if (!pck->on_ground && !_isJumping && !_isFlying && ((pck->feet_y + 64) - (_pos.y + 64) > 0)) {
         _isJumping = true;
+        _isFlying = true;
+    }
     this->setPosition(pck->x, pck->feet_y, pck->z);
 }
 
@@ -601,10 +607,12 @@ void Player::_onSetPlayerPositionAndRotation(const std::shared_ptr<protocol::Set
         yaw_tmp += 360;
     while (yaw_tmp > 360)
         yaw_tmp -= 360;
-    if (pck->on_ground && _isJumping)
-        _isJumping = false;
-    if (!pck->on_ground && !_isJumping)
+    if (pck->on_ground && _isFlying)
+        _isFlying = false;
+    if (!pck->on_ground && !_isJumping && !_isFlying && ((pck->feet_y + 64) - (_pos.y + 64) > 0)) {
         _isJumping = true;
+        _isFlying = true;
+    }
     this->setPosition(pck->x, pck->feet_y, pck->z);
     this->setRotation(yaw_tmp, pck->pitch / 1.5);
 }
@@ -957,6 +965,8 @@ void Player::_foodTick()
             needUpdate = true;
         }
     }
+    if (_foodLevel <= 17 && _foodLevel > 0 && _foodTickTimer > 0)
+        _foodTickTimer = 0;
     if (needUpdate) {
         this->sendHealth();
         LDEBUG("Health is now ", _health, " and food level is now ", _foodLevel);
