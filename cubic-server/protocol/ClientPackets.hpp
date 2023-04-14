@@ -50,7 +50,7 @@ enum class ClientPacketID : int32_t {
     ServerData = 0x41,
     CenterChunk = 0x4a,
     EntityVelocity = 0x4f,
-    Health = 0x52,
+    Health = 0x53,
     UpdateTime = 0x5A,
     EntitySoundEffect = 0x5D,
     SoundEffect = 0x5E,
