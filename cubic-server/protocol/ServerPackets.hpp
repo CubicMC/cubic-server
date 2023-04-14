@@ -307,9 +307,24 @@ struct PlayerAbilities : BaseServerPacket {
 std::shared_ptr<PlayerAbilities> parsePlayerAbilities(std::vector<uint8_t> &buffer);
 
 struct PlayerAction : BaseServerPacket {
-    int32_t status; // TODO: Use an enum
+    enum class Status : int32_t {
+        StartedDigging,
+        CancelledDigging,
+        FinishedDigging,
+        DropItemStack,
+        DropItem,
+        ShootArrowOrFinishEating,
+        SwapItemInHand,
+    } status;
     Position location;
-    uint8_t face; // TODO: Use an enum
+    enum class Face : uint8_t {
+        Bottom,
+        Top,
+        North,
+        South,
+        West,
+        East,
+    } face;
     int32_t sequence;
 };
 std::shared_ptr<PlayerAction> parsePlayerAction(std::vector<uint8_t> &buffer);
