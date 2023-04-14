@@ -142,6 +142,7 @@ private:
     void _continueLoginSequence();
     void _sendLoginMessage();
     void _unloadChunk(int32_t x, int32_t z);
+    void _foodTick();
 
     Client *_cli;
     std::string _username;
@@ -155,6 +156,16 @@ private:
     bool _isFlying;
     bool _isOperator;
     std::unordered_map<Position2D, ChunkState> _chunks;
+
+    // Food Mechanics
+    int _foodLevel;
+    float _foodSaturationLevel;
+    int _foodTickTimer;
+    float _foodExhaustionLevel;
+
+    // player status
+    bool _isSprinting;
+    bool _isJumping;
 };
 
 #endif // CUBICSERVER_PLAYER_HPP

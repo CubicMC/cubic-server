@@ -19,7 +19,11 @@ Player::Player(Client *cli, std::shared_ptr<Dimension> dim, u128 uuid, const std
     _keepAliveId(0),
     _keepAliveIgnored(0),
     _gamemode(0),
-    _keepAliveClock(200, std::bind(&Player::_processKeepAlive, this)) // 5 seconds for keep-alives
+    _keepAliveClock(200, std::bind(&Player::_processKeepAlive, this)), // 5 seconds for keep-alives
+    _foodLevel(20), // TODO: Take this from the saved data
+    _foodSaturationLevel(5.0f), // TODO: Take this from the saved data
+    _foodTickTimer(0), // TODO: Take this from the saved data
+    _foodExhaustionLevel(0.0f) // TODO: Take this from the saved data
 {
     _keepAliveClock.start();
     _heldItem = 0;
@@ -117,6 +121,8 @@ void Player::tick()
 
     if (_pos.y < -100)
         teleport({_pos.x, -58, _pos.z});
+
+    _foodTick();
 }
 
 Client *Player::getClient() const { return _cli; }
@@ -159,7 +165,10 @@ void Player::setPosition(const Vector3<double> &pos)
 {
     auto newChunkPos = Position2D(transformBlockPosToChunkPos(pos.x), transformBlockPosToChunkPos(pos.z));
     auto oldChunkPos = Position2D(transformBlockPosToChunkPos(_pos.x), transformBlockPosToChunkPos(_pos.z));
-
+    if (_isSprinting)
+        _foodExhaustionLevel += _pos.distance(pos) * 0.1;
+    if (_isJumping)
+        _foodExhaustionLevel += _isSprinting ? 0.2 : 0.05;
     Entity::setPosition(pos);
 
     _updateRenderedChunks(oldChunkPos, newChunkPos);
@@ -548,6 +557,7 @@ void Player::_onInteract(const std::shared_ptr<protocol::Interact> &pck)
         } else if (target != nullptr) {
             target->attack(_pos);
         }
+        _foodExhaustionLevel += 0.1;
         break;
     case 2: // interact at type
         break;
@@ -576,6 +586,10 @@ void Player::_onSetPlayerPosition(const std::shared_ptr<protocol::SetPlayerPosit
     LDEBUG("Got a Set Player Position (", pck->x, ", ", pck->feet_y, ", ", pck->z, ")");
     // TODO: Validate the position
     this->setPosition(pck->x, pck->feet_y, pck->z);
+    if (pck->on_ground && _isJumping)
+        _isJumping = false;
+    if (!pck->on_ground && !_isJumping)
+        _isJumping = true;
 }
 
 void Player::_onSetPlayerPositionAndRotation(const std::shared_ptr<protocol::SetPlayerPositionAndRotation> &pck)
@@ -589,6 +603,10 @@ void Player::_onSetPlayerPositionAndRotation(const std::shared_ptr<protocol::Set
     while (yaw_tmp > 360)
         yaw_tmp -= 360;
     this->setRotation(yaw_tmp, pck->pitch / 1.5);
+    if (pck->on_ground && _isJumping)
+        _isJumping = false;
+    if (!pck->on_ground && !_isJumping)
+        _isJumping = true;
 }
 
 void Player::_onSetPlayerRotation(const std::shared_ptr<protocol::SetPlayerRotation> &pck)
@@ -624,10 +642,20 @@ void Player::_onPlayerAction(const std::shared_ptr<protocol::PlayerAction> &pck)
         this->getDimension()->blockUpdate(pck->location, 0);
     } else if (pck->status == 2) {
         this->getDimension()->blockUpdate(pck->location, 0);
+        _foodExhaustionLevel += 0.005;
     }
 }
 
-void Player::_onPlayerCommand(const std::shared_ptr<protocol::PlayerCommand> &pck) { LDEBUG("Got a Player Command"); }
+void Player::_onPlayerCommand(const std::shared_ptr<protocol::PlayerCommand> &pck)
+{
+    LDEBUG("Got a Player Command");
+    if (pck->action_id == 3) {
+        _isSprinting = true;
+    }
+    if (pck->action_id == 4) {
+        _isSprinting = false;
+    }
+}
 
 void Player::_onPlayerInput(const std::shared_ptr<protocol::PlayerInput> &pck) { LDEBUG("Got a Player Input"); }
 
@@ -891,6 +919,36 @@ void Player::_unloadChunk(int32_t x, int32_t z)
 
     this->sendUnloadChunk(x, z);
     this->_chunks.erase({x, z});
+}
+
+void Player::_foodTick()
+{
+    if (_foodLevel == 0 && _health > 10 && _foodTickTimer >= 80) { // TODO: Make it depends on difficulty
+        _health -= 1; // TODO: use a callback to send the health update
+        _foodTickTimer = 0;
+        return;
+    }
+    if (_foodLevel > 17 && _health < _maxHealth) {
+        if (_foodSaturationLevel > 0 && _foodLevel == 20 && _foodTickTimer >= 10) {
+            // _health += ((1.0 / 6) * _foodSaturationLevel >= 1) ? 1 : 0; // TODO: use a callback to send the health update
+            // not clear
+        }
+        if (_foodTickTimer >= 80) {
+            _health += 1; // TODO: use a callback to send the health update
+            _foodExhaustionLevel += 6;
+            _foodTickTimer = 0;
+            return;
+        }
+    }
+    if (_foodLevel > 17 || _foodLevel == 0)
+        _foodTickTimer++;
+    if (_foodExhaustionLevel >= 4) {
+        _foodExhaustionLevel -= 4;
+        if (_foodSaturationLevel > 0)
+            _foodSaturationLevel -= 1;
+        else
+            _foodLevel -= 1;
+    }
 }
 
 void Player::teleport(const Vector3<double> &pos)
