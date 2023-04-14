@@ -163,13 +163,23 @@ private:
     std::vector<Base *> _value;
 
 public:
-    Compound(std::string name, std::vector<Base *> value):
+    Compound(std::string name, std::vector<Base *> value = {}):
         Base(std::move(name), TagType::Compound),
         _value(std::move(value)) {};
-    Compound(std::string name, std::initializer_list<Base *> value):
+    Compound(std::string name, std::initializer_list<Base *> value = {}):
         Base(std::move(name), TagType::Compound),
         _value(value) {};
     ~Compound() override = default;
+
+    constexpr void addValue(Base *value)
+    {
+        _value.push_back(value);
+    }
+
+    constexpr size_t size() const
+    {
+        return _value.size();
+    }
 
     /**
      * @brief Checks if an NBT Tag exists
@@ -490,6 +500,8 @@ public:
     [[nodiscard]] constexpr std::vector<Base *> &getValues() { return _value; }
 
     [[nodiscard]] constexpr const std::vector<Base *> &getValues() const { return _value; }
+
+    constexpr void push_back(Base *value) { _value.push_back(value); }
 
     [[nodiscard]] constexpr std::vector<uint8_t> serialize() const override
     {

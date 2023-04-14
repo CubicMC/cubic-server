@@ -51,35 +51,13 @@ Player::Player(Client *cli, std::shared_ptr<Dimension> dim, u128 uuid, const std
 
 Player::~Player()
 {
-    // Send a disconnect message to the chat
-    // chat::Message disconnectMsg = chat::Message(
-    //     "",
-    //     {.color = "yellow",
-    //      .translate = "multiplayer.player.left",
-    //      .with = std::vector<chat::Message>({chat::Message(
-    //          this->getUsername(),
-    //          {
-    //              .insertion = this->getUsername(),
-    //          },
-    //          chat::message::ClickEvent(chat::message::ClickEvent::Action::SuggestCommand, "/tell " + this->getUsername()),
-    //          chat::message::HoverEvent(
-    //              chat::message::HoverEvent::Action::ShowEntity,
-    //              "{\"type\": \"minecraft:player\", \"id\": \"" + this->getUuidString() + "\", \"name\": \"" + this->getUsername() + "\"}"
-    //          )
-    //      )})}
-    // );
-
-    chat::Message disconnectMsg = chat::Message::fromTranslateKey<chat::TranslateKey::multiplayer_player_left>(*this);
+    chat::Message disconnectMsg = chat::Message::fromTranslationKey<chat::TranslationKey::multiplayer_player_left, const Player *>(this);
 
     this->_dim->getWorld()->sendPlayerInfoRemovePlayer(this);
     this->_dim->removeEntity(this);
 
     // Send a disconnect message
     this->_dim->getWorld()->getChat()->sendSystemMessage(disconnectMsg, false, this->_dim->getWorld()->getWorldGroup());
-    // _player->_dim->getWorld()->getChat()->sendPlayerMessage(
-    //     disconnectMsg,
-    //     _player
-    // );
 }
 
 void Player::tick()
@@ -1035,7 +1013,7 @@ void Player::_continueLoginSequence()
 void Player::_sendLoginMessage(void)
 {
     // Send login message
-    chat::Message connectionMsg = chat::Message::fromTranslateKey<chat::TranslateKey::multiplayer_player_joined>(*this);
+    chat::Message connectionMsg = chat::Message::fromTranslationKey<chat::TranslationKey::multiplayer_player_joined, const Player *>(this);
 
     this->getDimension()->getWorld()->getChat()->sendSystemMessage(connectionMsg, false, this->getDimension()->getWorld()->getWorldGroup());
 }

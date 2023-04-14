@@ -15,32 +15,7 @@ void Chat::sendPlayerMessage(const chat::Message &message, const Player *sender)
         return;
     }
 
-    // TODO: Filter client by chat visibility
-    for (auto &[_, world] : sender->getDimension()->getWorld()->getWorldGroup()->getWorlds()) {
-        for (auto &player : world->getPlayers()) {
-            // if (player == sender)
-            //     continue;
-            player->sendChatMessageResponse({
-                sender->getUuid(),
-                (int32_t) this->_messagesLog.size(),
-                // TODO: Message signature
-                false,
-                {},
-                "",
-                std::time(nullptr),
-                0,
-                // TODO: Previous message
-                {},
-                true,
-                message.serialize(),
-                0,
-                {},
-                0, // TODO: ???
-                ::chat::Message(sender->getUsername()).serialize(),
-                false,
-            });
-        }
-    }
+    this->_sendMessage(message, sender, chat::message::Type::Chat);
 }
 
 void Chat::sendSystemMessage(const chat::Message &message, bool overlay, const WorldGroup *worldGroup)
@@ -58,50 +33,45 @@ void Chat::sendSystemMessage(const chat::Message &message, bool overlay, const W
     }
 }
 
-void Chat::sendSayMessage(const chat::Message &message, const Player *sender)
-{
-    if (sender == nullptr) {
-        LERROR("sender is null");
-        return;
-    }
-
-    // TODO: Filter client by chat visibility
-    for (auto &[_, world] : sender->getDimension()->getWorld()->getWorldGroup()->getWorlds()) {
-        for (auto &player : world->getPlayers()) {
-            player->sendChatMessageResponse({
-                sender->getUuid(),
-                (int32_t) this->_messagesLog.size(),
-                // TODO: Message signature
-                false,
-                {},
-                "",
-                std::time(nullptr),
-                0,
-                // TODO: Previous message
-                {},
-                true,
-                message.serialize(),
-                0,
-                {},
-                0, // TODO: ???
-                "Network Name",
-                false,
-            });
-        }
-    }
-}
-
-void Chat::sendMsgMessage(const chat::Message &message, Player *sender, Player *to)
+void Chat::sendWhisperMessage(const chat::Message &message, Player *sender, Player *to)
 {
     if (to == nullptr) {
         LERROR("to is null");
         return;
     }
-    chat::Message msg = "[" + sender->getUsername() + "]";
-    msg.extra().push_back(message);
+    // chat::Message out = chat::Message::fromTranslationKey<chat::TranslationKey::commands_message_display_outgoing>(message, sender, to);
+    // chat::Message in = chat::Message::fromTranslationKey<chat::TranslationKey::commands_message_display_incoming>(message, sender, to);
 
-    to->sendSystemChatMessage({
-        msg.serialize(),
+    // this->_sendMessage(message, sender, chat::message::Type::Chat);
+}
+
+void Chat::_sendMessage(const chat::Message &message, const Player *from, const chat::message::Type &type)
+{
+    protocol::PlayerChatMessage pck = {
+        from->getUuid(),
+        (int32_t) this->_messagesLog.size(),
+        // TODO: Message signature
         false,
-    });
+        {},
+        "",
+        std::time(nullptr),
+        0,
+        // TODO: Previous message
+        {},
+        true,
+        message.serialize(),
+        0,
+        {},
+        static_cast<int32_t>(type),
+        chat::Message(from->getUsername()).serialize(),
+        false,
+    };
+
+    this->_messagesLog.push_back(message);
+
+    // TODO: Filter client by chat visibility
+    for (auto &[_, world] : from->getDimension()->getWorld()->getWorldGroup()->getWorlds()) {
+        for (auto &player : world->getPlayers())
+            player->sendChatMessageResponse(pck);
+    }
 }

@@ -10,9 +10,28 @@
 #include "HoverEvent.hpp"
 #include "ClickEvent.hpp"
 
+#include "nbt.hpp"
+
+class Player;
+
 namespace chat {
 
+// Should be in the same order as in the login play packet
+enum TranslationKey : int32_t {
+    chat_type_text = 0,
+    chat_type_emote,
+    commands_message_display_incoming,
+    commands_message_display_outgoing,
+    chat_type_announcement,
+    chat_type_team_text,
+    chat_type_team_sent,
+    multiplayer_player_left = 500,
+    multiplayer_player_joined,
+};
+
 namespace message {
+nbt::Compound *getChatRegistry();
+
 enum class Type : int32_t {
     Chat = 0,
     System = 1,
@@ -25,15 +44,9 @@ enum class Type : int32_t {
 };
 } // namespace message
 
-enum TranslateKey : int32_t {
-    multiplayer_player_left = 0,
-    multiplayer_player_joined = 1,
-};
-
 class Message {
 public:
-    struct Options {
-        // Options() = default;
+    struct Style {
         std::optional<bool> bold;
         std::optional<bool> italic;
         std::optional<bool> underlined;
@@ -41,9 +54,11 @@ public:
         std::optional<bool> obfuscated;
         std::optional<std::string> font;
         std::optional<std::string> color;
+    };
+    struct Options : public Style {
         std::optional<std::string> insertion;
         std::optional<std::string> translate;
-        std::optional<std::vector<Message>> with;
+        std::vector<Message> with;
     };
 
 private:
@@ -80,8 +95,8 @@ public:
 
     static Message deserialize(const std::string &message);
     static Message fromJson(const nlohmann::json &json);
-    template<TranslateKey key, typename... Args>
-    static Message fromTranslateKey(const Args&... args);
+    template<TranslationKey key, typename... Args>
+    static Message fromTranslationKey(Args... args);
 
 private:
     std::string _message;
@@ -91,26 +106,26 @@ private:
     std::vector<Message> _extra;
 };
 
-// template<typename... Args>
-// Message &Message::wrap(const std::string &translationKey, const Args&... args)
-// {
-//     _options.translate = translationKey;
-//     _options.with = {args...};
-//     return *this;
-// }
-
 template<>
-Message Message::fromTranslateKey<TranslateKey::multiplayer_player_joined, std::string>(const std::string &playerName);
+Message Message::fromTranslationKey<TranslationKey::chat_type_text>(const Player *player, const std::string &message);
+// template<>
+// Message Message::fromTranslationKey<TranslationKey::chat_type_emote>(const Player *player, const std::string &message);
 template<>
-Message Message::fromTranslateKey<TranslateKey::multiplayer_player_left, std::string>(const std::string &playerName);
-
-// template<TranslateKey::multiplayer_player_joined, typename... Args>
-// Message Message::fromTranslateKey(const Args&... args)
-// {
-//     Message message;
-//     message.wrap(args...);
-//     return message;
-// }
+Message Message::fromTranslationKey<TranslationKey::commands_message_display_incoming>(const Player *player, const std::string &message);
+template<>
+Message Message::fromTranslationKey<TranslationKey::commands_message_display_outgoing>(const Player *player, const std::string &message);
+template<>
+Message Message::fromTranslationKey<TranslationKey::chat_type_announcement>(const Player *player, const std::string &message);
+template<>
+Message Message::fromTranslationKey<TranslationKey::chat_type_team_text>(const Player *player, const std::string &message);
+template<>
+Message Message::fromTranslationKey<TranslationKey::chat_type_team_sent>(const Player *player, const std::string &message);
+template<>
+Message Message::fromTranslationKey<TranslationKey::chat_type_team_text>(const Player *player, const std::string &message);
+template<>
+Message Message::fromTranslationKey<TranslationKey::multiplayer_player_joined>(const Player *player);
+template<>
+Message Message::fromTranslationKey<TranslationKey::multiplayer_player_left>(const Player *player);
 
 } // namespace chat
 
