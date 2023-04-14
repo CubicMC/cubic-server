@@ -54,7 +54,7 @@ nbt::Compound *chat::_details::ChatType::toNBT() const
 
 nbt::Compound *chat::_details::Registry::toNBT() const
 {
-    auto values = new nbt::List("values");
+    auto values = new nbt::List("value");
 
     for (const auto &chatType : _chatTypes)
         values->push_back(chatType.toNBT());
@@ -63,4 +63,122 @@ nbt::Compound *chat::_details::Registry::toNBT() const
         new nbt::String("type", "minecraft:chat_type"),
         values
     });
+}
+
+/**
+ * @brief Generate the chat registry
+ *
+ * @return nbt::Compound*
+ */
+nbt::Compound *chat::_details::getChatRegistry()
+{
+    chat::_details::Registry registry;
+
+    // Chat message
+    chat::_details::ChatType chatType;
+    chatType
+        .id(chat::message::Type::Chat)
+        .name("minecraft:chat")
+        .addChatParameter("sender")
+        .addChatParameter("content")
+        .addNarrateParameter("sender")
+        .addNarrateParameter("content")
+        .chatKey("chat.type.text")
+        .narrateKey("chat.type.text.narrate");
+
+    registry.addChatType(chatType);
+
+    // Emote message (lol)
+    chat::_details::ChatType emoteType;
+    emoteType
+        .id(chat::message::Type::Emote)
+        .name("minecraft:emote_command")
+        .addChatParameter("sender")
+        .addChatParameter("content")
+        .addNarrateParameter("sender")
+        .addNarrateParameter("content")
+        .chatKey("chat.type.emote")
+        .narrateKey("chat.type.emote");
+
+    registry.addChatType(emoteType);
+
+    // Whisper message incoming
+    chat::_details::ChatType whisperIncomingType;
+    whisperIncomingType
+        .id(chat::message::Type::WhisperInc)
+        .name("minecraft:msg_command_incoming")
+        .addChatParameter("sender")
+        .addChatParameter("content")
+        .addNarrateParameter("sender")
+        .addNarrateParameter("content")
+        .chatKey("commands.message.display.incoming")
+        .narrateKey("chat.type.text.narrate")
+        .addStyle({
+            .italic = true,
+            .color = "gray",
+        });
+
+    registry.addChatType(whisperIncomingType);
+
+    // Whisper message outgoing
+    chat::_details::ChatType whisperOutgoingType;
+    whisperOutgoingType
+        .id(chat::message::Type::WhisperOut)
+        .name("minecraft:msg_command_outgoing")
+        .addChatParameter("target")
+        .addChatParameter("content")
+        .addNarrateParameter("sender")
+        .addNarrateParameter("content")
+        .chatKey("commands.message.display.outgoing")
+        .narrateKey("chat.type.text.narrate")
+        .addStyle({
+            .italic = true,
+            .color = "gray",
+        });
+
+    registry.addChatType(whisperOutgoingType);
+
+    // say message
+    chat::_details::ChatType sayType;
+    sayType
+        .id(chat::message::Type::Announce)
+        .name("minecraft:say_command")
+        .addChatParameter("sender")
+        .addChatParameter("content")
+        .addNarrateParameter("sender")
+        .addNarrateParameter("content")
+        .chatKey("chat.type.announcement")
+        .narrateKey("chat.type.text.narrate");
+
+    registry.addChatType(sayType);
+
+    // Chat team message incoming
+    chat::_details::ChatType teamIncomingType;
+    teamIncomingType
+        .id(chat::message::Type::TeamText)
+        .name("minecraft:team_msg_command_incoming")
+        .addChatParameter("target")
+        .addChatParameter("sender")
+        .addChatParameter("content")
+        .addNarrateParameter("sender")
+        .addNarrateParameter("content")
+        .chatKey("chat.type.team.text")
+        .narrateKey("chat.type.text.narrate");
+
+    registry.addChatType(teamIncomingType);
+
+    // Chat team message outgoing
+    chat::_details::ChatType teamOutgoingType;
+    teamOutgoingType
+        .id(chat::message::Type::TeamSent)
+        .name("minecraft:team_msg_command_outgoing")
+        .addChatParameter("target")
+        .addChatParameter("sender")
+        .addChatParameter("content")
+        .addNarrateParameter("sender")
+        .addNarrateParameter("content")
+        .chatKey("chat.type.team.sent")
+        .narrateKey("chat.type.text.narrate");
+
+    return registry.toNBT();
 }

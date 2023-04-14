@@ -9,6 +9,8 @@
 
 namespace chat::_details {
 
+nbt::Compound *getChatRegistry();
+
 class ChatType {
 public:
     typedef struct {

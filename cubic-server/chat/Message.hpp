@@ -30,17 +30,14 @@ enum TranslationKey : int32_t {
 };
 
 namespace message {
-nbt::Compound *getChatRegistry();
-
-enum class Type : int32_t {
+enum Type : int32_t {
     Chat = 0,
-    System = 1,
-    GameInfo = 2,
-    Say = 3,
-    Whisper = 4,
-    Team = 5,
-    Emote = 6, // Don't ask me...
-    Tellraw = 7,
+    Emote,
+    WhisperInc,
+    WhisperOut,
+    Announce,
+    TeamText,
+    TeamSent,
 };
 } // namespace message
 

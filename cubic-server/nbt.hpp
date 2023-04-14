@@ -163,10 +163,10 @@ private:
     std::vector<Base *> _value;
 
 public:
-    Compound(std::string name, std::vector<Base *> value = {}):
+    Compound(std::string name, std::vector<Base *> value):
         Base(std::move(name), TagType::Compound),
         _value(std::move(value)) {};
-    Compound(std::string name, std::initializer_list<Base *> value = {}):
+    Compound(std::string name, std::initializer_list<Base *> value):
         Base(std::move(name), TagType::Compound),
         _value(value) {};
     ~Compound() override = default;

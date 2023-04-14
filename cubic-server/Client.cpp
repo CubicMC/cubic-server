@@ -14,6 +14,7 @@
 #include "protocol/ClientPackets.hpp"
 #include "protocol/ServerPackets.hpp"
 #include "whitelist/Whitelist.hpp"
+#include "chat/ChatRegistry.hpp"
 
 Client::Client(int sockfd, struct sockaddr_in6 addr):
     _sockfd(sockfd),
@@ -392,6 +393,7 @@ void Client::sendLoginPlay()
         .dimensionNames = std::vector<std::string>({"minecraft:overworld"}), // TODO: something like this this->_player->_dim->getWorld()->getDimensions();
         // clang-format off
         .registryCodec = nbt::Compound("", {
+            chat::_details::getChatRegistry(),
             new nbt::Compound("minecraft:dimension_type", {
                 new nbt::String("type", "minecraft:dimension_type"),
                 new nbt::List("value", {
@@ -461,31 +463,6 @@ void Client::sendLoginPlay()
                     })
                 })
             }),
-            new nbt::Compound("minecraft:chat_type", {
-                new nbt::String("type", "minecraft:chat_type"),
-                new nbt::List("value", {
-                    new nbt::Compound("", {
-                        new nbt::String("name", "minecraft:chat"),
-                        new nbt::Int("id", 0),
-                        new nbt::Compound("element", {
-                            new nbt::Compound("chat", {
-                                new nbt::List("parameters", {
-                                    new nbt::String("", "sender"),
-                                    new nbt::String("", "content")
-                                }),
-                                new nbt::String("translation_key", "chat.type.text"),
-                            }),
-                            new nbt::Compound("narration", {
-                                new nbt::List("parameters", {
-                                    new nbt::String("", "sender"),
-                                    new nbt::String("", "content")
-                                }),
-                                new nbt::String("translation_key", "chat.type.text.narrate"),
-                            })
-                        })
-                    })
-                })
-            })
         }),
         // clang-format on
         .dimensionType = "minecraft:overworld", // TODO: something like this this->_player->_dim->getDimensionType();
