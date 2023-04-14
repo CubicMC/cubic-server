@@ -7,6 +7,7 @@
 #include "LivingEntity.hpp"
 #include "SoundList.hpp"
 #include "TickClock.hpp"
+#include "items/foodItems.hpp"
 #include "logging/Logger.hpp"
 #include "math/Vector3.hpp"
 #include "protocol/ClientPackets.hpp"
@@ -143,6 +144,7 @@ private:
     void _sendLoginMessage();
     void _unloadChunk(int32_t x, int32_t z);
     void _foodTick();
+    void _eat(int32_t itemId);
 
     Client *_cli;
     std::string _username;

@@ -645,12 +645,30 @@ void Player::_onPlayerAbilities(const std::shared_ptr<protocol::PlayerAbilities>
 void Player::_onPlayerAction(const std::shared_ptr<protocol::PlayerAction> &pck)
 {
     // LINFO("Got a Player Action ", pck->status, " at ", pck->location);
-    LDEBUG("Got a Player Action and player is in gamemode ", this->getGamemode(), " and status is ", pck->status);
-    if (pck->status == 0 && this->getGamemode() == 1) {
-        this->getDimension()->blockUpdate(pck->location, 0);
-    } else if (pck->status == 2) {
+    LDEBUG("Got a Player Action and player is in gamemode ", this->getGamemode(), " and status is ", (int32_t) pck->status);
+    switch (pck->status) {
+    case protocol::PlayerAction::Status::StartedDigging:
+        if (this->getGamemode() == 1)
+            this->getDimension()->blockUpdate(pck->location, 0);
+        break;
+    case protocol::PlayerAction::Status::CancelledDigging:
+        break;
+    case protocol::PlayerAction::Status::FinishedDigging:
         this->getDimension()->blockUpdate(pck->location, 0);
         _foodExhaustionLevel += 0.005;
+        break;
+    case protocol::PlayerAction::Status::DropItemStack:
+        break;
+    case protocol::PlayerAction::Status::DropItem:
+        break;
+    case protocol::PlayerAction::Status::ShootArrowOrFinishEating:
+        _eat(922);
+        break;
+    case protocol::PlayerAction::Status::SwapItemInHand:
+        break;
+    default:
+        LERROR("Got a Player Action with an unknown status: ", (int32_t) pck->status);
+        break;
     }
 }
 
@@ -973,6 +991,28 @@ void Player::_foodTick()
     }
     if (needUpdate == false && ((_foodLevel > 17 && _health < _maxHealth) || (_foodLevel == 0 && _health > 10))) // TODO: Make it depends on difficulty
         _foodTickTimer++;
+}
+
+void Player::_eat(int32_t itemId)
+{
+    const Items::FoodItem *food = std::find_if(Items::foodItems.begin(), Items::foodItems.end(), [itemId](const Items::FoodItem &item) {
+        return item.id == itemId;
+    });
+    if (food == Items::foodItems.end()) {
+        LERROR("Trying to eat an item that is not food");
+        return;
+    }
+    if (_foodLevel > 19) {
+        LERROR("Trying to eat while food level is already at max");
+        return;
+    }
+    _foodLevel += food->foodValue;
+    _foodSaturationLevel += food->saturation;
+    if (_foodLevel > 20)
+        _foodLevel = 20;
+    if (_foodSaturationLevel > _foodLevel)
+        _foodSaturationLevel = _foodLevel;
+    this->sendHealth();
 }
 
 void Player::teleport(const Vector3<double> &pos)
