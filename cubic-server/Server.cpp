@@ -5,6 +5,7 @@
 #include <exception>
 #include <fstream>
 #include <iostream>
+#include <memory>
 #include <netdb.h>
 #include <poll.h>
 #include <sys/socket.h>
@@ -15,7 +16,10 @@
 
 #include <CRC.h>
 
+#include "Client.hpp"
+#include "Player.hpp"
 #include "Server.hpp"
+#include "World.hpp"
 
 #include "protocol/ClientPackets.hpp"
 #include "protocol/ServerPackets.hpp"
@@ -99,20 +103,6 @@ void Server::launch()
 
 void Server::stop() { this->_running = false; }
 
-void Server::forEachWorldGroup(std::function<void(WorldGroup &)> callback)
-{
-    for (auto &[_, worldGroup] : this->_worldGroups)
-        callback(*worldGroup);
-}
-
-void Server::forEachWorldGroupIf(std::function<void(WorldGroup &)> callback, std::function<bool(const WorldGroup &)> predicate)
-{
-    for (auto &[_, worldGroup] : this->_worldGroups) {
-        if (predicate(*worldGroup))
-            callback(*worldGroup);
-    }
-}
-
 void Server::_acceptLoop()
 {
     struct pollfd poll_set[1];
@@ -166,7 +156,7 @@ void Server::_stop()
 
     for (auto &[name, worldGroup] : _worldGroups) {
         worldGroup->stop();
-        delete worldGroup;
+        worldGroup.reset();
     }
     if (this->_sockfd != -1)
         close(this->_sockfd);
@@ -218,7 +208,8 @@ void Server::_downloadFile(const std::string &url, const std::string &path)
 /*
 **  Reloads the config if no error within the new file
 */
-void Server::_reloadConfig() {
+void Server::_reloadConfig()
+{
     try {
         _config.parse("./config.yml");
     } catch (const std::exception &e) {
@@ -234,7 +225,8 @@ void Server::_reloadConfig() {
 /*
 **  Reloads the whitelist if no error within the new file
 */
-void Server::_reloadWhitelist() {
+void Server::_reloadWhitelist()
+{
     try {
         if (_whitelistEnabled) {
             WhitelistHandling::Whitelist whitelistReloaded = WhitelistHandling::Whitelist();
@@ -249,7 +241,8 @@ void Server::_reloadWhitelist() {
 **  Reloads the server. Used in the /reload command.
 **  More details in *Reload.hpp*.
 */
-void Server::reload() {
+void Server::reload()
+{
     _reloadConfig();
     _reloadWhitelist();
     _enforceWhitelistOnReload();
@@ -263,13 +256,21 @@ void Server::reload() {
 */
 void Server::_enforceWhitelistOnReload()
 {
-    if (_whitelistEnabled && _enforceWhitelist) {
-        for (auto &client : _clients) {
-            if (!_whitelist.isPlayerWhitelisted(client->getPlayer()->getUuid(), client->getPlayer()->getUsername()).first) {
-                client->disconnect("You are not whitelisted on this server.");
-                return;
+    if (!_whitelistEnabled || !_enforceWhitelist)
+        return;
+    for (auto [_, worldGroup] : _worldGroups) {
+        for (auto [_, world] : worldGroup->getWorlds()) {
+            for (auto [_, dim] : world->getDimensions()) {
+                for (auto player : dim->getPlayers()) {
+                    if (!_whitelist.isPlayerWhitelisted(player->getUuid(), player->getUsername()).first) {
+                        player->disconnect("You are not whitelisted on this server.");
+                    }
+                }
             }
         }
     }
-    return;
 }
+
+std::unordered_map<std::string_view, std::shared_ptr<WorldGroup>> &Server::getWorldGroups() { return _worldGroups; }
+
+const std::unordered_map<std::string_view, std::shared_ptr<WorldGroup>> &Server::getWorldGroups() const { return _worldGroups; }

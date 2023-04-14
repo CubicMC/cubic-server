@@ -1,8 +1,10 @@
 #include <cstdint>
 #include <iostream>
+#include <memory>
 #include <sstream>
 #include <string>
 
+#include "Client.hpp"
 #include "Player.hpp"
 #include "Server.hpp"
 #include "World.hpp"
@@ -62,7 +64,6 @@ Player::~Player()
     );
 
     this->_dim->getWorld()->sendPlayerInfoRemovePlayer(this);
-    this->_dim->removeEntity(this);
 
     // Send a disconnect message
     this->_dim->getWorld()->getChat()->sendSystemMessage(disconnectMsg, false, this->_dim->getWorld()->getWorldGroup());
@@ -76,6 +77,7 @@ void Player::tick()
 {
     _keepAliveClock.tick();
 
+    // TODO(huntears): Move all that to a new function
     bool updatePos = false;
     bool updateRot = false;
     int16_t deltaX = 0;
@@ -94,20 +96,20 @@ void Player::tick()
         _lastRot = _rot;
     }
     if (updatePos && updateRot) {
-        for (auto i : this->getDimension()->getPlayerList()) {
+        for (auto i : this->getDimension()->getPlayers()) {
             if (i->getId() == this->getId())
                 continue;
             i->sendUpdateEntityPositionAndRotation({this->getId(), deltaX, deltaY, deltaZ, this->_rot.x, this->_rot.y, true});
             i->sendHeadRotation({this->getId(), _rot.x});
         }
     } else if (updatePos && !updateRot) {
-        for (auto i : this->getDimension()->getPlayerList()) {
+        for (auto i : this->getDimension()->getPlayers()) {
             if (i->getId() == this->getId())
                 continue;
             i->sendUpdateEntityPosition({this->getId(), deltaX, deltaY, deltaZ, true});
         }
     } else if (!updatePos && updateRot) {
-        for (auto i : this->getDimension()->getPlayerList()) {
+        for (auto i : this->getDimension()->getPlayers()) {
             if (i->getId() == this->getId())
                 continue;
             i->sendUpdateEntityRotation({this->getId(), this->_rot.x, this->_rot.y, true});
@@ -181,10 +183,10 @@ void Player::playSoundEffect(SoundsList sound, FloatingPosition position, SoundC
     LDEBUG("Sent a sound effect packet");
 }
 
-void Player::playSoundEffect(SoundsList sound, const Entity *entity, SoundCategory category)
+void Player::playSoundEffect(SoundsList sound, const Entity &entity, SoundCategory category)
 {
     auto pck = protocol::createEntitySoundEffect({
-        (int32_t) sound, (int32_t) category, entity->getId(),
+        (int32_t) sound, (int32_t) category, entity.getId(),
         1.0, // TODO: get the right volume
         1.0, // TODO: get the right pitch
         1 // TODO: get the right seed
@@ -377,7 +379,7 @@ void Player::sendChunkAndLightUpdate(const Position2D &pos) { this->sendChunkAnd
 void Player::sendChunkAndLightUpdate(int32_t x, int32_t z)
 {
     if (!this->_dim->hasChunkLoaded(x, z)) {
-        this->_dim->loadOrGenerateChunk(x, z, this);
+        this->_dim->loadOrGenerateChunk(x, z, dynamic_pointer_cast<Player>(shared_from_this()));
         this->_chunks[{x, z}] = ChunkState::Loading;
         //     [this](const world_storage::ChunkColumn &chunk) {
         //         // pls don't kill me
@@ -535,8 +537,8 @@ void Player::_onQueryEntityTag(const std::shared_ptr<protocol::QueryEntityTag> &
  */
 void Player::_onInteract(const std::shared_ptr<protocol::Interact> &pck)
 {
-    LivingEntity *target = dynamic_cast<LivingEntity *>(_dim->getEntityByID(pck->entity_id));
-    Player *player = dynamic_cast<Player *>(target);
+    auto target = dynamic_pointer_cast<LivingEntity>(_dim->getEntityByID(pck->entity_id));
+    auto player = dynamic_pointer_cast<Player>(target);
 
     switch (pck->type) {
     case 0: // interact type
@@ -621,9 +623,9 @@ void Player::_onPlayerAction(const std::shared_ptr<protocol::PlayerAction> &pck)
     // LINFO("Got a Player Action ", pck->status, " at ", pck->location);
     LDEBUG("Got a Player Action and player is in gamemode ", this->getGamemode(), " and status is ", pck->status);
     if (pck->status == 0 && this->getGamemode() == 1) {
-        this->getDimension()->blockUpdate(pck->location, 0);
+        this->getDimension()->updateBlock(pck->location, 0);
     } else if (pck->status == 2) {
-        this->getDimension()->blockUpdate(pck->location, 0);
+        this->getDimension()->updateBlock(pck->location, 0);
     }
 }
 
@@ -666,7 +668,7 @@ void Player::_onUpdateSign(const std::shared_ptr<protocol::UpdateSign> &pck) { L
 void Player::_onSwingArm(const std::shared_ptr<protocol::SwingArm> &pck)
 {
     LDEBUG("Got a Swing Arm");
-    for (auto i : this->getDimension()->getPlayerList()) {
+    for (auto i : this->getDimension()->getPlayers()) {
         if (i->getId() == this->getId())
             continue;
         i->sendSwingArm(pck->hand == 0, this->getId());
@@ -700,19 +702,19 @@ void Player::_onUseItemOn(const std::shared_ptr<protocol::UseItemOn> &pck)
     }
     switch (this->_heldItem) {
     case 0:
-        this->getDimension()->blockUpdate(pck->location, Blocks::GrassBlock::toProtocol(Blocks::GrassBlock::Properties::Snowy::FALSE));
+        this->getDimension()->updateBlock(pck->location, Blocks::GrassBlock::toProtocol(Blocks::GrassBlock::Properties::Snowy::FALSE));
         break;
     case 1:
-        this->getDimension()->blockUpdate(pck->location, Blocks::Dirt::toProtocol());
+        this->getDimension()->updateBlock(pck->location, Blocks::Dirt::toProtocol());
         break;
     case 2:
-        this->getDimension()->blockUpdate(pck->location, Blocks::Bedrock::toProtocol());
+        this->getDimension()->updateBlock(pck->location, Blocks::Bedrock::toProtocol());
         break;
     case 3:
-        this->getDimension()->blockUpdate(pck->location, Blocks::OakLog::toProtocol(Blocks::OakLog::Properties::Axis::Y));
+        this->getDimension()->updateBlock(pck->location, Blocks::OakLog::toProtocol(Blocks::OakLog::Properties::Axis::Y));
         break;
     case 4:
-        this->getDimension()->blockUpdate(
+        this->getDimension()->updateBlock(
             pck->location,
             Blocks::OakLeaves::toProtocol(
                 Blocks::OakLeaves::Properties::Distance::ONE, Blocks::OakLeaves::Properties::Persistent::FALSE, Blocks::OakLeaves::Properties::Waterlogged::FALSE
@@ -720,16 +722,16 @@ void Player::_onUseItemOn(const std::shared_ptr<protocol::UseItemOn> &pck)
         );
         break;
     case 5:
-        this->getDimension()->blockUpdate(pck->location, Blocks::Glass::toProtocol());
+        this->getDimension()->updateBlock(pck->location, Blocks::Glass::toProtocol());
         break;
     case 6:
-        this->getDimension()->blockUpdate(pck->location, Blocks::Cobblestone::toProtocol());
+        this->getDimension()->updateBlock(pck->location, Blocks::Cobblestone::toProtocol());
         break;
     case 7:
-        this->getDimension()->blockUpdate(pck->location, Blocks::PinkTerracotta::toProtocol());
+        this->getDimension()->updateBlock(pck->location, Blocks::PinkTerracotta::toProtocol());
         break;
     case 8:
-        this->getDimension()->blockUpdate(pck->location, Blocks::PurpleCarpet::toProtocol());
+        this->getDimension()->updateBlock(pck->location, Blocks::PurpleCarpet::toProtocol());
         break;
     }
 }
@@ -830,7 +832,8 @@ void Player::_continueLoginSequence()
 
     this->sendServerData({false, "", false, "", false});
 
-    _dim->addEntity(this);
+    _dim->addEntity(shared_from_this());
+    _dim->addPlayer(dynamic_pointer_cast<Player>(shared_from_this()));
     LDEBUG("Added entity player to dimension");
     getDimension()->getWorld()->sendPlayerInfoAddPlayer(this);
 
@@ -850,7 +853,7 @@ void Player::_continueLoginSequence()
     // for (auto &player : this->_player->getDimension()->getPlayerList())
     //     player->_synchronizePostion({0, -58, 0});
     // this->_player->sendChunkAndLightUpdate(0, 0);
-    getDimension()->spawnPlayer(this);
+    getDimension()->spawnPlayer(*this);
     this->teleport({8.5, 100, 8.5});
 
     this->_sendLoginMessage();
@@ -884,7 +887,7 @@ void Player::_unloadChunk(int32_t x, int32_t z)
     if (!this->_chunks.contains({x, z}))
         return;
     else if (this->_chunks[{x, z}] == ChunkState::Loading) {
-        this->_dim->removePlayerFromLoadingChunk({x, z}, this);
+        this->_dim->removePlayerFromLoadingChunk({x, z}, dynamic_pointer_cast<Player>(shared_from_this()));
         this->_chunks.erase({x, z});
         return;
     }

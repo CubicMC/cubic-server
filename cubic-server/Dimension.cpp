@@ -1,11 +1,13 @@
 #include "Dimension.hpp"
+#include "Entity.hpp"
 #include "Player.hpp"
 #include "Server.hpp"
 #include "World.hpp"
 #include "logging/Logger.hpp"
 #include "world_storage/ChunkColumn.hpp"
+#include <memory>
 
-Dimension::Dimension(World *world):
+Dimension::Dimension(std::shared_ptr<World> world):
     _world(world),
     _dimensionLock(std::counting_semaphore<1000>(0)),
     _isInitialized(false),
@@ -15,9 +17,9 @@ Dimension::Dimension(World *world):
 
 void Dimension::tick()
 {
-    forEachEntity([](Entity *ent) {
+    for (auto ent : _entities) {
         ent->tick();
-    });
+    }
 }
 
 void Dimension::stop()
@@ -37,13 +39,17 @@ void Dimension::initialize()
 
 bool Dimension::isInitialized() const { return _isInitialized; }
 
-World *Dimension::getWorld() const { return _world; }
+std::shared_ptr<World> Dimension::getWorld() { return _world; }
+
+const std::shared_ptr<World> Dimension::getWorld() const { return _world; }
 
 std::counting_semaphore<1000> &Dimension::getDimensionLock() { return _dimensionLock; }
 
-std::vector<Entity *> &Dimension::getEntities() { return _entities; }
+std::vector<std::shared_ptr<Entity>> &Dimension::getEntities() { return _entities; }
 
-Entity *Dimension::getEntityByID(int32_t id)
+const std::vector<std::shared_ptr<Entity>> &Dimension::getEntities() const { return _entities; }
+
+std::shared_ptr<Entity> Dimension::getEntityByID(int32_t id)
 {
     for (auto &entity : _entities)
         if (entity->getId() == id)
@@ -51,53 +57,56 @@ Entity *Dimension::getEntityByID(int32_t id)
     throw std::runtime_error("Entity not found");
 }
 
-void Dimension::removeEntity(Entity *entity)
+const std::shared_ptr<Entity> Dimension::getEntityByID(int32_t id) const
 {
-    LINFO("In remove entity in dimension");
-    _entities.erase(std::remove(_entities.begin(), _entities.end(), entity), _entities.end());
-    for (auto &player : getPlayerList())
-        player->sendRemoveEntities({entity->getId()});
+    for (auto &entity : _entities)
+        if (entity->getId() == id)
+            return entity;
+    throw std::runtime_error("Entity not found");
 }
 
-void Dimension::addEntity(Entity *entity) { _entities.push_back(entity); }
-
-void Dimension::forEachEntity(std::function<void(Entity *)> callback)
+void Dimension::removeEntity(int32_t entity_id)
 {
-    for (auto _entity : _entities)
-        callback(_entity);
+    _entities.erase(
+        std::remove_if(
+            _entities.begin(), _entities.end(),
+            [entity_id](const std::shared_ptr<Entity> ent) {
+                return entity_id == ent->getId();
+            }
+        ),
+        _entities.end()
+    );
+    for (auto &player : _players)
+        player->sendRemoveEntities({entity_id});
 }
 
-void Dimension::forEachEntityIf(std::function<void(Entity *)> callback, std::function<bool(const Entity *)> predicate)
+void Dimension::removePlayer(int32_t entity_id)
 {
-    for (auto _entity : _entities)
-        if (predicate(_entity))
-            callback(_entity);
+    LDEBUG("Removing player with id: ", entity_id);
+    _players.erase(
+        std::remove_if(
+            _players.begin(), _players.end(),
+            [entity_id](const std::shared_ptr<Player> ent) {
+                return entity_id == ent->getId();
+            }
+        ),
+        _players.end()
+    );
+    for (auto &player : _players)
+        player->sendRemoveEntities({entity_id});
 }
 
-void Dimension::forEachPlayer(std::function<void(Player *)> callback)
-{
-    std::vector<Player *> _players = this->getPlayerList();
+void Dimension::addEntity(std::shared_ptr<Entity> entity) { _entities.push_back(entity); }
 
-    for (auto _player : _players)
-        callback(_player);
-}
-
-void Dimension::forEachPlayerIf(std::function<void(Player *)> callback, std::function<bool(const Entity *)> predicate)
-{
-    std::vector<Player *> _players = this->getPlayerList();
-
-    for (auto _player : _players)
-        if (predicate(_player))
-            callback(_player);
-}
+void Dimension::addPlayer(std::shared_ptr<Player> entity) { _players.push_back(entity); }
 
 const world_storage::Level &Dimension::getLevel() const { return _level; }
 
-world_storage::Level &Dimension::getEditableLevel() { return _level; }
+world_storage::Level &Dimension::getLevel() { return _level; }
 
 void Dimension::generateChunk(int x, int z) { }
 
-std::shared_ptr<thread_pool::Task> Dimension::loadOrGenerateChunk(int x, int z, Player *player)
+std::shared_ptr<thread_pool::Task> Dimension::loadOrGenerateChunk(int x, int z, std::shared_ptr<Player> player)
 {
     this->_loadingChunksMutex.lock();
     if (this->_loadingChunks.contains({x, z})) {
@@ -114,15 +123,15 @@ std::shared_ptr<thread_pool::Task> Dimension::loadOrGenerateChunk(int x, int z, 
 
         // This send the chunk to the players that are loading it
         this->_loadingChunksMutex.lock();
-        for (auto &entity : this->_entities) {
+        for (auto &player : this->_players) {
             // pls don't kill me
             // this is a hack to check if the client is still connected
             // And the best part ? I don't even know if it works
-            if (std::find_if(this->_loadingChunks[{x, z}].players.begin(), this->_loadingChunks[{x, z}].players.end(), [entity](const Player *player) {
-                    return player == entity;
+            if (std::find_if(this->_loadingChunks[{x, z}].players.begin(), this->_loadingChunks[{x, z}].players.end(), [player](const std::shared_ptr<Player> current_player) {
+                    return player->getId() == current_player->getId();
                 }) == this->_loadingChunks[{x, z}].players.end())
                 continue;
-            reinterpret_cast<Player *>(entity)->sendChunkAndLightUpdate(this->_level.getChunkColumn(x, z));
+            player->sendChunkAndLightUpdate(this->_level.getChunkColumn(x, z));
         }
         this->_loadingChunks.erase({x, z});
         this->_loadingChunksMutex.unlock();
@@ -138,6 +147,7 @@ std::shared_ptr<thread_pool::Task> Dimension::loadOrGenerateChunk(int x, int z, 
 
 void Dimension::_run()
 {
+    // TODO(huntears): Remove this busy loop
     while (this->_isRunning && !this->_isInitialized)
         std::this_thread::sleep_for(std::chrono::milliseconds(100));
 
@@ -147,23 +157,13 @@ void Dimension::_run()
     }
 }
 
-std::vector<Player *> Dimension::getPlayerList() const
-{
-    std::vector<Player *> player_list;
+std::vector<std::shared_ptr<Player>> &Dimension::getPlayers() { return _players; }
 
-    for (auto &entity : this->_world->getEntities()) {
-        auto player = dynamic_cast<Player *>(entity);
-
-        if (player != nullptr && player->getDimension().get() == this) {
-            player_list.push_back(player);
-        }
-    }
-    return player_list;
-}
+const std::vector<std::shared_ptr<Player>> &Dimension::getPlayers() const { return _players; }
 
 bool Dimension::hasChunkLoaded(int x, int z) const { return this->_level.hasChunkColumn(x, z); }
 
-void Dimension::removePlayerFromLoadingChunk(const Position2D &pos, Player *player)
+void Dimension::removePlayerFromLoadingChunk(const Position2D &pos, std::shared_ptr<Player> player)
 {
     this->_loadingChunksMutex.lock();
     if (!this->_loadingChunks.contains(pos)) {
@@ -172,7 +172,13 @@ void Dimension::removePlayerFromLoadingChunk(const Position2D &pos, Player *play
     }
 
     this->_loadingChunks[pos].players.erase(
-        std::remove(this->_loadingChunks[pos].players.begin(), this->_loadingChunks[pos].players.end(), player), this->_loadingChunks[pos].players.end()
+        std::remove_if(
+            this->_loadingChunks[pos].players.begin(), this->_loadingChunks[pos].players.end(),
+            [player](const std::shared_ptr<Player> current_player) {
+                return current_player->getId() == player->getId();
+            }
+        ),
+        this->_loadingChunks[pos].players.end()
     );
 
     if (this->_loadingChunks[pos].players.empty()) {
@@ -184,30 +190,28 @@ void Dimension::removePlayerFromLoadingChunk(const Position2D &pos, Player *play
 
 world_storage::ChunkColumn &Dimension::getChunk(int x, int z) { return this->_level.getChunkColumn(x, z); }
 
-void Dimension::spawnPlayer(Player *current)
+void Dimension::spawnPlayer(Player &current)
 {
-    const std::vector<Player *> player_list = this->getPlayerList();
-
-    for (auto &player : player_list) {
+    auto current_id = current.getId();
+    for (auto player : _players) {
         LDEBUG("player is : ", player->getUsername());
-        LDEBUG("current is : ", current->getUsername());
+        LDEBUG("current is : ", current.getUsername());
         // if (current->getPos().distance(player->getPos()) <= 12) {
-        if (player->getId() != current->getId()) {
+        if (player->getId() != current_id) {
             player->sendSpawnPlayer(
-                {current->getId(), current->getUuid(), current->getPosition().x, current->getPosition().y, current->getPosition().z, current->getRotation().x,
-                 current->getRotation().y}
+                {current_id, current.getUuid(), current.getPosition().x, current.getPosition().y, current.getPosition().z, current.getRotation().x, current.getRotation().y}
             );
             LDEBUG("send spawn player to ", player->getUsername());
-            current->sendSpawnPlayer(
+            current.sendSpawnPlayer(
                 {player->getId(), player->getUuid(), player->getPosition().x, player->getPosition().y, player->getPosition().z, player->getRotation().x, player->getRotation().y}
             );
-            LDEBUG("send spawn player to ", current->getUsername());
+            LDEBUG("send spawn player to ", current.getUsername());
             //}
         }
     }
 }
 
-void Dimension::blockUpdate(Position position, int32_t id)
+void Dimension::updateBlock(Position position, int32_t id)
 {
     LDEBUG("Dimension block update ", position, " -> ", id, ")");
     auto &chunk = this->_level.getChunkColumnFromBlockPos(position.x, position.z);
@@ -221,7 +225,7 @@ void Dimension::blockUpdate(Position position, int32_t id)
         z += 16;
 
     chunk.updateBlock({x, position.y, z}, id);
-    this->forEachPlayer([&position, &id](Player *player) {
+    for (auto player : _players) {
         player->sendBlockUpdate({position, id});
-    });
+    }
 }

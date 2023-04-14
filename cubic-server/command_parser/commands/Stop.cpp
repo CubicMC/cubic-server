@@ -1,4 +1,5 @@
 #include "Stop.hpp"
+#include "Player.hpp"
 #include "Server.hpp"
 
 void command_parser::Stop::autocomplete(std::vector<std::string> &args, Player *invoker) const

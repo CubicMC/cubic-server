@@ -9,7 +9,7 @@
 
 WorldGroup::WorldGroup(std::shared_ptr<Chat> chat):
     _chat(std::move(chat)),
-    _soundSystem(new SoundSystem(this)),
+    _soundSystem(new SoundSystem(*this)),
     _running(false)
 {
 }
@@ -64,21 +64,9 @@ std::shared_ptr<Chat> WorldGroup::getChat() const { return _chat; }
 
 std::shared_ptr<World> WorldGroup::getWorld(const std::string_view &name) const { return this->_worlds.at(name); }
 
-std::unordered_map<std::string_view, std::shared_ptr<World>> WorldGroup::getWorlds() const { return this->_worlds; }
+std::unordered_map<std::string_view, std::shared_ptr<World>> &WorldGroup::getWorlds() { return this->_worlds; }
 
-void WorldGroup::forEachWorld(std::function<void(World &)> callback)
-{
-    for (auto &[_, world] : this->_worlds)
-        callback(*world);
-}
-
-void WorldGroup::forEachWorldIf(std::function<void(World &)> callback, std::function<bool(const World &)> predicate)
-{
-    for (auto &[_, world] : this->_worlds) {
-        if (predicate(*world))
-            callback(*world);
-    }
-}
+const std::unordered_map<std::string_view, std::shared_ptr<World>> &WorldGroup::getWorlds() const { return this->_worlds; }
 
 // void WorldGroup::initialize()
 //{

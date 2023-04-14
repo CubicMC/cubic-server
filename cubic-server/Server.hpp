@@ -8,7 +8,6 @@
 #include <string>
 #include <vector>
 
-#include "Client.hpp"
 #include "protocol/ServerPackets.hpp"
 
 #include "WorldGroup.hpp"
@@ -38,6 +37,8 @@
 
 #define GLOBAL_PALETTE Server::getInstance()->getGlobalPalette()
 
+class Client;
+
 class Server {
 public:
     ~Server();
@@ -64,7 +65,9 @@ public:
 
     const std::vector<std::shared_ptr<Client>> &getClients() const { return _clients; }
 
-    const WorldGroup *getWorldGroup(const std::string_view &name) const { return this->_worldGroups.at(name); }
+    std::shared_ptr<WorldGroup> getWorldGroup(const std::string_view &name) { return this->_worldGroups.at(name); }
+
+    const std::shared_ptr<WorldGroup> getWorldGroup(const std::string_view &name) const { return this->_worldGroups.at(name); }
 
     const std::vector<CommandBase *> &getCommands() const { return _commands; }
 
@@ -74,8 +77,9 @@ public:
 
     const Items::ItemConverter &getItemConverter() const { return _itemConverter; }
 
-    void forEachWorldGroup(std::function<void(WorldGroup &)> callback);
-    void forEachWorldGroupIf(std::function<void(WorldGroup &)> callback, std::function<bool(const WorldGroup &)> predicate);
+    std::unordered_map<std::string_view, std::shared_ptr<WorldGroup>> &getWorldGroups();
+
+    const std::unordered_map<std::string_view, std::shared_ptr<WorldGroup>> &getWorldGroups() const;
 
     Permissions permissions;
 
@@ -105,7 +109,8 @@ private:
 
     Configuration::ConfigHandler _config;
     WhitelistHandling::Whitelist _whitelist;
-    std::unordered_map<std::string_view, WorldGroup *> _worldGroups;
+    std::unordered_map<std::string_view, std::shared_ptr<WorldGroup>> _worldGroups;
+    // clang-format off
     std::vector<CommandBase *> _commands = {
         new command_parser::Help,
         new command_parser::QuestionMark,
@@ -118,6 +123,7 @@ private:
         new command_parser::Reload,
         new command_parser::Time,
     };
+    // clang-format on
     Blocks::GlobalPalette _globalPalette;
     Items::ItemConverter _itemConverter;
 };

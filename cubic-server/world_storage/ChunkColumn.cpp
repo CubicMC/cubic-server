@@ -74,20 +74,6 @@ uint8_t ChunkColumn::getBiome(Position pos) const { return _biomes.at(calculateB
 
 const std::array<uint8_t, BIOME_SECTION_3D_SIZE * NB_OF_SECTIONS> &ChunkColumn::getBiomes() const { return _biomes; }
 
-void ChunkColumn::updateBlockEntity(Position pos, BlockEntity *BlockEntity) { }
-
-void ChunkColumn::addBlockEntity(Position pos, BlockEntity *BlockEntity)
-{ // entity must be a pointer or a reference ?
-    _blockEntities.push_back(BlockEntity); // TODO: see which of emplace_back of emplace_front is better or push_back or push_front
-    // _blockEntities.emplace_back(std::make_shared<BlockEntity>(BlockEntity));
-}
-
-void ChunkColumn::removeBlockEntity(Position pos) { }
-
-BlockEntity *ChunkColumn::getBlockEntity(Position pos) { return _blockEntities.at(0); }
-
-const std::vector<BlockEntity *> &ChunkColumn::getBlockEntities() const { return _blockEntities; }
-
 int64_t ChunkColumn::getTick() { return _tickData; }
 
 void ChunkColumn::setTick(int64_t tick) { _tickData = tick; }

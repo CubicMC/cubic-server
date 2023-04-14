@@ -69,7 +69,7 @@ void Entity::teleport(const Vector3<double> &pos)
 {
     this->forceSetPosition(pos);
 
-    for (auto i : this->getDimension()->getPlayerList()) {
+    for (auto i : this->getDimension()->getPlayers()) {
         if (i->getId() == this->getId())
             continue;
         i->sendTeleportEntity(this->getId(), pos);

@@ -1,14 +1,13 @@
 #ifndef CUBICSERVER_ENTITY_HPP
 #define CUBICSERVER_ENTITY_HPP
 
-#include "Dimension.hpp"
 #include "math/Vector2.hpp"
 #include "math/Vector3.hpp"
 #include <memory>
 
 class Dimension;
 
-class Entity {
+class Entity : public std::enable_shared_from_this<Entity> {
     enum class Pose {
         Standing,
         FallFlying,

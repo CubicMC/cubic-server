@@ -4,12 +4,12 @@
 #include <array>
 #include <cmath>
 #include <cstdint>
+#include <memory>
 #include <unordered_map>
 #include <vector>
 
-// #include "Entity.hpp"
-#include "Block.hpp"
 #include "Palette.hpp"
+#include "nbt.hpp"
 #include "protocol/Structures.hpp"
 #include "types.hpp"
 
@@ -97,12 +97,6 @@ public:
     BiomeId getBiome(Position pos) const;
     const std::array<BiomeId, BIOME_SECTION_3D_SIZE * NB_OF_SECTIONS> &getBiomes() const;
 
-    void updateBlockEntity(Position pos, BlockEntity *BlockEntity);
-    void addBlockEntity(Position pos, BlockEntity *BlockEntity);
-    void removeBlockEntity(Position pos);
-    BlockEntity *getBlockEntity(Position pos);
-    const std::vector<BlockEntity *> &getBlockEntities() const;
-
     int64_t getTick();
     void setTick(int64_t tick);
     Position2D getChunkPos() const;
@@ -127,7 +121,6 @@ private:
     std::array<uint8_t, BLOCKS_PER_CHUNK> _skyLights;
     std::array<uint8_t, BLOCKS_PER_CHUNK> _blockLights;
     std::array<uint8_t, BIOME_PER_CHUNK> _biomes;
-    std::vector<BlockEntity *> _blockEntities;
     int64_t _tickData;
     Position2D _chunkPos;
     HeightMap _heightMap;

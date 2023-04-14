@@ -30,12 +30,13 @@ void LivingEntity::damage(float damage) { _health -= damage; }
 void LivingEntity::knockback(Vector3<double> source, float force)
 {
     // compute knockback
+    // TODO(huntears): Change how the knockback is calculated to be more "vanilla like"
     Vector3<double> direction = (source - _pos) * force;
 
     direction.normalize();
 
     // send entity velocity too connected players (should be optimized)
-    for (auto &player : _dim->getPlayerList()) {
+    for (auto player : _dim->getPlayers()) {
         player->sendEntityVelocity({_id, static_cast<int16_t>(direction.x), static_cast<int16_t>(direction.y), static_cast<int16_t>(direction.z)});
     }
 }

@@ -7,6 +7,7 @@
 #include <unistd.h>
 
 #include "Client.hpp"
+#include "Player.hpp"
 #include "Server.hpp"
 #include "World.hpp"
 #include "nlohmann/json.hpp"
@@ -28,6 +29,7 @@ Client::Client(int sockfd, struct sockaddr_in6 addr):
 
 Client::~Client()
 {
+    LDEBUG("Destroying client");
     // Stop the thread
     _is_running = false;
     if (this->_networkThread.joinable())
@@ -42,10 +44,11 @@ Client::~Client()
         close(_sockfd);
     }
 
-    // Remove the player from the world
     if (!_player)
         return;
-    delete _player;
+    this->_player->_dim->removeEntity(_player->_id);
+    this->_player->_dim->removePlayer(_player->_id);
+    this->_player->_cli = nullptr;
 }
 
 void Client::networkLoop()
@@ -131,7 +134,7 @@ void Client::switchToPlayState(u128 playerUuid, const std::string &username)
     this->setStatus(protocol::ClientStatus::Play);
     LDEBUG("Switched to play state");
     // TODO: get the player dimension from the world by his uuid
-    this->_player = new Player(this, Server::getInstance()->getWorldGroup("default")->getWorld("default")->getDimension("overworld"), playerUuid, username);
+    this->_player = std::make_shared<Player>(this, Server::getInstance()->getWorldGroup("default")->getWorld("default")->getDimension("overworld"), playerUuid, username);
     LDEBUG("Created player");
 }
 
@@ -537,4 +540,6 @@ void Client::_loginSequence(const protocol::LoginSuccess &pck)
     this->_player->_continueLoginSequence();
 }
 
-Player *Client::getPlayer() const { return _player; }
+std::shared_ptr<Player> Client::getPlayer() { return _player; }
+
+const std::shared_ptr<Player> Client::getPlayer() const { return _player; }

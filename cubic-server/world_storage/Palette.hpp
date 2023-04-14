@@ -6,8 +6,6 @@
 #include <map>
 #include <vector>
 
-#include "world_storage/Block.hpp"
-
 namespace world_storage {
 
 // https://stackoverflow.com/a/23784921

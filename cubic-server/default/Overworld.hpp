@@ -2,12 +2,13 @@
 #define CUBICSERVER_OVERWORLD_HPP
 
 #include <future>
+#include <memory>
 
 #include "../Dimension.hpp"
 
 class Overworld : public Dimension {
 public:
-    Overworld(World *world):
+    Overworld(std::shared_ptr<World> world):
         Dimension(world)
     {
     }

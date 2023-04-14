@@ -35,24 +35,15 @@ bool PlayersInterface::on_timeout()
     std::string temp = "";
     std::string players;
     int nb_players = 0;
-    std::vector<Player *> playersList_copy; // How can I get it ?
 
-    for (auto world : Server::getInstance()->getWorldGroup("default")->getWorlds()) {
-        if (world.second->getPlayers().size() != 0) {
-            if (playersList_copy.size() == 0) {
-                for (auto player : world.second->getPlayers()) {
-                    playersList_copy.push_back(player);
+    for (auto [_, worldGroup] : Server::getInstance()->getWorldGroups()) {
+        for (auto [_, world] : worldGroup->getWorlds()) {
+            for (auto [_, dim] : world->getDimensions()) {
+                for (auto player : dim->getPlayers()) {
+                    temp += player->getUsername() + "\n";
+                    nb_players++;
                 }
-            } else {
-                playersList_copy.insert(playersList_copy.end(), world.second->getPlayers().begin(), world.second->getPlayers().end());
             }
-        }
-    }
-
-    if (playersList_copy.size() != 0) {
-        for (auto player : playersList_copy) {
-            temp += player->getUsername() + "\n";
-            nb_players = nb_players + 1;
         }
     }
 

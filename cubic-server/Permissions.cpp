@@ -1,7 +1,9 @@
 #include <fstream>
 #include <iostream>
+#include <memory>
 
 #include "Permissions.hpp"
+#include "Player.hpp"
 #include "Server.hpp"
 #include "World.hpp"
 
@@ -42,16 +44,18 @@ void Permissions::addOperator(const std::string &name)
 
     // searches for the player with the right name
     Server *server = Server::getInstance();
-    Player *selectedPlayer = nullptr;
+    std::shared_ptr<Player> selectedPlayer = nullptr;
 
-    server->forEachWorldGroup([&name, &selectedPlayer](WorldGroup &worldGroup) {
-        worldGroup.forEachWorld([&name, &selectedPlayer](World &world) {
-            world.forEachPlayer([&name, &selectedPlayer](Player *player) {
-                if (player && player->getUsername() == name)
-                    selectedPlayer = player;
-            });
-        });
-    });
+    for (auto [_, worldGroup] : server->getWorldGroups()) {
+        for (auto [_, world] : worldGroup->getWorlds()) {
+            for (auto [_, dim] : world->getDimensions()) {
+                for (auto player : dim->getPlayers()) {
+                    if (player->getUsername() == name)
+                        selectedPlayer.swap(player);
+                }
+            }
+        }
+    }
 
     // adds operator to the set
     this->_operatorSet.insert(name);
@@ -65,20 +69,23 @@ void Permissions::addOperator(const std::string &name)
 bool Permissions::removeOperator(const std::string &name)
 {
     if (!this->_operatorSet.contains(name)) // cannot find operator with this name, exit
-        return (false);
+        return false;
 
     // searches for the player with the right name
     Server *server = Server::getInstance();
-    Player *selectedPlayer = nullptr;
 
-    server->forEachWorldGroup([&name, &selectedPlayer](WorldGroup &worldGroup) {
-        worldGroup.forEachWorld([&name, &selectedPlayer](World &world) {
-            world.forEachPlayer([&name, &selectedPlayer](Player *player) {
-                if (player && player->getUsername() == name)
-                    selectedPlayer = player;
-            });
-        });
-    });
+    std::shared_ptr<Player> selectedPlayer = nullptr;
+
+    for (auto [_, worldGroup] : server->getWorldGroups()) {
+        for (auto [_, world] : worldGroup->getWorlds()) {
+            for (auto [_, dim] : world->getDimensions()) {
+                for (auto player : dim->getPlayers()) {
+                    if (player->getUsername() == name)
+                        selectedPlayer.swap(player);
+                }
+            }
+        }
+    }
 
     // remove operator from the set
     this->_operatorSet.erase(name);
@@ -87,8 +94,8 @@ bool Permissions::removeOperator(const std::string &name)
         // set players own operator variable for rapid access
         selectedPlayer->setOperator(false);
     }
-    return (true);
+    return true;
     // returned true if operator successfuly removed, false otherwise
 }
 
-const bool Permissions::isOperator(const std::string &name) const { return (this->_operatorSet.contains(name)); }
+const bool Permissions::isOperator(const std::string &name) const { return this->_operatorSet.contains(name); }

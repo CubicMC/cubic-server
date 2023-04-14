@@ -1,4 +1,5 @@
 #include "Chat.hpp"
+#include "Player.hpp"
 #include "Server.hpp"
 #include "World.hpp"
 #include "WorldGroup.hpp"
@@ -21,18 +22,17 @@ void Chat::sendPlayerMessage(const chat::Message &message, const Player *sender)
     response["with"].push_back(message.toJson());
 
     // TODO: Filter client by chat visibility
-    for (auto &world : sender->getDimension()->getWorld()->getWorldGroup()->getWorlds()) {
-        for (auto &entity : world.second->getEntities()) {
-            auto player = dynamic_cast<Player *>(entity);
-            if (player == nullptr)
-                continue;
-            player->sendChatMessageResponse(
-                {"", true, response.dump(),
-                 // (int32_t) chat::message::Type::System,
-                 (int32_t) chat::message::Type::Chat, sender->getUuid(),
-                 "{\"text\": \"\"}", // sender->getName();
-                 false, "", std::time(nullptr), 0, std::vector<uint8_t>()}
-            );
+    for (auto [_, world] : sender->getDimension()->getWorld()->getWorldGroup()->getWorlds()) {
+        for (auto [_, dim] : world->getDimensions()) {
+            for (auto player : dim->getPlayers()) {
+                player->sendChatMessageResponse(
+                    {"", true, response.dump(),
+                     // (int32_t) chat::message::Type::System,
+                     (int32_t) chat::message::Type::Chat, sender->getUuid(),
+                     "{\"text\": \"\"}", // sender->getName();
+                     false, "", std::time(nullptr), 0, std::vector<uint8_t>()}
+                );
+            }
         }
     }
 }
@@ -46,12 +46,11 @@ void Chat::sendSystemMessage(const chat::Message &message, bool overlay, const W
     LDEBUG("send System Message: ", message.getMessage()); // FUCKING CRASHES THE SERVER BECAUSE I DON'T FUCKING KNOW
 
     // TODO: Filter client by chat visibility
-    for (const auto &world : worldGroup->getWorlds()) {
-        for (auto &entity : world.second->getEntities()) {
-            auto player = dynamic_cast<Player *>(entity);
-            if (player == nullptr)
-                continue;
-            player->sendSystemChatMessage({message.serialize(), overlay});
+    for (auto [_, world] : worldGroup->getWorlds()) {
+        for (auto [_, dim] : world->getDimensions()) {
+            for (auto player : dim->getPlayers()) {
+                player->sendSystemChatMessage({message.serialize(), overlay});
+            }
         }
     }
 }
@@ -64,14 +63,13 @@ void Chat::sendSayMessage(const chat::Message &message, const Player *sender)
     }
 
     // TODO: Filter client by chat visibility
-    for (auto &world : sender->getDimension()->getWorld()->getWorldGroup()->getWorlds()) {
-        for (auto &entity : world.second->getEntities()) {
-            auto player = dynamic_cast<Player *>(entity);
-            if (player == nullptr)
-                continue;
-            player->sendChatMessageResponse(
-                {"", true, message.serialize(), (int32_t) chat::message::Type::Say, {0, 0}, "", false, "", std::time(nullptr), 0, std::vector<uint8_t>()}
-            );
+    for (auto [_, world] : sender->getDimension()->getWorld()->getWorldGroup()->getWorlds()) {
+        for (auto [_, dim] : world->getDimensions()) {
+            for (auto player : dim->getPlayers()) {
+                player->sendChatMessageResponse(
+                    {"", true, message.serialize(), (int32_t) chat::message::Type::Say, {0, 0}, "", false, "", std::time(nullptr), 0, std::vector<uint8_t>()}
+                );
+            }
         }
     }
 }
@@ -234,7 +232,7 @@ nlohmann::json chat::message::HoverEvent::toJson() const
         break;
     }
 
-    response["contents"] == value;
+    // response["contents"] == value;
     // response["contents"] = nlohmann::json::object();
     // response["contents"]["type"] = "minecraft:player";
     // response["contents"]["id"] = "7e4a61cc-83fa-4441-a299-bf69786e610a";
@@ -243,9 +241,9 @@ nlohmann::json chat::message::HoverEvent::toJson() const
     A JSON-NBT String describing the entity. Contains 3 values: id, the entity's UUID (with dashes);
     type (optional), which contains the resource location for the entity's type (eg minecraft:zombie);
     and name, which contains the entity's custom name (if present).
-    Note that this is a String and not a JSON object. It should be set in a String directly ("value":"{id:7e4a61cc-83fa-4441-a299-bf69786e610a,type:minecraft:zombie,name:Zombie}")
-    or as the content of a component. If the entity is invalid, "Invalid Entity!" will be displayed.
-    Note that the client does not need to have the given entity loaded.
+    Note that this is a String and not a JSON object. It should be set in a String directly
+    ("value":"{id:7e4a61cc-83fa-4441-a299-bf69786e610a,type:minecraft:zombie,name:Zombie}") or as the content of a component. If the entity is invalid, "Invalid Entity!" will
+    be displayed. Note that the client does not need to have the given entity loaded.
     */
     // response["value"] = value;
 

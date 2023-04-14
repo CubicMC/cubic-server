@@ -1,4 +1,5 @@
 #include "DumpChunk.hpp"
+#include "Player.hpp"
 #include "Server.hpp"
 #include "World.hpp"
 

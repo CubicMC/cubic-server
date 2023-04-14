@@ -2,7 +2,6 @@
 #define CUBICSERVER_PLAYER_HPP
 
 #include "Chat.hpp"
-#include "Client.hpp"
 #include "Entity.hpp"
 #include "LivingEntity.hpp"
 #include "SoundList.hpp"
@@ -65,7 +64,7 @@ public:
     void sendSystemChatMessage(const protocol::SystemChatMessage &packet);
     void sendWorldEvent(const protocol::WorldEvent &packet);
     void playSoundEffect(SoundsList sound, FloatingPosition position, SoundCategory category = SoundCategory::Master);
-    void playSoundEffect(SoundsList sound, const Entity *entity, SoundCategory category = SoundCategory::Master);
+    void playSoundEffect(SoundsList sound, const Entity &entity, SoundCategory category = SoundCategory::Master);
     void playCustomSound(std::string sound, FloatingPosition position, SoundCategory category = SoundCategory::Master);
     void stopSound(uint8_t flags = 0, SoundCategory category = SoundCategory::Ambient, std::string sound = "");
     void sendKeepAlive(long id);
