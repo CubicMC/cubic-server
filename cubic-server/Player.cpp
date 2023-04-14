@@ -284,7 +284,7 @@ void Player::sendEntityVelocity(const protocol::EntityVelocity &data)
 
 void Player::sendHealth(void)
 {
-    auto pck = protocol::createHealth({_health, 20, 0.0f});
+    auto pck = protocol::createHealth({_health, _foodLevel, _foodSaturationLevel});
     this->_cli->_sendData(*pck);
 
     LDEBUG("Sent a Health packet");
@@ -585,28 +585,28 @@ void Player::_onSetPlayerPosition(const std::shared_ptr<protocol::SetPlayerPosit
 {
     LDEBUG("Got a Set Player Position (", pck->x, ", ", pck->feet_y, ", ", pck->z, ")");
     // TODO: Validate the position
-    this->setPosition(pck->x, pck->feet_y, pck->z);
     if (pck->on_ground && _isJumping)
         _isJumping = false;
     if (!pck->on_ground && !_isJumping)
         _isJumping = true;
+    this->setPosition(pck->x, pck->feet_y, pck->z);
 }
 
 void Player::_onSetPlayerPositionAndRotation(const std::shared_ptr<protocol::SetPlayerPositionAndRotation> &pck)
 {
     LDEBUG("Got a Set Player Position And Rotation (", pck->x, ", ", pck->feet_y, ", ", pck->z, ")");
     // TODO: Validate the position
-    this->setPosition(pck->x, pck->feet_y, pck->z);
     float yaw_tmp = pck->yaw;
     while (yaw_tmp < 0)
         yaw_tmp += 360;
     while (yaw_tmp > 360)
         yaw_tmp -= 360;
-    this->setRotation(yaw_tmp, pck->pitch / 1.5);
     if (pck->on_ground && _isJumping)
         _isJumping = false;
     if (!pck->on_ground && !_isJumping)
         _isJumping = true;
+    this->setPosition(pck->x, pck->feet_y, pck->z);
+    this->setRotation(yaw_tmp, pck->pitch / 1.5);
 }
 
 void Player::_onSetPlayerRotation(const std::shared_ptr<protocol::SetPlayerRotation> &pck)
@@ -881,6 +881,8 @@ void Player::_continueLoginSequence()
     getDimension()->spawnPlayer(this);
     this->teleport({8.5, 100, 8.5});
 
+    this->sendHealth();
+
     this->_sendLoginMessage();
 }
 
@@ -923,32 +925,44 @@ void Player::_unloadChunk(int32_t x, int32_t z)
 
 void Player::_foodTick()
 {
-    if (_foodLevel == 0 && _health > 10 && _foodTickTimer >= 80) { // TODO: Make it depends on difficulty
-        _health -= 1; // TODO: use a callback to send the health update
-        _foodTickTimer = 0;
+    if (_gamemode != 0 && _gamemode != 2)
         return;
+    bool needUpdate = false;
+    if (_foodLevel == 0 && _health > 10 && _foodTickTimer >= 80) { // TODO: Make it depends on difficulty
+        _health -= 1;
+        _foodTickTimer = 0;
+        needUpdate = true;
     }
     if (_foodLevel > 17 && _health < _maxHealth) {
         if (_foodSaturationLevel > 0 && _foodLevel == 20 && _foodTickTimer >= 10) {
-            // _health += ((1.0 / 6) * _foodSaturationLevel >= 1) ? 1 : 0; // TODO: use a callback to send the health update
-            // not clear
-        }
-        if (_foodTickTimer >= 80) {
-            _health += 1; // TODO: use a callback to send the health update
+            _health += ((1.0 / 6) * _foodSaturationLevel >= 1) ? 1 : (1.0 / 6) * _foodSaturationLevel;
             _foodExhaustionLevel += 6;
             _foodTickTimer = 0;
-            return;
+            needUpdate = true;
+        }
+        if (_foodTickTimer >= 80) {
+            _health += 1;
+            _foodExhaustionLevel += 6;
+            _foodTickTimer = 0;
+            needUpdate = true;
         }
     }
-    if (_foodLevel > 17 || _foodLevel == 0)
-        _foodTickTimer++;
-    if (_foodExhaustionLevel >= 4) {
+    if (_foodExhaustionLevel >= 4 && needUpdate == false) {
         _foodExhaustionLevel -= 4;
-        if (_foodSaturationLevel > 0)
+        if (_foodSaturationLevel > 0) {
             _foodSaturationLevel -= 1;
-        else
-            _foodLevel -= 1;
+            needUpdate = true;
+        } else {
+            _foodLevel -= _foodLevel > 0 ? 1 : 0;
+            needUpdate = true;
+        }
     }
+    if (needUpdate) {
+        this->sendHealth();
+        LDEBUG("Health is now ", _health, " and food level is now ", _foodLevel);
+    }
+    if (needUpdate == false && ((_foodLevel > 17 && _health < _maxHealth) || (_foodLevel == 0 && _health > 10))) // TODO: Make it depends on difficulty
+        _foodTickTimer++;
 }
 
 void Player::teleport(const Vector3<double> &pos)
