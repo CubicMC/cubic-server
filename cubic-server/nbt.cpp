@@ -1,5 +1,7 @@
 #include "nbt.hpp"
 #include <cstdint>
+#include <iterator>
+#include <memory>
 #include <optional>
 #include <vector>
 
@@ -35,7 +37,7 @@ static std::optional<std::string> parseName(uint8_t *&at, const uint8_t *end)
         name = tmp.value();            \
     }
 
-Byte *nbt::parseByte(uint8_t *&at, const uint8_t *end, bool include_name, bool in_list)
+std::shared_ptr<Byte> nbt::parseByte(uint8_t *&at, const uint8_t *end, bool include_name, bool in_list)
 {
     if (at > end)
         return nullptr;
@@ -53,10 +55,10 @@ Byte *nbt::parseByte(uint8_t *&at, const uint8_t *end, bool include_name, bool i
 
     int8_t value = *at++;
 
-    return new Byte(name, value);
+    return std::make_shared<Byte>(name, value);
 }
 
-Short *nbt::parseShort(uint8_t *&at, const uint8_t *end, bool include_name, bool in_list)
+std::shared_ptr<Short> nbt::parseShort(uint8_t *&at, const uint8_t *end, bool include_name, bool in_list)
 {
     if (at > end)
         return nullptr;
@@ -76,10 +78,10 @@ Short *nbt::parseShort(uint8_t *&at, const uint8_t *end, bool include_name, bool
     for (int i = 0; i < 2; i++)
         value = (value << 8) | *at++;
 
-    return new Short(name, value);
+    return std::make_shared<Short>(name, value);
 }
 
-Int *nbt::parseInt(uint8_t *&at, const uint8_t *end, bool include_name, bool in_list)
+std::shared_ptr<Int> nbt::parseInt(uint8_t *&at, const uint8_t *end, bool include_name, bool in_list)
 {
     if (at > end)
         return nullptr;
@@ -99,10 +101,10 @@ Int *nbt::parseInt(uint8_t *&at, const uint8_t *end, bool include_name, bool in_
     for (int i = 0; i < 4; i++)
         value = (value << 8) | *at++;
 
-    return new Int(name, value);
+    return std::make_shared<Int>(name, value);
 }
 
-Long *nbt::parseLong(uint8_t *&at, const uint8_t *end, bool include_name, bool in_list)
+std::shared_ptr<Long> nbt::parseLong(uint8_t *&at, const uint8_t *end, bool include_name, bool in_list)
 {
     if (at > end)
         return nullptr;
@@ -122,10 +124,10 @@ Long *nbt::parseLong(uint8_t *&at, const uint8_t *end, bool include_name, bool i
     for (int i = 0; i < 8; i++)
         value = (value << 8) | *at++;
 
-    return new Long(name, value);
+    return std::make_shared<Long>(name, value);
 }
 
-Float *nbt::parseFloat(uint8_t *&at, const uint8_t *end, bool include_name, bool in_list)
+std::shared_ptr<Float> nbt::parseFloat(uint8_t *&at, const uint8_t *end, bool include_name, bool in_list)
 {
     if (at > end)
         return nullptr;
@@ -150,10 +152,10 @@ Float *nbt::parseFloat(uint8_t *&at, const uint8_t *end, bool include_name, bool
     for (int i = 3; i >= 0; i--)
         val.value |= ((uint32_t) (*at++)) << (i * 8);
 
-    return new Float(name, val.toReturn);
+    return std::make_shared<Float>(name, val.toReturn);
 }
 
-Double *nbt::parseDouble(uint8_t *&at, const uint8_t *end, bool include_name, bool in_list)
+std::shared_ptr<Double> nbt::parseDouble(uint8_t *&at, const uint8_t *end, bool include_name, bool in_list)
 {
     if (at > end)
         return nullptr;
@@ -178,10 +180,10 @@ Double *nbt::parseDouble(uint8_t *&at, const uint8_t *end, bool include_name, bo
     for (int i = 7; i >= 0; i--)
         val.value |= ((uint64_t) (*at++)) << (i * 8);
 
-    return new Double(name, val.toReturn);
+    return std::make_shared<Double>(name, val.toReturn);
 }
 
-ByteArray *nbt::parseByteArray(uint8_t *&at, const uint8_t *end, bool include_name, bool in_list)
+std::shared_ptr<ByteArray> nbt::parseByteArray(uint8_t *&at, const uint8_t *end, bool include_name, bool in_list)
 {
     if (at > end)
         return nullptr;
@@ -210,10 +212,10 @@ ByteArray *nbt::parseByteArray(uint8_t *&at, const uint8_t *end, bool include_na
         data.push_back(val);
     }
 
-    return new ByteArray(name, data);
+    return std::make_shared<ByteArray>(name, data);
 }
 
-String *nbt::parseString(uint8_t *&at, const uint8_t *end, bool include_name, bool in_list)
+std::shared_ptr<String> nbt::parseString(uint8_t *&at, const uint8_t *end, bool include_name, bool in_list)
 {
     if (at > end)
         return nullptr;
@@ -241,10 +243,10 @@ String *nbt::parseString(uint8_t *&at, const uint8_t *end, bool include_name, bo
         data.push_back(val);
     }
 
-    return new String(name, data);
+    return std::make_shared<String>(name, data);
 }
 
-List *nbt::parseList(uint8_t *&at, const uint8_t *end, bool include_name, bool in_list)
+std::shared_ptr<List> nbt::parseList(uint8_t *&at, const uint8_t *end, bool include_name, bool in_list)
 {
     if (at > end)
         return nullptr;
@@ -269,9 +271,9 @@ List *nbt::parseList(uint8_t *&at, const uint8_t *end, bool include_name, bool i
     for (int i = 0; i < 4; i++)
         size = (size << 8) | *at++;
 
-    std::vector<Base *> data;
+    std::vector<std::shared_ptr<Base>> data;
     for (int i = 0; i < size; i++) {
-        Base *val = nullptr;
+        std::shared_ptr<Base> val = nullptr;
         // AUGH
         switch (type) {
         case (uint8_t) TagType::Byte:
@@ -313,20 +315,15 @@ List *nbt::parseList(uint8_t *&at, const uint8_t *end, bool include_name, bool i
         default:
             return nullptr;
         }
-        if (!val) {
-            for (int y = i - 1; y >= 0; y--) {
-                data[y]->destroy();
-                delete data[y];
-            }
+        if (!val)
             return nullptr;
-        }
-        data.push_back(val);
+        data.emplace_back(std::move(val));
     }
 
-    return new List(name, data);
+    return std::make_shared<List>(name, std::move(data));
 }
 
-Compound *nbt::parseCompound(uint8_t *&at, const uint8_t *end, bool include_name, bool in_list)
+std::shared_ptr<Compound> nbt::parseCompound(uint8_t *&at, const uint8_t *end, bool include_name, bool in_list)
 {
     if (at > end)
         return nullptr;
@@ -339,29 +336,24 @@ Compound *nbt::parseCompound(uint8_t *&at, const uint8_t *end, bool include_name
     }
     GET_NAME()
 
-    std::vector<Base *> data;
-    for (auto i = 0; 1; i++) {
+    std::vector<std::shared_ptr<Base>> data;
+    for (;;) {
         if (at > end)
             return nullptr;
         if (*at == (uint8_t) TagType::End) {
             at++;
             break;
         }
-        Base *val = parse(at, end);
-        if (!val) {
-            for (int y = i - 1; y >= 0; y--) {
-                data[y]->destroy();
-                delete data[y];
-            }
+        std::shared_ptr<Base> val = parse(at, end);
+        if (!val)
             return nullptr;
-        }
-        data.push_back(val);
+        data.emplace_back(std::move(val));
     }
 
-    return new Compound(name, data);
+    return std::make_shared<Compound>(name, std::move(data));
 }
 
-IntArray *nbt::parseIntArray(uint8_t *&at, const uint8_t *end, bool include_name, bool in_list)
+std::shared_ptr<IntArray> nbt::parseIntArray(uint8_t *&at, const uint8_t *end, bool include_name, bool in_list)
 {
     if (at > end)
         return nullptr;
@@ -392,10 +384,10 @@ IntArray *nbt::parseIntArray(uint8_t *&at, const uint8_t *end, bool include_name
         data.push_back(val);
     }
 
-    return new IntArray(name, data);
+    return std::make_shared<IntArray>(name, std::move(data));
 }
 
-LongArray *nbt::parseLongArray(uint8_t *&at, const uint8_t *end, bool include_name, bool in_list)
+std::shared_ptr<LongArray> nbt::parseLongArray(uint8_t *&at, const uint8_t *end, bool include_name, bool in_list)
 {
     if (at > end)
         return nullptr;
@@ -426,10 +418,10 @@ LongArray *nbt::parseLongArray(uint8_t *&at, const uint8_t *end, bool include_na
         data.push_back(val);
     }
 
-    return new LongArray(name, data);
+    return std::make_shared<LongArray>(name, std::move(data));
 }
 
-Base *nbt::parse(uint8_t *&at, const uint8_t *end)
+std::shared_ptr<Base> nbt::parse(uint8_t *&at, const uint8_t *end)
 {
     if (at > end)
         return nullptr;
@@ -461,6 +453,6 @@ Base *nbt::parse(uint8_t *&at, const uint8_t *end)
     case (uint8_t) TagType::LongArray:
         return parseLongArray(at, end);
     default:
-        throw UnknownType("Could not parse unknown NBT type");
+        return nullptr;
     }
 }

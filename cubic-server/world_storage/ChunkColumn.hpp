@@ -65,8 +65,8 @@ struct BlockEntity { };
 
 struct HeightMap {
     // https://wiki.vg/index.php?title=Protocol&oldid=17753#Chunk_Data_and_Update_Light
-    std::array<nbt::Long, HEIGHTMAP_ARRAY_SIZE> motionBlocking;
-    std::array<nbt::Long, HEIGHTMAP_ARRAY_SIZE> worldSurface;
+    std::array<std::shared_ptr<nbt::Long>, HEIGHTMAP_ARRAY_SIZE> motionBlocking;
+    std::array<std::shared_ptr<nbt::Long>, HEIGHTMAP_ARRAY_SIZE> worldSurface;
 };
 
 enum class WorldType {

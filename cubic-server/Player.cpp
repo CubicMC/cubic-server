@@ -10,6 +10,7 @@
 #include "World.hpp"
 #include "blocks.hpp"
 #include "command_parser/CommandParser.hpp"
+#include "nbt.hpp"
 #include "protocol/ClientPackets.hpp"
 #include <cstdint>
 
@@ -414,22 +415,23 @@ void Player::sendChunkAndLightUpdate(const world_storage::ChunkColumn &chunk)
     auto heightMap = chunk.getHeightMap();
     auto chunkPos = chunk.getChunkPos();
 
-    std::vector<nbt::Base *> motionBlocking;
-    std::vector<nbt::Base *> worldSurface;
+    std::vector<std::shared_ptr<nbt::Base>> motionBlocking;
+    std::vector<std::shared_ptr<nbt::Base>> worldSurface;
+    motionBlocking.reserve(heightMap.motionBlocking.size());
+    worldSurface.reserve(heightMap.worldSurface.size());
 
-    // HeightMap preparation
-    for (auto &it : heightMap.motionBlocking)
-        motionBlocking.push_back(&it);
-    for (auto &it : heightMap.worldSurface)
-        worldSurface.push_back(&it);
+    for (auto i = 0; i < world_storage::HEIGHTMAP_ARRAY_SIZE; i++) {
+        motionBlocking.push_back(heightMap.motionBlocking.at(i));
+        worldSurface.push_back(heightMap.worldSurface.at(i));
+    }
 
-    auto motionBlockingList = new nbt::List("MOTION_BLOCKING", motionBlocking);
-    auto worldSurfaceList = new nbt::List("WORLD_SURFACE", worldSurface);
+    auto motionBlockingList = NBT_MAKE(nbt::List, "MOTION_BLOCKING", motionBlocking);
+    auto worldSurfaceList = NBT_MAKE(nbt::List, "WORLD_SURFACE", worldSurface);
 
     auto packet = protocol::createChunkDataAndLightUpdate({
         chunkPos.x,
         chunkPos.z,
-        nbt::Compound("", {motionBlockingList, worldSurfaceList}),
+        std::shared_ptr<nbt::Compound>(new nbt::Compound("", {motionBlockingList, worldSurfaceList})),
         chunk,
         {}, // TODO: BlockEntities
         false, // Trust Edges: If edges should be trusted for light updates.
@@ -445,8 +447,6 @@ void Player::sendChunkAndLightUpdate(const world_storage::ChunkColumn &chunk)
     this->_chunks[chunkPos] = ChunkState::Loaded;
 
     LDEBUG("Sent a chunk data and light update packet ", chunkPos, ")");
-    delete motionBlockingList;
-    delete worldSurfaceList;
 }
 
 void Player::sendUnloadChunk(int32_t x, int32_t z)

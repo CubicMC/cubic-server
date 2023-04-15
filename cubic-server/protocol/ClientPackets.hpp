@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "Structures.hpp"
+#include "nbt.hpp"
 #include "typeSerialization.hpp"
 #include "types.hpp"
 #include "world_storage/ChunkColumn.hpp"
@@ -143,7 +144,7 @@ std::unique_ptr<std::vector<uint8_t>> createKeepAlive(long id);
 struct ChunkDataAndLightUpdate {
     int32_t chunkX;
     int32_t chunkZ;
-    nbt::Compound heightmaps;
+    std::shared_ptr<nbt::Compound> heightmaps;
     const world_storage::ChunkColumn &data;
     std::vector<BlockEntity> blockEntities;
     bool trustEdges;
@@ -170,7 +171,7 @@ struct LoginPlay {
     uint8_t gamemode;
     uint8_t previousGamemode; // must be a signed byte
     std::vector<std::string> dimensionNames;
-    nbt::Compound registryCodec;
+    std::shared_ptr<nbt::Compound> registryCodec;
     std::string dimensionType;
     std::string dimensionName;
     long hashedSeed;

@@ -21,7 +21,13 @@ std::unique_ptr<std::vector<uint8_t>> protocol::createLoginDisconnect(const Disc
 std::unique_ptr<std::vector<uint8_t>> protocol::createLoginSuccess(const LoginSuccess &in)
 {
     std::vector<uint8_t> payload;
-    serialize(payload, in.uuid, addUUID, in.username, addString, in.numberOfProperties, addVarInt);
+    // clang-format off
+    serialize(payload,
+        in.uuid, addUUID,
+        in.username, addString,
+        in.numberOfProperties, addVarInt
+    );
+    // clang-format on
 
     // in.name, addString,
     // in.value, addString,
@@ -152,7 +158,7 @@ std::unique_ptr<std::vector<uint8_t>> protocol::createChunkDataAndLightUpdate(co
     serialize(payload,
         in.chunkX, addInt,
         in.chunkZ, addInt,
-        in.heightmaps, addNBT<nbt::Compound>,
+        *in.heightmaps, addNBT<nbt::Compound>,
         in.data, addChunkColumn,
         in.blockEntities, addBlockEntities,
         in.trustEdges, addBoolean,
@@ -183,7 +189,7 @@ std::unique_ptr<std::vector<uint8_t>> protocol::createLoginPlay(const LoginPlay 
     std::vector<uint8_t> payload;
     serialize(
         payload, in.entityID, addInt, in.isHardcore, addBoolean, in.gamemode, addByte, in.previousGamemode, addByte, in.dimensionNames, addArray<std::string, addString>,
-        in.registryCodec, addNBT<nbt::Compound>, in.dimensionType, addString, in.dimensionName, addString, in.hashedSeed, addLong, in.maxPlayers, addVarInt, in.viewDistance,
+        *in.registryCodec, addNBT<nbt::Compound>, in.dimensionType, addString, in.dimensionName, addString, in.hashedSeed, addLong, in.maxPlayers, addVarInt, in.viewDistance,
         addVarInt, in.simulationDistance, addVarInt, in.reducedDebugInfo, addBoolean, in.enableRespawnScreen, addBoolean, in.isDebug, addBoolean, in.isFlat, addBoolean,
         in.hasDeathLocation, addBoolean
     );

@@ -20,6 +20,10 @@ ChunkColumn::ChunkColumn(const Position2D &chunkPos):
         block = 0;
     for (auto &biome : this->_biomes)
         biome = 0;
+    for (auto i = 0; i < HEIGHTMAP_ARRAY_SIZE; i++) {
+        _heightMap.motionBlocking[i] = std::make_shared<nbt::Long>("", 0);
+        _heightMap.worldSurface[i] = std::make_shared<nbt::Long>("", 0);
+    }
 }
 
 ChunkColumn::~ChunkColumn() { }
@@ -33,11 +37,11 @@ void ChunkColumn::updateBlock(Position pos, BlockId id)
     int startOffset = (blockNumber * HEIGHTMAP_BITS) % 64;
     int endLong = ((blockNumber + 1) * HEIGHTMAP_BITS - 1) / 64;
 
-    if (pos.y > _heightMap.motionBlocking.at(startLong).get_value() >> startOffset) {
-        _heightMap.motionBlocking[startLong] |= (pos.y << startOffset);
+    if (pos.y > _heightMap.motionBlocking.at(startLong)->get_value() >> startOffset) {
+        *_heightMap.motionBlocking[startLong] |= (pos.y << startOffset);
 
         if (startLong != endLong)
-            _heightMap.motionBlocking[endLong] |= (pos.y >> (64 - startOffset));
+            *_heightMap.motionBlocking[endLong] |= (pos.y >> (64 - startOffset));
     }
 
     // Block update
