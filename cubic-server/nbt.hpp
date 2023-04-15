@@ -482,6 +482,14 @@ public:
     }
 };
 
+class TypeMismatch : public std::runtime_error {
+public:
+    TypeMismatch(const char *const message) throw():
+        std::runtime_error(message)
+    {
+    }
+};
+
 class List : public Base {
 private:
     std::vector<std::shared_ptr<Base>> _value;
@@ -523,7 +531,7 @@ public:
             if (current == TagType::End)
                 current = i->getType();
             if (current != i->getType())
-                throw std::runtime_error("nbt::List contains more than one type");
+                throw TypeMismatch("nbt::List contains more than one type");
             // i->serialize(data, false);
             i->serialize(data, false);
         }
@@ -546,24 +554,10 @@ public:
     }
 };
 
-// clang-format off
 template <typename Child, typename Base>
 concept is_base_of = std::is_base_of_v<Base, Child>;
 
-// template <is_base_of<Base> T, typename... Args> std::shared_ptr<Base> make(Args&&... args) {
-//     return std::shared_ptr<Base>(new T(std::forward<Args>(args)...));
-// }
-
-// template <is_base_of<Base> T, typename... Args> std::shared_ptr<Base> make(Args&... args) {
-//     return std::shared_ptr<Base>(new T(std::forward<Args>(args)...));
-// }
-
-#define NBT_MAKE(nbt_type, ...) std::shared_ptr<nbt::Base>(new nbt_type (__VA_ARGS__))
-
-// template <is_base_of<Base> T, typename... Args> std::shared_ptr<Base> make(Args... args) {
-//     return std::shared_ptr<Base>(new T(args...));
-// }
-// clang-format on
+#define NBT_MAKE(nbt_type, ...) std::shared_ptr<nbt::Base>(new nbt_type(__VA_ARGS__))
 
 std::shared_ptr<Byte> parseByte(uint8_t *&at, const uint8_t *end, bool include_name = true, bool in_list = false);
 std::shared_ptr<Short> parseShort(uint8_t *&at, const uint8_t *end, bool include_name = true, bool in_list = false);
