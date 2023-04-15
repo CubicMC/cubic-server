@@ -141,7 +141,6 @@ void ChunkColumn::generate(WorldType worldType, Seed seed)
 void ChunkColumn::_generateOverworld(Seed seed)
 {
     auto generator = generation::Overworld(seed);
-    int normalHeight = 100;
     int waterLevel = 86;
 
     // generate blocks
@@ -213,11 +212,11 @@ void ChunkColumn::_generateOverworld(Seed seed)
     }
 }
 
-void ChunkColumn::_generateNether(Seed seed) { }
+void ChunkColumn::_generateNether(UNUSED Seed seed) { }
 
-void ChunkColumn::_generateEnd(Seed seed) { }
+void ChunkColumn::_generateEnd(UNUSED Seed seed) { }
 
-void ChunkColumn::_generateFlat(Seed seed)
+void ChunkColumn::_generateFlat(UNUSED Seed seed)
 {
     // TODO: optimize this
     // This take forever because of the Block constructor

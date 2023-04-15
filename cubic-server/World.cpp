@@ -130,6 +130,7 @@ void World::sendPlayerInfoAddPlayer(Player *current)
                            .updateDisplayName =
                                {
                                    .hasDisplayName = false,
+                                   .displayName = "",
                                }}}}
                 );
             }
@@ -161,6 +162,7 @@ void World::sendPlayerInfoAddPlayer(Player *current)
                  .updateDisplayName =
                      {
                          .hasDisplayName = false,
+                         .displayName = "",
                      }}
             );
         }

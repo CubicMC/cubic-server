@@ -1,7 +1,8 @@
 #include "Log.hpp"
+#include "Server.hpp"
 #include "logging/Logger.hpp"
 
-void command_parser::Log::autocomplete(std::vector<std::string> &args, Player *invoker) const
+void command_parser::Log::autocomplete(UNUSED std::vector<std::string> &args, Player *invoker) const
 {
     if (invoker)
         return;
@@ -9,7 +10,7 @@ void command_parser::Log::autocomplete(std::vector<std::string> &args, Player *i
         LINFO("autocomplete log");
 }
 
-void command_parser::Log::execute(std::vector<std::string> &args, Player *invoker) const
+void command_parser::Log::execute(std::vector<std::string> &args, UNUSED Player *invoker) const
 {
     if (args.size() < 2) {
         LDEBUG("Usage : /log <on|off> (type)");
@@ -52,7 +53,7 @@ void command_parser::Log::execute(std::vector<std::string> &args, Player *invoke
         LDEBUG("Usage : /log <on|off> (type)");
 }
 
-void command_parser::Log::help(std::vector<std::string> &args, Player *invoker) const
+void command_parser::Log::help(UNUSED std::vector<std::string> &args, Player *invoker) const
 {
     if (!invoker)
         LINFO("/log <on|off> (type)");

@@ -5,7 +5,7 @@
 
 using namespace command_parser;
 
-void Time::autocomplete(std::vector<std::string> &args, Player *invoker) const
+void Time::autocomplete(UNUSED std::vector<std::string> &args, Player *invoker) const
 {
     if (invoker)
         return;
@@ -63,7 +63,7 @@ int setTimeToAdd(std::string timeToAdd)
     return time;
 }
 
-int setTimeToSet(std::string timeToSet)
+int setTimeToSet(const std::string &timeToSet)
 {
     int time = 0;
     if (std::find_if(timeToSet.begin(), timeToSet.end(), [](unsigned char c) {
@@ -79,7 +79,7 @@ int setTimeToSet(std::string timeToSet)
     else if (timeToSet == "midnight")
         time = 18000;
     else {
-        if (timeToSet.back() == 'd' || timeToSet.back() == 's' || (timeToSet.back() == 't' && timeToSet != "midnight" && timeToSet != "night") && timeToSet.front() != '-') {
+        if (timeToSet.back() == 'd' || timeToSet.back() == 's' || (timeToSet.back() == 't' && timeToSet != "midnight" && timeToSet != "night" && timeToSet.front() != '-')) {
             time = setTimeFromArg(timeToSet, setMultiplier(timeToSet.back()));
             return time;
         } else if (timeToSet.front() == '-') {
@@ -143,7 +143,7 @@ void Time::execute(std::vector<std::string> &args, Player *invoker) const
     }
 }
 
-void Time::help(std::vector<std::string> &args, Player *invoker) const
+void Time::help(UNUSED std::vector<std::string> &args, Player *invoker) const
 {
     if (invoker) {
         // if (invoker->isOperator()) // TODO: uncomment this when permissions are implemented

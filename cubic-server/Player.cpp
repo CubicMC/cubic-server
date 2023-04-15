@@ -14,14 +14,14 @@
 #include <cstdint>
 
 Player::Player(Client *cli, std::shared_ptr<Dimension> dim, u128 uuid, const std::string &username):
-    _cli(cli),
     LivingEntity(dim),
-    _uuid(uuid),
+    _cli(cli),
     _username(username),
+    _uuid(uuid),
     _keepAliveId(0),
     _keepAliveIgnored(0),
     _gamemode(0),
-    _keepAliveClock(200, std::bind(&Player::_processKeepAlive, this)) // 5 seconds for keep-alives
+    _keepAliveClock(200, std::bind(&Player::_processKeepAlive, this)) // 10 seconds for keep-alives
 {
     _keepAliveClock.start();
     _heldItem = 0;
@@ -45,7 +45,9 @@ Player::Player(Client *cli, std::shared_ptr<Dimension> dim, u128 uuid, const std
 
 Player::~Player()
 {
-    // Send a disconnect message to the chat
+// Send a disconnect message to the chat
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wmissing-field-initializers"
     chat::Message disconnectMsg = chat::Message(
         "",
         {.color = "yellow",
@@ -62,6 +64,7 @@ Player::~Player()
              )
          )})}
     );
+#pragma GCC diagnostic pop
 
     this->_dim->getWorld()->sendPlayerInfoRemovePlayer(this);
 
@@ -291,7 +294,7 @@ void Player::sendUpdateTime(const protocol::UpdateTime &data)
     LDEBUG("Sent an Update Time packet");
 }
 
-void Player::sendChatMessageResponse(const protocol::PlayerChatMessage &packet)
+void Player::sendChatMessageResponse(UNUSED const protocol::PlayerChatMessage &packet)
 {
     // auto pck = protocol::createPlayerChatMessage(packet);
     // this->_cli->_sendData(*pck);
@@ -358,7 +361,7 @@ void Player::sendSetCenterChunk(const Position2D &pos)
     LDEBUG("Sent a center chunk packet");
 }
 
-void Player::sendSynchronizePosition(Vector3<double> pos)
+void Player::sendSynchronizePosition(const Vector3<double> &pos)
 {
     auto pck = protocol::createSynchronizePlayerPosition({
         pos.x,
@@ -464,7 +467,7 @@ void Player::sendSwingArm(bool main_hand, int32_t swinger_id)
 
 void Player::sendTeleportEntity(int32_t id, const Vector3<double> &pos)
 {
-    auto pck = protocol::createTeleportEntity({id, pos.x, pos.y, pos.z});
+    auto pck = protocol::createTeleportEntity({id, pos.x, pos.y, pos.z, _rot.x, _rot.y, false});
     _cli->_sendData(*pck);
     LDEBUG("Sent a Teleport Entity");
 }
@@ -479,11 +482,11 @@ void Player::sendPlayerAbilities(const protocol::PlayerAbilitiesClient &packet)
 #pragma endregion
 #pragma region ServerBound
 
-void Player::_onConfirmTeleportation(const std::shared_ptr<protocol::ConfirmTeleportation> &pck) { LDEBUG("Got a Confirm Teleportation"); }
+void Player::_onConfirmTeleportation(UNUSED const std::shared_ptr<protocol::ConfirmTeleportation> &pck) { LDEBUG("Got a Confirm Teleportation"); }
 
-void Player::_onQueryBlockEntityTag(const std::shared_ptr<protocol::QueryBlockEntityTag> &pck) { LDEBUG("Got a Query Block Entity Tag"); }
+void Player::_onQueryBlockEntityTag(UNUSED const std::shared_ptr<protocol::QueryBlockEntityTag> &pck) { LDEBUG("Got a Query Block Entity Tag"); }
 
-void Player::_onChangeDifficulty(const std::shared_ptr<protocol::ChangeDifficulty> &pck) { LDEBUG("Got a Change difficulty"); }
+void Player::_onChangeDifficulty(UNUSED const std::shared_ptr<protocol::ChangeDifficulty> &pck) { LDEBUG("Got a Change difficulty"); }
 
 // Receive a chat message from the client, transmit it to the chat system.
 void Player::_onChatMessage(const std::shared_ptr<protocol::ChatMessage> &pck)
@@ -505,15 +508,15 @@ void Player::_onChatCommand(const std::shared_ptr<protocol::ChatCommand> &pck)
     command_parser::parseCommand(pck->command, this);
 }
 
-void Player::_onClientCommand(const std::shared_ptr<protocol::ClientCommand> &pck) { LDEBUG("Got a Client Command"); }
+void Player::_onClientCommand(UNUSED const std::shared_ptr<protocol::ClientCommand> &pck) { LDEBUG("Got a Client Command"); }
 
-void Player::_onClientInformation(const std::shared_ptr<protocol::ClientInformation> &pck) { LDEBUG("Got a Client Information"); }
+void Player::_onClientInformation(UNUSED const std::shared_ptr<protocol::ClientInformation> &pck) { LDEBUG("Got a Client Information"); }
 
-void Player::_onCommandSuggestionRequest(const std::shared_ptr<protocol::CommandSuggestionRequest> &pck) { LDEBUG("Got a Command Suggestion Request"); }
+void Player::_onCommandSuggestionRequest(UNUSED const std::shared_ptr<protocol::CommandSuggestionRequest> &pck) { LDEBUG("Got a Command Suggestion Request"); }
 
-void Player::_onClickContainerButton(const std::shared_ptr<protocol::ClickContainerButton> &pck) { LDEBUG("Got a Click Container Button"); }
+void Player::_onClickContainerButton(UNUSED const std::shared_ptr<protocol::ClickContainerButton> &pck) { LDEBUG("Got a Click Container Button"); }
 
-void Player::_onCloseContainerRequest(const std::shared_ptr<protocol::CloseContainerRequest> &pck) { LDEBUG("Got a Close Container Request"); }
+void Player::_onCloseContainerRequest(UNUSED const std::shared_ptr<protocol::CloseContainerRequest> &pck) { LDEBUG("Got a Close Container Request"); }
 
 void Player::_onPluginMessage(const std::shared_ptr<protocol::PluginMessage> &pck)
 {
@@ -528,9 +531,9 @@ void Player::_onPluginMessage(const std::shared_ptr<protocol::PluginMessage> &pc
     }
 }
 
-void Player::_onEditBook(const std::shared_ptr<protocol::EditBook> &pck) { LDEBUG("Got a Edit Book"); }
+void Player::_onEditBook(UNUSED const std::shared_ptr<protocol::EditBook> &pck) { LDEBUG("Got a Edit Book"); }
 
-void Player::_onQueryEntityTag(const std::shared_ptr<protocol::QueryEntityTag> &pck) { LDEBUG("Got a Query Entity Tag"); }
+void Player::_onQueryEntityTag(UNUSED const std::shared_ptr<protocol::QueryEntityTag> &pck) { LDEBUG("Got a Query Entity Tag"); }
 
 /*
  * @brief Handle a player's interaction with an entity.
@@ -557,7 +560,7 @@ void Player::_onInteract(const std::shared_ptr<protocol::Interact> &pck)
     LDEBUG("Got a Interact");
 }
 
-void Player::_onJigsawGenerate(const std::shared_ptr<protocol::JigsawGenerate> &pck) { LDEBUG("Got a Jigsaw Generate"); }
+void Player::_onJigsawGenerate(UNUSED const std::shared_ptr<protocol::JigsawGenerate> &pck) { LDEBUG("Got a Jigsaw Generate"); }
 
 void Player::_onKeepAliveResponse(const std::shared_ptr<protocol::KeepAliveResponse> &pck)
 {
@@ -571,7 +574,7 @@ void Player::_onKeepAliveResponse(const std::shared_ptr<protocol::KeepAliveRespo
     LDEBUG("Got a Keep Alive Response");
 }
 
-void Player::_onLockDifficulty(const std::shared_ptr<protocol::LockDifficulty> &pck) { LDEBUG("Got a Lock Difficulty"); }
+void Player::_onLockDifficulty(UNUSED const std::shared_ptr<protocol::LockDifficulty> &pck) { LDEBUG("Got a Lock Difficulty"); }
 
 void Player::_onSetPlayerPosition(const std::shared_ptr<protocol::SetPlayerPosition> &pck)
 {
@@ -599,15 +602,15 @@ void Player::_onSetPlayerRotation(const std::shared_ptr<protocol::SetPlayerRotat
     this->setRotation(pck->yaw, pck->pitch / 1.5);
 }
 
-void Player::_onSetPlayerOnGround(const std::shared_ptr<protocol::SetPlayerOnGround> &pck) { LDEBUG("Got a Set Player On Ground"); }
+void Player::_onSetPlayerOnGround(UNUSED const std::shared_ptr<protocol::SetPlayerOnGround> &pck) { LDEBUG("Got a Set Player On Ground"); }
 
-void Player::_onMoveVehicle(const std::shared_ptr<protocol::MoveVehicle> &pck) { LDEBUG("Got a Move Vehicle"); }
+void Player::_onMoveVehicle(UNUSED const std::shared_ptr<protocol::MoveVehicle> &pck) { LDEBUG("Got a Move Vehicle"); }
 
-void Player::_onPaddleBoat(const std::shared_ptr<protocol::PaddleBoat> &pck) { LDEBUG("Got a Paddle Boat"); }
+void Player::_onPaddleBoat(UNUSED const std::shared_ptr<protocol::PaddleBoat> &pck) { LDEBUG("Got a Paddle Boat"); }
 
-void Player::_onPickItem(const std::shared_ptr<protocol::PickItem> &pck) { LDEBUG("Got a Pick Item"); }
+void Player::_onPickItem(UNUSED const std::shared_ptr<protocol::PickItem> &pck) { LDEBUG("Got a Pick Item"); }
 
-void Player::_onPlaceRecipe(const std::shared_ptr<protocol::PlaceRecipe> &pck) { LDEBUG("Got a Place Recipe"); }
+void Player::_onPlaceRecipe(UNUSED const std::shared_ptr<protocol::PlaceRecipe> &pck) { LDEBUG("Got a Place Recipe"); }
 
 void Player::_onPlayerAbilities(const std::shared_ptr<protocol::PlayerAbilities> &pck)
 {
@@ -629,25 +632,25 @@ void Player::_onPlayerAction(const std::shared_ptr<protocol::PlayerAction> &pck)
     }
 }
 
-void Player::_onPlayerCommand(const std::shared_ptr<protocol::PlayerCommand> &pck) { LDEBUG("Got a Player Command"); }
+void Player::_onPlayerCommand(UNUSED const std::shared_ptr<protocol::PlayerCommand> &pck) { LDEBUG("Got a Player Command"); }
 
-void Player::_onPlayerInput(const std::shared_ptr<protocol::PlayerInput> &pck) { LDEBUG("Got a Player Input"); }
+void Player::_onPlayerInput(UNUSED const std::shared_ptr<protocol::PlayerInput> &pck) { LDEBUG("Got a Player Input"); }
 
-void Player::_onPong(const std::shared_ptr<protocol::Pong> &pck) { LDEBUG("Got a Pong"); }
+void Player::_onPong(UNUSED const std::shared_ptr<protocol::Pong> &pck) { LDEBUG("Got a Pong"); }
 
-void Player::_onChangeRecipeBookSettings(const std::shared_ptr<protocol::ChangeRecipeBookSettings> &pck) { LDEBUG("Got a Change Recipe Book Settings"); }
+void Player::_onChangeRecipeBookSettings(UNUSED const std::shared_ptr<protocol::ChangeRecipeBookSettings> &pck) { LDEBUG("Got a Change Recipe Book Settings"); }
 
-void Player::_onSetSeenRecipe(const std::shared_ptr<protocol::SetSeenRecipe> &pck) { LDEBUG("Got a Set Seen Recipe"); }
+void Player::_onSetSeenRecipe(UNUSED const std::shared_ptr<protocol::SetSeenRecipe> &pck) { LDEBUG("Got a Set Seen Recipe"); }
 
-void Player::_onRenameItem(const std::shared_ptr<protocol::RenameItem> &pck) { LDEBUG("Got a Rename Item"); }
+void Player::_onRenameItem(UNUSED const std::shared_ptr<protocol::RenameItem> &pck) { LDEBUG("Got a Rename Item"); }
 
-void Player::_onResourcePack(const std::shared_ptr<protocol::ResourcePack> &pck) { LDEBUG("Got a Resource Pack"); }
+void Player::_onResourcePack(UNUSED const std::shared_ptr<protocol::ResourcePack> &pck) { LDEBUG("Got a Resource Pack"); }
 
-void Player::_onSeenAdvancements(const std::shared_ptr<protocol::SeenAdvancements> &pck) { LDEBUG("Got a Seen Advancements"); }
+void Player::_onSeenAdvancements(UNUSED const std::shared_ptr<protocol::SeenAdvancements> &pck) { LDEBUG("Got a Seen Advancements"); }
 
-void Player::_onSelectTrade(const std::shared_ptr<protocol::SelectTrade> &pck) { LDEBUG("Got a Select Trade"); }
+void Player::_onSelectTrade(UNUSED const std::shared_ptr<protocol::SelectTrade> &pck) { LDEBUG("Got a Select Trade"); }
 
-void Player::_onSetBeaconEffect(const std::shared_ptr<protocol::SetBeaconEffect> &pck) { LDEBUG("Got a Set Beacon Effect"); }
+void Player::_onSetBeaconEffect(UNUSED const std::shared_ptr<protocol::SetBeaconEffect> &pck) { LDEBUG("Got a Set Beacon Effect"); }
 
 void Player::_onSetHeldItem(const std::shared_ptr<protocol::SetHeldItem> &pck)
 {
@@ -655,15 +658,15 @@ void Player::_onSetHeldItem(const std::shared_ptr<protocol::SetHeldItem> &pck)
     LDEBUG("Got a Set Held Item");
 }
 
-void Player::_onProgramCommandBlock(const std::shared_ptr<protocol::ProgramCommandBlock> &pck) { LDEBUG("Got a Program Command Block"); }
+void Player::_onProgramCommandBlock(UNUSED const std::shared_ptr<protocol::ProgramCommandBlock> &pck) { LDEBUG("Got a Program Command Block"); }
 
-void Player::_onProgramCommandBlockMinecart(const std::shared_ptr<protocol::ProgramCommandBlockMinecart> &pck) { LDEBUG("Got a Program Command Block Minecart"); }
+void Player::_onProgramCommandBlockMinecart(UNUSED const std::shared_ptr<protocol::ProgramCommandBlockMinecart> &pck) { LDEBUG("Got a Program Command Block Minecart"); }
 
-void Player::_onProgramJigsawBlock(const std::shared_ptr<protocol::ProgramJigsawBlock> &pck) { LDEBUG("Got a Program Jigsaw Block"); }
+void Player::_onProgramJigsawBlock(UNUSED const std::shared_ptr<protocol::ProgramJigsawBlock> &pck) { LDEBUG("Got a Program Jigsaw Block"); }
 
-void Player::_onProgramStructureBlock(const std::shared_ptr<protocol::ProgramStructureBlock> &pck) { LDEBUG("Got a Program Structure Block"); }
+void Player::_onProgramStructureBlock(UNUSED const std::shared_ptr<protocol::ProgramStructureBlock> &pck) { LDEBUG("Got a Program Structure Block"); }
 
-void Player::_onUpdateSign(const std::shared_ptr<protocol::UpdateSign> &pck) { LDEBUG("Got a Update Sign"); }
+void Player::_onUpdateSign(UNUSED const std::shared_ptr<protocol::UpdateSign> &pck) { LDEBUG("Got a Update Sign"); }
 
 void Player::_onSwingArm(const std::shared_ptr<protocol::SwingArm> &pck)
 {
@@ -675,7 +678,7 @@ void Player::_onSwingArm(const std::shared_ptr<protocol::SwingArm> &pck)
     }
 }
 
-void Player::_onTeleportToEntity(const std::shared_ptr<protocol::TeleportToEntity> &pck) { LDEBUG("Got a Teleport To Entity"); }
+void Player::_onTeleportToEntity(UNUSED const std::shared_ptr<protocol::TeleportToEntity> &pck) { LDEBUG("Got a Teleport To Entity"); }
 
 void Player::_onUseItemOn(const std::shared_ptr<protocol::UseItemOn> &pck)
 {
@@ -736,7 +739,7 @@ void Player::_onUseItemOn(const std::shared_ptr<protocol::UseItemOn> &pck)
     }
 }
 
-void Player::_onUseItem(const std::shared_ptr<protocol::UseItem> &pck) { LDEBUG("Got a Use Item"); }
+void Player::_onUseItem(UNUSED const std::shared_ptr<protocol::UseItem> &pck) { LDEBUG("Got a Use Item"); }
 
 #pragma endregion Serverbound
 
@@ -861,7 +864,9 @@ void Player::_continueLoginSequence()
 
 void Player::_sendLoginMessage(void)
 {
-    // Send login message
+// Send login message
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wmissing-field-initializers"
     chat::Message connectionMsg = chat::Message(
         "",
         {.color = "yellow",
@@ -878,6 +883,7 @@ void Player::_sendLoginMessage(void)
              )
          )})}
     );
+#pragma GCC diagnostic pop
 
     this->getDimension()->getWorld()->getChat()->sendSystemMessage(connectionMsg, false, this->getDimension()->getWorld()->getWorldGroup());
 }

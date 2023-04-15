@@ -8,8 +8,8 @@
 #include <memory>
 
 Dimension::Dimension(std::shared_ptr<World> world):
-    _world(world),
     _dimensionLock(std::counting_semaphore<1000>(0)),
+    _world(world),
     _isInitialized(false),
     _isRunning(false)
 {
@@ -104,7 +104,7 @@ const world_storage::Level &Dimension::getLevel() const { return _level; }
 
 world_storage::Level &Dimension::getLevel() { return _level; }
 
-void Dimension::generateChunk(int x, int z) { }
+void Dimension::generateChunk(UNUSED int x, UNUSED int z) { }
 
 std::shared_ptr<thread_pool::Task> Dimension::loadOrGenerateChunk(int x, int z, std::shared_ptr<Player> player)
 {

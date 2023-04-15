@@ -68,7 +68,7 @@ public:
     void playCustomSound(std::string sound, FloatingPosition position, SoundCategory category = SoundCategory::Master);
     void stopSound(uint8_t flags = 0, SoundCategory category = SoundCategory::Ambient, std::string sound = "");
     void sendKeepAlive(long id);
-    void sendSynchronizePosition(Vector3<double> pos);
+    void sendSynchronizePosition(const Vector3<double> &pos);
     void sendSwingArm(bool main_hand, int32_t swinger_id);
     void sendTeleportEntity(int32_t id, const Vector3<double> &pos);
     void sendRemoveEntities(const std::vector<int32_t> &entities);

@@ -2,7 +2,7 @@
 #include "Player.hpp"
 #include "Server.hpp"
 
-void command_parser::Stop::autocomplete(std::vector<std::string> &args, Player *invoker) const
+void command_parser::Stop::autocomplete(UNUSED std::vector<std::string> &args, Player *invoker) const
 {
     if (invoker)
         return;
@@ -10,7 +10,7 @@ void command_parser::Stop::autocomplete(std::vector<std::string> &args, Player *
         LINFO("autocomplete stop");
 }
 
-void command_parser::Stop::execute(std::vector<std::string> &args, Player *invoker) const
+void command_parser::Stop::execute(UNUSED std::vector<std::string> &args, Player *invoker) const
 {
     if (invoker) {
         if (invoker->isOperator()) { // TODO: uncomment this when permissions are implemented
@@ -21,7 +21,7 @@ void command_parser::Stop::execute(std::vector<std::string> &args, Player *invok
         Server::getInstance()->stop();
 }
 
-void command_parser::Stop::help(std::vector<std::string> &args, Player *invoker) const
+void command_parser::Stop::help(UNUSED std::vector<std::string> &args, Player *invoker) const
 {
     if (invoker) {
         // if (invoker->isOperator()) // TODO: uncomment this when permissions are implemented

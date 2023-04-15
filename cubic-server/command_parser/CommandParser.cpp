@@ -17,18 +17,18 @@ void command_parser::parseCommand(std::string &command, Player *invoker)
         commandName = commandName.erase(0, 1);
     args.erase(args.begin());
 
-    auto result = std::find_if(Server::getInstance()->getCommands().begin(), Server::getInstance()->getCommands().end(), [commandName](CommandBase *command) {
-        return command->_name == commandName;
-    });
-    if (result != Server::getInstance()->getCommands().end())
-        (*result)->execute(args, invoker);
-    else {
-        if (invoker) {
-            // (*invoker)->sendPlayerChatMessage("Unknown or incomplete command, see below for error"); // TODO: Change this to the correct packet (gl @STMiki)
-            // (*invoker)->sendPlayerChatMessage(commandName.erase(commandName.find_last_not_of(' ') + 1) + "<--[HERE]"); // TODO: Change this to the correct packet (gl @STMiki)
-        } else {
-            LINFO("Unknown or incomplete command, see below for error");
-            LINFO(commandName.erase(commandName.find_last_not_of(' ') + 1) + "<--[HERE]");
+    for (auto &&result : Server::getInstance()->getCommands()) {
+        if (result->_name == commandName) {
+            result->execute(args, invoker);
+            return;
         }
+    }
+    if (invoker) {
+        // (*invoker)->sendPlayerChatMessage("Unknown or incomplete command, see below for error"); // TODO: Change this to the correct packet (gl @STMiki)
+        // (*invoker)->sendPlayerChatMessage(commandName.erase(commandName.find_last_not_of(' ') + 1) + "<--[HERE]"); // TODO: Change this to the correct packet (gl
+        // @STMiki)
+    } else {
+        LINFO("Unknown or incomplete command, see below for error");
+        LINFO(commandName.erase(commandName.find_last_not_of(' ') + 1) + "<--[HERE]");
     }
 }

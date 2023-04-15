@@ -7,7 +7,7 @@
  * @param damage The damage to deal
  * @param source The source of the damage
  */
-void LivingEntity::attack(Vector3<double> source)
+void LivingEntity::attack(const Vector3<double> &source)
 {
     //  TODO : think about how to deal with damage calculation later
     this->damage(1);
@@ -27,7 +27,7 @@ void LivingEntity::damage(float damage) { _health -= damage; }
  * @param source The source of the knockback
  * @param force The force of the knockback
  */
-void LivingEntity::knockback(Vector3<double> source, float force)
+void LivingEntity::knockback(const Vector3<double> &source, float force)
 {
     // compute knockback
     // TODO(huntears): Change how the knockback is calculated to be more "vanilla like"

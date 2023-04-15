@@ -19,7 +19,7 @@ std::shared_ptr<Handshake> protocol::parseHandshake(std::vector<uint8_t> &buffer
     return h;
 }
 
-std::shared_ptr<StatusRequest> protocol::parseStatusRequest(std::vector<uint8_t> &buffer) { return {}; }
+std::shared_ptr<StatusRequest> protocol::parseStatusRequest(UNUSED std::vector<uint8_t> &buffer) { return {}; }
 
 std::shared_ptr<PingRequest> protocol::parsePingRequest(std::vector<uint8_t> &buffer)
 {

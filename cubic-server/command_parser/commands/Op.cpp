@@ -4,7 +4,7 @@
 
 using namespace command_parser;
 
-void Op::autocomplete(std::vector<std::string> &args, Player *invoker) const { }
+void Op::autocomplete(UNUSED std::vector<std::string> &args, UNUSED Player *invoker) const { }
 
 void Op::execute(std::vector<std::string> &args, Player *invoker) const
 {
@@ -29,4 +29,4 @@ void Op::execute(std::vector<std::string> &args, Player *invoker) const
     }
 }
 
-void Op::help(std::vector<std::string> &args, Player *invoker) const { LINFO("/op [<player>]"); }
+void Op::help(UNUSED std::vector<std::string> &args, UNUSED Player *invoker) const { LINFO("/op [<player>]"); }

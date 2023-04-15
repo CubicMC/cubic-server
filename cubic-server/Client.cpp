@@ -18,12 +18,12 @@
 Client::Client(int sockfd, struct sockaddr_in6 addr):
     _sockfd(sockfd),
     _addr(addr),
+    _is_running(true),
     _status(protocol::ClientStatus::Initial),
     _recv_buffer(0),
     _send_buffer(0),
     _networkThread(&Client::networkLoop, this),
-    _player(nullptr),
-    _is_running(true)
+    _player(nullptr)
 {
 }
 
@@ -297,7 +297,7 @@ void Client::_onHandshake(const std::shared_ptr<protocol::Handshake> &pck)
         this->setStatus(protocol::ClientStatus::Login);
 }
 
-void Client::_onStatusRequest(const std::shared_ptr<protocol::StatusRequest> &pck)
+void Client::_onStatusRequest(UNUSED const std::shared_ptr<protocol::StatusRequest> &pck)
 {
     LDEBUG("Got a status request");
 
@@ -359,7 +359,7 @@ void Client::_onLoginStart(const std::shared_ptr<protocol::LoginStart> &pck)
     this->_loginSequence(resPck);
 }
 
-void Client::_onEncryptionResponse(const std::shared_ptr<protocol::EncryptionResponse> &pck) { LDEBUG("Got a Encryption Response"); }
+void Client::_onEncryptionResponse(UNUSED const std::shared_ptr<protocol::EncryptionResponse> &pck) { LDEBUG("Got a Encryption Response"); }
 
 void Client::sendStatusResponse(const std::string &json)
 {
@@ -500,12 +500,10 @@ void Client::sendLoginPlay()
         .enableRespawnScreen = true, // TODO: implement gamerules !this->_player->_dim->getWorld()->getGamerules()["doImmediateRespawn"];
         .isDebug = false, // TODO: something like this->_player->_dim->getWorld()->isDebugModeWorld;
         .isFlat = false, // TODO: something like this->_player->_dim->isFlat;
-        .hasDeathLocation = false // TODO: something like this->_player->hasDeathLocation;
+        .hasDeathLocation = false, // TODO: something like this->_player->hasDeathLocation;
+        .deathDimensionName = "",
+        .deathLocation = {{0, 0, 0}},
     };
-    if (resPck.hasDeathLocation) {
-        resPck.deathDimensionName = ""; // TODO: something like this->_player->deathDimensionName;
-        resPck.deathLocation = {0, 0, 0}; // TODO: something like this->_player->deathLocation;
-    }
     _player->sendLoginPlay(resPck);
     resPck.registryCodec.destroy();
 }

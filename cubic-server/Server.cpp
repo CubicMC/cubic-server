@@ -36,9 +36,9 @@ static const std::unordered_map<std::string, std::uint32_t> _checksums = {
     {"https://cdn.cubic-mc.com/1.19.3/registries-1.19.3.json", 0xdfabe75c}};
 
 Server::Server():
+    _running(false),
     _sockfd(-1),
-    _config(),
-    _running(false)
+    _config()
 {
     _config.parse("./config.yml");
     _whitelist = WhitelistHandling::Whitelist();
@@ -48,6 +48,18 @@ Server::Server():
     _motd = _config.getMotd();
     _whitelistEnabled = _config.getWhitelist();
     _enforceWhitelist = _config.getEnforceWhitelist();
+
+    _commands.reserve(10);
+    _commands.emplace_back(std::make_unique<command_parser::Help>());
+    _commands.emplace_back(std::make_unique<command_parser::QuestionMark>());
+    _commands.emplace_back(std::make_unique<command_parser::Stop>());
+    _commands.emplace_back(std::make_unique<command_parser::Seed>());
+    _commands.emplace_back(std::make_unique<command_parser::DumpChunk>());
+    _commands.emplace_back(std::make_unique<command_parser::Log>());
+    _commands.emplace_back(std::make_unique<command_parser::Op>());
+    _commands.emplace_back(std::make_unique<command_parser::Deop>());
+    _commands.emplace_back(std::make_unique<command_parser::Reload>());
+    _commands.emplace_back(std::make_unique<command_parser::Time>());
 
     LINFO("Server created with host: ", _host, " and port: ", _port);
 }
@@ -160,8 +172,6 @@ void Server::_stop()
     }
     if (this->_sockfd != -1)
         close(this->_sockfd);
-    for (auto &command : _commands)
-        delete command;
     LINFO("Server stopped");
 }
 
@@ -173,14 +183,13 @@ void Server::_downloadFile(const std::string &url, const std::string &path)
         LDEBUG("Downloading file " << path);
         CURL *curl;
         FILE *fp;
-        CURLcode res;
         curl = curl_easy_init();
         if (curl) {
             fp = fopen(path.c_str(), "wb");
             curl_easy_setopt(curl, CURLOPT_URL, url.c_str());
             // curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, NULL);
             curl_easy_setopt(curl, CURLOPT_WRITEDATA, fp);
-            res = curl_easy_perform(curl);
+            curl_easy_perform(curl);
             curl_easy_cleanup(curl);
             fclose(fp);
         }

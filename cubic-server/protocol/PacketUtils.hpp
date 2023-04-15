@@ -1,6 +1,7 @@
 #ifndef A0501C0F_377F_42C5_9420_0833FCD13CFF
 #define A0501C0F_377F_42C5_9420_0833FCD13CFF
 
+#include "Server.hpp"
 #include "typeSerialization.hpp"
 #include <functional>
 #include <memory>
@@ -9,7 +10,7 @@
 
 namespace protocol {
 
-template <typename H> constexpr uint8_t *parse(uint8_t *&begin, uint8_t *end, H &out) { return begin; }
+template <typename H> constexpr uint8_t *parse(uint8_t *&begin, UNUSED uint8_t *end, UNUSED H &out) { return begin; }
 
 // Thanks a lot to ralismark for helping me with the constexpr parser
 template <typename H, typename F, typename... Args>
@@ -19,7 +20,7 @@ constexpr uint8_t *parse(uint8_t *&begin, uint8_t *end, H &out, F (*parser)(uint
     return parse(begin, end, out, args...);
 }
 
-constexpr void serialize(std::vector<uint8_t> &out) { }
+constexpr void serialize(UNUSED std::vector<uint8_t> &out) { }
 
 template <typename H, typename F, typename... Args>
 constexpr void serialize(std::vector<uint8_t> &out, const H &data, F (*serializer)(std::vector<uint8_t> &, const H &), Args... args)

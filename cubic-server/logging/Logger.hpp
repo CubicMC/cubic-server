@@ -60,7 +60,7 @@ public:
     const LogLevel &get_level() const;
     const std::string &get_message() const;
     const std::time_t &get_time() const;
-    const int get_millis() const;
+    int get_millis() const;
 
 private:
     const LogLevel _level;
@@ -103,7 +103,7 @@ public:
     const std::unordered_map<LogLevel, std::string> &get_display_specification_level_in_console() const;
 
     const std::queue<LogMessage> &get_logs() const;
-    const int get_log_buffer_size() const;
+    int get_log_buffer_size() const;
     void set_log_buffer_size(int size);
 
 private:
@@ -132,7 +132,7 @@ private:
 
     // Buffer to store logs before the file is opened
     std::queue<LogMessage> _log_buffer;
-    int _buffer_size;
+    uint64_t _buffer_size;
 
     std::mutex _loggerMutex;
 };

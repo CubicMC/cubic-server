@@ -2,7 +2,7 @@
 #include "Player.hpp"
 #include "Server.hpp"
 
-void command_parser::Reload::autocomplete(std::vector<std::string> &args, Player *invoker) const
+void command_parser::Reload::autocomplete(UNUSED std::vector<std::string> &args, Player *invoker) const
 {
     if (invoker)
         return;
@@ -10,7 +10,7 @@ void command_parser::Reload::autocomplete(std::vector<std::string> &args, Player
         LINFO("autocomplete reload");
 }
 
-void command_parser::Reload::execute(std::vector<std::string> &args, Player *invoker) const
+void command_parser::Reload::execute(UNUSED std::vector<std::string> &args, Player *invoker) const
 {
     if (invoker) {
         if (invoker->isOperator()) {
@@ -23,7 +23,7 @@ void command_parser::Reload::execute(std::vector<std::string> &args, Player *inv
     }
 }
 
-void command_parser::Reload::help(std::vector<std::string> &args, Player *invoker) const
+void command_parser::Reload::help(UNUSED std::vector<std::string> &args, Player *invoker) const
 {
     if (invoker) {
         // if (invoker->isOperator()) // TODO: uncomment this when permissions are implemented

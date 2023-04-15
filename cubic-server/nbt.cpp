@@ -141,11 +141,16 @@ Float *nbt::parseFloat(uint8_t *&at, const uint8_t *end, bool include_name, bool
     if (end - at < 3)
         return nullptr;
 
-    int64_t value = 0;
-    for (int i = 3; i >= 0; i--)
-        value |= ((uint64_t) (*at++)) << (i * 8);
+    union {
+        float toReturn;
+        uint32_t value;
+    } val;
+    val.value = 0;
 
-    return new Float(name, *((float *) (&value)));
+    for (int i = 3; i >= 0; i--)
+        val.value |= ((uint32_t) (*at++)) << (i * 8);
+
+    return new Float(name, val.toReturn);
 }
 
 Double *nbt::parseDouble(uint8_t *&at, const uint8_t *end, bool include_name, bool in_list)
@@ -164,11 +169,16 @@ Double *nbt::parseDouble(uint8_t *&at, const uint8_t *end, bool include_name, bo
     if (end - at < 7)
         return nullptr;
 
-    uint64_t value = 0;
-    for (int i = 7; i >= 0; i--)
-        value |= ((uint64_t) (*at++)) << (i * 8);
+    union {
+        double toReturn;
+        uint64_t value;
+    } val;
+    val.value = 0;
 
-    return new Double(name, *((double *) (&value)));
+    for (int i = 7; i >= 0; i--)
+        val.value |= ((uint64_t) (*at++)) << (i * 8);
+
+    return new Double(name, val.toReturn);
 }
 
 ByteArray *nbt::parseByteArray(uint8_t *&at, const uint8_t *end, bool include_name, bool in_list)

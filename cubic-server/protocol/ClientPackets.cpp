@@ -96,7 +96,7 @@ std::shared_ptr<std::vector<uint8_t>> protocol::createPluginMessageResponse(cons
     return packet;
 }
 
-std::shared_ptr<std::vector<uint8_t>> protocol::createCustomSoundEffect(const CustomSoundEffect &in)
+std::shared_ptr<std::vector<uint8_t>> protocol::createCustomSoundEffect(UNUSED const CustomSoundEffect &in)
 {
     return std::make_shared<std::vector<uint8_t>>();
     /*

@@ -35,6 +35,8 @@
 #define MS_PER_TICK 50
 #endif
 
+#define UNUSED __attribute__((unused))
+
 #define GLOBAL_PALETTE Server::getInstance()->getGlobalPalette()
 
 class Client;
@@ -53,9 +55,9 @@ public:
 
     const WhitelistHandling::Whitelist &getWhitelist() const { return _whitelist; }
 
-    const bool isWhitelistEnabled() const { return _whitelistEnabled; }
+    bool isWhitelistEnabled() const { return _whitelistEnabled; }
 
-    const bool getEnforceWhitelist() const { return _enforceWhitelist; }
+    bool getEnforceWhitelist() const { return _enforceWhitelist; }
 
     static Server *getInstance()
     {
@@ -69,7 +71,7 @@ public:
 
     const std::shared_ptr<WorldGroup> getWorldGroup(const std::string_view &name) const { return this->_worldGroups.at(name); }
 
-    const std::vector<CommandBase *> &getCommands() const { return _commands; }
+    const std::vector<std::unique_ptr<CommandBase>> &getCommands() const { return _commands; }
 
     bool isRunning() const { return _running; }
 
@@ -111,18 +113,7 @@ private:
     WhitelistHandling::Whitelist _whitelist;
     std::unordered_map<std::string_view, std::shared_ptr<WorldGroup>> _worldGroups;
     // clang-format off
-    std::vector<CommandBase *> _commands = {
-        new command_parser::Help,
-        new command_parser::QuestionMark,
-        new command_parser::Stop,
-        new command_parser::Seed,
-        new command_parser::DumpChunk,
-        new command_parser::Log,
-        new command_parser::Op,
-        new command_parser::Deop,
-        new command_parser::Reload,
-        new command_parser::Time,
-    };
+    std::vector<std::unique_ptr<CommandBase>> _commands;
     // clang-format on
     Blocks::GlobalPalette _globalPalette;
     Items::ItemConverter _itemConverter;

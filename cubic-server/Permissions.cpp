@@ -98,4 +98,4 @@ bool Permissions::removeOperator(const std::string &name)
     // returned true if operator successfuly removed, false otherwise
 }
 
-const bool Permissions::isOperator(const std::string &name) const { return this->_operatorSet.contains(name); }
+bool Permissions::isOperator(const std::string &name) const { return this->_operatorSet.contains(name); }
