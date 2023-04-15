@@ -24,17 +24,11 @@
 
 #include "Permissions.hpp"
 
-#ifndef MC_VERSION
-#define MC_VERSION "1.19.3"
-#endif
+constexpr char MC_VERSION[] = "1.19.3";
 
-#ifndef MC_PROTOCOL
-#define MC_PROTOCOL 761
-#endif
+constexpr uint16_t MC_PROTOCOL = 761;
 
-#ifndef MS_PER_TICK
-#define MS_PER_TICK 50
-#endif
+constexpr uint16_t MS_PER_TICK = 50;
 
 #define GLOBAL_PALETTE Server::getInstance()->getGlobalPalette()
 
