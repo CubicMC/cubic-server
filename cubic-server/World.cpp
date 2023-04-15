@@ -160,70 +160,62 @@ void World::sendPlayerInfoAddPlayer(Player *current)
     // iterate through the list of players
     for (auto &player : players) {
         // send to each player the info of the current added player
+        // clang-format off
         if (player->getId() != current->getId()) {
-
-            player->sendPlayerInfoUpdate(
-                {.actions = actions,
-                 .numberOfActions = 1,
-                 .actionSets =
-                     {{.uuid = current->getUuid(),
-                       .addPlayer =
-                           {
-                               .name = current->getUsername(),
-                               .numberOfProperties = 0,
-                           },
-                       .initializeChat =
-                           {
-                               .has_sig_data = false,
-                           },
-                       .updateGamemode =
-                           {
-                               .gamemode = current->getGamemode(),
-                           },
-                       .updateListed =
-                           {
-                               .listed = true,
-                           },
-                       .updateLatency =
-                           {
-                               .latency = 0, // TODO
-                           },
-                       .updateDisplayName =
-                           {
-                               .hasDisplayName = false,
-                           }}}}
-            );
+            player->sendPlayerInfoUpdate({
+                .actions = actions,
+                .numberOfActions = 1,
+                .actionSets = {
+                    {
+                        .uuid = current->getUuid(),
+                        .addPlayer = {
+                            .name = current->getUsername(),
+                            .numberOfProperties = 0,
+                        },
+                       .initializeChat = {
+                            .has_sig_data = false,
+                        },
+                       .updateGamemode = {
+                            .gamemode = (int32_t) current->getGamemode(),
+                        },
+                       .updateListed = {
+                            .listed = true,
+                        },
+                       .updateLatency = {
+                            .latency = 0, // TODO
+                        },
+                       .updateDisplayName = {
+                            .hasDisplayName = false,
+                        }
+                    }
+                }
+            });
         }
 
         // save the content of the iterated player for after
-        players_info.push_back(
-            {.uuid = player->getUuid(),
-             .addPlayer =
-                 {
-                     .name = player->getUsername(),
-                     .numberOfProperties = 0,
-                 },
-             .initializeChat =
-                 {
-                     .has_sig_data = false,
-                 },
-             .updateGamemode =
-                 {
-                     .gamemode = player->getGamemode(),
-                 },
-             .updateListed =
-                 {
-                     .listed = true,
-                 },
-             .updateLatency =
-                 {
-                     .latency = 0, // TODO
-                 },
-             .updateDisplayName =
-                 {
-                     .hasDisplayName = false,
-                 }}
-        );
+        players_info.push_back({
+            .uuid = player->getUuid(),
+            .addPlayer = {
+                .name = player->getUsername(),
+                .numberOfProperties = 0,
+            },
+            .initializeChat = {
+                .has_sig_data = false,
+            },
+            .updateGamemode = {
+                .gamemode = (int32_t) player->getGamemode(),
+            },
+            .updateListed = {
+                .listed = true,
+            },
+            .updateLatency = {
+                .latency = 0, // TODO
+            },
+            .updateDisplayName = {
+                .hasDisplayName = false,
+            }
+        });
+        // clang-format on
     }
 
     // send the infos of all players to the current added player

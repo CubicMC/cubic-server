@@ -9,6 +9,7 @@
 #include <variant>
 #include <vector>
 
+#include "PlayerAttributes.hpp"
 #include "Structures.hpp"
 #include "typeSerialization.hpp"
 #include "types.hpp"
@@ -158,7 +159,75 @@ struct ChunkDataAndLightUpdate {
 std::shared_ptr<std::vector<uint8_t>> createChunkDataAndLightUpdate(const ChunkDataAndLightUpdate &);
 
 struct WorldEvent {
-    int32_t event;
+    enum class Event : int32_t {
+        // Sound
+        DispenserDispenses = 1000,
+        DispenserFailsToDispense = 1001,
+        DispenserShoots = 1002,
+        EnderEyeLaunched = 1003,
+        FireworkShot = 1004,
+        IronDoorOpened = 1005,
+        WoodenDoorOpened = 1006,
+        WoodenTrapdoorOpened = 1007,
+        FenceGateOpened = 1008,
+        FireExtinguished = 1009,
+        PlayRecord = 1010,
+        IronDoorClosed = 1011,
+        WoodenDoorClosed = 1012,
+        WoodenTrapdoorClosed = 1013,
+        FenceGateClosed = 1014,
+        GhastWarns = 1015,
+        GhastShoots = 1016,
+        EnderdragonShoots = 1017,
+        BlazeShoots = 1018,
+        ZombieAttacksWoodDoor = 1019,
+        ZombieAttacksIronDoor = 1020,
+        ZombieBreaksWoodDoor = 1021,
+        WitherBreaksBlock = 1022,
+        WitherSpawned = 1023,
+        WitherShoots = 1024,
+        BatTakesOff = 1025,
+        ZombieInfects = 1026,
+        ZombieVillagerConverted = 1027,
+        EnderDragonDeath = 1028,
+        AnvilDestroyed = 1029,
+        AnvilUsed = 1030,
+        AnvilLanded = 1031,
+        PortalTravel = 1032,
+        ChorusFlowerGrown = 1033,
+        ChorusFlowerDied = 1034,
+        BrewingStandBrewed = 1035,
+        IronTrapdoorOpened = 1036,
+        IronTrapdoorClosed = 1037,
+        EndPortalCreatedInOverworld = 1038,
+        PhantomBites = 1039,
+        ZombieConvertsToDrowned = 1040,
+        HuskConvertsToZombieByDrowning = 1041,
+        GrindstoneUsed = 1042,
+        BookPageTurned = 1043,
+        // Particle
+        ComposterComposts = 1500,
+        LavaConvertsBlock = 1501,
+        RedstoneTorchBurnsOut = 1502,
+        EnderEyePlaced = 1503,
+        SpawnsTenSmokeParticles = 2000,
+        BlockBreakAndBlockBreakSound = 2001,
+        SplashPotion = 2002,
+        EyeOfEnderEntityBreakAnimation = 2003,
+        MobSpawnParticleEffect = 2004,
+        BonemealParticles = 2005,
+        DragonBreath = 2006,
+        InstantSplashPotion = 2007,
+        EnderDragonDestroysBlock = 2008,
+        WetSpongeVaporizesInNether = 2009,
+        EndGatewaySpawn = 3000,
+        EnderdragonGrowl = 3001,
+        ElectricSpark = 3002,
+        CopperApplyWax = 3003,
+        CopperRemoveWax = 3004,
+        CopperScrapeOxidation = 3005,
+
+    } event;
     Position position;
     int32_t data;
     bool disableRelativeVolume;
@@ -168,8 +237,8 @@ std::shared_ptr<std::vector<uint8_t>> createWorldEvent(const WorldEvent &);
 struct LoginPlay {
     int32_t entityID;
     bool isHardcore;
-    uint8_t gamemode;
-    uint8_t previousGamemode; // must be a signed byte
+    player_attributes::Gamemode gamemode;
+    player_attributes::Gamemode previousGamemode; // must be a signed byte
     std::vector<std::string> dimensionNames;
     nbt::Compound registryCodec;
     std::string dimensionType;

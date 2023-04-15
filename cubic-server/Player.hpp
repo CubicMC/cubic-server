@@ -2,9 +2,8 @@
 #define CUBICSERVER_PLAYER_HPP
 
 #include "Chat.hpp"
-#include "Client.hpp"
-#include "Entity.hpp"
 #include "LivingEntity.hpp"
+#include "PlayerAttributes.hpp"
 #include "SoundList.hpp"
 #include "TickClock.hpp"
 #include "items/foodItems.hpp"
@@ -39,8 +38,8 @@ public:
     const u128 &getUuid() const;
     uint16_t getHeldItem() const;
     const std::string &getUuidString() const;
-    uint8_t getGamemode() const;
-    void setGamemode(uint8_t gm);
+    player_attributes::Gamemode getGamemode() const;
+    void setGamemode(player_attributes::Gamemode gm);
     long keepAliveId() const;
     void setKeepAliveId(long id);
     uint8_t keepAliveIgnored() const;
@@ -49,8 +48,8 @@ public:
     bool isOperator() const;
 
 public:
-    void setPosition(const Vector3<double> &pos) override;
-    void setPosition(double x, double y, double z) override;
+    void setPosition(const Vector3<double> &pos, bool on_ground) override;
+    void setPosition(double x, double y, double z, bool on_ground) override;
     void teleport(const Vector3<double> &pos) override;
 
 public:
@@ -144,7 +143,7 @@ private:
     void _sendLoginMessage();
     void _unloadChunk(int32_t x, int32_t z);
     void _foodTick();
-    void _eat(int32_t itemId);
+    void _eat(ItemId itemId);
 
     Client *_cli;
     std::string _username;
@@ -153,7 +152,7 @@ private:
     long _keepAliveId;
     uint8_t _keepAliveIgnored;
     uint16_t _heldItem;
-    uint8_t _gamemode;
+    player_attributes::Gamemode _gamemode;
     TickClock _keepAliveClock;
     bool _isFlying;
     bool _isOperator;
