@@ -106,7 +106,7 @@ void Player::_tickPosition()
         for (auto i : this->getDimension()->getPlayers()) {
             if (i->getId() == this->getId())
                 continue;
-            i->sendUpdateEntityPositionAndRotation({this->getId(), deltaX, deltaY, deltaZ, this->_rot.x, this->_rot.y, true});
+            i->sendUpdateEntityPositionAndRotation({this->getId(), deltaX, deltaY, deltaZ, this->_rot.x, this->_rot.z, true});
             i->sendHeadRotation({this->getId(), _rot.x});
         }
     } else if (updatePos && !updateRot) {
@@ -119,7 +119,7 @@ void Player::_tickPosition()
         for (auto i : this->getDimension()->getPlayers()) {
             if (i->getId() == this->getId())
                 continue;
-            i->sendUpdateEntityRotation({this->getId(), this->_rot.x, this->_rot.y, true});
+            i->sendUpdateEntityRotation({this->getId(), this->_rot.x, this->_rot.z, true});
             i->sendHeadRotation({this->getId(), _rot.x});
         }
     }
@@ -471,7 +471,7 @@ void Player::sendSwingArm(bool main_hand, int32_t swinger_id)
 
 void Player::sendTeleportEntity(int32_t id, const Vector3<double> &pos)
 {
-    auto pck = protocol::createTeleportEntity({id, pos.x, pos.y, pos.z, _rot.x, _rot.y, false});
+    auto pck = protocol::createTeleportEntity({id, pos.x, pos.y, pos.z, _rot.x, _rot.z, false});
     _cli->_sendData(*pck);
     LDEBUG("Sent a Teleport Entity");
 }

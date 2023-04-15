@@ -46,7 +46,7 @@ void Entity::setRotation(const Vector2<uint8_t> &rot) { _rot = rot; }
 void Entity::setRotation(uint8_t yaw, uint8_t pitch)
 {
     _rot.x = yaw;
-    _rot.y = pitch;
+    _rot.z = pitch;
 }
 
 std::shared_ptr<Dimension> Entity::getDimension() const { return _dim; }

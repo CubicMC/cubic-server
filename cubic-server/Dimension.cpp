@@ -200,11 +200,11 @@ void Dimension::spawnPlayer(Player &current)
         // if (current->getPos().distance(player->getPos()) <= 12) {
         if (player->getId() != current_id) {
             player->sendSpawnPlayer(
-                {current_id, current.getUuid(), current.getPosition().x, current.getPosition().y, current.getPosition().z, current.getRotation().x, current.getRotation().y}
+                {current_id, current.getUuid(), current.getPosition().x, current.getPosition().y, current.getPosition().z, current.getRotation().x, current.getRotation().z}
             );
             LDEBUG("send spawn player to ", player->getUsername());
             current.sendSpawnPlayer(
-                {player->getId(), player->getUuid(), player->getPosition().x, player->getPosition().y, player->getPosition().z, player->getRotation().x, player->getRotation().y}
+                {player->getId(), player->getUuid(), player->getPosition().x, player->getPosition().y, player->getPosition().z, player->getRotation().x, player->getRotation().z}
             );
             LDEBUG("send spawn player to ", current.getUsername());
             //}
