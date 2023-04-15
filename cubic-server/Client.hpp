@@ -26,7 +26,7 @@
         __PCK_CALLBACK_PLAY(type)
 
 #define PARSER_IT_DECLARE(state) \
-    std::unordered_map<protocol::ServerPacketsID, std::function<std::shared_ptr<protocol::BaseServerPacket>(std::vector<uint8_t> &)>>::const_iterator __##state
+    std::unordered_map<protocol::ServerPacketsID, std::function<std::unique_ptr<protocol::BaseServerPacket>(std::vector<uint8_t> &)>>::const_iterator __##state
 
 #define GET_PARSER(state)                                         \
     __##state = protocol::packetIDToParse##state.find(packet_id); \

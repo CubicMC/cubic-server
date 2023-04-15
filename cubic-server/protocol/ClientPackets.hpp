@@ -63,7 +63,7 @@ enum class ClientPacketID : int32_t {
 struct Disconnect {
     std::string reason;
 };
-std::shared_ptr<std::vector<uint8_t>> createLoginDisconnect(const Disconnect &);
+std::unique_ptr<std::vector<uint8_t>> createLoginDisconnect(const Disconnect &);
 
 struct LoginSuccess {
     u128 uuid;
@@ -76,17 +76,17 @@ struct LoginSuccess {
     bool isSigned;
     std::optional<std::string> signature;
 };
-std::shared_ptr<std::vector<uint8_t>> createLoginSuccess(const LoginSuccess &);
+std::unique_ptr<std::vector<uint8_t>> createLoginSuccess(const LoginSuccess &);
 
 struct StatusResponse {
     std::string payload;
 };
-std::shared_ptr<std::vector<uint8_t>> createStatusResponse(const StatusResponse &);
+std::unique_ptr<std::vector<uint8_t>> createStatusResponse(const StatusResponse &);
 
 struct PingResponse {
     int64_t payload;
 };
-std::shared_ptr<std::vector<uint8_t>> createPingResponse(const PingResponse &);
+std::unique_ptr<std::vector<uint8_t>> createPingResponse(const PingResponse &);
 
 struct SpawnPlayer {
     int32_t entity_id;
@@ -97,7 +97,7 @@ struct SpawnPlayer {
     uint8_t yaw;
     uint8_t pitch;
 };
-std::shared_ptr<std::vector<uint8_t>> createSpawnPlayer(const SpawnPlayer &);
+std::unique_ptr<std::vector<uint8_t>> createSpawnPlayer(const SpawnPlayer &);
 
 enum class EntityAnimationID : uint8_t {
     SwingMainArm = 0x00,
@@ -107,19 +107,19 @@ enum class EntityAnimationID : uint8_t {
     CriticalEffect = 0x04,
     MagicCriticalEffect = 0x05,
 };
-std::shared_ptr<std::vector<uint8_t>> createEntityAnimation(EntityAnimationID animId, int32_t entityID);
+std::unique_ptr<std::vector<uint8_t>> createEntityAnimation(EntityAnimationID animId, int32_t entityID);
 
 struct BlockUpdate {
     Position location;
     int32_t block_id;
 };
-std::shared_ptr<std::vector<uint8_t>> createBlockUpdate(const BlockUpdate &);
+std::unique_ptr<std::vector<uint8_t>> createBlockUpdate(const BlockUpdate &);
 
 struct PluginMessageResponse {
     std::string channel;
     std::vector<uint8_t> data;
 };
-std::shared_ptr<std::vector<uint8_t>> createPluginMessageResponse(const PluginMessageResponse &);
+std::unique_ptr<std::vector<uint8_t>> createPluginMessageResponse(const PluginMessageResponse &);
 
 struct CustomSoundEffect {
     std::string name;
@@ -131,13 +131,13 @@ struct CustomSoundEffect {
     float pitch;
     long seed;
 };
-std::shared_ptr<std::vector<uint8_t>> createCustomSoundEffect(const CustomSoundEffect &);
+std::unique_ptr<std::vector<uint8_t>> createCustomSoundEffect(const CustomSoundEffect &);
 
-std::shared_ptr<std::vector<uint8_t>> createPlayDisconnect(const Disconnect &);
+std::unique_ptr<std::vector<uint8_t>> createPlayDisconnect(const Disconnect &);
 
-std::shared_ptr<std::vector<uint8_t>> createUnloadChunk(const Position2D &);
+std::unique_ptr<std::vector<uint8_t>> createUnloadChunk(const Position2D &);
 
-std::shared_ptr<std::vector<uint8_t>> createKeepAlive(long id);
+std::unique_ptr<std::vector<uint8_t>> createKeepAlive(long id);
 
 // Only for chunk data and light update packet
 struct ChunkDataAndLightUpdate {
@@ -154,7 +154,7 @@ struct ChunkDataAndLightUpdate {
     std::vector<std::array<uint8_t, LIGHT_ARRAY_SIZE>> skyLight;
     std::vector<std::array<uint8_t, LIGHT_ARRAY_SIZE>> blockLight;
 };
-std::shared_ptr<std::vector<uint8_t>> createChunkDataAndLightUpdate(const ChunkDataAndLightUpdate &);
+std::unique_ptr<std::vector<uint8_t>> createChunkDataAndLightUpdate(const ChunkDataAndLightUpdate &);
 
 struct WorldEvent {
     int32_t event;
@@ -162,7 +162,7 @@ struct WorldEvent {
     int32_t data;
     bool disableRelativeVolume;
 };
-std::shared_ptr<std::vector<uint8_t>> createWorldEvent(const WorldEvent &);
+std::unique_ptr<std::vector<uint8_t>> createWorldEvent(const WorldEvent &);
 
 struct LoginPlay {
     int32_t entityID;
@@ -185,7 +185,7 @@ struct LoginPlay {
     std::optional<std::string> deathDimensionName;
     std::optional<Position> deathLocation;
 };
-std::shared_ptr<std::vector<uint8_t>> createLoginPlay(const LoginPlay &);
+std::unique_ptr<std::vector<uint8_t>> createLoginPlay(const LoginPlay &);
 
 struct UpdateEntityPosition {
     int32_t entityId;
@@ -194,7 +194,7 @@ struct UpdateEntityPosition {
     int16_t deltaZ;
     bool onGround;
 };
-std::shared_ptr<std::vector<uint8_t>> createUpdateEntityPosition(const UpdateEntityPosition &);
+std::unique_ptr<std::vector<uint8_t>> createUpdateEntityPosition(const UpdateEntityPosition &);
 
 struct UpdateEntityPositionRotation {
     int32_t entityId;
@@ -205,7 +205,7 @@ struct UpdateEntityPositionRotation {
     uint8_t pitch;
     bool onGround;
 };
-std::shared_ptr<std::vector<uint8_t>> createUpdateEntityPositionRotation(const UpdateEntityPositionRotation &);
+std::unique_ptr<std::vector<uint8_t>> createUpdateEntityPositionRotation(const UpdateEntityPositionRotation &);
 
 struct UpdateEntityRotation {
     int32_t entityId;
@@ -213,7 +213,7 @@ struct UpdateEntityRotation {
     uint8_t pitch;
     bool onGround;
 };
-std::shared_ptr<std::vector<uint8_t>> createUpdateEntityRotation(const UpdateEntityRotation &);
+std::unique_ptr<std::vector<uint8_t>> createUpdateEntityRotation(const UpdateEntityRotation &);
 
 enum PlayerAbilitiesFlags : uint8_t {
     Invulnerable = 0x01,
@@ -226,7 +226,7 @@ struct PlayerAbilitiesClient {
     float flyingSpeed;
     float fieldOfViewModifier;
 };
-std::shared_ptr<std::vector<uint8_t>> createPlayerAbilities(const PlayerAbilitiesClient &in);
+std::unique_ptr<std::vector<uint8_t>> createPlayerAbilities(const PlayerAbilitiesClient &in);
 
 struct PlayerChatMessage {
     std::string signedContent;
@@ -241,12 +241,12 @@ struct PlayerChatMessage {
     long salt;
     std::vector<uint8_t> signature;
 };
-std::shared_ptr<std::vector<uint8_t>> createPlayerChatMessage(const PlayerChatMessage &);
+std::unique_ptr<std::vector<uint8_t>> createPlayerChatMessage(const PlayerChatMessage &);
 
 struct PlayerInfoRemove {
     std::vector<u128> uuids;
 };
-std::shared_ptr<std::vector<uint8_t>> createPlayerInfoRemove(const PlayerInfoRemove &);
+std::unique_ptr<std::vector<uint8_t>> createPlayerInfoRemove(const PlayerInfoRemove &);
 
 struct _AddPlayer {
     std::string name;
@@ -311,7 +311,7 @@ struct PlayerInfoUpdate {
     int32_t numberOfActions;
     std::vector<_Actions> actionSets;
 };
-std::shared_ptr<std::vector<uint8_t>> createPlayerInfoUpdate(const PlayerInfoUpdate &);
+std::unique_ptr<std::vector<uint8_t>> createPlayerInfoUpdate(const PlayerInfoUpdate &);
 
 struct SynchronizePlayerPosition {
     double x;
@@ -323,18 +323,18 @@ struct SynchronizePlayerPosition {
     int32_t teleportId;
     bool dismountVehicle;
 };
-std::shared_ptr<std::vector<uint8_t>> createSynchronizePlayerPosition(const SynchronizePlayerPosition &);
+std::unique_ptr<std::vector<uint8_t>> createSynchronizePlayerPosition(const SynchronizePlayerPosition &);
 
 struct RemoveEntities {
     std::vector<int32_t> entities;
 };
-std::shared_ptr<std::vector<uint8_t>> createRemoveEntities(const RemoveEntities &in);
+std::unique_ptr<std::vector<uint8_t>> createRemoveEntities(const RemoveEntities &in);
 
 struct HeadRotation {
     int32_t entityID;
     uint8_t headYaw;
 };
-std::shared_ptr<std::vector<uint8_t>> createHeadRotation(const HeadRotation &in);
+std::unique_ptr<std::vector<uint8_t>> createHeadRotation(const HeadRotation &in);
 
 struct ServerData {
     bool has_motd;
@@ -343,15 +343,15 @@ struct ServerData {
     std::string icon;
     bool enforce_secure_chat;
 };
-std::shared_ptr<std::vector<uint8_t>> createServerData(const ServerData &in);
+std::unique_ptr<std::vector<uint8_t>> createServerData(const ServerData &in);
 
-std::shared_ptr<std::vector<uint8_t>> createCenterChunk(const Position2D &in);
+std::unique_ptr<std::vector<uint8_t>> createCenterChunk(const Position2D &in);
 
 struct UpdateTime {
     long world_age;
     long time_of_day;
 };
-std::shared_ptr<std::vector<uint8_t>> createUpdateTime(const UpdateTime &);
+std::unique_ptr<std::vector<uint8_t>> createUpdateTime(const UpdateTime &);
 
 struct EntitySoundEffect {
     int32_t soundId;
@@ -361,7 +361,7 @@ struct EntitySoundEffect {
     float pitch;
     long seed;
 };
-std::shared_ptr<std::vector<uint8_t>> createEntitySoundEffect(const EntitySoundEffect &);
+std::unique_ptr<std::vector<uint8_t>> createEntitySoundEffect(const EntitySoundEffect &);
 
 struct SoundEffect {
     int32_t soundId;
@@ -373,21 +373,21 @@ struct SoundEffect {
     float pitch;
     long seed;
 };
-std::shared_ptr<std::vector<uint8_t>> createSoundEffect(const SoundEffect &);
+std::unique_ptr<std::vector<uint8_t>> createSoundEffect(const SoundEffect &);
 
 struct StopSound {
     uint8_t flags;
     int32_t source;
     std::string sound;
 };
-std::shared_ptr<std::vector<uint8_t>> createStopSound(const StopSound &);
+std::unique_ptr<std::vector<uint8_t>> createStopSound(const StopSound &);
 
 struct SystemChatMessage {
     std::string JSONData;
     bool overlay;
 };
 
-std::shared_ptr<std::vector<uint8_t>> createSystemChatMessage(const SystemChatMessage &);
+std::unique_ptr<std::vector<uint8_t>> createSystemChatMessage(const SystemChatMessage &);
 
 struct EntityVelocity {
     int32_t entity_id;
@@ -396,7 +396,7 @@ struct EntityVelocity {
     int16_t velocity_z;
 };
 
-std::shared_ptr<std::vector<uint8_t>> createEntityVelocity(const EntityVelocity &);
+std::unique_ptr<std::vector<uint8_t>> createEntityVelocity(const EntityVelocity &);
 
 struct Health {
     float health;
@@ -404,7 +404,7 @@ struct Health {
     float foodSaturation;
 };
 
-std::shared_ptr<std::vector<uint8_t>> createHealth(const Health &);
+std::unique_ptr<std::vector<uint8_t>> createHealth(const Health &);
 
 struct TeleportEntity {
     int32_t entityID;
@@ -415,12 +415,12 @@ struct TeleportEntity {
     uint8_t pitch;
     bool onGround;
 };
-std::shared_ptr<std::vector<uint8_t>> createTeleportEntity(const TeleportEntity &);
+std::unique_ptr<std::vector<uint8_t>> createTeleportEntity(const TeleportEntity &);
 
 struct FeatureFlags {
     std::vector<std::string> flags;
 };
-std::shared_ptr<std::vector<uint8_t>> createFeatureFlags(const FeatureFlags &in);
+std::unique_ptr<std::vector<uint8_t>> createFeatureFlags(const FeatureFlags &in);
 }
 
 #endif /* A7ADDD9E_6961_4A3D_AAB2_DF37DB6915F0 */
