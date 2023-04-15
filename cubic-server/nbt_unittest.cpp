@@ -1,6 +1,7 @@
 #include "nbt.hpp"
 #include <fstream>
 #include <gtest/gtest.h>
+#include <memory>
 #include <rapidcheck/gtest.h>
 #include <vector>
 
@@ -107,7 +108,7 @@ RC_GTEST_PROP(RapidCheckTest, NbtLongArrayChecker, (const std::vector<int64_t> v
 
 TEST(NbtTest, TestNbt)
 {
-    auto to_serialize = nbt::Compound("hello world", {new nbt::String("name", "Bananrama")});
+    auto to_serialize = nbt::Compound("hello world", {std::shared_ptr<nbt::String>(new nbt::String("name", "Bananrama"))});
     auto serialized = to_serialize.serialize();
 
     std::vector<uint8_t> to_get({0x0a, 0x00, 0x0b, 0x68, 0x65, 0x6c, 0x6c, 0x6f, 0x20, 0x77, 0x6f, 0x72, 0x6c, 0x64, 0x08, 0x00, 0x04,
