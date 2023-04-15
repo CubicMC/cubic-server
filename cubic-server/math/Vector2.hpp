@@ -7,35 +7,35 @@
 
 template <typename T> class Vector2 {
 public:
-    Vector2(T nx, T nz) noexcept:
+    constexpr Vector2(T nx, T nz) noexcept:
         x(nx),
         z(nz)
     {
     }
-    Vector2(const Vector2<T> &other) noexcept:
+    constexpr Vector2(const Vector2<T> &other) noexcept:
         x(other.x),
         z(other.z)
     {
     }
-    Vector2(const Vector3<T> &other) noexcept:
+    constexpr Vector2(const Vector3<T> &other) noexcept:
         x(other.x),
         z(other.z)
     {
     }
-    Vector2() noexcept = default;
-    ~Vector2() noexcept = default;
+    constexpr Vector2() noexcept = default;
+    constexpr ~Vector2() noexcept = default;
 
-    T distance(const Vector2 &other) const { return std::sqrt(std::pow((other.x - this->x), 2) + std::pow((other.z - this->z), 2)); }
+    constexpr T distance(const Vector2 &other) const { return std::sqrt(std::pow((other.x - this->x), 2) + std::pow((other.z - this->z), 2)); }
 
-    T magnitude() const { return std::sqrt(this->x * this->x + this->z * this->z); }
+    constexpr T magnitude() const { return std::sqrt(this->x * this->x + this->z * this->z); }
 
-    Vector2 normalized() const noexcept
+    constexpr Vector2 normalized() const noexcept
     {
         T mag = this->magnitude();
         return Vector2(this->x / mag, this->z / mag);
     }
 
-    void normalize() noexcept
+    constexpr void normalize() noexcept
     {
         T mag = this->magnitude();
 
@@ -43,13 +43,13 @@ public:
         this->z /= mag;
     }
 
-    T dot_product(const Vector2 &other) noexcept { return this->x * other.x + this->z * other.z; }
+    constexpr T dot_product(const Vector2 &other) noexcept { return this->x * other.x + this->z * other.z; }
 
-    Vector2 operator+(const Vector2 &other) noexcept { return Vector2<T>(other.x + this->x, other.z + this->z); }
+    constexpr Vector2 operator+(const Vector2 &other) noexcept { return Vector2<T>(other.x + this->x, other.z + this->z); }
 
-    Vector2 operator+(const T &other) noexcept { return Vector2<T>(other + this->x, other + this->z); }
+    constexpr Vector2 operator+(const T &other) noexcept { return Vector2<T>(other + this->x, other + this->z); }
 
-    Vector2 operator+=(const Vector2 &other) noexcept
+    constexpr Vector2 operator+=(const Vector2 &other) noexcept
     {
         this->x += other.x;
         this->z += other.z;
@@ -57,7 +57,7 @@ public:
         return *this;
     }
 
-    Vector2 operator+=(const T &other) noexcept
+    constexpr Vector2 operator+=(const T &other) noexcept
     {
         this->x += other;
         this->z += other;
@@ -65,11 +65,11 @@ public:
         return *this;
     }
 
-    Vector2 operator-(const Vector2 &other) noexcept { return Vector2<T>(other.x - this->x, other.z - this->z); }
+    constexpr Vector2 operator-(const Vector2 &other) noexcept { return Vector2<T>(other.x - this->x, other.z - this->z); }
 
-    Vector2 operator-(const T &other) noexcept { return Vector2<T>(other - this->x, other - this->z); }
+    constexpr Vector2 operator-(const T &other) noexcept { return Vector2<T>(other - this->x, other - this->z); }
 
-    Vector2 operator-=(const Vector2 &other) noexcept
+    constexpr Vector2 operator-=(const Vector2 &other) noexcept
     {
         this->x -= other.x;
         this->z -= other.z;
@@ -77,7 +77,7 @@ public:
         return *this;
     }
 
-    Vector2 operator-=(const T &other) noexcept
+    constexpr Vector2 operator-=(const T &other) noexcept
     {
         this->x -= other;
         this->z -= other;
@@ -85,11 +85,11 @@ public:
         return *this;
     }
 
-    Vector2 operator*(const Vector2 &other) noexcept { return Vector2<T>(other.x * this->x, other.z * this->z); }
+    constexpr Vector2 operator*(const Vector2 &other) noexcept { return Vector2<T>(other.x * this->x, other.z * this->z); }
 
-    Vector2 operator*(const T &other) noexcept { return Vector2<T>(other * this->x, other * this->z); }
+    constexpr Vector2 operator*(const T &other) noexcept { return Vector2<T>(other * this->x, other * this->z); }
 
-    Vector2 operator*=(const Vector2 &other) noexcept
+    constexpr Vector2 operator*=(const Vector2 &other) noexcept
     {
         this->x *= other.x;
         this->z *= other.z;
@@ -97,7 +97,7 @@ public:
         return *this;
     }
 
-    Vector2 operator*=(const T &other) noexcept
+    constexpr Vector2 operator*=(const T &other) noexcept
     {
         this->x *= other;
         this->z *= other;
@@ -105,11 +105,11 @@ public:
         return *this;
     }
 
-    Vector2 operator/(const Vector2 &other) noexcept { return Vector2<T>(other.x / this->x, other.z / this->z); }
+    constexpr Vector2 operator/(const Vector2 &other) noexcept { return Vector2<T>(other.x / this->x, other.z / this->z); }
 
-    Vector2 operator/(const T &other) noexcept { return Vector2<T>(other / this->x, other / this->z); }
+    constexpr Vector2 operator/(const T &other) noexcept { return Vector2<T>(other / this->x, other / this->z); }
 
-    Vector2 operator/=(const Vector2 &other) noexcept
+    constexpr Vector2 operator/=(const Vector2 &other) noexcept
     {
         this->x /= other.x;
         this->z /= other.z;
@@ -117,7 +117,7 @@ public:
         return *this;
     }
 
-    Vector2 operator/=(const T &other) noexcept
+    constexpr Vector2 operator/=(const T &other) noexcept
     {
         this->x /= other;
         this->z /= other;
@@ -125,11 +125,11 @@ public:
         return *this;
     }
 
-    Vector2 operator%(const Vector2 &other) noexcept { return Vector2<T>(other.x % this->x, other.z % this->y, other.z % this->z); }
+    constexpr Vector2 operator%(const Vector2 &other) noexcept { return Vector2<T>(other.x % this->x, other.z % this->y, other.z % this->z); }
 
-    Vector2 operator%(const T &other) noexcept { return Vector2<T>(other % this->x, other % this->z); }
+    constexpr Vector2 operator%(const T &other) noexcept { return Vector2<T>(other % this->x, other % this->z); }
 
-    Vector2 operator%=(const Vector2 &other) noexcept
+    constexpr Vector2 operator%=(const Vector2 &other) noexcept
     {
         this->x %= other.x;
         this->z %= other.z;
@@ -137,7 +137,7 @@ public:
         return *this;
     }
 
-    Vector2 operator%=(const T &other) noexcept
+    constexpr Vector2 operator%=(const T &other) noexcept
     {
         this->x %= other;
         this->z %= other;
@@ -145,7 +145,7 @@ public:
         return *this;
     }
 
-    Vector2 &operator=(const Vector2 &other) noexcept
+    constexpr Vector2 &operator=(const Vector2 &other) noexcept
     {
         this->x = other.x;
         this->z = other.z;
@@ -153,7 +153,7 @@ public:
         return *this;
     }
 
-    Vector2 &operator=(const T &other) noexcept
+    constexpr Vector2 &operator=(const T &other) noexcept
     {
         this->x = other;
         this->z = other;
@@ -161,19 +161,19 @@ public:
         return *this;
     }
 
-    bool operator==(const Vector2 &other) const noexcept { return this->x == other.x && this->z == other.z; }
+    constexpr bool operator==(const Vector2 &other) const noexcept { return this->x == other.x && this->z == other.z; }
 
-    bool operator==(const T &other) noexcept { return this->x == other && this->z == other; }
+    constexpr bool operator==(const T &other) noexcept { return this->x == other && this->z == other; }
 
-    bool operator!=(const Vector2 &other) noexcept { return this->x != other.x || this->z != other.z; }
+    constexpr bool operator!=(const Vector2 &other) noexcept { return this->x != other.x || this->z != other.z; }
 
-    bool operator!=(const T &other) noexcept { return this->x != other || this->z != other; }
+    constexpr bool operator!=(const T &other) noexcept { return this->x != other || this->z != other; }
 
     T x;
     T z;
 };
 
-template <typename T> std::ostream &operator<<(std::ostream &o, const Vector2<T> &v)
+template <typename T> constexpr std::ostream &operator<<(std::ostream &o, const Vector2<T> &v)
 {
     o << "x : " << v.x << " | "
       << "z : " << v.z;
