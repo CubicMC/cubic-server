@@ -1,6 +1,7 @@
 #ifndef CUBICSERVER_VECTOR2_H
 #define CUBICSERVER_VECTOR2_H
 
+#include "math/Vector3.hpp"
 #include <cmath>
 #include <iostream>
 
@@ -9,6 +10,16 @@ public:
     Vector2(T nx, T nz) noexcept:
         x(nx),
         z(nz)
+    {
+    }
+    Vector2(const Vector2<T> &other) noexcept:
+        x(other.x),
+        z(other.z)
+    {
+    }
+    Vector2(const Vector3<T> &other) noexcept:
+        x(other.x),
+        z(other.z)
     {
     }
     Vector2() noexcept = default;
