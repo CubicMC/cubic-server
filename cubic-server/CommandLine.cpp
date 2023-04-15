@@ -26,7 +26,8 @@ void CommandLine::run()
         if ((poll_set[0].revents & POLLIN) == 0)
             continue;
 
-        std::getline(std::cin, command);
+        if (!std::getline(std::cin, command))
+            break;
 
         command_parser::parseCommand(command, nullptr);
     }
