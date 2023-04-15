@@ -465,7 +465,12 @@ void Player::sendRemoveEntities(const std::vector<int32_t> &entities)
 
 void Player::sendSwingArm(bool main_hand, int32_t swinger_id)
 {
-    auto pck = protocol::createEntityAnimation(main_hand ? protocol::EntityAnimationID::SwingMainArm : protocol::EntityAnimationID::SwingOffHand, swinger_id);
+    sendEntityAnimation(main_hand ? protocol::EntityAnimationID::SwingMainArm : protocol::EntityAnimationID::SwingOffHand, swinger_id);
+}
+
+void Player::sendEntityAnimation(protocol::EntityAnimationID animId, int32_t entityID)
+{
+    auto pck = protocol::createEntityAnimation(animId, entityID);
     _cli->_sendData(*pck);
 }
 
@@ -817,11 +822,15 @@ void Player::_continueLoginSequence()
 {
     this->sendFeatureFlags({{"minecraft:vanilla"}});
 
-    this->sendPlayerAbilities(
-        {(uint8_t) protocol::PlayerAbilitiesFlags::Invulnerable | (uint8_t) protocol::PlayerAbilitiesFlags::Flying | (uint8_t) protocol::PlayerAbilitiesFlags::AllowFlying |
-             (uint8_t) protocol::PlayerAbilitiesFlags::CreativeMode,
+    // clang-format off
+    this->sendPlayerAbilities({0,
+        // (uint8_t) protocol::PlayerAbilitiesFlags::Invulnerable |
+        // (uint8_t) protocol::PlayerAbilitiesFlags::Flying |
+        // (uint8_t) protocol::PlayerAbilitiesFlags::AllowFlying |
+        // (uint8_t) protocol::PlayerAbilitiesFlags::CreativeMode,
          0.05, 0.1}
     );
+    // clang-format on
 
     // TODO: set Held Item
 
