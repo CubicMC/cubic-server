@@ -80,7 +80,11 @@ void Player::tick()
 {
     _keepAliveClock.tick();
 
-    // TODO(huntears): Move all that to a new function
+    _tickPosition();
+}
+
+void Player::_tickPosition()
+{
     bool updatePos = false;
     bool updateRot = false;
     int16_t deltaX = 0;

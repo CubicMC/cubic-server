@@ -137,6 +137,7 @@ private:
 
 private:
     void _processKeepAlive();
+    void _tickPosition();
     void _updateRenderedChunks(const Position2D &oldChunkPos, const Position2D &newChunkPos);
     void _continueLoginSequence();
     void _sendLoginMessage();
