@@ -995,7 +995,7 @@ void Player::_foodTick()
 
 void Player::_eat(int32_t itemId)
 {
-    const Items::FoodItem *food = std::find_if(Items::foodItems.begin(), Items::foodItems.end(), [itemId](const Items::FoodItem &item) {
+    auto food = std::find_if(Items::foodItems.begin(), Items::foodItems.end(), [itemId](const Items::FoodItem &item) {
         return item.id == itemId;
     });
     if (food == Items::foodItems.end()) {
