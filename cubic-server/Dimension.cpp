@@ -110,7 +110,11 @@ std::shared_ptr<thread_pool::Task> Dimension::loadOrGenerateChunk(int x, int z, 
 {
     this->_loadingChunksMutex.lock();
     if (this->_loadingChunks.contains({x, z})) {
-        if (std::find(this->_loadingChunks[{x, z}].players.begin(), this->_loadingChunks[{x, z}].players.end(), player) == this->_loadingChunks[{x, z}].players.end()) {
+        if (std::find_if(this->_loadingChunks[{x, z}].players.begin(), this->_loadingChunks[{x, z}].players.end(), [player](const std::weak_ptr<Player> current_weak_player) {
+                if (auto current_player = current_weak_player.lock())
+                    return current_player->getId() == player->getId();
+                return false;
+            }) == this->_loadingChunks[{x, z}].players.end()) {
             this->_loadingChunks[{x, z}].players.push_back(player);
         }
         this->_loadingChunksMutex.unlock();
@@ -123,15 +127,10 @@ std::shared_ptr<thread_pool::Task> Dimension::loadOrGenerateChunk(int x, int z, 
 
         // This send the chunk to the players that are loading it
         this->_loadingChunksMutex.lock();
-        for (auto &player : this->_players) {
-            // pls don't kill me
-            // this is a hack to check if the client is still connected
-            // And the best part ? I don't even know if it works
-            if (std::find_if(this->_loadingChunks[{x, z}].players.begin(), this->_loadingChunks[{x, z}].players.end(), [player](const std::shared_ptr<Player> current_player) {
-                    return player->getId() == current_player->getId();
-                }) == this->_loadingChunks[{x, z}].players.end())
-                continue;
-            player->sendChunkAndLightUpdate(this->_level.getChunkColumn(x, z));
+        for (auto weak_player : this->_loadingChunks[{x, z}].players) {
+            if (auto player = weak_player.lock()) {
+                player->sendChunkAndLightUpdate(this->_level.getChunkColumn(x, z));
+            }
         }
         this->_loadingChunks.erase({x, z});
         this->_loadingChunksMutex.unlock();
@@ -174,8 +173,10 @@ void Dimension::removePlayerFromLoadingChunk(const Position2D &pos, std::shared_
     this->_loadingChunks[pos].players.erase(
         std::remove_if(
             this->_loadingChunks[pos].players.begin(), this->_loadingChunks[pos].players.end(),
-            [player](const std::shared_ptr<Player> current_player) {
-                return current_player->getId() == player->getId();
+            [player](const std::weak_ptr<Player> current_weak_player) {
+                if (auto current_player = current_weak_player.lock())
+                    return current_player->getId() == player->getId();
+                return true;
             }
         ),
         this->_loadingChunks[pos].players.end()

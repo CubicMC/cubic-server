@@ -26,7 +26,7 @@ class Dimension {
 private:
     struct ChunkRequest {
         std::shared_ptr<thread_pool::Task> task;
-        std::vector<std::shared_ptr<Player>> players;
+        std::vector<std::weak_ptr<Player>> players;
     };
 
 public:
