@@ -64,17 +64,18 @@ struct Disconnect {
     std::string reason;
 };
 std::shared_ptr<std::vector<uint8_t>> createLoginDisconnect(const Disconnect &);
+struct _LoginSuccessProperty {
+    std::string name;
+    std::string value;
+    bool isSigned;
+    std::optional<std::string> signature;
+};
 
 struct LoginSuccess {
     u128 uuid;
     std::string username;
     int32_t numberOfProperties;
-    // Don't know how to build a Property thing that is an array of strings and bools
-    // std::array<std::variant<std::string, bool>, 4> properties;
-    std::string name;
-    std::string value;
-    bool isSigned;
-    std::optional<std::string> signature;
+    std::vector<_LoginSuccessProperty> properties;
 };
 std::shared_ptr<std::vector<uint8_t>> createLoginSuccess(const LoginSuccess &);
 

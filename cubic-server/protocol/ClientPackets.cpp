@@ -21,13 +21,26 @@ std::shared_ptr<std::vector<uint8_t>> protocol::createLoginDisconnect(const Disc
 std::shared_ptr<std::vector<uint8_t>> protocol::createLoginSuccess(const LoginSuccess &in)
 {
     std::vector<uint8_t> payload;
-    serialize(payload, in.uuid, addUUID, in.username, addString, in.numberOfProperties, addVarInt);
+    // clang-format off
+    serialize(payload,
+        in.uuid, addUUID,
+        in.username, addString,
+        in.numberOfProperties, addVarInt
 
-    // in.name, addString,
-    // in.value, addString,
-    // in.isSigned, addBoolean
-    if (in.isSigned)
-        serialize(payload, in.signature.value(), addString);
+    );
+    for (auto &property : in.properties) {
+        serialize(payload,
+            property.name, addString,
+            property.value, addString,
+            property.isSigned, addBoolean
+        );
+        if (property.isSigned) {
+            serialize(payload,
+                property.signature.value(), addString
+            );
+        }
+    }
+    // clang-format on
     auto packet = std::make_shared<std::vector<uint8_t>>();
     finalize(*packet, payload, (int32_t) ClientPacketID::LoginSuccess);
     return packet;
