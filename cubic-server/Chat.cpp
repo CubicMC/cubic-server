@@ -54,8 +54,6 @@ void Chat::sendSystemMessage(const chat::Message &message, const Player *from, b
         return;
     }
 
-    LINFO("Sending system message: " << message.serialize() << " with chat visibility: " << (int32_t) from->getChatVisibility());
-
     this->_sendSystem(message, from->getWorldGroup(), overlay);
 }
 

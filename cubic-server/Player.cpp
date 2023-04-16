@@ -303,7 +303,7 @@ void Player::sendChatMessageResponse(const protocol::PlayerChatMessage &packet)
     auto pck = protocol::createPlayerChatMessage(packet);
     this->_cli->_sendData(*pck);
 
-    LINFO("Sent a chat message response", packet.unsignedContent);
+    LDEBUG("Sent a chat message response");
 }
 
 void Player::sendSystemChatMessage(const protocol::SystemChatMessage &packet)
