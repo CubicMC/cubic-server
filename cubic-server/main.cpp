@@ -48,6 +48,7 @@ int main(int argc, char **argv)
 
     std::signal(SIGTERM, signalHandler);
     std::signal(SIGINT, signalHandler);
+    std::signal(SIGPIPE, SIG_IGN);
 
     // This should be inside the server
     cmd.launch();
