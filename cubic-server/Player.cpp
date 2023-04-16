@@ -953,7 +953,7 @@ void Player::_continueLoginSequence()
     this->sendFeatureFlags({{"minecraft:vanilla"}});
 
     // TODO: Fix that to the real values
-    this->sendChangeDifficulty({0, true});
+    this->sendChangeDifficulty({1, true});
 
     this->sendPlayerAbilities(
         {(uint8_t) protocol::PlayerAbilitiesClient::Flags::Invulnerable | (uint8_t) protocol::PlayerAbilitiesClient::Flags::Flying |
