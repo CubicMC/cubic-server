@@ -23,7 +23,7 @@ public:
 
     constexpr ChatType &id(int32_t id);
     constexpr ChatType &name(const std::string &name);
-    constexpr ChatType &addStyle(chat::Message::Style style);
+    constexpr ChatType &addStyle(chat::message::Style style);
 
     constexpr ChatType &addChatParameter(const std::string &name);
     constexpr ChatType &addNarrateParameter(const std::string &name);
@@ -37,7 +37,7 @@ private:
     int32_t _id;
     std::string _name;
     parameters_t _chat;
-    chat::Message::Style _style;
+    chat::message::Style _style;
     parameters_t _narrate;
 };
 
@@ -65,7 +65,7 @@ constexpr ChatType &ChatType::name(const std::string &name)
     return *this;
 }
 
-constexpr ChatType &ChatType::addStyle(chat::Message::Style style)
+constexpr ChatType &ChatType::addStyle(chat::message::Style style)
 {
     this->_style = style;
     return *this;
