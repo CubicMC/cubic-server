@@ -2,9 +2,9 @@
 #define CHAT_SIMPLEMESSAGE_HPP
 
 #include <cstdint>
+#include <nlohmann/json.hpp>
 #include <optional>
 #include <string>
-#include <nlohmann/json.hpp>
 
 #include "translationFromKey.hpp"
 
@@ -39,6 +39,15 @@ struct Options {
 };
 } // namespace message
 
+/**
+ * @brief A simple message that can be sent to a player, without any events
+ *
+ * @note This class is used to build a Message and should not be used directly
+ *     It was created to avoid receiving events when not needed, but the official
+ *     Minecraft client does not care about the events, so it is not really useful
+ *
+ * @see Message
+ */
 class SimpleMessage {
 public:
     SimpleMessage(const std::string &message, const chat::message::Style &style = {}, const chat::message::Options &options = {});
@@ -53,14 +62,40 @@ public:
     chat::message::Style &style();
     chat::message::Options &options();
 
+    /**
+     * @brief Serialize the message to a json string
+     *
+     * @return std::string
+     */
     std::string serialize() const;
+
+    /**
+     * @brief Serialize the message to a json object
+     *
+     * @return nlohmann::json
+     */
     virtual nlohmann::json toJson() const;
 
+    /**
+     * @brief Deserialize a message from a string
+     *
+     * @throw std::invalid_argument if the message is not a valid json string
+     * @throw std::runtime_error if the parsing failed
+     *
+     * @param message
+     * @return SimpleMessage
+     */
     static SimpleMessage deserialize(const std::string &message);
-    static SimpleMessage fromJson(const nlohmann::json &json);
 
-    template<chat::message::TranslationKey key, typename... Args>
-    static SimpleMessage fromTranslationKey(Args... args);
+    /**
+     * @brief Deserialize a message from a json object
+     *
+     * @throw std::runtime_error if the parsing failed
+     *
+     * @param json
+     * @return SimpleMessage
+     */
+    static SimpleMessage fromJson(const nlohmann::json &json);
 
 protected:
     std::string _message;

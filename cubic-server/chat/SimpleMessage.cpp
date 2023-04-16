@@ -89,40 +89,48 @@ std::string chat::SimpleMessage::serialize() const { return this->toJson().dump(
 
 chat::SimpleMessage chat::SimpleMessage::deserialize(const std::string &message)
 {
-    return chat::SimpleMessage::fromJson(nlohmann::json::parse(message));
+    try {
+        return chat::SimpleMessage::fromJson(nlohmann::json::parse(message));
+    } catch (const nlohmann::json::exception &e) {
+        throw std::invalid_argument(e.what());
+    }
 }
 
 chat::SimpleMessage chat::SimpleMessage::fromJson(const nlohmann::json &json)
 {
-    SimpleMessage message = SimpleMessage(json["text"].get<std::string>());
+    try {
+        SimpleMessage message = SimpleMessage(json["text"].get<std::string>());
 
-    if (json.contains("bold"))
-        message._style.bold = json["bold"].get<bool>();
-    if (json.contains("italic"))
-        message._style.italic = json["italic"].get<bool>();
-    if (json.contains("underlined"))
-        message._style.underlined = json["underlined"].get<bool>();
-    if (json.contains("strikethrough"))
-        message._style.strikethrough = json["strikethrough"].get<bool>();
-    if (json.contains("obfuscated"))
-        message._style.obfuscated = json["obfuscated"].get<bool>();
-    if (json.contains("font"))
-        message._style.font = json["font"].get<std::string>();
-    if (json.contains("color"))
-        message._style.color = json["color"].get<std::string>();
-    if (json.contains("insertion"))
-        message._options.insertion = json["insertion"].get<std::string>();
-    if (json.contains("translate"))
-        message._options.translate = json["translate"].get<std::string>();
-    if (json.contains("with")) {
-        for (const auto &with : json["with"])
-            message._options.with.push_back(Message::fromJson(with));
+        if (json.contains("bold"))
+            message._style.bold = json["bold"].get<bool>();
+        if (json.contains("italic"))
+            message._style.italic = json["italic"].get<bool>();
+        if (json.contains("underlined"))
+            message._style.underlined = json["underlined"].get<bool>();
+        if (json.contains("strikethrough"))
+            message._style.strikethrough = json["strikethrough"].get<bool>();
+        if (json.contains("obfuscated"))
+            message._style.obfuscated = json["obfuscated"].get<bool>();
+        if (json.contains("font"))
+            message._style.font = json["font"].get<std::string>();
+        if (json.contains("color"))
+            message._style.color = json["color"].get<std::string>();
+        if (json.contains("insertion"))
+            message._options.insertion = json["insertion"].get<std::string>();
+        if (json.contains("translate"))
+            message._options.translate = json["translate"].get<std::string>();
+        if (json.contains("with")) {
+            for (const auto &with : json["with"])
+                message._options.with.push_back(Message::fromJson(with));
+        }
+
+        if (json.contains("extra")) {
+            for (const auto &extra : json["extra"])
+                message._extra.push_back(Message::fromJson(extra));
+        }
+
+        return message;
+    } catch (const nlohmann::json::exception &e) {
+        throw std::runtime_error(e.what());
     }
-
-    if (json.contains("extra")) {
-        for (const auto &extra : json["extra"])
-            message._extra.push_back(Message::fromJson(extra));
-    }
-
-    return message;
 }

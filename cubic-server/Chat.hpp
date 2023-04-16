@@ -15,20 +15,75 @@ class WorldGroup;
 class Chat {
 public:
     Chat();
-
     // TODO: Maybe more complicated than that, because of the selector (@a, @p, @r, @e, @s)
+
+    /**
+     * @brief Used to send a message to a player from the chat
+     *
+     * @param message
+     * @param from
+     */
     void sendPlayerMessage(const chat::Message &message, const Player *from);
+
+    /**
+     * @brief Used to send a system message to a player from the server
+     *
+     * @param message
+     * @param from The player who will receive the message
+     * @param overlay A normal message will be displayed in the chat, an overlay message will be displayed in the middle of the screen
+     */
     void sendSystemMessage(const chat::Message &message, const Player *from, bool overlay = false);
+
+    /**
+     * @brief What is this?
+     */
     // void sendGameInfoMessage(const chat::Message &message, const Player *from);
+
+    /**
+     * @brief Used by the /say command
+     *
+     * @param message
+     * @param from
+     */
     void sendSayMessage(const chat::Message &message, const Player *from);
+
+    /**
+     * @brief Used to send a whisper message to a player
+     *
+     * @param message
+     * @param from
+     * @param to
+     */
     void sendWhisperMessage(const chat::Message &message, Player *from, Player *to);
-    // void sendTeamMessage(const chat::Message &message, const Player *sender);
+
+    /**
+     * @brief Used to send a message to the player team
+     *
+     * @param message
+     * @param sender
+     */
+    void sendTeamMessage(const chat::Message &message, const Player *sender);
+
+    /**
+     * @brief What is this? ²
+     *
+     */
     // void sendEmoteMessage(const chat::Message &message, const Player *from);
+
+    /**
+     * @brief Used by the /tellraw command
+     *
+     * @param message
+     * @param from
+     * @param selector
+     */
     void sendTellrawMessage(const chat::Message &message, const Player *from, const std::string &selector);
 
 private:
-    void _sendMessage(const chat::Message &message, const Player *from, const chat::message::Type &type);
+    // void _sendMessage(const chat::Message &message, const Player *from, const chat::message::Type &type);
     void _sendMessage(const chat::Message &message, const Player *from, Player *to, const chat::message::Type &type);
+    void _sendMessage(const chat::Message &message, const Player *from, const WorldGroup *, const chat::message::Type &type);
+    void _sendMessage(const chat::Message &message, const Player *from, const std::vector<Player *> &, const chat::message::Type &type);
     void _sendSystem(const chat::Message &message, const WorldGroup *worldGroup, bool overlay = false);
     void _sendSystem(const chat::Message &message, const std::vector<Player *> &players, bool overlay = false);
     void _sendSystem(const chat::Message &message, Player *player, bool overlay = false);

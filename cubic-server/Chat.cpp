@@ -38,7 +38,7 @@ void Chat::sendPlayerMessage(const chat::Message &message, const Player *sender)
         return;
     }
 
-    this->_sendMessage(message, sender, chat::message::Type::Chat);
+    this->_sendMessage(message, sender, sender->getWorldGroup(), chat::message::Type::Chat);
 }
 
 void Chat::sendSystemMessage(const chat::Message &message, const Player *from, bool overlay)
@@ -48,7 +48,7 @@ void Chat::sendSystemMessage(const chat::Message &message, const Player *from, b
         return;
     }
 
-    this->_sendSystem(message, from->getDimension()->getWorld()->getWorldGroup(), overlay);
+    this->_sendSystem(message, from->getWorldGroup(), overlay);
 }
 
 void Chat::sendSayMessage(const chat::Message &raw, const Player *from)
@@ -60,7 +60,7 @@ void Chat::sendSayMessage(const chat::Message &raw, const Player *from)
 
     auto message = chat::Message::fromTranslationKey<chat::message::TranslationKey::chat_type_announcement>(from, raw);
 
-    this->_sendMessage(message, from, chat::message::Type::Announce);
+    this->_sendMessage(message, from, from->getWorldGroup(), chat::message::Type::Announce);
 }
 
 void Chat::sendWhisperMessage(const chat::Message &message, Player *sender, Player *to)
@@ -76,13 +76,24 @@ void Chat::sendWhisperMessage(const chat::Message &message, Player *sender, Play
     chat::Message in = chat::Message::fromTranslationKey<chat::message::TranslationKey::commands_message_display_incoming>(sender, message);
     chat::Message out = chat::Message::fromTranslationKey<chat::message::TranslationKey::commands_message_display_outgoing>(to, message);
 
-    this->_sendMessage(out, sender, chat::message::Type::WhisperOut);
-    this->_sendMessage(in, to, chat::message::Type::WhisperIn);
+    this->_sendMessage(out, sender, sender, chat::message::Type::WhisperOut);
+    this->_sendMessage(in, sender, to, chat::message::Type::WhisperIn);
+}
+
+void Chat::sendTeamMessage(const chat::Message &message, const Player *sender)
+{
+    if (sender == nullptr) {
+        LERROR("sender is null");
+        return;
+    }
+
+    // TODO: Change this when team chat is implemented
+    this->_sendMessage(message, sender, sender->getWorldGroup(), chat::message::Type::TeamSent);
 }
 
 void Chat::sendTellrawMessage(const chat::Message &message, const Player *from, const std::string &selector)
 {
-    this->_sendSystem(message, Server::getInstance()->getWorldGroup("default"));
+    this->_sendSystem(message, from->getWorldGroup());
 }
 
 void Chat::_sendMessage(const chat::Message &message, const Player *from, Player *to, const chat::message::Type &type)
@@ -95,7 +106,7 @@ void Chat::_sendMessage(const chat::Message &message, const Player *from, Player
     to->sendChatMessageResponse(pck);
 }
 
-void Chat::_sendMessage(const chat::Message &message, const Player *from, const chat::message::Type &type)
+void Chat::_sendMessage(const chat::Message &message, const Player *from, const WorldGroup *worldGroup, const chat::message::Type &type)
 {
     protocol::PlayerChatMessage pck = buildPacket(from, this->_messagesLog.size(), message, type);
 
@@ -103,7 +114,7 @@ void Chat::_sendMessage(const chat::Message &message, const Player *from, const 
     this->_messagesLog.push_back(message);
 
     // TODO: Filter client by chat visibility
-    for (auto &[_, world] : from->getDimension()->getWorld()->getWorldGroup()->getWorlds()) {
+    for (auto &[_, world] : worldGroup->getWorlds()) {
         for (auto &player : world->getPlayers())
             player->sendChatMessageResponse(pck);
     }
