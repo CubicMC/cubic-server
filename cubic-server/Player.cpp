@@ -963,25 +963,31 @@ void Player::_continueLoginSequence()
 {
     this->sendFeatureFlags({{"minecraft:vanilla"}});
 
-    // TODO: send Change Difficulty
+    // TODO: Fix that to the real values
+    this->sendChangeDifficulty({0, true});
 
     this->sendPlayerAbilities(
         {(uint8_t) protocol::PlayerAbilitiesClient::Flags::Invulnerable | (uint8_t) protocol::PlayerAbilitiesClient::Flags::Flying |
              (uint8_t) protocol::PlayerAbilitiesClient::Flags::AllowFlying | (uint8_t) protocol::PlayerAbilitiesClient::Flags::CreativeMode,
          0.05, 0.1}
     );
+    // TODO: send the value stored in the player data
+    this->sendSetHeldItem({4});
 
-    // TODO: set Held Item
-
+    // TODO: send the recipes
     this->sendUpdateRecipes({});
 
+    // TODO: send the tags
     this->sendUpdateTags({});
 
-    // TODO: entity event entity id and byte enum = 0x18 -> 24 (set op permission level)
+    // TODO: implement the event Statues correctly // 24 (set op permission level)
+    this->sendEntityEvent({this->_id, 24});
 
+    // TODO: send all the commands avaliable in the server
     this->sendCommands({{}, 0});
 
-    // TODO: update recipes book
+    // TODO: send the player recipies book
+    this->sendUpdateRecipiesBook({});
 
     this->teleport({8.5, 100, 8.5}); // TODO: change that to player_attributes::DEFAULT_SPAWN_POINT
 
@@ -1006,20 +1012,25 @@ void Player::_continueLoginSequence()
     }
 
     // TODO: Initialize world border
+    this->sendInitializeWorldBorder({0, 0, 0, 10000, 0, 29999984, 10, 10});
 
     this->sendSetDefaultSpawnPosition({{0, 100, 0}, 0.0f});
 
     this->sendSetContainerContent({0, 0, {}, {false}});
 
     // TODO: set entity metadata
+    // this->sendEntityMetadata({this->_id, {}});
 
-    // TODO: update attributes
+    // TODO: send the player's attributes
+    this->sendUpdateAttributes({this->getId(), {}});
 
-    // TODO: update Advancements
+    // TODO: send the player's advancements
+    this->sendUpdateAdvancements({false, {}, {}, {}});
 
     this->sendHealth();
 
-    // TODO: set experience
+    // TODO: send the player's experience
+    this->sendSetExperience({0, 0, 0});
 
     // TODO: set entity metadata
 
