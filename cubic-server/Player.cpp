@@ -767,10 +767,10 @@ void Player::_onPlayerAction(const std::shared_ptr<protocol::PlayerAction> &pck)
 void Player::_onPlayerCommand(const std::shared_ptr<protocol::PlayerCommand> &pck)
 {
     LDEBUG("Got a Player Command");
-    if (pck->action_id == 3) {
+    if (pck->action_id == protocol::PlayerCommand::ActionId::StartSprinting) {
         _isSprinting = true;
     }
-    if (pck->action_id == 4) {
+    if (pck->action_id == protocol::PlayerCommand::ActionId::StopSprinting) {
         _isSprinting = false;
     }
 }

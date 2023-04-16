@@ -337,7 +337,17 @@ std::shared_ptr<PlayerAction> parsePlayerAction(std::vector<uint8_t> &buffer);
 
 struct PlayerCommand : BaseServerPacket {
     int32_t entity_id;
-    int32_t action_id; // TODO: Use an enum
+    enum class ActionId : int32_t {
+        StartSneaking,
+        StopSneaking,
+        LeaveBed,
+        StartSprinting,
+        StopSprinting,
+        StartJumpWithHorse,
+        StopJumpWithHorse,
+        OpenHorseInventory,
+        StartFlyingWithElytra,
+    } action_id;
     int32_t jump_boost;
 };
 std::shared_ptr<PlayerCommand> parsePlayerCommand(std::vector<uint8_t> &buffer);
