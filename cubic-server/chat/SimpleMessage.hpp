@@ -57,10 +57,12 @@ public:
     const std::string &getMessage() const;
     const chat::message::Style &getStyle() const;
     const chat::message::Options &getOptions() const;
+    const std::vector<chat::Message> &getExtra() const;
 
     std::string &message();
     chat::message::Style &style();
     chat::message::Options &options();
+    std::vector<chat::Message> &extra();
 
     /**
      * @brief Serialize the message to a json string

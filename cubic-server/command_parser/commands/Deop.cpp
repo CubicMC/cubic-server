@@ -26,6 +26,8 @@ void Deop::execute(std::vector<std::string> &args, Player *invoker) const
             invoker->getDimension()->getWorld()->getChat()->sendSystemMessage(args[0] + " is not an operator.", invoker);
         LINFO(args[0] + " is not an operator.");
     } else {
+        if (invoker)
+            invoker->getDimension()->getWorld()->getChat()->sendSystemMessage(args[0] + " deopped.", invoker);
         server->permissions.removeOperator(args[0]);
         LINFO(args[0] + " deopped.");
     }

@@ -47,14 +47,33 @@ void Chat::sendPlayerMessage(const chat::Message &message, const Player *sender)
     this->_sendMessage(message, sender, sender->getWorldGroup(), chat::message::Type::Chat);
 }
 
-void Chat::sendSystemMessage(const chat::Message &message, const Player *from, bool overlay)
+void Chat::sendSystemMessage(const chat::Message &message, Player *to, bool overlay)
 {
-    if (from == nullptr) {
-        LERROR("from is null");
+    if (to == nullptr) {
+        LERROR("to is null");
         return;
     }
 
-    this->_sendSystem(message, from->getWorldGroup(), overlay);
+    this->_sendSystem(message, to, overlay);
+}
+
+void Chat::sendSystemMessage(const chat::Message &message, const WorldGroup *worldGroup, bool overlay)
+{
+    if (worldGroup == nullptr) {
+        LERROR("worldGroup is null");
+        return;
+    }
+    this->_sendSystem(message, worldGroup, overlay);
+}
+
+void Chat::sendSystemMessage(const chat::Message &message, const std::vector<Player *> &players, bool overlay)
+{
+    if (players.empty()) {
+        LERROR("players is empty");
+        return;
+    }
+
+    this->_sendSystem(message, players, overlay);
 }
 
 void Chat::sendSayMessage(const chat::Message &raw, const Player *from)
