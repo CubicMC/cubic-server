@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "PlayerAttributes.hpp"
+#include "protocol/Structures.hpp"
 #include "typeSerialization.hpp"
 #include "types.hpp"
 
@@ -31,13 +32,14 @@ enum class ServerPacketsID : int32_t {
     ConfirmTeleportation = 0x00,
     QueryBlockEntityTag = 0x01,
     ChangeDifficulty = 0x02,
-    MessageAcknowledgement = 0x03, // TODO: Implement
+    MessageAcknowledgement = 0x03,
     ChatCommand = 0x04,
     ChatMessage = 0x05,
     ClientCommand = 0x06,
     ClientInformation = 0x07,
     CommandSuggestionRequest = 0x08,
     ClickContainerButton = 0x09,
+    ClickContainer = 0x0a,
     CloseContainerRequest = 0x0b,
     PluginMessage = 0x0c,
     EditBook = 0x0d,
@@ -59,7 +61,7 @@ enum class ServerPacketsID : int32_t {
     PlayerCommand = 0x1d,
     PlayerInput = 0x1e,
     Pong = 0x1f,
-    PlayerSession = 0x20, // TODO: Implement
+    PlayerSession = 0x20,
     ChangeRecipeBookSettings = 0x21,
     SetSeenRecipe = 0x22,
     RenameItem = 0x23,
@@ -70,6 +72,7 @@ enum class ServerPacketsID : int32_t {
     SetHeldItem = 0x28,
     ProgramCommandBlock = 0x29,
     ProgramCommandBlockMinecart = 0x2a,
+    SetCreativeModeSlot = 0x2b,
     ProgramJigsawBlock = 0x2c,
     ProgramStructureBlock = 0x2d,
     UpdateSign = 0x2e,
@@ -87,7 +90,10 @@ struct Handshake : BaseServerPacket {
     int32_t prot_version;
     std::string addr;
     uint16_t port;
-    int32_t next_state; // TODO: Use an enum here instead of an int32_t
+    enum class State : int32_t {
+        Status = 1,
+        Login = 2,
+    } next_state;
 };
 std::shared_ptr<Handshake> parseHandshake(std::vector<uint8_t> &buffer);
 
@@ -169,17 +175,27 @@ struct ChatMessage : BaseServerPacket {
 std::shared_ptr<ChatMessage> parseChatMessage(std::vector<uint8_t> &buffer);
 
 struct ClientCommand : BaseServerPacket {
-    ClientCommandActionID action_id;
+    enum class ActionID : int32_t {
+        PerformRespawn = 0,
+        RequestStats = 1,
+    } action_id;
 };
 std::shared_ptr<ClientCommand> parseClientCommand(std::vector<uint8_t> &buffer);
 
 struct ClientInformation : BaseServerPacket {
     std::string locale;
     uint8_t view_distance;
-    ClientInformationChatMode chat_mode;
+    enum class ChatMode : int32_t {
+        Enabled = 0,
+        CommandsOnly = 1,
+        Hidden = 2,
+    } chat_mode;
     bool chat_colors;
     uint8_t displayed_skin_parts;
-    ClientInformationMainHand main_hand;
+    enum class MainHand : int32_t {
+        Left = 0,
+        Right = 1,
+    } main_hand;
     bool enable_text_filtering;
     bool allow_server_listings;
 };
@@ -196,6 +212,17 @@ struct ClickContainerButton : BaseServerPacket {
     uint8_t button_id;
 };
 std::shared_ptr<ClickContainerButton> parseClickContainerButton(std::vector<uint8_t> &buffer);
+
+struct ClickContainer : BaseServerPacket {
+    uint8_t window_id;
+    int32_t state_id;
+    int16_t slot;
+    int8_t button;
+    int32_t mode; // May be an enum but there is to many cases
+    std::vector<SlotWithIndex> array_of_slots;
+    Slot carried_item;
+};
+std::shared_ptr<ClickContainer> parseClickContainer(std::vector<uint8_t> &buffer);
 
 struct CloseContainerRequest : BaseServerPacket {
     uint8_t window_id;
@@ -224,11 +251,18 @@ std::shared_ptr<QueryEntityTag> parseQueryEntityTag(std::vector<uint8_t> &buffer
 
 struct Interact : BaseServerPacket {
     int32_t entity_id;
-    int32_t type; // TODO: Use an enum
+    enum class Type : int32_t {
+        Interact,
+        Attack,
+        InteractAt,
+    } type;
     float target_x;
     float target_y;
     float target_z;
-    int32_t hand; // TODO: Use an enum
+    enum class Hand : int32_t {
+        MainHand,
+        OffHand,
+    } hand;
     bool sneaking;
 };
 std::shared_ptr<Interact> parseInteract(std::vector<uint8_t> &buffer);
@@ -364,8 +398,21 @@ struct Pong : BaseServerPacket {
 };
 std::shared_ptr<Pong> parsePong(std::vector<uint8_t> &buffer);
 
+struct PlayerSession : BaseServerPacket {
+    u128 uuid;
+    long expires_at;
+    std::vector<uint8_t> public_key;
+    std::vector<uint8_t> signature;
+};
+std::shared_ptr<PlayerSession> parsePlayerSession(std::vector<uint8_t> &buffer);
+
 struct ChangeRecipeBookSettings : BaseServerPacket {
-    int32_t book_id; // TODO: Use an enum
+    enum class BookID : int32_t {
+        Crafting,
+        Furnace,
+        BlastFurnace,
+        Smoker,
+    } book_id;
     bool book_open;
     bool filter_active;
 };
@@ -382,12 +429,20 @@ struct RenameItem : BaseServerPacket {
 std::shared_ptr<RenameItem> parseRenameItem(std::vector<uint8_t> &buffer);
 
 struct ResourcePack : BaseServerPacket {
-    int32_t result; // TODO: Use an enum
+    enum class Result : int32_t {
+        SuccessfullyLoaded,
+        Declined,
+        FailedDownload,
+        Accepted,
+    } result;
 };
 std::shared_ptr<ResourcePack> parseResourcePack(std::vector<uint8_t> &buffer);
 
 struct SeenAdvancements : BaseServerPacket {
-    int32_t action; // TODO: use an enum
+    enum class Action : int32_t {
+        OpenedTab,
+        ClosedScreen,
+    } action;
     std::string tab_id;
 };
 std::shared_ptr<SeenAdvancements> parseSeenAdvancements(std::vector<uint8_t> &buffer);
@@ -413,7 +468,11 @@ std::shared_ptr<SetHeldItem> parseSetHeldItem(std::vector<uint8_t> &buffer);
 struct ProgramCommandBlock : BaseServerPacket {
     Position location;
     std::string command;
-    int32_t mode; // TODO: Use an enum
+    enum class Mode : int32_t {
+        Sequence,
+        Auto,
+        Redstone,
+    } mode;
     uint8_t flags;
 };
 std::shared_ptr<ProgramCommandBlock> parseProgramCommandBlock(std::vector<uint8_t> &buffer);
@@ -424,6 +483,12 @@ struct ProgramCommandBlockMinecart : BaseServerPacket {
     bool track_output;
 };
 std::shared_ptr<ProgramCommandBlockMinecart> parseProgramCommandBlockMinecart(std::vector<uint8_t> &buffer);
+
+struct SetCreativeModeSlot : BaseServerPacket {
+    int16_t slot;
+    Slot clicked_item;
+};
+std::shared_ptr<SetCreativeModeSlot> parseSetCreativeModeSlot(std::vector<uint8_t> &buffer);
 
 struct ProgramJigsawBlock : BaseServerPacket {
     Position location;
@@ -437,8 +502,18 @@ std::shared_ptr<ProgramJigsawBlock> parseProgramJigsawBlock(std::vector<uint8_t>
 
 struct ProgramStructureBlock : BaseServerPacket {
     Position location;
-    int32_t action; // TODO: Use an enum
-    int32_t mode; // TODO: Use an enum
+    enum class Action : int32_t {
+        UpdateData,
+        SaveTheStructure,
+        LoadTheStructure,
+        DetectSize,
+    } action;
+    enum class Mode : int32_t {
+        Save,
+        Load,
+        Corner,
+        Data,
+    } mode;
     std::string name;
     uint8_t offset_x;
     uint8_t offset_y;
@@ -446,8 +521,17 @@ struct ProgramStructureBlock : BaseServerPacket {
     uint8_t size_x;
     uint8_t size_y;
     uint8_t size_z;
-    int32_t mirror; // TODO: Use an enum
-    int32_t rotation; // TODO: Use an enum
+    enum class Mirror : int32_t {
+        None,
+        LeftRight,
+        FrontBack,
+    } mirror;
+    enum class Rotation : int32_t {
+        None,
+        ClockWiseNinety,
+        ClockWiseOneEighty,
+        CounterClockWiseNinety,
+    } rotation;
     std::string metadata;
     float integrity;
     int64_t seed;
@@ -465,7 +549,10 @@ struct UpdateSign : BaseServerPacket {
 std::shared_ptr<UpdateSign> parseUpdateSign(std::vector<uint8_t> &buffer);
 
 struct SwingArm : BaseServerPacket {
-    int32_t hand; // TODO: Use an enum
+    enum class Hand : int32_t {
+        MainHand,
+        OffHand,
+    } hand;
 };
 std::shared_ptr<SwingArm> parseSwingArm(std::vector<uint8_t> &buffer);
 
@@ -475,9 +562,19 @@ struct TeleportToEntity : BaseServerPacket {
 std::shared_ptr<TeleportToEntity> parseTeleportToEntity(std::vector<uint8_t> &buffer);
 
 struct UseItemOn : BaseServerPacket {
-    int32_t hand; // TODO: Use an enum
+    enum class Hand : int32_t {
+        MainHand,
+        OffHand,
+    } hand;
     Position location;
-    int32_t face; // TODO: Use an enum
+    enum class Face : int32_t {
+        Bottom,
+        Top,
+        North,
+        South,
+        West,
+        East,
+    } face;
     float cursor_position_x;
     float cursor_position_y;
     float cursor_position_z;
@@ -487,7 +584,10 @@ struct UseItemOn : BaseServerPacket {
 std::shared_ptr<UseItemOn> parseUseItemOn(std::vector<uint8_t> &buffer);
 
 struct UseItem : BaseServerPacket {
-    int32_t hand; // TODO: Use an enum
+    enum class Hand : int32_t {
+        MainHand,
+        OffHand,
+    } hand;
     int32_t sequence;
 };
 std::shared_ptr<UseItem> parseUseItem(std::vector<uint8_t> &buffer);
@@ -518,6 +618,7 @@ static const std::unordered_map<ServerPacketsID, std::function<std::shared_ptr<B
     {ServerPacketsID::ClientInformation, &parseClientInformation},
     {ServerPacketsID::CommandSuggestionRequest, &parseCommandSuggestionRequest},
     {ServerPacketsID::ClickContainerButton, &parseClickContainerButton},
+    {ServerPacketsID::ClickContainer, &parseClickContainer},
     {ServerPacketsID::CloseContainerRequest, &parseCloseContainerRequest},
     {ServerPacketsID::PluginMessage, &parsePluginMessage},
     {ServerPacketsID::EditBook, &parseEditBook},
@@ -539,6 +640,7 @@ static const std::unordered_map<ServerPacketsID, std::function<std::shared_ptr<B
     {ServerPacketsID::PlayerCommand, &parsePlayerCommand},
     {ServerPacketsID::PlayerInput, &parsePlayerInput},
     {ServerPacketsID::Pong, &parsePong},
+    {ServerPacketsID::PlayerSession, &parsePlayerSession},
     {ServerPacketsID::ChangeRecipeBookSettings, &parseChangeRecipeBookSettings},
     {ServerPacketsID::SetSeenRecipe, &parseSetSeenRecipe},
     {ServerPacketsID::RenameItem, &parseRenameItem},
@@ -549,6 +651,7 @@ static const std::unordered_map<ServerPacketsID, std::function<std::shared_ptr<B
     {ServerPacketsID::SetHeldItem, &parseSetHeldItem},
     {ServerPacketsID::ProgramCommandBlock, &parseProgramCommandBlock},
     {ServerPacketsID::ProgramCommandBlockMinecart, &parseProgramCommandBlockMinecart},
+    {ServerPacketsID::SetCreativeModeSlot, &parseSetCreativeModeSlot},
     {ServerPacketsID::ProgramJigsawBlock, &parseProgramJigsawBlock},
     {ServerPacketsID::ProgramStructureBlock, &parseProgramStructureBlock},
     {ServerPacketsID::UpdateSign, &parseUpdateSign},

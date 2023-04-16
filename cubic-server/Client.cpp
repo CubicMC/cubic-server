@@ -180,6 +180,7 @@ void Client::handleParsedClientPacket(const std::shared_ptr<protocol::BaseServer
             PCK_CALLBACK_PLAY(ClientInformation);
             PCK_CALLBACK_PLAY(CommandSuggestionRequest);
             PCK_CALLBACK_PLAY(ClickContainerButton);
+            PCK_CALLBACK_PLAY(ClickContainer);
             PCK_CALLBACK_PLAY(CloseContainerRequest);
             PCK_CALLBACK_PLAY(EditBook);
             PCK_CALLBACK_PLAY(QueryEntityTag);
@@ -200,6 +201,7 @@ void Client::handleParsedClientPacket(const std::shared_ptr<protocol::BaseServer
             PCK_CALLBACK_PLAY(PlayerCommand);
             PCK_CALLBACK_PLAY(PlayerInput);
             PCK_CALLBACK_PLAY(Pong);
+            PCK_CALLBACK_PLAY(PlayerSession);
             PCK_CALLBACK_PLAY(ChangeRecipeBookSettings);
             PCK_CALLBACK_PLAY(SetSeenRecipe);
             PCK_CALLBACK_PLAY(RenameItem);
@@ -210,6 +212,7 @@ void Client::handleParsedClientPacket(const std::shared_ptr<protocol::BaseServer
             PCK_CALLBACK_PLAY(SetHeldItem);
             PCK_CALLBACK_PLAY(ProgramCommandBlock);
             PCK_CALLBACK_PLAY(ProgramCommandBlockMinecart);
+            PCK_CALLBACK_PLAY(SetCreativeModeSlot);
             PCK_CALLBACK_PLAY(ProgramJigsawBlock);
             PCK_CALLBACK_PLAY(ProgramStructureBlock);
             PCK_CALLBACK_PLAY(UpdateSign);
@@ -289,9 +292,9 @@ void Client::_handlePacket()
 void Client::_onHandshake(const std::shared_ptr<protocol::Handshake> &pck)
 {
     LDEBUG("Got an handshake");
-    if (pck->next_state == 1)
+    if (pck->next_state == protocol::Handshake::State::Status)
         this->setStatus(protocol::ClientStatus::Status);
-    else if (pck->next_state == 2)
+    else if (pck->next_state == protocol::Handshake::State::Login)
         this->setStatus(protocol::ClientStatus::Login);
 }
 

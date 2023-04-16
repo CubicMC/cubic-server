@@ -11,6 +11,7 @@
 #include "blocks.hpp"
 #include "command_parser/CommandParser.hpp"
 #include "protocol/ClientPackets.hpp"
+#include "protocol/ServerPackets.hpp"
 #include "types.hpp"
 
 Player::Player(Client *cli, std::shared_ptr<Dimension> dim, u128 uuid, const std::string &username):
@@ -633,6 +634,8 @@ void Player::_onCommandSuggestionRequest(const std::shared_ptr<protocol::Command
 
 void Player::_onClickContainerButton(const std::shared_ptr<protocol::ClickContainerButton> &pck) { LDEBUG("Got a Click Container Button"); }
 
+void Player::_onClickContainer(const std::shared_ptr<protocol::ClickContainer> &pck) { LDEBUG("Got a Click Container"); }
+
 void Player::_onCloseContainerRequest(const std::shared_ptr<protocol::CloseContainerRequest> &pck) { LDEBUG("Got a Close Container Request"); }
 
 void Player::_onPluginMessage(const std::shared_ptr<protocol::PluginMessage> &pck)
@@ -661,9 +664,9 @@ void Player::_onInteract(const std::shared_ptr<protocol::Interact> &pck)
     Player *player = dynamic_cast<Player *>(target);
 
     switch (pck->type) {
-    case 0: // interact type
+    case protocol::Interact::Type::Interact:
         break;
-    case 1: // attack type
+    case protocol::Interact::Type::Attack:
         if (player != nullptr && player->_gamemode != player_attributes::Gamemode::Creative) {
             player->attack(_pos);
             player->sendHealth();
@@ -672,8 +675,10 @@ void Player::_onInteract(const std::shared_ptr<protocol::Interact> &pck)
         }
         _foodExhaustionLevel += player_attributes::FOOD_EXHAUSTION_ATTACK;
         break;
-    case 2: // interact at type
+    case protocol::Interact::Type::InteractAt:
         break;
+    default:
+        LERROR("Got a Interact with an unknown type: ", (int32_t) pck->type);
     }
     LDEBUG("Got a Interact");
 }
@@ -779,6 +784,8 @@ void Player::_onPlayerInput(const std::shared_ptr<protocol::PlayerInput> &pck) {
 
 void Player::_onPong(const std::shared_ptr<protocol::Pong> &pck) { LDEBUG("Got a Pong"); }
 
+void Player::_onPlayerSession(const std::shared_ptr<protocol::PlayerSession> &pck) { LDEBUG("Got a Player Session"); }
+
 void Player::_onChangeRecipeBookSettings(const std::shared_ptr<protocol::ChangeRecipeBookSettings> &pck) { LDEBUG("Got a Change Recipe Book Settings"); }
 
 void Player::_onSetSeenRecipe(const std::shared_ptr<protocol::SetSeenRecipe> &pck) { LDEBUG("Got a Set Seen Recipe"); }
@@ -803,6 +810,8 @@ void Player::_onProgramCommandBlock(const std::shared_ptr<protocol::ProgramComma
 
 void Player::_onProgramCommandBlockMinecart(const std::shared_ptr<protocol::ProgramCommandBlockMinecart> &pck) { LDEBUG("Got a Program Command Block Minecart"); }
 
+void Player::_onSetCreativeModeSlot(const std::shared_ptr<protocol::SetCreativeModeSlot> &pck) { LDEBUG("Got a Set Creative Mode Slot"); }
+
 void Player::_onProgramJigsawBlock(const std::shared_ptr<protocol::ProgramJigsawBlock> &pck) { LDEBUG("Got a Program Jigsaw Block"); }
 
 void Player::_onProgramStructureBlock(const std::shared_ptr<protocol::ProgramStructureBlock> &pck) { LDEBUG("Got a Program Structure Block"); }
@@ -815,7 +824,7 @@ void Player::_onSwingArm(const std::shared_ptr<protocol::SwingArm> &pck)
     for (auto i : this->getDimension()->getPlayerList()) {
         if (i->getId() == this->getId())
             continue;
-        i->sendSwingArm(pck->hand == 0, this->getId());
+        i->sendSwingArm(pck->hand == protocol::SwingArm::Hand::MainHand, this->getId());
     }
 }
 
@@ -825,22 +834,22 @@ void Player::_onUseItemOn(const std::shared_ptr<protocol::UseItemOn> &pck)
 {
     LDEBUG("Got a Use Item On ", pck->location, " -> ", this->_heldItem);
     switch (pck->face) {
-    case 0:
+    case protocol::UseItemOn::Face::Bottom:
         pck->location.y--;
         break;
-    case 1:
+    case protocol::UseItemOn::Face::Top:
         pck->location.y++;
         break;
-    case 2:
+    case protocol::UseItemOn::Face::North:
         pck->location.z--;
         break;
-    case 3:
+    case protocol::UseItemOn::Face::South:
         pck->location.z++;
         break;
-    case 4:
+    case protocol::UseItemOn::Face::West:
         pck->location.x--;
         break;
-    case 5:
+    case protocol::UseItemOn::Face::East:
         pck->location.x++;
         break;
     }

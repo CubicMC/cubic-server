@@ -15,22 +15,6 @@ struct Slot {
     // NBT nbt;
 };
 
-enum class ClientCommandActionID {
-    perform_respawn = 0,
-    request_stats = 1,
-};
-
-enum class ClientInformationChatMode {
-    enabled = 0,
-    commands_only = 1,
-    hidden = 2,
-};
-
-enum class ClientInformationMainHand {
-    left = 0,
-    right = 1,
-};
-
 struct Instant {
     long seconds;
     int nanos;
@@ -47,5 +31,10 @@ struct BlockEntity {
 struct ArgumentSignature {
     std::string argument;
     std::vector<uint8_t> signature;
+};
+
+struct SlotWithIndex {
+    int16_t slot_number;
+    Slot slot_data;
 };
 } // namespace protocol

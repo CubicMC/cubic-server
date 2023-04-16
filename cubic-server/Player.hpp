@@ -111,6 +111,7 @@ private:
     void _onClientInformation(const std::shared_ptr<protocol::ClientInformation> &pck);
     void _onCommandSuggestionRequest(const std::shared_ptr<protocol::CommandSuggestionRequest> &pck);
     void _onClickContainerButton(const std::shared_ptr<protocol::ClickContainerButton> &pck);
+    void _onClickContainer(const std::shared_ptr<protocol::ClickContainer> &pck);
     void _onCloseContainerRequest(const std::shared_ptr<protocol::CloseContainerRequest> &pck);
     void _onPluginMessage(const std::shared_ptr<protocol::PluginMessage> &pck);
     void _onEditBook(const std::shared_ptr<protocol::EditBook> &pck);
@@ -132,6 +133,7 @@ private:
     void _onPlayerCommand(const std::shared_ptr<protocol::PlayerCommand> &pck);
     void _onPlayerInput(const std::shared_ptr<protocol::PlayerInput> &pck);
     void _onPong(const std::shared_ptr<protocol::Pong> &pck);
+    void _onPlayerSession(const std::shared_ptr<protocol::PlayerSession> &pck);
     void _onChangeRecipeBookSettings(const std::shared_ptr<protocol::ChangeRecipeBookSettings> &pck);
     void _onSetSeenRecipe(const std::shared_ptr<protocol::SetSeenRecipe> &pck);
     void _onRenameItem(const std::shared_ptr<protocol::RenameItem> &pck);
@@ -142,6 +144,7 @@ private:
     void _onSetHeldItem(const std::shared_ptr<protocol::SetHeldItem> &pck);
     void _onProgramCommandBlock(const std::shared_ptr<protocol::ProgramCommandBlock> &pck);
     void _onProgramCommandBlockMinecart(const std::shared_ptr<protocol::ProgramCommandBlockMinecart> &pck);
+    void _onSetCreativeModeSlot(const std::shared_ptr<protocol::SetCreativeModeSlot> &pck);
     void _onProgramJigsawBlock(const std::shared_ptr<protocol::ProgramJigsawBlock> &pck);
     void _onProgramStructureBlock(const std::shared_ptr<protocol::ProgramStructureBlock> &pck);
     void _onUpdateSign(const std::shared_ptr<protocol::UpdateSign> &pck);

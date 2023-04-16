@@ -14,10 +14,6 @@
 #include "world_storage/Palette.hpp"
 
 namespace protocol {
-constexpr void addClientCommandActionID(std::vector<uint8_t> &out, const ClientCommandActionID &data) { return addVarInt(out, static_cast<int32_t>(data)); }
-
-constexpr void addClientInformationChatMode(std::vector<uint8_t> &out, const ClientInformationChatMode &data) { return addVarInt(out, static_cast<int32_t>(data)); }
-
 constexpr void addBlockEntity(std::vector<uint8_t> &out, const BlockEntity &data)
 {
     addByte(out, data.sectionCoordinate);
