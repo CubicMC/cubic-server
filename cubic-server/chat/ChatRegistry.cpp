@@ -180,5 +180,7 @@ nbt::Compound *chat::_details::getChatRegistry()
         .chatKey("chat.type.team.sent")
         .narrateKey("chat.type.text.narrate");
 
+    registry.addChatType(teamOutgoingType);
+
     return registry.toNBT();
 }
