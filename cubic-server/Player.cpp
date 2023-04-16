@@ -555,12 +555,12 @@ void Player::sendUpdateRecipiesBook(const protocol::UpdateRecipesBook &packet)
     LDEBUG("Sent update recipies book packet");
 }
 
-// void Player::sendInitializeWorldBorder(const protocol::InitializeWorldBorder &packet)
-// {
-//     auto pck = protocol::createInitializeWorldBorder(packet);
-//     _cli->_sendData(*pck);
-//     LDEBUG("Sent initialize world border packet");
-// }
+void Player::sendInitializeWorldBorder(const protocol::InitializeWorldBorder &packet)
+{
+    auto pck = protocol::createInitializeWorldBorder(packet);
+    _cli->_sendData(*pck);
+    LDEBUG("Sent initialize world border packet");
+}
 
 void Player::sendSetDefaultSpawnPosition(const protocol::SetDefaultSpawnPosition &packet)
 {
@@ -576,26 +576,26 @@ void Player::sendSetDefaultSpawnPosition(const protocol::SetDefaultSpawnPosition
 //     LDEBUG("Sent set entity metadata packet");
 // }
 
-// void Player::sendUpdateAttributes(const protocol::UpdateAttributes &packet)
-// {
-//     auto pck = protocol::createUpdateAttributes(packet);
-//     _cli->_sendData(*pck);
-//     LDEBUG("Sent update attributes packet");
-// }
+void Player::sendUpdateAttributes(const protocol::UpdateAttributes &packet)
+{
+    auto pck = protocol::createUpdateAttributes(packet);
+    _cli->_sendData(*pck);
+    LDEBUG("Sent update attributes packet");
+}
 
-// void Player::sendUpdateAdvancements(const protocol::SeenAdvancements &packet)
-// {
-//     auto pck = protocol::createSeenAdvancements(packet);
-//     _cli->_sendData(*pck);
-//     LDEBUG("Sent update advancements packet");
-// }
+void Player::sendUpdateAdvancements(const protocol::UpdateAdvancements &packet)
+{
+    auto pck = protocol::createUpdateAdvancements(packet);
+    _cli->_sendData(*pck);
+    LDEBUG("Sent update advancements packet");
+}
 
-// void Player::sendSetExperience(const protocol::SetExperience &packet)
-// {
-//     auto pck = protocol::createSetExperience(packet);
-//     _cli->_sendData(*pck);
-//     LDEBUG("Sent set experience packet");
-// }
+void Player::sendSetExperience(const protocol::SetExperience &packet)
+{
+    auto pck = protocol::createSetExperience(packet);
+    _cli->_sendData(*pck);
+    LDEBUG("Sent set experience packet");
+}
 
 #pragma endregion
 #pragma region ServerBound

@@ -94,12 +94,12 @@ public:
     void sendSetHeldItem(const protocol::SetHeldItemClient &packet);
     void sendEntityEvent(const protocol::EntityEvent &packet);
     void sendUpdateRecipiesBook(const protocol::UpdateRecipesBook &packet);
-    // void sendInitializeWorldBorder(const protocol::InitializeWorldBorder &packet);
+    void sendInitializeWorldBorder(const protocol::InitializeWorldBorder &packet);
     void sendSetDefaultSpawnPosition(const protocol::SetDefaultSpawnPosition &packet);
     // void sendSetEntityMetadata(const protocol::SetEntityMetadata &packet);
-    // void sendUpdateAttributes(const protocol::UpdateAttributes &packet);
-    // void sendUpdateAdvancements(const protocol::UpdateAdvancements &packet);
-    // void sendSetExperience(const protocol::SetExperience &packet);
+    void sendUpdateAttributes(const protocol::UpdateAttributes &packet);
+    void sendUpdateAdvancements(const protocol::UpdateAdvancements &packet);
+    void sendSetExperience(const protocol::SetExperience &packet);
 
 private:
     void _onConfirmTeleportation(const std::shared_ptr<protocol::ConfirmTeleportation> &pck);

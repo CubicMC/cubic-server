@@ -247,6 +247,26 @@ std::shared_ptr<std::vector<uint8_t>> protocol::createUnloadChunk(const Position
     return packet;
 }
 
+std::shared_ptr<std::vector<uint8_t>> protocol::createInitializeWorldBorder(const InitializeWorldBorder &in)
+{
+    std::vector<uint8_t> payload;
+    // clang-format off
+    serialize(payload,
+        in.x, addDouble,
+        in.z, addDouble,
+        in.oldDiameter, addDouble,
+        in.newDiameter, addDouble,
+        in.speed, addVarLong,
+        in.portalTeleportBoundary, addVarInt,
+        in.warningTime, addVarInt,
+        in.warningBlocks, addVarInt
+    );
+    // clang-format on
+    auto packet = std::make_shared<std::vector<uint8_t>>();
+    finalize(*packet, payload, ClientPacketID::InitializeWorldBorder);
+    return packet;
+}
+
 std::shared_ptr<std::vector<uint8_t>> protocol::createKeepAlive(long id)
 {
     std::vector<uint8_t> payload;
@@ -621,6 +641,20 @@ std::shared_ptr<std::vector<uint8_t>> protocol::createSetDefaultSpawnPosition(co
     return packet;
 }
 
+// std::shared_ptr<std::vector<uint8_t>> protocol::createSetEntityMetadata(const SetEntityMetadata &in)
+// {
+//     std::vector<uint8_t> payload;
+//     // clang-format off
+//     serialize(payload,
+//         in.entityId, addVarInt,
+//         in.metadata, addMetadata
+//     );
+//     // clang-format on
+//     auto packet = std::make_shared<std::vector<uint8_t>>();
+//     finalize(*packet, payload, ClientPacketID::SetEntityMetadata);
+//     return packet;
+// }
+
 std::shared_ptr<std::vector<uint8_t>> protocol::createUpdateTime(const UpdateTime &in)
 {
     std::vector<uint8_t> payload;
@@ -717,6 +751,21 @@ std::shared_ptr<std::vector<uint8_t>> protocol::createEntityVelocity(const Entit
     return packet;
 }
 
+std::shared_ptr<std::vector<uint8_t>> protocol::createSetExperience(const SetExperience &in)
+{
+    std::vector<uint8_t> payload;
+    // clang-format off
+    serialize(payload,
+        in.experienceBar, addFloat,
+        in.level, addVarInt,
+        in.totalExperience, addVarInt
+    );
+    // clang-format on
+    auto packet = std::make_shared<std::vector<uint8_t>>();
+    finalize(*packet, payload, ClientPacketID::SetExperience);
+    return packet;
+}
+
 std::shared_ptr<std::vector<uint8_t>> protocol::createHealth(const Health &in)
 {
     std::vector<uint8_t> payload;
@@ -749,6 +798,36 @@ std::shared_ptr<std::vector<uint8_t>> protocol::createTeleportEntity(const Telep
     // clang-format on
     auto packet = std::make_shared<std::vector<uint8_t>>();
     finalize(*packet, payload, ClientPacketID::TeleportEntity);
+    return packet;
+}
+
+std::shared_ptr<std::vector<uint8_t>> protocol::createUpdateAdvancements(const UpdateAdvancements &in)
+{
+    std::vector<uint8_t> payload;
+    // clang-format off
+    serialize(payload,
+        in.resetOrClear, addBoolean,
+        in.advancementMapping, addArray<protocol::UpdateAdvancements::AdvancementMapping, addAdvancementMapping>,
+        in.identifiers, addArray<std::string, addIdentifier>,
+        in.progressMapping, addArray<protocol::UpdateAdvancements::ProgressMapping, addAdvancementProgressMapping>
+    );
+    // clang-format on
+    auto packet = std::make_shared<std::vector<uint8_t>>();
+    finalize(*packet, payload, ClientPacketID::UpdateAdvancements);
+    return packet;
+}
+
+std::shared_ptr<std::vector<uint8_t>> protocol::createUpdateAttributes(const UpdateAttributes &in)
+{
+    std::vector<uint8_t> payload;
+    // clang-format off
+    serialize(payload,
+        in.entityId, addVarInt,
+        in.attributes, addArray<protocol::UpdateAttributes::Property, addAttributesProperty>
+    );
+    // clang-format on
+    auto packet = std::make_shared<std::vector<uint8_t>>();
+    finalize(*packet, payload, ClientPacketID::UpdateAttributes);
     return packet;
 }
 

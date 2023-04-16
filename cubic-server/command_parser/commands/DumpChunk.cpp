@@ -1,6 +1,7 @@
 #include "DumpChunk.hpp"
 #include "Server.hpp"
 #include "World.hpp"
+#include "protocol/typeSerialization.hpp"
 
 #include <iostream>
 

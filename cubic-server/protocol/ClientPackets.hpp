@@ -10,7 +10,6 @@
 
 #include "PlayerAttributes.hpp"
 #include "Structures.hpp"
-#include "typeSerialization.hpp"
 #include "types.hpp"
 #include "world_storage/ChunkColumn.hpp"
 
@@ -37,6 +36,7 @@ enum class ClientPacketID : int32_t {
     DisconnectPlay = 0x17,
     EntityEvent = 0x19,
     UnloadChunk = 0x1b,
+    InitializeWorldBorder = 0x1e,
     KeepAlive = 0x1F,
     ChunkDataAndLightUpdate = 0x20,
     WorldEvent = 0x21,
@@ -56,7 +56,9 @@ enum class ClientPacketID : int32_t {
     SetHeldItem = 0x49,
     CenterChunk = 0x4a,
     SetDefaultSpawnPosition = 0x4c,
+    // SetEntityMetadata = 0x4e, HAHA LOL
     EntityVelocity = 0x4f,
+    SetExperience = 0x52,
     Health = 0x53,
     UpdateTime = 0x5A,
     EntitySoundEffect = 0x5D,
@@ -64,6 +66,8 @@ enum class ClientPacketID : int32_t {
     StopSound = 0x5F,
     SystemChatMessage = 0x60,
     TeleportEntity = 0x64,
+    UpdateAdvancements = 0x65,
+    UpdateAttributes = 0x66,
     FeatureFlags = 0x67,
     UpdateRecipes = 0x69,
     UpdateTags = 0x6A,
@@ -175,6 +179,18 @@ struct EntityEvent {
 std::shared_ptr<std::vector<uint8_t>> createEntityEvent(const EntityEvent &);
 
 std::shared_ptr<std::vector<uint8_t>> createUnloadChunk(const Position2D &);
+
+struct InitializeWorldBorder {
+    double x;
+    double z;
+    double oldDiameter;
+    double newDiameter;
+    int64_t speed;
+    int32_t portalTeleportBoundary;
+    int32_t warningTime;
+    int32_t warningBlocks;
+};
+std::shared_ptr<std::vector<uint8_t>> createInitializeWorldBorder(const InitializeWorldBorder &);
 
 std::shared_ptr<std::vector<uint8_t>> createKeepAlive(long id);
 
@@ -454,7 +470,6 @@ std::shared_ptr<std::vector<uint8_t>> createServerData(const ServerData &in);
 struct SetHeldItemClient {
     uint8_t slot; // must be a byte
 };
-
 std::shared_ptr<std::vector<uint8_t>> createSetHeldItemClient(const SetHeldItemClient &);
 
 std::shared_ptr<std::vector<uint8_t>> createCenterChunk(const Position2D &in);
@@ -463,8 +478,47 @@ struct SetDefaultSpawnPosition {
     Position position;
     float angle;
 };
-
 std::shared_ptr<std::vector<uint8_t>> createSetDefaultSpawnPosition(const SetDefaultSpawnPosition &);
+
+// struct SetEntityMetadata {
+//     struct EntityMetadata {
+//         uint8_t index;
+//         enum class Type : int32_t {
+//             Byte = 0,
+//             VarInt = 1,
+//             VarLong = 2,
+//             Float = 3,
+//             String = 4,
+//             Chat = 5,
+//             OptChat = 6,
+//             Slot = 7,
+//             Boolean = 8,
+//             Rotation = 9,
+//             Position = 10,
+//             OptPosition = 11,
+//             Direction = 12,
+//             OptUUID = 13,
+//             BlockID = 14,
+//             OptBlockID = 15,
+//             NBT = 16,
+//             Particle = 17,
+//             VillagerData = 18,
+//             OptVarInt = 19,
+//             Pose = 20,
+//             CatVariant = 21,
+//             FrogVariant = 22,
+//             OptGlobalPos = 23,
+//             PaintingVariant = 24,
+//             SnifferState = 25,
+//             Vector3 = 26,
+//             Quaternion = 27,
+//         } type;
+//         // TODO: value GLHF;
+//     };
+//     int32_t entityId;
+//     std::vector<EntityMetadata> metadata;
+// };
+// std::shared_ptr<std::vector<uint8_t>> createSetEntityMetadata(const SetEntityMetadata &);
 
 struct UpdateTime {
     long worldAge;
@@ -505,7 +559,6 @@ struct SystemChatMessage {
     std::string JSONData;
     bool overlay;
 };
-
 std::shared_ptr<std::vector<uint8_t>> createSystemChatMessage(const SystemChatMessage &);
 
 struct EntityVelocity {
@@ -514,15 +567,20 @@ struct EntityVelocity {
     int16_t velocityY;
     int16_t velocityZ;
 };
-
 std::shared_ptr<std::vector<uint8_t>> createEntityVelocity(const EntityVelocity &);
+
+struct SetExperience {
+    float experienceBar;
+    int32_t totalExperience;
+    int32_t level;
+};
+std::shared_ptr<std::vector<uint8_t>> createSetExperience(const SetExperience &);
 
 struct Health {
     float health;
     int32_t food;
     float foodSaturation;
 };
-
 std::shared_ptr<std::vector<uint8_t>> createHealth(const Health &);
 
 struct TeleportEntity {
@@ -535,6 +593,78 @@ struct TeleportEntity {
     bool onGround;
 };
 std::shared_ptr<std::vector<uint8_t>> createTeleportEntity(const TeleportEntity &);
+
+struct UpdateAdvancements {
+    struct AdvancementMapping {
+        std::string identifier;
+        struct Advancement {
+            struct Criteria {
+                std::string key;
+                // std::string value;
+            };
+            bool hasParent;
+            std::string parent;
+            bool hasDisplay;
+            struct Display {
+                std::string title;
+                std::string description;
+                Slot icon;
+                enum class FrameType : int32_t {
+                    task = 0,
+                    challenge = 1,
+                    goal = 2,
+                } frameType;
+                enum class Flags : int32_t {
+                    hasBackgroundTexture = 0x01,
+                    showToast = 0x02,
+                    hidden = 0x04,
+                } flags;
+                std::string backgroundTexture;
+                float xCoord;
+                float yCoord;
+            } displayData;
+            std::vector<Criteria> criteria;
+            std::vector<std::vector<std::string>> requirements;
+        } advancement;
+    };
+    struct ProgressMapping {
+        struct CriteriaMapping {
+            struct CriterionProgress {
+                bool achived;
+                long dateOfAchieving;
+            };
+            std::string identifier;
+            CriterionProgress criteria;
+        };
+        std::string identifier;
+        std::vector<CriteriaMapping> advancementProgress;
+    };
+    bool resetOrClear;
+    std::vector<AdvancementMapping> advancementMapping;
+    std::vector<std::string> identifiers;
+    std::vector<ProgressMapping> progressMapping;
+};
+std::shared_ptr<std::vector<uint8_t>> createUpdateAdvancements(const UpdateAdvancements &);
+
+struct UpdateAttributes {
+    struct Property {
+        struct Modifier {
+            u128 uuid;
+            double amount;
+            enum class Operation : uint8_t {
+                AddSubstractAmount = 0,
+                AddSubstractAmountPercent = 1,
+                MultiplyByAmountPercent = 2,
+            } operation;
+        };
+        std::string key;
+        std::string value;
+        std::vector<Modifier> modifiers;
+    };
+    int32_t entityId;
+    std::vector<Property> attributes;
+};
+std::shared_ptr<std::vector<uint8_t>> createUpdateAttributes(const UpdateAttributes &);
 
 struct FeatureFlags {
     std::vector<std::string> flags;

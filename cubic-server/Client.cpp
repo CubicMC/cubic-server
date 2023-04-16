@@ -13,6 +13,7 @@
 #include "nlohmann/json.hpp"
 #include "protocol/ClientPackets.hpp"
 #include "protocol/ServerPackets.hpp"
+#include "protocol/typeSerialization.hpp"
 #include "whitelist/Whitelist.hpp"
 
 Client::Client(int sockfd, struct sockaddr_in6 addr):

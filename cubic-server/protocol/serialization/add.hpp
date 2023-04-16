@@ -6,6 +6,7 @@
 #include <vector>
 
 #include "addPrimaryType.hpp"
+#include "protocol/ClientPackets.hpp"
 #include "protocol/ParseExceptions.hpp"
 #include "protocol/Structures.hpp"
 #include "protocol/common.hpp"
@@ -167,6 +168,80 @@ constexpr void addChunkColumn(std::vector<uint8_t> &out, const world_storage::Ch
 
     // Add the chunk data
     addArray<uint8_t, addByte>(out, chunkData);
+}
+constexpr void addAttributesProperyModifier(std::vector<uint8_t> &out, const protocol::UpdateAttributes::Property::Modifier &data)
+{
+    addUUID(out, data.uuid);
+    addDouble(out, data.amount);
+    addByte(out, (uint8_t) data.operation);
+}
+
+constexpr void addAttributesProperty(std::vector<uint8_t> &out, const protocol::UpdateAttributes::Property &data)
+{
+    addString(out, data.key);
+    addString(out, data.value);
+    addArray<protocol::UpdateAttributes::Property::Modifier, addAttributesProperyModifier>(out, data.modifiers);
+}
+
+constexpr void addAdvancementDisplay(std::vector<uint8_t> &out, const UpdateAdvancements::AdvancementMapping::Advancement::Display &data)
+{
+    using Flags = UpdateAdvancements::AdvancementMapping::Advancement::Display::Flags;
+
+    addChat(out, data.title);
+    addChat(out, data.description);
+    addSlot(out, data.icon);
+    addVarInt(out, (uint8_t) data.frameType);
+    addInt(out, (int32_t) data.flags);
+    if ((int32_t) data.flags & (int32_t) Flags::hasBackgroundTexture)
+        addString(out, data.backgroundTexture);
+    addFloat(out, data.xCoord);
+    addFloat(out, data.yCoord);
+}
+
+constexpr void addAdvancementCriteria(std::vector<uint8_t> &out, const UpdateAdvancements::AdvancementMapping::Advancement::Criteria &data)
+{
+    addIdentifier(out, data.key);
+    // addString(out, data.value);
+}
+
+constexpr void addAdvancement(std::vector<uint8_t> &out, const UpdateAdvancements::AdvancementMapping::Advancement &data)
+{
+    using Criteria = UpdateAdvancements::AdvancementMapping::Advancement::Criteria;
+
+    addBoolean(out, data.hasParent);
+    if (data.hasParent)
+        addString(out, data.parent);
+    addBoolean(out, data.hasDisplay);
+    if (data.hasDisplay)
+        addAdvancementDisplay(out, data.displayData);
+    addArray<Criteria, addAdvancementCriteria>(out, data.criteria);
+    addArray<std::vector<std::string>, addArray<std::string, addString>>(out, data.requirements);
+}
+
+constexpr void addAdvancementMapping(std::vector<uint8_t> &out, const UpdateAdvancements::AdvancementMapping &data)
+{
+    addIdentifier(out, data.identifier);
+    addAdvancement(out, data.advancement);
+}
+
+constexpr void addAdvancementCriterionProgress(std::vector<uint8_t> &out, const UpdateAdvancements::ProgressMapping::CriteriaMapping::CriterionProgress &data)
+{
+    addBoolean(out, data.achived);
+    addLong(out, data.dateOfAchieving);
+}
+
+constexpr void addAdvancementCriteriaMapping(std::vector<uint8_t> &out, const UpdateAdvancements::ProgressMapping::CriteriaMapping &data)
+{
+    addIdentifier(out, data.identifier);
+    addAdvancementCriterionProgress(out, data.criteria);
+}
+
+constexpr void addAdvancementProgressMapping(std::vector<uint8_t> &out, const UpdateAdvancements::ProgressMapping &data)
+{
+    using CriteriaMapping = UpdateAdvancements::ProgressMapping::CriteriaMapping;
+
+    addIdentifier(out, data.identifier);
+    addArray<CriteriaMapping, addAdvancementCriteriaMapping>(out, data.advancementProgress);
 }
 } // namespace protocol
 
