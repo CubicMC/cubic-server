@@ -138,13 +138,12 @@ struct ChangeDifficulty : BaseServerPacket {
 std::shared_ptr<ChangeDifficulty> parseChangeDifficulty(std::vector<uint8_t> &buffer);
 
 struct MessageAcknowledgement : BaseServerPacket {
-    int32_t message_count;
+    int32_t messageCount;
 };
 std::shared_ptr<MessageAcknowledgement> parseMessageAcknowledgement(std::vector<uint8_t> &buffer);
 
 /**
  * @brief this is the link to the packet: https://wiki.vg/Protocol#Chat_Command
- *
  */
 struct ChatCommand : BaseServerPacket {
     std::string command;
@@ -165,12 +164,12 @@ std::shared_ptr<ChatCommand> parseChatCommand(std::vector<uint8_t> &buffer);
 
 struct ChatMessage : BaseServerPacket {
     std::string message;
-    // I think this is a string, it is marked as an 'Instant' in the protocol
-    // https://wiki.vg/index.php?title=Protocol&oldid=17753#Chat_Command
-    Instant timestamp;
+    int64_t timestamp;
     long salt;
-    std::vector<uint8_t> signature;
     bool isSigned;
+    std::vector<uint8_t> signature;
+    int32_t messageCount;
+    std::bitset<20> acknowledged;
 };
 std::shared_ptr<ChatMessage> parseChatMessage(std::vector<uint8_t> &buffer);
 
@@ -618,6 +617,7 @@ static const std::unordered_map<ServerPacketsID, std::function<std::shared_ptr<B
     {ServerPacketsID::ConfirmTeleportation, &parseConfirmTeleportation},
     {ServerPacketsID::QueryBlockEntityTag, &parseQueryBlockEntityTag},
     {ServerPacketsID::ChangeDifficulty, &parseChangeDifficulty},
+    {ServerPacketsID::MessageAcknowledgement, &parseMessageAcknowledgement},
     {ServerPacketsID::ChatCommand, &parseChatCommand},
     {ServerPacketsID::ChatMessage, &parseChatMessage},
     {ServerPacketsID::ClientCommand, &parseClientCommand},

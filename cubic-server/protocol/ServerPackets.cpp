@@ -124,7 +124,7 @@ std::shared_ptr<MessageAcknowledgement> protocol::parseMessageAcknowledgement(st
     auto at = buffer.data();
     // clang-format off
     parse(at, buffer.data() + buffer.size() - 1, *h,
-        popVarInt, &MessageAcknowledgement::message_count
+        popVarInt, &MessageAcknowledgement::messageCount
     );
     // clang-format on
     return h;
@@ -152,12 +152,20 @@ std::shared_ptr<ChatMessage> protocol::parseChatMessage(std::vector<uint8_t> &bu
     auto h = std::make_shared<ChatMessage>();
     auto at = buffer.data();
     // clang-format off
-    parse(at, buffer.data() + buffer.size() - 1, *h,
+    parse(
+        at, buffer.data() + buffer.size() - 1, *h,
         popString, &ChatMessage::message,
-        popInstantJavaObject, &ChatMessage::timestamp,
+        popLong, &ChatMessage::timestamp,
         popLong, &ChatMessage::salt,
-        popArray<uint8_t, popByte>, &ChatMessage::signature,
         popBoolean, &ChatMessage::isSigned
+    );
+    if (h->isSigned) {
+        parse(at, buffer.data() + buffer.size() - 1, *h,
+            popArray<uint8_t, popByte>, &ChatMessage::signature
+        );
+    }
+    parse(at, buffer.data() + buffer.size() - 1, *h,
+        popBitSet<20>, &ChatMessage::acknowledged
     );
     // clang-format on
     return h;

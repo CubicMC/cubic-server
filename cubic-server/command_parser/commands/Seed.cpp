@@ -14,8 +14,8 @@ void command_parser::Seed::execute(std::vector<std::string> &args, Player *invok
 {
     std::string msg = "Seed: [" + std::to_string(Server::getInstance()->getWorldGroup("default")->getWorld("default")->getSeed()) + "]";
     if (invoker) {
-        // if (invoker->isOperator()) // TODO: uncomment this when permissions are implemented
-        // invoker->sendPlayerChatMessage(msg); // TODO: Change this to the correct packet (gl @STMiki)
+        if (invoker->isOperator())
+            invoker->getDimension()->getWorld()->getChat()->sendSystemMessage(msg, invoker);
     } else
         LINFO(msg);
 }
@@ -23,8 +23,8 @@ void command_parser::Seed::execute(std::vector<std::string> &args, Player *invok
 void command_parser::Seed::help(std::vector<std::string> &args, Player *invoker) const
 {
     if (invoker) {
-        // if (invoker->isOperator()) // TODO: uncomment this when permissions are implemented
-        // invoker->sendPlayerChatMessage("/seed"); // TODO: Change this to the correct packet (gl @STMiki)
+        if (invoker->isOperator())
+            invoker->getDimension()->getWorld()->getChat()->sendSystemMessage("/seed", invoker);
     } else
         LINFO("/seed");
 }

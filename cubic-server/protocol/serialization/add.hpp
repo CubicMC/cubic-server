@@ -243,6 +243,13 @@ constexpr void addAdvancementProgressMapping(std::vector<uint8_t> &out, const Up
     addIdentifier(out, data.identifier);
     addArray<CriteriaMapping, addAdvancementCriteriaMapping>(out, data.advancementProgress);
 }
+
+constexpr void addRawMessage(std::vector<uint8_t> &out, const std::pair<int32_t, std::vector<uint8_t>> &rawMessage)
+{
+    addVarInt(out, rawMessage.first);
+    addArray<uint8_t, addByte>(out, rawMessage.second);
+}
+
 } // namespace protocol
 
 #endif

@@ -352,17 +352,32 @@ struct PlayerAbilitiesClient {
 std::shared_ptr<std::vector<uint8_t>> createPlayerAbilities(const PlayerAbilitiesClient &in);
 
 struct PlayerChatMessage {
-    std::string signedContent;
+    // Header
+    u128 senderUUID;
+    int32_t index;
+    bool hasSignature;
+    std::vector<uint8_t> signature;
+
+    // Body
+    std::string message;
+    int64_t timestamp;
+    int64_t salt;
+
+    // Previous messages
+    // A previous message is a message ID and the message signature
+    std::vector<std::pair<int32_t, std::vector<uint8_t>>> previousMessages;
+
+    // Other
     bool hasUnsignedContent;
     std::string unsignedContent;
-    int32_t type;
-    u128 senderUUID;
-    std::string senderName;
-    bool hasTeamName;
-    std::string teamName;
-    long timestamp;
-    long salt;
-    std::vector<uint8_t> signature;
+    int32_t filterType;
+    std::vector<int64_t> filterData;
+
+    // Network
+    int32_t chatType;
+    std::string networkName;
+    bool hasNetworkTargetName;
+    std::string networkTargetName;
 };
 std::shared_ptr<std::vector<uint8_t>> createPlayerChatMessage(const PlayerChatMessage &);
 

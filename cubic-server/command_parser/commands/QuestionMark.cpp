@@ -1,5 +1,6 @@
 #include "QuestionMark.hpp"
 #include "Server.hpp"
+#include "World.hpp"
 
 void command_parser::QuestionMark::autocomplete(std::vector<std::string> &args, Player *invoker) const
 {
@@ -14,8 +15,8 @@ void command_parser::QuestionMark::execute(std::vector<std::string> &args, Playe
     if (args.empty()) {
         if (invoker) {
             for (auto command : Server::getInstance()->getCommands()) {
-                // if (invoker->isOperator()) // TODO: uncomment this when permissions are implemented
-                // invoker->sendPlayerChatMessage(command->_help); // TODO: Change this to the correct packet (gl @STMiki)
+                if (invoker->isOperator())
+                    invoker->getDimension()->getWorld()->getChat()->sendSystemMessage(command->_help, invoker);
             }
         } else {
             for (auto command : Server::getInstance()->getCommands()) {
@@ -30,8 +31,7 @@ void command_parser::QuestionMark::execute(std::vector<std::string> &args, Playe
             (*result)->help(args, invoker);
         else {
             if (invoker)
-                // invoker->sendPlayerChatMessage("Unknown command or insufficient permissions"); // TODO: Change this to the correct packet (gl @STMiki)
-                return;
+                invoker->getDimension()->getWorld()->getChat()->sendSystemMessage("Unknown command or insufficient permissions", invoker);
             else
                 LINFO("Unknown command or insufficient permissions");
         }
@@ -41,8 +41,8 @@ void command_parser::QuestionMark::execute(std::vector<std::string> &args, Playe
 void command_parser::QuestionMark::help(std::vector<std::string> &args, Player *invoker) const
 {
     if (invoker) {
-        // if (invoker->isOperator()) // TODO: uncomment this when permissions are implemented
-        // invoker->sendPlayerChatMessage("/? [<command>]"); // TODO: Change this to the correct packet (gl @STMiki)
+        if (invoker->isOperator())
+            invoker->getDimension()->getWorld()->getChat()->sendSystemMessage("/? [<command>]", invoker);
     } else
         LINFO("/? [<command>]");
 }
