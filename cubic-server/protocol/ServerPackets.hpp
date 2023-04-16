@@ -10,6 +10,7 @@
 #include <unordered_map>
 #include <vector>
 
+#include "PlayerAttributes.hpp"
 #include "typeSerialization.hpp"
 #include "types.hpp"
 
@@ -126,9 +127,14 @@ struct QueryBlockEntityTag : BaseServerPacket {
 std::shared_ptr<QueryBlockEntityTag> parseQueryBlockEntityTag(std::vector<uint8_t> &buffer);
 
 struct ChangeDifficulty : BaseServerPacket {
-    uint8_t new_difficulty;
+    player_attributes::Gamemode new_difficulty;
 };
 std::shared_ptr<ChangeDifficulty> parseChangeDifficulty(std::vector<uint8_t> &buffer);
+
+struct MessageAcknowledgement : BaseServerPacket {
+    int32_t message_count;
+};
+std::shared_ptr<MessageAcknowledgement> parseMessageAcknowledgement(std::vector<uint8_t> &buffer);
 
 /**
  * @brief this is the link to the packet: https://wiki.vg/Protocol#Chat_Command

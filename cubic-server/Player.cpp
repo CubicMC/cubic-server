@@ -498,6 +498,104 @@ void Player::sendPlayerAbilities(const protocol::PlayerAbilitiesClient &packet)
     LDEBUG("Sent a Player Abilities packet");
 }
 
+void Player::sendSetContainerContent(const protocol::SetContainerContent &packet)
+{
+    auto pck = protocol::createSetContainerContent(packet);
+    _cli->_sendData(*pck);
+    LDEBUG("Sent set container content packet");
+}
+
+void Player::sendUpdateRecipes(const protocol::UpdateRecipes &packet)
+{
+    auto pck = protocol::createUpdateRecipes(packet);
+    _cli->_sendData(*pck);
+    LDEBUG("Sent update recipes packet");
+}
+
+void Player::sendUpdateTags(const protocol::UpdateTags &packet)
+{
+    auto pck = protocol::createUpdateTags(packet);
+    _cli->_sendData(*pck);
+    LDEBUG("Sent update tags packet");
+}
+
+void Player::sendCommands(const protocol::Commands &packet)
+{
+    auto pck = protocol::createCommands(packet);
+    _cli->_sendData(*pck);
+    LDEBUG("Sent commands packet");
+}
+
+void Player::sendChangeDifficulty(const protocol::ChangeDifficultyClient &packet)
+{
+    auto pck = protocol::createChangeDifficultyClient(packet);
+    _cli->_sendData(*pck);
+    LDEBUG("Sent change difficulty packet");
+}
+
+void Player::sendSetHeldItem(const protocol::SetHeldItemClient &packet)
+{
+    auto pck = protocol::createSetHeldItemClient(packet);
+    _cli->_sendData(*pck);
+    LDEBUG("Sent set held item packet");
+}
+
+void Player::sendEntityEvent(const protocol::EntityEvent &packet)
+{
+    auto pck = protocol::createEntityEvent(packet);
+    _cli->_sendData(*pck);
+    LDEBUG("Sent entity event packet");
+}
+
+void Player::sendUpdateRecipiesBook(const protocol::UpdateRecipesBook &packet)
+{
+    auto pck = protocol::createUpdateRecipesBook(packet);
+    _cli->_sendData(*pck);
+    LDEBUG("Sent update recipies book packet");
+}
+
+// void Player::sendInitializeWorldBorder(const protocol::InitializeWorldBorder &packet)
+// {
+//     auto pck = protocol::createInitializeWorldBorder(packet);
+//     _cli->_sendData(*pck);
+//     LDEBUG("Sent initialize world border packet");
+// }
+
+void Player::sendSetDefaultSpawnPosition(const protocol::SetDefaultSpawnPosition &packet)
+{
+    auto pck = protocol::createSetDefaultSpawnPosition(packet);
+    _cli->_sendData(*pck);
+    LDEBUG("Sent set default spawn position packet");
+}
+
+// void Player::sendSetEntityMetadata(const protocol::SetEntityMetadata &packet)
+// {
+//     auto pck = protocol::createSetEntityMetadata(packet);
+//     _cli->_sendData(*pck);
+//     LDEBUG("Sent set entity metadata packet");
+// }
+
+// void Player::sendUpdateAttributes(const protocol::UpdateAttributes &packet)
+// {
+//     auto pck = protocol::createUpdateAttributes(packet);
+//     _cli->_sendData(*pck);
+//     LDEBUG("Sent update attributes packet");
+// }
+
+// void Player::sendUpdateAdvancements(const protocol::SeenAdvancements &packet)
+// {
+//     auto pck = protocol::createSeenAdvancements(packet);
+//     _cli->_sendData(*pck);
+//     LDEBUG("Sent update advancements packet");
+// }
+
+// void Player::sendSetExperience(const protocol::SetExperience &packet)
+// {
+//     auto pck = protocol::createSetExperience(packet);
+//     _cli->_sendData(*pck);
+//     LDEBUG("Sent set experience packet");
+// }
+
 #pragma endregion
 #pragma region ServerBound
 
@@ -856,6 +954,8 @@ void Player::_continueLoginSequence()
 {
     this->sendFeatureFlags({{"minecraft:vanilla"}});
 
+    // TODO: send Change Difficulty
+
     this->sendPlayerAbilities(
         {(uint8_t) protocol::PlayerAbilitiesFlags::Invulnerable | (uint8_t) protocol::PlayerAbilitiesFlags::Flying | (uint8_t) protocol::PlayerAbilitiesFlags::AllowFlying |
              (uint8_t) protocol::PlayerAbilitiesFlags::CreativeMode,
@@ -864,13 +964,13 @@ void Player::_continueLoginSequence()
 
     // TODO: set Held Item
 
-    // TODO: update recipes
+    this->sendUpdateRecipes({});
 
-    // TODO: update tags
+    this->sendUpdateTags({});
 
-    // TODO: entity event ?
+    // TODO: entity event entity id and byte enum = 0x18 -> 24 (set op permission level)
 
-    // TODO: command list
+    this->sendCommands({{}, 0});
 
     // TODO: update recipes book
 
@@ -895,13 +995,30 @@ void Player::_continueLoginSequence()
             sendChunkAndLightUpdate(x, z);
         }
     }
+
+    // TODO: Initialize world border
+
+    this->sendSetDefaultSpawnPosition({{0, 100, 0}, 0.0f});
+
+    this->sendSetContainerContent({0, 0, {}, {false}});
+
+    // TODO: set entity metadata
+
+    // TODO: update attributes
+
+    // TODO: update Advancements
+
+    this->sendHealth();
+
+    // TODO: set experience
+
+    // TODO: set entity metadata
+
     // for (auto &player : this->_player->getDimension()->getPlayerList())
     //     player->_synchronizePostion({0, -58, 0});
     // this->_player->sendChunkAndLightUpdate(0, 0);
     getDimension()->spawnPlayer(this);
     this->teleport({8.5, 100, 8.5}); // TODO: change that to player_attributes::DEFAULT_SPAWN_POINT
-
-    this->sendHealth();
 
     this->_sendLoginMessage();
 }
