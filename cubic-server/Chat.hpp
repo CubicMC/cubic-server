@@ -18,7 +18,7 @@ public:
 
     // TODO: Maybe more complicated than that, because of the selector (@a, @p, @r, @e, @s)
     void sendPlayerMessage(const chat::Message &message, const Player *from);
-    void sendSystemMessage(const chat::Message &message, bool overlay, const WorldGroup *worldGroup);
+    void sendSystemMessage(const chat::Message &message, const Player *from, bool overlay = false);
     // void sendGameInfoMessage(const chat::Message &message, const Player *from);
     void sendSayMessage(const chat::Message &message, const Player *from);
     void sendWhisperMessage(const chat::Message &message, Player *from, Player *to);
@@ -28,6 +28,7 @@ public:
 
 private:
     void _sendMessage(const chat::Message &message, const Player *from, const chat::message::Type &type);
+    void _sendMessage(const chat::Message &message, const Player *from, Player *to, const chat::message::Type &type);
     void _sendSystem(const chat::Message &message, const WorldGroup *worldGroup, bool overlay = false);
     void _sendSystem(const chat::Message &message, const std::vector<Player *> &players, bool overlay = false);
     void _sendSystem(const chat::Message &message, Player *player, bool overlay = false);

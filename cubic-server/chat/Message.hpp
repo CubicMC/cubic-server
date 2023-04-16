@@ -65,21 +65,21 @@ private:
 };
 
 template<>
-Message Message::fromTranslationKey<message::TranslationKey::chat_type_text>(const Player *player, const std::string &message);
+Message Message::fromTranslationKey<message::TranslationKey::chat_type_text>(const Player *player, const chat::Message &message);
 // template<>
-// Message Message::fromTranslationKey<message::TranslationKey::chat_type_emote>(const Player *player, const std::string &message);
+// Message Message::fromTranslationKey<message::TranslationKey::chat_type_emote>(const Player *player, const chat::Message &message);
 template<>
-Message Message::fromTranslationKey<message::TranslationKey::commands_message_display_incoming>(const Player *player, const std::string &message);
+Message Message::fromTranslationKey<message::TranslationKey::commands_message_display_incoming>(const Player *player, const chat::Message &message);
 template<>
-Message Message::fromTranslationKey<message::TranslationKey::commands_message_display_outgoing>(const Player *player, const std::string &message);
+Message Message::fromTranslationKey<message::TranslationKey::commands_message_display_outgoing>(const Player *player, const chat::Message &message);
 template<>
-Message Message::fromTranslationKey<message::TranslationKey::chat_type_announcement>(const Player *player, const std::string &message);
+Message Message::fromTranslationKey<message::TranslationKey::chat_type_announcement>(const Player *player, const chat::Message &message);
 template<>
-Message Message::fromTranslationKey<message::TranslationKey::chat_type_team_text>(const Player *player, const std::string &message);
+Message Message::fromTranslationKey<message::TranslationKey::chat_type_team_text>(const Player *player, const chat::Message &message);
 template<>
-Message Message::fromTranslationKey<message::TranslationKey::chat_type_team_sent>(const Player *player, const std::string &message);
+Message Message::fromTranslationKey<message::TranslationKey::chat_type_team_sent>(const Player *player, const chat::Message &message);
 template<>
-Message Message::fromTranslationKey<message::TranslationKey::chat_type_team_text>(const Player *player, const std::string &message);
+Message Message::fromTranslationKey<message::TranslationKey::chat_type_team_text>(const Player *player, const chat::Message &message);
 template<>
 Message Message::fromTranslationKey<message::TranslationKey::multiplayer_player_joined>(const Player *player);
 template<>

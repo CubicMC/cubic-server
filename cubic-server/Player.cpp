@@ -57,7 +57,7 @@ Player::~Player()
     this->_dim->removeEntity(this);
 
     // Send a disconnect message
-    this->_dim->getWorld()->getChat()->sendSystemMessage(disconnectMsg, false, this->_dim->getWorld()->getWorldGroup());
+    this->_dim->getWorld()->getChat()->sendSystemMessage(disconnectMsg, this);
 }
 
 void Player::tick()
@@ -1014,7 +1014,7 @@ void Player::_sendLoginMessage()
     // Send login message
     chat::Message connectionMsg = chat::Message::fromTranslationKey<chat::message::TranslationKey::multiplayer_player_joined, const Player *>(this);
 
-    this->getDimension()->getWorld()->getChat()->sendSystemMessage(connectionMsg, false, this->getDimension()->getWorld()->getWorldGroup());
+    this->getDimension()->getWorld()->getChat()->sendSystemMessage(connectionMsg, this);
 }
 
 void Player::_unloadChunk(int32_t x, int32_t z)

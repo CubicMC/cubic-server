@@ -1,5 +1,6 @@
 #include "Reload.hpp"
 #include "Server.hpp"
+#include "World.hpp"
 
 void command_parser::Reload::autocomplete(std::vector<std::string>& args, Player *invoker) const {
     if (invoker)
@@ -12,7 +13,7 @@ void command_parser::Reload::execute(std::vector<std::string>& args, Player *inv
     if (invoker) {
         if (invoker->isOperator()) {
             Server::getInstance()->reload();
-            LINFO("Successfully reloaded loot tables, advancements and functions");
+            invoker->getDimension()->getWorld()->getChat()->sendSystemMessage("Successfully reloaded loot tables, advancements and functions", invoker);
         }
     } else {
         Server::getInstance()->reload();
@@ -22,8 +23,8 @@ void command_parser::Reload::execute(std::vector<std::string>& args, Player *inv
 
 void command_parser::Reload::help(std::vector<std::string>& args, Player *invoker) const {
     if (invoker) {
-        // if (invoker->isOperator()) // TODO: uncomment this when permissions are implemented
-            // invoker->sendPlayerChatMessage("/reload"); // TODO: Change this to the correct packet (gl @STMiki)
+        if (invoker->isOperator())
+            invoker->getDimension()->getWorld()->getChat()->sendSystemMessage("/reload", invoker);
     } else
         LINFO("/reload");
 }

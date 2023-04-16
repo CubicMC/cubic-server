@@ -39,7 +39,7 @@ chat::Message chat::Message::fromTranslationKey<chat::message::TranslationKey::m
 }
 
 template<>
-chat::Message chat::Message::fromTranslationKey<chat::message::TranslationKey::commands_message_display_incoming>(const Player *player, const std::string &message)
+chat::Message chat::Message::fromTranslationKey<chat::message::TranslationKey::commands_message_display_incoming>(const Player *player, const chat::Message &message)
 {
     auto response = chat::Message();
     auto sender = chat::Message(player->getUsername());
@@ -50,13 +50,13 @@ chat::Message chat::Message::fromTranslationKey<chat::message::TranslationKey::c
     );
 
     response.messageComponent().options().translate = "commands.message.display.incoming";
-    response.messageComponent().options().with = std::vector<chat::Message>({ sender, chat::Message(message) });
+    response.messageComponent().options().with = std::vector<chat::Message>({ sender, message });
 
     return response;
 }
 
 template<>
-chat::Message chat::Message::fromTranslationKey<chat::message::TranslationKey::commands_message_display_outgoing>(const Player *player, const std::string &message)
+chat::Message chat::Message::fromTranslationKey<chat::message::TranslationKey::commands_message_display_outgoing>(const Player *player, const chat::Message &message)
 {
     auto response = chat::Message();
     auto sender = chat::Message(player->getUsername());
@@ -67,13 +67,13 @@ chat::Message chat::Message::fromTranslationKey<chat::message::TranslationKey::c
     );
 
     response.messageComponent().options().translate = "commands.message.display.outgoing";
-    response.messageComponent().options().with = std::vector<chat::Message>({ sender, chat::Message(message) });
+    response.messageComponent().options().with = std::vector<chat::Message>({ sender, message });
 
     return response;
 }
 
 template<>
-chat::Message chat::Message::fromTranslationKey<chat::message::TranslationKey::chat_type_announcement>(const Player *player, const std::string &message)
+chat::Message chat::Message::fromTranslationKey<chat::message::TranslationKey::chat_type_announcement>(const Player *player, const chat::Message &message)
 {
     auto response = chat::Message();
     auto sender = chat::Message(player->getUsername());
@@ -84,13 +84,13 @@ chat::Message chat::Message::fromTranslationKey<chat::message::TranslationKey::c
     );
 
     response.messageComponent().options().translate = "chat.type.announcement";
-    response.messageComponent().options().with = std::vector<chat::Message>({ sender, chat::Message(message) });
+    response.messageComponent().options().with = std::vector<chat::Message>({ sender, message });
 
     return response;
 }
 
 template<>
-chat::Message chat::Message::fromTranslationKey<chat::message::TranslationKey::chat_type_team_text>(const Player *player, const std::string &message)
+chat::Message chat::Message::fromTranslationKey<chat::message::TranslationKey::chat_type_team_text>(const Player *player, const chat::Message &message)
 {
     auto response = chat::Message();
     auto team = chat::Message(/* player->getTeam() */ "TEAM CUCK");
@@ -102,13 +102,13 @@ chat::Message chat::Message::fromTranslationKey<chat::message::TranslationKey::c
     );
 
     response.messageComponent().options().translate = "chat.type.team.text";
-    response.messageComponent().options().with = std::vector<chat::Message>({ team, sender, chat::Message(message) });
+    response.messageComponent().options().with = std::vector<chat::Message>({ team, sender, message });
 
     return response;
 }
 
 template<>
-chat::Message chat::Message::fromTranslationKey<chat::message::TranslationKey::chat_type_team_sent>(const Player *player, const std::string &message)
+chat::Message chat::Message::fromTranslationKey<chat::message::TranslationKey::chat_type_team_sent>(const Player *player, const chat::Message &message)
 {
     auto response = chat::Message();
     auto team = chat::Message(/* player->getTeam() */ "TEAM CUCK");
@@ -120,7 +120,7 @@ chat::Message chat::Message::fromTranslationKey<chat::message::TranslationKey::c
     );
 
     response.messageComponent().options().translate = "chat.type.team.sent";
-    response.messageComponent().options().with = std::vector<chat::Message>({ team, sender, chat::Message(message) });
+    response.messageComponent().options().with = std::vector<chat::Message>({ team, sender, message });
 
     return response;
 }
