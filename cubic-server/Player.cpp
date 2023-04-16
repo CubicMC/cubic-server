@@ -1,6 +1,7 @@
 #include <cstdint>
 #include <iostream>
 #include <sstream>
+#include <cstdint>
 #include <string>
 
 #include "Entity.hpp"
@@ -9,6 +10,7 @@
 #include "Server.hpp"
 #include "World.hpp"
 #include "blocks.hpp"
+#include "chat/Message.hpp"
 #include "command_parser/CommandParser.hpp"
 #include "protocol/ClientPackets.hpp"
 #include "types.hpp"
@@ -25,7 +27,8 @@ Player::Player(Client *cli, std::shared_ptr<Dimension> dim, u128 uuid, const std
     _foodLevel(player_attributes::MAX_FOOD_LEVEL), // TODO: Take this from the saved data
     _foodSaturationLevel(player_attributes::DEFAULT_FOOD_SATURATION_LEVEL), // TODO: Take this from the saved data
     _foodTickTimer(0), // TODO: Take this from the saved data
-    _foodExhaustionLevel(0.0f) // TODO: Take this from the saved data
+    _foodExhaustionLevel(0.0f), // TODO: Take this from the saved data
+    _chatVisibility(protocol::ClientInformationChatMode::enabled)
 {
     _keepAliveClock.start();
     _heldItem = 0;
@@ -49,33 +52,13 @@ Player::Player(Client *cli, std::shared_ptr<Dimension> dim, u128 uuid, const std
 
 Player::~Player()
 {
-    // Send a disconnect message to the chat
-    chat::Message disconnectMsg = chat::Message(
-        "",
-        {.color = "yellow",
-         .translate = "multiplayer.player.left",
-         .with = std::vector<chat::Message>({chat::Message(
-             this->getUsername(),
-             {
-                 .insertion = this->getUsername(),
-             },
-             chat::message::ClickEvent(chat::message::ClickEvent::Action::SuggestCommand, "/tell " + this->getUsername()),
-             chat::message::HoverEvent(
-                 chat::message::HoverEvent::Action::ShowEntity,
-                 "{\"type\": \"minecraft:player\", \"id\": \"" + this->getUuidString() + "\", \"name\": \"" + this->getUsername() + "\"}"
-             )
-         )})}
-    );
+    chat::Message disconnectMsg = chat::Message::fromTranslationKey<chat::message::TranslationKey::multiplayer_player_left>(this);
 
     this->_dim->getWorld()->sendPlayerInfoRemovePlayer(this);
     this->_dim->removeEntity(this);
 
     // Send a disconnect message
-    this->_dim->getWorld()->getChat()->sendSystemMessage(disconnectMsg, false, this->_dim->getWorld()->getWorldGroup());
-    // _player->_dim->getWorld()->getChat()->sendPlayerMessage(
-    //     disconnectMsg,
-    //     _player
-    // );
+    this->_dim->getWorld()->getChat()->sendSystemMessage(disconnectMsg, this);
 }
 
 void Player::tick()
@@ -138,6 +121,8 @@ uint16_t Player::getHeldItem() const { return this->_heldItem; }
 const std::string &Player::getUuidString() const { return this->_uuidString; }
 
 player_attributes::Gamemode Player::getGamemode() const { return _gamemode; }
+
+const protocol::ClientInformationChatMode &Player::getChatVisibility() const { return this->_chatVisibility; }
 
 void Player::setGamemode(player_attributes::Gamemode gamemode) { _gamemode = gamemode; }
 
@@ -315,10 +300,10 @@ void Player::sendUpdateTime(const protocol::UpdateTime &data)
 
 void Player::sendChatMessageResponse(const protocol::PlayerChatMessage &packet)
 {
-    // auto pck = protocol::createPlayerChatMessage(packet);
-    // this->_cli->_sendData(*pck);
+    auto pck = protocol::createPlayerChatMessage(packet);
+    this->_cli->_sendData(*pck);
 
-    // LDEBUG("Sent a chat message response");
+    LDEBUG("Sent a chat message response");
 }
 
 void Player::sendSystemChatMessage(const protocol::SystemChatMessage &packet)
@@ -327,7 +312,6 @@ void Player::sendSystemChatMessage(const protocol::SystemChatMessage &packet)
     this->_cli->_sendData(*pck);
 
     LDEBUG("Sent a system chat message to ", this->getUsername());
-    LDEBUG("message: ", packet.JSONData);
 }
 
 void Player::sendWorldEvent(const protocol::WorldEvent &packet)
@@ -613,6 +597,11 @@ void Player::_onChatMessage(const std::shared_ptr<protocol::ChatMessage> &pck)
     LDEBUG("Got a Chat Message");
 }
 
+void Player::_onMessageAcknowledgement(const std::shared_ptr<protocol::MessageAcknowledgement> &pck)
+{
+    LINFO("Got a Message Acknowledgement");
+}
+
 /**
  * @brief This function is called when a client sends a command in the chat.
  *
@@ -627,7 +616,11 @@ void Player::_onChatCommand(const std::shared_ptr<protocol::ChatCommand> &pck)
 
 void Player::_onClientCommand(const std::shared_ptr<protocol::ClientCommand> &pck) { LDEBUG("Got a Client Command"); }
 
-void Player::_onClientInformation(const std::shared_ptr<protocol::ClientInformation> &pck) { LDEBUG("Got a Client Information"); }
+void Player::_onClientInformation(const std::shared_ptr<protocol::ClientInformation> &pck)
+{
+    this->_chatVisibility = pck->chat_mode;
+    LDEBUG("Got a Client Information");
+}
 
 void Player::_onCommandSuggestionRequest(const std::shared_ptr<protocol::CommandSuggestionRequest> &pck) { LDEBUG("Got a Command Suggestion Request"); }
 
@@ -1023,27 +1016,12 @@ void Player::_continueLoginSequence()
     this->_sendLoginMessage();
 }
 
-void Player::_sendLoginMessage(void)
+void Player::_sendLoginMessage()
 {
     // Send login message
-    chat::Message connectionMsg = chat::Message(
-        "",
-        {.color = "yellow",
-         .translate = "multiplayer.player.joined",
-         .with = std::vector<chat::Message>({chat::Message(
-             this->getUsername(),
-             {
-                 .insertion = this->getUsername(),
-             },
-             chat::message::ClickEvent(chat::message::ClickEvent::Action::SuggestCommand, "/tell " + this->getUsername() + " "),
-             chat::message::HoverEvent(
-                 chat::message::HoverEvent::Action::ShowEntity,
-                 "{\"type\": \"minecraft:player\", \"id\": \"" + this->getUuidString() + "\", \"name\": \"" + this->getUsername() + "\"}"
-             )
-         )})}
-    );
+    chat::Message connectionMsg = chat::Message::fromTranslationKey<chat::message::TranslationKey::multiplayer_player_joined>(this);
 
-    this->getDimension()->getWorld()->getChat()->sendSystemMessage(connectionMsg, false, this->getDimension()->getWorld()->getWorldGroup());
+    this->getWorld()->getChat()->sendSystemMessage(connectionMsg, this);
 }
 
 void Player::_unloadChunk(int32_t x, int32_t z)

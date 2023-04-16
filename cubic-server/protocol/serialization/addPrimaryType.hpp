@@ -125,9 +125,13 @@ static constexpr void _addString(std::vector<uint8_t> &out, const std::string &d
 }
 
 // Default addString with a max size of 32767
-constexpr void addString(std::vector<uint8_t> &out, const std::string &data) { _addString(out, data, 32767); }
+constexpr size_t MAX_STRING_SIZE = 32767;
+constexpr size_t MAX_CHAT_SIZE = 262144;
 
-constexpr void addChat(std::vector<uint8_t> &out, const std::string &data) { _addString(out, data, 262144); }
+constexpr void addString(std::vector<uint8_t> &out, const std::string &data) { _addString(out, data, MAX_STRING_SIZE); }
+
+// Should use chat::Message, but can't because the JSON lib is not constexpr
+constexpr void addChat(std::vector<uint8_t> &out, const std::string &data) { _addString(out, data, MAX_CHAT_SIZE); }
 
 // TODO: gl :>
 // constexpr void addEntityMetadata(std::vector<uint8_t>, const EntityMetadata &data)

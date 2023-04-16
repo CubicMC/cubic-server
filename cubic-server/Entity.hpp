@@ -6,6 +6,8 @@
 #include "math/Vector3.hpp"
 #include <memory>
 
+class World;
+class WorldGroup;
 class Dimension;
 
 class Entity {
@@ -39,6 +41,8 @@ public:
     virtual void setRotation(const Vector2<uint8_t> &rot);
     virtual void setRotation(uint8_t yaw, uint8_t pitch);
     [[nodiscard]] virtual std::shared_ptr<Dimension> getDimension() const;
+    [[nodiscard]] virtual World *getWorld() const;
+    [[nodiscard]] virtual WorldGroup *getWorldGroup() const;
     [[nodiscard]] virtual int32_t getId() const;
     [[nodiscard]] virtual Vector3<double> &getPosition();
     [[nodiscard]] virtual const Vector3<double> &getPosition() const;

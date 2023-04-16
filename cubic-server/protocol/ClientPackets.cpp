@@ -407,21 +407,36 @@ std::shared_ptr<std::vector<uint8_t>> protocol::createPlayerAbilities(const Play
 std::shared_ptr<std::vector<uint8_t>> protocol::createPlayerChatMessage(const PlayerChatMessage &in)
 {
     std::vector<uint8_t> payload;
-    // clang-format off
-    serialize(payload,
-        in.signedContent, addChat,
-        in.hasUnsignedContent, addBoolean,
-        in.unsignedContent, addString,
-        in.type, addVarInt,
+    serialize(
+        payload,
         in.senderUUID, addUUID,
-        in.senderName, addChat,
-        in.hasTeamName, addBoolean,
-        in.teamName, addChat,
+        in.index, addVarInt,
+        in.hasSignature, addBoolean
+    );
+    if (in.hasSignature)
+        serialize(payload, in.signature, addArray<uint8_t, addByte>);
+    serialize(
+        payload,
+        in.message, addChat,
         in.timestamp, addLong,
         in.salt, addLong,
-        in.signature, addArray<uint8_t, addByte>
+        in.previousMessages, addArray<std::pair<int32_t, std::vector<uint8_t>>, addRawMessage>,
+        in.hasUnsignedContent, addBoolean
     );
-    // clang-format on
+    if (in.hasUnsignedContent)
+        serialize(payload, in.unsignedContent, addChat);
+    serialize(payload, in.filterType, addVarInt);
+    // TODO: Chat filter
+    // if ()
+    //     serialize(payload, in.filterData, addArray<int64_t, addLong>);
+    serialize(
+        payload,
+        in.chatType, addVarInt,
+        in.networkName, addChat,
+        in.hasNetworkTargetName, addBoolean
+    );
+    if (in.hasNetworkTargetName)
+        serialize(payload, in.networkTargetName, addChat);
     auto packet = std::make_shared<std::vector<uint8_t>>();
     finalize(*packet, payload, ClientPacketID::PlayerChatMessage);
     return packet;
@@ -463,7 +478,7 @@ std::shared_ptr<std::vector<uint8_t>> protocol::createPlayerInfoUpdate(const Pla
             serialize(payload,
                 actionSet.initializeChat.has_sig_data, addBoolean
             );
-            // TODO: miki
+            // TODO(miki or huntears): Chat signature data
         }
         if (in.actions & (uint8_t) PlayerInfoUpdateActions::UpdateGamemode) { // Update gamemode
             serialize(payload,

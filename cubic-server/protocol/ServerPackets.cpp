@@ -83,6 +83,15 @@ std::shared_ptr<ChangeDifficulty> protocol::parseChangeDifficulty(std::vector<ui
     return h;
 }
 
+std::shared_ptr<MessageAcknowledgement> protocol::parseMessageAcknowledgement(std::vector<uint8_t> &buffer)
+{
+    auto h = std::make_shared<MessageAcknowledgement>();
+    auto at = buffer.data();
+
+    parse(at, buffer.data() + buffer.size() - 1, *h, popVarInt, &MessageAcknowledgement::messageCount);
+    return h;
+}
+
 std::shared_ptr<ChatCommand> protocol::parseChatCommand(std::vector<uint8_t> &buffer)
 {
     auto h = std::make_shared<ChatCommand>();
@@ -101,9 +110,15 @@ std::shared_ptr<ChatMessage> protocol::parseChatMessage(std::vector<uint8_t> &bu
     auto at = buffer.data();
 
     parse(
-        at, buffer.data() + buffer.size() - 1, *h, popString, &ChatMessage::message, popInstantJavaObject, &ChatMessage::timestamp, popLong, &ChatMessage::salt,
-        popArray<uint8_t, popByte>, &ChatMessage::signature, popBoolean, &ChatMessage::isSigned
+        at, buffer.data() + buffer.size() - 1, *h,
+        popString, &ChatMessage::message,
+        popLong, &ChatMessage::timestamp,
+        popLong, &ChatMessage::salt,
+        popBoolean, &ChatMessage::isSigned
     );
+    if (h->isSigned)
+        parse(at, buffer.data() + buffer.size() - 1, *h, popArray<uint8_t, popByte>, &ChatMessage::signature);
+    parse(at, buffer.data() + buffer.size() - 1, *h, popBitSet<20>, &ChatMessage::acknowledged);
     return h;
 }
 

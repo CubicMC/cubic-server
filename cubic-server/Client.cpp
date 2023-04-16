@@ -14,6 +14,7 @@
 #include "protocol/ClientPackets.hpp"
 #include "protocol/ServerPackets.hpp"
 #include "whitelist/Whitelist.hpp"
+#include "chat/ChatRegistry.hpp"
 
 Client::Client(int sockfd, struct sockaddr_in6 addr):
     _sockfd(sockfd),
@@ -197,6 +198,7 @@ void Client::handleParsedClientPacket(const std::shared_ptr<protocol::BaseServer
             PCK_CALLBACK_PLAY(PlaceRecipe);
             PCK_CALLBACK_PLAY(PlayerAbilities);
             PCK_CALLBACK_PLAY(PlayerAction);
+            PCK_CALLBACK_PLAY(MessageAcknowledgement);
             PCK_CALLBACK_PLAY(PlayerCommand);
             PCK_CALLBACK_PLAY(PlayerInput);
             PCK_CALLBACK_PLAY(Pong);
@@ -390,102 +392,78 @@ void Client::sendLoginPlay()
             player_attributes::Gamemode::Survival, // TODO: something like this this->_player->getPreviousGamemode().has_value() ? this->_player->getPreviousGamemode() : -1;
         .dimensionNames = std::vector<std::string>({"minecraft:overworld"}), // TODO: something like this this->_player->_dim->getWorld()->getDimensions();
         // clang-format off
-            .registryCodec = nbt::Compound("", {
-                new nbt::Compound("minecraft:dimension_type", {
-                    new nbt::String("type", "minecraft:dimension_type"),
-                    new nbt::List("value", {
-                        new nbt::Compound("", {
-                            new nbt::String("name", "minecraft:overworld"),
-                            new nbt::Int("id", 0),
-                            new nbt::Compound("element", {
-                                new nbt::Byte("ultrawarm", 0),
-                                new nbt::Int("logical_height", 256),
-                                new nbt::String("infiniburn", "#minecraft:infiniburn_overworld"),
-                                new nbt::Byte("piglin_safe", 0),
-                                new nbt::Float("ambient_light", 0.0),
-                                new nbt::Byte("has_skylight", 1),
-                                new nbt::String("effects", "minecraft:overworld"),
-                                new nbt::Byte("has_raids", 1),
-                                new nbt::Int("monster_spawn_block_light_limit", 0),
-                                new nbt::Byte("respawn_anchor_works", 0),
-                                new nbt::Int("height", 384),
-                                new nbt::Byte("has_ceiling", 0),
-                                new nbt::Compound("monster_spawn_light_level", {
-                                    new nbt::String("type", "minecraft:uniform"),
-                                    new nbt::Compound("value", {
-                                        new nbt::Int("max_inclusive", 7),
-                                        new nbt::Int("min_inclusive", 0),
-                                    })
-                                }),
-                                new nbt::Byte("natural", 1),
-                                new nbt::Int("min_y", -64),
-                                new nbt::Float("coordinate_scale", 1.0),
-                                new nbt::Byte("bed_works", 1),
+        .registryCodec = nbt::Compound("", {
+            chat::_details::getChatRegistry(),
+            new nbt::Compound("minecraft:dimension_type", {
+                new nbt::String("type", "minecraft:dimension_type"),
+                new nbt::List("value", {
+                    new nbt::Compound("", {
+                        new nbt::String("name", "minecraft:overworld"),
+                        new nbt::Int("id", 0),
+                        new nbt::Compound("element", {
+                            new nbt::Byte("ultrawarm", 0),
+                            new nbt::Int("logical_height", 256),
+                            new nbt::String("infiniburn", "#minecraft:infiniburn_overworld"),
+                            new nbt::Byte("piglin_safe", 0),
+                            new nbt::Float("ambient_light", 0.0),
+                            new nbt::Byte("has_skylight", 1),
+                            new nbt::String("effects", "minecraft:overworld"),
+                            new nbt::Byte("has_raids", 1),
+                            new nbt::Int("monster_spawn_block_light_limit", 0),
+                            new nbt::Byte("respawn_anchor_works", 0),
+                            new nbt::Int("height", 384),
+                            new nbt::Byte("has_ceiling", 0),
+                            new nbt::Compound("monster_spawn_light_level", {
+                                new nbt::String("type", "minecraft:uniform"),
+                                new nbt::Compound("value", {
+                                    new nbt::Int("max_inclusive", 7),
+                                    new nbt::Int("min_inclusive", 0),
+                                })
                             }),
+                            new nbt::Byte("natural", 1),
+                            new nbt::Int("min_y", -64),
+                            new nbt::Float("coordinate_scale", 1.0),
+                            new nbt::Byte("bed_works", 1),
                         }),
-                    })
-                }),
-                new nbt::Compound("minecraft:worldgen/biome", {
-                    new nbt::String("type", "minecraft:worldgen/biome"),
-                    new nbt::List("value", {
-                        new nbt::Compound("", {
-                            new nbt::String("name", "minecraft:plains"),
-                            new nbt::Int("id", 0),
-                            new nbt::Compound("element", {
-                                new nbt::String("precipitation", "none"),
-                                new nbt::Float("temperature", 0.8),
-                                new nbt::Float("downfall", 0.4),
-                                new nbt::Compound("effects", {
-                                    new nbt::Int("sky_color", 7907327),
-                                    new nbt::Int("water_fog_color", 329011),
-                                    new nbt::Int("fog_color", 12638463),
-                                    new nbt::Int("water_color", 4159204),
-                                })
-                            }),
-                        }),
-                        new nbt::Compound("", {
-                            new nbt::String("name", "minecraft:my_super_cool_biome_lol_haha"),
-                            new nbt::Int("id", 1),
-                            new nbt::Compound("element", {
-                                new nbt::String("precipitation", "none"),
-                                new nbt::Float("temperature", 0.8),
-                                new nbt::Float("downfall", 0.4),
-                                new nbt::Compound("effects", {
-                                    new nbt::Int("sky_color", 7907327),
-                                    new nbt::Int("water_fog_color", 329011),
-                                    new nbt::Int("fog_color", 12638463),
-                                    new nbt::Int("water_color", 4159204),
-                                })
-                            }),
-                        })
-                    })
-                }),
-                new nbt::Compound("minecraft:chat_type", {
-                    new nbt::String("type", "minecraft:chat_type"),
-                    new nbt::List("value", {
-                        new nbt::Compound("", {
-                            new nbt::String("name", "minecraft:chat"),
-                            new nbt::Int("id", 0),
-                            new nbt::Compound("element", {
-                                new nbt::Compound("chat", {
-                                    new nbt::List("parameters", {
-                                        new nbt::String("", "sender"),
-                                        new nbt::String("", "content")
-                                    }),
-                                    new nbt::String("translation_key", "chat.type.text"),
-                                }),
-                                new nbt::Compound("narration", {
-                                    new nbt::List("parameters", {
-                                        new nbt::String("", "sender"),
-                                        new nbt::String("", "content")
-                                    }),
-                                    new nbt::String("translation_key", "chat.type.text.narrate"),
-                                })
+                    }),
+                })
+            }),
+            new nbt::Compound("minecraft:worldgen/biome", {
+                new nbt::String("type", "minecraft:worldgen/biome"),
+                new nbt::List("value", {
+                    new nbt::Compound("", {
+                        new nbt::String("name", "minecraft:plains"),
+                        new nbt::Int("id", 0),
+                        new nbt::Compound("element", {
+                            new nbt::String("precipitation", "none"),
+                            new nbt::Float("temperature", 0.8),
+                            new nbt::Float("downfall", 0.4),
+                            new nbt::Compound("effects", {
+                                new nbt::Int("sky_color", 7907327),
+                                new nbt::Int("water_fog_color", 329011),
+                                new nbt::Int("fog_color", 12638463),
+                                new nbt::Int("water_color", 4159204),
                             })
-                        })
+                        }),
+                    }),
+                    new nbt::Compound("", {
+                        new nbt::String("name", "minecraft:my_super_cool_biome_lol_haha"),
+                        new nbt::Int("id", 1),
+                        new nbt::Compound("element", {
+                            new nbt::String("precipitation", "none"),
+                            new nbt::Float("temperature", 0.8),
+                            new nbt::Float("downfall", 0.4),
+                            new nbt::Compound("effects", {
+                                new nbt::Int("sky_color", 7907327),
+                                new nbt::Int("water_fog_color", 329011),
+                                new nbt::Int("fog_color", 12638463),
+                                new nbt::Int("water_color", 4159204),
+                            })
+                        }),
                     })
                 })
             }),
+        }),
         // clang-format on
         .dimensionType = "minecraft:overworld", // TODO: something like this this->_player->_dim->getDimensionType();
         .dimensionName = "overworld", // TODO: something like this this->_player->getDimension()->name;
