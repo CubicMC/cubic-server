@@ -4,6 +4,7 @@
 #include "WorldGroup.hpp"
 #include "protocol/ClientPackets.hpp"
 #include "protocol/typeSerialization.hpp"
+#include "types.hpp"
 #include <cstdint>
 
 World::World(WorldGroup *worldGroup):
@@ -151,11 +152,11 @@ void World::sendPlayerInfoAddPlayer(Player *current)
 {
     // get list of players
     std::vector<Player *> players = this->getPlayers();
-    std::vector<protocol::_Actions> players_info;
+    std::vector<protocol::PlayerInfoUpdate::Action> players_info;
 
-    uint8_t actions = (uint8_t) protocol::PlayerInfoUpdateActions::AddPlayer | (uint8_t) protocol::PlayerInfoUpdateActions::InitializeChat |
-        (uint8_t) protocol::PlayerInfoUpdateActions::UpdateGamemode | (uint8_t) protocol::PlayerInfoUpdateActions::UpdateListed |
-        (uint8_t) protocol::PlayerInfoUpdateActions::UpdateLatency | (uint8_t) protocol::PlayerInfoUpdateActions::UpdateDisplayName;
+    uint8_t actions = (uint8_t) protocol::PlayerInfoUpdate::Actions::AddPlayer | (uint8_t) protocol::PlayerInfoUpdate::Actions::InitializeChat |
+        (uint8_t) protocol::PlayerInfoUpdate::Actions::UpdateGamemode | (uint8_t) protocol::PlayerInfoUpdate::Actions::UpdateListed |
+        (uint8_t) protocol::PlayerInfoUpdate::Actions::UpdateLatency | (uint8_t) protocol::PlayerInfoUpdate::Actions::UpdateDisplayName;
 
     // iterate through the list of players
     for (auto &player : players) {
@@ -164,16 +165,15 @@ void World::sendPlayerInfoAddPlayer(Player *current)
         if (player->getId() != current->getId()) {
             player->sendPlayerInfoUpdate({
                 .actions = actions,
-                .numberOfActions = 1,
                 .actionSets = {
                     {
                         .uuid = current->getUuid(),
                         .addPlayer = {
                             .name = current->getUsername(),
-                            .numberOfProperties = 0,
+                            .properties = {},
                         },
                        .initializeChat = {
-                            .has_sig_data = false,
+                            .hasSigData = false,
                         },
                        .updateGamemode = {
                             .gamemode = (int32_t) current->getGamemode(),
@@ -197,10 +197,10 @@ void World::sendPlayerInfoAddPlayer(Player *current)
             .uuid = player->getUuid(),
             .addPlayer = {
                 .name = player->getUsername(),
-                .numberOfProperties = 0,
+                .properties = {},
             },
             .initializeChat = {
-                .has_sig_data = false,
+                .hasSigData = false,
             },
             .updateGamemode = {
                 .gamemode = (int32_t) player->getGamemode(),
@@ -219,7 +219,12 @@ void World::sendPlayerInfoAddPlayer(Player *current)
     }
 
     // send the infos of all players to the current added player
-    current->sendPlayerInfoUpdate({.actions = actions, .numberOfActions = (int32_t) players_info.size(), .actionSets = players_info});
+    // clang-format off
+    current->sendPlayerInfoUpdate({
+        .actions = actions,
+        .actionSets = players_info
+    });
+    // clang-format on
     LDEBUG("Sent player info to " + current->getUsername());
 }
 

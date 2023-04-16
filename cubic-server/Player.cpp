@@ -244,7 +244,7 @@ void Player::sendBlockUpdate(const protocol::BlockUpdate &packet)
     auto pck = protocol::createBlockUpdate(packet);
     this->_cli->_sendData(*pck);
 
-    LDEBUG("Sent a block update at ", packet.location, " = ", packet.block_id, " to ", this->getUsername());
+    LDEBUG("Sent a block update at ", packet.location, " = ", packet.blockId, " to ", this->getUsername());
 }
 
 void Player::sendFeatureFlags(const protocol::FeatureFlags &packet)
@@ -295,7 +295,7 @@ void Player::sendEntityVelocity(const protocol::EntityVelocity &data)
     auto pck = protocol::createEntityVelocity(data);
     this->_cli->_sendData(*pck);
 
-    LDEBUG("Sent an Entity Velocity packet with velocity: x -> ", data.velocity_x, " | ", "y -> ", data.velocity_y, " | ", "z -> ", data.velocity_z);
+    LDEBUG("Sent an Entity Velocity packet with velocity: x -> ", data.velocityX, " | ", "y -> ", data.velocityY, " | ", "z -> ", data.velocityZ);
 }
 
 void Player::sendHealth(void)
@@ -479,9 +479,9 @@ void Player::sendRemoveEntities(const std::vector<int32_t> &entities)
     LDEBUG("Sent a Remove Entities packet");
 }
 
-void Player::sendSwingArm(bool main_hand, int32_t swinger_id)
+void Player::sendSwingArm(bool mainHand, int32_t swingerId)
 {
-    auto pck = protocol::createEntityAnimation(main_hand ? protocol::EntityAnimationID::SwingMainArm : protocol::EntityAnimationID::SwingOffHand, swinger_id);
+    auto pck = protocol::createEntityAnimation(mainHand ? protocol::EntityAnimation::ID::SwingMainArm : protocol::EntityAnimation::ID::SwingOffHand, swingerId);
     _cli->_sendData(*pck);
 }
 
@@ -732,9 +732,9 @@ void Player::_onPlaceRecipe(const std::shared_ptr<protocol::PlaceRecipe> &pck) {
 
 void Player::_onPlayerAbilities(const std::shared_ptr<protocol::PlayerAbilities> &pck)
 {
-    this->_isFlying = pck->flags & protocol::PlayerAbilitiesFlags::Flying;
-    uint8_t flags = this->_isFlying ? protocol::PlayerAbilitiesFlags::Flying : 0x00;
-    flags |= protocol::PlayerAbilitiesFlags::Invulnerable | protocol::PlayerAbilitiesFlags::AllowFlying | protocol::PlayerAbilitiesFlags::CreativeMode;
+    this->_isFlying = pck->flags & protocol::PlayerAbilities::Flags::Flying;
+    uint8_t flags = this->_isFlying ? protocol::PlayerAbilities::Flags::Flying : 0x00;
+    flags |= protocol::PlayerAbilities::Flags::Invulnerable | protocol::PlayerAbilities::Flags::AllowFlying | protocol::PlayerAbilities::Flags::CreativeMode;
     this->sendPlayerAbilities({flags, 0.05f, 0.1f});
     LDEBUG("Got a Player Abilities");
 }
@@ -966,8 +966,8 @@ void Player::_continueLoginSequence()
     // TODO: send Change Difficulty
 
     this->sendPlayerAbilities(
-        {(uint8_t) protocol::PlayerAbilitiesFlags::Invulnerable | (uint8_t) protocol::PlayerAbilitiesFlags::Flying | (uint8_t) protocol::PlayerAbilitiesFlags::AllowFlying |
-             (uint8_t) protocol::PlayerAbilitiesFlags::CreativeMode,
+        {(uint8_t) protocol::PlayerAbilitiesClient::Flags::Invulnerable | (uint8_t) protocol::PlayerAbilitiesClient::Flags::Flying |
+             (uint8_t) protocol::PlayerAbilitiesClient::Flags::AllowFlying | (uint8_t) protocol::PlayerAbilitiesClient::Flags::CreativeMode,
          0.05, 0.1}
     );
 

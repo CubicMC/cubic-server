@@ -3,7 +3,6 @@
 
 #include <cstdint>
 #include <memory>
-#include <optional>
 #include <stdint.h>
 #include <string>
 #include <variant>
@@ -74,18 +73,18 @@ struct Disconnect {
     std::string reason;
 };
 std::shared_ptr<std::vector<uint8_t>> createLoginDisconnect(const Disconnect &);
-struct _LoginSuccessProperty {
-    std::string name;
-    std::string value;
-    bool isSigned;
-    std::optional<std::string> signature;
-};
 
 struct LoginSuccess {
+    struct Property {
+        std::string name;
+        std::string value;
+        bool isSigned;
+        std::string signature;
+    };
     u128 uuid;
     std::string username;
     int32_t numberOfProperties;
-    std::vector<_LoginSuccessProperty> properties;
+    std::vector<Property> properties;
 };
 std::shared_ptr<std::vector<uint8_t>> createLoginSuccess(const LoginSuccess &);
 
@@ -100,8 +99,8 @@ struct PingResponse {
 std::shared_ptr<std::vector<uint8_t>> createPingResponse(const PingResponse &);
 
 struct SpawnPlayer {
-    int32_t entity_id;
-    u128 player_uuid;
+    int32_t entityId;
+    u128 playerUuid;
     double x;
     double y;
     double z;
@@ -110,19 +109,22 @@ struct SpawnPlayer {
 };
 std::shared_ptr<std::vector<uint8_t>> createSpawnPlayer(const SpawnPlayer &);
 
-enum class EntityAnimationID : uint8_t {
-    SwingMainArm = 0x00,
-    TakeDamage = 0x01,
-    LeaveBed = 0x02,
-    SwingOffHand = 0x03,
-    CriticalEffect = 0x04,
-    MagicCriticalEffect = 0x05,
+struct EntityAnimation {
+    enum class ID : uint8_t {
+        SwingMainArm = 0x00,
+        TakeDamage = 0x01,
+        LeaveBed = 0x02,
+        SwingOffHand = 0x03,
+        CriticalEffect = 0x04,
+        MagicCriticalEffect = 0x05,
+    } animId;
+    int32_t entityId;
 };
-std::shared_ptr<std::vector<uint8_t>> createEntityAnimation(EntityAnimationID animId, int32_t entityID);
+std::shared_ptr<std::vector<uint8_t>> createEntityAnimation(EntityAnimation::ID animId, int32_t entityID);
 
 struct BlockUpdate {
     Position location;
-    int32_t block_id;
+    int32_t blockId;
 };
 std::shared_ptr<std::vector<uint8_t>> createBlockUpdate(const BlockUpdate &);
 
@@ -134,15 +136,15 @@ std::shared_ptr<std::vector<uint8_t>> createChangeDifficultyClient(const ChangeD
 
 struct Commands {
     std::vector<int> nodes;
-    int32_t root_index;
+    int32_t rootIndex;
 };
 std::shared_ptr<std::vector<uint8_t>> createCommands(const Commands &);
 
 struct SetContainerContent {
-    uint8_t window_id;
-    int32_t state_id;
-    std::vector<Slot> slot_data;
-    Slot carried_item;
+    uint8_t windowId;
+    int32_t stateId;
+    std::vector<Slot> slotData;
+    Slot carriedItem;
 };
 std::shared_ptr<std::vector<uint8_t>> createSetContainerContent(const SetContainerContent &);
 
@@ -167,10 +169,9 @@ std::shared_ptr<std::vector<uint8_t>> createCustomSoundEffect(const CustomSoundE
 std::shared_ptr<std::vector<uint8_t>> createPlayDisconnect(const Disconnect &);
 
 struct EntityEvent {
-    int32_t entity_id;
-    uint8_t event_status;
+    int32_t entityId;
+    uint8_t eventStatus;
 };
-
 std::shared_ptr<std::vector<uint8_t>> createEntityEvent(const EntityEvent &);
 
 std::shared_ptr<std::vector<uint8_t>> createUnloadChunk(const Position2D &);
@@ -288,8 +289,8 @@ struct LoginPlay {
     bool isDebug;
     bool isFlat;
     bool hasDeathLocation;
-    std::optional<std::string> deathDimensionName;
-    std::optional<Position> deathLocation;
+    std::string deathDimensionName;
+    Position deathLocation;
 };
 std::shared_ptr<std::vector<uint8_t>> createLoginPlay(const LoginPlay &);
 
@@ -321,13 +322,13 @@ struct UpdateEntityRotation {
 };
 std::shared_ptr<std::vector<uint8_t>> createUpdateEntityRotation(const UpdateEntityRotation &);
 
-enum PlayerAbilitiesFlags : uint8_t {
-    Invulnerable = 0x01,
-    Flying = 0x02,
-    AllowFlying = 0x04,
-    CreativeMode = 0x08
-};
 struct PlayerAbilitiesClient {
+    enum Flags : uint8_t {
+        Invulnerable = 0x01,
+        Flying = 0x02,
+        AllowFlying = 0x04,
+        CreativeMode = 0x08
+    };
     uint8_t flags;
     float flyingSpeed;
     float fieldOfViewModifier;
@@ -354,68 +355,52 @@ struct PlayerInfoRemove {
 };
 std::shared_ptr<std::vector<uint8_t>> createPlayerInfoRemove(const PlayerInfoRemove &);
 
-struct _AddPlayer {
-    std::string name;
-    int32_t numberOfProperties;
-    // properties lol
-};
-
-struct _UpdateGamemode {
-    int32_t gamemode;
-};
-
-struct _UpdateLatency {
-    int32_t latency;
-};
-
-struct _UpdateDisplayName {
-    bool hasDisplayName;
-    std::string displayName;
-};
-
-struct _InitializeChat {
-    // TODO: Let Miki do it xd
-    bool has_sig_data;
-};
-
-struct _UpdateListed {
-    bool listed;
-};
-
-struct _Actions {
-    u128 uuid;
-    // AddPlayer
-    _AddPlayer addPlayer;
-
-    // InitializeChat
-    _InitializeChat initializeChat;
-
-    // UpdateGamemode
-    _UpdateGamemode updateGamemode;
-
-    // UpdateListed
-    _UpdateListed updateListed;
-
-    // UpdateLatency
-    _UpdateLatency updateLatency;
-
-    // UpdateDisplayName
-    _UpdateDisplayName updateDisplayName;
-};
-
-enum class PlayerInfoUpdateActions : uint8_t {
-    AddPlayer = 0b00000001,
-    InitializeChat = 0b00000010,
-    UpdateGamemode = 0b00000100,
-    UpdateListed = 0b00001000,
-    UpdateLatency = 0b00010000,
-    UpdateDisplayName = 0b00100000,
-};
-
 struct PlayerInfoUpdate {
+    enum class Actions : uint8_t {
+        AddPlayer = 0b00000001,
+        InitializeChat = 0b00000010,
+        UpdateGamemode = 0b00000100,
+        UpdateListed = 0b00001000,
+        UpdateLatency = 0b00010000,
+        UpdateDisplayName = 0b00100000,
+    };
+    struct Action {
+        u128 uuid;
+        struct AddPlayer {
+            struct Property {
+                std::string name;
+                std::string value;
+                bool isSigned;
+                std::string signature;
+            };
+            std::string name;
+            std::vector<Property> properties;
+        } addPlayer;
+
+        struct InitializeChat {
+            // TODO: Let Miki do it xd
+            bool hasSigData;
+        } initializeChat;
+
+        struct UpdateGamemode {
+            int32_t gamemode;
+        } updateGamemode;
+
+        struct UpdateListed {
+            bool listed;
+        } updateListed;
+
+        struct UpdateLatency {
+            int32_t latency;
+        } updateLatency;
+
+        struct UpdateDisplayName {
+            bool hasDisplayName;
+            std::string displayName;
+        } updateDisplayName;
+    };
     uint8_t actions;
-    int32_t numberOfActions;
-    std::vector<_Actions> actionSets;
+    std::vector<Action> actionSets;
 };
 std::shared_ptr<std::vector<uint8_t>> createPlayerInfoUpdate(const PlayerInfoUpdate &);
 
@@ -433,16 +418,16 @@ std::shared_ptr<std::vector<uint8_t>> createSynchronizePlayerPosition(const Sync
 
 struct UpdateRecipesBook {
     int32_t action;
-    bool crafting_recipe_book_open;
-    bool crafting_recipe_book_filter_active;
-    bool smelting_recipe_book_open;
-    bool smelting_recipe_book_filter_active;
-    bool blast_furnace_recipe_book_open;
-    bool blast_furnace_recipe_book_filter_active;
-    bool smoker_recipe_book_open;
-    bool smoker_recipe_book_filter_active;
-    std::vector<std::string> recipes_id;
-    std::optional<std::vector<std::string>> recipies_id_two; // Don't know why
+    bool craftingRecipeBookOpen;
+    bool craftingRecipeBookFilterActive;
+    bool smeltingRecipeBookOpen;
+    bool smeltingRecipeBookFilterActive;
+    bool blastFurnaceRecipeBookOpen;
+    bool blastFurnaceRecipeBookFilterActive;
+    bool smokerRecipeBookOpen;
+    bool smokerRecipeBookFilterActive;
+    std::vector<std::string> recipesId;
+    std::vector<std::string> recipiesIdForInit;
 };
 std::shared_ptr<std::vector<uint8_t>> createUpdateRecipesBook(const UpdateRecipesBook &);
 
@@ -458,11 +443,11 @@ struct HeadRotation {
 std::shared_ptr<std::vector<uint8_t>> createHeadRotation(const HeadRotation &in);
 
 struct ServerData {
-    bool has_motd;
+    bool hasMotd;
     std::string motd;
-    bool has_icon;
+    bool hasIcon;
     std::string icon;
-    bool enforce_secure_chat;
+    bool enforceSecureChat;
 };
 std::shared_ptr<std::vector<uint8_t>> createServerData(const ServerData &in);
 
@@ -482,8 +467,8 @@ struct SetDefaultSpawnPosition {
 std::shared_ptr<std::vector<uint8_t>> createSetDefaultSpawnPosition(const SetDefaultSpawnPosition &);
 
 struct UpdateTime {
-    long world_age;
-    long time_of_day;
+    long worldAge;
+    long timeOfDay;
 };
 std::shared_ptr<std::vector<uint8_t>> createUpdateTime(const UpdateTime &);
 
@@ -524,10 +509,10 @@ struct SystemChatMessage {
 std::shared_ptr<std::vector<uint8_t>> createSystemChatMessage(const SystemChatMessage &);
 
 struct EntityVelocity {
-    int32_t entity_id;
-    int16_t velocity_x;
-    int16_t velocity_y;
-    int16_t velocity_z;
+    int32_t entityId;
+    int16_t velocityX;
+    int16_t velocityY;
+    int16_t velocityZ;
 };
 
 std::shared_ptr<std::vector<uint8_t>> createEntityVelocity(const EntityVelocity &);
