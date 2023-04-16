@@ -58,7 +58,7 @@ void Chat::sendSayMessage(const chat::Message &raw, const Player *from)
         return;
     }
 
-    auto message = chat::Message::fromTranslationKey<chat::message::TranslationKey::chat_type_announcement, const Player *, const chat::Message &>(from, raw);
+    auto message = chat::Message::fromTranslationKey<chat::message::TranslationKey::chat_type_announcement>(from, raw);
 
     this->_sendMessage(message, from, chat::message::Type::Announce);
 }
@@ -73,8 +73,8 @@ void Chat::sendWhisperMessage(const chat::Message &message, Player *sender, Play
         return;
     }
 
-    chat::Message in = chat::Message::fromTranslationKey<chat::message::TranslationKey::commands_message_display_incoming, const Player *, const chat::Message &>(sender, message);
-    chat::Message out = chat::Message::fromTranslationKey<chat::message::TranslationKey::commands_message_display_outgoing, const Player *, const chat::Message &>(to, message);
+    chat::Message in = chat::Message::fromTranslationKey<chat::message::TranslationKey::commands_message_display_incoming>(sender, message);
+    chat::Message out = chat::Message::fromTranslationKey<chat::message::TranslationKey::commands_message_display_outgoing>(to, message);
 
     this->_sendMessage(out, sender, chat::message::Type::WhisperOut);
     this->_sendMessage(in, to, chat::message::Type::WhisperIn);

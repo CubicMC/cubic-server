@@ -51,7 +51,7 @@ Player::Player(Client *cli, std::shared_ptr<Dimension> dim, u128 uuid, const std
 
 Player::~Player()
 {
-    chat::Message disconnectMsg = chat::Message::fromTranslationKey<chat::message::TranslationKey::multiplayer_player_left, const Player *>(this);
+    chat::Message disconnectMsg = chat::Message::fromTranslationKey<chat::message::TranslationKey::multiplayer_player_left>(this);
 
     this->_dim->getWorld()->sendPlayerInfoRemovePlayer(this);
     this->_dim->removeEntity(this);
@@ -1012,7 +1012,7 @@ void Player::_continueLoginSequence()
 void Player::_sendLoginMessage()
 {
     // Send login message
-    chat::Message connectionMsg = chat::Message::fromTranslationKey<chat::message::TranslationKey::multiplayer_player_joined, const Player *>(this);
+    chat::Message connectionMsg = chat::Message::fromTranslationKey<chat::message::TranslationKey::multiplayer_player_joined>(this);
 
     this->getDimension()->getWorld()->getChat()->sendSystemMessage(connectionMsg, this);
 }
