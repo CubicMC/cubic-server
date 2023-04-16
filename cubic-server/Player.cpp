@@ -51,13 +51,13 @@ Player::Player(Client *cli, std::shared_ptr<Dimension> dim, u128 uuid, const std
 
 Player::~Player()
 {
-    // chat::Message disconnectMsg = chat::Message::fromTranslationKey<chat::TranslationKey::multiplayer_player_left, const Player *>(this);
+    chat::Message disconnectMsg = chat::Message::fromTranslationKey<chat::message::TranslationKey::multiplayer_player_left, const Player *>(this);
 
     this->_dim->getWorld()->sendPlayerInfoRemovePlayer(this);
     this->_dim->removeEntity(this);
 
     // Send a disconnect message
-    // this->_dim->getWorld()->getChat()->sendSystemMessage(disconnectMsg, false, this->_dim->getWorld()->getWorldGroup());
+    this->_dim->getWorld()->getChat()->sendSystemMessage(disconnectMsg, false, this->_dim->getWorld()->getWorldGroup());
 }
 
 void Player::tick()
@@ -1010,12 +1010,12 @@ void Player::_continueLoginSequence()
     this->_sendLoginMessage();
 }
 
-void Player::_sendLoginMessage(void)
+void Player::_sendLoginMessage()
 {
     // Send login message
-    // chat::Message connectionMsg = chat::Message::fromTranslationKey<chat::TranslationKey::multiplayer_player_joined, const Player *>(this);
+    chat::Message connectionMsg = chat::Message::fromTranslationKey<chat::message::TranslationKey::multiplayer_player_joined, const Player *>(this);
 
-    // this->getDimension()->getWorld()->getChat()->sendSystemMessage(connectionMsg, false, this->getDimension()->getWorld()->getWorldGroup());
+    this->getDimension()->getWorld()->getChat()->sendSystemMessage(connectionMsg, false, this->getDimension()->getWorld()->getWorldGroup());
 }
 
 void Player::_unloadChunk(int32_t x, int32_t z)

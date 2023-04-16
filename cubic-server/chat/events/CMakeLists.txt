@@ -6,4 +6,4 @@ target_sources (${CMAKE_PROJECT_NAME} PRIVATE
 )
 
 add_subdirectory(clicks)
-add_subdirectory(hover)
+add_subdirectory(hovers)

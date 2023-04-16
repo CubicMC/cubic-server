@@ -12,7 +12,7 @@
 #include "events/Hover.hpp"
 #include "events/Click.hpp"
 
-#include "nbt.hpp"
+#include "concept.hpp"
 
 class Player;
 
@@ -24,7 +24,7 @@ private:
 
 public:
     Message(
-        const std::string &message, const chat::message::Style &style = {}, const chat::message::Options &options = {}, const std::optional<std::shared_ptr<chat::message::event::OnClick>> &clickEvent = std::nullopt,
+        const std::string &message = "", const chat::message::Style &style = {}, const chat::message::Options &options = {}, const std::optional<std::shared_ptr<chat::message::event::OnClick>> &clickEvent = std::nullopt,
         const std::optional<std::shared_ptr<chat::message::event::OnHover>> &hoverEvent = std::nullopt
     );
 
@@ -38,6 +38,11 @@ public:
     const std::optional<std::shared_ptr<chat::message::event::OnClick>> &getClickEvent() const;
     const SimpleMessage &getMessageComponent() const;
     const std::vector<chat::Message> &getExtra() const;
+
+    template<is_base_of<chat::message::event::OnHover> Event, typename... Args>
+    void makeHoverEvent(Args... args) { this->_hoverEvent = std::make_shared<Event>(std::forward<Args>(args)...); }
+    template<is_base_of<chat::message::event::OnClick> Event, typename... Args>
+    void makeClickEvent(Args... args) { this->_clickEvent = std::make_shared<Event>(std::forward<Args>(args)...); }
 
     void hoverEvent(const std::optional<std::shared_ptr<chat::message::event::OnHover>> &event);
     void clickEvent(const std::optional<std::shared_ptr<chat::message::event::OnClick>> &event);
@@ -59,27 +64,26 @@ private:
     std::vector<Message> _extra;
 };
 
+template<>
+Message Message::fromTranslationKey<message::TranslationKey::chat_type_text>(const Player *player, const std::string &message);
 // template<>
-// Message Message::fromTranslationKey<TranslationKey::chat_type_text>(const Player *player, const std::string &message);
-// // template<>
-// // Message Message::fromTranslationKey<TranslationKey::chat_type_emote>(const Player *player, const std::string &message);
-// template<>
-// Message Message::fromTranslationKey<TranslationKey::commands_message_display_incoming>(const Player *player, const std::string &message);
-// template<>
-// Message Message::fromTranslationKey<TranslationKey::commands_message_display_outgoing>(const Player *player, const std::string &message);
-// template<>
-// Message Message::fromTranslationKey<TranslationKey::chat_type_announcement>(const Player *player, const std::string &message);
-// template<>
-// Message Message::fromTranslationKey<TranslationKey::chat_type_team_text>(const Player *player, const std::string &message);
-// template<>
-// Message Message::fromTranslationKey<TranslationKey::chat_type_team_sent>(const Player *player, const std::string &message);
-// template<>
-// Message Message::fromTranslationKey<TranslationKey::chat_type_team_text>(const Player *player, const std::string &message);
-// template<>
-// Message Message::fromTranslationKey<TranslationKey::multiplayer_player_joined>(const Player *player);
-// template<>
-// Message Message::fromTranslationKey<TranslationKey::multiplayer_player_left>(const Player *player);
-
+// Message Message::fromTranslationKey<message::TranslationKey::chat_type_emote>(const Player *player, const std::string &message);
+template<>
+Message Message::fromTranslationKey<message::TranslationKey::commands_message_display_incoming>(const Player *player, const std::string &message);
+template<>
+Message Message::fromTranslationKey<message::TranslationKey::commands_message_display_outgoing>(const Player *player, const std::string &message);
+template<>
+Message Message::fromTranslationKey<message::TranslationKey::chat_type_announcement>(const Player *player, const std::string &message);
+template<>
+Message Message::fromTranslationKey<message::TranslationKey::chat_type_team_text>(const Player *player, const std::string &message);
+template<>
+Message Message::fromTranslationKey<message::TranslationKey::chat_type_team_sent>(const Player *player, const std::string &message);
+template<>
+Message Message::fromTranslationKey<message::TranslationKey::chat_type_team_text>(const Player *player, const std::string &message);
+template<>
+Message Message::fromTranslationKey<message::TranslationKey::multiplayer_player_joined>(const Player *player);
+template<>
+Message Message::fromTranslationKey<message::TranslationKey::multiplayer_player_left>(const Player *player);
 } // namespace chat
 
 #endif // CHAT_MESSAGE_HPP

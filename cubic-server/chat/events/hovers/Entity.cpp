@@ -16,6 +16,9 @@ nlohmann::json chat::message::event::EntityHover::toJson() const
 
     response["action"] = "show_entity";
     response["contents"] = nlohmann::json::object();
+    response["contents"]["type"] = "minecraft:player";
+    response["contents"]["id"] = "00000000-0000-0000-0000-000000000000";
+    // response["contents"]["id"] = _entity->uuid().toString();
     // TODO: Implement entity
 
     return response;

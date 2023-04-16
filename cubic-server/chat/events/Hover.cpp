@@ -1,8 +1,8 @@
 #include "Hover.hpp"
 #include "logging/Logger.hpp"
-#include "chat/events/hover/Item.hpp"
-#include "chat/events/hover/Text.hpp"
-#include "chat/events/hover/Entity.hpp"
+#include "hovers/Item.hpp"
+#include "hovers/Text.hpp"
+#include "hovers/Entity.hpp"
 
 std::shared_ptr<chat::message::event::OnHover> chat::message::event::OnHover::deserialize(const std::string &message)
 {

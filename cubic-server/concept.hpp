@@ -16,4 +16,7 @@ requires(std::ostream &os, const T &value) {
 template <typename T>
 concept is_nbt = std::is_base_of_v<nbt::Base, T>;
 
+template <typename Child, typename Base>
+concept is_base_of = std::is_base_of_v<Base, Child>;
+
 #endif // CONCEPT_HPP
