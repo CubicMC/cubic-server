@@ -15,7 +15,7 @@ namespace message {
 enum Type : int32_t {
     Chat = 0,
     Emote,
-    WhisperInc,
+    WhisperIn,
     WhisperOut,
     Announce,
     TeamText,

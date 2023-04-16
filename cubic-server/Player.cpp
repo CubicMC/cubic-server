@@ -309,7 +309,6 @@ void Player::sendSystemChatMessage(const protocol::SystemChatMessage &packet)
     this->_cli->_sendData(*pck);
 
     LDEBUG("Sent a system chat message to ", this->getUsername());
-    LDEBUG("message: ", packet.JSONData);
 }
 
 void Player::sendWorldEvent(const protocol::WorldEvent &packet)

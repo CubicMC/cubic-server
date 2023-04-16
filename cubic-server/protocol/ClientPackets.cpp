@@ -478,7 +478,7 @@ std::shared_ptr<std::vector<uint8_t>> protocol::createPlayerInfoUpdate(const Pla
             serialize(payload,
                 actionSet.initializeChat.has_sig_data, addBoolean
             );
-            // TODO: miki
+            // TODO(miki or huntears): Chat signature data
         }
         if (in.actions & (uint8_t) PlayerInfoUpdateActions::UpdateGamemode) { // Update gamemode
             serialize(payload,

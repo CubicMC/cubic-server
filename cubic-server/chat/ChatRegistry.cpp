@@ -105,7 +105,7 @@ nbt::Compound *chat::_details::getChatRegistry()
     // Whisper message incoming
     chat::_details::ChatType whisperIncomingType;
     whisperIncomingType
-        .id(chat::message::Type::WhisperInc)
+        .id(chat::message::Type::WhisperIn)
         .name("minecraft:msg_command_incoming")
         .addChatParameter("sender")
         .addChatParameter("content")

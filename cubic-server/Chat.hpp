@@ -24,13 +24,13 @@ public:
     void sendWhisperMessage(const chat::Message &message, Player *from, Player *to);
     // void sendTeamMessage(const chat::Message &message, const Player *sender);
     // void sendEmoteMessage(const chat::Message &message, const Player *from);
-    void sendTellrawMessage(const chat::Message &message, const std::string &selector);
+    void sendTellrawMessage(const chat::Message &message, const Player *from, const std::string &selector);
 
 private:
     void _sendMessage(const chat::Message &message, const Player *from, const chat::message::Type &type);
-    void _sendSystem(const chat::Message &message, const WorldGroup *worldGroup, bool overlay);
-    void _sendSystem(const chat::Message &message, const Player *player, bool overlay);
-    void _sendSystem(const chat::Message &message, const std::vector<Player *> &players, bool overlay);
+    void _sendSystem(const chat::Message &message, const WorldGroup *worldGroup, bool overlay = false);
+    void _sendSystem(const chat::Message &message, const std::vector<Player *> &players, bool overlay = false);
+    void _sendSystem(const chat::Message &message, Player *player, bool overlay = false);
 
 private:
     std::vector<chat::Message> _messagesLog;
