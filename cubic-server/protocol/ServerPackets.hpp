@@ -252,16 +252,16 @@ std::shared_ptr<QueryEntityTag> parseQueryEntityTag(std::vector<uint8_t> &buffer
 struct Interact : BaseServerPacket {
     int32_t entity_id;
     enum class Type : int32_t {
-        Interact,
-        Attack,
-        InteractAt,
+        Interact = 0,
+        Attack = 1,
+        InteractAt = 2,
     } type;
     float target_x;
     float target_y;
     float target_z;
     enum class Hand : int32_t {
-        MainHand,
-        OffHand,
+        MainHand = 0,
+        OffHand = 1,
     } hand;
     bool sneaking;
 };
@@ -354,22 +354,22 @@ std::shared_ptr<PlayerAbilities> parsePlayerAbilities(std::vector<uint8_t> &buff
 
 struct PlayerAction : BaseServerPacket {
     enum class Status : int32_t {
-        StartedDigging,
-        CancelledDigging,
-        FinishedDigging,
-        DropItemStack,
-        DropItem,
-        ShootArrowOrFinishEating,
-        SwapItemInHand,
+        StartedDigging = 0,
+        CancelledDigging = 1,
+        FinishedDigging = 2,
+        DropItemStack = 3,
+        DropItem = 4,
+        ShootArrowOrFinishEating = 5,
+        SwapItemInHand = 6,
     } status;
     Position location;
     enum class Face : uint8_t {
-        Bottom,
-        Top,
-        North,
-        South,
-        West,
-        East,
+        Bottom = 0,
+        Top = 1,
+        North = 2,
+        South = 3,
+        West = 4,
+        East = 5,
     } face;
     int32_t sequence;
 };
@@ -378,15 +378,15 @@ std::shared_ptr<PlayerAction> parsePlayerAction(std::vector<uint8_t> &buffer);
 struct PlayerCommand : BaseServerPacket {
     int32_t entity_id;
     enum class ActionId : int32_t {
-        StartSneaking,
-        StopSneaking,
-        LeaveBed,
-        StartSprinting,
-        StopSprinting,
-        StartJumpWithHorse,
-        StopJumpWithHorse,
-        OpenHorseInventory,
-        StartFlyingWithElytra,
+        StartSneaking = 0,
+        StopSneaking = 1,
+        LeaveBed = 2,
+        StartSprinting = 3,
+        StopSprinting = 4,
+        StartJumpWithHorse = 5,
+        StopJumpWithHorse = 6,
+        OpenHorseInventory = 7,
+        StartFlyingWithElytra = 8,
     } action_id;
     int32_t jump_boost;
 };
@@ -414,10 +414,10 @@ std::shared_ptr<PlayerSession> parsePlayerSession(std::vector<uint8_t> &buffer);
 
 struct ChangeRecipeBookSettings : BaseServerPacket {
     enum class BookID : int32_t {
-        Crafting,
-        Furnace,
-        BlastFurnace,
-        Smoker,
+        Crafting = 0,
+        Furnace = 1,
+        BlastFurnace = 2,
+        Smoker = 3,
     } book_id;
     bool book_open;
     bool filter_active;
@@ -436,18 +436,18 @@ std::shared_ptr<RenameItem> parseRenameItem(std::vector<uint8_t> &buffer);
 
 struct ResourcePack : BaseServerPacket {
     enum class Result : int32_t {
-        SuccessfullyLoaded,
-        Declined,
-        FailedDownload,
-        Accepted,
+        SuccessfullyLoaded = 0,
+        Declined = 1,
+        FailedDownload = 2,
+        Accepted = 3,
     } result;
 };
 std::shared_ptr<ResourcePack> parseResourcePack(std::vector<uint8_t> &buffer);
 
 struct SeenAdvancements : BaseServerPacket {
     enum class Action : int32_t {
-        OpenedTab,
-        ClosedScreen,
+        OpenedTab = 0,
+        ClosedScreen = 1,
     } action;
     std::string tab_id;
 };
@@ -475,9 +475,9 @@ struct ProgramCommandBlock : BaseServerPacket {
     Position location;
     std::string command;
     enum class Mode : int32_t {
-        Sequence,
-        Auto,
-        Redstone,
+        Sequence = 0,
+        Auto = 1,
+        Redstone = 2,
     } mode;
     uint8_t flags;
 };
@@ -509,16 +509,16 @@ std::shared_ptr<ProgramJigsawBlock> parseProgramJigsawBlock(std::vector<uint8_t>
 struct ProgramStructureBlock : BaseServerPacket {
     Position location;
     enum class Action : int32_t {
-        UpdateData,
-        SaveTheStructure,
-        LoadTheStructure,
-        DetectSize,
+        UpdateData = 0,
+        SaveTheStructure = 1,
+        LoadTheStructure = 2,
+        DetectSize = 3,
     } action;
     enum class Mode : int32_t {
-        Save,
-        Load,
-        Corner,
-        Data,
+        Save = 0,
+        Load = 1,
+        Corner = 2,
+        Data = 3,
     } mode;
     std::string name;
     uint8_t offset_x;
@@ -528,15 +528,15 @@ struct ProgramStructureBlock : BaseServerPacket {
     uint8_t size_y;
     uint8_t size_z;
     enum class Mirror : int32_t {
-        None,
-        LeftRight,
-        FrontBack,
+        None = 0,
+        LeftRight = 1,
+        FrontBack = 2,
     } mirror;
     enum class Rotation : int32_t {
-        None,
-        ClockWiseNinety,
-        ClockWiseOneEighty,
-        CounterClockWiseNinety,
+        None = 0,
+        ClockWiseNinety = 1,
+        ClockWiseOneEighty = 2,
+        CounterClockWiseNinety = 3,
     } rotation;
     std::string metadata;
     float integrity;
@@ -556,8 +556,8 @@ std::shared_ptr<UpdateSign> parseUpdateSign(std::vector<uint8_t> &buffer);
 
 struct SwingArm : BaseServerPacket {
     enum class Hand : int32_t {
-        MainHand,
-        OffHand,
+        MainHand = 0,
+        OffHand = 1,
     } hand;
 };
 std::shared_ptr<SwingArm> parseSwingArm(std::vector<uint8_t> &buffer);
@@ -569,17 +569,17 @@ std::shared_ptr<TeleportToEntity> parseTeleportToEntity(std::vector<uint8_t> &bu
 
 struct UseItemOn : BaseServerPacket {
     enum class Hand : int32_t {
-        MainHand,
-        OffHand,
+        MainHand = 0,
+        OffHand = 1,
     } hand;
     Position location;
     enum class Face : int32_t {
-        Bottom,
-        Top,
-        North,
-        South,
-        West,
-        East,
+        Bottom = 0,
+        Top = 1,
+        North = 2,
+        South = 3,
+        West = 4,
+        East = 5,
     } face;
     float cursor_position_x;
     float cursor_position_y;
@@ -591,8 +591,8 @@ std::shared_ptr<UseItemOn> parseUseItemOn(std::vector<uint8_t> &buffer);
 
 struct UseItem : BaseServerPacket {
     enum class Hand : int32_t {
-        MainHand,
-        OffHand,
+        MainHand = 0,
+        OffHand = 1,
     } hand;
     int32_t sequence;
 };
