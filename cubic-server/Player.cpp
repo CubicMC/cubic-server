@@ -3,13 +3,15 @@
 #include <sstream>
 #include <string>
 
+#include "Entity.hpp"
 #include "Player.hpp"
+#include "PlayerAttributes.hpp"
 #include "Server.hpp"
 #include "World.hpp"
 #include "blocks.hpp"
 #include "command_parser/CommandParser.hpp"
 #include "protocol/ClientPackets.hpp"
-#include <cstdint>
+#include "types.hpp"
 
 Player::Player(Client *cli, std::shared_ptr<Dimension> dim, u128 uuid, const std::string &username):
     _cli(cli),
@@ -18,8 +20,12 @@ Player::Player(Client *cli, std::shared_ptr<Dimension> dim, u128 uuid, const std
     _username(username),
     _keepAliveId(0),
     _keepAliveIgnored(0),
-    _gamemode(0),
-    _keepAliveClock(200, std::bind(&Player::_processKeepAlive, this)) // 5 seconds for keep-alives
+    _gamemode(player_attributes::Gamemode::Survival),
+    _keepAliveClock(200, std::bind(&Player::_processKeepAlive, this)), // 5 seconds for keep-alives
+    _foodLevel(player_attributes::MAX_FOOD_LEVEL), // TODO: Take this from the saved data
+    _foodSaturationLevel(player_attributes::DEFAULT_FOOD_SATURATION_LEVEL), // TODO: Take this from the saved data
+    _foodTickTimer(0), // TODO: Take this from the saved data
+    _foodExhaustionLevel(0.0f) // TODO: Take this from the saved data
 {
     _keepAliveClock.start();
     _heldItem = 0;
@@ -115,8 +121,10 @@ void Player::tick()
         }
     }
 
-    if (_pos.y < -100)
+    if (_pos.y < -100) // TODO: Change that
         teleport({_pos.x, -58, _pos.z});
+
+    _foodTick();
 }
 
 Client *Player::getClient() const { return _cli; }
@@ -129,9 +137,9 @@ uint16_t Player::getHeldItem() const { return this->_heldItem; }
 
 const std::string &Player::getUuidString() const { return this->_uuidString; }
 
-uint8_t Player::getGamemode() const { return _gamemode; }
+player_attributes::Gamemode Player::getGamemode() const { return _gamemode; }
 
-void Player::setGamemode(uint8_t gamemode) { _gamemode = gamemode; }
+void Player::setGamemode(player_attributes::Gamemode gamemode) { _gamemode = gamemode; }
 
 void Player::setOperator(const bool isOp) { this->_isOperator = isOp; }
 
@@ -155,17 +163,33 @@ void Player::setKeepAliveIgnored(uint8_t ign) { _keepAliveIgnored = ign; }
 
 uint8_t Player::keepAliveIgnored() const { return _keepAliveIgnored; }
 
-void Player::setPosition(const Vector3<double> &pos)
+void Player::setPosition(const Vector3<double> &pos, bool on_ground)
 {
     auto newChunkPos = Position2D(transformBlockPosToChunkPos(pos.x), transformBlockPosToChunkPos(pos.z));
     auto oldChunkPos = Position2D(transformBlockPosToChunkPos(_pos.x), transformBlockPosToChunkPos(_pos.z));
+    auto oldPos2d = Vector2<double>(_pos.x, _pos.z);
+    auto newPos2d = Vector2<double>(pos.x, pos.z);
 
-    Entity::setPosition(pos);
+    if (on_ground && _isFlying)
+        _isFlying = false;
+    if (!on_ground && !_isJumping && !_isFlying && ((pos.y + (-world_storage::CHUNK_HEIGHT_MIN)) - (_pos.y + (-world_storage::CHUNK_HEIGHT_MIN)) > 0)) {
+        _isJumping = true;
+        _isFlying = true;
+    }
+
+    if (_isSprinting && !_isFlying)
+        _foodExhaustionLevel += oldPos2d.distance(newPos2d) * player_attributes::FOOD_EXHAUSTION_SPRINTING_MULTIPLIER;
+    if (_isJumping) {
+        _foodExhaustionLevel += _isSprinting ? player_attributes::FOOD_EXHAUSTION_SPRINTING_JUMP : player_attributes::FOOD_EXHAUSTION_JUMP;
+        _isJumping = false;
+    }
+
+    Entity::setPosition(pos, on_ground);
 
     _updateRenderedChunks(oldChunkPos, newChunkPos);
 }
 
-void Player::setPosition(double x, double y, double z) { this->setPosition({x, y, z}); }
+void Player::setPosition(double x, double y, double z, bool on_ground) { this->setPosition({x, y, z}, on_ground); }
 
 void Player::playSoundEffect(SoundsList sound, FloatingPosition position, SoundCategory category)
 {
@@ -275,7 +299,7 @@ void Player::sendEntityVelocity(const protocol::EntityVelocity &data)
 
 void Player::sendHealth(void)
 {
-    auto pck = protocol::createHealth({_health, 20, 0.0f});
+    auto pck = protocol::createHealth({_health, _foodLevel, _foodSaturationLevel});
     this->_cli->_sendData(*pck);
 
     LDEBUG("Sent a Health packet");
@@ -362,7 +386,7 @@ void Player::sendSynchronizePosition(Vector3<double> pos)
         pos.x,
         pos.y,
         pos.z,
-        0,
+        0, // TODO: document those magic numbers
         0,
         0x08 | 0x10,
         0,
@@ -474,6 +498,104 @@ void Player::sendPlayerAbilities(const protocol::PlayerAbilitiesClient &packet)
     LDEBUG("Sent a Player Abilities packet");
 }
 
+void Player::sendSetContainerContent(const protocol::SetContainerContent &packet)
+{
+    auto pck = protocol::createSetContainerContent(packet);
+    _cli->_sendData(*pck);
+    LDEBUG("Sent set container content packet");
+}
+
+void Player::sendUpdateRecipes(const protocol::UpdateRecipes &packet)
+{
+    auto pck = protocol::createUpdateRecipes(packet);
+    _cli->_sendData(*pck);
+    LDEBUG("Sent update recipes packet");
+}
+
+void Player::sendUpdateTags(const protocol::UpdateTags &packet)
+{
+    auto pck = protocol::createUpdateTags(packet);
+    _cli->_sendData(*pck);
+    LDEBUG("Sent update tags packet");
+}
+
+void Player::sendCommands(const protocol::Commands &packet)
+{
+    auto pck = protocol::createCommands(packet);
+    _cli->_sendData(*pck);
+    LDEBUG("Sent commands packet");
+}
+
+void Player::sendChangeDifficulty(const protocol::ChangeDifficultyClient &packet)
+{
+    auto pck = protocol::createChangeDifficultyClient(packet);
+    _cli->_sendData(*pck);
+    LDEBUG("Sent change difficulty packet");
+}
+
+void Player::sendSetHeldItem(const protocol::SetHeldItemClient &packet)
+{
+    auto pck = protocol::createSetHeldItemClient(packet);
+    _cli->_sendData(*pck);
+    LDEBUG("Sent set held item packet");
+}
+
+void Player::sendEntityEvent(const protocol::EntityEvent &packet)
+{
+    auto pck = protocol::createEntityEvent(packet);
+    _cli->_sendData(*pck);
+    LDEBUG("Sent entity event packet");
+}
+
+void Player::sendUpdateRecipiesBook(const protocol::UpdateRecipesBook &packet)
+{
+    auto pck = protocol::createUpdateRecipesBook(packet);
+    _cli->_sendData(*pck);
+    LDEBUG("Sent update recipies book packet");
+}
+
+// void Player::sendInitializeWorldBorder(const protocol::InitializeWorldBorder &packet)
+// {
+//     auto pck = protocol::createInitializeWorldBorder(packet);
+//     _cli->_sendData(*pck);
+//     LDEBUG("Sent initialize world border packet");
+// }
+
+void Player::sendSetDefaultSpawnPosition(const protocol::SetDefaultSpawnPosition &packet)
+{
+    auto pck = protocol::createSetDefaultSpawnPosition(packet);
+    _cli->_sendData(*pck);
+    LDEBUG("Sent set default spawn position packet");
+}
+
+// void Player::sendSetEntityMetadata(const protocol::SetEntityMetadata &packet)
+// {
+//     auto pck = protocol::createSetEntityMetadata(packet);
+//     _cli->_sendData(*pck);
+//     LDEBUG("Sent set entity metadata packet");
+// }
+
+// void Player::sendUpdateAttributes(const protocol::UpdateAttributes &packet)
+// {
+//     auto pck = protocol::createUpdateAttributes(packet);
+//     _cli->_sendData(*pck);
+//     LDEBUG("Sent update attributes packet");
+// }
+
+// void Player::sendUpdateAdvancements(const protocol::SeenAdvancements &packet)
+// {
+//     auto pck = protocol::createSeenAdvancements(packet);
+//     _cli->_sendData(*pck);
+//     LDEBUG("Sent update advancements packet");
+// }
+
+// void Player::sendSetExperience(const protocol::SetExperience &packet)
+// {
+//     auto pck = protocol::createSetExperience(packet);
+//     _cli->_sendData(*pck);
+//     LDEBUG("Sent set experience packet");
+// }
+
 #pragma endregion
 #pragma region ServerBound
 
@@ -542,12 +664,13 @@ void Player::_onInteract(const std::shared_ptr<protocol::Interact> &pck)
     case 0: // interact type
         break;
     case 1: // attack type
-        if (player != nullptr && player->_gamemode != 1) {
+        if (player != nullptr && player->_gamemode != player_attributes::Gamemode::Creative) {
             player->attack(_pos);
             player->sendHealth();
         } else if (target != nullptr) {
             target->attack(_pos);
         }
+        _foodExhaustionLevel += player_attributes::FOOD_EXHAUSTION_ATTACK;
         break;
     case 2: // interact at type
         break;
@@ -575,26 +698,21 @@ void Player::_onSetPlayerPosition(const std::shared_ptr<protocol::SetPlayerPosit
 {
     LDEBUG("Got a Set Player Position (", pck->x, ", ", pck->feet_y, ", ", pck->z, ")");
     // TODO: Validate the position
-    this->setPosition(pck->x, pck->feet_y, pck->z);
+    this->setPosition(pck->x, pck->feet_y, pck->z, pck->on_ground);
 }
 
 void Player::_onSetPlayerPositionAndRotation(const std::shared_ptr<protocol::SetPlayerPositionAndRotation> &pck)
 {
     LDEBUG("Got a Set Player Position And Rotation (", pck->x, ", ", pck->feet_y, ", ", pck->z, ")");
     // TODO: Validate the position
-    this->setPosition(pck->x, pck->feet_y, pck->z);
-    float yaw_tmp = pck->yaw;
-    while (yaw_tmp < 0)
-        yaw_tmp += 360;
-    while (yaw_tmp > 360)
-        yaw_tmp -= 360;
-    this->setRotation(yaw_tmp, pck->pitch / 1.5);
+    this->setPosition(pck->x, pck->feet_y, pck->z, pck->on_ground);
+    this->setRotation(pck->yaw, pck->pitch);
 }
 
 void Player::_onSetPlayerRotation(const std::shared_ptr<protocol::SetPlayerRotation> &pck)
 {
     LDEBUG("Got a Set Player Rotation");
-    this->setRotation(pck->yaw, pck->pitch / 1.5);
+    this->setRotation(pck->yaw, pck->pitch);
 }
 
 void Player::_onSetPlayerOnGround(const std::shared_ptr<protocol::SetPlayerOnGround> &pck) { LDEBUG("Got a Set Player On Ground"); }
@@ -619,15 +737,43 @@ void Player::_onPlayerAbilities(const std::shared_ptr<protocol::PlayerAbilities>
 void Player::_onPlayerAction(const std::shared_ptr<protocol::PlayerAction> &pck)
 {
     // LINFO("Got a Player Action ", pck->status, " at ", pck->location);
-    LDEBUG("Got a Player Action and player is in gamemode ", this->getGamemode(), " and status is ", pck->status);
-    if (pck->status == 0 && this->getGamemode() == 1) {
+    LDEBUG("Got a Player Action and player is in gamemode ", this->getGamemode(), " and status is ", (int32_t) pck->status);
+    switch (pck->status) {
+    case protocol::PlayerAction::Status::StartedDigging:
+        if (this->getGamemode() == player_attributes::Gamemode::Creative)
+            this->getDimension()->blockUpdate(pck->location, 0);
+        break;
+    case protocol::PlayerAction::Status::CancelledDigging:
+        break;
+    case protocol::PlayerAction::Status::FinishedDigging:
         this->getDimension()->blockUpdate(pck->location, 0);
-    } else if (pck->status == 2) {
-        this->getDimension()->blockUpdate(pck->location, 0);
+        _foodExhaustionLevel += 0.005;
+        break;
+    case protocol::PlayerAction::Status::DropItemStack:
+        break;
+    case protocol::PlayerAction::Status::DropItem:
+        break;
+    case protocol::PlayerAction::Status::ShootArrowOrFinishEating:
+        _eat(922); // TODO: Change that to use the item in hand (for instance it's a raw chicken)
+        break;
+    case protocol::PlayerAction::Status::SwapItemInHand:
+        break;
+    default:
+        LERROR("Got a Player Action with an unknown status: ", (int32_t) pck->status);
+        break;
     }
 }
 
-void Player::_onPlayerCommand(const std::shared_ptr<protocol::PlayerCommand> &pck) { LDEBUG("Got a Player Command"); }
+void Player::_onPlayerCommand(const std::shared_ptr<protocol::PlayerCommand> &pck)
+{
+    LDEBUG("Got a Player Command");
+    if (pck->action_id == protocol::PlayerCommand::ActionId::StartSprinting) {
+        _isSprinting = true;
+    }
+    if (pck->action_id == protocol::PlayerCommand::ActionId::StopSprinting) {
+        _isSprinting = false;
+    }
+}
 
 void Player::_onPlayerInput(const std::shared_ptr<protocol::PlayerInput> &pck) { LDEBUG("Got a Player Input"); }
 
@@ -743,8 +889,8 @@ void Player::_processKeepAlive()
     long id = std::chrono::system_clock::now().time_since_epoch().count();
     if (this->keepAliveId() != 0) {
         this->setKeepAliveIgnored(this->keepAliveIgnored() + 1);
-        if (this->_keepAliveClock.tickRate() * this->keepAliveIgnored() >= 6000)
-            this->disconnect("Timed out from keep alive LOL");
+        if (this->_keepAliveClock.tickRate() * this->keepAliveIgnored() >= player_attributes::MAX_TICK_BEFORE_TIMEOUT)
+            this->disconnect("Skill issues detected");
         return;
     }
     this->setKeepAliveId(id);
@@ -808,6 +954,8 @@ void Player::_continueLoginSequence()
 {
     this->sendFeatureFlags({{"minecraft:vanilla"}});
 
+    // TODO: send Change Difficulty
+
     this->sendPlayerAbilities(
         {(uint8_t) protocol::PlayerAbilitiesFlags::Invulnerable | (uint8_t) protocol::PlayerAbilitiesFlags::Flying | (uint8_t) protocol::PlayerAbilitiesFlags::AllowFlying |
              (uint8_t) protocol::PlayerAbilitiesFlags::CreativeMode,
@@ -816,17 +964,17 @@ void Player::_continueLoginSequence()
 
     // TODO: set Held Item
 
-    // TODO: update recipes
+    this->sendUpdateRecipes({});
 
-    // TODO: update tags
+    this->sendUpdateTags({});
 
-    // TODO: entity event ?
+    // TODO: entity event entity id and byte enum = 0x18 -> 24 (set op permission level)
 
-    // TODO: command list
+    this->sendCommands({{}, 0});
 
     // TODO: update recipes book
 
-    this->teleport({8.5, 100, 8.5});
+    this->teleport({8.5, 100, 8.5}); // TODO: change that to player_attributes::DEFAULT_SPAWN_POINT
 
     this->sendServerData({false, "", false, "", false});
 
@@ -847,11 +995,30 @@ void Player::_continueLoginSequence()
             sendChunkAndLightUpdate(x, z);
         }
     }
+
+    // TODO: Initialize world border
+
+    this->sendSetDefaultSpawnPosition({{0, 100, 0}, 0.0f});
+
+    this->sendSetContainerContent({0, 0, {}, {false}});
+
+    // TODO: set entity metadata
+
+    // TODO: update attributes
+
+    // TODO: update Advancements
+
+    this->sendHealth();
+
+    // TODO: set experience
+
+    // TODO: set entity metadata
+
     // for (auto &player : this->_player->getDimension()->getPlayerList())
     //     player->_synchronizePostion({0, -58, 0});
     // this->_player->sendChunkAndLightUpdate(0, 0);
     getDimension()->spawnPlayer(this);
-    this->teleport({8.5, 100, 8.5});
+    this->teleport({8.5, 100, 8.5}); // TODO: change that to player_attributes::DEFAULT_SPAWN_POINT
 
     this->_sendLoginMessage();
 }
@@ -891,6 +1058,75 @@ void Player::_unloadChunk(int32_t x, int32_t z)
 
     this->sendUnloadChunk(x, z);
     this->_chunks.erase({x, z});
+}
+
+void Player::_foodTick()
+{
+    using namespace player_attributes;
+    if (_gamemode != Gamemode::Survival && _gamemode != Gamemode::Adventure)
+        return;
+    bool needUpdate = false;
+    if (_foodLevel == MIN_FOOD_LEVEL && _health > 10 && _foodTickTimer >= 80) { // TODO: Make it depends on difficulty
+        _health -= 1;
+        _foodTickTimer = 0;
+        needUpdate = true;
+    }
+    if (_foodLevel >= MIN_FOOD_LEVEL_FOR_REGENERATION && _health < _maxHealth) {
+        if (_foodSaturationLevel > 0 && _foodLevel == MAX_FOOD_LEVEL && _foodTickTimer >= 10) {
+            _health += ((1.0 / 6) * _foodSaturationLevel >= 1) ? 1 : (1.0 / 6) * _foodSaturationLevel;
+            _foodExhaustionLevel += 6;
+            _foodTickTimer = 0;
+            needUpdate = true;
+        }
+        if (_foodTickTimer >= 80) {
+            _health += 1;
+            _foodExhaustionLevel += 6;
+            _foodTickTimer = 0;
+            needUpdate = true;
+        }
+    }
+    if (_foodExhaustionLevel >= 4 && needUpdate == false) {
+        _foodExhaustionLevel -= 4;
+        if (_foodSaturationLevel > 0) {
+            _foodSaturationLevel -= 1;
+            needUpdate = true;
+        } else {
+            _foodLevel -= _foodLevel > 0 ? 1 : 0;
+            needUpdate = true;
+        }
+    }
+    if (_foodLevel < MIN_FOOD_LEVEL_FOR_REGENERATION && _foodLevel > 0 && _foodTickTimer > 0)
+        _foodTickTimer = 0;
+    if (needUpdate) {
+        this->sendHealth();
+        LDEBUG("Health is now ", _health, " and food level is now ", _foodLevel);
+    }
+    if (needUpdate == false &&
+        ((_foodLevel >= MIN_FOOD_LEVEL_FOR_REGENERATION && _health < _maxHealth) || (_foodLevel == MIN_FOOD_LEVEL && _health > 10))) // TODO: Make it depends on difficulty
+        _foodTickTimer++;
+}
+
+void Player::_eat(ItemId itemId)
+{
+    using namespace player_attributes;
+    auto food = std::find_if(Items::foodItems.begin(), Items::foodItems.end(), [itemId](const Items::FoodItem &item) {
+        return item.id == itemId;
+    });
+    if (food == Items::foodItems.end()) {
+        LERROR("Trying to eat an item that is not food");
+        return;
+    }
+    if (_foodLevel >= MAX_FOOD_LEVEL) {
+        LERROR("Trying to eat while food level is already at max");
+        return;
+    }
+    _foodLevel += food->foodValue;
+    _foodSaturationLevel += food->saturation;
+    if (_foodLevel > MAX_FOOD_LEVEL)
+        _foodLevel = MAX_FOOD_LEVEL;
+    if (_foodSaturationLevel > _foodLevel)
+        _foodSaturationLevel = _foodLevel;
+    this->sendHealth();
 }
 
 void Player::teleport(const Vector3<double> &pos)

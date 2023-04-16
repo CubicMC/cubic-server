@@ -6,6 +6,8 @@ target_sources (${CMAKE_PROJECT_NAME} PRIVATE
     Client.hpp
     Player.cpp
     Player.hpp
+    PlayerAttributes.cpp
+    PlayerAttributes.hpp
     Entity.cpp
     Entity.hpp
     LivingEntity.cpp
@@ -76,3 +78,4 @@ add_subdirectory (whitelist)
 add_subdirectory (generation)
 add_subdirectory (thread_pool)
 add_subdirectory (blocks)
+add_subdirectory (items)

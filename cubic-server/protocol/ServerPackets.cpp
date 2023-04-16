@@ -325,11 +325,14 @@ std::shared_ptr<PlayerAction> protocol::parsePlayerAction(std::vector<uint8_t> &
 {
     auto h = std::make_shared<PlayerAction>();
     auto at = buffer.data();
-
-    parse(
-        at, buffer.data() + buffer.size() - 1, *h, popVarInt, &PlayerAction::status, popPosition, &PlayerAction::location, popByte, &PlayerAction::face, popVarInt,
-        &PlayerAction::sequence
+    // clang-format off
+    parse(at, buffer.data() + buffer.size() - 1, *h,
+        popVarInt, &PlayerAction::status,
+        popPosition, &PlayerAction::location,
+        popByte, &PlayerAction::face,
+        popVarInt, &PlayerAction::sequence
     );
+    // clang-format on
     return h;
 }
 

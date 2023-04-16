@@ -9,6 +9,7 @@
 #include <variant>
 #include <vector>
 
+#include "PlayerAttributes.hpp"
 #include "Structures.hpp"
 #include "typeSerialization.hpp"
 #include "types.hpp"
@@ -29,9 +30,13 @@ enum class ClientPacketID : int32_t {
     SpawnPlayer = 0x02,
     EntityAnimation = 0x03,
     BlockUpdate = 0x09,
+    ChangeDifficulty = 0x0B,
+    Commands = 0x0E,
+    SetContainerContent = 0x10,
     PluginMessage = 0x15,
     // CustomSoundEffect = 0x16, TODO: This is removed in the last revision of wiki.vg
     DisconnectPlay = 0x17,
+    EntityEvent = 0x19,
     UnloadChunk = 0x1b,
     KeepAlive = 0x1F,
     ChunkDataAndLightUpdate = 0x20,
@@ -45,12 +50,15 @@ enum class ClientPacketID : int32_t {
     PlayerInfoRemove = 0x35,
     PlayerInfoUpdate = 0x36,
     SynchronizePlayerPosition = 0x38,
+    UpdateRecipesBook = 0x39,
     RemoveEntities = 0x3A,
     HeadRotation = 0x3E,
     ServerData = 0x41,
+    SetHeldItem = 0x49,
     CenterChunk = 0x4a,
+    SetDefaultSpawnPosition = 0x4c,
     EntityVelocity = 0x4f,
-    Health = 0x52,
+    Health = 0x53,
     UpdateTime = 0x5A,
     EntitySoundEffect = 0x5D,
     SoundEffect = 0x5E,
@@ -58,23 +66,26 @@ enum class ClientPacketID : int32_t {
     SystemChatMessage = 0x60,
     TeleportEntity = 0x64,
     FeatureFlags = 0x67,
+    UpdateRecipes = 0x69,
+    UpdateTags = 0x6A,
 };
 
 struct Disconnect {
     std::string reason;
 };
 std::shared_ptr<std::vector<uint8_t>> createLoginDisconnect(const Disconnect &);
+struct _LoginSuccessProperty {
+    std::string name;
+    std::string value;
+    bool isSigned;
+    std::optional<std::string> signature;
+};
 
 struct LoginSuccess {
     u128 uuid;
     std::string username;
     int32_t numberOfProperties;
-    // Don't know how to build a Property thing that is an array of strings and bools
-    // std::array<std::variant<std::string, bool>, 4> properties;
-    std::string name;
-    std::string value;
-    bool isSigned;
-    std::optional<std::string> signature;
+    std::vector<_LoginSuccessProperty> properties;
 };
 std::shared_ptr<std::vector<uint8_t>> createLoginSuccess(const LoginSuccess &);
 
@@ -115,6 +126,26 @@ struct BlockUpdate {
 };
 std::shared_ptr<std::vector<uint8_t>> createBlockUpdate(const BlockUpdate &);
 
+struct ChangeDifficultyClient {
+    uint8_t difficulty;
+    bool locked;
+};
+std::shared_ptr<std::vector<uint8_t>> createChangeDifficultyClient(const ChangeDifficultyClient &);
+
+struct Commands {
+    std::vector<int> nodes;
+    int32_t root_index;
+};
+std::shared_ptr<std::vector<uint8_t>> createCommands(const Commands &);
+
+struct SetContainerContent {
+    uint8_t window_id;
+    int32_t state_id;
+    std::vector<Slot> slot_data;
+    Slot carried_item;
+};
+std::shared_ptr<std::vector<uint8_t>> createSetContainerContent(const SetContainerContent &);
+
 struct PluginMessageResponse {
     std::string channel;
     std::vector<uint8_t> data;
@@ -134,6 +165,13 @@ struct CustomSoundEffect {
 std::shared_ptr<std::vector<uint8_t>> createCustomSoundEffect(const CustomSoundEffect &);
 
 std::shared_ptr<std::vector<uint8_t>> createPlayDisconnect(const Disconnect &);
+
+struct EntityEvent {
+    int32_t entity_id;
+    uint8_t event_status;
+};
+
+std::shared_ptr<std::vector<uint8_t>> createEntityEvent(const EntityEvent &);
 
 std::shared_ptr<std::vector<uint8_t>> createUnloadChunk(const Position2D &);
 
@@ -157,7 +195,75 @@ struct ChunkDataAndLightUpdate {
 std::shared_ptr<std::vector<uint8_t>> createChunkDataAndLightUpdate(const ChunkDataAndLightUpdate &);
 
 struct WorldEvent {
-    int32_t event;
+    enum class Event : int32_t {
+        // Sound
+        DispenserDispenses = 1000,
+        DispenserFailsToDispense = 1001,
+        DispenserShoots = 1002,
+        EnderEyeLaunched = 1003,
+        FireworkShot = 1004,
+        IronDoorOpened = 1005,
+        WoodenDoorOpened = 1006,
+        WoodenTrapdoorOpened = 1007,
+        FenceGateOpened = 1008,
+        FireExtinguished = 1009,
+        PlayRecord = 1010,
+        IronDoorClosed = 1011,
+        WoodenDoorClosed = 1012,
+        WoodenTrapdoorClosed = 1013,
+        FenceGateClosed = 1014,
+        GhastWarns = 1015,
+        GhastShoots = 1016,
+        EnderdragonShoots = 1017,
+        BlazeShoots = 1018,
+        ZombieAttacksWoodDoor = 1019,
+        ZombieAttacksIronDoor = 1020,
+        ZombieBreaksWoodDoor = 1021,
+        WitherBreaksBlock = 1022,
+        WitherSpawned = 1023,
+        WitherShoots = 1024,
+        BatTakesOff = 1025,
+        ZombieInfects = 1026,
+        ZombieVillagerConverted = 1027,
+        EnderDragonDeath = 1028,
+        AnvilDestroyed = 1029,
+        AnvilUsed = 1030,
+        AnvilLanded = 1031,
+        PortalTravel = 1032,
+        ChorusFlowerGrown = 1033,
+        ChorusFlowerDied = 1034,
+        BrewingStandBrewed = 1035,
+        IronTrapdoorOpened = 1036,
+        IronTrapdoorClosed = 1037,
+        EndPortalCreatedInOverworld = 1038,
+        PhantomBites = 1039,
+        ZombieConvertsToDrowned = 1040,
+        HuskConvertsToZombieByDrowning = 1041,
+        GrindstoneUsed = 1042,
+        BookPageTurned = 1043,
+        // Particle
+        ComposterComposts = 1500,
+        LavaConvertsBlock = 1501,
+        RedstoneTorchBurnsOut = 1502,
+        EnderEyePlaced = 1503,
+        SpawnsTenSmokeParticles = 2000,
+        BlockBreakAndBlockBreakSound = 2001,
+        SplashPotion = 2002,
+        EyeOfEnderEntityBreakAnimation = 2003,
+        MobSpawnParticleEffect = 2004,
+        BonemealParticles = 2005,
+        DragonBreath = 2006,
+        InstantSplashPotion = 2007,
+        EnderDragonDestroysBlock = 2008,
+        WetSpongeVaporizesInNether = 2009,
+        EndGatewaySpawn = 3000,
+        EnderdragonGrowl = 3001,
+        ElectricSpark = 3002,
+        CopperApplyWax = 3003,
+        CopperRemoveWax = 3004,
+        CopperScrapeOxidation = 3005,
+
+    } event;
     Position position;
     int32_t data;
     bool disableRelativeVolume;
@@ -167,8 +273,8 @@ std::shared_ptr<std::vector<uint8_t>> createWorldEvent(const WorldEvent &);
 struct LoginPlay {
     int32_t entityID;
     bool isHardcore;
-    uint8_t gamemode;
-    uint8_t previousGamemode; // must be a signed byte
+    player_attributes::Gamemode gamemode;
+    player_attributes::Gamemode previousGamemode; // must be a signed byte
     std::vector<std::string> dimensionNames;
     nbt::Compound registryCodec;
     std::string dimensionType;
@@ -325,6 +431,21 @@ struct SynchronizePlayerPosition {
 };
 std::shared_ptr<std::vector<uint8_t>> createSynchronizePlayerPosition(const SynchronizePlayerPosition &);
 
+struct UpdateRecipesBook {
+    int32_t action;
+    bool crafting_recipe_book_open;
+    bool crafting_recipe_book_filter_active;
+    bool smelting_recipe_book_open;
+    bool smelting_recipe_book_filter_active;
+    bool blast_furnace_recipe_book_open;
+    bool blast_furnace_recipe_book_filter_active;
+    bool smoker_recipe_book_open;
+    bool smoker_recipe_book_filter_active;
+    std::vector<std::string> recipes_id;
+    std::optional<std::vector<std::string>> recipies_id_two; // Don't know why
+};
+std::shared_ptr<std::vector<uint8_t>> createUpdateRecipesBook(const UpdateRecipesBook &);
+
 struct RemoveEntities {
     std::vector<int32_t> entities;
 };
@@ -345,7 +466,20 @@ struct ServerData {
 };
 std::shared_ptr<std::vector<uint8_t>> createServerData(const ServerData &in);
 
+struct SetHeldItemClient {
+    uint8_t slot; // must be a byte
+};
+
+std::shared_ptr<std::vector<uint8_t>> createSetHeldItemClient(const SetHeldItemClient &);
+
 std::shared_ptr<std::vector<uint8_t>> createCenterChunk(const Position2D &in);
+
+struct SetDefaultSpawnPosition {
+    Position position;
+    float angle;
+};
+
+std::shared_ptr<std::vector<uint8_t>> createSetDefaultSpawnPosition(const SetDefaultSpawnPosition &);
 
 struct UpdateTime {
     long world_age;
@@ -421,6 +555,16 @@ struct FeatureFlags {
     std::vector<std::string> flags;
 };
 std::shared_ptr<std::vector<uint8_t>> createFeatureFlags(const FeatureFlags &in);
+
+struct UpdateRecipes {
+    std::vector<int> recipes;
+};
+std::shared_ptr<std::vector<uint8_t>> createUpdateRecipes(const UpdateRecipes &);
+
+struct UpdateTags {
+    std::vector<int> tags;
+};
+std::shared_ptr<std::vector<uint8_t>> createUpdateTags(const UpdateTags &);
 }
 
 #endif /* A7ADDD9E_6961_4A3D_AAB2_DF37DB6915F0 */

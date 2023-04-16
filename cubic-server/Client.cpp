@@ -7,6 +7,7 @@
 #include <unistd.h>
 
 #include "Client.hpp"
+#include "PlayerAttributes.hpp"
 #include "Server.hpp"
 #include "World.hpp"
 #include "nlohmann/json.hpp"
@@ -342,9 +343,7 @@ void Client::_onLoginStart(const std::shared_ptr<protocol::LoginStart> &pck)
     resPck.uuid = pck->has_player_uuid ? pck->player_uuid : u128 {std::hash<std::string> {}("OfflinePlayer:"), std::hash<std::string> {}(pck->name)};
     resPck.username = pck->name;
     resPck.numberOfProperties = 0;
-    resPck.name = ""; // TODO: figure out what to put there
-    resPck.value = ""; // TODO: figure out what to put there
-    resPck.isSigned = false;
+    resPck.properties = {}; // TODO: figure out what to put there
 
     if (!Server::getInstance()->getWorldGroup("default")->isInitialized()) {
         this->disconnect("Server is not initialized yet.");
@@ -387,7 +386,8 @@ void Client::sendLoginPlay()
         .entityID = _player->getId(), // TODO: figure out what is this
         .isHardcore = false, // TODO: something like this this->_player->_dim->getWorld()->getDifficulty(); Thats not difficulty tho (peaceful, easy, normal, hard)
         .gamemode = this->_player->getGamemode(),
-        .previousGamemode = 0, // TODO: something like this this->_player->getPreviousGamemode().has_value() ? this->_player->getPreviousGamemode() : -1;
+        .previousGamemode =
+            player_attributes::Gamemode::Survival, // TODO: something like this this->_player->getPreviousGamemode().has_value() ? this->_player->getPreviousGamemode() : -1;
         .dimensionNames = std::vector<std::string>({"minecraft:overworld"}), // TODO: something like this this->_player->_dim->getWorld()->getDimensions();
         // clang-format off
             .registryCodec = nbt::Compound("", {

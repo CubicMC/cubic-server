@@ -10,6 +10,7 @@
 #include <unordered_map>
 #include <vector>
 
+#include "PlayerAttributes.hpp"
 #include "typeSerialization.hpp"
 #include "types.hpp"
 
@@ -126,9 +127,14 @@ struct QueryBlockEntityTag : BaseServerPacket {
 std::shared_ptr<QueryBlockEntityTag> parseQueryBlockEntityTag(std::vector<uint8_t> &buffer);
 
 struct ChangeDifficulty : BaseServerPacket {
-    uint8_t new_difficulty;
+    player_attributes::Gamemode new_difficulty;
 };
 std::shared_ptr<ChangeDifficulty> parseChangeDifficulty(std::vector<uint8_t> &buffer);
+
+struct MessageAcknowledgement : BaseServerPacket {
+    int32_t message_count;
+};
+std::shared_ptr<MessageAcknowledgement> parseMessageAcknowledgement(std::vector<uint8_t> &buffer);
 
 /**
  * @brief this is the link to the packet: https://wiki.vg/Protocol#Chat_Command
@@ -307,16 +313,41 @@ struct PlayerAbilities : BaseServerPacket {
 std::shared_ptr<PlayerAbilities> parsePlayerAbilities(std::vector<uint8_t> &buffer);
 
 struct PlayerAction : BaseServerPacket {
-    int32_t status; // TODO: Use an enum
+    enum class Status : int32_t {
+        StartedDigging,
+        CancelledDigging,
+        FinishedDigging,
+        DropItemStack,
+        DropItem,
+        ShootArrowOrFinishEating,
+        SwapItemInHand,
+    } status;
     Position location;
-    uint8_t face; // TODO: Use an enum
+    enum class Face : uint8_t {
+        Bottom,
+        Top,
+        North,
+        South,
+        West,
+        East,
+    } face;
     int32_t sequence;
 };
 std::shared_ptr<PlayerAction> parsePlayerAction(std::vector<uint8_t> &buffer);
 
 struct PlayerCommand : BaseServerPacket {
     int32_t entity_id;
-    int32_t action_id; // TODO: Use an enum
+    enum class ActionId : int32_t {
+        StartSneaking,
+        StopSneaking,
+        LeaveBed,
+        StartSprinting,
+        StopSprinting,
+        StartJumpWithHorse,
+        StopJumpWithHorse,
+        OpenHorseInventory,
+        StartFlyingWithElytra,
+    } action_id;
     int32_t jump_boost;
 };
 std::shared_ptr<PlayerCommand> parsePlayerCommand(std::vector<uint8_t> &buffer);

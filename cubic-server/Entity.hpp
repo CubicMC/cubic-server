@@ -32,8 +32,8 @@ public:
     virtual ~Entity() {};
     virtual void tick() = 0;
     virtual void setDimension(std::shared_ptr<Dimension> dim);
-    virtual void setPosition(const Vector3<double> &pos);
-    virtual void setPosition(double x, double y, double z);
+    virtual void setPosition(const Vector3<double> &pos, bool on_ground);
+    virtual void setPosition(double x, double y, double z, bool on_ground);
     virtual void forceSetPosition(const Vector3<double> &pos);
     virtual void forceSetPosition(double x, double y, double z);
     virtual void setRotation(const Vector2<uint8_t> &rot);

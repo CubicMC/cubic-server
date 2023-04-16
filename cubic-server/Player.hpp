@@ -2,11 +2,11 @@
 #define CUBICSERVER_PLAYER_HPP
 
 #include "Chat.hpp"
-#include "Client.hpp"
-#include "Entity.hpp"
 #include "LivingEntity.hpp"
+#include "PlayerAttributes.hpp"
 #include "SoundList.hpp"
 #include "TickClock.hpp"
+#include "items/foodItems.hpp"
 #include "logging/Logger.hpp"
 #include "math/Vector3.hpp"
 #include "protocol/ClientPackets.hpp"
@@ -38,8 +38,8 @@ public:
     const u128 &getUuid() const;
     uint16_t getHeldItem() const;
     const std::string &getUuidString() const;
-    uint8_t getGamemode() const;
-    void setGamemode(uint8_t gm);
+    player_attributes::Gamemode getGamemode() const;
+    void setGamemode(player_attributes::Gamemode gm);
     long keepAliveId() const;
     void setKeepAliveId(long id);
     uint8_t keepAliveIgnored() const;
@@ -48,8 +48,8 @@ public:
     bool isOperator() const;
 
 public:
-    void setPosition(const Vector3<double> &pos) override;
-    void setPosition(double x, double y, double z) override;
+    void setPosition(const Vector3<double> &pos, bool on_ground) override;
+    void setPosition(double x, double y, double z, bool on_ground) override;
     void teleport(const Vector3<double> &pos) override;
 
 public:
@@ -86,6 +86,20 @@ public:
     void sendPlayerAbilities(const protocol::PlayerAbilitiesClient &packet);
     void sendFeatureFlags(const protocol::FeatureFlags &packet);
     void sendServerData(const protocol::ServerData &packet);
+    void sendSetContainerContent(const protocol::SetContainerContent &packet);
+    void sendUpdateRecipes(const protocol::UpdateRecipes &packet);
+    void sendUpdateTags(const protocol::UpdateTags &packet);
+    void sendCommands(const protocol::Commands &packet);
+    void sendChangeDifficulty(const protocol::ChangeDifficultyClient &packet);
+    void sendSetHeldItem(const protocol::SetHeldItemClient &packet);
+    void sendEntityEvent(const protocol::EntityEvent &packet);
+    void sendUpdateRecipiesBook(const protocol::UpdateRecipesBook &packet);
+    // void sendInitializeWorldBorder(const protocol::InitializeWorldBorder &packet);
+    void sendSetDefaultSpawnPosition(const protocol::SetDefaultSpawnPosition &packet);
+    // void sendSetEntityMetadata(const protocol::SetEntityMetadata &packet);
+    // void sendUpdateAttributes(const protocol::UpdateAttributes &packet);
+    // void sendUpdateAdvancements(const protocol::UpdateAdvancements &packet);
+    // void sendSetExperience(const protocol::SetExperience &packet);
 
 private:
     void _onConfirmTeleportation(const std::shared_ptr<protocol::ConfirmTeleportation> &pck);
@@ -142,6 +156,8 @@ private:
     void _continueLoginSequence();
     void _sendLoginMessage();
     void _unloadChunk(int32_t x, int32_t z);
+    void _foodTick();
+    void _eat(ItemId itemId);
 
     Client *_cli;
     std::string _username;
@@ -150,11 +166,21 @@ private:
     long _keepAliveId;
     uint8_t _keepAliveIgnored;
     uint16_t _heldItem;
-    uint8_t _gamemode;
+    player_attributes::Gamemode _gamemode;
     TickClock _keepAliveClock;
     bool _isFlying;
     bool _isOperator;
     std::unordered_map<Position2D, ChunkState> _chunks;
+
+    // Food Mechanics
+    int _foodLevel;
+    float _foodSaturationLevel;
+    int _foodTickTimer;
+    float _foodExhaustionLevel;
+
+    // player status
+    bool _isSprinting;
+    bool _isJumping;
 };
 
 #endif // CUBICSERVER_PLAYER_HPP
