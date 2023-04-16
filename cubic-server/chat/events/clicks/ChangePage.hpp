@@ -4,6 +4,9 @@
 #include "chat/events/Click.hpp"
 
 namespace chat::message::event {
+/**
+ * @brief Change the page of a book
+ */
 class ChangePageClick : public OnClick {
 public:
     ChangePageClick(const std::string &page)

@@ -4,6 +4,9 @@
 #include "chat/events/Click.hpp"
 
 namespace chat::message::event {
+/**
+ * @brief Open an URL
+ */
 class OpenUrlClick : public OnClick {
 public:
     OpenUrlClick(const std::string &url):

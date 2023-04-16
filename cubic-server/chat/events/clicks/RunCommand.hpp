@@ -4,6 +4,9 @@
 #include "chat/events/Click.hpp"
 
 namespace chat::message::event {
+/**
+ * @brief Run a command
+ */
 class RunCommandClick : public OnClick {
 public:
     RunCommandClick(const std::string &command)

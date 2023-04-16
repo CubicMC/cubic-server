@@ -4,6 +4,9 @@
 #include "chat/events/Click.hpp"
 
 namespace chat::message::event {
+/**
+ * @brief Copy a text to the clipboard
+ */
 class CopyToClipboardClick : public OnClick {
 public:
     CopyToClipboardClick(const std::string &text):

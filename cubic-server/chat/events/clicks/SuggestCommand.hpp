@@ -4,6 +4,9 @@
 #include "chat/events/Click.hpp"
 
 namespace chat::message::event {
+/**
+ * @brief Suggest a command to the player
+ */
 class SuggestCommandClick : public OnClick {
 public:
     SuggestCommandClick(const std::string &command):
