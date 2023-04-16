@@ -20,7 +20,7 @@ enum class ClientCommandActionID {
     request_stats = 1,
 };
 
-enum class ClientInformationChatMode {
+enum class ClientInformationChatMode : int32_t {
     enabled = 0,
     commands_only = 1,
     hidden = 2,

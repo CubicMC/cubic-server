@@ -39,18 +39,19 @@ public:
     uint16_t getHeldItem() const;
     const std::string &getUuidString() const;
     player_attributes::Gamemode getGamemode() const;
-    void setGamemode(player_attributes::Gamemode gm);
+    const protocol::ClientInformationChatMode &getChatVisibility() const;
     long keepAliveId() const;
-    void setKeepAliveId(long id);
     uint8_t keepAliveIgnored() const;
-    void setKeepAliveIgnored(uint8_t ign);
-    void setOperator(const bool isOp);
     bool isOperator() const;
 
 public:
     void setPosition(const Vector3<double> &pos, bool on_ground) override;
     void setPosition(double x, double y, double z, bool on_ground) override;
+    void setGamemode(player_attributes::Gamemode gm);
     void teleport(const Vector3<double> &pos) override;
+    void setKeepAliveIgnored(uint8_t ign);
+    void setOperator(const bool isOp);
+    void setKeepAliveId(long id);
 
 public:
     void disconnect(const chat::Message &reason = "Disconnected");
@@ -169,8 +170,6 @@ private:
     uint16_t _heldItem;
     player_attributes::Gamemode _gamemode;
     TickClock _keepAliveClock;
-    bool _isFlying;
-    bool _isOperator;
     std::unordered_map<Position2D, ChunkState> _chunks;
 
     // Food Mechanics
@@ -180,6 +179,9 @@ private:
     float _foodExhaustionLevel;
 
     // player status
+    protocol::ClientInformationChatMode _chatVisibility;
+    bool _isFlying;
+    bool _isOperator;
     bool _isSprinting;
     bool _isJumping;
 };

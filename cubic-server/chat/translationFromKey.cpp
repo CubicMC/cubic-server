@@ -9,6 +9,10 @@ chat::Message chat::message::_detail::fromTranslationKey<chat::message::Translat
     chat::Message message = chat::Message();
     chat::Message userName = chat::Message(player->getUsername());
 
+    // TODO: Change this to check for the team color
+    if (player->getUsername() == "STMiki")
+        userName.messageComponent().style().color = "gold";
+
     userName.makeClickEvent<chat::message::event::SuggestCommandClick>("/tell " + player->getUsername() + " ");
     userName.makeHoverEvent<chat::message::event::EntityHover>(
         //  "{\"type\": \"minecraft:player\", \"id\": \"" + player->getUuidString() + "\", \"name\": \"" + player->getUsername() + "\"}"
@@ -26,6 +30,10 @@ chat::Message chat::message::_detail::fromTranslationKey<chat::message::Translat
 {
     chat::Message message = chat::Message();
     chat::Message userName = chat::Message(player->getUsername());
+
+    // TODO: Change this to check for the team color
+    if (player->getUsername() == "STMiki")
+        userName.messageComponent().style().color = "gold";
 
     userName.makeClickEvent<chat::message::event::SuggestCommandClick>("/tell " + player->getUsername() + " ");
     userName.makeHoverEvent<chat::message::event::EntityHover>(

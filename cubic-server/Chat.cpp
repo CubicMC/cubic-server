@@ -8,6 +8,12 @@
 
 static protocol::PlayerChatMessage buildPacket(const Player *from, size_t messageLogSize, const chat::Message &message, const chat::message::Type &type)
 {
+    auto userName = chat::Message(from->getUsername());
+
+    // TODO: change this to check the team color
+    if (userName.messageComponent().message() == "STMiki")
+        userName.messageComponent().style().color = "gold";
+
     return protocol::PlayerChatMessage {
         from->getUuid(),
         (int32_t) messageLogSize,
@@ -24,7 +30,7 @@ static protocol::PlayerChatMessage buildPacket(const Player *from, size_t messag
         0,
         {},
         static_cast<int32_t>(type),
-        chat::Message(from->getUsername()).serialize(),
+        userName.serialize(),
         false,
     };
 }
@@ -47,6 +53,8 @@ void Chat::sendSystemMessage(const chat::Message &message, const Player *from, b
         LERROR("from is null");
         return;
     }
+
+    LINFO("Sending system message: " << message.serialize() << " with chat visibility: " << (int32_t) from->getChatVisibility());
 
     this->_sendSystem(message, from->getWorldGroup(), overlay);
 }
@@ -93,11 +101,27 @@ void Chat::sendTeamMessage(const chat::Message &message, const Player *sender)
 
 void Chat::sendTellrawMessage(const chat::Message &message, const Player *from, const std::string &selector)
 {
+    if (from == nullptr) {
+        LERROR("from is null");
+        return;
+    }
+
     this->_sendSystem(message, from->getWorldGroup());
 }
 
 void Chat::_sendMessage(const chat::Message &message, const Player *from, Player *to, const chat::message::Type &type)
 {
+    if (from == nullptr) {
+        LERROR("from is null");
+        return;
+    } else if (to == nullptr) {
+        LERROR("to is null");
+        return;
+    }
+
+    if (to->getChatVisibility() != protocol::ClientInformationChatMode::enabled)
+        return;
+
     protocol::PlayerChatMessage pck = buildPacket(from, this->_messagesLog.size(), message, type);
 
     // TODO: Change this to push_back the message signature when it's implemented
@@ -113,9 +137,26 @@ void Chat::_sendMessage(const chat::Message &message, const Player *from, const 
     // TODO: Change this to push_back the message signature when it's implemented
     this->_messagesLog.push_back(message);
 
-    // TODO: Filter client by chat visibility
     for (auto &[_, world] : worldGroup->getWorlds()) {
-        for (auto &player : world->getPlayers())
+        for (auto &player : world->getPlayers()) {
+            if (player->getChatVisibility() == protocol::ClientInformationChatMode::enabled)
+                player->sendChatMessageResponse(pck);
+        }
+    }
+}
+
+void Chat::_sendMessage(const chat::Message &message, const Player *from, const std::vector<Player *> &players, const chat::message::Type &type)
+{
+    if (from->getChatVisibility() != protocol::ClientInformationChatMode::enabled)
+        return;
+
+    protocol::PlayerChatMessage pck = buildPacket(from, this->_messagesLog.size(), message, type);
+
+    // TODO: Change this to push_back the message signature when it's implemented
+    this->_messagesLog.push_back(message);
+
+    for (auto &player : players) {
+        if (player->getChatVisibility() == protocol::ClientInformationChatMode::enabled)
             player->sendChatMessageResponse(pck);
     }
 }
@@ -123,18 +164,23 @@ void Chat::_sendMessage(const chat::Message &message, const Player *from, const 
 void Chat::_sendSystem(const chat::Message &message, const WorldGroup *worldGroup, bool overlay)
 {
     for (const auto &[_, world] : worldGroup->getWorlds()) {
-        for (auto &player : world->getPlayers())
-            player->sendSystemChatMessage({message.serialize(), overlay});
+        for (auto &player : world->getPlayers()) {
+            if (player->getChatVisibility() <= protocol::ClientInformationChatMode::commands_only)
+                player->sendSystemChatMessage({message.serialize(), overlay});
+        }
     }
 }
 
 void Chat::_sendSystem(const chat::Message &message, Player *player, bool overlay)
 {
-    player->sendSystemChatMessage({message.serialize(), overlay});
+    if (player->getChatVisibility() <= protocol::ClientInformationChatMode::commands_only)
+        player->sendSystemChatMessage({message.serialize(), overlay});
 }
 
 void Chat::_sendSystem(const chat::Message &message, const std::vector<Player *> &players, bool overlay)
 {
-    for (auto &player : players)
-        player->sendSystemChatMessage({message.serialize(), overlay});
+    for (auto &player : players) {
+        if (player->getChatVisibility() <= protocol::ClientInformationChatMode::commands_only)
+            player->sendSystemChatMessage({message.serialize(), overlay});
+    }
 }
