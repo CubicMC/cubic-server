@@ -1,5 +1,5 @@
-#ifndef F43D56DD_C750_470F_A7C9_27CE21D37FC3
-#define F43D56DD_C750_470F_A7C9_27CE21D37FC3
+#ifndef CUBICSERVER_SERVER_HPP
+#define CUBICSERVER_SERVER_HPP
 
 #include <arpa/inet.h>
 #include <cstdint>
@@ -31,6 +31,8 @@ constexpr uint16_t MC_PROTOCOL = 761;
 constexpr uint16_t MS_PER_TICK = 50;
 
 #define GLOBAL_PALETTE Server::getInstance()->getGlobalPalette()
+
+class Client;
 
 class Server {
 public:
@@ -101,19 +103,11 @@ private:
     WhitelistHandling::Whitelist _whitelist;
     std::unordered_map<std::string_view, WorldGroup *> _worldGroups;
     std::vector<CommandBase *> _commands = {
-        new command_parser::Help,
-        new command_parser::QuestionMark,
-        new command_parser::Stop,
-        new command_parser::Seed,
-        new command_parser::DumpChunk,
-        new command_parser::Log,
-        new command_parser::Op,
-        new command_parser::Deop,
-        new command_parser::Reload,
-        new command_parser::Time,
+        new command_parser::Help, new command_parser::QuestionMark, new command_parser::Stop, new command_parser::Seed,   new command_parser::DumpChunk,
+        new command_parser::Log,  new command_parser::Op,           new command_parser::Deop, new command_parser::Reload, new command_parser::Time,
     };
     Blocks::GlobalPalette _globalPalette;
     Items::ItemConverter _itemConverter;
 };
 
-#endif /* F43D56DD_C750_470F_A7C9_27CE21D37FC3 */
+#endif // CUBICSERVER_SERVER_HPP

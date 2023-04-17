@@ -218,7 +218,8 @@ void Server::_downloadFile(const std::string &url, const std::string &path)
 /*
 **  Reloads the config if no error within the new file
 */
-void Server::_reloadConfig() {
+void Server::_reloadConfig()
+{
     try {
         _config.parse("./config.yml");
     } catch (const std::exception &e) {
@@ -234,7 +235,8 @@ void Server::_reloadConfig() {
 /*
 **  Reloads the whitelist if no error within the new file
 */
-void Server::_reloadWhitelist() {
+void Server::_reloadWhitelist()
+{
     try {
         if (_whitelistEnabled) {
             WhitelistHandling::Whitelist whitelistReloaded = WhitelistHandling::Whitelist();
@@ -249,7 +251,8 @@ void Server::_reloadWhitelist() {
 **  Reloads the server. Used in the /reload command.
 **  More details in *Reload.hpp*.
 */
-void Server::reload() {
+void Server::reload()
+{
     _reloadConfig();
     _reloadWhitelist();
     _enforceWhitelistOnReload();

@@ -1,9 +1,8 @@
-#ifndef A00E5759_8505_49C7_A2FA_F904C5D1B881
-#define A00E5759_8505_49C7_A2FA_F904C5D1B881
+#ifndef CUBICSERVER_TYPES_HPP
+#define CUBICSERVER_TYPES_HPP
 
 #include <cstdint>
-#include <iostream>
-#include <string>
+#include <ostream>
 
 struct u128 {
     uint64_t most;
@@ -135,7 +134,8 @@ constexpr Position2D Position2D::operator-(const value_type &i) const { return P
 
 constexpr bool Position2D::operator==(const Position2D &other) const { return x == other.x && z == other.z; }
 
-template <> struct std::hash<Position2D> {
+template<>
+struct std::hash<Position2D> {
     std::size_t operator()(const Position2D &pos) const noexcept
     {
         std::size_t h1 = std::hash<Position2D::value_type> {}(pos.x);
@@ -144,4 +144,4 @@ template <> struct std::hash<Position2D> {
     }
 };
 
-#endif /* A00E5759_8505_49C7_A2FA_F904C5D1B881 */
+#endif // CUBICSERVER_TYPES_HPP
