@@ -3,10 +3,7 @@
 
 #include <algorithm>
 #include <cstdint>
-#include <map>
 #include <vector>
-
-#include "world_storage/Block.hpp"
 
 namespace world_storage {
 

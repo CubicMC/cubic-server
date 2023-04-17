@@ -1,26 +1,15 @@
-#include <algorithm>
-#include <cerrno>
-#include <chrono>
-#include <cstring>
-#include <exception>
-#include <fstream>
-#include <iostream>
+#include <curl/curl.h>
 #include <netdb.h>
 #include <poll.h>
 #include <sys/socket.h>
-
-#include <curl/curl.h>
-
-#include <nlohmann/json.hpp>
 
 #include <CRC.h>
 
 #include "Server.hpp"
 
-#include "protocol/ClientPackets.hpp"
-#include "protocol/ServerPackets.hpp"
-#include "protocol/typeSerialization.hpp"
-
+#include "Chat.hpp"
+#include "Client.hpp"
+#include "Player.hpp"
 #include "WorldGroup.hpp"
 #include "default/DefaultWorldGroup.hpp"
 #include "logging/Logger.hpp"

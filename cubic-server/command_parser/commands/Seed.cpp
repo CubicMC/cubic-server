@@ -1,6 +1,10 @@
 #include "Seed.hpp"
+#include "Chat.hpp"
+#include "Dimension.hpp"
+#include "Player.hpp"
 #include "Server.hpp"
 #include "World.hpp"
+#include "WorldGroup.hpp"
 #include "chat/events.hpp"
 #include "chat/events/clicks/CopyToClipboard.hpp"
 

@@ -1,6 +1,7 @@
 #ifndef CUBICSERVER_PERMISSIONS_HPP
 #define CUBICSERVER_PERMISSIONS_HPP
 
+#include <string>
 #include <unordered_set>
 
 class Permissions {

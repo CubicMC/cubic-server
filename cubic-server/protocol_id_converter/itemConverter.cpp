@@ -1,6 +1,8 @@
 #include <filesystem>
 #include <fstream>
 
+#include <nlohmann/json.hpp>
+
 #include "itemConverter.hpp"
 #include "logging/Logger.hpp"
 

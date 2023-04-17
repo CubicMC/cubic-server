@@ -2,18 +2,14 @@
 #define CUBICSERVER_CLIENT_HPP
 
 #include <arpa/inet.h>
-#include <deque>
 #include <netinet/in.h>
 #include <thread>
 #include <vector>
 
-#include "Chat.hpp"
-#include "Player.hpp"
-#include "logging/Logger.hpp"
+#include "chat/Message.hpp"
 #include "protocol/ClientPackets.hpp"
 #include "protocol/ServerPackets.hpp"
 #include "protocol/common.hpp"
-#include "types.hpp"
 
 #define __PCK_CALLBACK_PRIM(type, object) return object->_on##type(std::static_pointer_cast<type>(packet))
 

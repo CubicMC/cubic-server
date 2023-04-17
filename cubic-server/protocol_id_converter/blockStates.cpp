@@ -1,6 +1,8 @@
 #include <filesystem>
 #include <fstream>
 
+#include <nlohmann/json.hpp>
+
 #include "blockStates.hpp"
 #include "logging/Logger.hpp"
 

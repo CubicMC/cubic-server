@@ -2,6 +2,7 @@
 #include "Dimension.hpp"
 #include "Player.hpp"
 #include "WorldGroup.hpp"
+#include "logging/Logger.hpp"
 
 World::World(WorldGroup *worldGroup):
     _worldGroup(worldGroup),

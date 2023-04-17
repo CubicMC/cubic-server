@@ -1,7 +1,6 @@
 #ifndef CUBICSERVER_WORLDSTORAGE_LEVEL_HPP
 #define CUBICSERVER_WORLDSTORAGE_LEVEL_HPP
 
-#include <functional>
 #include <mutex>
 #include <unordered_map>
 

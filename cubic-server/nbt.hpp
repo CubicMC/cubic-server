@@ -1,12 +1,9 @@
 #ifndef CUBICSERVER_NBT_HPP
 #define CUBICSERVER_NBT_HPP
 
-#include <algorithm>
-#include <array>
 #include <cstdint>
 #include <stdexcept>
-#include <utility>
-#include <variant>
+#include <string>
 #include <vector>
 
 namespace nbt {

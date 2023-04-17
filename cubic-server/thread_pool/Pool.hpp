@@ -3,13 +3,12 @@
 
 #include <atomic>
 #include <condition_variable>
-#include <functional>
+#include <deque>
 #include <mutex>
-#include <queue>
 #include <thread>
 #include <vector>
 
-#include <bits/stl_construct.h>
+// #include <bits/stl_construct.h>
 
 #include "Task.hpp"
 
@@ -38,9 +37,9 @@ public:
      * @param args arguments to pass to the function
      */
     template<typename F, typename... Args>
-    std::shared_ptr<thread_pool::Task> add(F &&task, Args &&...args);
+    std::shared_ptr<Task> add(F &&task, Args &&...args);
 
-    void cancel(thread_pool::Task::Id id);
+    void cancel(Task::Id id);
 
     void resize(size_t nbThreads);
     void grow(size_t nbThreads);
@@ -56,7 +55,7 @@ public:
     const Behavior &behavior() const;
 
     // Can't be const because of the mutex
-    std::vector<std::shared_ptr<thread_pool::Task>> tasks();
+    std::vector<std::shared_ptr<Task>> tasks();
 
 private:
     // no copy
@@ -67,7 +66,7 @@ private:
 private:
     std::vector<std::thread> _workers;
     std::unordered_map<int, bool> _isRunning;
-    std::deque<std::shared_ptr<thread_pool::Task>> _tasks;
+    std::deque<std::shared_ptr<Task>> _tasks;
     std::string _name;
 
     std::mutex _queueMutex;

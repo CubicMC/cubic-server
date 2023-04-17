@@ -1,19 +1,14 @@
-#include <cstdint>
-#include <iostream>
-#include <sstream>
-#include <string>
-
-#include "Entity.hpp"
 #include "Player.hpp"
+#include "Chat.hpp"
+#include "Client.hpp"
+#include "Dimension.hpp"
+#include "Entity.hpp"
 #include "PlayerAttributes.hpp"
 #include "Server.hpp"
 #include "World.hpp"
 #include "blocks.hpp"
-#include "chat/Message.hpp"
 #include "command_parser/CommandParser.hpp"
-#include "protocol/ClientPackets.hpp"
-#include "protocol/ServerPackets.hpp"
-#include "types.hpp"
+#include "items/foodItems.hpp"
 
 Player::Player(Client *cli, std::shared_ptr<Dimension> dim, u128 uuid, const std::string &username):
     _cli(cli),

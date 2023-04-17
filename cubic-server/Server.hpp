@@ -8,16 +8,10 @@
 #include <string>
 #include <vector>
 
-#include "Client.hpp"
-#include "protocol/ServerPackets.hpp"
-
-#include "WorldGroup.hpp"
 #include "configuration/ConfigHandler.hpp"
-#include "logging/Logger.hpp"
 #include "whitelist/Whitelist.hpp"
 
 #include "allCommands.hpp"
-#include "command_parser/commands/CommandBase.hpp"
 
 #include "protocol_id_converter/blockStates.hpp"
 #include "protocol_id_converter/itemConverter.hpp"
@@ -33,6 +27,7 @@ constexpr uint16_t MS_PER_TICK = 50;
 #define GLOBAL_PALETTE Server::getInstance()->getGlobalPalette()
 
 class Client;
+class WorldGroup;
 
 class Server {
 public:

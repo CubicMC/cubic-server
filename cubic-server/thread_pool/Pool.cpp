@@ -1,6 +1,4 @@
 #include "Pool.hpp"
-#include "Task.hpp"
-#include "logging/Logger.hpp"
 
 thread_pool::Pool::Pool(size_t nbThreads, const std::string &name, const Behavior &behavior):
     _name(name),

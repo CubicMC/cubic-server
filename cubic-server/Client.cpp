@@ -1,21 +1,20 @@
-#include <cstring>
-#include <iostream>
-#include <memory>
 #include <poll.h>
 #include <stdexcept>
 #include <string>
 #include <unistd.h>
 
+#include <nlohmann/json.hpp>
+
 #include "Client.hpp"
-#include "PlayerAttributes.hpp"
+
+#include "Player.hpp"
 #include "Server.hpp"
 #include "World.hpp"
+#include "WorldGroup.hpp"
 #include "chat/ChatRegistry.hpp"
-#include "nlohmann/json.hpp"
 #include "protocol/ClientPackets.hpp"
 #include "protocol/ServerPackets.hpp"
 #include "protocol/typeSerialization.hpp"
-#include "whitelist/Whitelist.hpp"
 
 Client::Client(int sockfd, struct sockaddr_in6 addr):
     _sockfd(sockfd),

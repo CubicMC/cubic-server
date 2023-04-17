@@ -1,7 +1,5 @@
 #include "nbt.hpp"
-#include <cstdint>
 #include <optional>
-#include <vector>
 
 using namespace nbt;
 

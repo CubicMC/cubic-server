@@ -2,7 +2,6 @@
 #include <fstream>
 #include <gtest/gtest.h>
 #include <rapidcheck/gtest.h>
-#include <vector>
 
 namespace Nbt_Testing {
 /**

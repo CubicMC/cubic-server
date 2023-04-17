@@ -1,11 +1,8 @@
 #ifndef CUBICSERVER_PROTOCOLIDCONVERTER_ITEMCONVERTER_HPP
 #define CUBICSERVER_PROTOCOLIDCONVERTER_ITEMCONVERTER_HPP
 
-#include <cstdint>
 #include <string>
 #include <vector>
-
-#include "nlohmann/json.hpp"
 
 #include "types.hpp"
 

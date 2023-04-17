@@ -1,15 +1,11 @@
 #ifndef CUBICSERVER_CHAT_HPP
 #define CUBICSERVER_CHAT_HPP
 
+#include <nlohmann/json.hpp>
+
 #include "chat/Message.hpp"
-#include "logging/Logger.hpp"
-#include "nlohmann/json.hpp"
-#include <optional>
-#include <stdint.h>
-#include <string>
 
 class Player;
-class Client;
 class WorldGroup;
 
 class Chat {

@@ -1,4 +1,7 @@
 #include "Op.hpp"
+#include "Chat.hpp"
+#include "Dimension.hpp"
+#include "Player.hpp"
 #include "Server.hpp"
 #include "World.hpp"
 

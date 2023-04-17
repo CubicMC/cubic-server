@@ -1,11 +1,8 @@
 #ifndef CUBICSERVER_PROTOCOLIDCONVERTER_BLOCKSTATES_HPP
 #define CUBICSERVER_PROTOCOLIDCONVERTER_BLOCKSTATES_HPP
 
-#include <cstdint>
 #include <string>
 #include <vector>
-
-#include "nlohmann/json.hpp"
 
 #include "types.hpp"
 

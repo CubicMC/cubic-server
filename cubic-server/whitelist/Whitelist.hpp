@@ -1,10 +1,10 @@
 #ifndef CUBICSERVER_WHITELIST_HPP
 #define CUBICSERVER_WHITELIST_HPP
 
-#include "logging/Logger.hpp"
 #include <string>
 
-#include "nlohmann/json.hpp"
+#include <nlohmann/json.hpp>
+
 #include "types.hpp"
 
 namespace WhitelistHandling {

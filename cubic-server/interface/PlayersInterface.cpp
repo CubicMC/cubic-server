@@ -6,6 +6,7 @@
 #include "PlayersInterface.hpp"
 #include "Server.hpp"
 #include "World.hpp"
+#include "WorldGroup.hpp"
 
 PlayersInterface::PlayersInterface()
 {

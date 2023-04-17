@@ -8,7 +8,6 @@
 #include "Server.hpp"
 #include "interface/InterfaceContainer.hpp"
 #include "logging/Logger.hpp"
-#include "protocol/ServerPackets.hpp"
 
 argparse::ArgumentParser argParser(int argc, char **argv)
 {

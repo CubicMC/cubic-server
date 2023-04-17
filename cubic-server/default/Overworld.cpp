@@ -1,5 +1,6 @@
 #include "Overworld.hpp"
 #include "World.hpp"
+#include "logging/Logger.hpp"
 #include <future>
 #include <queue>
 

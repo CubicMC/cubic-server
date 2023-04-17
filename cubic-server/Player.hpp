@@ -1,13 +1,11 @@
 #ifndef CUBICSERVER_PLAYER_HPP
 #define CUBICSERVER_PLAYER_HPP
 
-#include "Chat.hpp"
 #include "LivingEntity.hpp"
 #include "PlayerAttributes.hpp"
 #include "SoundList.hpp"
 #include "TickClock.hpp"
-#include "items/foodItems.hpp"
-#include "logging/Logger.hpp"
+#include "chat/Message.hpp"
 #include "math/Vector3.hpp"
 #include "protocol/ClientPackets.hpp"
 #include "protocol/ServerPackets.hpp"
@@ -15,7 +13,7 @@
 #include "world_storage/ChunkColumn.hpp"
 
 class Client;
-class Entity;
+// class Entity;
 
 class Player : public LivingEntity {
     friend class Client;
