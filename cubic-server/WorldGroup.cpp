@@ -1,11 +1,9 @@
 #include "WorldGroup.hpp"
+#include "Chat.hpp"
 #include "Server.hpp"
 #include "SoundSystem.hpp"
 #include "World.hpp"
 #include "logging/Logger.hpp"
-
-#include <thread>
-#include <utility>
 
 WorldGroup::WorldGroup(std::shared_ptr<Chat> chat):
     _chat(std::move(chat)),
