@@ -952,7 +952,7 @@ void Player::_continueLoginSequence()
 {
     this->sendFeatureFlags({{"minecraft:vanilla"}});
 
-    // TODO: Fix that to the real values
+    // TODO: Fix that to the real values (currently it's in easy and it's locked for the client)
     this->sendChangeDifficulty({1, true});
 
     this->sendPlayerAbilities(
