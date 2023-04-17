@@ -40,8 +40,8 @@ int main(int argc, char **argv)
     InterfaceContainer interfaceContainer;
     CommandLine cmd;
 
-    auto logger = logging::Logger::get_instance();
-    logger->unset_display_specification_level_in_console(logging::LogLevel::DEBUG);
+    auto logger = logging::Logger::getInstance();
+    logger->unsetDisplaySpecificationLevelInConsole(logging::LogLevel::DEBUG);
 
     if (program["--nogui"] == false)
         interfaceContainer.launch(argc, argv);

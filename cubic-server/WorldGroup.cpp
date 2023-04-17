@@ -27,22 +27,22 @@ void WorldGroup::initialize()
 void WorldGroup::_run()
 {
     while (_running) {
-        auto start_time = std::chrono::system_clock::now();
+        auto startTime = std::chrono::system_clock::now();
         for (auto &[_, world] : _worlds) {
             world->tick();
         }
         _soundSystem->tick();
-        auto end_time = std::chrono::system_clock::now();
-        auto compute_time = end_time - start_time;
-        if (compute_time > std::chrono::milliseconds(MS_PER_TICK)) { // If this happens there is a serious problem
-            auto nb_ticks = compute_time / std::chrono::milliseconds(MS_PER_TICK);
+        auto endTime = std::chrono::system_clock::now();
+        auto computeTime = endTime - startTime;
+        if (computeTime > std::chrono::milliseconds(MS_PER_TICK)) { // If this happens there is a serious problem
+            auto nbTicks = computeTime / std::chrono::milliseconds(MS_PER_TICK);
             LWARN(
-                "Can't keep up! Did the system time change, or is the server overloaded? Running ", std::chrono::duration_cast<std::chrono::milliseconds>(compute_time).count(),
-                "ms behind, skipping ", nb_ticks, " tick(s)"
+                "Can't keep up! Did the system time change, or is the server overloaded? Running ", std::chrono::duration_cast<std::chrono::milliseconds>(computeTime).count(),
+                "ms behind, skipping ", nbTicks, " tick(s)"
             );
             continue;
         }
-        std::this_thread::sleep_for(std::chrono::milliseconds(MS_PER_TICK) - compute_time);
+        std::this_thread::sleep_for(std::chrono::milliseconds(MS_PER_TICK) - computeTime);
     }
 }
 

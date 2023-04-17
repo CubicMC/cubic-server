@@ -33,7 +33,7 @@ void ChunkColumn::updateBlock(Position pos, BlockId id)
     int startOffset = (blockNumber * HEIGHTMAP_BITS) % 64;
     int endLong = ((blockNumber + 1) * HEIGHTMAP_BITS - 1) / 64;
 
-    if (pos.y > _heightMap.motionBlocking.at(startLong).get_value() >> startOffset) {
+    if (pos.y > _heightMap.motionBlocking.at(startLong).getValue() >> startOffset) {
         _heightMap.motionBlocking[startLong] |= (pos.y << startOffset);
 
         if (startLong != endLong)

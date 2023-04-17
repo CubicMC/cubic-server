@@ -1,3 +1,6 @@
+#ifndef CUBICSERVER_PROTOCOLIDCONVERTER_ITEMCONVERTER_HPP
+#define CUBICSERVER_PROTOCOLIDCONVERTER_ITEMCONVERTER_HPP
+
 #include <cstdint>
 #include <string>
 #include <vector>
@@ -43,3 +46,5 @@ private:
     std::vector<InternalItem> _items; // The internal representation of the items
 };
 }
+
+#endif // CUBICSERVER_PROTOCOLIDCONVERTER_ITEMCONVERTER_HPP

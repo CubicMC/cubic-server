@@ -83,7 +83,7 @@ void Chat::sendSayMessage(const chat::Message &raw, const Player *from)
         return;
     }
 
-    auto message = chat::Message::fromTranslationKey<chat::message::TranslationKey::chat_type_announcement>(from, raw);
+    auto message = chat::Message::fromTranslationKey<chat::message::TranslationKey::ChatTypeAnnouncement>(from, raw);
 
     this->_sendMessage(message, from, from->getWorldGroup(), chat::message::Type::Announce);
 }
@@ -98,8 +98,8 @@ void Chat::sendWhisperMessage(const chat::Message &message, Player *sender, Play
         return;
     }
 
-    chat::Message in = chat::Message::fromTranslationKey<chat::message::TranslationKey::commands_message_display_incoming>(sender, message);
-    chat::Message out = chat::Message::fromTranslationKey<chat::message::TranslationKey::commands_message_display_outgoing>(to, message);
+    chat::Message in = chat::Message::fromTranslationKey<chat::message::TranslationKey::CommandsMessageDisplayIncoming>(sender, message);
+    chat::Message out = chat::Message::fromTranslationKey<chat::message::TranslationKey::CommandsMessageDisplayOutgoing>(to, message);
 
     this->_sendMessage(out, sender, sender, chat::message::Type::WhisperOut);
     this->_sendMessage(in, sender, to, chat::message::Type::WhisperIn);
@@ -136,7 +136,7 @@ void Chat::_sendMessage(const chat::Message &message, const Player *from, Player
         return;
     }
 
-    if (to->getChatVisibility() != protocol::ClientInformation::ChatMode::Enabled)
+    if (to->getChatVisibility() != protocol::ClientInformation::ChatVisibility::Enabled)
         return;
 
     protocol::PlayerChatMessage pck = buildPacket(from, this->_messagesLog.size(), message, type);
@@ -156,7 +156,7 @@ void Chat::_sendMessage(const chat::Message &message, const Player *from, const 
 
     for (auto &[_, world] : worldGroup->getWorlds()) {
         for (auto &player : world->getPlayers()) {
-            if (player->getChatVisibility() == protocol::ClientInformation::ChatMode::Enabled)
+            if (player->getChatVisibility() == protocol::ClientInformation::ChatVisibility::Enabled)
                 player->sendChatMessageResponse(pck);
         }
     }
@@ -164,7 +164,7 @@ void Chat::_sendMessage(const chat::Message &message, const Player *from, const 
 
 void Chat::_sendMessage(const chat::Message &message, const Player *from, const std::vector<Player *> &players, const chat::message::Type &type)
 {
-    if (from->getChatVisibility() != protocol::ClientInformation::ChatMode::Enabled)
+    if (from->getChatVisibility() != protocol::ClientInformation::ChatVisibility::Enabled)
         return;
 
     protocol::PlayerChatMessage pck = buildPacket(from, this->_messagesLog.size(), message, type);
@@ -173,7 +173,7 @@ void Chat::_sendMessage(const chat::Message &message, const Player *from, const 
     this->_messagesLog.push_back(message);
 
     for (auto &player : players) {
-        if (player->getChatVisibility() == protocol::ClientInformation::ChatMode::Enabled)
+        if (player->getChatVisibility() == protocol::ClientInformation::ChatVisibility::Enabled)
             player->sendChatMessageResponse(pck);
     }
 }
@@ -182,7 +182,7 @@ void Chat::_sendSystem(const chat::Message &message, const WorldGroup *worldGrou
 {
     for (const auto &[_, world] : worldGroup->getWorlds()) {
         for (auto &player : world->getPlayers()) {
-            if (player->getChatVisibility() <= protocol::ClientInformation::ChatMode::CommandsOnly)
+            if (player->getChatVisibility() <= protocol::ClientInformation::ChatVisibility::CommandsOnly)
                 player->sendSystemChatMessage({message.serialize(), overlay});
         }
     }
@@ -190,14 +190,14 @@ void Chat::_sendSystem(const chat::Message &message, const WorldGroup *worldGrou
 
 void Chat::_sendSystem(const chat::Message &message, Player *player, bool overlay)
 {
-    if (player->getChatVisibility() <= protocol::ClientInformation::ChatMode::CommandsOnly)
+    if (player->getChatVisibility() <= protocol::ClientInformation::ChatVisibility::CommandsOnly)
         player->sendSystemChatMessage({message.serialize(), overlay});
 }
 
 void Chat::_sendSystem(const chat::Message &message, const std::vector<Player *> &players, bool overlay)
 {
     for (auto &player : players) {
-        if (player->getChatVisibility() <= protocol::ClientInformation::ChatMode::CommandsOnly)
+        if (player->getChatVisibility() <= protocol::ClientInformation::ChatVisibility::CommandsOnly)
             player->sendSystemChatMessage({message.serialize(), overlay});
     }
 }

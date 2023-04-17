@@ -10,10 +10,10 @@ namespace generation {
 class Overworld : public Generator {
 public:
     Overworld(Seed seed);
-    BlockId getBlock(position_type x, position_type y, position_type z) override;
+    BlockId getBlock(positionType x, positionType y, positionType z) override;
     BlockId getBlock(const Position &pos) override;
 
-    BiomeId getBiome(position_type x, position_type y, position_type z) override;
+    BiomeId getBiome(positionType x, positionType y, positionType z) override;
     BiomeId getBiome(const Position &pos) override;
 };
 }

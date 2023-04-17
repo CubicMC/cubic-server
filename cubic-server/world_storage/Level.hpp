@@ -1,5 +1,5 @@
-#ifndef LEVEL_HPP
-#define LEVEL_HPP
+#ifndef CUBICSERVER_WORLDSTORAGE_LEVEL_HPP
+#define CUBICSERVER_WORLDSTORAGE_LEVEL_HPP
 
 #include <functional>
 #include <mutex>
@@ -44,4 +44,4 @@ private:
 
 }
 
-#endif // LEVEL_HPP
+#endif // CUBICSERVER_WORLDSTORAGE_LEVEL_HPP

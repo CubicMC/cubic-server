@@ -102,10 +102,20 @@ private:
     Configuration::ConfigHandler _config;
     WhitelistHandling::Whitelist _whitelist;
     std::unordered_map<std::string_view, WorldGroup *> _worldGroups;
+    // clang-format off
     std::vector<CommandBase *> _commands = {
-        new command_parser::Help, new command_parser::QuestionMark, new command_parser::Stop, new command_parser::Seed,   new command_parser::DumpChunk,
-        new command_parser::Log,  new command_parser::Op,           new command_parser::Deop, new command_parser::Reload, new command_parser::Time,
+        new command_parser::Help,
+        new command_parser::QuestionMark,
+        new command_parser::Stop,
+        new command_parser::Seed,
+        new command_parser::DumpChunk,
+        new command_parser::Log,
+        new command_parser::Op,
+        new command_parser::Deop,
+        new command_parser::Reload,
+        new command_parser::Time,
     };
+    // clang-format on
     Blocks::GlobalPalette _globalPalette;
     Items::ItemConverter _itemConverter;
 };

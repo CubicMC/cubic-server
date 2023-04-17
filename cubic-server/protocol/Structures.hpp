@@ -34,7 +34,7 @@ struct ArgumentSignature {
 };
 
 struct SlotWithIndex {
-    int16_t slot_number;
-    Slot slot_data;
+    int16_t slotNumber;
+    Slot slotData;
 };
 } // namespace protocol

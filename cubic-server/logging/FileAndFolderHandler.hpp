@@ -9,18 +9,18 @@ namespace logging {
  */
 class FileAndFolderHandler {
 public:
-    void create_folder(std::string folder_name);
-    bool folder_exist(std::string foldername) const;
-    void create_file(std::string filename);
-    static bool file_exist(std::string filename);
-    const std::string &get_folder_path() const;
-    const std::string &get_file_path() const;
-    void unset_folder_path();
-    void unset_file_path();
+    void createFolder(std::string folderName);
+    bool folderExist(std::string folderName) const;
+    void createFile(std::string filename);
+    static bool fileExist(std::string filename);
+    const std::string &getFolderPath() const;
+    const std::string &getFilePath() const;
+    void unsetFolderPath();
+    void unsetFilePath();
 
 private:
-    std::string _folder_path; // Path to the folder where log files are stored
-    std::string _file_path; // Path to the current log file
+    std::string _folderPath; // Path to the folder where log files are stored
+    std::string _filePath; // Path to the current log file
 };
 }
 

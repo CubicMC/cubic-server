@@ -11,25 +11,25 @@ public:
     virtual ~LogsInterface();
 
 private:
-    bool on_log_to_display();
+    bool _onLogToDisplay();
     bool on_key_press_event(GdkEventKey *event) override;
-    void on_filter_selected(logging::LogLevel logLevel);
-    void on_reset_filters();
-    void scroll_to_end();
-    void on_button_clicked();
+    void _onFilterSelected(logging::LogLevel logLevel);
+    void _onResetFilters();
+    void _scrollToEnd();
+    void _onButtonClicked();
 
 protected:
-    Gtk::ScrolledWindow m_Logs_container;
-    Gtk::TextView m_Logs_view;
-    Glib::RefPtr<Gtk::TextBuffer> m_Logs;
-    Glib::RefPtr<Gtk::TextBuffer::Mark> m_endMark;
-    Gtk::Entry m_Entry;
-    Gtk::Box m_VBox_main, m_VBox_logs;
-    Gtk::Frame m_Frame_filters, m_Frame_selectedFilter;
-    Gtk::ButtonBox m_HBox_filters;
-    Gtk::Button m_Info, m_Warn, m_Error, m_Fatal, m_Debug, m_Reset;
-    Gtk::Label m_Selected_filter;
-    logging::LogLevel m_Selected_logLevel;
+    Gtk::ScrolledWindow _logsContainer;
+    Gtk::TextView _logsView;
+    Glib::RefPtr<Gtk::TextBuffer> _logs;
+    Glib::RefPtr<Gtk::TextBuffer::Mark> _endMark;
+    Gtk::Entry _entry;
+    Gtk::Box _VBoxMain, _VBoxLogs;
+    Gtk::Frame _frameFilters, _frameSelectedFilter;
+    Gtk::ButtonBox _HBoxFilters;
+    Gtk::Button _info, _warn, _error, _fatal, _debug, _reset;
+    Gtk::Label _selectedFilter;
+    logging::LogLevel _selectedLogLevel;
 };
 
 #endif /* !LOGSINTERFACE_HPP */

@@ -12,15 +12,15 @@ static std::optional<std::string> parseName(uint8_t *&at, const uint8_t *end)
     if (at + 1 > end)
         return std::nullopt;
 
-    uint16_t name_size = (*at << 8) | at[1];
+    uint16_t nameSize = (*at << 8) | at[1];
     at += 2;
 
-    if (name_size == 0)
+    if (nameSize == 0)
         return std::optional<std::string>("");
-    if (at + name_size - 1 > end)
+    if (at + nameSize - 1 > end)
         return std::nullopt;
 
-    for (auto i = 0; i < name_size; i++)
+    for (auto i = 0; i < nameSize; i++)
         value.push_back(*at++);
     return std::optional<std::string>(value);
 }
@@ -28,19 +28,19 @@ static std::optional<std::string> parseName(uint8_t *&at, const uint8_t *end)
 // Yeah that is bad I know, but it's that or I copy paste :)
 #define GET_NAME()                     \
     std::string name = "";             \
-    if (include_name) {                \
+    if (includeName) {                 \
         auto tmp = parseName(at, end); \
         if (!tmp)                      \
             return nullptr;            \
         name = tmp.value();            \
     }
 
-Byte *nbt::parseByte(uint8_t *&at, const uint8_t *end, bool include_name, bool in_list)
+Byte *nbt::parseByte(uint8_t *&at, const uint8_t *end, bool includeName, bool inList)
 {
     if (at > end)
         return nullptr;
 
-    if (!in_list) {
+    if (!inList) {
         if (*at != (uint8_t) TagType::Byte)
             return nullptr;
 
@@ -56,12 +56,12 @@ Byte *nbt::parseByte(uint8_t *&at, const uint8_t *end, bool include_name, bool i
     return new Byte(name, value);
 }
 
-Short *nbt::parseShort(uint8_t *&at, const uint8_t *end, bool include_name, bool in_list)
+Short *nbt::parseShort(uint8_t *&at, const uint8_t *end, bool includeName, bool inList)
 {
     if (at > end)
         return nullptr;
 
-    if (!in_list) {
+    if (!inList) {
         if (*at != (uint8_t) TagType::Short)
             return nullptr;
 
@@ -79,12 +79,12 @@ Short *nbt::parseShort(uint8_t *&at, const uint8_t *end, bool include_name, bool
     return new Short(name, value);
 }
 
-Int *nbt::parseInt(uint8_t *&at, const uint8_t *end, bool include_name, bool in_list)
+Int *nbt::parseInt(uint8_t *&at, const uint8_t *end, bool includeName, bool inList)
 {
     if (at > end)
         return nullptr;
 
-    if (!in_list) {
+    if (!inList) {
         if (*at != (uint8_t) TagType::Int)
             return nullptr;
 
@@ -102,12 +102,12 @@ Int *nbt::parseInt(uint8_t *&at, const uint8_t *end, bool include_name, bool in_
     return new Int(name, value);
 }
 
-Long *nbt::parseLong(uint8_t *&at, const uint8_t *end, bool include_name, bool in_list)
+Long *nbt::parseLong(uint8_t *&at, const uint8_t *end, bool includeName, bool inList)
 {
     if (at > end)
         return nullptr;
 
-    if (!in_list) {
+    if (!inList) {
         if (*at != (uint8_t) TagType::Long)
             return nullptr;
 
@@ -125,12 +125,12 @@ Long *nbt::parseLong(uint8_t *&at, const uint8_t *end, bool include_name, bool i
     return new Long(name, value);
 }
 
-Float *nbt::parseFloat(uint8_t *&at, const uint8_t *end, bool include_name, bool in_list)
+Float *nbt::parseFloat(uint8_t *&at, const uint8_t *end, bool includeName, bool inList)
 {
     if (at > end)
         return nullptr;
 
-    if (!in_list) {
+    if (!inList) {
         if (*at != (uint8_t) TagType::Float)
             return nullptr;
 
@@ -148,12 +148,12 @@ Float *nbt::parseFloat(uint8_t *&at, const uint8_t *end, bool include_name, bool
     return new Float(name, *((float *) (&value)));
 }
 
-Double *nbt::parseDouble(uint8_t *&at, const uint8_t *end, bool include_name, bool in_list)
+Double *nbt::parseDouble(uint8_t *&at, const uint8_t *end, bool includeName, bool inList)
 {
     if (at > end)
         return nullptr;
 
-    if (!in_list) {
+    if (!inList) {
         if (*at != (uint8_t) TagType::Double)
             return nullptr;
 
@@ -171,12 +171,12 @@ Double *nbt::parseDouble(uint8_t *&at, const uint8_t *end, bool include_name, bo
     return new Double(name, *((double *) (&value)));
 }
 
-ByteArray *nbt::parseByteArray(uint8_t *&at, const uint8_t *end, bool include_name, bool in_list)
+ByteArray *nbt::parseByteArray(uint8_t *&at, const uint8_t *end, bool includeName, bool inList)
 {
     if (at > end)
         return nullptr;
 
-    if (!in_list) {
+    if (!inList) {
         if (*at != (uint8_t) TagType::ByteArray)
             return nullptr;
 
@@ -203,12 +203,12 @@ ByteArray *nbt::parseByteArray(uint8_t *&at, const uint8_t *end, bool include_na
     return new ByteArray(name, data);
 }
 
-String *nbt::parseString(uint8_t *&at, const uint8_t *end, bool include_name, bool in_list)
+String *nbt::parseString(uint8_t *&at, const uint8_t *end, bool includeName, bool inList)
 {
     if (at > end)
         return nullptr;
 
-    if (!in_list) {
+    if (!inList) {
         if (*at != (uint8_t) TagType::String)
             return nullptr;
 
@@ -234,12 +234,12 @@ String *nbt::parseString(uint8_t *&at, const uint8_t *end, bool include_name, bo
     return new String(name, data);
 }
 
-List *nbt::parseList(uint8_t *&at, const uint8_t *end, bool include_name, bool in_list)
+List *nbt::parseList(uint8_t *&at, const uint8_t *end, bool includeName, bool inList)
 {
     if (at > end)
         return nullptr;
 
-    if (!in_list) {
+    if (!inList) {
         if (*at != (uint8_t) TagType::List)
             return nullptr;
 
@@ -316,12 +316,12 @@ List *nbt::parseList(uint8_t *&at, const uint8_t *end, bool include_name, bool i
     return new List(name, data);
 }
 
-Compound *nbt::parseCompound(uint8_t *&at, const uint8_t *end, bool include_name, bool in_list)
+Compound *nbt::parseCompound(uint8_t *&at, const uint8_t *end, bool includeName, bool inList)
 {
     if (at > end)
         return nullptr;
 
-    if (!in_list) {
+    if (!inList) {
         if (*at != (uint8_t) TagType::Compound)
             return nullptr;
 
@@ -351,12 +351,12 @@ Compound *nbt::parseCompound(uint8_t *&at, const uint8_t *end, bool include_name
     return new Compound(name, data);
 }
 
-IntArray *nbt::parseIntArray(uint8_t *&at, const uint8_t *end, bool include_name, bool in_list)
+IntArray *nbt::parseIntArray(uint8_t *&at, const uint8_t *end, bool includeName, bool inList)
 {
     if (at > end)
         return nullptr;
 
-    if (!in_list) {
+    if (!inList) {
         if (*at != (uint8_t) TagType::IntArray)
             return nullptr;
 
@@ -385,12 +385,12 @@ IntArray *nbt::parseIntArray(uint8_t *&at, const uint8_t *end, bool include_name
     return new IntArray(name, data);
 }
 
-LongArray *nbt::parseLongArray(uint8_t *&at, const uint8_t *end, bool include_name, bool in_list)
+LongArray *nbt::parseLongArray(uint8_t *&at, const uint8_t *end, bool includeName, bool inList)
 {
     if (at > end)
         return nullptr;
 
-    if (!in_list) {
+    if (!inList) {
         if (*at != (uint8_t) TagType::LongArray)
             return nullptr;
 

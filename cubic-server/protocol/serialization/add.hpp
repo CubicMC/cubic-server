@@ -1,5 +1,5 @@
-#ifndef PROTOCOL_SERIALIZATION_ADD_HPP
-#define PROTOCOL_SERIALIZATION_ADD_HPP
+#ifndef CUBICSERVER_PROTOCOL_SERIALIZATION_ADD_HPP
+#define CUBICSERVER_PROTOCOL_SERIALIZATION_ADD_HPP
 
 #include <cstdint>
 #include <string>
@@ -169,7 +169,7 @@ constexpr void addChunkColumn(std::vector<uint8_t> &out, const world_storage::Ch
     // Add the chunk data
     addArray<uint8_t, addByte>(out, chunkData);
 }
-constexpr void addAttributesProperyModifier(std::vector<uint8_t> &out, const protocol::UpdateAttributes::Property::Modifier &data)
+constexpr void addAttributesPropertyModifier(std::vector<uint8_t> &out, const protocol::UpdateAttributes::Property::Modifier &data)
 {
     addUUID(out, data.uuid);
     addDouble(out, data.amount);
@@ -180,7 +180,7 @@ constexpr void addAttributesProperty(std::vector<uint8_t> &out, const protocol::
 {
     addString(out, data.key);
     addString(out, data.value);
-    addArray<protocol::UpdateAttributes::Property::Modifier, addAttributesProperyModifier>(out, data.modifiers);
+    addArray<protocol::UpdateAttributes::Property::Modifier, addAttributesPropertyModifier>(out, data.modifiers);
 }
 
 constexpr void addAdvancementDisplay(std::vector<uint8_t> &out, const UpdateAdvancements::AdvancementMapping::Advancement::Display &data)
@@ -252,4 +252,4 @@ constexpr void addRawMessage(std::vector<uint8_t> &out, const std::pair<int32_t,
 
 } // namespace protocol
 
-#endif
+#endif // CUBICSERVER_PROTOCOL_SERIALIZATION_ADD_HPP

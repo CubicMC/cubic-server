@@ -39,14 +39,14 @@ public:
     uint16_t getHeldItem() const;
     const std::string &getUuidString() const;
     player_attributes::Gamemode getGamemode() const;
-    const protocol::ClientInformation::ChatMode &getChatVisibility() const;
+    const protocol::ClientInformation::ChatVisibility &getChatVisibility() const;
     long keepAliveId() const;
     uint8_t keepAliveIgnored() const;
     bool isOperator() const;
 
 public:
-    void setPosition(const Vector3<double> &pos, bool on_ground) override;
-    void setPosition(double x, double y, double z, bool on_ground) override;
+    void setPosition(const Vector3<double> &pos, bool onGround) override;
+    void setPosition(double x, double y, double z, bool onGround) override;
     void setGamemode(player_attributes::Gamemode gm);
     void teleport(const Vector3<double> &pos) override;
     void setKeepAliveIgnored(uint8_t ign);
@@ -71,7 +71,7 @@ public:
     void stopSound(uint8_t flags = 0, SoundCategory category = SoundCategory::Ambient, std::string sound = "");
     void sendKeepAlive(long id);
     void sendSynchronizePosition(Vector3<double> pos);
-    void sendSwingArm(bool main_hand, int32_t swinger_id);
+    void sendSwingArm(bool mainHand, int32_t swingerId);
     void sendTeleportEntity(int32_t id, const Vector3<double> &pos);
     void sendRemoveEntities(const std::vector<int32_t> &entities);
     void sendUpdateEntityPosition(const protocol::UpdateEntityPosition &data);
@@ -159,7 +159,6 @@ private:
     void _processKeepAlive();
     void _updateRenderedChunks(const Position2D &oldChunkPos, const Position2D &newChunkPos);
     void _continueLoginSequence();
-    void _sendLoginMessage();
     void _unloadChunk(int32_t x, int32_t z);
     void _foodTick();
     void _eat(ItemId itemId);
@@ -182,7 +181,7 @@ private:
     float _foodExhaustionLevel;
 
     // player status
-    protocol::ClientInformation::ChatMode _chatVisibility;
+    protocol::ClientInformation::ChatVisibility _chatVisibility;
     bool _isFlying;
     bool _isOperator;
     bool _isSprinting;

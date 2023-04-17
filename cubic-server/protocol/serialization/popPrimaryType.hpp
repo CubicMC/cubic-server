@@ -4,8 +4,8 @@
 ** https://wiki.vg/index.php?title=Protocol&oldid=17753
 */
 
-#ifndef PROTOCOL_SERIALIZATION_POP_PRIMARYTYPE_HPP
-#define PROTOCOL_SERIALIZATION_POP_PRIMARYTYPE_HPP
+#ifndef CUBICSERVER_PROTOCOL_SERIALIZATION_POPPRIMARYTYPE_HPP
+#define CUBICSERVER_PROTOCOL_SERIALIZATION_POPPRIMARYTYPE_HPP
 
 #include <bitset>
 #include <cstdint>
@@ -229,7 +229,8 @@ constexpr u128 popUUID(uint8_t *&at, uint8_t *eof)
     return value;
 }
 
-template <typename T, T (*pop)(uint8_t *&begin, uint8_t *end)> constexpr std::vector<T> popArray(uint8_t *&at, uint8_t *eof)
+template<typename T, T (*pop)(uint8_t *&begin, uint8_t *end)>
+constexpr std::vector<T> popArray(uint8_t *&at, uint8_t *eof)
 {
     std::vector<T> array;
     auto length = popVarInt(at, eof);
@@ -257,7 +258,8 @@ constexpr Position popPosition(uint8_t *&at, uint8_t *eof)
  * @param eof The end of the packet
  * @return A bitset of size size
  */
-template <uint64_t size> constexpr std::bitset<size> popBitSet(uint8_t *&at, uint8_t *eof)
+template<uint64_t size>
+constexpr std::bitset<size> popBitSet(uint8_t *&at, uint8_t *eof)
 {
     std::bitset<size> result;
 
@@ -271,4 +273,4 @@ template <uint64_t size> constexpr std::bitset<size> popBitSet(uint8_t *&at, uin
 }
 } // namespace protocol
 
-#endif
+#endif // CUBICSERVER_PROTOCOL_SERIALIZATION_POPPRIMARYTYPE_HPP

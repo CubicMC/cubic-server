@@ -1,5 +1,5 @@
-#ifndef THREADPOOL_TASK_HPP
-#define THREADPOOL_TASK_HPP
+#ifndef CUBICSERVER_THREADPOOL_TASK_HPP
+#define CUBICSERVER_THREADPOOL_TASK_HPP
 
 #include <cstdint>
 #include <functional>
@@ -58,4 +58,4 @@ private:
 
 } // namespace thread_pool
 
-#endif // THREADPOOL_TASK_HPP
+#endif // CUBICSERVER_THREADPOOL_TASK_HPP

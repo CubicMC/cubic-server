@@ -1,5 +1,5 @@
-#ifndef THREADPOOL_POOL_HPP
-#define THREADPOOL_POOL_HPP
+#ifndef CUBICSERVER_THREADPOOL_POOL_HPP
+#define CUBICSERVER_THREADPOOL_POOL_HPP
 
 #include <atomic>
 #include <condition_variable>
@@ -37,7 +37,8 @@ public:
      * @param task function to execute
      * @param args arguments to pass to the function
      */
-    template <typename F, typename... Args> std::shared_ptr<thread_pool::Task> add(F &&task, Args &&...args);
+    template<typename F, typename... Args>
+    std::shared_ptr<thread_pool::Task> add(F &&task, Args &&...args);
 
     void cancel(thread_pool::Task::Id id);
 
@@ -78,7 +79,8 @@ private:
 };
 
 // add new work item to the pool
-template <typename F, typename... Args> std::shared_ptr<Task> Pool::add(F &&taskFunction, Args &&...args)
+template<typename F, typename... Args>
+std::shared_ptr<Task> Pool::add(F &&taskFunction, Args &&...args)
 {
     auto boundTask = std::bind(std::forward<F>(taskFunction), std::forward<Args>(args)...);
     std::shared_ptr<Task> task = nullptr;
@@ -98,4 +100,4 @@ template <typename F, typename... Args> std::shared_ptr<Task> Pool::add(F &&task
 
 } // namespace ThreadPool
 
-#endif // THREADPOOL_HPP
+#endif // CUBICSERVER_THREADPOOL_POOL_HPP

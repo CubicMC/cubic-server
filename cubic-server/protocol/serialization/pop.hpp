@@ -1,5 +1,5 @@
-#ifndef PROTOCOL_SERIALIZATION_POP_HPP
-#define PROTOCOL_SERIALIZATION_POP_HPP
+#ifndef CUBICSERVER_PROTOCOL_SERIALIZATION_POP_HPP
+#define CUBICSERVER_PROTOCOL_SERIALIZATION_POP_HPP
 
 #include <cstdint>
 #include <string>
@@ -40,10 +40,10 @@ constexpr ArgumentSignature popArgumentSignature(uint8_t *&at, uint8_t *eof)
 constexpr SlotWithIndex popSlotWithIndex(uint8_t *&at, uint8_t *eof)
 {
     SlotWithIndex slotWithIndex;
-    slotWithIndex.slot_number = popShort(at, eof);
-    slotWithIndex.slot_data = popSlot(at, eof);
+    slotWithIndex.slotNumber = popShort(at, eof);
+    slotWithIndex.slotData = popSlot(at, eof);
     return slotWithIndex;
 }
 } // namespace protocol
 
-#endif
+#endif // CUBICSERVER_PROTOCOL_SERIALIZATION_POP_HPP

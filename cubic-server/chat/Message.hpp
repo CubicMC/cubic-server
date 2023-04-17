@@ -50,7 +50,7 @@ public:
      * @tparam Args
      * @param args
      */
-    template<is_base_of<chat::message::event::OnHover> Event, typename... Args>
+    template<IsBaseOf<chat::message::event::OnHover> Event, typename... Args>
     void makeHoverEvent(Args... args)
     { this->_hoverEvent = std::make_shared<Event>(std::forward<Args>(args)...); }
 
@@ -61,7 +61,7 @@ public:
      * @tparam Args
      * @param args
      */
-    template<is_base_of<chat::message::event::OnClick> Event, typename... Args>
+    template<IsBaseOf<chat::message::event::OnClick> Event, typename... Args>
     void makeClickEvent(Args... args)
     { this->_clickEvent = std::make_shared<Event>(std::forward<Args>(args)...); }
     // clang-format on

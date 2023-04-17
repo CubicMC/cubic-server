@@ -148,7 +148,7 @@ void World::sendPlayerInfoAddPlayer(Player *current)
 {
     // get list of players
     std::vector<Player *> players = this->getPlayers();
-    std::vector<protocol::PlayerInfoUpdate::Action> players_info;
+    std::vector<protocol::PlayerInfoUpdate::Action> playersInfo;
 
     uint8_t actions = (uint8_t) protocol::PlayerInfoUpdate::Actions::AddPlayer | (uint8_t) protocol::PlayerInfoUpdate::Actions::InitializeChat |
         (uint8_t) protocol::PlayerInfoUpdate::Actions::UpdateGamemode | (uint8_t) protocol::PlayerInfoUpdate::Actions::UpdateListed |
@@ -189,7 +189,7 @@ void World::sendPlayerInfoAddPlayer(Player *current)
         }
 
         // save the content of the iterated player for after
-        players_info.push_back({
+        playersInfo.push_back({
             .uuid = player->getUuid(),
             .addPlayer = {
                 .name = player->getUsername(),
@@ -218,7 +218,7 @@ void World::sendPlayerInfoAddPlayer(Player *current)
     // clang-format off
     current->sendPlayerInfoUpdate({
         .actions = actions,
-        .actionSets = players_info
+        .actionSets = playersInfo
     });
     // clang-format on
     LDEBUG("Sent player info to " + current->getUsername());

@@ -1,3 +1,6 @@
+#ifndef CUBICSERVER_PROTOCOLIDCONVERTER_BLOCKSTATES_HPP
+#define CUBICSERVER_PROTOCOLIDCONVERTER_BLOCKSTATES_HPP
+
 #include <cstdint>
 #include <string>
 #include <vector>
@@ -63,3 +66,5 @@ private:
     std::vector<InternalBlock> _blocks; // The internal blocks
 };
 }
+
+#endif // CUBICSERVER_PROTOCOLIDCONVERTER_BLOCKSTATES_HPP

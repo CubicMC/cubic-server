@@ -1,7 +1,7 @@
 #include "Entity.hpp"
 #include "Player.hpp"
-#include "types.hpp"
 #include "World.hpp"
+#include "types.hpp"
 
 Entity::Entity(std::shared_ptr<Dimension> dim):
     _dim(dim)
@@ -31,9 +31,9 @@ Entity::Entity(std::shared_ptr<Dimension> dim):
 
 void Entity::setDimension(std::shared_ptr<Dimension> dim) { _dim = dim; }
 
-void Entity::setPosition(const Vector3<double> &pos, bool on_ground) { _pos = pos; }
+void Entity::setPosition(const Vector3<double> &pos, bool onGround) { _pos = pos; }
 
-void Entity::setPosition(double x, double y, double z, bool on_ground) { this->setPosition({x, y, z}, on_ground); }
+void Entity::setPosition(double x, double y, double z, bool onGround) { this->setPosition({x, y, z}, onGround); }
 
 void Entity::forceSetPosition(const Vector3<double> &pos)
 {
@@ -45,12 +45,12 @@ void Entity::forceSetPosition(double x, double y, double z) { this->forceSetPosi
 
 void Entity::setRotation(const Vector2<uint8_t> &rot)
 {
-    float yaw_tmp = rot.x;
-    while (yaw_tmp < 0) // TODO: change that completely
-        yaw_tmp += 360;
-    while (yaw_tmp > 360)
-        yaw_tmp -= 360;
-    _rot.x = yaw_tmp;
+    float yawTmp = rot.x;
+    while (yawTmp < 0) // TODO: change that completely
+        yawTmp += 360;
+    while (yawTmp > 360)
+        yawTmp -= 360;
+    _rot.x = yawTmp;
     _rot.y = rot.y / 1.5;
 }
 

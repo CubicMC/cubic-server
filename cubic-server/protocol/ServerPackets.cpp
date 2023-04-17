@@ -16,10 +16,10 @@ std::shared_ptr<Handshake> protocol::parseHandshake(std::vector<uint8_t> &buffer
     auto at = buffer.data();
     // clang-format off
     parse(at, buffer.data() + buffer.size() - 1, *h,
-        popVarInt, &Handshake::prot_version,
+        popVarInt, &Handshake::protVersion,
         popString, &Handshake::addr,
         popShort, &Handshake::port,
-        popVarInt, &Handshake::next_state
+        popVarInt, &Handshake::nextState
     );
     // clang-format on
     return h;
@@ -46,13 +46,13 @@ std::shared_ptr<LoginStart> protocol::parseLoginStart(std::vector<uint8_t> &buff
     // clang-format off
     parse(at, buffer.data() + buffer.size() - 1, *h,
         popString, &LoginStart::name,
-        popBoolean, &LoginStart::has_player_uuid
+        popBoolean, &LoginStart::hasPlayerUuid
     );
     // clang-format on
-    if (h->has_player_uuid) {
+    if (h->hasPlayerUuid) {
         // clang-format off
         parse(at, buffer.data() + buffer.size() - 1, *h,
-            popUUID, &LoginStart::player_uuid
+            popUUID, &LoginStart::playerUuid
         );
         // clang-format on
     }
@@ -65,17 +65,17 @@ std::shared_ptr<EncryptionResponse> protocol::parseEncryptionResponse(std::vecto
     auto at = buffer.data();
     // clang-format off
     parse(at, buffer.data() + buffer.size() - 1, *h,
-        popArray<uint8_t, popByte>, &EncryptionResponse::shared_secret,
-        popBoolean, &EncryptionResponse::has_verify_token
+        popArray<uint8_t, popByte>, &EncryptionResponse::sharedSecret,
+        popBoolean, &EncryptionResponse::hasVerifyToken
     );
     // clang-format on
-    if (!h->has_verify_token)
+    if (!h->hasVerifyToken)
         return h;
     // clang-format off
     parse(at, buffer.data() + buffer.size() - 1, *h,
-        popArray<uint8_t, popByte>, &EncryptionResponse::verify_token,
+        popArray<uint8_t, popByte>, &EncryptionResponse::verifyToken,
         popLong, &EncryptionResponse::salt,
-        popArray<uint8_t, popByte>, &EncryptionResponse::message_signature
+        popArray<uint8_t, popByte>, &EncryptionResponse::messageSignature
     );
     // clang-format on
     return h;
@@ -87,7 +87,7 @@ std::shared_ptr<ConfirmTeleportation> protocol::parseConfirmTeleportation(std::v
     auto at = buffer.data();
     // clang-format off
     parse(at, buffer.data() + buffer.size() - 1, *h,
-        popVarInt, &ConfirmTeleportation::teleport_id
+        popVarInt, &ConfirmTeleportation::teleportId
     );
     // clang-format on
     return h;
@@ -99,7 +99,7 @@ std::shared_ptr<QueryBlockEntityTag> protocol::parseQueryBlockEntityTag(std::vec
     auto at = buffer.data();
     // clang-format off
     parse(at, buffer.data() + buffer.size() - 1, *h,
-        popVarInt, &QueryBlockEntityTag::transaction_id,
+        popVarInt, &QueryBlockEntityTag::transactionId,
         popPosition, &QueryBlockEntityTag::location
     );
     // clang-format on
@@ -112,7 +112,7 @@ std::shared_ptr<ChangeDifficulty> protocol::parseChangeDifficulty(std::vector<ui
     auto at = buffer.data();
     // clang-format off
     parse(at, buffer.data() + buffer.size() - 1, *h,
-        popByte, &ChangeDifficulty::new_difficulty
+        popByte, &ChangeDifficulty::newDifficulty
     );
     // clang-format on
     return h;
@@ -177,7 +177,7 @@ std::shared_ptr<ClientCommand> protocol::parseClientCommand(std::vector<uint8_t>
     auto at = buffer.data();
     // clang-format off
     parse(at, buffer.data() + buffer.size() - 1, *h,
-        popVarInt, &ClientCommand::action_id
+        popVarInt, &ClientCommand::actionId
     );
     // clang-format on
     return h;
@@ -190,13 +190,13 @@ std::shared_ptr<ClientInformation> protocol::parseClientInformation(std::vector<
     // clang-format off
     parse(at, buffer.data() + buffer.size() - 1, *h,
         popString, &ClientInformation::locale,
-        popByte, &ClientInformation::view_distance,
-        popVarInt, &ClientInformation::chat_mode,
-        popBoolean, &ClientInformation::chat_colors,
-        popByte, &ClientInformation::displayed_skin_parts,
-        popVarInt, &ClientInformation::main_hand,
-        popBoolean, &ClientInformation::enable_text_filtering,
-        popBoolean, &ClientInformation::allow_server_listings
+        popByte, &ClientInformation::viewDistance,
+        popVarInt, &ClientInformation::chatMode,
+        popBoolean, &ClientInformation::chatColors,
+        popByte, &ClientInformation::displayedSkinParts,
+        popVarInt, &ClientInformation::mainHand,
+        popBoolean, &ClientInformation::enableTextFiltering,
+        popBoolean, &ClientInformation::allowServerListings
     );
     // clang-format on
     return h;
@@ -208,7 +208,7 @@ std::shared_ptr<CommandSuggestionRequest> protocol::parseCommandSuggestionReques
     auto at = buffer.data();
     // clang-format off
     parse(at, buffer.data() + buffer.size() - 1, *h,
-        popVarInt, &CommandSuggestionRequest::transaction_id,
+        popVarInt, &CommandSuggestionRequest::transactionId,
         popString, &CommandSuggestionRequest::text
     );
     // clang-format on
@@ -221,8 +221,8 @@ std::shared_ptr<ClickContainerButton> protocol::parseClickContainerButton(std::v
     auto at = buffer.data();
     // clang-format off
     parse(at, buffer.data() + buffer.size() - 1, *h,
-        popByte, &ClickContainerButton::window_id,
-        popByte, &ClickContainerButton::button_id
+        popByte, &ClickContainerButton::windowId,
+        popByte, &ClickContainerButton::buttonId
     );
     // clang-format on
     return h;
@@ -234,13 +234,13 @@ std::shared_ptr<ClickContainer> protocol::parseClickContainer(std::vector<uint8_
     auto at = buffer.data();
     // clang-format off
     parse(at, buffer.data() + buffer.size() - 1, *h,
-        popByte, &ClickContainer::window_id,
-        popVarInt, &ClickContainer::state_id,
+        popByte, &ClickContainer::windowId,
+        popVarInt, &ClickContainer::stateId,
         popShort, &ClickContainer::slot,
         popByte, &ClickContainer::button,
         popVarInt, &ClickContainer::mode,
-        popArray<SlotWithIndex, popSlotWithIndex>, &ClickContainer::array_of_slots,
-        popSlot, &ClickContainer::carried_item
+        popArray<SlotWithIndex, popSlotWithIndex>, &ClickContainer::arrayOfSlots,
+        popSlot, &ClickContainer::carriedItem
     );
     // clang-format on
     return h;
@@ -252,7 +252,7 @@ std::shared_ptr<CloseContainerRequest> protocol::parseCloseContainerRequest(std:
     auto at = buffer.data();
     // clang-format off
     parse(at, buffer.data() + buffer.size() - 1, *h,
-        popByte, &CloseContainerRequest::window_id
+        popByte, &CloseContainerRequest::windowId
     );
     // clang-format on
     return h;
@@ -282,16 +282,14 @@ std::shared_ptr<EditBook> protocol::parseEditBook(std::vector<uint8_t> &buffer)
     parse(at, buffer.data() + buffer.size() - 1, *h,
         popVarInt, &EditBook::slot,
         popArray<std::string, popString>, &EditBook::entries,
-        popBoolean, &EditBook::has_title
+        popBoolean, &EditBook::hasTitle
     );
-    // clang-format on
-    if (h->has_title) {
-        // clang-format off
+    if (h->hasTitle) {
         parse(at, buffer.data() + buffer.size() - 1, *h,
             popString, &EditBook::title
         );
-        // clang-format on
     }
+    // clang-format on
     return h;
 }
 
@@ -301,8 +299,8 @@ std::shared_ptr<QueryEntityTag> protocol::parseQueryEntityTag(std::vector<uint8_
     auto at = buffer.data();
     // clang-format off
     parse(at, buffer.data() + buffer.size() - 1, *h,
-        popVarInt, &QueryEntityTag::transaction_id,
-        popVarInt, &QueryEntityTag::entity_id
+        popVarInt, &QueryEntityTag::transactionId,
+        popVarInt, &QueryEntityTag::entityId
     );
     // clang-format on
     return h;
@@ -314,15 +312,25 @@ std::shared_ptr<Interact> protocol::parseInteract(std::vector<uint8_t> &buffer)
     auto at = buffer.data();
     // clang-format off
     parse(at, buffer.data() + buffer.size() - 1, *h,
-        popVarInt, &Interact::entity_id,
+        popVarInt, &Interact::entityId,
         popVarInt, &Interact::type
     );
+    if (h->type == protocol::Interact::Type::InteractAt) {
+        parse(at, buffer.data() + buffer.size() - 1, *h,
+            popFloat, &Interact::targetX,
+            popFloat, &Interact::targetY,
+            popFloat, &Interact::targetZ
+        );
+    }
+    if (h->type != protocol::Interact::Type::Attack) {
+        parse(at, buffer.data() + buffer.size() - 1, *h,
+            popVarInt, &Interact::hand
+        );
+    }
+    parse(at, buffer.data() + buffer.size() - 1, *h,
+        popBoolean, &Interact::sneaking
+    );
     // clang-format on
-    if (h->type == protocol::Interact::Type::InteractAt)
-        parse(at, buffer.data() + buffer.size() - 1, *h, popFloat, &Interact::target_x, popFloat, &Interact::target_y, popFloat, &Interact::target_z);
-    if (h->type != protocol::Interact::Type::Attack)
-        parse(at, buffer.data() + buffer.size() - 1, *h, popVarInt, &Interact::hand);
-    parse(at, buffer.data() + buffer.size() - 1, *h, popBoolean, &Interact::sneaking);
     return h;
 }
 
@@ -334,7 +342,7 @@ std::shared_ptr<JigsawGenerate> protocol::parseJigsawGenerate(std::vector<uint8_
     parse(at, buffer.data() + buffer.size() - 1, *h,
         popPosition, &JigsawGenerate::location,
         popVarInt, &JigsawGenerate::levels,
-        popBoolean, &JigsawGenerate::keep_jigsaws
+        popBoolean, &JigsawGenerate::keepJigsaws
     );
     // clang-format on
     return h;
@@ -346,7 +354,7 @@ std::shared_ptr<KeepAliveResponse> protocol::parseKeepAliveResponse(std::vector<
     auto at = buffer.data();
     // clang-format off
     parse(at, buffer.data() + buffer.size() - 1, *h,
-        popLong, &KeepAliveResponse::keep_alive_id
+        popLong, &KeepAliveResponse::keepAliveId
     );
     // clang-format on
     return h;
@@ -371,9 +379,9 @@ std::shared_ptr<SetPlayerPosition> protocol::parseSetPlayerPosition(std::vector<
     // clang-format off
     parse(at, buffer.data() + buffer.size() - 1, *h,
         popDouble, &SetPlayerPosition::x,
-        popDouble, &SetPlayerPosition::feet_y,
+        popDouble, &SetPlayerPosition::feetY,
         popDouble, &SetPlayerPosition::z,
-        popBoolean, &SetPlayerPosition::on_ground
+        popBoolean, &SetPlayerPosition::onGround
     );
     // clang-format on
     return h;
@@ -386,11 +394,11 @@ std::shared_ptr<SetPlayerPositionAndRotation> protocol::parseSetPlayerPositionAn
     // clang-format off
     parse(at, buffer.data() + buffer.size() - 1, *h,
         popDouble, &SetPlayerPositionAndRotation::x,
-        popDouble, &SetPlayerPositionAndRotation::feet_y,
+        popDouble, &SetPlayerPositionAndRotation::feetY,
         popDouble, &SetPlayerPositionAndRotation::z,
         popFloat, &SetPlayerPositionAndRotation::yaw,
         popFloat, &SetPlayerPositionAndRotation::pitch,
-        popBoolean, &SetPlayerPositionAndRotation::on_ground
+        popBoolean, &SetPlayerPositionAndRotation::onGround
     );
     // clang-format on
     return h;
@@ -404,7 +412,7 @@ std::shared_ptr<SetPlayerRotation> protocol::parseSetPlayerRotation(std::vector<
     parse(at, buffer.data() + buffer.size() - 1, *h,
         popFloat, &SetPlayerRotation::yaw,
         popFloat, &SetPlayerRotation::pitch,
-        popBoolean, &SetPlayerRotation::on_ground
+        popBoolean, &SetPlayerRotation::onGround
     );
     // clang-format on
     return h;
@@ -416,7 +424,7 @@ std::shared_ptr<SetPlayerOnGround> protocol::parseSetPlayerOnGround(std::vector<
     auto at = buffer.data();
     // clang-format off
     parse(at, buffer.data() + buffer.size() - 1, *h,
-        popBoolean, &SetPlayerOnGround::on_ground
+        popBoolean, &SetPlayerOnGround::onGround
     );
     // clang-format on
     return h;
@@ -444,8 +452,8 @@ std::shared_ptr<PaddleBoat> protocol::parsePaddleBoat(std::vector<uint8_t> &buff
     auto at = buffer.data();
     // clang-format off
     parse(at, buffer.data() + buffer.size() - 1, *h,
-        popBoolean, &PaddleBoat::left_paddle_turning,
-        popBoolean, &PaddleBoat::right_paddle_turning
+        popBoolean, &PaddleBoat::leftPaddleTurning,
+        popBoolean, &PaddleBoat::rightPaddleTurning
     );
     // clang-format on
     return h;
@@ -457,7 +465,7 @@ std::shared_ptr<PickItem> protocol::parsePickItem(std::vector<uint8_t> &buffer)
     auto at = buffer.data();
     // clang-format off
     parse(at, buffer.data() + buffer.size() - 1, *h,
-        popVarInt, &PickItem::slot_to_use
+        popVarInt, &PickItem::slotToUse
     );
     // clang-format on
     return h;
@@ -469,9 +477,9 @@ std::shared_ptr<PlaceRecipe> protocol::parsePlaceRecipe(std::vector<uint8_t> &bu
     auto at = buffer.data();
     // clang-format off
     parse(at, buffer.data() + buffer.size() - 1, *h,
-        popByte, &PlaceRecipe::window_id,
+        popByte, &PlaceRecipe::windowId,
         popString, &PlaceRecipe::recipe,
-        popBoolean, &PlaceRecipe::make_all
+        popBoolean, &PlaceRecipe::makeAll
     );
     // clang-format on
     return h;
@@ -510,9 +518,9 @@ std::shared_ptr<PlayerCommand> protocol::parsePlayerCommand(std::vector<uint8_t>
     auto at = buffer.data();
     // clang-format off
     parse(at, buffer.data() + buffer.size() - 1, *h,
-        popVarInt, &PlayerCommand::entity_id,
-        popVarInt, &PlayerCommand::action_id,
-        popVarInt, &PlayerCommand::jump_boost
+        popVarInt, &PlayerCommand::entityId,
+        popVarInt, &PlayerCommand::actionId,
+        popVarInt, &PlayerCommand::jumpBoost
     );
     // clang-format on
     return h;
@@ -551,8 +559,8 @@ std::shared_ptr<PlayerSession> protocol::parsePlayerSession(std::vector<uint8_t>
     // clang-format off
     parse(at, buffer.data() + buffer.size() - 1, *h,
         popUUID, &PlayerSession::uuid,
-        popLong, &PlayerSession::expires_at,
-        popArray<uint8_t, popByte>, &PlayerSession::public_key,
+        popLong, &PlayerSession::expiresAt,
+        popArray<uint8_t, popByte>, &PlayerSession::publicKey,
         popArray<uint8_t, popByte>, &PlayerSession::signature
     );
     // clang-format on
@@ -565,9 +573,9 @@ std::shared_ptr<ChangeRecipeBookSettings> protocol::parseChangeRecipeBookSetting
     auto at = buffer.data();
     // clang-format off
     parse(at, buffer.data() + buffer.size() - 1, *h,
-        popVarInt, &ChangeRecipeBookSettings::book_id,
-        popBoolean, &ChangeRecipeBookSettings::book_open,
-        popBoolean, &ChangeRecipeBookSettings::filter_active
+        popVarInt, &ChangeRecipeBookSettings::bookId,
+        popBoolean, &ChangeRecipeBookSettings::bookOpen,
+        popBoolean, &ChangeRecipeBookSettings::filterActive
     );
     // clang-format on
     return h;
@@ -579,7 +587,7 @@ std::shared_ptr<SetSeenRecipe> protocol::parseSetSeenRecipe(std::vector<uint8_t>
     auto at = buffer.data();
     // clang-format off
     parse(at, buffer.data() + buffer.size() - 1, *h,
-        popString, &SetSeenRecipe::recipe_id
+        popString, &SetSeenRecipe::recipeId
     );
     // clang-format on
     return h;
@@ -591,7 +599,7 @@ std::shared_ptr<RenameItem> protocol::parseRenameItem(std::vector<uint8_t> &buff
     auto at = buffer.data();
     // clang-format off
     parse(at, buffer.data() + buffer.size() - 1, *h,
-        popString, &RenameItem::item_name
+        popString, &RenameItem::itemName
     );
     // clang-format on
     return h;
@@ -617,14 +625,12 @@ std::shared_ptr<SeenAdvancements> protocol::parseSeenAdvancements(std::vector<ui
     parse(at, buffer.data() + buffer.size() - 1, *h,
         popVarInt, &SeenAdvancements::action
     );
-    // clang-format on
     if (h->action == protocol::SeenAdvancements::Action::OpenedTab) {
-        // clang-format off
         parse(at, buffer.data() + buffer.size() - 1, *h,
-            popString, &SeenAdvancements::tab_id
+            popString, &SeenAdvancements::tabId
         );
-        // clang-format on
     }
+    // clang-format on
     return h;
 }
 
@@ -634,7 +640,7 @@ std::shared_ptr<SelectTrade> protocol::parseSelectTrade(std::vector<uint8_t> &bu
     auto at = buffer.data();
     // clang-format off
     parse(at, buffer.data() + buffer.size() - 1, *h,
-        popVarInt, &SelectTrade::selected_slot
+        popVarInt, &SelectTrade::selectedSlot
     );
     // clang-format on
     return h;
@@ -646,10 +652,10 @@ std::shared_ptr<SetBeaconEffect> protocol::parseSetBeaconEffect(std::vector<uint
     auto at = buffer.data();
     // clang-format off
     parse(at, buffer.data() + buffer.size() - 1, *h,
-        popBoolean, &SetBeaconEffect::primary_effect_present,
-        popVarInt, &SetBeaconEffect::primary_effect,
-        popBoolean, &SetBeaconEffect::secondary_effect_present,
-        popVarInt, &SetBeaconEffect::secondary_effect
+        popBoolean, &SetBeaconEffect::primaryEffectPresent,
+        popVarInt, &SetBeaconEffect::primaryEffect,
+        popBoolean, &SetBeaconEffect::secondaryEffectPresent,
+        popVarInt, &SetBeaconEffect::secondaryEffect
     );
     // clang-format on
     return h;
@@ -688,9 +694,9 @@ std::shared_ptr<ProgramCommandBlockMinecart> protocol::parseProgramCommandBlockM
     auto at = buffer.data();
     // clang-format off
     parse(at, buffer.data() + buffer.size() - 1, *h,
-        popVarInt, &ProgramCommandBlockMinecart::entity_id,
+        popVarInt, &ProgramCommandBlockMinecart::entityId,
         popString, &ProgramCommandBlockMinecart::command,
-        popBoolean, &ProgramCommandBlockMinecart::track_output
+        popBoolean, &ProgramCommandBlockMinecart::trackOutput
     );
     // clang-format on
     return h;
@@ -703,7 +709,7 @@ std::shared_ptr<SetCreativeModeSlot> protocol::parseSetCreativeModeSlot(std::vec
     // clang-format off
     parse(at, buffer.data() + buffer.size() - 1, *h,
         popShort, &SetCreativeModeSlot::slot,
-        popSlot, &SetCreativeModeSlot::clicked_item
+        popSlot, &SetCreativeModeSlot::clickedItem
     );
     // clang-format on
     return h;
@@ -719,8 +725,8 @@ std::shared_ptr<ProgramJigsawBlock> protocol::parseProgramJigsawBlock(std::vecto
         popString, &ProgramJigsawBlock::name,
         popString, &ProgramJigsawBlock::target,
         popString, &ProgramJigsawBlock::pool,
-        popString, &ProgramJigsawBlock::final_state,
-        popString, &ProgramJigsawBlock::joint_type
+        popString, &ProgramJigsawBlock::finalState,
+        popString, &ProgramJigsawBlock::jointType
     );
     // clang-format on
     return h;
@@ -735,12 +741,12 @@ std::shared_ptr<ProgramStructureBlock> protocol::parseProgramStructureBlock(std:
         popPosition, &ProgramStructureBlock::location,
         popVarInt, &ProgramStructureBlock::action,
         popVarInt, &ProgramStructureBlock::mode,
-        popByte, &ProgramStructureBlock::offset_x,
-        popByte, &ProgramStructureBlock::offset_y,
-        popByte, &ProgramStructureBlock::offset_z,
-        popByte, &ProgramStructureBlock::size_x,
-        popByte, &ProgramStructureBlock::size_y,
-        popByte, &ProgramStructureBlock::size_z,
+        popByte, &ProgramStructureBlock::offsetX,
+        popByte, &ProgramStructureBlock::offsetY,
+        popByte, &ProgramStructureBlock::offsetZ,
+        popByte, &ProgramStructureBlock::sizeX,
+        popByte, &ProgramStructureBlock::sizeY,
+        popByte, &ProgramStructureBlock::sizeZ,
         popVarInt, &ProgramStructureBlock::mirror,
         popVarInt, &ProgramStructureBlock::rotation,
         popString, &ProgramStructureBlock::metadata,
@@ -759,10 +765,10 @@ std::shared_ptr<UpdateSign> protocol::parseUpdateSign(std::vector<uint8_t> &buff
     // clang-format off
     parse(at, buffer.data() + buffer.size() - 1, *h,
         popPosition, &UpdateSign::location,
-        popString, &UpdateSign::line_1,
-        popString, &UpdateSign::line_2,
-        popString, &UpdateSign::line_3,
-        popString, &UpdateSign::line_4
+        popString, &UpdateSign::line1,
+        popString, &UpdateSign::line2,
+        popString, &UpdateSign::line3,
+        popString, &UpdateSign::line4
     );
     // clang-format on
     return h;
@@ -786,7 +792,7 @@ std::shared_ptr<TeleportToEntity> protocol::parseTeleportToEntity(std::vector<ui
     auto at = buffer.data();
     // clang-format off
     parse(at, buffer.data() + buffer.size() - 1, *h,
-        popUUID, &TeleportToEntity::target_player
+        popUUID, &TeleportToEntity::targetPlayer
     );
     // clang-format on
     return h;
@@ -801,10 +807,10 @@ std::shared_ptr<UseItemOn> protocol::parseUseItemOn(std::vector<uint8_t> &buffer
         popVarInt, &UseItemOn::hand,
         popPosition, &UseItemOn::location,
         popVarInt, &UseItemOn::face,
-        popFloat, &UseItemOn::cursor_position_x,
-        popFloat, &UseItemOn::cursor_position_y,
-        popFloat, &UseItemOn::cursor_position_z,
-        popBoolean, &UseItemOn::inside_block,
+        popFloat, &UseItemOn::cursorPositionX,
+        popFloat, &UseItemOn::cursorPositionY,
+        popFloat, &UseItemOn::cursorPositionZ,
+        popBoolean, &UseItemOn::insideBlock,
         popVarInt, &UseItemOn::sequence
     );
     // clang-format on

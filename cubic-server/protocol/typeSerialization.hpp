@@ -1,5 +1,5 @@
-#ifndef D7286F40_D05F_4DC1_9A04_28C9F7417C4E
-#define D7286F40_D05F_4DC1_9A04_28C9F7417C4E
+#ifndef CUBICSERVER_PROTOCOL_TYPESERIALIZATION_HPP
+#define CUBICSERVER_PROTOCOL_TYPESERIALIZATION_HPP
 
 #include "serialization/add.hpp"
 #include "serialization/addPrimaryType.hpp"
@@ -13,4 +13,4 @@ constexpr bool BITSET_GET_BIT(const std::vector<uint64_t> &bitset, uint32_t bit)
 // ! could throw if if we access a bit that is not in the bitset
 constexpr void BITSET_SET_BIT(std::vector<uint64_t> &bitset, uint32_t bit, bool value) { bitset[bit / 64] = (bitset[bit / 64] & ~(1ULL << (bit % 64))) | (value << (bit % 64)); }
 
-#endif /* D7286F40_D05F_4DC1_9A04_28C9F7417C4E */
+#endif // CUBICSERVER_PROTOCOL_TYPESERIALIZATION_HPP

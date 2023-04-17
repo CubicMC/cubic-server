@@ -28,7 +28,7 @@ Player::Player(Client *cli, std::shared_ptr<Dimension> dim, u128 uuid, const std
     _foodSaturationLevel(player_attributes::DEFAULT_FOOD_SATURATION_LEVEL), // TODO: Take this from the saved data
     _foodTickTimer(0), // TODO: Take this from the saved data
     _foodExhaustionLevel(0.0f), // TODO: Take this from the saved data
-    _chatVisibility(protocol::ClientInformation::ChatMode::Enabled)
+    _chatVisibility(protocol::ClientInformation::ChatVisibility::Enabled)
 {
     _keepAliveClock.start();
     _heldItem = 0;
@@ -52,7 +52,7 @@ Player::Player(Client *cli, std::shared_ptr<Dimension> dim, u128 uuid, const std
 
 Player::~Player()
 {
-    chat::Message disconnectMsg = chat::Message::fromTranslationKey<chat::message::TranslationKey::multiplayer_player_left>(this);
+    chat::Message disconnectMsg = chat::Message::fromTranslationKey<chat::message::TranslationKey::MultiplayerPlayerLeft>(this);
 
     this->_dim->getWorld()->sendPlayerInfoRemovePlayer(this);
     this->_dim->removeEntity(this);
@@ -122,7 +122,7 @@ const std::string &Player::getUuidString() const { return this->_uuidString; }
 
 player_attributes::Gamemode Player::getGamemode() const { return _gamemode; }
 
-const protocol::ClientInformation::ChatMode &Player::getChatVisibility() const { return this->_chatVisibility; }
+const protocol::ClientInformation::ChatVisibility &Player::getChatVisibility() const { return this->_chatVisibility; }
 
 void Player::setGamemode(player_attributes::Gamemode gamemode) { _gamemode = gamemode; }
 
@@ -134,7 +134,7 @@ void Player::disconnect(const chat::Message &reason)
 {
     auto pck = protocol::createPlayDisconnect({reason.serialize()});
     this->_cli->_sendData(*pck);
-    this->_cli->_is_running = false;
+    this->_cli->_isRunning = false;
     LDEBUG("Sent a disconnect play packet");
 }
 
@@ -148,16 +148,16 @@ void Player::setKeepAliveIgnored(uint8_t ign) { _keepAliveIgnored = ign; }
 
 uint8_t Player::keepAliveIgnored() const { return _keepAliveIgnored; }
 
-void Player::setPosition(const Vector3<double> &pos, bool on_ground)
+void Player::setPosition(const Vector3<double> &pos, bool onGround)
 {
     auto newChunkPos = Position2D(transformBlockPosToChunkPos(pos.x), transformBlockPosToChunkPos(pos.z));
     auto oldChunkPos = Position2D(transformBlockPosToChunkPos(_pos.x), transformBlockPosToChunkPos(_pos.z));
     auto oldPos2d = Vector2<double>(_pos.x, _pos.z);
     auto newPos2d = Vector2<double>(pos.x, pos.z);
 
-    if (on_ground && _isFlying)
+    if (onGround && _isFlying)
         _isFlying = false;
-    if (!on_ground && !_isJumping && !_isFlying && ((pos.y + (-world_storage::CHUNK_HEIGHT_MIN)) - (_pos.y + (-world_storage::CHUNK_HEIGHT_MIN)) > 0)) {
+    if (!onGround && !_isJumping && !_isFlying && ((pos.y + (-world_storage::CHUNK_HEIGHT_MIN)) - (_pos.y + (-world_storage::CHUNK_HEIGHT_MIN)) > 0)) {
         _isJumping = true;
         _isFlying = true;
     }
@@ -169,12 +169,12 @@ void Player::setPosition(const Vector3<double> &pos, bool on_ground)
         _isJumping = false;
     }
 
-    Entity::setPosition(pos, on_ground);
+    Entity::setPosition(pos, onGround);
 
     _updateRenderedChunks(oldChunkPos, newChunkPos);
 }
 
-void Player::setPosition(double x, double y, double z, bool on_ground) { this->setPosition({x, y, z}, on_ground); }
+void Player::setPosition(double x, double y, double z, bool onGround) { this->setPosition({x, y, z}, onGround); }
 
 void Player::playSoundEffect(SoundsList sound, FloatingPosition position, SoundCategory category)
 {
@@ -615,7 +615,7 @@ void Player::_onClientCommand(const std::shared_ptr<protocol::ClientCommand> &pc
 
 void Player::_onClientInformation(const std::shared_ptr<protocol::ClientInformation> &pck)
 {
-    this->_chatVisibility = pck->chat_mode;
+    this->_chatVisibility = pck->chatMode;
     LDEBUG("Got a Client Information");
 }
 
@@ -649,7 +649,7 @@ void Player::_onQueryEntityTag(const std::shared_ptr<protocol::QueryEntityTag> &
  */
 void Player::_onInteract(const std::shared_ptr<protocol::Interact> &pck)
 {
-    LivingEntity *target = dynamic_cast<LivingEntity *>(_dim->getEntityByID(pck->entity_id));
+    LivingEntity *target = dynamic_cast<LivingEntity *>(_dim->getEntityByID(pck->entityId));
     Player *player = dynamic_cast<Player *>(target);
 
     switch (pck->type) {
@@ -676,8 +676,8 @@ void Player::_onJigsawGenerate(const std::shared_ptr<protocol::JigsawGenerate> &
 
 void Player::_onKeepAliveResponse(const std::shared_ptr<protocol::KeepAliveResponse> &pck)
 {
-    if (pck->keep_alive_id != _keepAliveId) {
-        LERROR("Got a Keep Alive Response with a wrong ID: ", pck->keep_alive_id, " (expected ", _keepAliveId, ")");
+    if (pck->keepAliveId != _keepAliveId) {
+        LERROR("Got a Keep Alive Response with a wrong ID: ", pck->keepAliveId, " (expected ", _keepAliveId, ")");
         this->disconnect("Wrong Keep Alive ID");
         return;
     }
@@ -690,16 +690,16 @@ void Player::_onLockDifficulty(const std::shared_ptr<protocol::LockDifficulty> &
 
 void Player::_onSetPlayerPosition(const std::shared_ptr<protocol::SetPlayerPosition> &pck)
 {
-    LDEBUG("Got a Set Player Position (", pck->x, ", ", pck->feet_y, ", ", pck->z, ")");
+    LDEBUG("Got a Set Player Position (", pck->x, ", ", pck->feetY, ", ", pck->z, ")");
     // TODO: Validate the position
-    this->setPosition(pck->x, pck->feet_y, pck->z, pck->on_ground);
+    this->setPosition(pck->x, pck->feetY, pck->z, pck->onGround);
 }
 
 void Player::_onSetPlayerPositionAndRotation(const std::shared_ptr<protocol::SetPlayerPositionAndRotation> &pck)
 {
-    LDEBUG("Got a Set Player Position And Rotation (", pck->x, ", ", pck->feet_y, ", ", pck->z, ")");
+    LDEBUG("Got a Set Player Position And Rotation (", pck->x, ", ", pck->feetY, ", ", pck->z, ")");
     // TODO: Validate the position
-    this->setPosition(pck->x, pck->feet_y, pck->z, pck->on_ground);
+    this->setPosition(pck->x, pck->feetY, pck->z, pck->onGround);
     this->setRotation(pck->yaw, pck->pitch);
 }
 
@@ -761,10 +761,10 @@ void Player::_onPlayerAction(const std::shared_ptr<protocol::PlayerAction> &pck)
 void Player::_onPlayerCommand(const std::shared_ptr<protocol::PlayerCommand> &pck)
 {
     LDEBUG("Got a Player Command");
-    if (pck->action_id == protocol::PlayerCommand::ActionId::StartSprinting) {
+    if (pck->actionId == protocol::PlayerCommand::ActionId::StartSprinting) {
         _isSprinting = true;
     }
-    if (pck->action_id == protocol::PlayerCommand::ActionId::StopSprinting) {
+    if (pck->actionId == protocol::PlayerCommand::ActionId::StopSprinting) {
         _isSprinting = false;
     }
 }
@@ -1029,13 +1029,8 @@ void Player::_continueLoginSequence()
     getDimension()->spawnPlayer(this);
     this->teleport({8.5, 100, 8.5}); // TODO: change that to player_attributes::DEFAULT_SPAWN_POINT
 
-    this->_sendLoginMessage();
-}
-
-void Player::_sendLoginMessage()
-{
     // Send login message
-    chat::Message connectionMsg = chat::Message::fromTranslationKey<chat::message::TranslationKey::multiplayer_player_joined>(this);
+    chat::Message connectionMsg = chat::Message::fromTranslationKey<chat::message::TranslationKey::MultiplayerPlayerJoined>(this);
 
     this->getWorld()->getChat()->sendSystemMessage(connectionMsg, this);
 }

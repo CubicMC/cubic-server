@@ -20,15 +20,15 @@ void command_parser::Log::execute(std::vector<std::string> &args, Player *invoke
         args.erase(args.begin());
         for (auto arg : args) {
             if (arg == "debug")
-                logging::Logger::get_instance()->set_display_specification_level_in_console(logging::LogLevel::DEBUG);
+                logging::Logger::getInstance()->setDisplaySpecificationLevelInConsole(logging::LogLevel::DEBUG);
             else if (arg == "info")
-                logging::Logger::get_instance()->set_display_specification_level_in_console(logging::LogLevel::INFO);
+                logging::Logger::getInstance()->setDisplaySpecificationLevelInConsole(logging::LogLevel::INFO);
             else if (arg == "warning")
-                logging::Logger::get_instance()->set_display_specification_level_in_console(logging::LogLevel::WARNING);
+                logging::Logger::getInstance()->setDisplaySpecificationLevelInConsole(logging::LogLevel::WARNING);
             else if (arg == "error")
-                logging::Logger::get_instance()->set_display_specification_level_in_console(logging::LogLevel::ERROR);
+                logging::Logger::getInstance()->setDisplaySpecificationLevelInConsole(logging::LogLevel::ERROR);
             else if (arg == "fatal")
-                logging::Logger::get_instance()->set_display_specification_level_in_console(logging::LogLevel::FATAL);
+                logging::Logger::getInstance()->setDisplaySpecificationLevelInConsole(logging::LogLevel::FATAL);
             else
                 LDEBUG("Unknown log type : " + arg);
         }
@@ -36,15 +36,15 @@ void command_parser::Log::execute(std::vector<std::string> &args, Player *invoke
         args.erase(args.begin());
         for (auto arg : args) {
             if (arg == "debug")
-                logging::Logger::get_instance()->unset_display_specification_level_in_console(logging::LogLevel::DEBUG);
+                logging::Logger::getInstance()->unsetDisplaySpecificationLevelInConsole(logging::LogLevel::DEBUG);
             else if (arg == "info")
-                logging::Logger::get_instance()->unset_display_specification_level_in_console(logging::LogLevel::INFO);
+                logging::Logger::getInstance()->unsetDisplaySpecificationLevelInConsole(logging::LogLevel::INFO);
             else if (arg == "warning")
-                logging::Logger::get_instance()->unset_display_specification_level_in_console(logging::LogLevel::WARNING);
+                logging::Logger::getInstance()->unsetDisplaySpecificationLevelInConsole(logging::LogLevel::WARNING);
             else if (arg == "error")
-                logging::Logger::get_instance()->unset_display_specification_level_in_console(logging::LogLevel::ERROR);
+                logging::Logger::getInstance()->unsetDisplaySpecificationLevelInConsole(logging::LogLevel::ERROR);
             else if (arg == "fatal")
-                logging::Logger::get_instance()->unset_display_specification_level_in_console(logging::LogLevel::FATAL);
+                logging::Logger::getInstance()->unsetDisplaySpecificationLevelInConsole(logging::LogLevel::FATAL);
             else
                 LDEBUG("Unknown log type : " + arg);
         }

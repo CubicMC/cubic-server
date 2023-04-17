@@ -10,7 +10,7 @@
 namespace generation {
 class Generator {
 public:
-    typedef Position::value_type position_type;
+    typedef Position::valueType positionType;
 
     typedef struct {
         double continentalness;
@@ -37,25 +37,25 @@ public:
     Generator(Seed seed);
     virtual ~Generator() = default;
 
-    virtual BlockId getBlock(position_type x, position_type y, position_type z) = 0;
+    virtual BlockId getBlock(positionType x, positionType y, positionType z) = 0;
     virtual BlockId getBlock(const Position &pos) = 0;
-    virtual BiomeId getBiome(position_type x, position_type y, position_type z) = 0;
+    virtual BiomeId getBiome(positionType x, positionType y, positionType z) = 0;
     virtual BiomeId getBiome(const Position &pos) = 0;
 
-    virtual GenerationNoise getNoise(position_type x, position_type y, position_type z, double frequency = 0.02, uint8_t octaves = 3);
+    virtual GenerationNoise getNoise(positionType x, positionType y, positionType z, double frequency = 0.02, uint8_t octaves = 3);
 
 protected:
-    bool isCached(position_type x, position_type y, position_type z);
-    bool isCached2D(position_type x, position_type z);
+    bool isCached(positionType x, positionType y, positionType z);
+    bool isCached2D(positionType x, positionType z);
 
 protected:
     siv::PerlinNoise _noiseMaker;
     std::unordered_map<
-        position_type, // x
+        positionType, // x
         std::unordered_map<
-            position_type, // z
+            positionType, // z
             std::pair<
-                GenerationNoise2D, std::unordered_map<position_type, GenerationNoise3D> // y
+                GenerationNoise2D, std::unordered_map<positionType, GenerationNoise3D> // y
                 >>>
         _noiseCache;
 };
