@@ -1,22 +1,21 @@
 #ifndef CUBICSERVER_WORLD_HPP
 #define CUBICSERVER_WORLD_HPP
 
-#include <algorithm>
 #include <functional>
 #include <memory>
 #include <thread>
 #include <vector>
 
-#include "Chat.hpp"
-#include "Entity.hpp"
 #include "TickClock.hpp"
-#include "logging/Logger.hpp"
 #include "thread_pool/Pool.hpp"
 #include "types.hpp"
 #include "world_storage/LevelData.hpp"
 
-class WorldGroup;
+class Chat;
 class Dimension;
+class Entity;
+class Player;
+class WorldGroup;
 
 constexpr int NB_SPAWN_CHUNKS = 19;
 

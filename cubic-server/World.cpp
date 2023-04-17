@@ -2,10 +2,6 @@
 #include "Dimension.hpp"
 #include "Player.hpp"
 #include "WorldGroup.hpp"
-#include "protocol/ClientPackets.hpp"
-#include "protocol/typeSerialization.hpp"
-#include "types.hpp"
-#include <cstdint>
 
 World::World(WorldGroup *worldGroup):
     _worldGroup(worldGroup),
