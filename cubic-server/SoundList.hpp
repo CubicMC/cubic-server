@@ -16,7 +16,7 @@ enum class SoundCategory : int32_t {
     Voice
 };
 
-// TODO(Trompettesib of Miki): Regenerate this list with the 1.19.3 sounds (and please generate it in PascalCase)
+// TODO(Trompettesib for Miki): Regenerate this list with the 1.19.3 sounds (and please generate it in PascalCase)
 // TODO: export the category, volume of each sounds
 // Extracted from https://pokechu22.github.io/Burger/1.19.html#sounds
 enum class SoundsList : int32_t {

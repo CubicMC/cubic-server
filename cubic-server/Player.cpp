@@ -1,4 +1,5 @@
 #include "Player.hpp"
+
 #include "Chat.hpp"
 #include "Client.hpp"
 #include "Dimension.hpp"
@@ -9,6 +10,7 @@
 #include "blocks.hpp"
 #include "command_parser/CommandParser.hpp"
 #include "items/foodItems.hpp"
+#include "logging/Logger.hpp"
 
 Player::Player(Client *cli, std::shared_ptr<Dimension> dim, u128 uuid, const std::string &username):
     _cli(cli),

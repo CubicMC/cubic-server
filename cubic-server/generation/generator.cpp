@@ -1,5 +1,3 @@
-#include <PerlinNoise.hpp>
-
 #include "generator.hpp"
 
 generation::Generator::Generator(Seed seed):

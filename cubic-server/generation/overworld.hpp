@@ -1,7 +1,5 @@
-#ifndef GENERATION_OVERWORLD_HPP
-#define GENERATION_OVERWORLD_HPP
-
-#include <cstdint>
+#ifndef CUBICSERVER_GENERATION_OVERWORLD_HPP
+#define CUBICSERVER_GENERATION_OVERWORLD_HPP
 
 #include "generator.hpp"
 #include "types.hpp"
@@ -18,4 +16,4 @@ public:
 };
 }
 
-#endif // GENERATION_OVERWORLD_HPP
+#endif // CUBICSERVER_GENERATION_OVERWORLD_HPP

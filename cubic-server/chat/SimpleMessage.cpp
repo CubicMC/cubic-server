@@ -1,4 +1,5 @@
 #include "SimpleMessage.hpp"
+
 #include "Message.hpp"
 
 chat::SimpleMessage::SimpleMessage(const std::string &message, const chat::message::Style &style, const chat::message::Options &options):

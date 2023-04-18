@@ -1,9 +1,11 @@
 #include "Stop.hpp"
+
 #include "Chat.hpp"
 #include "Dimension.hpp"
 #include "Player.hpp"
 #include "Server.hpp"
 #include "World.hpp"
+#include "logging/Logger.hpp"
 
 void command_parser::Stop::autocomplete(std::vector<std::string> &args, Player *invoker) const
 {

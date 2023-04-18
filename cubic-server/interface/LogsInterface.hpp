@@ -1,5 +1,5 @@
-#ifndef LOGSINTERFACE_HPP
-#define LOGSINTERFACE_HPP
+#ifndef CUBICSERVER_INTERFACE_LOGSINTERFACE_HPP
+#define CUBICSERVER_INTERFACE_LOGSINTERFACE_HPP
 
 #include <gtkmm.h>
 
@@ -32,4 +32,4 @@ protected:
     logging::LogLevel _selectedLogLevel;
 };
 
-#endif /* !LOGSINTERFACE_HPP */
+#endif // CUBICSERVER_INTERFACE_LOGSINTERFACE_HPP

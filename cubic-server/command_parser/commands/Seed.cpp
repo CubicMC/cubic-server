@@ -1,4 +1,5 @@
 #include "Seed.hpp"
+
 #include "Chat.hpp"
 #include "Dimension.hpp"
 #include "Player.hpp"
@@ -7,6 +8,7 @@
 #include "WorldGroup.hpp"
 #include "chat/events.hpp"
 #include "chat/events/clicks/CopyToClipboard.hpp"
+#include "logging/Logger.hpp"
 
 void command_parser::Seed::autocomplete(std::vector<std::string> &args, Player *invoker) const
 {

@@ -7,12 +7,6 @@
 
 #include "addPrimaryType.hpp"
 #include "protocol/ClientPackets.hpp"
-#include "protocol/ParseExceptions.hpp"
-#include "protocol/Structures.hpp"
-#include "protocol/common.hpp"
-#include "types.hpp"
-#include "world_storage/ChunkColumn.hpp"
-#include "world_storage/Palette.hpp"
 
 namespace protocol {
 constexpr void addBlockEntity(std::vector<uint8_t> &out, const BlockEntity &data)

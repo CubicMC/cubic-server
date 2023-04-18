@@ -1,5 +1,5 @@
-#ifndef TIMEFORMATTER_HPP_
-#define TIMEFORMATTER_HPP_
+#ifndef CUBICSERVER_LOGGING_TIMEFORMATTER_HPP
+#define CUBICSERVER_LOGGING_TIMEFORMATTER_HPP
 
 #include <ctime>
 #include <string>
@@ -16,4 +16,4 @@ std::string getTime(std::string format, std::time_t time, int millis);
 };
 }
 
-#endif /* !TIMEFORMATTER_HPP_ */
+#endif // CUBICSERVER_LOGGING_TIMEFORMATTER_HPP

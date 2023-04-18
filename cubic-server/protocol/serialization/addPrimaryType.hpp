@@ -12,10 +12,8 @@
 #include <vector>
 
 #include "concept.hpp"
-#include "nbt.hpp"
 #include "protocol/ParseExceptions.hpp"
 #include "protocol/Structures.hpp"
-#include "protocol/common.hpp"
 #include "types.hpp"
 
 namespace protocol {

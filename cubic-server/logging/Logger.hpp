@@ -1,13 +1,12 @@
-#ifndef LOGGER_HPP_
-#define LOGGER_HPP_
+#ifndef CUBICSERVER_LOGGING_LOGGER_HPP
+#define CUBICSERVER_LOGGING_LOGGER_HPP
 
-#include <chrono>
 #include <fstream>
 #include <mutex>
 #include <queue>
+#include <sstream>
 #include <string>
 #include <unordered_map>
-#include <utility>
 
 #include "FileAndFolderHandler.hpp"
 
@@ -138,4 +137,4 @@ private:
 };
 }
 
-#endif /* !LOGGER_HPP_ */
+#endif // CUBICSERVER_LOGGING_LOGGER_HPP

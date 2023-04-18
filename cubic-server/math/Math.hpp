@@ -1,5 +1,5 @@
-#ifndef MATH_HPP_
-#define MATH_HPP_
+#ifndef CUBICSERVER_MATH_MATH_HPP
+#define CUBICSERVER_MATH_MATH_HPP
 
 namespace Math_Testing {
 /**
@@ -14,4 +14,4 @@ public:
 };
 }
 
-#endif /* !MATH_HPP_ */
+#endif // CUBICSERVER_MATH_MATH_HPP

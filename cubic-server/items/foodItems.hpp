@@ -1,5 +1,5 @@
-#ifndef CUBICSERVER_FOODITEMS_HPP
-#define CUBICSERVER_FOODITEMS_HPP
+#ifndef CUBICSERVER_ITEMS_FOODITEMS_HPP
+#define CUBICSERVER_ITEMS_FOODITEMS_HPP
 
 #include <array>
 #include <string_view>
@@ -60,4 +60,4 @@ constexpr std::array<FoodItem, 41> foodItems {
 // clang-format on
 }
 
-#endif // CUBICSERVER_FOODITEMS_HPP
+#endif // CUBICSERVER_ITEMS_FOODITEMS_HPP

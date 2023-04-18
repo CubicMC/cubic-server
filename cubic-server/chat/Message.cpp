@@ -1,4 +1,5 @@
 #include "Message.hpp"
+
 #include "ChatRegistry.hpp"
 #include "SimpleMessage.hpp"
 #include <nlohmann/json.hpp>

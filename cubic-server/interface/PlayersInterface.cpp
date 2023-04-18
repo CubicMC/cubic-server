@@ -1,9 +1,10 @@
+#include "PlayersInterface.hpp"
+
 #include <fstream>
 #include <iostream>
 #include <unistd.h>
 
 #include "Player.hpp"
-#include "PlayersInterface.hpp"
 #include "Server.hpp"
 #include "World.hpp"
 #include "WorldGroup.hpp"

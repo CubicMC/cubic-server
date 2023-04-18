@@ -4,9 +4,7 @@
 #include <bitset>
 #include <cstdint>
 #include <functional>
-#include <map>
 #include <memory>
-#include <optional>
 #include <string>
 #include <unordered_map>
 #include <vector>
@@ -146,6 +144,10 @@ std::shared_ptr<MessageAcknowledgement> parseMessageAcknowledgement(std::vector<
  * @brief this is the link to the packet: https://wiki.vg/Protocol#Chat_Command
  */
 struct ChatCommand : BaseServerPacket {
+    struct ArgumentSignature {
+        std::string argument;
+        std::vector<uint8_t> signature;
+    };
     std::string command;
     long timestamp;
     long salt;
@@ -213,6 +215,10 @@ struct ClickContainerButton : BaseServerPacket {
 std::shared_ptr<ClickContainerButton> parseClickContainerButton(std::vector<uint8_t> &buffer);
 
 struct ClickContainer : BaseServerPacket {
+    struct SlotWithIndex {
+        int16_t slotNumber;
+        Slot slotData;
+    };
     uint8_t windowId;
     int32_t stateId;
     int16_t slot;

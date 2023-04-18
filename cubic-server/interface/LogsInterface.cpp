@@ -1,10 +1,10 @@
+#include "LogsInterface.hpp"
+
 #include <fstream>
 #include <iostream>
 #include <queue>
 #include <string>
 #include <unistd.h>
-
-#include "LogsInterface.hpp"
 
 LogsInterface::LogsInterface():
     _VBoxMain(Gtk::ORIENTATION_VERTICAL),

@@ -1,5 +1,5 @@
-#ifndef PLAYERSINTERFACE_HPP
-#define PLAYERSINTERFACE_HPP
+#ifndef CUBICSERVER_INTERFACE_PLAYERSINTERFACE_HPP
+#define CUBICSERVER_INTERFACE_PLAYERSINTERFACE_HPP
 
 #include <gtkmm.h>
 #include <string>
@@ -18,4 +18,4 @@ protected:
     std::string _nbPlayers = "Players : --";
 };
 
-#endif /* !PLAYERSINTERFACE_HPP */
+#endif // CUBICSERVER_INTERFACE_PLAYERSINTERFACE_HPP

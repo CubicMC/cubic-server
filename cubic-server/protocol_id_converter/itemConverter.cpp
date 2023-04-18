@@ -1,9 +1,10 @@
+#include "itemConverter.hpp"
+
 #include <filesystem>
 #include <fstream>
 
 #include <nlohmann/json.hpp>
 
-#include "itemConverter.hpp"
 #include "logging/Logger.hpp"
 
 void Items::ItemConverter::initialize(const std::string &path)

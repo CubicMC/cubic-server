@@ -1,9 +1,10 @@
-#ifndef GENERATION_GENERATOR_HPP
-#define GENERATION_GENERATOR_HPP
+#ifndef CUBICSERVER_GENERATION_GENERATOR_HPP
+#define CUBICSERVER_GENERATION_GENERATOR_HPP
 
-#include <PerlinNoise.hpp>
 #include <cstdint>
 #include <unordered_map>
+
+#include <PerlinNoise.hpp>
 
 #include "types.hpp"
 
@@ -61,4 +62,4 @@ protected:
 };
 }
 
-#endif // GENERATION_GENERATOR_HPP
+#endif // CUBICSERVER_GENERATION_GENERATOR_HPP

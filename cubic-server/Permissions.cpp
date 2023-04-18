@@ -1,6 +1,7 @@
 #include <fstream>
 
 #include "Permissions.hpp"
+
 #include "Player.hpp"
 #include "Server.hpp"
 #include "World.hpp"

@@ -1,10 +1,8 @@
 #ifndef CUBICSERVER_PROTOCOL_TYPESERIALIZATION_HPP
 #define CUBICSERVER_PROTOCOL_TYPESERIALIZATION_HPP
 
-#include "serialization/add.hpp"
-#include "serialization/addPrimaryType.hpp"
-#include "serialization/pop.hpp"
-#include "serialization/popPrimaryType.hpp"
+#include <cstdint>
+#include <vector>
 
 // bitset = std::vector<uint64_t>
 // ! could throw if if we access a bit that is not in the bitset

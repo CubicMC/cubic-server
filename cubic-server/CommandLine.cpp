@@ -3,6 +3,8 @@
 #include <string>
 
 #include "CommandLine.hpp"
+
+#include "Server.hpp"
 #include "command_parser/CommandParser.hpp"
 
 void CommandLine::launch() { this->_thread = std::thread(&CommandLine::run, this); }

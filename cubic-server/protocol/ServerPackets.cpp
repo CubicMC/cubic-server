@@ -1,12 +1,7 @@
-#include <memory>
-#include <optional>
-#include <vector>
+#include "ServerPackets.hpp"
 
 #include "PacketUtils.hpp"
-#include "ServerPackets.hpp"
-#include "nbt.hpp"
-#include "protocol/Structures.hpp"
-#include "typeSerialization.hpp"
+#include "serialization/pop.hpp"
 
 using namespace protocol;
 
@@ -139,7 +134,7 @@ std::shared_ptr<ChatCommand> protocol::parseChatCommand(std::vector<uint8_t> &bu
         popString, &ChatCommand::command,
         popLong, &ChatCommand::timestamp,
         popLong, &ChatCommand::salt,
-        popArray<ArgumentSignature, popArgumentSignature>, &ChatCommand::argumentSignatures,
+        popArray<ChatCommand::ArgumentSignature, popArgumentSignature>, &ChatCommand::argumentSignatures,
         popVarInt, &ChatCommand::messageCount,
         popBitSet<20>, &ChatCommand::acknowledged
     );
@@ -239,7 +234,7 @@ std::shared_ptr<ClickContainer> protocol::parseClickContainer(std::vector<uint8_
         popShort, &ClickContainer::slot,
         popByte, &ClickContainer::button,
         popVarInt, &ClickContainer::mode,
-        popArray<SlotWithIndex, popSlotWithIndex>, &ClickContainer::arrayOfSlots,
+        popArray<ClickContainer::SlotWithIndex, popSlotWithIndex>, &ClickContainer::arrayOfSlots,
         popSlot, &ClickContainer::carriedItem
     );
     // clang-format on

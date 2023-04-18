@@ -1,9 +1,9 @@
+#include "ManagementInterface.hpp"
+
 #include <iostream>
 #include <string>
-#include <thread>
 #include <unistd.h>
 
-#include "ManagementInterface.hpp"
 #include "Server.hpp"
 
 ManagementInterface::ManagementInterface()

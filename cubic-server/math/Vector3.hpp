@@ -1,5 +1,5 @@
-#ifndef CUBICSERVER_VECTOR3_H
-#define CUBICSERVER_VECTOR3_H
+#ifndef CUBICSERVER_MATH_VECTOR3_HPP
+#define CUBICSERVER_MATH_VECTOR3_HPP
 
 #include <cmath>
 #include <iostream>
@@ -187,4 +187,4 @@ std::ostream &operator<<(std::ostream &o, const Vector3<T> &v)
     return o;
 }
 
-#endif // CUBICSERVER_VECTOR3_H
+#endif // CUBICSERVER_MATH_VECTOR3_HPP

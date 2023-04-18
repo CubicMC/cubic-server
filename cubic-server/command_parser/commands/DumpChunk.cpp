@@ -1,10 +1,13 @@
 #include "DumpChunk.hpp"
+
 #include "Dimension.hpp"
 #include "Player.hpp"
 #include "Server.hpp"
 #include "World.hpp"
 #include "WorldGroup.hpp"
-#include "protocol/typeSerialization.hpp"
+#include "logging/Logger.hpp"
+#include "protocol/serialization/add.hpp"
+#include "protocol/serialization/popPrimaryType.hpp"
 
 #include <iostream>
 

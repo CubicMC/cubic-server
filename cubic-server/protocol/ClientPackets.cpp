@@ -1,11 +1,7 @@
 #include "ClientPackets.hpp"
+
 #include "PacketUtils.hpp"
-#include "protocol/serialization/addPrimaryType.hpp"
-#include "protocol/typeSerialization.hpp"
-#include <cassert>
-#include <cstdint>
-#include <memory>
-#include <vector>
+#include "serialization/add.hpp"
 
 using namespace protocol;
 
@@ -425,20 +421,11 @@ std::shared_ptr<std::vector<uint8_t>> protocol::createPlayerAbilities(const Play
 std::shared_ptr<std::vector<uint8_t>> protocol::createPlayerChatMessage(const PlayerChatMessage &in)
 {
     std::vector<uint8_t> payload;
-    serialize(
-        payload,
-        in.senderUUID, addUUID,
-        in.index, addVarInt,
-        in.hasSignature, addBoolean
-    );
+    serialize(payload, in.senderUUID, addUUID, in.index, addVarInt, in.hasSignature, addBoolean);
     if (in.hasSignature)
         serialize(payload, in.signature, addArray<uint8_t, addByte>);
     serialize(
-        payload,
-        in.message, addChat,
-        in.timestamp, addLong,
-        in.salt, addLong,
-        in.previousMessages, addArray<std::pair<int32_t, std::vector<uint8_t>>, addRawMessage>,
+        payload, in.message, addChat, in.timestamp, addLong, in.salt, addLong, in.previousMessages, addArray<std::pair<int32_t, std::vector<uint8_t>>, addRawMessage>,
         in.hasUnsignedContent, addBoolean
     );
     if (in.hasUnsignedContent)
@@ -447,12 +434,7 @@ std::shared_ptr<std::vector<uint8_t>> protocol::createPlayerChatMessage(const Pl
     // TODO: Chat filter
     // if ()
     //     serialize(payload, in.filterData, addArray<int64_t, addLong>);
-    serialize(
-        payload,
-        in.chatType, addVarInt,
-        in.networkName, addChat,
-        in.hasNetworkTargetName, addBoolean
-    );
+    serialize(payload, in.chatType, addVarInt, in.networkName, addChat, in.hasNetworkTargetName, addBoolean);
     if (in.hasNetworkTargetName)
         serialize(payload, in.networkTargetName, addChat);
     auto packet = std::make_shared<std::vector<uint8_t>>();

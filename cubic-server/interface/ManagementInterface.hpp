@@ -1,9 +1,7 @@
-#ifndef MANAGEMENTINTERFACE_HPP
-#define MANAGEMENTINTERFACE_HPP
+#ifndef CUBICSERVER_INTERFACE_MANAGEMENTINTERFACE_HPP
+#define CUBICSERVER_INTERFACE_MANAGEMENTINTERFACE_HPP
 
 #include <gtkmm.h>
-#include <memory>
-#include <thread>
 
 #include "LogsInterface.hpp"
 #include "PlayersInterface.hpp"
@@ -27,4 +25,4 @@ protected:
     LogsInterface _logsSection;
 };
 
-#endif /* !MANAGEMENTINTERFACE_HPP_ */
+#endif // CUBICSERVER_INTERFACE_MANAGEMENTINTERFACE_HPP

@@ -12,9 +12,10 @@
 #include "World.hpp"
 #include "WorldGroup.hpp"
 #include "chat/ChatRegistry.hpp"
+#include "logging/Logger.hpp"
 #include "protocol/ClientPackets.hpp"
 #include "protocol/ServerPackets.hpp"
-#include "protocol/typeSerialization.hpp"
+#include "protocol/serialization/popPrimaryType.hpp"
 
 Client::Client(int sockfd, struct sockaddr_in6 addr):
     _sockfd(sockfd),

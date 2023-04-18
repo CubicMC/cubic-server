@@ -1,16 +1,15 @@
 #include "Hover.hpp"
-#include "logging/Logger.hpp"
+
+#include "hovers/Entity.hpp"
 #include "hovers/Item.hpp"
 #include "hovers/Text.hpp"
-#include "hovers/Entity.hpp"
+#include "logging/Logger.hpp"
 
-std::shared_ptr<chat::message::event::OnHover> chat::message::event::OnHover::deserialize(const std::string &message)
-{
-    return fromJson(nlohmann::json::parse(message));
-}
+std::shared_ptr<chat::message::event::OnHover> chat::message::event::OnHover::deserialize(const std::string &message) { return fromJson(nlohmann::json::parse(message)); }
 
 std::shared_ptr<chat::message::event::OnHover> chat::message::event::OnHover::fromJson(const nlohmann::json &json)
-{;
+{
+    ;
     std::string action = json["action"].get<std::string>();
 
     if (action == "show_text")

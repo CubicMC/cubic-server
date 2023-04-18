@@ -1,4 +1,5 @@
 #include "WorldGroup.hpp"
+
 #include "Chat.hpp"
 #include "Server.hpp"
 #include "SoundSystem.hpp"

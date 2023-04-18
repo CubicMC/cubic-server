@@ -1,4 +1,5 @@
 #include "nbt.hpp"
+
 #include <optional>
 
 using namespace nbt;

@@ -1,4 +1,5 @@
 #include "Log.hpp"
+
 #include "logging/Logger.hpp"
 
 void command_parser::Log::autocomplete(std::vector<std::string> &args, Player *invoker) const

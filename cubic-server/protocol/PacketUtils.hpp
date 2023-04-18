@@ -1,12 +1,11 @@
 #ifndef CUBICSERVER_PROTOCOL_PACKETUTILS_HPP
 #define CUBICSERVER_PROTOCOL_PACKETUTILS_HPP
 
-#include "protocol/ClientPackets.hpp"
-#include "typeSerialization.hpp"
-#include <functional>
-#include <memory>
-#include <optional>
+#include <cstdint>
 #include <vector>
+
+#include "protocol/ClientPackets.hpp"
+#include "serialization/addPrimaryType.hpp"
 
 namespace protocol {
 

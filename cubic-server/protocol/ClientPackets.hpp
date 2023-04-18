@@ -1,15 +1,14 @@
-#ifndef A7ADDD9E_6961_4A3D_AAB2_DF37DB6915F0
-#define A7ADDD9E_6961_4A3D_AAB2_DF37DB6915F0
+#ifndef CUBICSERVER_PROTOCOL_CLIENTPACKETS_HPP
+#define CUBICSERVER_PROTOCOL_CLIENTPACKETS_HPP
 
 #include <cstdint>
 #include <memory>
-#include <stdint.h>
 #include <string>
-#include <variant>
 #include <vector>
 
 #include "PlayerAttributes.hpp"
 #include "Structures.hpp"
+#include "common.hpp"
 #include "types.hpp"
 #include "world_storage/ChunkColumn.hpp"
 
@@ -697,4 +696,4 @@ struct UpdateTags {
 std::shared_ptr<std::vector<uint8_t>> createUpdateTags(const UpdateTags &);
 }
 
-#endif /* A7ADDD9E_6961_4A3D_AAB2_DF37DB6915F0 */
+#endif // CUBICSERVER_PROTOCOL_CLIENTPACKETS_HPP
