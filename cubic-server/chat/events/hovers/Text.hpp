@@ -17,7 +17,7 @@ public:
     TextHover(const std::vector<chat::SimpleMessage> &messages);
     TextHover(const std::initializer_list<chat::SimpleMessage> &messages);
     template<typename... Args>
-    TextHover(const chat::SimpleMessage &message, const Args&... args)
+    TextHover(const chat::SimpleMessage &message, const Args &...args)
     {
         messages.push_back(message);
         addMessage(std::forward<Args>(args)...);
@@ -27,7 +27,7 @@ public:
     TextHover &addMessage(const chat::SimpleMessage &message);
 
     template<typename... Args>
-    TextHover &addMessage(const chat::SimpleMessage &message, const Args&... args)
+    TextHover &addMessage(const chat::SimpleMessage &message, const Args &...args)
     {
         messages.push_back(message);
         return addMessage(std::forward<Args>(args)...);

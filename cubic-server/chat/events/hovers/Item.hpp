@@ -19,6 +19,7 @@ public:
     nlohmann::json toJson() const override;
 
     static std::shared_ptr<ItemHover> fromJson(const nlohmann::json &json);
+
 private:
     world_storage::Item _item;
 };

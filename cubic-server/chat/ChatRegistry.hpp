@@ -4,8 +4,9 @@
 #include <cstdint>
 #include <string>
 #include <vector>
-#include "nbt.hpp"
+
 #include "chat/Message.hpp"
+#include "nbt.hpp"
 
 namespace chat::_details {
 
@@ -100,6 +101,5 @@ constexpr Registry &Registry::addChatType(const ChatType &chatType)
 }
 
 } // namespace chat::_details
-
 
 #endif // CHAT_REGISTRY_HPP
