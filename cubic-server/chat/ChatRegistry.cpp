@@ -35,21 +35,21 @@ nbt::Compound *chat::_details::ChatType::toNBT() const
         style = nullptr;
     } else
         chat->addValue(style);
-
-    return new nbt::Compound(
-        "",
-        {
+    // clang-format off
+    return new nbt::Compound("", {
             new nbt::Int("id", this->_id),
             new nbt::String("name", this->_name),
-            new nbt::Compound(
-                "element",
-                {
+            new nbt::Compound("element", {
                     chat,
-                    new nbt::Compound("narration", {new nbt::String("translation_key", this->_narrate.key), narrateParameters}),
+                    new nbt::Compound("narration", {
+                        new nbt::String("translation_key", this->_narrate.key),
+                        narrateParameters
+                    }),
                 }
             ),
         }
     );
+    // clang-format on
 }
 
 nbt::Compound *chat::_details::Registry::toNBT() const
@@ -73,7 +73,9 @@ nbt::Compound *chat::_details::getChatRegistry()
 
     // Chat message
     chat::_details::ChatType chatType;
-    chatType.id(chat::message::Type::Chat)
+    // clang-format off
+    chatType
+        .id(chat::message::Type::Chat)
         .name("minecraft:chat")
         .addChatParameter("sender")
         .addChatParameter("content")
@@ -86,7 +88,8 @@ nbt::Compound *chat::_details::getChatRegistry()
 
     // Emote message (lol)
     chat::_details::ChatType emoteType;
-    emoteType.id(chat::message::Type::Emote)
+    emoteType
+        .id(chat::message::Type::Emote)
         .name("minecraft:emote_command")
         .addChatParameter("sender")
         .addChatParameter("content")
@@ -99,7 +102,8 @@ nbt::Compound *chat::_details::getChatRegistry()
 
     // Whisper message incoming
     chat::_details::ChatType whisperIncomingType;
-    whisperIncomingType.id(chat::message::Type::WhisperIn)
+    whisperIncomingType
+        .id(chat::message::Type::WhisperIn)
         .name("minecraft:msg_command_incoming")
         .addChatParameter("sender")
         .addChatParameter("content")
@@ -116,7 +120,8 @@ nbt::Compound *chat::_details::getChatRegistry()
 
     // Whisper message outgoing
     chat::_details::ChatType whisperOutgoingType;
-    whisperOutgoingType.id(chat::message::Type::WhisperOut)
+    whisperOutgoingType
+        .id(chat::message::Type::WhisperOut)
         .name("minecraft:msg_command_outgoing")
         .addChatParameter("target")
         .addChatParameter("content")
@@ -133,7 +138,8 @@ nbt::Compound *chat::_details::getChatRegistry()
 
     // say message
     chat::_details::ChatType sayType;
-    sayType.id(chat::message::Type::Announce)
+    sayType
+        .id(chat::message::Type::Announce)
         .name("minecraft:say_command")
         .addChatParameter("sender")
         .addChatParameter("content")
@@ -146,7 +152,8 @@ nbt::Compound *chat::_details::getChatRegistry()
 
     // Chat team message incoming
     chat::_details::ChatType teamIncomingType;
-    teamIncomingType.id(chat::message::Type::TeamText)
+    teamIncomingType
+        .id(chat::message::Type::TeamText)
         .name("minecraft:team_msg_command_incoming")
         .addChatParameter("target")
         .addChatParameter("sender")
@@ -160,7 +167,8 @@ nbt::Compound *chat::_details::getChatRegistry()
 
     // Chat team message outgoing
     chat::_details::ChatType teamOutgoingType;
-    teamOutgoingType.id(chat::message::Type::TeamSent)
+    teamOutgoingType
+        .id(chat::message::Type::TeamSent)
         .name("minecraft:team_msg_command_outgoing")
         .addChatParameter("target")
         .addChatParameter("sender")
@@ -171,6 +179,6 @@ nbt::Compound *chat::_details::getChatRegistry()
         .narrateKey("chat.type.text.narrate");
 
     registry.addChatType(teamOutgoingType);
-
+    // clang-format on
     return registry.toNBT();
 }
