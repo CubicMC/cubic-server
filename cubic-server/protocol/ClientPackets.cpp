@@ -421,22 +421,46 @@ std::shared_ptr<std::vector<uint8_t>> protocol::createPlayerAbilities(const Play
 std::shared_ptr<std::vector<uint8_t>> protocol::createPlayerChatMessage(const PlayerChatMessage &in)
 {
     std::vector<uint8_t> payload;
-    serialize(payload, in.senderUUID, addUUID, in.index, addVarInt, in.hasSignature, addBoolean);
-    if (in.hasSignature)
-        serialize(payload, in.signature, addArray<uint8_t, addByte>);
-    serialize(
-        payload, in.message, addChat, in.timestamp, addLong, in.salt, addLong, in.previousMessages, addArray<std::pair<int32_t, std::vector<uint8_t>>, addRawMessage>,
+    // clang-format off
+    serialize(payload,
+        in.senderUUID, addUUID,
+        in.index, addVarInt,
+        in.hasSignature, addBoolean
+    );
+    if (in.hasSignature) {
+        serialize(payload,
+            in.signature, addArray<uint8_t, addByte>
+        );
+    }
+    serialize(payload,
+        in.message, addChat,
+        in.timestamp, addLong,
+        in.salt, addLong,
+        in.previousMessages, addArray<std::pair<int32_t, std::vector<uint8_t>>, addRawMessage>,
         in.hasUnsignedContent, addBoolean
     );
-    if (in.hasUnsignedContent)
-        serialize(payload, in.unsignedContent, addChat);
-    serialize(payload, in.filterType, addVarInt);
+    if (in.hasUnsignedContent) {
+        serialize(payload,
+            in.unsignedContent, addChat
+        );
+    }
+    serialize(payload,
+        in.filterType, addVarInt
+    );
     // TODO: Chat filter
     // if ()
     //     serialize(payload, in.filterData, addArray<int64_t, addLong>);
-    serialize(payload, in.chatType, addVarInt, in.networkName, addChat, in.hasNetworkTargetName, addBoolean);
-    if (in.hasNetworkTargetName)
-        serialize(payload, in.networkTargetName, addChat);
+    serialize(payload,
+        in.chatType, addVarInt,
+        in.networkName, addChat,
+        in.hasNetworkTargetName, addBoolean
+    );
+    if (in.hasNetworkTargetName) {
+        serialize(payload,
+            in.networkTargetName, addChat
+        );
+    }
+    // clang-format on
     auto packet = std::make_shared<std::vector<uint8_t>>();
     finalize(*packet, payload, ClientPacketID::PlayerChatMessage);
     return packet;
