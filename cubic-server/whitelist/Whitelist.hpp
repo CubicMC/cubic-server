@@ -1,10 +1,10 @@
-#ifndef WHITELIST_HPP_
-#define WHITELIST_HPP_
+#ifndef CUBICSERVER_WHITELIST_HPP
+#define CUBICSERVER_WHITELIST_HPP
 
 #include <string>
-#include "logging/Logger.hpp"
 
-#include "nlohmann/json.hpp"
+#include <nlohmann/json.hpp>
+
 #include "types.hpp"
 
 namespace WhitelistHandling {
@@ -33,4 +33,4 @@ private:
 };
 }
 
-#endif /* !WHITELIST_HPP_ */
+#endif // CUBICSERVER_WHITELIST_HPP

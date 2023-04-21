@@ -1,4 +1,6 @@
 #include "LivingEntity.hpp"
+
+#include "Dimension.hpp"
 #include "Player.hpp"
 
 /*

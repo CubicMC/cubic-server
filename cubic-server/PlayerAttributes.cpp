@@ -1,4 +1,5 @@
 #include "PlayerAttributes.hpp"
+
 namespace player_attributes {
 std::ostream &operator<<(std::ostream &os, const Gamemode &gamemode)
 {

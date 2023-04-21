@@ -12,5 +12,4 @@
 #include "events/hovers/Item.hpp"
 #include "events/hovers/Text.hpp"
 
-
 #endif // CHAT_EVENTS_HPP

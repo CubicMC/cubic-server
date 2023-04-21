@@ -28,28 +28,28 @@ nbt::Compound *chat::_details::ChatType::toNBT() const
     if (_style.color.has_value())
         style->addValue(new nbt::String("color", _style.color.value()));
 
-    auto chat = new nbt::Compound("chat", {
-        new nbt::String("translation_key", this->_chat.key),
-        chatParameters
-    });
+    auto chat = new nbt::Compound("chat", {new nbt::String("translation_key", this->_chat.key), chatParameters});
 
     if (style->size() <= 0) {
         delete style;
         style = nullptr;
     } else
         chat->addValue(style);
-
+    // clang-format off
     return new nbt::Compound("", {
-        new nbt::Int("id", this->_id),
-        new nbt::String("name", this->_name),
-        new nbt::Compound("element", {
-            chat,
-            new nbt::Compound("narration", {
-                new nbt::String("translation_key",  this->_narrate.key),
-                narrateParameters
-            }),
-        }),
-    });
+            new nbt::Int("id", this->_id),
+            new nbt::String("name", this->_name),
+            new nbt::Compound("element", {
+                    chat,
+                    new nbt::Compound("narration", {
+                        new nbt::String("translation_key", this->_narrate.key),
+                        narrateParameters
+                    }),
+                }
+            ),
+        }
+    );
+    // clang-format on
 }
 
 nbt::Compound *chat::_details::Registry::toNBT() const
@@ -59,10 +59,7 @@ nbt::Compound *chat::_details::Registry::toNBT() const
     for (const auto &chatType : _chatTypes)
         values->push_back(chatType.toNBT());
 
-    return new nbt::Compound("minecraft:chat_type", {
-        new nbt::String("type", "minecraft:chat_type"),
-        values
-    });
+    return new nbt::Compound("minecraft:chat_type", {new nbt::String("type", "minecraft:chat_type"), values});
 }
 
 /**
@@ -76,6 +73,7 @@ nbt::Compound *chat::_details::getChatRegistry()
 
     // Chat message
     chat::_details::ChatType chatType;
+    // clang-format off
     chatType
         .id(chat::message::Type::Chat)
         .name("minecraft:chat")
@@ -181,6 +179,6 @@ nbt::Compound *chat::_details::getChatRegistry()
         .narrateKey("chat.type.text.narrate");
 
     registry.addChatType(teamOutgoingType);
-
+    // clang-format on
     return registry.toNBT();
 }

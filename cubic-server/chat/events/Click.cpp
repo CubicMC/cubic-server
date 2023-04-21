@@ -1,15 +1,13 @@
-#include "logging/Logger.hpp"
 #include "Click.hpp"
-#include "clicks/RunCommand.hpp"
-#include "clicks/SuggestCommand.hpp"
-#include "clicks/OpenUrl.hpp"
+
 #include "clicks/ChangePage.hpp"
 #include "clicks/CopyToClipboard.hpp"
+#include "clicks/OpenUrl.hpp"
+#include "clicks/RunCommand.hpp"
+#include "clicks/SuggestCommand.hpp"
+#include "logging/Logger.hpp"
 
-std::shared_ptr<chat::message::event::OnClick> chat::message::event::OnClick::deserialize(const std::string &json)
-{
-    return fromJson(nlohmann::json::parse(json));
-}
+std::shared_ptr<chat::message::event::OnClick> chat::message::event::OnClick::deserialize(const std::string &json) { return fromJson(nlohmann::json::parse(json)); }
 
 std::shared_ptr<chat::message::event::OnClick> chat::message::event::OnClick::fromJson(const nlohmann::json &json)
 {

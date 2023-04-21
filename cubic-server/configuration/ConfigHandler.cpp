@@ -1,8 +1,7 @@
 #include "ConfigHandler.hpp"
+
+#include "logging/Logger.hpp"
 #include <filesystem>
-#include <fstream>
-#include <iostream>
-#include <yaml-cpp/yaml.h>
 
 namespace Configuration {
 constexpr std::string_view fileContent = "network:\n\

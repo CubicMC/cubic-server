@@ -1,4 +1,5 @@
 #include "FileAndFolderHandler.hpp"
+
 #include <cstring>
 #include <errno.h>
 #include <fstream>
@@ -9,31 +10,31 @@ namespace logging {
 /**
  * @brief Create the folder if it doesn't exist
  *
- * @param folder_name Name of the folder to create.
+ * @param folderName Name of the folder to create.
  *
  * @throw std::runtime_error if the folder can't be created
  */
-void FileAndFolderHandler::create_folder(std::string folder_name)
+void FileAndFolderHandler::createFolder(std::string folderName)
 {
-    if (mkdir(folder_name.c_str(), 0777) != 0)
+    if (mkdir(folderName.c_str(), 0777) != 0)
         if (errno != EEXIST)
             throw std::runtime_error(std::strerror(errno));
-    this->_folder_path = folder_name;
+    this->_folderPath = folderName;
 }
 
 /**
  * @brief Check if the folder exist
  *
- * @param foldername Name of the folder to check.
+ * @param folderName Name of the folder to check.
  *
  * @return true if the folder exist
  * @return false if the folder doesn't exist
  */
-bool FileAndFolderHandler::folder_exist(std::string foldername) const
+bool FileAndFolderHandler::folderExist(std::string folderName) const
 {
     struct stat info;
 
-    if (stat(foldername.c_str(), &info) != 0)
+    if (stat(folderName.c_str(), &info) != 0)
         return false;
     else if (info.st_mode & S_IFDIR)
         return true;
@@ -48,11 +49,11 @@ bool FileAndFolderHandler::folder_exist(std::string foldername) const
  *
  * @throw std::runtime_error if the file cannot be created
  */
-void FileAndFolderHandler::create_file(std::string filename)
+void FileAndFolderHandler::createFile(std::string filename)
 {
-    this->_file_path = this->_folder_path.empty() ? filename : this->_folder_path + "/" + filename;
+    this->_filePath = this->_folderPath.empty() ? filename : this->_folderPath + "/" + filename;
     std::fstream file;
-    file.open(this->_file_path, std::ios::app);
+    file.open(this->_filePath, std::ios::app);
     if (!file.is_open()) {
         throw std::runtime_error("Cannot create file");
     }
@@ -67,7 +68,7 @@ void FileAndFolderHandler::create_file(std::string filename)
  * @return true The file exist
  * @return false The file doesn't exist
  */
-bool FileAndFolderHandler::file_exist(std::string filename)
+bool FileAndFolderHandler::fileExist(std::string filename)
 {
     struct stat info;
     int ret = stat(filename.c_str(), &info);
@@ -84,22 +85,22 @@ bool FileAndFolderHandler::file_exist(std::string filename)
  *
  * @return std::string Path to the folder where log files are stored
  */
-const std::string &FileAndFolderHandler::get_folder_path() const { return this->_folder_path; }
+const std::string &FileAndFolderHandler::getFolderPath() const { return this->_folderPath; }
 
 /**
  * @brief Get the File Path object
  *
  * @return std::string Path to the current log file
  */
-const std::string &FileAndFolderHandler::get_file_path() const { return this->_file_path; }
+const std::string &FileAndFolderHandler::getFilePath() const { return this->_filePath; }
 
 /**
  * @brief Unset the folder path
  */
-void FileAndFolderHandler::unset_folder_path() { this->_folder_path = ""; }
+void FileAndFolderHandler::unsetFolderPath() { this->_folderPath = ""; }
 
 /**
  * @brief Unset the file path
  */
-void FileAndFolderHandler::unset_file_path() { this->_file_path = ""; }
+void FileAndFolderHandler::unsetFilePath() { this->_filePath = ""; }
 }

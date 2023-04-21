@@ -9,8 +9,8 @@ namespace chat::message::event {
  */
 class ChangePageClick : public OnClick {
 public:
-    ChangePageClick(const std::string &page)
-        : _page(page)
+    ChangePageClick(const std::string &page):
+        _page(page)
     {
     }
 

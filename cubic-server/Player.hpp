@@ -1,13 +1,11 @@
 #ifndef CUBICSERVER_PLAYER_HPP
 #define CUBICSERVER_PLAYER_HPP
 
-#include "Chat.hpp"
 #include "LivingEntity.hpp"
 #include "PlayerAttributes.hpp"
 #include "SoundList.hpp"
 #include "TickClock.hpp"
-#include "items/foodItems.hpp"
-#include "logging/Logger.hpp"
+#include "chat/Message.hpp"
 #include "math/Vector3.hpp"
 #include "protocol/ClientPackets.hpp"
 #include "protocol/ServerPackets.hpp"
@@ -15,7 +13,7 @@
 #include "world_storage/ChunkColumn.hpp"
 
 class Client;
-class Entity;
+// class Entity;
 
 class Player : public LivingEntity {
     friend class Client;
@@ -39,14 +37,14 @@ public:
     uint16_t getHeldItem() const;
     const std::string &getUuidString() const;
     player_attributes::Gamemode getGamemode() const;
-    const protocol::ClientInformationChatMode &getChatVisibility() const;
+    const protocol::ClientInformation::ChatVisibility &getChatVisibility() const;
     long keepAliveId() const;
     uint8_t keepAliveIgnored() const;
     bool isOperator() const;
 
 public:
-    void setPosition(const Vector3<double> &pos, bool on_ground) override;
-    void setPosition(double x, double y, double z, bool on_ground) override;
+    void setPosition(const Vector3<double> &pos, bool onGround) override;
+    void setPosition(double x, double y, double z, bool onGround) override;
     void setGamemode(player_attributes::Gamemode gm);
     void teleport(const Vector3<double> &pos) override;
     void setKeepAliveIgnored(uint8_t ign);
@@ -71,7 +69,7 @@ public:
     void stopSound(uint8_t flags = 0, SoundCategory category = SoundCategory::Ambient, std::string sound = "");
     void sendKeepAlive(long id);
     void sendSynchronizePosition(Vector3<double> pos);
-    void sendSwingArm(bool main_hand, int32_t swinger_id);
+    void sendSwingArm(bool mainHand, int32_t swingerId);
     void sendTeleportEntity(int32_t id, const Vector3<double> &pos);
     void sendRemoveEntities(const std::vector<int32_t> &entities);
     void sendUpdateEntityPosition(const protocol::UpdateEntityPosition &data);
@@ -95,12 +93,12 @@ public:
     void sendSetHeldItem(const protocol::SetHeldItemClient &packet);
     void sendEntityEvent(const protocol::EntityEvent &packet);
     void sendUpdateRecipiesBook(const protocol::UpdateRecipesBook &packet);
-    // void sendInitializeWorldBorder(const protocol::InitializeWorldBorder &packet);
+    void sendInitializeWorldBorder(const protocol::InitializeWorldBorder &packet);
     void sendSetDefaultSpawnPosition(const protocol::SetDefaultSpawnPosition &packet);
     // void sendSetEntityMetadata(const protocol::SetEntityMetadata &packet);
-    // void sendUpdateAttributes(const protocol::UpdateAttributes &packet);
-    // void sendUpdateAdvancements(const protocol::UpdateAdvancements &packet);
-    // void sendSetExperience(const protocol::SetExperience &packet);
+    void sendUpdateAttributes(const protocol::UpdateAttributes &packet);
+    void sendUpdateAdvancements(const protocol::UpdateAdvancements &packet);
+    void sendSetExperience(const protocol::SetExperience &packet);
 
 private:
     void _onConfirmTeleportation(const std::shared_ptr<protocol::ConfirmTeleportation> &pck);
@@ -113,6 +111,7 @@ private:
     void _onClientInformation(const std::shared_ptr<protocol::ClientInformation> &pck);
     void _onCommandSuggestionRequest(const std::shared_ptr<protocol::CommandSuggestionRequest> &pck);
     void _onClickContainerButton(const std::shared_ptr<protocol::ClickContainerButton> &pck);
+    void _onClickContainer(const std::shared_ptr<protocol::ClickContainer> &pck);
     void _onCloseContainerRequest(const std::shared_ptr<protocol::CloseContainerRequest> &pck);
     void _onPluginMessage(const std::shared_ptr<protocol::PluginMessage> &pck);
     void _onEditBook(const std::shared_ptr<protocol::EditBook> &pck);
@@ -134,6 +133,7 @@ private:
     void _onPlayerCommand(const std::shared_ptr<protocol::PlayerCommand> &pck);
     void _onPlayerInput(const std::shared_ptr<protocol::PlayerInput> &pck);
     void _onPong(const std::shared_ptr<protocol::Pong> &pck);
+    void _onPlayerSession(const std::shared_ptr<protocol::PlayerSession> &pck);
     void _onChangeRecipeBookSettings(const std::shared_ptr<protocol::ChangeRecipeBookSettings> &pck);
     void _onSetSeenRecipe(const std::shared_ptr<protocol::SetSeenRecipe> &pck);
     void _onRenameItem(const std::shared_ptr<protocol::RenameItem> &pck);
@@ -144,6 +144,7 @@ private:
     void _onSetHeldItem(const std::shared_ptr<protocol::SetHeldItem> &pck);
     void _onProgramCommandBlock(const std::shared_ptr<protocol::ProgramCommandBlock> &pck);
     void _onProgramCommandBlockMinecart(const std::shared_ptr<protocol::ProgramCommandBlockMinecart> &pck);
+    void _onSetCreativeModeSlot(const std::shared_ptr<protocol::SetCreativeModeSlot> &pck);
     void _onProgramJigsawBlock(const std::shared_ptr<protocol::ProgramJigsawBlock> &pck);
     void _onProgramStructureBlock(const std::shared_ptr<protocol::ProgramStructureBlock> &pck);
     void _onUpdateSign(const std::shared_ptr<protocol::UpdateSign> &pck);
@@ -156,7 +157,6 @@ private:
     void _processKeepAlive();
     void _updateRenderedChunks(const Position2D &oldChunkPos, const Position2D &newChunkPos);
     void _continueLoginSequence();
-    void _sendLoginMessage();
     void _unloadChunk(int32_t x, int32_t z);
     void _foodTick();
     void _eat(ItemId itemId);
@@ -179,7 +179,7 @@ private:
     float _foodExhaustionLevel;
 
     // player status
-    protocol::ClientInformationChatMode _chatVisibility;
+    protocol::ClientInformation::ChatVisibility _chatVisibility;
     bool _isFlying;
     bool _isOperator;
     bool _isSprinting;

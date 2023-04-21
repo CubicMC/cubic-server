@@ -3,6 +3,7 @@
 
 #include <cstdint>
 #include <string>
+
 #include <nlohmann/json.hpp>
 
 namespace chat::message::event {

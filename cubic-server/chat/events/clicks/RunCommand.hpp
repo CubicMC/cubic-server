@@ -9,8 +9,8 @@ namespace chat::message::event {
  */
 class RunCommandClick : public OnClick {
 public:
-    RunCommandClick(const std::string &command)
-        : _command(command)
+    RunCommandClick(const std::string &command):
+        _command(command)
     {
     }
 

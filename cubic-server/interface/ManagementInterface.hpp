@@ -1,9 +1,7 @@
-#ifndef MANAGEMENTINTERFACE_HPP
-#define MANAGEMENTINTERFACE_HPP
+#ifndef CUBICSERVER_INTERFACE_MANAGEMENTINTERFACE_HPP
+#define CUBICSERVER_INTERFACE_MANAGEMENTINTERFACE_HPP
 
 #include <gtkmm.h>
-#include <memory>
-#include <thread>
 
 #include "LogsInterface.hpp"
 #include "PlayersInterface.hpp"
@@ -13,18 +11,18 @@ public:
     ManagementInterface();
     virtual ~ManagementInterface();
 
-    bool on_timeout();
+    bool onTimeout();
     void stop();
 
 protected:
     virtual bool on_delete_event(GdkEventAny *event) override;
 
 protected:
-    Gtk::Paned m_content;
-    Gtk::Paned m_sections;
-    Gtk::Label m_players_title;
-    PlayersInterface m_players_section;
-    LogsInterface m_logs_section;
+    Gtk::Paned _content;
+    Gtk::Paned _sections;
+    Gtk::Label _playersTitle;
+    PlayersInterface _playersSection;
+    LogsInterface _logsSection;
 };
 
-#endif /* !MANAGEMENTINTERFACE_HPP_ */
+#endif // CUBICSERVER_INTERFACE_MANAGEMENTINTERFACE_HPP

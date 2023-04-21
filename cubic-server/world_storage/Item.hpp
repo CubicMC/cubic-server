@@ -1,8 +1,8 @@
-#ifndef WORLD_STORAGE_ITEM_HPP
-#define WORLD_STORAGE_ITEM_HPP
+#ifndef CUBICSERVER_WORLDSTORAGE_ITEM_HPP
+#define CUBICSERVER_WORLDSTORAGE_ITEM_HPP
 
-#include <string>
 #include <cstdint>
+#include <string>
 
 namespace world_storage {
 
@@ -13,7 +13,8 @@ public:
         name(name),
         count(count),
         damage(damage)
-    {}
+    {
+    }
 
     constexpr const std::string &getName() const { return this->name; }
     constexpr int32_t getCount() const { return this->count; }
@@ -31,4 +32,4 @@ private:
 
 } // namespace world_storage
 
-#endif // WORLD_STORAGE_ITEM_HPP
+#endif // CUBICSERVER_WORLDSTORAGE_ITEM_HPP

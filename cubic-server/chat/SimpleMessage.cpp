@@ -1,4 +1,5 @@
 #include "SimpleMessage.hpp"
+
 #include "Message.hpp"
 
 chat::SimpleMessage::SimpleMessage(const std::string &message, const chat::message::Style &style, const chat::message::Options &options):
@@ -15,35 +16,15 @@ chat::SimpleMessage::SimpleMessage(const char message[], const chat::message::St
 {
 }
 
-const std::string &chat::SimpleMessage::getMessage() const
-{
-    return this->_message;
-}
+const std::string &chat::SimpleMessage::getMessage() const { return this->_message; }
+const chat::message::Style &chat::SimpleMessage::getStyle() const { return this->_style; }
+const chat::message::Options &chat::SimpleMessage::getOptions() const { return this->_options; }
+const std::vector<chat::Message> &chat::SimpleMessage::getExtra() const { return _extra; }
 
-const chat::message::Style &chat::SimpleMessage::getStyle() const
-{
-    return this->_style;
-}
-
-const chat::message::Options &chat::SimpleMessage::getOptions() const
-{
-    return this->_options;
-}
-
-std::string &chat::SimpleMessage::message()
-{
-    return this->_message;
-}
-
-chat::message::Style &chat::SimpleMessage::style()
-{
-    return this->_style;
-}
-
-chat::message::Options &chat::SimpleMessage::options()
-{
-    return this->_options;
-}
+std::string &chat::SimpleMessage::message() { return this->_message; }
+chat::message::Style &chat::SimpleMessage::style() { return this->_style; }
+chat::message::Options &chat::SimpleMessage::options() { return this->_options; }
+std::vector<chat::Message> &chat::SimpleMessage::extra() { return _extra; }
 
 nlohmann::json chat::SimpleMessage::toJson() const
 {

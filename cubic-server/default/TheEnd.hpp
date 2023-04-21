@@ -1,5 +1,5 @@
-#ifndef CUBICSERVER_THEEND_HPP
-#define CUBICSERVER_THEEND_HPP
+#ifndef CUBICSERVER_DEFAULT_THEEND_HPP
+#define CUBICSERVER_DEFAULT_THEEND_HPP
 
 #include "../Dimension.hpp"
 
@@ -13,4 +13,4 @@ public:
     void initialize() override;
 };
 
-#endif // CUBICSERVER_THEEND_HPP
+#endif // CUBICSERVER_DEFAULT_THEEND_HPP

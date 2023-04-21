@@ -1,5 +1,5 @@
-#ifndef INTERFACE_CONTAINER_HPP
-#define INTERFACE_CONTAINER_HPP
+#ifndef CUBICSERVER_INTERFACE_INTERFACECONTAINER_HPP
+#define CUBICSERVER_INTERFACE_INTERFACECONTAINER_HPP
 
 #include <gtkmm.h>
 #include <memory>
@@ -18,4 +18,4 @@ private:
     Glib::RefPtr<Gtk::Application> _app;
 };
 
-#endif
+#endif // CUBICSERVER_INTERFACE_INTERFACECONTAINER_HPP

@@ -1,5 +1,5 @@
-#ifndef PLAYERSINTERFACE_HPP
-#define PLAYERSINTERFACE_HPP
+#ifndef CUBICSERVER_INTERFACE_PLAYERSINTERFACE_HPP
+#define CUBICSERVER_INTERFACE_PLAYERSINTERFACE_HPP
 
 #include <gtkmm.h>
 #include <string>
@@ -9,13 +9,13 @@ public:
     PlayersInterface();
     ~PlayersInterface();
 
-    bool on_timeout();
-    std::string get_nb_players();
+    bool onTimeout();
+    std::string getNbPlayers();
 
 protected:
-    Gtk::TextView m_Players_view;
-    Glib::RefPtr<Gtk::TextBuffer> m_Players;
-    std::string m_Nb_players = "Players : --";
+    Gtk::TextView _playersView;
+    Glib::RefPtr<Gtk::TextBuffer> _players;
+    std::string _nbPlayers = "Players : --";
 };
 
-#endif /* !PLAYERSINTERFACE_HPP */
+#endif // CUBICSERVER_INTERFACE_PLAYERSINTERFACE_HPP

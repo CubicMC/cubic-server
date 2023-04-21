@@ -1,5 +1,5 @@
-#ifndef F43D56DD_C750_470F_A7C9_27CE21D37FC3
-#define F43D56DD_C750_470F_A7C9_27CE21D37FC3
+#ifndef CUBICSERVER_SERVER_HPP
+#define CUBICSERVER_SERVER_HPP
 
 #include <arpa/inet.h>
 #include <cstdint>
@@ -8,16 +8,10 @@
 #include <string>
 #include <vector>
 
-#include "Client.hpp"
-#include "protocol/ServerPackets.hpp"
-
-#include "WorldGroup.hpp"
 #include "configuration/ConfigHandler.hpp"
-#include "logging/Logger.hpp"
 #include "whitelist/Whitelist.hpp"
 
 #include "allCommands.hpp"
-#include "command_parser/commands/CommandBase.hpp"
 
 #include "protocol_id_converter/blockStates.hpp"
 #include "protocol_id_converter/itemConverter.hpp"
@@ -31,6 +25,9 @@ constexpr uint16_t MC_PROTOCOL = 761;
 constexpr uint16_t MS_PER_TICK = 50;
 
 #define GLOBAL_PALETTE Server::getInstance()->getGlobalPalette()
+
+class Client;
+class WorldGroup;
 
 class Server {
 public:
@@ -100,6 +97,7 @@ private:
     Configuration::ConfigHandler _config;
     WhitelistHandling::Whitelist _whitelist;
     std::unordered_map<std::string_view, WorldGroup *> _worldGroups;
+    // clang-format off
     std::vector<CommandBase *> _commands = {
         new command_parser::Help,
         new command_parser::QuestionMark,
@@ -112,8 +110,9 @@ private:
         new command_parser::Reload,
         new command_parser::Time,
     };
+    // clang-format on
     Blocks::GlobalPalette _globalPalette;
     Items::ItemConverter _itemConverter;
 };
 
-#endif /* F43D56DD_C750_470F_A7C9_27CE21D37FC3 */
+#endif // CUBICSERVER_SERVER_HPP

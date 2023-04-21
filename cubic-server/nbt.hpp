@@ -1,12 +1,9 @@
 #ifndef CUBICSERVER_NBT_HPP
 #define CUBICSERVER_NBT_HPP
 
-#include <algorithm>
-#include <array>
 #include <cstdint>
 #include <stdexcept>
-#include <utility>
-#include <variant>
+#include <string>
 #include <vector>
 
 namespace nbt {
@@ -49,11 +46,11 @@ public:
         return data;
     }
 
-    constexpr virtual void serialize(std::vector<uint8_t> &data, bool include_name = true) const = 0;
+    constexpr virtual void serialize(std::vector<uint8_t> &data, bool includeName = true) const = 0;
 
-    constexpr virtual void pre_serialize(std::vector<uint8_t> &data, bool include_name) const
+    constexpr virtual void preSerialize(std::vector<uint8_t> &data, bool includeName) const
     {
-        if (!include_name)
+        if (!includeName)
             return;
         // Serialize the type
         data.push_back((uint8_t) _type);
@@ -68,7 +65,7 @@ public:
     constexpr virtual void destroy() {};
 };
 
-constexpr void serialize(std::vector<uint8_t> &data, const Base *nbt, bool include_name = true);
+constexpr void serialize(std::vector<uint8_t> &data, const Base *nbt, bool includeName = true);
 
 class Int : public Base {
 private:
@@ -80,7 +77,7 @@ public:
         _value(value) {};
     ~Int() override = default;
 
-    [[nodiscard]] constexpr int32_t get_value() const { return _value; }
+    [[nodiscard]] constexpr int32_t getValue() const { return _value; }
 
     void setValue(int32_t value) { _value = value; }
 
@@ -91,9 +88,9 @@ public:
         return data;
     }
 
-    constexpr void serialize(std::vector<uint8_t> &data, bool include_name = true) const override
+    constexpr void serialize(std::vector<uint8_t> &data, bool includeName = true) const override
     {
-        Base::pre_serialize(data, include_name);
+        Base::preSerialize(data, includeName);
         for (int i = 0; i < 4; i++)
             data.push_back((_value >> (24 - i * 8)) & 0xFF);
     }
@@ -109,7 +106,7 @@ public:
         _value(value) {};
     ~Byte() override = default;
 
-    [[nodiscard]] constexpr int8_t get_value() const { return _value; }
+    [[nodiscard]] constexpr int8_t getValue() const { return _value; }
 
     void setValue(int8_t value) { _value = value; }
 
@@ -120,9 +117,9 @@ public:
         return data;
     }
 
-    constexpr void serialize(std::vector<uint8_t> &data, bool include_name = true) const override
+    constexpr void serialize(std::vector<uint8_t> &data, bool includeName = true) const override
     {
-        Base::pre_serialize(data, include_name);
+        Base::preSerialize(data, includeName);
         data.push_back(_value);
     }
 };
@@ -146,9 +143,9 @@ public:
         return data;
     }
 
-    constexpr void serialize(std::vector<uint8_t> &data, bool include_name = true) const override
+    constexpr void serialize(std::vector<uint8_t> &data, bool includeName = true) const override
     {
-        Base::pre_serialize(data, include_name);
+        Base::preSerialize(data, includeName);
         // Serialize the length
         for (int i = 0; i < 4; i++)
             data.push_back((_value.size() >> (24 - i * 8)) & 0xFF);
@@ -171,15 +168,9 @@ public:
         _value(value) {};
     ~Compound() override = default;
 
-    constexpr void addValue(Base *value)
-    {
-        _value.push_back(value);
-    }
+    constexpr void addValue(Base *value) { _value.push_back(value); }
 
-    constexpr size_t size() const
-    {
-        return _value.size();
-    }
+    constexpr size_t size() const { return _value.size(); }
 
     /**
      * @brief Checks if an NBT Tag exists
@@ -233,10 +224,10 @@ public:
         return data;
     }
 
-    constexpr void serialize(std::vector<uint8_t> &data, bool include_name = true) const override
+    constexpr void serialize(std::vector<uint8_t> &data, bool includeName = true) const override
     {
-        Base::pre_serialize(data, include_name);
-        // if (!include_name) {
+        Base::preSerialize(data, includeName);
+        // if (!includeName) {
         //     // Serialize the length of the list in 4 bytes
         //     for (int i = 0; i < 4; i++)
         //         data.push_back(((_value.size() + 1) >> (24 - i * 8)) & 0xFF);
@@ -268,7 +259,7 @@ public:
         _value(value) {};
     ~Double() override = default;
 
-    [[nodiscard]] constexpr double get_value() const { return _value; }
+    [[nodiscard]] constexpr double getValue() const { return _value; }
 
     void setValue(double value) { _value = value; }
 
@@ -279,9 +270,9 @@ public:
         return data;
     }
 
-    constexpr void serialize(std::vector<uint8_t> &data, bool include_name = true) const override
+    constexpr void serialize(std::vector<uint8_t> &data, bool includeName = true) const override
     {
-        Base::pre_serialize(data, include_name);
+        Base::preSerialize(data, includeName);
         const uint8_t *p = (const uint8_t *) &_value;
         for (int i = 7; i >= 0; i--)
             data.push_back(p[i]);
@@ -298,7 +289,7 @@ public:
         _value(value) {};
     ~Float() override = default;
 
-    [[nodiscard]] constexpr float get_value() const { return _value; }
+    [[nodiscard]] constexpr float getValue() const { return _value; }
 
     void setValue(float value) { _value = value; }
 
@@ -309,9 +300,9 @@ public:
         return data;
     }
 
-    constexpr void serialize(std::vector<uint8_t> &data, bool include_name = true) const override
+    constexpr void serialize(std::vector<uint8_t> &data, bool includeName = true) const override
     {
-        Base::pre_serialize(data, include_name);
+        Base::preSerialize(data, includeName);
         const uint8_t *p = (const uint8_t *) &_value;
         for (int i = 3; i >= 0; i--)
             data.push_back(p[i]);
@@ -331,7 +322,7 @@ public:
         _value(value) {};
     ~Long() override = default;
 
-    [[nodiscard]] constexpr int64_t get_value() const { return _value; }
+    [[nodiscard]] constexpr int64_t getValue() const { return _value; }
 
     void setValue(int64_t value) { _value = value; }
 
@@ -348,9 +339,9 @@ public:
         return data;
     }
 
-    constexpr void serialize(std::vector<uint8_t> &data, bool include_name = true) const override
+    constexpr void serialize(std::vector<uint8_t> &data, bool includeName = true) const override
     {
-        Base::pre_serialize(data, include_name);
+        Base::preSerialize(data, includeName);
         for (int i = 0; i < 8; i++)
             data.push_back((_value >> (56 - i * 8)) & 0xFF);
     }
@@ -366,7 +357,7 @@ public:
         _value(value) {};
     ~Short() override = default;
 
-    [[nodiscard]] constexpr int16_t get_value() const { return _value; }
+    [[nodiscard]] constexpr int16_t getValue() const { return _value; }
 
     void setValue(int16_t value) { _value = value; }
 
@@ -377,9 +368,9 @@ public:
         return data;
     }
 
-    constexpr void serialize(std::vector<uint8_t> &data, bool include_name = true) const override
+    constexpr void serialize(std::vector<uint8_t> &data, bool includeName = true) const override
     {
-        Base::pre_serialize(data, include_name);
+        Base::preSerialize(data, includeName);
         data.push_back(_value >> 8);
         data.push_back(_value & 0xFF);
     }
@@ -395,7 +386,7 @@ public:
         _value(std::move(value)) {};
     ~String() override = default;
 
-    [[nodiscard]] constexpr const std::string &get_value() const { return _value; }
+    [[nodiscard]] constexpr const std::string &getValue() const { return _value; }
 
     void setValue(std::string value) { _value = std::move(value); }
 
@@ -406,9 +397,9 @@ public:
         return data;
     }
 
-    constexpr void serialize(std::vector<uint8_t> &data, bool include_name = true) const override
+    constexpr void serialize(std::vector<uint8_t> &data, bool includeName = true) const override
     {
-        Base::pre_serialize(data, include_name);
+        Base::preSerialize(data, includeName);
         // Serialize the length of the string
         data.push_back(_value.length() >> 8);
         data.push_back(_value.length() & 0xFF);
@@ -440,9 +431,9 @@ public:
         return data;
     }
 
-    constexpr void serialize(std::vector<uint8_t> &data, bool include_name = true) const override
+    constexpr void serialize(std::vector<uint8_t> &data, bool includeName = true) const override
     {
-        Base::pre_serialize(data, include_name);
+        Base::preSerialize(data, includeName);
         // Serialize the length of the data
         for (int i = 0; i < 4; i++)
             data.push_back((_value.size() >> (24 - i * 8)) & 0xFF);
@@ -473,9 +464,9 @@ public:
         return data;
     }
 
-    constexpr void serialize(std::vector<uint8_t> &data, bool include_name = true) const override
+    constexpr void serialize(std::vector<uint8_t> &data, bool includeName = true) const override
     {
-        Base::pre_serialize(data, include_name);
+        Base::preSerialize(data, includeName);
         // Serialize the length of the data
         for (int i = 0; i < 4; i++)
             data.push_back((_value.size() >> (24 - i * 8)) & 0xFF);
@@ -510,9 +501,9 @@ public:
         return data;
     }
 
-    constexpr void serialize(std::vector<uint8_t> &data, bool include_name = true) const override
+    constexpr void serialize(std::vector<uint8_t> &data, bool includeName = true) const override
     {
-        Base::pre_serialize(data, include_name);
+        Base::preSerialize(data, includeName);
         TagType current = TagType::End;
         // serialize the type of the first componant of the list
         data.push_back((uint8_t) _value[0]->getType());
@@ -555,18 +546,18 @@ public:
     }
 };
 
-Byte *parseByte(uint8_t *&at, const uint8_t *end, bool include_name = true, bool in_list = false);
-Short *parseShort(uint8_t *&at, const uint8_t *end, bool include_name = true, bool in_list = false);
-Int *parseInt(uint8_t *&at, const uint8_t *end, bool include_name = true, bool in_list = false);
-Long *parseLong(uint8_t *&at, const uint8_t *end, bool include_name = true, bool in_list = false);
-Float *parseFloat(uint8_t *&at, const uint8_t *end, bool include_name = true, bool in_list = false);
-Double *parseDouble(uint8_t *&at, const uint8_t *end, bool include_name = true, bool in_list = false);
-ByteArray *parseByteArray(uint8_t *&at, const uint8_t *end, bool include_name = true, bool in_list = false);
-String *parseString(uint8_t *&at, const uint8_t *end, bool include_name = true, bool in_list = false);
-List *parseList(uint8_t *&at, const uint8_t *end, bool include_name = true, bool in_list = false);
-Compound *parseCompound(uint8_t *&at, const uint8_t *end, bool include_name = true, bool in_list = false);
-IntArray *parseIntArray(uint8_t *&at, const uint8_t *end, bool include_name = true, bool in_list = false);
-LongArray *parseLongArray(uint8_t *&at, const uint8_t *end, bool include_name = true, bool in_list = false);
+Byte *parseByte(uint8_t *&at, const uint8_t *end, bool includeName = true, bool inList = false);
+Short *parseShort(uint8_t *&at, const uint8_t *end, bool includeName = true, bool inList = false);
+Int *parseInt(uint8_t *&at, const uint8_t *end, bool includeName = true, bool inList = false);
+Long *parseLong(uint8_t *&at, const uint8_t *end, bool includeName = true, bool inList = false);
+Float *parseFloat(uint8_t *&at, const uint8_t *end, bool includeName = true, bool inList = false);
+Double *parseDouble(uint8_t *&at, const uint8_t *end, bool includeName = true, bool inList = false);
+ByteArray *parseByteArray(uint8_t *&at, const uint8_t *end, bool includeName = true, bool inList = false);
+String *parseString(uint8_t *&at, const uint8_t *end, bool includeName = true, bool inList = false);
+List *parseList(uint8_t *&at, const uint8_t *end, bool includeName = true, bool inList = false);
+Compound *parseCompound(uint8_t *&at, const uint8_t *end, bool includeName = true, bool inList = false);
+IntArray *parseIntArray(uint8_t *&at, const uint8_t *end, bool includeName = true, bool inList = false);
+LongArray *parseLongArray(uint8_t *&at, const uint8_t *end, bool includeName = true, bool inList = false);
 
 Base *parse(uint8_t *&at, const uint8_t *end);
 

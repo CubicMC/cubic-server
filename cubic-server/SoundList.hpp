@@ -1,5 +1,5 @@
-#ifndef SOUNDS_LIST_HPP
-#define SOUNDS_LIST_HPP
+#ifndef CUBICSERVER_SOUNDLIST_HPP
+#define CUBICSERVER_SOUNDLIST_HPP
 
 #include <cstdint>
 
@@ -16,6 +16,7 @@ enum class SoundCategory : int32_t {
     Voice
 };
 
+// TODO(Trompettesib for Miki): Regenerate this list with the 1.19.3 sounds (and please generate it in PascalCase)
 // TODO: export the category, volume of each sounds
 // Extracted from https://pokechu22.github.io/Burger/1.19.html#sounds
 enum class SoundsList : int32_t {
@@ -1334,4 +1335,4 @@ enum class SoundsList : int32_t {
     weather_rain_above = 1236
 };
 
-#endif // SOUNDS_LIST_HPP
+#endif // CUBICSERVER_SOUNDLIST_HPP

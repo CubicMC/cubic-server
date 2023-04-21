@@ -1,7 +1,6 @@
 #ifndef CUBICSERVER_LIVINGENTITY_HPP
 #define CUBICSERVER_LIVINGENTITY_HPP
 
-#include "Dimension.hpp"
 #include "Entity.hpp"
 
 constexpr float KNOCKBACK_DEFAULT_FORCE = 1000.0f;

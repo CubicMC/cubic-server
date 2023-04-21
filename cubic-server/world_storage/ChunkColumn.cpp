@@ -1,14 +1,7 @@
-#include <PerlinNoise.hpp>
-#include <memory>
-
 #include "ChunkColumn.hpp"
-#include "Palette.hpp"
-#include "Server.hpp"
+
 #include "blocks.hpp"
 #include "generation/overworld.hpp"
-#include "logging/Logger.hpp"
-#include "protocol/serialization/addPrimaryType.hpp"
-#include "types.hpp"
 
 namespace world_storage {
 
@@ -33,7 +26,7 @@ void ChunkColumn::updateBlock(Position pos, BlockId id)
     int startOffset = (blockNumber * HEIGHTMAP_BITS) % 64;
     int endLong = ((blockNumber + 1) * HEIGHTMAP_BITS - 1) / 64;
 
-    if (pos.y > _heightMap.motionBlocking.at(startLong).get_value() >> startOffset) {
+    if (pos.y > _heightMap.motionBlocking.at(startLong).getValue() >> startOffset) {
         _heightMap.motionBlocking[startLong] |= (pos.y << startOffset);
 
         if (startLong != endLong)
@@ -74,19 +67,19 @@ uint8_t ChunkColumn::getBiome(Position pos) const { return _biomes.at(calculateB
 
 const std::array<uint8_t, BIOME_SECTION_3D_SIZE * NB_OF_SECTIONS> &ChunkColumn::getBiomes() const { return _biomes; }
 
-void ChunkColumn::updateBlockEntity(Position pos, BlockEntity *BlockEntity) { }
+void ChunkColumn::updateBlockEntity(Position pos, protocol::BlockEntity *BlockEntity) { }
 
-void ChunkColumn::addBlockEntity(Position pos, BlockEntity *BlockEntity)
+void ChunkColumn::addBlockEntity(Position pos, protocol::BlockEntity *BlockEntity)
 { // entity must be a pointer or a reference ?
     _blockEntities.push_back(BlockEntity); // TODO: see which of emplace_back of emplace_front is better or push_back or push_front
-    // _blockEntities.emplace_back(std::make_shared<BlockEntity>(BlockEntity));
+    // _blockEntities.emplace_back(std::make_shared<protocol::BlockEntity>(BlockEntity));
 }
 
 void ChunkColumn::removeBlockEntity(Position pos) { }
 
-BlockEntity *ChunkColumn::getBlockEntity(Position pos) { return _blockEntities.at(0); }
+protocol::BlockEntity *ChunkColumn::getBlockEntity(Position pos) { return _blockEntities.at(0); }
 
-const std::vector<BlockEntity *> &ChunkColumn::getBlockEntities() const { return _blockEntities; }
+const std::vector<protocol::BlockEntity *> &ChunkColumn::getBlockEntities() const { return _blockEntities; }
 
 int64_t ChunkColumn::getTick() { return _tickData; }
 

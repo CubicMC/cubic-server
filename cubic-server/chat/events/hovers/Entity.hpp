@@ -1,8 +1,8 @@
 #ifndef CHAT_EVENTS_HOVER_ENTITY_HPP
 #define CHAT_EVENTS_HOVER_ENTITY_HPP
 
-#include "chat/events/Hover.hpp"
 #include "Entity.hpp"
+#include "chat/events/Hover.hpp"
 
 namespace chat::message::event {
 /**
@@ -12,7 +12,7 @@ namespace chat::message::event {
  */
 class EntityHover : public OnHover {
 public:
-    EntityHover() {}
+    EntityHover() { }
     // EntityHover(const std::shared_ptr<Entity> &entity):
     //     _entity(entity) {};
 

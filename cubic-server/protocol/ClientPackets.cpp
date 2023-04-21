@@ -1,11 +1,7 @@
 #include "ClientPackets.hpp"
+
 #include "PacketUtils.hpp"
-#include "protocol/serialization/addPrimaryType.hpp"
-#include "protocol/typeSerialization.hpp"
-#include <cassert>
-#include <cstdint>
-#include <memory>
-#include <vector>
+#include "serialization/add.hpp"
 
 using namespace protocol;
 
@@ -40,7 +36,7 @@ std::shared_ptr<std::vector<uint8_t>> protocol::createLoginSuccess(const LoginSu
         );
         if (property.isSigned) {
             serialize(payload,
-                property.signature.value(), addString
+                property.signature, addString
             );
         }
     }
@@ -81,8 +77,8 @@ std::shared_ptr<std::vector<uint8_t>> protocol::createSpawnPlayer(const SpawnPla
     std::vector<uint8_t> payload;
     // clang-format off
     serialize(payload,
-        in.entity_id, addVarInt,
-        in.player_uuid, addUUID,
+        in.entityId, addVarInt,
+        in.playerUuid, addUUID,
         in.x, addDouble,
         in.y, addDouble,
         in.z, addDouble,
@@ -96,7 +92,7 @@ std::shared_ptr<std::vector<uint8_t>> protocol::createSpawnPlayer(const SpawnPla
     return packet;
 }
 
-std::shared_ptr<std::vector<uint8_t>> protocol::createEntityAnimation(EntityAnimationID animId, int32_t entityID)
+std::shared_ptr<std::vector<uint8_t>> protocol::createEntityAnimation(EntityAnimation::ID animId, int32_t entityID)
 {
     std::vector<uint8_t> payload;
     // clang-format off
@@ -116,7 +112,7 @@ std::shared_ptr<std::vector<uint8_t>> protocol::createBlockUpdate(const BlockUpd
     // clang-format off
     serialize(payload,
         in.location, addPosition,
-        in.block_id, addVarInt
+        in.blockId, addVarInt
     );
     // clang-format on
     auto packet = std::make_shared<std::vector<uint8_t>>();
@@ -144,7 +140,7 @@ std::shared_ptr<std::vector<uint8_t>> protocol::createCommands(const Commands &i
     // clang-format off
     serialize(payload,
         in.nodes, addArray<int, addVarInt>,
-        in.root_index, addVarInt
+        in.rootIndex, addVarInt
     );
     // clang-format on
     auto packet = std::make_shared<std::vector<uint8_t>>();
@@ -157,10 +153,10 @@ std::shared_ptr<std::vector<uint8_t>> protocol::createSetContainerContent(const 
     std::vector<uint8_t> payload;
     // clang-format off
     serialize(payload,
-        in.window_id, addByte,
-        in.state_id, addVarInt,
-        in.slot_data, addArray<Slot, addSlot>,
-        in.carried_item, addSlot
+        in.windowId, addByte,
+        in.stateId, addVarInt,
+        in.slotData, addArray<Slot, addSlot>,
+        in.carriedItem, addSlot
     );
     // clang-format on
     auto packet = std::make_shared<std::vector<uint8_t>>();
@@ -224,8 +220,8 @@ std::shared_ptr<std::vector<uint8_t>> protocol::createEntityEvent(const EntityEv
     std::vector<uint8_t> payload;
     // clang-format off
     serialize(payload,
-        in.entity_id, addInt, // cringe
-        in.event_status, addByte
+        in.entityId, addInt, // cringe
+        in.eventStatus, addByte
     );
     // clang-format on
     auto packet = std::make_shared<std::vector<uint8_t>>();
@@ -244,6 +240,26 @@ std::shared_ptr<std::vector<uint8_t>> protocol::createUnloadChunk(const Position
     // clang-format on
     auto packet = std::make_shared<std::vector<uint8_t>>();
     finalize(*packet, payload, ClientPacketID::UnloadChunk);
+    return packet;
+}
+
+std::shared_ptr<std::vector<uint8_t>> protocol::createInitializeWorldBorder(const InitializeWorldBorder &in)
+{
+    std::vector<uint8_t> payload;
+    // clang-format off
+    serialize(payload,
+        in.x, addDouble,
+        in.z, addDouble,
+        in.oldDiameter, addDouble,
+        in.newDiameter, addDouble,
+        in.speed, addVarLong,
+        in.portalTeleportBoundary, addVarInt,
+        in.warningTime, addVarInt,
+        in.warningBlocks, addVarInt
+    );
+    // clang-format on
+    auto packet = std::make_shared<std::vector<uint8_t>>();
+    finalize(*packet, payload, ClientPacketID::InitializeWorldBorder);
     return packet;
 }
 
@@ -323,15 +339,13 @@ std::shared_ptr<std::vector<uint8_t>> protocol::createLoginPlay(const LoginPlay 
         in.isFlat, addBoolean,
         in.hasDeathLocation, addBoolean
     );
-    // clang-format on
     if (in.hasDeathLocation) {
-        // clang-format off
         serialize(payload,
-            in.deathDimensionName.value(), addString,
-            in.deathLocation.value(), addPosition
+            in.deathDimensionName, addString,
+            in.deathLocation, addPosition
         );
-        // clang-format on
     }
+    // clang-format on
     auto packet = std::make_shared<std::vector<uint8_t>>();
     finalize(*packet, payload, ClientPacketID::LoginPlay);
     return packet;
@@ -407,36 +421,46 @@ std::shared_ptr<std::vector<uint8_t>> protocol::createPlayerAbilities(const Play
 std::shared_ptr<std::vector<uint8_t>> protocol::createPlayerChatMessage(const PlayerChatMessage &in)
 {
     std::vector<uint8_t> payload;
-    serialize(
-        payload,
+    // clang-format off
+    serialize(payload,
         in.senderUUID, addUUID,
         in.index, addVarInt,
         in.hasSignature, addBoolean
     );
-    if (in.hasSignature)
-        serialize(payload, in.signature, addArray<uint8_t, addByte>);
-    serialize(
-        payload,
+    if (in.hasSignature) {
+        serialize(payload,
+            in.signature, addArray<uint8_t, addByte>
+        );
+    }
+    serialize(payload,
         in.message, addChat,
         in.timestamp, addLong,
         in.salt, addLong,
         in.previousMessages, addArray<std::pair<int32_t, std::vector<uint8_t>>, addRawMessage>,
         in.hasUnsignedContent, addBoolean
     );
-    if (in.hasUnsignedContent)
-        serialize(payload, in.unsignedContent, addChat);
-    serialize(payload, in.filterType, addVarInt);
+    if (in.hasUnsignedContent) {
+        serialize(payload,
+            in.unsignedContent, addChat
+        );
+    }
+    serialize(payload,
+        in.filterType, addVarInt
+    );
     // TODO: Chat filter
     // if ()
     //     serialize(payload, in.filterData, addArray<int64_t, addLong>);
-    serialize(
-        payload,
+    serialize(payload,
         in.chatType, addVarInt,
         in.networkName, addChat,
         in.hasNetworkTargetName, addBoolean
     );
-    if (in.hasNetworkTargetName)
-        serialize(payload, in.networkTargetName, addChat);
+    if (in.hasNetworkTargetName) {
+        serialize(payload,
+            in.networkTargetName, addChat
+        );
+    }
+    // clang-format on
     auto packet = std::make_shared<std::vector<uint8_t>>();
     finalize(*packet, payload, ClientPacketID::PlayerChatMessage);
     return packet;
@@ -468,34 +492,34 @@ std::shared_ptr<std::vector<uint8_t>> protocol::createPlayerInfoUpdate(const Pla
             actionSet.uuid, addUUID
         );
 
-        if (in.actions & (uint8_t) PlayerInfoUpdateActions::AddPlayer) { // Add Player
+        if (in.actions & (uint8_t) PlayerInfoUpdate::Actions::AddPlayer) { // Add Player
             serialize(payload,
                 actionSet.addPlayer.name, addString,
                 0, addVarInt // Number of properties -> To change to handle skins and stuff
             );
         }
-        if (in.actions & (uint8_t) PlayerInfoUpdateActions::InitializeChat) { // Initialize chat
+        if (in.actions & (uint8_t) PlayerInfoUpdate::Actions::InitializeChat) { // Initialize chat
             serialize(payload,
-                actionSet.initializeChat.has_sig_data, addBoolean
+                actionSet.initializeChat.hasSigData, addBoolean
             );
             // TODO(miki or huntears): Chat signature data
         }
-        if (in.actions & (uint8_t) PlayerInfoUpdateActions::UpdateGamemode) { // Update gamemode
+        if (in.actions & (uint8_t) PlayerInfoUpdate::Actions::UpdateGamemode) { // Update gamemode
             serialize(payload,
                 actionSet.updateGamemode.gamemode, addVarInt
             );
         }
-        if (in.actions & (uint8_t) PlayerInfoUpdateActions::UpdateListed) { // Update listed
+        if (in.actions & (uint8_t) PlayerInfoUpdate::Actions::UpdateListed) { // Update listed
             serialize(payload,
                 actionSet.updateListed.listed, addBoolean
             );
         }
-        if (in.actions & (uint8_t) PlayerInfoUpdateActions::UpdateLatency) { // Update latency
+        if (in.actions & (uint8_t) PlayerInfoUpdate::Actions::UpdateLatency) { // Update latency
             serialize(payload,
                 actionSet.updateLatency.latency, addVarInt
             );
         }
-        if (in.actions & (uint8_t) PlayerInfoUpdateActions::UpdateDisplayName) { // Update display name
+        if (in.actions & (uint8_t) PlayerInfoUpdate::Actions::UpdateDisplayName) { // Update display name
             serialize(payload,
                 actionSet.updateDisplayName.hasDisplayName, addBoolean
             );
@@ -534,17 +558,21 @@ std::shared_ptr<std::vector<uint8_t>> protocol::createUpdateRecipesBook(const Up
     // clang-format off
     serialize(payload,
         in.action, addVarInt,
-        in.crafting_recipe_book_open, addBoolean,
-        in.crafting_recipe_book_filter_active, addBoolean,
-        in.smelting_recipe_book_open, addBoolean,
-        in.smelting_recipe_book_filter_active, addBoolean,
-        in.blast_furnace_recipe_book_open, addBoolean,
-        in.blast_furnace_recipe_book_filter_active, addBoolean,
-        in.smoker_recipe_book_open, addBoolean,
-        in.smoker_recipe_book_filter_active, addBoolean,
-        in.recipes_id, addArray<std::string, addIdentifier>
-        // TODO: add optional recipies id two
+        in.craftingRecipeBookOpen, addBoolean,
+        in.craftingRecipeBookFilterActive, addBoolean,
+        in.smeltingRecipeBookOpen, addBoolean,
+        in.smeltingRecipeBookFilterActive, addBoolean,
+        in.blastFurnaceRecipeBookOpen, addBoolean,
+        in.blastFurnaceRecipeBookFilterActive, addBoolean,
+        in.smokerRecipeBookOpen, addBoolean,
+        in.smokerRecipeBookFilterActive, addBoolean,
+        in.recipesId, addArray<std::string, addIdentifier>
     );
+    if (in.action == 0) {
+        serialize(payload,
+            in.recipiesIdForInit, addArray<std::string, addIdentifier>
+        );
+    }
     // clang-format on
     auto packet = std::make_shared<std::vector<uint8_t>>();
     finalize(*packet, payload, ClientPacketID::UpdateRecipesBook);
@@ -583,9 +611,9 @@ std::shared_ptr<std::vector<uint8_t>> protocol::createServerData(const ServerDat
     std::vector<uint8_t> payload;
     // clang-format off
     serialize(payload,
-        in.has_motd, addBoolean,
-        in.has_icon, addBoolean,
-        in.enforce_secure_chat, addBoolean
+        in.hasMotd, addBoolean,
+        in.hasIcon, addBoolean,
+        in.enforceSecureChat, addBoolean
     );
     // clang-format on
     auto packet = std::make_shared<std::vector<uint8_t>>();
@@ -634,13 +662,27 @@ std::shared_ptr<std::vector<uint8_t>> protocol::createSetDefaultSpawnPosition(co
     return packet;
 }
 
+// std::shared_ptr<std::vector<uint8_t>> protocol::createSetEntityMetadata(const SetEntityMetadata &in)
+// {
+//     std::vector<uint8_t> payload;
+//     // clang-format off
+//     serialize(payload,
+//         in.entityId, addVarInt,
+//         in.metadata, addMetadata
+//     );
+//     // clang-format on
+//     auto packet = std::make_shared<std::vector<uint8_t>>();
+//     finalize(*packet, payload, ClientPacketID::SetEntityMetadata);
+//     return packet;
+// }
+
 std::shared_ptr<std::vector<uint8_t>> protocol::createUpdateTime(const UpdateTime &in)
 {
     std::vector<uint8_t> payload;
     // clang-format off
     serialize(payload,
-        in.world_age, addLong,
-        in.time_of_day, addLong
+        in.worldAge, addLong,
+        in.timeOfDay, addLong
     );
     // clang-format on
     auto packet = std::make_shared<std::vector<uint8_t>>();
@@ -719,14 +761,29 @@ std::shared_ptr<std::vector<uint8_t>> protocol::createEntityVelocity(const Entit
     std::vector<uint8_t> payload;
     // clang-format off
     serialize(payload,
-        in.entity_id, addVarInt,
-        in.velocity_x, addShort,
-        in.velocity_y, addShort,
-        in.velocity_z, addShort
+        in.entityId, addVarInt,
+        in.velocityX, addShort,
+        in.velocityY, addShort,
+        in.velocityZ, addShort
     );
     // clang-format on
     auto packet = std::make_shared<std::vector<uint8_t>>();
     finalize(*packet, payload, ClientPacketID::EntityVelocity);
+    return packet;
+}
+
+std::shared_ptr<std::vector<uint8_t>> protocol::createSetExperience(const SetExperience &in)
+{
+    std::vector<uint8_t> payload;
+    // clang-format off
+    serialize(payload,
+        in.experienceBar, addFloat,
+        in.level, addVarInt,
+        in.totalExperience, addVarInt
+    );
+    // clang-format on
+    auto packet = std::make_shared<std::vector<uint8_t>>();
+    finalize(*packet, payload, ClientPacketID::SetExperience);
     return packet;
 }
 
@@ -762,6 +819,36 @@ std::shared_ptr<std::vector<uint8_t>> protocol::createTeleportEntity(const Telep
     // clang-format on
     auto packet = std::make_shared<std::vector<uint8_t>>();
     finalize(*packet, payload, ClientPacketID::TeleportEntity);
+    return packet;
+}
+
+std::shared_ptr<std::vector<uint8_t>> protocol::createUpdateAdvancements(const UpdateAdvancements &in)
+{
+    std::vector<uint8_t> payload;
+    // clang-format off
+    serialize(payload,
+        in.resetOrClear, addBoolean,
+        in.advancementMapping, addArray<protocol::UpdateAdvancements::AdvancementMapping, addAdvancementMapping>,
+        in.identifiers, addArray<std::string, addIdentifier>,
+        in.progressMapping, addArray<protocol::UpdateAdvancements::ProgressMapping, addAdvancementProgressMapping>
+    );
+    // clang-format on
+    auto packet = std::make_shared<std::vector<uint8_t>>();
+    finalize(*packet, payload, ClientPacketID::UpdateAdvancements);
+    return packet;
+}
+
+std::shared_ptr<std::vector<uint8_t>> protocol::createUpdateAttributes(const UpdateAttributes &in)
+{
+    std::vector<uint8_t> payload;
+    // clang-format off
+    serialize(payload,
+        in.entityId, addVarInt,
+        in.attributes, addArray<protocol::UpdateAttributes::Property, addAttributesProperty>
+    );
+    // clang-format on
+    auto packet = std::make_shared<std::vector<uint8_t>>();
+    finalize(*packet, payload, ClientPacketID::UpdateAttributes);
     return packet;
 }
 

@@ -13,10 +13,10 @@ requires(std::ostream &os, const T &value) {
 
 // clang-format on
 
-template <typename T>
-concept is_nbt = std::is_base_of_v<nbt::Base, T>;
+template<typename T>
+concept IsNbt = std::is_base_of_v<nbt::Base, T>;
 
-template <typename Child, typename Base>
-concept is_base_of = std::is_base_of_v<Base, Child>;
+template<typename Child, typename Base>
+concept IsBaseOf = std::is_base_of_v<Base, Child>;
 
 #endif // CONCEPT_HPP

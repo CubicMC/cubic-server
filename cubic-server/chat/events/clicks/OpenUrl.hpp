@@ -10,7 +10,9 @@ namespace chat::message::event {
 class OpenUrlClick : public OnClick {
 public:
     OpenUrlClick(const std::string &url):
-        _url(url) {}
+        _url(url)
+    {
+    }
 
     nlohmann::json toJson() const override;
 

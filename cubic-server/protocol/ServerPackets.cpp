@@ -1,10 +1,7 @@
-#include <optional>
-#include <vector>
+#include "ServerPackets.hpp"
 
 #include "PacketUtils.hpp"
-#include "ServerPackets.hpp"
-#include "nbt.hpp"
-#include "typeSerialization.hpp"
+#include "serialization/pop.hpp"
 
 using namespace protocol;
 
@@ -12,10 +9,14 @@ std::shared_ptr<Handshake> protocol::parseHandshake(std::vector<uint8_t> &buffer
 {
     auto h = std::make_shared<Handshake>();
     auto at = buffer.data();
-
-    parse(
-        at, buffer.data() + buffer.size() - 1, *h, popVarInt, &Handshake::prot_version, popString, &Handshake::addr, popShort, &Handshake::port, popVarInt, &Handshake::next_state
+    // clang-format off
+    parse(at, buffer.data() + buffer.size() - 1, *h,
+        popVarInt, &Handshake::protVersion,
+        popString, &Handshake::addr,
+        popShort, &Handshake::port,
+        popVarInt, &Handshake::nextState
     );
+    // clang-format on
     return h;
 }
 
@@ -25,8 +26,11 @@ std::shared_ptr<PingRequest> protocol::parsePingRequest(std::vector<uint8_t> &bu
 {
     auto h = std::make_shared<PingRequest>();
     auto at = buffer.data();
-
-    parse(at, buffer.data() + buffer.size() - 1, *h, popLong, &PingRequest::payload);
+    // clang-format off
+    parse(at, buffer.data() + buffer.size() - 1, *h,
+        popLong, &PingRequest::payload
+    );
+    // clang-format ons
     return h;
 }
 
@@ -34,10 +38,19 @@ std::shared_ptr<LoginStart> protocol::parseLoginStart(std::vector<uint8_t> &buff
 {
     auto h = std::make_shared<LoginStart>();
     auto at = buffer.data();
-
-    parse(at, buffer.data() + buffer.size() - 1, *h, popString, &LoginStart::name, popBoolean, &LoginStart::has_player_uuid);
-    if (h->has_player_uuid)
-        parse(at, buffer.data() + buffer.size() - 1, *h, popUUID, &LoginStart::player_uuid);
+    // clang-format off
+    parse(at, buffer.data() + buffer.size() - 1, *h,
+        popString, &LoginStart::name,
+        popBoolean, &LoginStart::hasPlayerUuid
+    );
+    // clang-format on
+    if (h->hasPlayerUuid) {
+        // clang-format off
+        parse(at, buffer.data() + buffer.size() - 1, *h,
+            popUUID, &LoginStart::playerUuid
+        );
+        // clang-format on
+    }
     return h;
 }
 
@@ -45,14 +58,21 @@ std::shared_ptr<EncryptionResponse> protocol::parseEncryptionResponse(std::vecto
 {
     auto h = std::make_shared<EncryptionResponse>();
     auto at = buffer.data();
-
-    parse(at, buffer.data() + buffer.size() - 1, *h, popArray<uint8_t, popByte>, &EncryptionResponse::shared_secret, popBoolean, &EncryptionResponse::has_verify_token);
-    if (!h->has_verify_token)
-        return h;
-    parse(
-        at, buffer.data() + buffer.size() - 1, *h, popArray<uint8_t, popByte>, &EncryptionResponse::verify_token, popLong, &EncryptionResponse::salt, popArray<uint8_t, popByte>,
-        &EncryptionResponse::message_signature
+    // clang-format off
+    parse(at, buffer.data() + buffer.size() - 1, *h,
+        popArray<uint8_t, popByte>, &EncryptionResponse::sharedSecret,
+        popBoolean, &EncryptionResponse::hasVerifyToken
     );
+    // clang-format on
+    if (!h->hasVerifyToken)
+        return h;
+    // clang-format off
+    parse(at, buffer.data() + buffer.size() - 1, *h,
+        popArray<uint8_t, popByte>, &EncryptionResponse::verifyToken,
+        popLong, &EncryptionResponse::salt,
+        popArray<uint8_t, popByte>, &EncryptionResponse::messageSignature
+    );
+    // clang-format on
     return h;
 }
 
@@ -60,8 +80,11 @@ std::shared_ptr<ConfirmTeleportation> protocol::parseConfirmTeleportation(std::v
 {
     auto h = std::make_shared<ConfirmTeleportation>();
     auto at = buffer.data();
-
-    parse(at, buffer.data() + buffer.size() - 1, *h, popVarInt, &ConfirmTeleportation::teleport_id);
+    // clang-format off
+    parse(at, buffer.data() + buffer.size() - 1, *h,
+        popVarInt, &ConfirmTeleportation::teleportId
+    );
+    // clang-format on
     return h;
 }
 
@@ -69,8 +92,12 @@ std::shared_ptr<QueryBlockEntityTag> protocol::parseQueryBlockEntityTag(std::vec
 {
     auto h = std::make_shared<QueryBlockEntityTag>();
     auto at = buffer.data();
-
-    parse(at, buffer.data() + buffer.size() - 1, *h, popVarInt, &QueryBlockEntityTag::transaction_id, popPosition, &QueryBlockEntityTag::location);
+    // clang-format off
+    parse(at, buffer.data() + buffer.size() - 1, *h,
+        popVarInt, &QueryBlockEntityTag::transactionId,
+        popPosition, &QueryBlockEntityTag::location
+    );
+    // clang-format on
     return h;
 }
 
@@ -78,8 +105,11 @@ std::shared_ptr<ChangeDifficulty> protocol::parseChangeDifficulty(std::vector<ui
 {
     auto h = std::make_shared<ChangeDifficulty>();
     auto at = buffer.data();
-
-    parse(at, buffer.data() + buffer.size() - 1, *h, popByte, &ChangeDifficulty::new_difficulty);
+    // clang-format off
+    parse(at, buffer.data() + buffer.size() - 1, *h,
+        popByte, &ChangeDifficulty::newDifficulty
+    );
+    // clang-format on
     return h;
 }
 
@@ -87,8 +117,11 @@ std::shared_ptr<MessageAcknowledgement> protocol::parseMessageAcknowledgement(st
 {
     auto h = std::make_shared<MessageAcknowledgement>();
     auto at = buffer.data();
-
-    parse(at, buffer.data() + buffer.size() - 1, *h, popVarInt, &MessageAcknowledgement::messageCount);
+    // clang-format off
+    parse(at, buffer.data() + buffer.size() - 1, *h,
+        popVarInt, &MessageAcknowledgement::messageCount
+    );
+    // clang-format on
     return h;
 }
 
@@ -96,11 +129,16 @@ std::shared_ptr<ChatCommand> protocol::parseChatCommand(std::vector<uint8_t> &bu
 {
     auto h = std::make_shared<ChatCommand>();
     auto at = buffer.data();
-
-    parse(
-        at, buffer.data() + buffer.size() - 1, *h, popString, &ChatCommand::command, popLong, &ChatCommand::timestamp, popLong, &ChatCommand::salt,
-        popArray<ArgumentSignature, popArgumentSignature>, &ChatCommand::argumentSignatures, popVarInt, &ChatCommand::messageCount, popBitSet<20>, &ChatCommand::acknowledged
+    // clang-format off
+    parse(at, buffer.data() + buffer.size() - 1, *h,
+        popString, &ChatCommand::command,
+        popLong, &ChatCommand::timestamp,
+        popLong, &ChatCommand::salt,
+        popArray<ChatCommand::ArgumentSignature, popArgumentSignature>, &ChatCommand::argumentSignatures,
+        popVarInt, &ChatCommand::messageCount,
+        popBitSet<20>, &ChatCommand::acknowledged
     );
+    // clang-format on
     return h;
 }
 
@@ -108,7 +146,7 @@ std::shared_ptr<ChatMessage> protocol::parseChatMessage(std::vector<uint8_t> &bu
 {
     auto h = std::make_shared<ChatMessage>();
     auto at = buffer.data();
-
+    // clang-format off
     parse(
         at, buffer.data() + buffer.size() - 1, *h,
         popString, &ChatMessage::message,
@@ -116,9 +154,15 @@ std::shared_ptr<ChatMessage> protocol::parseChatMessage(std::vector<uint8_t> &bu
         popLong, &ChatMessage::salt,
         popBoolean, &ChatMessage::isSigned
     );
-    if (h->isSigned)
-        parse(at, buffer.data() + buffer.size() - 1, *h, popArray<uint8_t, popByte>, &ChatMessage::signature);
-    parse(at, buffer.data() + buffer.size() - 1, *h, popBitSet<20>, &ChatMessage::acknowledged);
+    if (h->isSigned) {
+        parse(at, buffer.data() + buffer.size() - 1, *h,
+            popArray<uint8_t, popByte>, &ChatMessage::signature
+        );
+    }
+    parse(at, buffer.data() + buffer.size() - 1, *h,
+        popBitSet<20>, &ChatMessage::acknowledged
+    );
+    // clang-format on
     return h;
 }
 
@@ -126,8 +170,11 @@ std::shared_ptr<ClientCommand> protocol::parseClientCommand(std::vector<uint8_t>
 {
     auto h = std::make_shared<ClientCommand>();
     auto at = buffer.data();
-
-    parse(at, buffer.data() + buffer.size() - 1, *h, popClientCommandActionID, &ClientCommand::action_id);
+    // clang-format off
+    parse(at, buffer.data() + buffer.size() - 1, *h,
+        popVarInt, &ClientCommand::actionId
+    );
+    // clang-format on
     return h;
 }
 
@@ -135,12 +182,18 @@ std::shared_ptr<ClientInformation> protocol::parseClientInformation(std::vector<
 {
     auto h = std::make_shared<ClientInformation>();
     auto at = buffer.data();
-
-    parse(
-        at, buffer.data() + buffer.size() - 1, *h, popString, &ClientInformation::locale, popByte, &ClientInformation::view_distance, popClientInformationChatMode,
-        &ClientInformation::chat_mode, popBoolean, &ClientInformation::chat_colors, popByte, &ClientInformation::displayed_skin_parts, popClientInformationMainHand,
-        &ClientInformation::main_hand, popBoolean, &ClientInformation::enable_text_filtering, popBoolean, &ClientInformation::allow_server_listings
+    // clang-format off
+    parse(at, buffer.data() + buffer.size() - 1, *h,
+        popString, &ClientInformation::locale,
+        popByte, &ClientInformation::viewDistance,
+        popVarInt, &ClientInformation::chatMode,
+        popBoolean, &ClientInformation::chatColors,
+        popByte, &ClientInformation::displayedSkinParts,
+        popVarInt, &ClientInformation::mainHand,
+        popBoolean, &ClientInformation::enableTextFiltering,
+        popBoolean, &ClientInformation::allowServerListings
     );
+    // clang-format on
     return h;
 }
 
@@ -148,8 +201,12 @@ std::shared_ptr<CommandSuggestionRequest> protocol::parseCommandSuggestionReques
 {
     auto h = std::make_shared<CommandSuggestionRequest>();
     auto at = buffer.data();
-
-    parse(at, buffer.data() + buffer.size() - 1, *h, popVarInt, &CommandSuggestionRequest::transaction_id, popString, &CommandSuggestionRequest::text);
+    // clang-format off
+    parse(at, buffer.data() + buffer.size() - 1, *h,
+        popVarInt, &CommandSuggestionRequest::transactionId,
+        popString, &CommandSuggestionRequest::text
+    );
+    // clang-format on
     return h;
 }
 
@@ -157,8 +214,30 @@ std::shared_ptr<ClickContainerButton> protocol::parseClickContainerButton(std::v
 {
     auto h = std::make_shared<ClickContainerButton>();
     auto at = buffer.data();
+    // clang-format off
+    parse(at, buffer.data() + buffer.size() - 1, *h,
+        popByte, &ClickContainerButton::windowId,
+        popByte, &ClickContainerButton::buttonId
+    );
+    // clang-format on
+    return h;
+}
 
-    parse(at, buffer.data() + buffer.size() - 1, *h, popByte, &ClickContainerButton::window_id, popByte, &ClickContainerButton::button_id);
+std::shared_ptr<ClickContainer> protocol::parseClickContainer(std::vector<uint8_t> &buffer)
+{
+    auto h = std::make_shared<ClickContainer>();
+    auto at = buffer.data();
+    // clang-format off
+    parse(at, buffer.data() + buffer.size() - 1, *h,
+        popByte, &ClickContainer::windowId,
+        popVarInt, &ClickContainer::stateId,
+        popShort, &ClickContainer::slot,
+        popByte, &ClickContainer::button,
+        popVarInt, &ClickContainer::mode,
+        popArray<ClickContainer::SlotWithIndex, popSlotWithIndex>, &ClickContainer::arrayOfSlots,
+        popSlot, &ClickContainer::carriedItem
+    );
+    // clang-format on
     return h;
 }
 
@@ -166,8 +245,11 @@ std::shared_ptr<CloseContainerRequest> protocol::parseCloseContainerRequest(std:
 {
     auto h = std::make_shared<CloseContainerRequest>();
     auto at = buffer.data();
-
-    parse(at, buffer.data() + buffer.size() - 1, *h, popByte, &CloseContainerRequest::window_id);
+    // clang-format off
+    parse(at, buffer.data() + buffer.size() - 1, *h,
+        popByte, &CloseContainerRequest::windowId
+    );
+    // clang-format on
     return h;
 }
 
@@ -175,8 +257,11 @@ std::shared_ptr<PluginMessage> protocol::parsePluginMessage(std::vector<uint8_t>
 {
     auto h = std::make_shared<PluginMessage>();
     auto at = buffer.data();
-
-    parse(at, buffer.data() + buffer.size() - 1, *h, popString, &PluginMessage::channel);
+    // clang-format off
+    parse(at, buffer.data() + buffer.size() - 1, *h,
+        popString, &PluginMessage::channel
+    );
+    // clang-format on
     //   popArray<uint8_t, popByte>, &PluginMessage::data);
     // That line cannot work since this is not a normal byte array
     // I will let it empty for now
@@ -188,10 +273,18 @@ std::shared_ptr<EditBook> protocol::parseEditBook(std::vector<uint8_t> &buffer)
 {
     auto h = std::make_shared<EditBook>();
     auto at = buffer.data();
-
-    parse(at, buffer.data() + buffer.size() - 1, *h, popVarInt, &EditBook::slot, popArray<std::string, popString>, &EditBook::entries, popBoolean, &EditBook::has_title);
-    if (h->has_title)
-        parse(at, buffer.data() + buffer.size() - 1, *h, popString, &EditBook::title);
+    // clang-format off
+    parse(at, buffer.data() + buffer.size() - 1, *h,
+        popVarInt, &EditBook::slot,
+        popArray<std::string, popString>, &EditBook::entries,
+        popBoolean, &EditBook::hasTitle
+    );
+    if (h->hasTitle) {
+        parse(at, buffer.data() + buffer.size() - 1, *h,
+            popString, &EditBook::title
+        );
+    }
+    // clang-format on
     return h;
 }
 
@@ -199,8 +292,12 @@ std::shared_ptr<QueryEntityTag> protocol::parseQueryEntityTag(std::vector<uint8_
 {
     auto h = std::make_shared<QueryEntityTag>();
     auto at = buffer.data();
-
-    parse(at, buffer.data() + buffer.size() - 1, *h, popVarInt, &QueryEntityTag::transaction_id, popVarInt, &QueryEntityTag::entity_id);
+    // clang-format off
+    parse(at, buffer.data() + buffer.size() - 1, *h,
+        popVarInt, &QueryEntityTag::transactionId,
+        popVarInt, &QueryEntityTag::entityId
+    );
+    // clang-format on
     return h;
 }
 
@@ -208,13 +305,27 @@ std::shared_ptr<Interact> protocol::parseInteract(std::vector<uint8_t> &buffer)
 {
     auto h = std::make_shared<Interact>();
     auto at = buffer.data();
-
-    parse(at, buffer.data() + buffer.size() - 1, *h, popVarInt, &Interact::entity_id, popVarInt, &Interact::type);
-    if (h->type == 2)
-        parse(at, buffer.data() + buffer.size() - 1, *h, popFloat, &Interact::target_x, popFloat, &Interact::target_y, popFloat, &Interact::target_z);
-    if (h->type != 1)
-        parse(at, buffer.data() + buffer.size() - 1, *h, popVarInt, &Interact::hand);
-    parse(at, buffer.data() + buffer.size() - 1, *h, popBoolean, &Interact::sneaking);
+    // clang-format off
+    parse(at, buffer.data() + buffer.size() - 1, *h,
+        popVarInt, &Interact::entityId,
+        popVarInt, &Interact::type
+    );
+    if (h->type == protocol::Interact::Type::InteractAt) {
+        parse(at, buffer.data() + buffer.size() - 1, *h,
+            popFloat, &Interact::targetX,
+            popFloat, &Interact::targetY,
+            popFloat, &Interact::targetZ
+        );
+    }
+    if (h->type != protocol::Interact::Type::Attack) {
+        parse(at, buffer.data() + buffer.size() - 1, *h,
+            popVarInt, &Interact::hand
+        );
+    }
+    parse(at, buffer.data() + buffer.size() - 1, *h,
+        popBoolean, &Interact::sneaking
+    );
+    // clang-format on
     return h;
 }
 
@@ -222,8 +333,13 @@ std::shared_ptr<JigsawGenerate> protocol::parseJigsawGenerate(std::vector<uint8_
 {
     auto h = std::make_shared<JigsawGenerate>();
     auto at = buffer.data();
-
-    parse(at, buffer.data() + buffer.size() - 1, *h, popPosition, &JigsawGenerate::location, popVarInt, &JigsawGenerate::levels, popBoolean, &JigsawGenerate::keep_jigsaws);
+    // clang-format off
+    parse(at, buffer.data() + buffer.size() - 1, *h,
+        popPosition, &JigsawGenerate::location,
+        popVarInt, &JigsawGenerate::levels,
+        popBoolean, &JigsawGenerate::keepJigsaws
+    );
+    // clang-format on
     return h;
 }
 
@@ -231,8 +347,11 @@ std::shared_ptr<KeepAliveResponse> protocol::parseKeepAliveResponse(std::vector<
 {
     auto h = std::make_shared<KeepAliveResponse>();
     auto at = buffer.data();
-
-    parse(at, buffer.data() + buffer.size() - 1, *h, popLong, &KeepAliveResponse::keep_alive_id);
+    // clang-format off
+    parse(at, buffer.data() + buffer.size() - 1, *h,
+        popLong, &KeepAliveResponse::keepAliveId
+    );
+    // clang-format on
     return h;
 }
 
@@ -240,8 +359,11 @@ std::shared_ptr<LockDifficulty> protocol::parseLockDifficulty(std::vector<uint8_
 {
     auto h = std::make_shared<LockDifficulty>();
     auto at = buffer.data();
-
-    parse(at, buffer.data() + buffer.size() - 1, *h, popBoolean, &LockDifficulty::locked);
+    // clang-format off
+    parse(at, buffer.data() + buffer.size() - 1, *h,
+        popBoolean, &LockDifficulty::locked
+    );
+    // clang-format on
     return h;
 }
 
@@ -249,11 +371,14 @@ std::shared_ptr<SetPlayerPosition> protocol::parseSetPlayerPosition(std::vector<
 {
     auto h = std::make_shared<SetPlayerPosition>();
     auto at = buffer.data();
-
-    parse(
-        at, buffer.data() + buffer.size() - 1, *h, popDouble, &SetPlayerPosition::x, popDouble, &SetPlayerPosition::feet_y, popDouble, &SetPlayerPosition::z, popBoolean,
-        &SetPlayerPosition::on_ground
+    // clang-format off
+    parse(at, buffer.data() + buffer.size() - 1, *h,
+        popDouble, &SetPlayerPosition::x,
+        popDouble, &SetPlayerPosition::feetY,
+        popDouble, &SetPlayerPosition::z,
+        popBoolean, &SetPlayerPosition::onGround
     );
+    // clang-format on
     return h;
 }
 
@@ -261,12 +386,16 @@ std::shared_ptr<SetPlayerPositionAndRotation> protocol::parseSetPlayerPositionAn
 {
     auto h = std::make_shared<SetPlayerPositionAndRotation>();
     auto at = buffer.data();
-
-    parse(
-        at, buffer.data() + buffer.size() - 1, *h, popDouble, &SetPlayerPositionAndRotation::x, popDouble, &SetPlayerPositionAndRotation::feet_y, popDouble,
-        &SetPlayerPositionAndRotation::z, popFloat, &SetPlayerPositionAndRotation::yaw, popFloat, &SetPlayerPositionAndRotation::pitch, popBoolean,
-        &SetPlayerPositionAndRotation::on_ground
+    // clang-format off
+    parse(at, buffer.data() + buffer.size() - 1, *h,
+        popDouble, &SetPlayerPositionAndRotation::x,
+        popDouble, &SetPlayerPositionAndRotation::feetY,
+        popDouble, &SetPlayerPositionAndRotation::z,
+        popFloat, &SetPlayerPositionAndRotation::yaw,
+        popFloat, &SetPlayerPositionAndRotation::pitch,
+        popBoolean, &SetPlayerPositionAndRotation::onGround
     );
+    // clang-format on
     return h;
 }
 
@@ -274,8 +403,13 @@ std::shared_ptr<SetPlayerRotation> protocol::parseSetPlayerRotation(std::vector<
 {
     auto h = std::make_shared<SetPlayerRotation>();
     auto at = buffer.data();
-
-    parse(at, buffer.data() + buffer.size() - 1, *h, popFloat, &SetPlayerRotation::yaw, popFloat, &SetPlayerRotation::pitch, popBoolean, &SetPlayerRotation::on_ground);
+    // clang-format off
+    parse(at, buffer.data() + buffer.size() - 1, *h,
+        popFloat, &SetPlayerRotation::yaw,
+        popFloat, &SetPlayerRotation::pitch,
+        popBoolean, &SetPlayerRotation::onGround
+    );
+    // clang-format on
     return h;
 }
 
@@ -283,8 +417,11 @@ std::shared_ptr<SetPlayerOnGround> protocol::parseSetPlayerOnGround(std::vector<
 {
     auto h = std::make_shared<SetPlayerOnGround>();
     auto at = buffer.data();
-
-    parse(at, buffer.data() + buffer.size() - 1, *h, popBoolean, &SetPlayerOnGround::on_ground);
+    // clang-format off
+    parse(at, buffer.data() + buffer.size() - 1, *h,
+        popBoolean, &SetPlayerOnGround::onGround
+    );
+    // clang-format on
     return h;
 }
 
@@ -292,11 +429,15 @@ std::shared_ptr<MoveVehicle> protocol::parseMoveVehicle(std::vector<uint8_t> &bu
 {
     auto h = std::make_shared<MoveVehicle>();
     auto at = buffer.data();
-
-    parse(
-        at, buffer.data() + buffer.size() - 1, *h, popDouble, &MoveVehicle::x, popDouble, &MoveVehicle::y, popDouble, &MoveVehicle::z, popFloat, &MoveVehicle::yaw, popFloat,
-        &MoveVehicle::pitch
+    // clang-format off
+    parse(at, buffer.data() + buffer.size() - 1, *h,
+        popDouble, &MoveVehicle::x,
+        popDouble, &MoveVehicle::y,
+        popDouble, &MoveVehicle::z,
+        popFloat, &MoveVehicle::yaw,
+        popFloat, &MoveVehicle::pitch
     );
+    // clang-format on
     return h;
 }
 
@@ -304,8 +445,12 @@ std::shared_ptr<PaddleBoat> protocol::parsePaddleBoat(std::vector<uint8_t> &buff
 {
     auto h = std::make_shared<PaddleBoat>();
     auto at = buffer.data();
-
-    parse(at, buffer.data() + buffer.size() - 1, *h, popBoolean, &PaddleBoat::left_paddle_turning, popBoolean, &PaddleBoat::right_paddle_turning);
+    // clang-format off
+    parse(at, buffer.data() + buffer.size() - 1, *h,
+        popBoolean, &PaddleBoat::leftPaddleTurning,
+        popBoolean, &PaddleBoat::rightPaddleTurning
+    );
+    // clang-format on
     return h;
 }
 
@@ -313,8 +458,11 @@ std::shared_ptr<PickItem> protocol::parsePickItem(std::vector<uint8_t> &buffer)
 {
     auto h = std::make_shared<PickItem>();
     auto at = buffer.data();
-
-    parse(at, buffer.data() + buffer.size() - 1, *h, popVarInt, &PickItem::slot_to_use);
+    // clang-format off
+    parse(at, buffer.data() + buffer.size() - 1, *h,
+        popVarInt, &PickItem::slotToUse
+    );
+    // clang-format on
     return h;
 }
 
@@ -322,8 +470,13 @@ std::shared_ptr<PlaceRecipe> protocol::parsePlaceRecipe(std::vector<uint8_t> &bu
 {
     auto h = std::make_shared<PlaceRecipe>();
     auto at = buffer.data();
-
-    parse(at, buffer.data() + buffer.size() - 1, *h, popByte, &PlaceRecipe::window_id, popString, &PlaceRecipe::recipe, popBoolean, &PlaceRecipe::make_all);
+    // clang-format off
+    parse(at, buffer.data() + buffer.size() - 1, *h,
+        popByte, &PlaceRecipe::windowId,
+        popString, &PlaceRecipe::recipe,
+        popBoolean, &PlaceRecipe::makeAll
+    );
+    // clang-format on
     return h;
 }
 
@@ -331,8 +484,11 @@ std::shared_ptr<PlayerAbilities> protocol::parsePlayerAbilities(std::vector<uint
 {
     auto h = std::make_shared<PlayerAbilities>();
     auto at = buffer.data();
-
-    parse(at, buffer.data() + buffer.size() - 1, *h, popByte, &PlayerAbilities::flags);
+    // clang-format off
+    parse(at, buffer.data() + buffer.size() - 1, *h,
+        popByte, &PlayerAbilities::flags
+    );
+    // clang-format on
     return h;
 }
 
@@ -355,8 +511,13 @@ std::shared_ptr<PlayerCommand> protocol::parsePlayerCommand(std::vector<uint8_t>
 {
     auto h = std::make_shared<PlayerCommand>();
     auto at = buffer.data();
-
-    parse(at, buffer.data() + buffer.size() - 1, *h, popVarInt, &PlayerCommand::entity_id, popVarInt, &PlayerCommand::action_id, popVarInt, &PlayerCommand::jump_boost);
+    // clang-format off
+    parse(at, buffer.data() + buffer.size() - 1, *h,
+        popVarInt, &PlayerCommand::entityId,
+        popVarInt, &PlayerCommand::actionId,
+        popVarInt, &PlayerCommand::jumpBoost
+    );
+    // clang-format on
     return h;
 }
 
@@ -364,8 +525,13 @@ std::shared_ptr<PlayerInput> protocol::parsePlayerInput(std::vector<uint8_t> &bu
 {
     auto h = std::make_shared<PlayerInput>();
     auto at = buffer.data();
-
-    parse(at, buffer.data() + buffer.size() - 1, *h, popFloat, &PlayerInput::sideways, popFloat, &PlayerInput::forward, popByte, &PlayerInput::flags);
+    // clang-format off
+    parse(at, buffer.data() + buffer.size() - 1, *h,
+        popFloat, &PlayerInput::sideways,
+        popFloat, &PlayerInput::forward,
+        popByte, &PlayerInput::flags
+    );
+    // clang-format on
     return h;
 }
 
@@ -373,8 +539,26 @@ std::shared_ptr<Pong> protocol::parsePong(std::vector<uint8_t> &buffer)
 {
     auto h = std::make_shared<Pong>();
     auto at = buffer.data();
+    // clang-format off
+    parse(at, buffer.data() + buffer.size() - 1, *h,
+        popInt, &Pong::id
+    );
+    // clang-format on
+    return h;
+}
 
-    parse(at, buffer.data() + buffer.size() - 1, *h, popInt, &Pong::id);
+std::shared_ptr<PlayerSession> protocol::parsePlayerSession(std::vector<uint8_t> &buffer)
+{
+    auto h = std::make_shared<PlayerSession>();
+    auto at = buffer.data();
+    // clang-format off
+    parse(at, buffer.data() + buffer.size() - 1, *h,
+        popUUID, &PlayerSession::uuid,
+        popLong, &PlayerSession::expiresAt,
+        popArray<uint8_t, popByte>, &PlayerSession::publicKey,
+        popArray<uint8_t, popByte>, &PlayerSession::signature
+    );
+    // clang-format on
     return h;
 }
 
@@ -382,11 +566,13 @@ std::shared_ptr<ChangeRecipeBookSettings> protocol::parseChangeRecipeBookSetting
 {
     auto h = std::make_shared<ChangeRecipeBookSettings>();
     auto at = buffer.data();
-
-    parse(
-        at, buffer.data() + buffer.size() - 1, *h, popVarInt, &ChangeRecipeBookSettings::book_id, popBoolean, &ChangeRecipeBookSettings::book_open, popBoolean,
-        &ChangeRecipeBookSettings::filter_active
+    // clang-format off
+    parse(at, buffer.data() + buffer.size() - 1, *h,
+        popVarInt, &ChangeRecipeBookSettings::bookId,
+        popBoolean, &ChangeRecipeBookSettings::bookOpen,
+        popBoolean, &ChangeRecipeBookSettings::filterActive
     );
+    // clang-format on
     return h;
 }
 
@@ -394,8 +580,11 @@ std::shared_ptr<SetSeenRecipe> protocol::parseSetSeenRecipe(std::vector<uint8_t>
 {
     auto h = std::make_shared<SetSeenRecipe>();
     auto at = buffer.data();
-
-    parse(at, buffer.data() + buffer.size() - 1, *h, popString, &SetSeenRecipe::recipe_id);
+    // clang-format off
+    parse(at, buffer.data() + buffer.size() - 1, *h,
+        popString, &SetSeenRecipe::recipeId
+    );
+    // clang-format on
     return h;
 }
 
@@ -403,8 +592,11 @@ std::shared_ptr<RenameItem> protocol::parseRenameItem(std::vector<uint8_t> &buff
 {
     auto h = std::make_shared<RenameItem>();
     auto at = buffer.data();
-
-    parse(at, buffer.data() + buffer.size() - 1, *h, popString, &RenameItem::item_name);
+    // clang-format off
+    parse(at, buffer.data() + buffer.size() - 1, *h,
+        popString, &RenameItem::itemName
+    );
+    // clang-format on
     return h;
 }
 
@@ -412,8 +604,11 @@ std::shared_ptr<ResourcePack> protocol::parseResourcePack(std::vector<uint8_t> &
 {
     auto h = std::make_shared<ResourcePack>();
     auto at = buffer.data();
-
-    parse(at, buffer.data() + buffer.size() - 1, *h, popVarInt, &ResourcePack::result);
+    // clang-format off
+    parse(at, buffer.data() + buffer.size() - 1, *h,
+        popVarInt, &ResourcePack::result
+    );
+    // clang-format on
     return h;
 }
 
@@ -421,10 +616,16 @@ std::shared_ptr<SeenAdvancements> protocol::parseSeenAdvancements(std::vector<ui
 {
     auto h = std::make_shared<SeenAdvancements>();
     auto at = buffer.data();
-
-    parse(at, buffer.data() + buffer.size() - 1, *h, popVarInt, &SeenAdvancements::action);
-    if (h->action == 0)
-        parse(at, buffer.data() + buffer.size() - 1, *h, popString, &SeenAdvancements::tab_id);
+    // clang-format off
+    parse(at, buffer.data() + buffer.size() - 1, *h,
+        popVarInt, &SeenAdvancements::action
+    );
+    if (h->action == protocol::SeenAdvancements::Action::OpenedTab) {
+        parse(at, buffer.data() + buffer.size() - 1, *h,
+            popString, &SeenAdvancements::tabId
+        );
+    }
+    // clang-format on
     return h;
 }
 
@@ -432,8 +633,11 @@ std::shared_ptr<SelectTrade> protocol::parseSelectTrade(std::vector<uint8_t> &bu
 {
     auto h = std::make_shared<SelectTrade>();
     auto at = buffer.data();
-
-    parse(at, buffer.data() + buffer.size() - 1, *h, popVarInt, &SelectTrade::selected_slot);
+    // clang-format off
+    parse(at, buffer.data() + buffer.size() - 1, *h,
+        popVarInt, &SelectTrade::selectedSlot
+    );
+    // clang-format on
     return h;
 }
 
@@ -441,11 +645,14 @@ std::shared_ptr<SetBeaconEffect> protocol::parseSetBeaconEffect(std::vector<uint
 {
     auto h = std::make_shared<SetBeaconEffect>();
     auto at = buffer.data();
-
-    parse(
-        at, buffer.data() + buffer.size() - 1, *h, popBoolean, &SetBeaconEffect::primary_effect_present, popVarInt, &SetBeaconEffect::primary_effect, popBoolean,
-        &SetBeaconEffect::secondary_effect_present, popVarInt, &SetBeaconEffect::secondary_effect
+    // clang-format off
+    parse(at, buffer.data() + buffer.size() - 1, *h,
+        popBoolean, &SetBeaconEffect::primaryEffectPresent,
+        popVarInt, &SetBeaconEffect::primaryEffect,
+        popBoolean, &SetBeaconEffect::secondaryEffectPresent,
+        popVarInt, &SetBeaconEffect::secondaryEffect
     );
+    // clang-format on
     return h;
 }
 
@@ -453,8 +660,11 @@ std::shared_ptr<SetHeldItem> protocol::parseSetHeldItem(std::vector<uint8_t> &bu
 {
     auto h = std::make_shared<SetHeldItem>();
     auto at = buffer.data();
-
-    parse(at, buffer.data() + buffer.size() - 1, *h, popShort, &SetHeldItem::slot);
+    // clang-format off
+    parse(at, buffer.data() + buffer.size() - 1, *h,
+        popShort, &SetHeldItem::slot
+    );
+    // clang-format on
     return h;
 }
 
@@ -462,11 +672,14 @@ std::shared_ptr<ProgramCommandBlock> protocol::parseProgramCommandBlock(std::vec
 {
     auto h = std::make_shared<ProgramCommandBlock>();
     auto at = buffer.data();
-
-    parse(
-        at, buffer.data() + buffer.size() - 1, *h, popPosition, &ProgramCommandBlock::location, popString, &ProgramCommandBlock::command, popVarInt, &ProgramCommandBlock::mode,
+    // clang-format off
+    parse(at, buffer.data() + buffer.size() - 1, *h,
+        popPosition, &ProgramCommandBlock::location,
+        popString, &ProgramCommandBlock::command,
+        popVarInt, &ProgramCommandBlock::mode,
         popByte, &ProgramCommandBlock::flags
     );
+    // clang-format on
     return h;
 }
 
@@ -474,11 +687,26 @@ std::shared_ptr<ProgramCommandBlockMinecart> protocol::parseProgramCommandBlockM
 {
     auto h = std::make_shared<ProgramCommandBlockMinecart>();
     auto at = buffer.data();
-
-    parse(
-        at, buffer.data() + buffer.size() - 1, *h, popVarInt, &ProgramCommandBlockMinecart::entity_id, popString, &ProgramCommandBlockMinecart::command, popBoolean,
-        &ProgramCommandBlockMinecart::track_output
+    // clang-format off
+    parse(at, buffer.data() + buffer.size() - 1, *h,
+        popVarInt, &ProgramCommandBlockMinecart::entityId,
+        popString, &ProgramCommandBlockMinecart::command,
+        popBoolean, &ProgramCommandBlockMinecart::trackOutput
     );
+    // clang-format on
+    return h;
+}
+
+std::shared_ptr<SetCreativeModeSlot> protocol::parseSetCreativeModeSlot(std::vector<uint8_t> &buffer)
+{
+    auto h = std::make_shared<SetCreativeModeSlot>();
+    auto at = buffer.data();
+    // clang-format off
+    parse(at, buffer.data() + buffer.size() - 1, *h,
+        popShort, &SetCreativeModeSlot::slot,
+        popSlot, &SetCreativeModeSlot::clickedItem
+    );
+    // clang-format on
     return h;
 }
 
@@ -486,11 +714,16 @@ std::shared_ptr<ProgramJigsawBlock> protocol::parseProgramJigsawBlock(std::vecto
 {
     auto h = std::make_shared<ProgramJigsawBlock>();
     auto at = buffer.data();
-
-    parse(
-        at, buffer.data() + buffer.size() - 1, *h, popPosition, &ProgramJigsawBlock::location, popString, &ProgramJigsawBlock::name, popString, &ProgramJigsawBlock::target,
-        popString, &ProgramJigsawBlock::pool, popString, &ProgramJigsawBlock::final_state, popString, &ProgramJigsawBlock::joint_type
+    // clang-format off
+    parse(at, buffer.data() + buffer.size() - 1, *h,
+        popPosition, &ProgramJigsawBlock::location,
+        popString, &ProgramJigsawBlock::name,
+        popString, &ProgramJigsawBlock::target,
+        popString, &ProgramJigsawBlock::pool,
+        popString, &ProgramJigsawBlock::finalState,
+        popString, &ProgramJigsawBlock::jointType
     );
+    // clang-format on
     return h;
 }
 
@@ -498,14 +731,25 @@ std::shared_ptr<ProgramStructureBlock> protocol::parseProgramStructureBlock(std:
 {
     auto h = std::make_shared<ProgramStructureBlock>();
     auto at = buffer.data();
-
-    parse(
-        at, buffer.data() + buffer.size() - 1, *h, popPosition, &ProgramStructureBlock::location, popVarInt, &ProgramStructureBlock::action, popVarInt,
-        &ProgramStructureBlock::mode, popByte, &ProgramStructureBlock::offset_x, popByte, &ProgramStructureBlock::offset_y, popByte, &ProgramStructureBlock::offset_z, popByte,
-        &ProgramStructureBlock::size_x, popByte, &ProgramStructureBlock::size_y, popByte, &ProgramStructureBlock::size_z, popVarInt, &ProgramStructureBlock::mirror, popVarInt,
-        &ProgramStructureBlock::rotation, popString, &ProgramStructureBlock::metadata, popFloat, &ProgramStructureBlock::integrity, popVarLong, &ProgramStructureBlock::seed,
+    // clang-format off
+    parse(at, buffer.data() + buffer.size() - 1, *h,
+        popPosition, &ProgramStructureBlock::location,
+        popVarInt, &ProgramStructureBlock::action,
+        popVarInt, &ProgramStructureBlock::mode,
+        popByte, &ProgramStructureBlock::offsetX,
+        popByte, &ProgramStructureBlock::offsetY,
+        popByte, &ProgramStructureBlock::offsetZ,
+        popByte, &ProgramStructureBlock::sizeX,
+        popByte, &ProgramStructureBlock::sizeY,
+        popByte, &ProgramStructureBlock::sizeZ,
+        popVarInt, &ProgramStructureBlock::mirror,
+        popVarInt, &ProgramStructureBlock::rotation,
+        popString, &ProgramStructureBlock::metadata,
+        popFloat, &ProgramStructureBlock::integrity,
+        popVarLong, &ProgramStructureBlock::seed,
         popByte, &ProgramStructureBlock::flags
     );
+    // clang-format on
     return h;
 }
 
@@ -513,11 +757,15 @@ std::shared_ptr<UpdateSign> protocol::parseUpdateSign(std::vector<uint8_t> &buff
 {
     auto h = std::make_shared<UpdateSign>();
     auto at = buffer.data();
-
-    parse(
-        at, buffer.data() + buffer.size() - 1, *h, popPosition, &UpdateSign::location, popString, &UpdateSign::line_1, popString, &UpdateSign::line_2, popString,
-        &UpdateSign::line_3, popString, &UpdateSign::line_4
+    // clang-format off
+    parse(at, buffer.data() + buffer.size() - 1, *h,
+        popPosition, &UpdateSign::location,
+        popString, &UpdateSign::line1,
+        popString, &UpdateSign::line2,
+        popString, &UpdateSign::line3,
+        popString, &UpdateSign::line4
     );
+    // clang-format on
     return h;
 }
 
@@ -525,8 +773,11 @@ std::shared_ptr<SwingArm> protocol::parseSwingArm(std::vector<uint8_t> &buffer)
 {
     auto h = std::make_shared<SwingArm>();
     auto at = buffer.data();
-
-    parse(at, buffer.data() + buffer.size() - 1, *h, popVarInt, &SwingArm::hand);
+    // clang-format off
+    parse(at, buffer.data() + buffer.size() - 1, *h,
+        popVarInt, &SwingArm::hand
+    );
+    // clang-format on
     return h;
 }
 
@@ -534,8 +785,11 @@ std::shared_ptr<TeleportToEntity> protocol::parseTeleportToEntity(std::vector<ui
 {
     auto h = std::make_shared<TeleportToEntity>();
     auto at = buffer.data();
-
-    parse(at, buffer.data() + buffer.size() - 1, *h, popUUID, &TeleportToEntity::target_player);
+    // clang-format off
+    parse(at, buffer.data() + buffer.size() - 1, *h,
+        popUUID, &TeleportToEntity::targetPlayer
+    );
+    // clang-format on
     return h;
 }
 
@@ -543,12 +797,18 @@ std::shared_ptr<UseItemOn> protocol::parseUseItemOn(std::vector<uint8_t> &buffer
 {
     auto h = std::make_shared<UseItemOn>();
     auto at = buffer.data();
-
-    parse(
-        at, buffer.data() + buffer.size() - 1, *h, popVarInt, &UseItemOn::hand, popPosition, &UseItemOn::location, popVarInt, &UseItemOn::face, popFloat,
-        &UseItemOn::cursor_position_x, popFloat, &UseItemOn::cursor_position_y, popFloat, &UseItemOn::cursor_position_z, popBoolean, &UseItemOn::inside_block, popVarInt,
-        &UseItemOn::sequence
+    // clang-format off
+    parse(at, buffer.data() + buffer.size() - 1, *h,
+        popVarInt, &UseItemOn::hand,
+        popPosition, &UseItemOn::location,
+        popVarInt, &UseItemOn::face,
+        popFloat, &UseItemOn::cursorPositionX,
+        popFloat, &UseItemOn::cursorPositionY,
+        popFloat, &UseItemOn::cursorPositionZ,
+        popBoolean, &UseItemOn::insideBlock,
+        popVarInt, &UseItemOn::sequence
     );
+    // clang-format on
     return h;
 }
 
@@ -556,7 +816,11 @@ std::shared_ptr<UseItem> protocol::parseUseItem(std::vector<uint8_t> &buffer)
 {
     auto h = std::make_shared<UseItem>();
     auto at = buffer.data();
-
-    parse(at, buffer.data() + buffer.size() - 1, *h, popVarInt, &UseItem::hand, popVarInt, &UseItem::sequence);
+    // clang-format off
+    parse(at, buffer.data() + buffer.size() - 1, *h,
+        popVarInt, &UseItem::hand,
+        popVarInt, &UseItem::sequence
+    );
+    // clang-format on
     return h;
 }

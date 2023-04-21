@@ -1,6 +1,8 @@
 #include "SoundSystem.hpp"
+
 #include "Player.hpp"
 #include "World.hpp"
+#include "WorldGroup.hpp"
 
 SoundSystem::SoundSystem(const WorldGroup *group):
     _group(group)

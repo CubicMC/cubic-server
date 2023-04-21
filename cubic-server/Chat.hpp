@@ -1,15 +1,11 @@
 #ifndef CUBICSERVER_CHAT_HPP
 #define CUBICSERVER_CHAT_HPP
 
-#include "logging/Logger.hpp"
-#include "nlohmann/json.hpp"
-#include <stdint.h>
-#include <string>
-#include <optional>
+#include <nlohmann/json.hpp>
+
 #include "chat/Message.hpp"
 
 class Player;
-class Client;
 class WorldGroup;
 
 class Chat {
@@ -29,10 +25,29 @@ public:
      * @brief Used to send a system message to a player from the server
      *
      * @param message
-     * @param from The player who will receive the message
+     * @param from
+     * @param to
      * @param overlay A normal message will be displayed in the chat, an overlay message will be displayed in the middle of the screen
      */
-    void sendSystemMessage(const chat::Message &message, const Player *from, bool overlay = false);
+    void sendSystemMessage(const chat::Message &message, Player *to, bool overlay = false);
+
+    /**
+     * @brief Used to send a system message to all players in a worldgroup
+     *
+     * @param message
+     * @param worldGroup
+     * @param overlay A normal message will be displayed in the chat, an overlay message will be displayed in the middle of the screen
+     */
+    void sendSystemMessage(const chat::Message &message, const WorldGroup *worldGroup, bool overlay = false);
+
+    /**
+     * @brief Used to send a system message to a list of players
+     *
+     * @param message
+     * @param to
+     * @param overlay A normal message will be displayed in the chat, an overlay message will be displayed in the middle of the screen
+     */
+    void sendSystemMessage(const chat::Message &message, const std::vector<Player *> &to, bool overlay = false);
 
     /**
      * @brief What is this?

@@ -1,9 +1,8 @@
-#ifndef CONFIG_CONFIGHANDLER_HPP
-#define CONFIG_CONFIGHANDLER_HPP
+#ifndef CUBICSERVER_CONFIGURATION_CONFIGHANDLER_HPP
+#define CUBICSERVER_CONFIGURATION_CONFIGHANDLER_HPP
 
-#include "logging/Logger.hpp"
-#include <map>
 #include <string>
+
 #include <yaml-cpp/yaml.h>
 
 namespace Configuration {
@@ -34,4 +33,4 @@ private:
 };
 }
 
-#endif /* CONFIG_CONFIGHANDLER_HPP */
+#endif // CUBICSERVER_CONFIGURATION_CONFIGHANDLER_HPP
