@@ -1,4 +1,8 @@
 #include "ConfigHandler.hpp"
+#include <iostream>
+#include <yaml-cpp/yaml.h>
+#include <filesystem>
+#include "errors.hpp"
 
 // namespace Configuration
 // {
@@ -68,22 +72,20 @@
 //     }
 // }
 
-namespace configuration
-{
 
-void ArgumentsHolder::init()
-{
-    this->_parser.add_argument("-c", "--config")
-        .help("Specify the configuration file to use UNUSED")
-        .default_value("config.yml");
-    this->_parser.add_argument("-w", "--world")
-        .help("Specify the world to load UNUSED")
-        .default_value("world");
-    this->_parser.add_argument("--nogui")
-        .help("Disable the GUI")
-        .default_value(false)
-        .implicit_value(true);
-}
+// void configuration::ArgumentsHolder::init()
+// {
+    // this->_parser.add_argument("-c", "--config")
+    //     .help("Specify the configuration file to use UNUSED")
+    //     .default_value("config.yml");
+    // this->_parser.add_argument("-w", "--world")
+    //     .help("Specify the world to load UNUSED")
+    //     .default_value("world");
+    // this->_parser.add_argument("--nogui")
+    //     .help("Disable the GUI")
+    //     .default_value(false)
+    //     .implicit_value(true);
+// }
 
 // void ConfigHandler::init()
 // {
@@ -128,49 +130,54 @@ void ArgumentsHolder::init()
 //         .defaultValueFromEnvironmentVariable("CUBIC_SERVER_NO_GUI");
 // }
 
-void ArgumentsHolder::parseArgs(int argc, char **argv)
+void configuration::ConfigHandler::load(const std::filesystem::path &path)
+{ this->_config.load(path); }
+
+void configuration::ConfigHandler::save(const std::filesystem::path &path)
+{ this->_config.save(path); }
+
+configuration::Value &configuration::ConfigHandler::add(const std::string &key)
 {
-    try {
-        this->_parser.parse_args(argc, argv);
-    } catch (const std::runtime_error &err) {
-        throw InvalidArguments(err.what());
+    this->_values.emplace(std::make_pair(key, Value(this->_arguments)));
+    return this->_values.at(key);
+}
+
+void configuration::ConfigHandler::parse(int argc, const char * const *argv)
+{
+    std::cout << "parsing config" << std::endl;
+    std::cout << "general: " << this->_config.has("general") << std::endl;
+    std::cout << "network: " << this->_config.has("network") << std::endl;
+    std::cout << "general.max_players: " << this->_config.at("general").has("max_players") << std::endl;
+    std::cout << "general.motd: " << this->_config.at("general").has("motd") << std::endl;
+    std::cout << "general.enforce-whitelist: " << this->_config.at("general").has("enforce-whitelist") << std::endl;
+    std::cout << "network.ip: " << this->_config.at("network").has("ip") << std::endl;
+    std::cout << "network.port: " << this->_config.at("network").has("port") << std::endl;
+
+
+    for (auto &[_, value]: this->_values)
+        value.addToParser();
+
+    this->_arguments.parse(argc, argv);
+
+    for (auto &[_, value]: this->_values) {
+        std::cout << "parsing " << _ <<  std::endl;
+        value.parse(this->_config);
     }
+    std::cout << "parsing config" << std::endl;
+    std::cout << "general: " << this->_config.has("general") << std::endl;
+    std::cout << "network: " << this->_config.has("network") << std::endl;
+    std::cout << "general.max_players: " << this->_config.at("general").has("max_players") << std::endl;
+    std::cout << "general.motd: " << this->_config.at("general").has("motd") << std::endl;
+    std::cout << "general.enforce-whitelist: " << this->_config.at("general").has("enforce-whitelist") << std::endl;
+    std::cout << "network.ip: " << this->_config.at("network").has("ip") << std::endl;
+    std::cout << "network.port: " << this->_config.at("network").has("port") << std::endl;
+    // this->_arguments.parse(argc, argv, envp);
+    // this->_config.parse(this->_arguments.get("config"));
 }
 
-bool ArgumentsHolder::has(const std::string &name) const
-{
-    try {
-        this->_parser[name];
-        return true;
-    } catch (const std::logic_error &) {
-        return false;
-    }
-}
-
-Value &Value::required(bool required = true)
-{
-    this->_required = required;
-}
-
-Value &Value::type(const Type &type)
-{
-    this->_types = type;
-    return *this;
-}
-
-Value &Value::defaultValueFromArgument(const std::string &argument)
-{
-    if (this->_defaultValueArgument.empty())
-        this->_defaultValueArgument = argument;
-    return *this;
-}
-
-Value &Value::defaultValueFromEnvironmentVariable(const std::string &variable)
-{
-    if (this->_defaultValueEnvironmentVariable.empty())
-        this->_defaultValueEnvironmentVariable = variable;
-    return *this;
-}
+configuration::Value &configuration::ConfigHandler::operator[](const std::string &key)
+{ return this->_values.at(key); }
 
 
-} // namespace configuration
+std::ostream &configuration::operator<<(std::ostream &os, const configuration::ConfigHandler &config)
+{ return os << config._arguments; }

@@ -7,28 +7,19 @@
 #include <yaml-cpp/yaml.h>
 #include <argparse/argparse.hpp>
 #include "logging/Logger.hpp"
-#include "exceptions.hpp"
+#include "errors.hpp"
 #include "concept.hpp"
+#include "Node.hpp"
 #include "Value.hpp"
 
-#define BIT(x) (1 << x)
-
-namespace configuration
-{
-
-DEFINE_EXCEPTION(InvalidArguments);
-DEFINE_EXCEPTION(InvalidArgumentParameter);
-
-DEFINE_EXCEPTION(MissingRequiredConfigurationKey);
-DEFINE_EXCEPTION(InvalidConfigurationType);
-DEFINE_EXCEPTION(InvalidConfigurationFile);
-DEFINE_EXCEPTION(MissingConfigurationFile);
-
-
-class ConfigHandler
-{
+namespace configuration {
+class ConfigHandler {
+public:
+    typedef std::unordered_map<std::string, Value>::iterator iterator;
+    friend std::ostream &operator<<(std::ostream &os, const ConfigHandler &config);
 public:
     ConfigHandler() = default;
+    ~ConfigHandler() = default;
 
     /**
      * @brief Load the configuration from the given path
@@ -39,7 +30,7 @@ public:
      *
      * @param path
      */
-    void load(const std::string &path);
+    void load(const std::filesystem::path &path);
 
     /**
      * @brief Save the configuration to the given path
@@ -48,18 +39,36 @@ public:
      *
      * @param path
      */
-    void save(const std::string &path);
-
-    Value &add();
+    void save(const std::filesystem::path &path);
 
     /**
-     * @brief Validate the configuration
+     * @brief Add a new value to the configuration
      *
-     * @throw MissingRequiredConfigurationKey
-     * @throw InvalidConfigurationType
+     * @param key
+     * @return iterator
      */
-    void validate();
+    Value &add(const std::string &key);
+
+    // Schema &addSchema(const std::string &rootKey);
+
+    /**
+     * @brief Parse All arguments
+     *
+     * @param argc
+     * @param argv
+     * @param envp
+     */
+    void parse(int argc, const char * const *argv);
+
+    Value &operator[](const std::string &key);
+
+private:
+    std::unordered_map<std::string, Value> _values;
+    Node _config;
+    ArgumentsParser _arguments;
 };
+
+std::ostream &operator<<(std::ostream &os, const ConfigHandler &config);
 
 // template<typename T>
 // T ArgumentsHolder::operator[](const std::string &argument) const

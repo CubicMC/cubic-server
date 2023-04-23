@@ -20,30 +20,51 @@ endif()
 include(FetchContent)
 
 FetchContent_Declare(
+    yaml-cpp
+    GIT_REPOSITORY https://github.com/jbeder/yaml-cpp.git
+    GIT_TAG 4ae4cb7309c07b2d8623d7e4f01efa6321441366 # The latest yaml-cpp commit at the time of writing.
+)
+# FetchContent_GetProperties(yaml-cpp)
+
+# if(NOT yaml-cpp_POPULATED)
+#     message(STATUS "Fetching yaml-cpp...")
+#     FetchContent_Populate(yaml-cpp)
+#     add_subdirectory(${yaml-cpp_SOURCE_DIR} ${yaml-cpp_BINARY_DIR})
+# endif()
+
+FetchContent_Declare(
     json
     URL https://github.com/nlohmann/json/releases/download/v3.11.2/json.tar.xz
 )
-FetchContent_MakeAvailable(json)
+# FetchContent_MakeAvailable(json)
 
 FetchContent_Declare(
     noise
     GIT_REPOSITORY https://github.com/Reputeless/PerlinNoise.git
     GIT_TAG v3.0.0
 )
-FetchContent_MakeAvailable(noise)
+# FetchContent_MakeAvailable(noise)
 
 FetchContent_Declare(
     argparse
     GIT_REPOSITORY https://github.com/p-ranav/argparse.git
 )
-FetchContent_MakeAvailable(argparse)
+# FetchContent_MakeAvailable(argparse)
 
 FetchContent_Declare(
     CRCpp
     GIT_REPOSITORY https://github.com/d-bahr/CRCpp.git
     GIT_TAG release-1.2.0.0
 )
-FetchContent_MakeAvailable(CRCpp)
+# FetchContent_MakeAvailable(CRCpp)
+
+FetchContent_MakeAvailable(
+    yaml-cpp
+    json
+    noise
+    argparse
+    CRCpp
+)
 
 if(GTEST) # if the flag GTEST is true
     FetchContent_Declare(
@@ -90,6 +111,7 @@ target_link_libraries (${CMAKE_PROJECT_NAME} PRIVATE
     nlohmann_json::nlohmann_json
     ${GTKMM_LIBRARIES}
     argparse
+    yaml-cpp
     curl
     CRCpp
 )

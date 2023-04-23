@@ -4,101 +4,126 @@
 #include <string>
 #include <variant>
 #include "concept.hpp"
-#include "ArgumentsHolder.hpp"
+#include "ArgumentsParser.hpp"
+#include "conversion.hpp"
+#include "Node.hpp"
 
-namespace configuration
-{
-
-#define BIT(x) (1 << x)
-
-enum class Type {
-    Any = 0,
-    String = BIT(0),
-    Integer = BIT(1),
-    Float = BIT(2),
-    Boolean = BIT(3),
-    Array = BIT(4),
-    Map = BIT(5),
-    Null = BIT(6)
-};
-
-class Value
-{
-public:
-    typedef std::variant<std::string, int, float, bool, std::nullptr_t> ValueType;
-    typedef std::vector<ValueType> Array;
+namespace configuration {
+class Value {
+    friend class ConfigHandler;
 
 public:
-    Value &required(bool required = true);
-    Value &type(const Type &type);
+    Value &required();
 
     template<typename T>
     requires is_one_or_convertible_to_one_of<T, std::string, int, float, bool, std::nullptr_t>
     Value &defaultValue(const T &defaultValue);
 
     template<typename... T>
-    Value &defaultValueFromConfig(const std::string &node, T... keys);
-    Value &defaultValueFromConfig(const std::string &key);
-    Value &defaultValueFromArgument(const std::string &argument);
-    Value &defaultValueFromEnvironmentVariable(const std::string &variable);
+    Value &valueFromConfig(const std::string &node, T... keys);
+    Value &valueFromConfig(const std::string &key);
+    Value &valueFromArgument(const std::string &argument);
+    Value &valueFromEnvironmentVariable(const std::string &variable);
 
-    ValueType &value();
-    Array &values();
+    Value &help(const std::string &help);
+    Value &implicit();
+
+    const std::string &value() const;
+    const std::vector<std::string> &values() const;
+
+    template<typename T>
+    bool operator==(const T &key) const
+    { return configuration::_details::Convertor<T>()(value()) == key; }
 
     /**
-     * @brief Get the Value as the given type
-     *
-     * @throw std::bad_variant_access if the type is not the same as the one stored
+     * @brief Get the Value as the given type.
      *
      * @tparam T
-     * @return T&
+     * @return T
      */
     template<typename T>
-    T &as();
+    T as();
 
     /**
-     * @brief Check if the value is the default one
+     * @brief Get the Values as the given type.
      *
-     * @return true
-     * @return false
+     * @tparam T
+     * @return T
+     */
+    template<typename R, typename T>
+    requires std::is_same_v<R, std::vector<T>>
+    std::vector<T> as();
+
+    /**
+     * @brief Check if the value is the default one.
+     *
+     * Always return false if the value has not been parsed yet
+     *
+     * @return bool
      */
     bool isDefault() const;
 
+    /**
+     * @brief Check if the stored value is an array.
+     *
+     * @details return false if the value has not been parsed yet
+     *
+     * @return bool
+     */
+    bool isArray() const;
+
 private:
-    Value(const char * const *environment, const ArgumentsHolder &argsHolder);
+    Value(ArgumentsParser &arguments);
+    void parse(const Node &node);
+    void addToParser();
 
 private:
     bool _required;
-    Type _types;
-    Array _value;
-    Array _defaultValue;
-    ArgumentsHolder _arguments;
+    bool _implicit;
+    std::vector<std::string> _value;
+    std::vector<std::string> _defaultValue;
+    std::string _help;
+
+    ArgumentsParser &_arguments;
+
     std::vector<std::string> _defaultValueConfig;
     std::string _defaultValueArgument;
     std::string _defaultValueEnvironmentVariable;
 };
+
+std::ostream &operator<<(std::ostream &os, const Value &value);
 
 template<typename T>
 requires is_one_or_convertible_to_one_of<T, std::string, int, float, bool, std::nullptr_t>
 Value &Value::defaultValue(const T &defaultValue)
 {
     _defaultValue.resize(1);
-    _defaultValue[0] = defaultValue;
+    _defaultValue[0] = _details::Convertor<std::string>()(defaultValue);
     return *this;
 }
 
 template<typename... T>
-Value &Value::defaultValueFromConfig(const std::string &node, T... keys)
+Value &Value::valueFromConfig(const std::string &node, T... keys)
 {
-    _defaultValueConfig = {node, keys...};
+    _defaultValueConfig = {node, _details::Convertor<std::string>()(std::forward<T>(keys))...};
+    for (auto &key : _defaultValueConfig) {
+        if (key.empty())
+            throw ConfigurationError("Invalid configuration value");
+        std::cout << "key: " << key << " -> " << node;
+        ((std::cout << ", " << std::forward<T>(keys)), ...);
+        std::cout << std::endl;
+    }
     return *this;
 }
 
 template<typename T>
-T &Value::as()
-{
-    return std::get<T>(_value);
-}
+T Value::as()
+{ return _details::Convertor<T>()(isDefault() ? _defaultValue[0] : _value[0]); }
+
+template<typename R, typename T>
+requires std::is_same_v<R, std::vector<T>>
+std::vector<T> Value::as()
+{ return _details::Convertor<std::vector<T>>()(isDefault() ? _defaultValue : _value); }
 
 } // namespace configuration
 

@@ -318,7 +318,7 @@ void Client::_onStatusRequest(UNUSED const std::shared_ptr<protocol::StatusReque
 
     json["previewsChat"] = false;
     json["favicon"] = DEFAULT_FAVICON; // TODO: Understand how this works, cause right now it is witchcraft
-    json["description"]["text"] = conf.getMotd();
+    // json["description"]["text"] = conf.getMotd();
     json["enforcesSecureChat"] = false;
 
     // Old
@@ -329,10 +329,14 @@ void Client::_onStatusRequest(UNUSED const std::shared_ptr<protocol::StatusReque
 
     json["version"]["name"] = MC_VERSION;
     json["version"]["protocol"] = MC_PROTOCOL;
-    json["players"]["max"] = conf.getMaxPlayers();
-    json["players"]["online"] = std::count_if(cli.begin(), cli.end(), [](std::shared_ptr<Client> &each) {
-        return each->getStatus() == protocol::ClientStatus::Play;
-    });
+    // json["players"]["max"] = conf.getMaxPlayers();
+    json["players"]["online"] = std::count_if(
+            cli.begin(),
+            cli.end(),
+            [](std::shared_ptr<Client> &each) {
+                return each->getStatus() == protocol::ClientStatus::Play;
+            }
+    );
 
     sendStatusResponse(json.dump());
 }

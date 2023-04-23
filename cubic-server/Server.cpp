@@ -27,14 +27,14 @@ Server::Server():
     _sockfd(-1),
     _config()
 {
-    _config.parse("./config.yml");
-    _whitelist = WhitelistHandling::Whitelist();
-    _host = _config.getIP();
-    _port = _config.getPort();
-    _maxPlayer = _config.getMaxPlayers();
-    _motd = _config.getMotd();
-    _whitelistEnabled = _config.getWhitelist();
-    _enforceWhitelist = _config.getEnforceWhitelist();
+    _config.load("./config.yml");
+    // _config.parse("./config.yml");
+    // _config.parse(2, (const char * const *){"./CubicServer", "--nogui"});
+    // _host = _config.getIP();
+    // _port = _config.getPort();
+    // _maxPlayer = _config.getMaxPlayers();
+    // _motd = _config.getMotd();
+    // _enforceWhitelist = _config.getEnforceWhitelist();
 
     _commands.reserve(10);
     _commands.emplace_back(std::make_unique<command_parser::Help>());

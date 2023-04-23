@@ -41,6 +41,10 @@ public:
 
     void reload();
 
+    const configuration::ConfigHandler &getConfig() const {
+        return _config;
+    }
+
     const Configuration::ConfigHandler &getConfig() const { return _config; }
 
     const WhitelistHandling::Whitelist &getWhitelist() const { return _whitelist; }
@@ -99,7 +103,6 @@ private:
     int _sockfd;
     struct sockaddr_in6 _addr;
 
-    Configuration::ConfigHandler _config;
     WhitelistHandling::Whitelist _whitelist;
     std::unordered_map<std::string_view, std::shared_ptr<WorldGroup>> _worldGroups;
     std::vector<std::unique_ptr<CommandBase>> _commands;
