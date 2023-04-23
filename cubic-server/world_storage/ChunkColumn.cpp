@@ -1,18 +1,36 @@
 #include "ChunkColumn.hpp"
 
+#include "Dimension.hpp"
 #include "blocks.hpp"
 #include "generation/overworld.hpp"
-
+#include "logging/Logger.hpp"
 namespace world_storage {
 
-ChunkColumn::ChunkColumn(const Position2D &chunkPos):
+ChunkColumn::ChunkColumn(const Position2D &chunkPos, std::shared_ptr<Dimension> dimension):
     _chunkPos(chunkPos),
-    _ready(false)
+    _currentState(GenerationState::INITIALIZED),
+    _dimension(dimension)
 {
     for (auto &block : this->_blocks)
         block = 0;
     for (auto &biome : this->_biomes)
         biome = 0;
+}
+
+ChunkColumn::ChunkColumn(const ChunkColumn &other):
+    _blocks(other._blocks),
+    _skyLights(other._skyLights),
+    _blockLights(other._blockLights),
+    _biomes(other._biomes),
+    _blockEntities(other._blockEntities),
+    _tickData(other._tickData),
+    _chunkPos(other._chunkPos),
+    _heightMap(other._heightMap),
+    _currentState(other._currentState),
+    _worldType(other._worldType),
+    _generationLock(),
+    _dimension(other._dimension)
+{
 }
 
 ChunkColumn::~ChunkColumn() { }
@@ -87,7 +105,9 @@ void ChunkColumn::setTick(int64_t tick) { _tickData = tick; }
 
 Position2D ChunkColumn::getChunkPos() const { return _chunkPos; }
 
-bool ChunkColumn::isReady() const { return this->_ready; }
+bool ChunkColumn::isReady() const { return this->_currentState == GenerationState::READY ? true : false; }
+
+GenerationState ChunkColumn::getState() const { return this->_currentState; }
 
 // void ChunkColumn::updateEntity(std::size_t id, Entity *e) {
 //     _entities.at(id) = e;
@@ -142,81 +162,52 @@ void ChunkColumn::generate(WorldType worldType, Seed seed)
     default:
         break;
     }
-    this->_ready = true;
 }
 
 void ChunkColumn::_generateOverworld(Seed seed)
 {
-    auto generator = generation::Overworld(seed);
-    int normalHeight = 100;
-    int waterLevel = 86;
-
-    // generate blocks
-    for (int y = CHUNK_HEIGHT_MIN; y < CHUNK_HEIGHT_MAX; y++) {
-        for (int z = 0; z < SECTION_WIDTH; z++) {
-            for (int x = 0; x < SECTION_WIDTH; x++) {
-                updateBlock({x, y, z}, generator.getBlock(x + this->_chunkPos.x * SECTION_WIDTH, y, z + this->_chunkPos.z * SECTION_WIDTH));
-            }
-        }
-    }
-
-    // TODO: improve this to fill caves
-    // generate water
-    for (int z = 0; z < SECTION_WIDTH; z++) {
-        for (int x = 0; x < SECTION_WIDTH; x++) {
-            for (int y = waterLevel; 0 < y; y--) {
-                if (getBlock({x, y, z}) == 1)
-                    break;
-                updateBlock({x, y, z}, Blocks::Water::toProtocol(Blocks::Water::Properties::Level::ZERO));
-            }
-        }
-    }
-
-    // generate grass
-    for (int z = 0; z < SECTION_WIDTH; z++) {
-        for (int x = 0; x < SECTION_WIDTH; x++) {
-            auto lastBlock = 0;
-            for (int y = CHUNK_HEIGHT_MAX - 2; CHUNK_HEIGHT_MIN <= y; y--) {
-                auto block = getBlock({x, y, z});
-                if (block == Blocks::Air::toProtocol())
-                    continue;
-                if (block == Blocks::Water::toProtocol(Blocks::Water::Properties::Level::ZERO)) {
-                    lastBlock = Blocks::Water::toProtocol(Blocks::Water::Properties::Level::ZERO);
-                    continue;
-                }
-                if (block == Blocks::Stone::toProtocol() && lastBlock == Blocks::Water::toProtocol(Blocks::Water::Properties::Level::ZERO)) {
-                    updateBlock({x, y, z}, Blocks::Sand::toProtocol()); // sand
-                    break;
-                }
-                if (block == Blocks::Stone::toProtocol() && lastBlock == Blocks::Air::toProtocol()) {
-                    updateBlock({x, y, z}, Blocks::GrassBlock::toProtocol(Blocks::GrassBlock::Properties::Snowy::FALSE)); // grass
-                    updateBlock({x, y - 1, z}, Blocks::Dirt::toProtocol()); // dirt
-                    updateBlock({x, y - 2, z}, Blocks::Dirt::toProtocol()); // dirt
-                    break;
-                }
-            }
-        }
-    }
-
-    // generate bedrock
-    int64_t state = (((this->_chunkPos.x * 0x4F9939F508L + this->_chunkPos.z * 0x1EF1565BD5L) ^ 0x5DEECE66DL) * 0x9D89DAE4D6C29D9L + 0x1844E300013E5B56L) & 0xFFFFFFFFFFFFL;
-    for (int x = 0; x < SECTION_WIDTH; x++) {
-        for (int z = 0; z < SECTION_WIDTH; z++) {
-            updateBlock({x, 0 + CHUNK_HEIGHT_MIN, z}, Blocks::Bedrock::toProtocol()); // bedrock
-            if (4 <= (state >> 17) % 5)
-                updateBlock({x, 1 + CHUNK_HEIGHT_MIN, z}, Blocks::Bedrock::toProtocol()); // bedrock
-            state = ((state * 0x530F32EB772C5F11L + 0x89712D3873C4CD04L) * 0x9D89DAE4D6C29D9L + 0x1844E300013E5B56L) & 0xFFFFFFFFFFFFL;
-        }
-    }
-
-    // generate biomes
-    for (int y = 0; y < BIOME_HEIGHT_MAX; y++) {
-        for (int z = 0; z < BIOME_SECTION_WIDTH; z++) {
-            for (int x = 0; x < BIOME_SECTION_WIDTH; x++) {
-                // TODO
-                updateBiome({x, y + BIOME_HEIGHT_MIN, z}, generator.getBiome(x, y, z));
-            }
-        }
+    static auto generator = generation::Overworld(seed);
+    // switch avec le state qui redirige sur la bonne fonction
+    switch (this->_currentState) {
+    case GenerationState::INITIALIZED:
+        _generateRawGeneration(generator);
+        break;
+    case GenerationState::RAW_GENERATION:
+        _generateLakes(generator);
+        break;
+    case GenerationState::LAKES:
+        _generateLocalModifications(generator);
+        break;
+    case GenerationState::LOCAL_MODIFICATIONS:
+        _generateUndergroundStructures(generator);
+        break;
+    case GenerationState::UNDERGROUND_STRUCTURES:
+        _generateSurfaceStructures(generator);
+        break;
+    case GenerationState::SURFACE_STRUCTURES:
+        _generateStrongholds(generator);
+        break;
+    case GenerationState::STRONGHOLDS:
+        _generateUndergroundOres(generator);
+        break;
+    case GenerationState::UNDERGROUND_ORES:
+        _generateUndergroundDecoration(generator);
+        break;
+    case GenerationState::UNDERGROUND_DECORATION:
+        _generateFluidSprings(generator);
+        break;
+    case GenerationState::FLUID_SPRINGS:
+        _generateVegetalDecoration(generator);
+        break;
+    case GenerationState::VEGETAL_DECORATION:
+        _generateTopLayerModification(generator);
+        break;
+    case GenerationState::TOP_LAYER_MODIFICATION:
+        _currentState = GenerationState::READY;
+        break;
+    default:
+        LERROR("Chunk: ", _chunkPos, " Unknown state");
+        break;
     }
 }
 
@@ -319,6 +310,138 @@ void ChunkColumn::_generateFlat(Seed seed)
                         );
                         break;
                     }
+                }
+            }
+        }
+    }
+}
+
+void ChunkColumn::_generateRawGeneration(generation::Generator &generator)
+{
+    _currentState = GenerationState::RAW_GENERATION;
+
+    // generate blocks
+    for (int y = CHUNK_HEIGHT_MIN; y < CHUNK_HEIGHT_MAX; y++) {
+        for (int z = 0; z < SECTION_WIDTH; z++) {
+            for (int x = 0; x < SECTION_WIDTH; x++) {
+                updateBlock({x, y, z}, generator.getBlock(x + this->_chunkPos.x * SECTION_WIDTH, y, z + this->_chunkPos.z * SECTION_WIDTH));
+            }
+        }
+    }
+    // generate bedrock
+    int64_t state = (((this->_chunkPos.x * 0x4F9939F508L + this->_chunkPos.z * 0x1EF1565BD5L) ^ 0x5DEECE66DL) * 0x9D89DAE4D6C29D9L + 0x1844E300013E5B56L) & 0xFFFFFFFFFFFFL;
+    for (int x = 0; x < SECTION_WIDTH; x++) {
+        for (int z = 0; z < SECTION_WIDTH; z++) {
+            updateBlock({x, 0 + CHUNK_HEIGHT_MIN, z}, Blocks::Bedrock::toProtocol()); // bedrock
+            if (4 <= (state >> 17) % 5)
+                updateBlock({x, 1 + CHUNK_HEIGHT_MIN, z}, Blocks::Bedrock::toProtocol()); // bedrock
+            state = ((state * 0x530F32EB772C5F11L + 0x89712D3873C4CD04L) * 0x9D89DAE4D6C29D9L + 0x1844E300013E5B56L) & 0xFFFFFFFFFFFFL;
+        }
+    }
+    // generate biomes
+    for (int y = 0; y < BIOME_HEIGHT_MAX; y++) {
+        for (int z = 0; z < BIOME_SECTION_WIDTH; z++) {
+            for (int x = 0; x < BIOME_SECTION_WIDTH; x++) {
+                // TODO
+                updateBiome({x, y + BIOME_HEIGHT_MIN, z}, generator.getBiome(x, y, z));
+            }
+        }
+    }
+    _generateLakes(generator);
+}
+
+void ChunkColumn::_generateLakes(generation::Generator &generator)
+{
+    _currentState = GenerationState::LAKES;
+    int waterLevel = 86;
+
+    // TODO: improve this to fill caves
+    // generate water
+    for (int z = 0; z < SECTION_WIDTH; z++) {
+        for (int x = 0; x < SECTION_WIDTH; x++) {
+            for (int y = waterLevel; 0 < y; y--) {
+                if (getBlock({x, y, z}) == 1)
+                    break;
+                updateBlock({x, y, z}, Blocks::Water::toProtocol(Blocks::Water::Properties::Level::ZERO));
+            }
+        }
+    }
+    _generateLocalModifications(generator);
+}
+
+void ChunkColumn::_generateLocalModifications(generation::Generator &generator)
+{
+    _currentState = GenerationState::LOCAL_MODIFICATIONS;
+    _generateUndergroundStructures(generator);
+}
+
+void ChunkColumn::_generateUndergroundStructures(generation::Generator &generator)
+{
+    _currentState = GenerationState::UNDERGROUND_STRUCTURES;
+    _generateSurfaceStructures(generator);
+}
+
+void ChunkColumn::_generateSurfaceStructures(generation::Generator &generator)
+{
+    _currentState = GenerationState::SURFACE_STRUCTURES;
+    _generateStrongholds(generator);
+}
+
+void ChunkColumn::_generateStrongholds(generation::Generator &generator)
+{
+    _currentState = GenerationState::STRONGHOLDS;
+    _generateUndergroundOres(generator);
+}
+
+void ChunkColumn::_generateUndergroundOres(generation::Generator &generator)
+{
+    _currentState = GenerationState::UNDERGROUND_ORES;
+    _generateUndergroundDecoration(generator);
+}
+
+void ChunkColumn::_generateUndergroundDecoration(generation::Generator &generator)
+{
+    _currentState = GenerationState::UNDERGROUND_DECORATION;
+    _generateFluidSprings(generator);
+}
+
+void ChunkColumn::_generateFluidSprings(generation::Generator &generator)
+{
+    _currentState = GenerationState::FLUID_SPRINGS;
+    _generateVegetalDecoration(generator);
+}
+
+void ChunkColumn::_generateVegetalDecoration(generation::Generator &generator)
+{
+    _currentState = GenerationState::VEGETAL_DECORATION;
+    _generateTopLayerModification(generator);
+}
+
+void ChunkColumn::_generateTopLayerModification(generation::Generator &generator)
+{
+    _currentState = GenerationState::TOP_LAYER_MODIFICATION;
+
+    // generate grass
+    for (int z = 0; z < SECTION_WIDTH; z++) {
+        for (int x = 0; x < SECTION_WIDTH; x++) {
+            auto lastBlock = 0;
+            for (int y = CHUNK_HEIGHT_MAX - 2; CHUNK_HEIGHT_MIN <= y; y--) {
+                auto block = getBlock({x, y, z});
+                if (block == Blocks::Air::toProtocol())
+                    continue;
+                if (block == Blocks::Water::toProtocol(Blocks::Water::Properties::Level::ZERO)) {
+                    lastBlock = Blocks::Water::toProtocol(Blocks::Water::Properties::Level::ZERO);
+                    continue;
+                }
+                if (block == Blocks::Stone::toProtocol() && lastBlock == Blocks::Water::toProtocol(Blocks::Water::Properties::Level::ZERO)) {
+                    updateBlock({x, y, z}, Blocks::Sand::toProtocol()); // sand
+                    break;
+                }
+                if (block == Blocks::Stone::toProtocol() && lastBlock == Blocks::Air::toProtocol()) {
+                    updateBlock({x, y, z}, Blocks::GrassBlock::toProtocol(Blocks::GrassBlock::Properties::Snowy::FALSE)); // grass
+                    updateBlock({x, y - 1, z}, Blocks::Dirt::toProtocol()); // dirt
+                    updateBlock({x, y - 2, z}, Blocks::Dirt::toProtocol()); // dirt
+                    break;
                 }
             }
         }

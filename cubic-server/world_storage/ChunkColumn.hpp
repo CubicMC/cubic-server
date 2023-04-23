@@ -4,11 +4,16 @@
 #include <array>
 #include <cmath>
 #include <cstdint>
+#include <memory>
+#include <mutex>
 #include <vector>
 
 #include "Palette.hpp"
+#include "generation/generator.hpp"
 #include "protocol/Structures.hpp"
 #include "types.hpp"
+
+class Dimension;
 
 namespace world_storage {
 
@@ -71,9 +76,26 @@ enum class WorldType {
     FLAT
 };
 
+enum class GenerationState {
+    INITIALIZED,
+    RAW_GENERATION,
+    LAKES,
+    LOCAL_MODIFICATIONS,
+    UNDERGROUND_STRUCTURES,
+    SURFACE_STRUCTURES,
+    STRONGHOLDS,
+    UNDERGROUND_ORES,
+    UNDERGROUND_DECORATION,
+    FLUID_SPRINGS,
+    VEGETAL_DECORATION,
+    TOP_LAYER_MODIFICATION,
+    READY,
+};
+
 class ChunkColumn {
 public:
-    ChunkColumn(const Position2D &chunkPos);
+    ChunkColumn(const Position2D &chunkPos, std::shared_ptr<Dimension> dimension);
+    ChunkColumn(const ChunkColumn &);
     ~ChunkColumn();
 
     void updateBlock(Position pos, BlockId id);
@@ -102,6 +124,7 @@ public:
     void setTick(int64_t tick);
     Position2D getChunkPos() const;
     bool isReady() const;
+    GenerationState getState() const;
 
     // void updateEntity(std::size_t id, Entity *e);
     // void updateEntity(u128 uuid, Entity *e);
@@ -126,12 +149,27 @@ private:
     int64_t _tickData;
     Position2D _chunkPos;
     HeightMap _heightMap;
-    bool _ready;
+    GenerationState _currentState;
+    WorldType _worldType;
+    std::mutex _generationLock;
+    std::shared_ptr<Dimension> _dimension;
 
     void _generateOverworld(Seed seed);
     void _generateNether(Seed seed);
     void _generateEnd(Seed seed);
     void _generateFlat(Seed seed);
+
+    void _generateRawGeneration(generation::Generator &generator);
+    void _generateLakes(generation::Generator &generator);
+    void _generateLocalModifications(generation::Generator &generator);
+    void _generateUndergroundStructures(generation::Generator &generator);
+    void _generateSurfaceStructures(generation::Generator &generator);
+    void _generateStrongholds(generation::Generator &generator);
+    void _generateUndergroundOres(generation::Generator &generator);
+    void _generateUndergroundDecoration(generation::Generator &generator);
+    void _generateFluidSprings(generation::Generator &generator);
+    void _generateVegetalDecoration(generation::Generator &generator);
+    void _generateTopLayerModification(generation::Generator &generator);
 };
 
 } // namespace world_storage

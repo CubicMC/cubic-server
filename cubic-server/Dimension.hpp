@@ -18,7 +18,7 @@ class World;
 class Player;
 class Entity;
 
-class Dimension {
+class Dimension : public std::enable_shared_from_this<Dimension> {
 private:
     struct ChunkRequest {
         std::shared_ptr<thread_pool::Task> task;

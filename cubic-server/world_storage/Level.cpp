@@ -12,10 +12,10 @@ ChunkColumn &Level::addChunkColumn(Position2D pos, const ChunkColumn &chunkColum
     return _chunkColumns.at(pos);
 }
 
-ChunkColumn &Level::addChunkColumn(Position2D pos)
+ChunkColumn &Level::addChunkColumn(Position2D pos, std::shared_ptr<Dimension> dimension)
 {
     _chunkColumnsMutex.lock();
-    _chunkColumns.insert({pos, {pos}});
+    _chunkColumns.insert({pos, {pos, dimension}});
     _chunkColumnsMutex.unlock();
     return _chunkColumns.at(pos);
 }

@@ -1,11 +1,14 @@
 #ifndef CUBICSERVER_WORLDSTORAGE_LEVEL_HPP
 #define CUBICSERVER_WORLDSTORAGE_LEVEL_HPP
 
+#include <memory>
 #include <mutex>
 #include <unordered_map>
 
 #include "ChunkColumn.hpp"
 #include "types.hpp"
+
+class Dimension;
 
 constexpr int transformBlockPosToChunkPos(int64_t x) { return x < 0 ? -1 + int64_t((x + 1) / 16) : int64_t(x / 16); }
 
@@ -17,7 +20,7 @@ public:
     ~Level();
 
     ChunkColumn &addChunkColumn(Position2D pos, const ChunkColumn &chunkColumn);
-    ChunkColumn &addChunkColumn(Position2D pos);
+    ChunkColumn &addChunkColumn(Position2D pos, std::shared_ptr<Dimension> dimension);
 
     bool hasChunkColumn(const Position2D &pos) const;
     bool hasChunkColumn(int x, int z) const;
