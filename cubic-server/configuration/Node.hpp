@@ -20,9 +20,9 @@ public:
 
     virtual void load(const std::filesystem::path &path) = 0;
     virtual void save(const std::filesystem::path &path) = 0;
-    virtual ChildNode &at(const std::string &key) = 0;
+    virtual const ChildNode &at(const std::string &key) const = 0;
     template<typename... Args>
-    ChildNode &at(const std::string &key, Args... args) const
+    const ChildNode &at(const std::string &key, Args... args) const
     { return at(key).at(std::forward<Args>(args)...); }
     virtual std::string get() const = 0;
     virtual std::vector<std::string> getArray() const = 0;
@@ -45,7 +45,7 @@ public:
 
     virtual void load(const std::filesystem::path &path) override;
     virtual void save(const std::filesystem::path &path) override;
-    virtual Node &at(const std::string &key) override;
+    virtual const Node &at(const std::string &key) const override;
     virtual std::string get() const override;
     virtual std::vector<std::string> getArray() const override;
     virtual bool has(const std::string &key) const override;

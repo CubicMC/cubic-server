@@ -24,6 +24,8 @@ public:
     Value &valueFromConfig(const std::string &key);
     Value &valueFromArgument(const std::string &argument);
     Value &valueFromEnvironmentVariable(const std::string &variable);
+    template<typename T, typename... Args>
+    Value &possibleValues(const T &value, Args... values);
 
     Value &help(const std::string &help);
     Value &implicit();
@@ -73,7 +75,7 @@ public:
     bool isArray() const;
 
 private:
-    Value(ArgumentsParser &arguments);
+    Value(const std::string &name, ArgumentsParser &arguments);
     void parse(const Node &node);
     void addToParser();
 
@@ -84,8 +86,10 @@ private:
     std::vector<std::string> _defaultValue;
     std::string _help;
 
+    std::string _name;
     ArgumentsParser &_arguments;
 
+    std::vector<std::string> _possibleValue;
     std::vector<std::string> _defaultValueConfig;
     std::string _defaultValueArgument;
     std::string _defaultValueEnvironmentVariable;
@@ -102,6 +106,17 @@ Value &Value::defaultValue(const T &defaultValue)
     return *this;
 }
 
+
+template<typename T, typename... Args>
+Value &Value::possibleValues(const T &value, Args... values)
+{
+    this->_possibleValue.clear();
+    this->_possibleValue.resize(sizeof...(values) + 1);
+    _possibleValue.push_back(_details::Convertor<std::string>()(value));
+    ((_possibleValue.push_back(_details::Convertor<std::string>()(std::forward<Args>(values)))), ...);
+    return *this;
+}
+
 template<typename... T>
 Value &Value::valueFromConfig(const std::string &node, T... keys)
 {
@@ -109,9 +124,6 @@ Value &Value::valueFromConfig(const std::string &node, T... keys)
     for (auto &key : _defaultValueConfig) {
         if (key.empty())
             throw ConfigurationError("Invalid configuration value");
-        std::cout << "key: " << key << " -> " << node;
-        ((std::cout << ", " << std::forward<T>(keys)), ...);
-        std::cout << std::endl;
     }
     return *this;
 }

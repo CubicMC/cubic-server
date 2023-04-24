@@ -1,11 +1,12 @@
 #include "Value.hpp"
 
-configuration::Value::Value(configuration::ArgumentsParser &parser):
+configuration::Value::Value(const std::string &name, configuration::ArgumentsParser &parser):
     _required(false),
     _implicit(false),
     _value(),
     _defaultValue({""}),
     _help(""),
+    _name(name),
     _arguments(parser),
     _defaultValueConfig(),
     _defaultValueArgument(""),
@@ -94,23 +95,21 @@ void configuration::Value::parse(const Node &rootNode)
     }
 
     if (_defaultValueConfig.size() > 0) {
-        configuration::Node node = rootNode;
-        std::cout << (node == rootNode) << std::endl;
+        const auto *node = &rootNode;
         for (auto &key : _defaultValueConfig) {
-            if (node.has(key))
-                node = node.at(key);
-            else {
-                std::cout << "key not found: ";
-                for (auto &k : _defaultValueConfig)
-                    std::cout << k << " ";
-                std::cout << std::endl;
-                return;
-            }
+            if (node->has(key))
+                node = &node->at(key);
+            else
+                break;
         }
-        _value = {node.get()};
-        std::cout << "value(";
-        for (auto &k : _defaultValueConfig)
-            std::cout << k << " ";
-        std::cout << "): " << _value[0] << std::endl;
+        _value = {node->get()};
+    }
+
+    if (_possibleValue.size() <= 0)
+        return;
+
+    for (auto &value : _value) {
+        if (std::find(_possibleValue.begin(), _possibleValue.end(), value) == _possibleValue.end())
+            throw ConfigurationError("Invalid value: " + _name + " value '" + value + "' is not in the possible values list");
     }
 }

@@ -7,9 +7,7 @@ std::string configuration::ArgumentsParser::get(const std::string &argument) con
 { return this->_impl.get<std::string>(argument); }
 
 void configuration::ArgumentsParser::parse(int argc, char const * const *argv)
-{
-    this->_impl.parse_args(argc, argv);
-}
+{ this->_impl.parse_args(argc, argv); }
 
 configuration::ArgumentsParser::Argument &configuration::ArgumentsParser::addArgument(const std::string &argument)
 {

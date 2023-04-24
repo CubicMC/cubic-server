@@ -138,39 +138,19 @@ void configuration::ConfigHandler::save(const std::filesystem::path &path)
 
 configuration::Value &configuration::ConfigHandler::add(const std::string &key)
 {
-    this->_values.emplace(std::make_pair(key, Value(this->_arguments)));
+    this->_values.emplace(std::make_pair(key, Value(key, this->_arguments)));
     return this->_values.at(key);
 }
 
 void configuration::ConfigHandler::parse(int argc, const char * const *argv)
 {
-    std::cout << "parsing config" << std::endl;
-    std::cout << "general: " << this->_config.has("general") << std::endl;
-    std::cout << "network: " << this->_config.has("network") << std::endl;
-    std::cout << "general.max_players: " << this->_config.at("general").has("max_players") << std::endl;
-    std::cout << "general.motd: " << this->_config.at("general").has("motd") << std::endl;
-    std::cout << "general.enforce-whitelist: " << this->_config.at("general").has("enforce-whitelist") << std::endl;
-    std::cout << "network.ip: " << this->_config.at("network").has("ip") << std::endl;
-    std::cout << "network.port: " << this->_config.at("network").has("port") << std::endl;
-
-
     for (auto &[_, value]: this->_values)
         value.addToParser();
 
     this->_arguments.parse(argc, argv);
 
-    for (auto &[_, value]: this->_values) {
-        std::cout << "parsing " << _ <<  std::endl;
+    for (auto &[_, value]: this->_values)
         value.parse(this->_config);
-    }
-    std::cout << "parsing config" << std::endl;
-    std::cout << "general: " << this->_config.has("general") << std::endl;
-    std::cout << "network: " << this->_config.has("network") << std::endl;
-    std::cout << "general.max_players: " << this->_config.at("general").has("max_players") << std::endl;
-    std::cout << "general.motd: " << this->_config.at("general").has("motd") << std::endl;
-    std::cout << "general.enforce-whitelist: " << this->_config.at("general").has("enforce-whitelist") << std::endl;
-    std::cout << "network.ip: " << this->_config.at("network").has("ip") << std::endl;
-    std::cout << "network.port: " << this->_config.at("network").has("port") << std::endl;
     // this->_arguments.parse(argc, argv, envp);
     // this->_config.parse(this->_arguments.get("config"));
 }

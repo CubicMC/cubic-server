@@ -42,6 +42,7 @@ auto initArgs(int argc, char **argv)
         .help("prevents the GUI from displaying")
         .valueFromArgument("--nogui")
         .valueFromEnvironmentVariable("CBSRV_NOGUI")
+        .possibleValues(true, false)
         .implicit();
 
     program.add("ip")
@@ -88,7 +89,8 @@ auto initArgs(int argc, char **argv)
         // .valueFromArgument("--enforce-whitelist")
         .valueFromConfig("general", "enforce-whitelist")
         .valueFromEnvironmentVariable("CBSRV_ENFORCE_WHITELIST")
-        // .defaultValue(false);
+        .possibleValues(true, false)
+        .defaultValue(false)
         .required();
 
     program.parse(argc, argv);
