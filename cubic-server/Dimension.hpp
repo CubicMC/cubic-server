@@ -46,8 +46,7 @@ public:
     virtual void forEachPlayerIf(std::function<void(Player *)> callback, std::function<bool(const Entity *)> predicate);
 
     const world_storage::Level &getLevel() const;
-    world_storage::Level &getEditableLevel();
-    virtual void generateChunk(int x, int z);
+    world_storage::Level &getLevel();
     virtual void blockUpdate(Position position, int32_t id);
     virtual void spawnPlayer(Player *player);
 

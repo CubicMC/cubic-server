@@ -92,7 +92,7 @@ void Dimension::forEachPlayerIf(std::function<void(Player *)> callback, std::fun
 
 const world_storage::Level &Dimension::getLevel() const { return _level; }
 
-world_storage::Level &Dimension::getEditableLevel() { return _level; }
+world_storage::Level &Dimension::getLevel() { return _level; }
 
 void Dimension::generateChunk(int x, int z) { }
 
