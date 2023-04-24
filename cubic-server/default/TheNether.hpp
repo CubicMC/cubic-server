@@ -6,7 +6,7 @@
 class TheNether : public Dimension {
 public:
     TheNether(World *world):
-        Dimension(world)
+        Dimension(world, world_storage::DimensionType::NETHER)
     {
     }
     void tick() override;

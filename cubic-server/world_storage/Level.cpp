@@ -46,4 +46,11 @@ const ChunkColumn &Level::getChunkColumnFromBlockPos(Position2D pos) const
 
 void Level::removeChunkColumn(Position2D pos) { _chunkColumns.erase(pos); }
 
+void Level::clear()
+{
+    _chunkColumnsMutex.lock();
+    _chunkColumns.clear();
+    _chunkColumnsMutex.unlock();
 }
+
+} // namespace world_storage

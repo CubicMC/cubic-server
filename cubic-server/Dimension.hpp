@@ -26,7 +26,7 @@ private:
     };
 
 public:
-    Dimension(World *world);
+    Dimension(World *world, world_storage::DimensionType dimensionType);
     virtual void initialize();
     virtual void tick();
     virtual void stop();
@@ -47,8 +47,18 @@ public:
 
     const world_storage::Level &getLevel() const;
     world_storage::Level &getLevel();
+    virtual void generateChunk(Position2D pos, world_storage::GenerationState goalState = world_storage::GenerationState::READY);
+    virtual void generateChunk(int x, int z, world_storage::GenerationState goalState = world_storage::GenerationState::READY);
     virtual void blockUpdate(Position position, int32_t id);
     virtual void spawnPlayer(Player *player);
+
+    /**
+     * @brief Send the chunk to the players that are loading it
+     *
+     * @param x int
+     * @param z int
+     */
+    virtual void sendChunkToPlayers(int x, int z);
 
     /**
      * @brief Check if a chunk is loaded
@@ -81,6 +91,16 @@ public:
     virtual world_storage::ChunkColumn &getChunk(int x, int z);
 
     /**
+     * @brief Get a loaded chunk
+     *
+     * @throws std::runtime_error if the chunk is not loaded
+     *
+     * @param pos Position2D
+     * @return world_storage::ChunkColumn&
+     */
+    virtual world_storage::ChunkColumn &getChunk(const Position2D &pos);
+
+    /**
      * @brief Loads a chunk from the world save or generates it if it doesn't exist
      *
      * @note This function is thread-safe
@@ -90,6 +110,16 @@ public:
      * @return size_t a job id,
      */
     virtual std::shared_ptr<thread_pool::Task> loadOrGenerateChunk(int x, int z, Player *player);
+
+    /**
+     * @brief Get the dimension type
+     *
+     * @return world_storage::DimensionType
+     */
+    [[nodiscard]] virtual world_storage::DimensionType getDimensionType() const { return _dimensionType; }
+
+    virtual void lockLoadingChunksMutex() { _loadingChunksMutex.lock(); };
+    virtual void unlockLoadingChunksMutex() { _loadingChunksMutex.unlock(); };
 
 protected:
     virtual void _run();
@@ -105,6 +135,7 @@ protected:
     std::mutex _loadingChunksMutex;
     std::unordered_map<Position2D, ChunkRequest> _loadingChunks;
     std::thread _processingThread;
+    world_storage::DimensionType _dimensionType;
 };
 
 #endif // CUBICSERVER_DIMENSION_HPP

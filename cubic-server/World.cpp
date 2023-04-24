@@ -5,13 +5,14 @@
 #include "WorldGroup.hpp"
 #include "logging/Logger.hpp"
 
-World::World(WorldGroup *worldGroup):
+World::World(WorldGroup *worldGroup, world_storage::WorldType worldType):
     _worldGroup(worldGroup),
     _age(0),
     _time(0),
     _renderDistance(8), // TODO: Should be loaded from config
     _timeUpdateClock(20, std::bind(&World::updateTime, this)), // 1 second for time updates
-    _generationPool(4, "WorldGen", thread_pool::Pool::Behavior::Cancel)
+    _generationPool(4, "WorldGen", thread_pool::Pool::Behavior::Cancel),
+    _worldType(worldType)
 {
     _timeUpdateClock.start();
     _seed = -721274728; // TODO: Should be loaded from config or generated
@@ -40,7 +41,7 @@ void World::stop()
     for (auto &[_, dim] : _dimensions)
         dim->stop();
 
-    // TODO: Save the worlds
+    // TODO: Save the world
 }
 
 bool World::isInitialized() const

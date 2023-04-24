@@ -9,6 +9,7 @@
 #include "TickClock.hpp"
 #include "thread_pool/Pool.hpp"
 #include "types.hpp"
+#include "world_storage/ChunkColumn.hpp"
 #include "world_storage/LevelData.hpp"
 
 class Chat;
@@ -21,7 +22,7 @@ constexpr int NB_SPAWN_CHUNKS = 19;
 
 class World {
 public:
-    World(WorldGroup *worldGroup);
+    World(WorldGroup *worldGroup, world_storage::WorldType worldType);
 
     virtual void tick();
     virtual void initialize();
@@ -65,6 +66,8 @@ public:
     */
     virtual void setTime(int time);
 
+    [[nodiscard]] virtual world_storage::WorldType getWorldType() const { return _worldType; }
+
 protected:
     std::shared_ptr<Chat> _chat;
     WorldGroup *_worldGroup;
@@ -76,6 +79,7 @@ protected:
     TickClock _timeUpdateClock;
     Seed _seed;
     thread_pool::Pool _generationPool;
+    world_storage::WorldType _worldType;
 };
 
 #endif // CUBICSERVER_WORLD_HPP

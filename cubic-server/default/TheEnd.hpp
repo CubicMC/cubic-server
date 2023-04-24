@@ -6,7 +6,7 @@
 class TheEnd : public Dimension {
 public:
     TheEnd(World *world):
-        Dimension(world)
+        Dimension(world, world_storage::DimensionType::END)
     {
     }
     void tick() override;

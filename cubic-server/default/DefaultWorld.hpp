@@ -2,10 +2,11 @@
 #define CUBICSERVER_DEFAULT_DEFAULTWORLD_HPP
 
 #include "../World.hpp"
+#include "world_storage/ChunkColumn.hpp"
 
 class DefaultWorld : public World {
 public:
-    DefaultWorld(WorldGroup *worldGroup);
+    DefaultWorld(WorldGroup *worldGroup, world_storage::WorldType worldType);
     void tick() override;
     void initialize() override;
     void stop() override;

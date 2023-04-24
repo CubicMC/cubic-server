@@ -70,14 +70,22 @@ struct HeightMap {
 };
 
 enum class WorldType {
-    NORMAL,
+    DEFAULT = 0,
+    SUPERFLAT,
+    LARGEBIOME,
+    AMPLIFIED,
+    SINGLEBIOME,
+    DEBUG
+};
+
+enum class DimensionType {
+    OVERWORLD = 0,
     NETHER,
-    END,
-    FLAT
+    END
 };
 
 enum class GenerationState {
-    INITIALIZED,
+    INITIALIZED = 0,
     RAW_GENERATION,
     LAKES,
     LOCAL_MODIFICATIONS,
@@ -138,26 +146,13 @@ public:
     void updateHeightMap(void);
     const HeightMap &getHeightMap() const;
 
-    void generate(WorldType worldType, Seed seed);
+    void generate(GenerationState goalState = GenerationState::READY);
 
 private:
-    std::array<BlockId, BLOCKS_PER_CHUNK> _blocks;
-    std::array<uint8_t, BLOCKS_PER_CHUNK> _skyLights;
-    std::array<uint8_t, BLOCKS_PER_CHUNK> _blockLights;
-    std::array<uint8_t, BIOME_PER_CHUNK> _biomes;
-    std::vector<protocol::BlockEntity *> _blockEntities;
-    int64_t _tickData;
-    Position2D _chunkPos;
-    HeightMap _heightMap;
-    GenerationState _currentState;
-    WorldType _worldType;
-    std::mutex _generationLock;
-    std::shared_ptr<Dimension> _dimension;
-
-    void _generateOverworld(Seed seed);
-    void _generateNether(Seed seed);
-    void _generateEnd(Seed seed);
-    void _generateFlat(Seed seed);
+    void _generateOverworld(GenerationState goalState);
+    void _generateNether(GenerationState goalState);
+    void _generateEnd(GenerationState goalState);
+    void _generateFlat(GenerationState goalState);
 
     void _generateRawGeneration(generation::Generator &generator);
     void _generateLakes(generation::Generator &generator);
@@ -170,6 +165,19 @@ private:
     void _generateFluidSprings(generation::Generator &generator);
     void _generateVegetalDecoration(generation::Generator &generator);
     void _generateTopLayerModification(generation::Generator &generator);
+
+private:
+    std::array<BlockId, BLOCKS_PER_CHUNK> _blocks;
+    std::array<uint8_t, BLOCKS_PER_CHUNK> _skyLights;
+    std::array<uint8_t, BLOCKS_PER_CHUNK> _blockLights;
+    std::array<uint8_t, BIOME_PER_CHUNK> _biomes;
+    std::vector<protocol::BlockEntity *> _blockEntities;
+    int64_t _tickData;
+    Position2D _chunkPos;
+    HeightMap _heightMap;
+    GenerationState _currentState;
+    std::mutex _generationLock;
+    std::shared_ptr<Dimension> _dimension;
 };
 
 } // namespace world_storage

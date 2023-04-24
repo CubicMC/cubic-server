@@ -39,6 +39,11 @@ public:
 
     void removeChunkColumn(Position2D pos);
 
+    const std::unordered_map<Position2D, ChunkColumn> &getChunkColumns() const { return _chunkColumns; }
+    std::unordered_map<Position2D, ChunkColumn> &getChunkColumns() { return _chunkColumns; }
+
+    void clear();
+
 private:
     std::mutex _chunkColumnsMutex;
     std::unordered_map<Position2D, ChunkColumn> _chunkColumns;

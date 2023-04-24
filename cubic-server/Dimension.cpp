@@ -4,11 +4,13 @@
 #include "World.hpp"
 #include "logging/Logger.hpp"
 
-Dimension::Dimension(World *world):
+Dimension::Dimension(World *world, world_storage::DimensionType dimensionType):
     _world(world),
     _dimensionLock(std::counting_semaphore<1000>(0)),
     _isInitialized(false),
-    _isRunning(false)
+    _isRunning(false),
+    _dimensionType(dimensionType)
+
 {
 }
 
@@ -26,6 +28,9 @@ void Dimension::stop()
 
     if (_processingThread.joinable())
         _processingThread.join();
+    // TODO: Save the dimension
+
+    _level.clear();
 }
 
 void Dimension::initialize()
@@ -94,7 +99,9 @@ const world_storage::Level &Dimension::getLevel() const { return _level; }
 
 world_storage::Level &Dimension::getLevel() { return _level; }
 
-void Dimension::generateChunk(int x, int z) { }
+void Dimension::generateChunk(Position2D pos, world_storage::GenerationState goalState) { generateChunk(pos.x, pos.z, goalState); }
+
+void Dimension::generateChunk(int x, int z, world_storage::GenerationState goalState) { }
 
 std::shared_ptr<thread_pool::Task> Dimension::loadOrGenerateChunk(int x, int z, Player *player)
 {
@@ -111,20 +118,10 @@ std::shared_ptr<thread_pool::Task> Dimension::loadOrGenerateChunk(int x, int z, 
         // TODO: load chunk from disk if it exists
         this->generateChunk(x, z);
 
-        // This send the chunk to the players that are loading it
-        this->_loadingChunksMutex.lock();
-        for (auto &entity : this->_entities) {
-            // pls don't kill me
-            // this is a hack to check if the client is still connected
-            // And the best part ? I don't even know if it works
-            if (std::find_if(this->_loadingChunks[{x, z}].players.begin(), this->_loadingChunks[{x, z}].players.end(), [entity](const Player *player) {
-                    return player == entity;
-                }) == this->_loadingChunks[{x, z}].players.end())
-                continue;
-            reinterpret_cast<Player *>(entity)->sendChunkAndLightUpdate(this->_level.getChunkColumn(x, z));
-        }
-        this->_loadingChunks.erase({x, z});
-        this->_loadingChunksMutex.unlock();
+        if (!this->hasChunkLoaded(x, z))
+            return;
+
+        this->sendChunkToPlayers(x, z);
     });
 
     auto request = ChunkRequest {task, {player}};
@@ -183,6 +180,8 @@ void Dimension::removePlayerFromLoadingChunk(const Position2D &pos, Player *play
 
 world_storage::ChunkColumn &Dimension::getChunk(int x, int z) { return this->_level.getChunkColumn(x, z); }
 
+world_storage::ChunkColumn &Dimension::getChunk(const Position2D &pos) { return this->_level.getChunkColumn(pos); }
+
 void Dimension::spawnPlayer(Player *current)
 {
     const std::vector<Player *> playerList = this->getPlayerList();
@@ -223,4 +222,21 @@ void Dimension::blockUpdate(Position position, int32_t id)
     this->forEachPlayer([&position, &id](Player *player) {
         player->sendBlockUpdate({position, id});
     });
+}
+
+void Dimension::sendChunkToPlayers(int x, int z)
+{
+    this->_loadingChunksMutex.lock();
+    for (auto &entity : this->_entities) {
+        // pls don't kill me
+        // this is a hack to check if the client is still connected
+        // And the best part ? I don't even know if it works
+        if (std::find_if(this->_loadingChunks[{x, z}].players.begin(), this->_loadingChunks[{x, z}].players.end(), [entity](const Player *player) {
+                return player == entity;
+            }) == this->_loadingChunks[{x, z}].players.end())
+            continue;
+        reinterpret_cast<Player *>(entity)->sendChunkAndLightUpdate(this->_level.getChunkColumn(x, z));
+    }
+    this->_loadingChunks.erase({x, z});
+    this->_loadingChunksMutex.unlock();
 }
