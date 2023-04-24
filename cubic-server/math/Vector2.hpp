@@ -1,10 +1,11 @@
-#ifndef CUBICSERVER_VECTOR2_H
-#define CUBICSERVER_VECTOR2_H
+#ifndef CUBICSERVER_MATH_VECTOR2_HPP
+#define CUBICSERVER_MATH_VECTOR2_HPP
 
 #include <cmath>
 #include <iostream>
 
-template <typename T> class Vector2 {
+template<typename T>
+class Vector2 {
 public:
     Vector2(T nx, T ny) noexcept:
         x(nx),
@@ -32,7 +33,7 @@ public:
         this->y /= mag;
     }
 
-    T dot_product(const Vector2 &other) noexcept { return this->x * other.x + this->y * other.y; }
+    T dotProduct(const Vector2 &other) noexcept { return this->x * other.x + this->y * other.y; }
 
     Vector2 operator+(const Vector2 &other) noexcept { return Vector2<T>(other.x + this->x, other.y + this->y); }
 
@@ -162,11 +163,12 @@ public:
     T y;
 };
 
-template <typename T> std::ostream &operator<<(std::ostream &o, const Vector2<T> &v)
+template<typename T>
+std::ostream &operator<<(std::ostream &o, const Vector2<T> &v)
 {
     o << "x : " << v.x << " | "
       << "y : " << v.y;
     return o;
 }
 
-#endif // CUBICSERVER_VECTOR2_H
+#endif // CUBICSERVER_MATH_VECTOR2_HPP

@@ -1,7 +1,14 @@
 #include "DumpChunk.hpp"
+
+#include "Dimension.hpp"
+#include "Player.hpp"
 #include "Server.hpp"
 #include "World.hpp"
 #include "world_storage/Palette.hpp"
+#include "WorldGroup.hpp"
+#include "logging/Logger.hpp"
+#include "protocol/serialization/add.hpp"
+#include "protocol/serialization/popPrimaryType.hpp"
 
 #include <iostream>
 

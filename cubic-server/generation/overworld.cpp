@@ -1,18 +1,11 @@
-#include <PerlinNoise.hpp>
-
-#include "generator.hpp"
-#include "logging/Logger.hpp"
 #include "overworld.hpp"
-#include "protocol/Structures.hpp"
-#include "types.hpp"
-#include "world_storage/ChunkColumn.hpp"
 
 generation::Overworld::Overworld(Seed seed):
     Generator(seed)
 {
 }
 
-BlockId generation::Overworld::getBlock(position_type x, position_type y, position_type z)
+BlockId generation::Overworld::getBlock(positionType x, positionType y, positionType z)
 {
     //! OLD
     // double test = y - world_storage::CHUNK_HEIGHT_MIN;
@@ -84,7 +77,7 @@ BlockId generation::Overworld::getBlock(position_type x, position_type y, positi
 
 BlockId generation::Overworld::getBlock(const Position &pos) { return getBlock(pos.x, pos.y, pos.z); }
 
-BiomeId generation::Overworld::getBiome(position_type x, position_type y, position_type z)
+BiomeId generation::Overworld::getBiome(positionType x, positionType y, positionType z)
 {
     // TODO: Implement lol
     return getNoise(x, y, z).noise2D.weirdness > 0.0 ? 0 : 1;

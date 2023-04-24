@@ -1,9 +1,11 @@
 #include <fstream>
-#include <iostream>
 
 #include "Permissions.hpp"
+
+#include "Player.hpp"
 #include "Server.hpp"
 #include "World.hpp"
+#include "WorldGroup.hpp"
 
 Permissions::Permissions(const std::string &filename):
     _operatorFileName(filename)

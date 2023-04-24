@@ -1,11 +1,12 @@
 #ifndef CUBICSERVER_ENTITY_HPP
 #define CUBICSERVER_ENTITY_HPP
 
-#include "Dimension.hpp"
 #include "math/Vector2.hpp"
 #include "math/Vector3.hpp"
 #include <memory>
 
+class World;
+class WorldGroup;
 class Dimension;
 
 class Entity {
@@ -32,13 +33,15 @@ public:
     virtual ~Entity() {};
     virtual void tick() = 0;
     virtual void setDimension(std::shared_ptr<Dimension> dim);
-    virtual void setPosition(const Vector3<double> &pos);
-    virtual void setPosition(double x, double y, double z);
+    virtual void setPosition(const Vector3<double> &pos, bool on_ground);
+    virtual void setPosition(double x, double y, double z, bool on_ground);
     virtual void forceSetPosition(const Vector3<double> &pos);
     virtual void forceSetPosition(double x, double y, double z);
     virtual void setRotation(const Vector2<uint8_t> &rot);
     virtual void setRotation(uint8_t yaw, uint8_t pitch);
     [[nodiscard]] virtual std::shared_ptr<Dimension> getDimension() const;
+    [[nodiscard]] virtual World *getWorld() const;
+    [[nodiscard]] virtual WorldGroup *getWorldGroup() const;
     [[nodiscard]] virtual int32_t getId() const;
     [[nodiscard]] virtual Vector3<double> &getPosition();
     [[nodiscard]] virtual const Vector3<double> &getPosition() const;

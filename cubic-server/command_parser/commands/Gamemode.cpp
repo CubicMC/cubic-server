@@ -2,6 +2,7 @@
 #include "Server.hpp"
 #include "logging/Logger.hpp"
 #include "protocol/ClientPackets.hpp"
+#include "Player.hpp"
 
 void command_parser::Gamemode::autocomplete(std::vector<std::string> &args, Player *invoker) const
 {
@@ -34,7 +35,7 @@ void command_parser::Gamemode::execute(std::vector<std::string> &args, Player *i
     } else if (args[0] == "spectator") {
         invoker->sendGameEvent({protocol::GameEvent::Event::ChangeGamemode, 3});
         invoker->sendPlayerAbilities(
-            {(uint8_t) protocol::PlayerAbilitiesFlags::Invulnerable | (uint8_t) protocol::PlayerAbilitiesFlags::Flying | (uint8_t) protocol::PlayerAbilitiesFlags::AllowFlying, 1.0,
+            {(uint8_t) protocol::PlayerAbilitiesClient::Flags::Invulnerable | (uint8_t) protocol::PlayerAbilitiesClient::Flags::Flying | (uint8_t) protocol::PlayerAbilitiesClient::Flags::AllowFlying, 1.0,
              0.1}
         );
         LINFO("Gamemode changed to spectator for ", invoker->getUsername());

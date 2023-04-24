@@ -1,9 +1,8 @@
 #include "Dimension.hpp"
+
 #include "Player.hpp"
-#include "Server.hpp"
 #include "World.hpp"
 #include "logging/Logger.hpp"
-#include "world_storage/ChunkColumn.hpp"
 
 Dimension::Dimension(World *world):
     _world(world),
@@ -149,16 +148,16 @@ void Dimension::_run()
 
 std::vector<Player *> Dimension::getPlayerList() const
 {
-    std::vector<Player *> player_list;
+    std::vector<Player *> playerList;
 
     for (auto &entity : this->_world->getEntities()) {
         auto player = dynamic_cast<Player *>(entity);
 
         if (player != nullptr && player->getDimension().get() == this) {
-            player_list.push_back(player);
+            playerList.push_back(player);
         }
     }
-    return player_list;
+    return playerList;
 }
 
 bool Dimension::hasChunkLoaded(int x, int z) const { return this->_level.hasChunkColumn(x, z); }
@@ -186,9 +185,9 @@ world_storage::ChunkColumn *Dimension::getChunk(int x, int z) { return this->_le
 
 void Dimension::spawnPlayer(Player *current)
 {
-    const std::vector<Player *> player_list = this->getPlayerList();
+    const std::vector<Player *> playerList = this->getPlayerList();
 
-    for (auto &player : player_list) {
+    for (auto &player : playerList) {
         LDEBUG("player is : ", player->getUsername());
         LDEBUG("current is : ", current->getUsername());
         // if (current->getPos().distance(player->getPos()) <= 12) {

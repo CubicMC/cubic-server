@@ -1,5 +1,5 @@
-#ifndef SEED_HPP_
-#define SEED_HPP_
+#ifndef CUBICSERVER_COMMANDPARSER_COMMANDS_SEED_HPP
+#define CUBICSERVER_COMMANDPARSER_COMMANDS_SEED_HPP
 
 #include "CommandBase.hpp"
 
@@ -16,4 +16,4 @@ struct Seed : public CommandBase {
 };
 }
 
-#endif /* !SEED_HPP_ */
+#endif // CUBICSERVER_COMMANDPARSER_COMMANDS_SEED_HPP

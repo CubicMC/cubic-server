@@ -25,7 +25,7 @@
         auto __tmp = root->getValue(src);                     \
         if (!__tmp || __tmp->getType() != nbt::TagType::type) \
             throw std::runtime_error("");                     \
-        dest->dst = ((nbt::type *) __tmp)->get_value();       \
+        dest->dst = ((nbt::type *) __tmp)->getValue();       \
     } while (0)
 
 #define GET_VALUE_TO(type, dst, src, root, dstroot)           \
@@ -33,7 +33,7 @@
         auto __tmp = root->getValue(src);                     \
         if (!__tmp || __tmp->getType() != nbt::TagType::type) \
             throw std::runtime_error("");                     \
-        dstroot.dst = ((nbt::type *) __tmp)->get_value();     \
+        dstroot.dst = ((nbt::type *) __tmp)->getValue();     \
     } while (0)
 
 template <typename T, nbt::TagType Tag> static inline const T *getConstElement(const nbt::Compound *root, const std::string &name)
@@ -188,9 +188,9 @@ void Persistence::loadPlayerData(u128 uuid, PlayerData *dest)
         for (auto i : __tmpList->getValues())
             if (i->getType() != nbt::TagType::Double)
                 throw std::runtime_error(""); // TODO(huntears): Better error message
-        dest->motion.x = ((nbt::Double *) __tmpList->getValues().at(0))->get_value();
-        dest->motion.y = ((nbt::Double *) __tmpList->getValues().at(1))->get_value();
-        dest->motion.z = ((nbt::Double *) __tmpList->getValues().at(2))->get_value();
+        dest->motion.x = ((nbt::Double *) __tmpList->getValues().at(0))->getValue();
+        dest->motion.y = ((nbt::Double *) __tmpList->getValues().at(1))->getValue();
+        dest->motion.z = ((nbt::Double *) __tmpList->getValues().at(2))->getValue();
     }
     GET_VALUE(Byte, onGround, "OnGround", root);
     GET_VALUE(Int, portalCooldown, "PortalCooldown", root);
@@ -201,9 +201,9 @@ void Persistence::loadPlayerData(u128 uuid, PlayerData *dest)
         for (auto i : __tmpList->getValues())
             if (i->getType() != nbt::TagType::Double)
                 throw std::runtime_error(""); // TODO(huntears): Better error message
-        dest->pos.x = ((nbt::Double *) __tmpList->getValues().at(0))->get_value();
-        dest->pos.y = ((nbt::Double *) __tmpList->getValues().at(1))->get_value();
-        dest->pos.z = ((nbt::Double *) __tmpList->getValues().at(2))->get_value();
+        dest->pos.x = ((nbt::Double *) __tmpList->getValues().at(0))->getValue();
+        dest->pos.y = ((nbt::Double *) __tmpList->getValues().at(1))->getValue();
+        dest->pos.z = ((nbt::Double *) __tmpList->getValues().at(2))->getValue();
     }
     {
         auto __tmpList = getConstElement<nbt::List, nbt::TagType::List>(root, "Rotation");
@@ -212,8 +212,8 @@ void Persistence::loadPlayerData(u128 uuid, PlayerData *dest)
         for (auto i : __tmpList->getValues())
             if (i->getType() != nbt::TagType::Float)
                 throw std::runtime_error(""); // TODO(huntears): Better error message
-        dest->rotation.yaw = ((nbt::Float *) __tmpList->getValues().at(0))->get_value();
-        dest->rotation.pitch = ((nbt::Float *) __tmpList->getValues().at(1))->get_value();
+        dest->rotation.yaw = ((nbt::Float *) __tmpList->getValues().at(0))->getValue();
+        dest->rotation.pitch = ((nbt::Float *) __tmpList->getValues().at(1))->getValue();
     }
     GET_VALUE(Int, score, "Score", root);
     GET_VALUE(Int, selectedItemSlot, "SelectedItemSlot", root);
@@ -380,7 +380,7 @@ void Persistence::loadRegion(int x, int z)
 
             auto data = nbt::parseCompound(at, end);
 
-            if (getConstElement<nbt::String, nbt::TagType::String>(data, "Status")->get_value() != "full")
+            if (getConstElement<nbt::String, nbt::TagType::String>(data, "Status")->getValue() != "full")
                 continue; // TODO(huntears): Handle non complete chunk later somehow
 
             // std::cout << std::hex << data << std::endl;
@@ -406,13 +406,13 @@ void Persistence::loadRegion(int x, int z)
                         throw std::runtime_error("");
                     const nbt::Compound *pal = (const nbt::Compound *) ii;
 
-                    Blocks::Block __tmpBlock = {getConstElement<nbt::String, nbt::TagType::String>(pal, "Name")->get_value(), {}};
+                    Blocks::Block __tmpBlock = {getConstElement<nbt::String, nbt::TagType::String>(pal, "Name")->getValue(), {}};
 
                     if (pal->hasValue("Properties")) {
                         for (const auto iii : getConstElement<nbt::Compound, nbt::TagType::Compound>(pal, "Properties")->getValues()) {
                             if (iii->getType() != nbt::TagType::String)
                                 throw std::runtime_error("");
-                            __tmpBlock.properties.push_back({iii->getName(), ((const nbt::String *) iii)->get_value()});
+                            __tmpBlock.properties.push_back({iii->getName(), ((const nbt::String *) iii)->getValue()});
                         }
                     }
 
@@ -454,9 +454,9 @@ void Persistence::loadRegion(int x, int z)
                             auto sectionY = getConstElement<nbt::Byte, nbt::TagType::Byte>(section, "Y");
 
                             if (paletteMapping.size() >= 1)
-                                chunk->_blocks.at(calculateBlockIdx({lx, ly + 16 * sectionY->get_value(), lz})) = paletteMapping.getGlobalId(data);
+                                chunk->_blocks.at(calculateBlockIdx({lx, ly + 16 * sectionY->getValue(), lz})) = paletteMapping.getGlobalId(data);
                             else
-                                chunk->_blocks.at(calculateBlockIdx({lx, ly + 16 * sectionY->get_value(), lz})) = data;
+                                chunk->_blocks.at(calculateBlockIdx({lx, ly + 16 * sectionY->getValue(), lz})) = data;
                         }
                     }
                 }

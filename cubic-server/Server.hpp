@@ -1,5 +1,5 @@
-#ifndef F43D56DD_C750_470F_A7C9_27CE21D37FC3
-#define F43D56DD_C750_470F_A7C9_27CE21D37FC3
+#ifndef CUBICSERVER_SERVER_HPP
+#define CUBICSERVER_SERVER_HPP
 
 #include <arpa/inet.h>
 #include <cstdint>
@@ -15,30 +15,25 @@
 
 #include "WorldGroup.hpp"
 #include "configuration/ConfigHandler.hpp"
-#include "logging/Logger.hpp"
 #include "whitelist/Whitelist.hpp"
 
 #include "allCommands.hpp"
-#include "command_parser/commands/CommandBase.hpp"
 
 #include "protocol_id_converter/blockStates.hpp"
 #include "protocol_id_converter/itemConverter.hpp"
 
 #include "Permissions.hpp"
 
-#ifndef MC_VERSION
-#define MC_VERSION "1.19.3"
-#endif
+constexpr char MC_VERSION[] = "1.19.3";
 
-#ifndef MC_PROTOCOL
-#define MC_PROTOCOL 761
-#endif
+constexpr uint16_t MC_PROTOCOL = 761;
 
-#ifndef MS_PER_TICK
-#define MS_PER_TICK 50
-#endif
+constexpr uint16_t MS_PER_TICK = 50;
 
 #define GLOBAL_PALETTE Server::getInstance()->getGlobalPalette()
+
+class Client;
+class WorldGroup;
 
 class Server {
 public:
@@ -120,11 +115,11 @@ private:
         new command_parser::Deop,
         new command_parser::Reload,
         new command_parser::Gamemode,
+        new command_parser::Time,
     };
     // clang-format on
-public:
     Blocks::GlobalPalette _globalPalette;
     Items::ItemConverter _itemConverter;
 };
 
-#endif /* F43D56DD_C750_470F_A7C9_27CE21D37FC3 */
+#endif // CUBICSERVER_SERVER_HPP

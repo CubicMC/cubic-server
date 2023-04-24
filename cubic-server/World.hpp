@@ -1,22 +1,21 @@
 #ifndef CUBICSERVER_WORLD_HPP
 #define CUBICSERVER_WORLD_HPP
 
-#include <algorithm>
 #include <functional>
 #include <memory>
 #include <thread>
 #include <vector>
 
-#include "Chat.hpp"
-#include "Entity.hpp"
 #include "TickClock.hpp"
-#include "logging/Logger.hpp"
 #include "thread_pool/Pool.hpp"
 #include "types.hpp"
 #include "world_storage/LevelData.hpp"
 
-class WorldGroup;
+class Chat;
 class Dimension;
+class Entity;
+class Player;
+class WorldGroup;
 
 constexpr int NB_SPAWN_CHUNKS = 19;
 
@@ -51,6 +50,20 @@ public:
 
     virtual Seed getSeed() const;
     virtual uint8_t getRenderDistance() const;
+    virtual long getTime() const;
+    virtual long getAge() const;
+
+    /*
+    **  Used in the /time command.
+    **  Adds time to the current world time
+    */
+    virtual int addTime(int time);
+
+    /*
+    **  Used in the /time command.
+    **  Sets the current world time to the given time
+    */
+    virtual void setTime(int time);
 
 protected:
     std::shared_ptr<Chat> _chat;

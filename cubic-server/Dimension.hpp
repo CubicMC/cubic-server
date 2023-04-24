@@ -3,14 +3,12 @@
 
 #include <atomic>
 #include <functional>
+#include <memory>
 #include <semaphore>
 #include <thread>
 #include <vector>
 
-#include "Entity.hpp"
-#include "logging/Logger.hpp"
-#include "math/Vector3.hpp"
-#include "thread_pool/Pool.hpp"
+#include "thread_pool/Task.hpp"
 #include "world_storage/ChunkColumn.hpp"
 #include "world_storage/Level.hpp"
 

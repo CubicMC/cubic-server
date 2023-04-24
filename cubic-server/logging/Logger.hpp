@@ -1,13 +1,12 @@
-#ifndef LOGGER_HPP_
-#define LOGGER_HPP_
+#ifndef CUBICSERVER_LOGGING_LOGGER_HPP
+#define CUBICSERVER_LOGGING_LOGGER_HPP
 
-#include <chrono>
 #include <fstream>
 #include <mutex>
 #include <queue>
+#include <sstream>
 #include <string>
 #include <unordered_map>
-#include <utility>
 
 #include "FileAndFolderHandler.hpp"
 
@@ -30,11 +29,11 @@
         _LOG2(__VA_ARGS__), _LOG1(__VA_ARGS__), _LOG0(__VA_ARGS__),                                                                                                  \
     )
 
-#define _LOG(type, ...)                                      \
-    do {                                                     \
-        std::stringstream __ss;                              \
-        __ss << _LOGN(__VA_ARGS__);                          \
-        ::logging::Logger::get_instance()->type(__ss.str()); \
+#define _LOG(type, ...)                                     \
+    do {                                                    \
+        std::stringstream __ss;                             \
+        __ss << _LOGN(__VA_ARGS__);                         \
+        ::logging::Logger::getInstance()->type(__ss.str()); \
     } while (0)
 
 #define LDEBUG(...) _LOG(debug, __VA_ARGS__)
@@ -57,10 +56,10 @@ class LogMessage {
 public:
     LogMessage(LogLevel level, std::string message);
 
-    const LogLevel &get_level() const;
-    const std::string &get_message() const;
-    const std::time_t &get_time() const;
-    const int get_millis() const;
+    const LogLevel &getLevel() const;
+    const std::string &getMessage() const;
+    const std::time_t &getTime() const;
+    const int getMillis() const;
 
 private:
     const LogLevel _level;
@@ -77,14 +76,14 @@ std::ostream &operator<<(std::ostream &os, const LogMessage &log);
  *
  * @return std::string the string corresponding to the LogLevel
  */
-const char *level_to_string(const LogLevel &level);
+const char *levelToString(const LogLevel &level);
 
 /**
  * @brief Handles logging in a file.
  */
 class Logger {
 public:
-    static Logger *get_instance();
+    static Logger *getInstance();
 
     ~Logger();
     ;
@@ -95,16 +94,16 @@ public:
     void error(const std::string &msg);
     void fatal(const std::string &msg);
 
-    void set_display_specification_level_in_file(LogLevel level);
-    void unset_display_specification_level_in_file(LogLevel level);
-    const std::unordered_map<LogLevel, std::string> &get_display_specification_level_in_file() const;
-    void set_display_specification_level_in_console(LogLevel level);
-    void unset_display_specification_level_in_console(LogLevel level);
-    const std::unordered_map<LogLevel, std::string> &get_display_specification_level_in_console() const;
+    void setDisplaySpecificationLevelInFile(LogLevel level);
+    void unsetDisplaySpecificationLevelInFile(LogLevel level);
+    const std::unordered_map<LogLevel, std::string> &getDisplaySpecificationLevelInFile() const;
+    void setDisplaySpecificationLevelInConsole(LogLevel level);
+    void unsetDisplaySpecificationLevelInConsole(LogLevel level);
+    const std::unordered_map<LogLevel, std::string> &getDisplaySpecificationLevelInConsole() const;
 
-    const std::queue<LogMessage> &get_logs() const;
-    const int get_log_buffer_size() const;
-    void set_log_buffer_size(int size);
+    const std::queue<LogMessage> &getLogs() const;
+    const int getLogBufferSize() const;
+    void setLogBufferSize(int size);
 
 private:
     // Private constructor to prevent multiple instances
@@ -114,28 +113,28 @@ private:
     Logger(Logger &&) = delete;
     Logger &operator=(Logger &&) = delete;
 
-    std::string get_file_path() const;
+    std::string getFilePath() const;
 
     // Stream to the current log file
-    std::fstream _file_stream;
+    std::fstream _fileStream;
 
     // Handler for files and folders
-    FileAndFolderHandler _file_and_folder_handler;
+    FileAndFolderHandler _fileAndFolderHandler;
 
     // Map of LogLevel and his associated string to display in the log file
-    std::unordered_map<LogLevel, std::string> _specification_level_in_file;
+    std::unordered_map<LogLevel, std::string> _specificationLevelInFile;
 
     // Map of LogLevel and his associated string to display in the console
-    std::unordered_map<LogLevel, std::string> _specification_level_in_console;
+    std::unordered_map<LogLevel, std::string> _specificationLevelInConsole;
 
     void _log(LogLevel level, const std::string &message);
 
     // Buffer to store logs before the file is opened
-    std::queue<LogMessage> _log_buffer;
-    int _buffer_size;
+    std::queue<LogMessage> _logBuffer;
+    int _bufferSize;
 
     std::mutex _loggerMutex;
 };
 }
 
-#endif /* !LOGGER_HPP_ */
+#endif // CUBICSERVER_LOGGING_LOGGER_HPP

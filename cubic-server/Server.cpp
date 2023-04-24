@@ -1,26 +1,15 @@
-#include <algorithm>
-#include <cerrno>
-#include <chrono>
-#include <cstring>
-#include <exception>
-#include <fstream>
-#include <iostream>
+#include <curl/curl.h>
 #include <netdb.h>
 #include <poll.h>
 #include <sys/socket.h>
-
-#include <curl/curl.h>
-
-#include <nlohmann/json.hpp>
 
 #include <CRC.h>
 
 #include "Server.hpp"
 
-#include "protocol/ClientPackets.hpp"
-#include "protocol/ServerPackets.hpp"
-#include "protocol/typeSerialization.hpp"
-
+#include "Chat.hpp"
+#include "Client.hpp"
+#include "Player.hpp"
 #include "WorldGroup.hpp"
 #include "default/DefaultWorldGroup.hpp"
 #include "logging/Logger.hpp"
@@ -115,32 +104,32 @@ void Server::forEachWorldGroupIf(std::function<void(WorldGroup &)> callback, std
 
 void Server::_acceptLoop()
 {
-    struct pollfd poll_set[1];
+    struct pollfd pollSet[1];
 
-    poll_set[0].fd = _sockfd;
-    poll_set[0].events = POLLIN;
+    pollSet[0].fd = _sockfd;
+    pollSet[0].events = POLLIN;
     while (this->_running) {
-        poll(poll_set, 1, 50);
-        if (poll_set[0].revents & POLLIN) {
-            struct sockaddr_in6 client_addr { };
-            socklen_t client_addr_size = sizeof(client_addr);
-            int client_fd = accept(_sockfd, reinterpret_cast<struct sockaddr *>(&client_addr), &client_addr_size);
-            if (client_fd == -1) {
+        poll(pollSet, 1, 50);
+        if (pollSet[0].revents & POLLIN) {
+            struct sockaddr_in6 clientAddr { };
+            socklen_t clientAddrSize = sizeof(clientAddr);
+            int clientFd = accept(_sockfd, reinterpret_cast<struct sockaddr *>(&clientAddr), &clientAddrSize);
+            if (clientFd == -1) {
                 throw std::runtime_error(strerror(errno));
             }
             // Add accepted client to the vector of clients
-            // auto cli = std::make_shared<Client>(client_fd, client_addr);
+            // auto cli = std::make_shared<Client>(clientFd, clientAddr);
             // _clients.push_back(cli);
-            _clients.push_back(std::make_shared<Client>(client_fd, client_addr));
+            _clients.push_back(std::make_shared<Client>(clientFd, clientAddr));
 
             // Emplace_back is not working, I don't know why
-            // _clients.emplace_back(client_fd, client_addr);
+            // _clients.emplace_back(clientFd, clientAddr);
 
             // That line is kinda borked, but I'll check one day how to fix it
-            // auto *cli_thread = new std::thread(&Client::networkLoop, &(*cli));
+            // auto *cliThread = new std::thread(&Client::networkLoop, &(*cli));
             // That is 99.99% a data race, but aight, it will probably
             // never happen
-            // cli->setRunningThread(cli_thread);
+            // cli->setRunningThread(cliThread);
         }
 
         _clients.erase(
@@ -218,7 +207,8 @@ void Server::_downloadFile(const std::string &url, const std::string &path)
 /*
 **  Reloads the config if no error within the new file
 */
-void Server::_reloadConfig() {
+void Server::_reloadConfig()
+{
     try {
         _config.parse("./config.yml");
     } catch (const std::exception &e) {
@@ -234,7 +224,8 @@ void Server::_reloadConfig() {
 /*
 **  Reloads the whitelist if no error within the new file
 */
-void Server::_reloadWhitelist() {
+void Server::_reloadWhitelist()
+{
     try {
         if (_whitelistEnabled) {
             WhitelistHandling::Whitelist whitelistReloaded = WhitelistHandling::Whitelist();
@@ -249,7 +240,8 @@ void Server::_reloadWhitelist() {
 **  Reloads the server. Used in the /reload command.
 **  More details in *Reload.hpp*.
 */
-void Server::reload() {
+void Server::reload()
+{
     _reloadConfig();
     _reloadWhitelist();
     _enforceWhitelistOnReload();

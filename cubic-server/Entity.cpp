@@ -1,5 +1,9 @@
 #include "Entity.hpp"
+
+#include "Dimension.hpp"
 #include "Player.hpp"
+#include "World.hpp"
+#include "types.hpp"
 
 Entity::Entity(std::shared_ptr<Dimension> dim):
     _dim(dim)
@@ -29,9 +33,9 @@ Entity::Entity(std::shared_ptr<Dimension> dim):
 
 void Entity::setDimension(std::shared_ptr<Dimension> dim) { _dim = dim; }
 
-void Entity::setPosition(const Vector3<double> &pos) { _pos = pos; }
+void Entity::setPosition(const Vector3<double> &pos, bool onGround) { _pos = pos; }
 
-void Entity::setPosition(double x, double y, double z) { this->setPosition({x, y, z}); }
+void Entity::setPosition(double x, double y, double z, bool onGround) { this->setPosition({x, y, z}, onGround); }
 
 void Entity::forceSetPosition(const Vector3<double> &pos)
 {
@@ -41,15 +45,24 @@ void Entity::forceSetPosition(const Vector3<double> &pos)
 
 void Entity::forceSetPosition(double x, double y, double z) { this->forceSetPosition({x, y, z}); }
 
-void Entity::setRotation(const Vector2<uint8_t> &rot) { _rot = rot; }
-
-void Entity::setRotation(uint8_t yaw, uint8_t pitch)
+void Entity::setRotation(const Vector2<uint8_t> &rot)
 {
-    _rot.x = yaw;
-    _rot.y = pitch;
+    float yawTmp = rot.x;
+    while (yawTmp < 0) // TODO: change that completely
+        yawTmp += 360;
+    while (yawTmp > 360)
+        yawTmp -= 360;
+    _rot.x = yawTmp;
+    _rot.y = rot.y / 1.5;
 }
 
+void Entity::setRotation(uint8_t yaw, uint8_t pitch) { this->setRotation({yaw, pitch}); }
+
 std::shared_ptr<Dimension> Entity::getDimension() const { return _dim; }
+
+World *Entity::getWorld() const { return _dim->getWorld(); }
+
+WorldGroup *Entity::getWorldGroup() const { return _dim->getWorld()->getWorldGroup(); }
 
 int32_t Entity::getId() const { return _id; }
 

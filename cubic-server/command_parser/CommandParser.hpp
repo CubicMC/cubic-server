@@ -1,7 +1,9 @@
-#ifndef CUBICSERVER_COMMANDPARSER_HPP
-#define CUBICSERVER_COMMANDPARSER_HPP
+#ifndef CUBICSERVER_COMMANDPARSER_COMMANDPARSER_HPP
+#define CUBICSERVER_COMMANDPARSER_COMMANDPARSER_HPP
 
-#include "Server.hpp"
+#include <string>
+
+class Player;
 
 namespace command_parser {
 /**
@@ -10,4 +12,4 @@ namespace command_parser {
 void parseCommand(std::string &command, Player *invoker);
 }
 
-#endif // CUBICSERVER_COMMANDPARSER_HPP
+#endif // CUBICSERVER_COMMANDPARSER_COMMANDPARSER_HPP

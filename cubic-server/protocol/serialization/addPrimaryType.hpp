@@ -4,18 +4,16 @@
 ** https://wiki.vg/index.php?title=Protocol&oldid=17753
 */
 
-#ifndef PROTOCOL_SERIALIZATION_ADD_PRIMARYTYPE_HPP
-#define PROTOCOL_SERIALIZATION_ADD_PRIMARYTYPE_HPP
+#ifndef CUBICSERVER_PROTOCOL_SERIALIZATION_ADDPRIMARYTYPE_HPP
+#define CUBICSERVER_PROTOCOL_SERIALIZATION_ADDPRIMARYTYPE_HPP
 
 #include <cstdint>
 #include <string>
 #include <vector>
 
 #include "concept.hpp"
-#include "nbt.hpp"
 #include "protocol/ParseExceptions.hpp"
 #include "protocol/Structures.hpp"
-#include "protocol/common.hpp"
 #include "types.hpp"
 
 namespace protocol {
@@ -125,9 +123,13 @@ static constexpr void _addString(std::vector<uint8_t> &out, const std::string &d
 }
 
 // Default addString with a max size of 32767
-constexpr void addString(std::vector<uint8_t> &out, const std::string &data) { _addString(out, data, 32767); }
+constexpr size_t MAX_STRING_SIZE = 32767;
+constexpr size_t MAX_CHAT_SIZE = 262144;
 
-constexpr void addChat(std::vector<uint8_t> &out, const std::string &data) { _addString(out, data, 262144); }
+constexpr void addString(std::vector<uint8_t> &out, const std::string &data) { _addString(out, data, MAX_STRING_SIZE); }
+
+// Should use chat::Message, but can't because the JSON lib is not constexpr
+constexpr void addChat(std::vector<uint8_t> &out, const std::string &data) { _addString(out, data, MAX_CHAT_SIZE); }
 
 // TODO: gl :>
 // constexpr void addEntityMetadata(std::vector<uint8_t>, const EntityMetadata &data)
@@ -144,7 +146,11 @@ constexpr void addSlot(std::vector<uint8_t> &out, const Slot &data)
     }
 }
 
-template <is_nbt T> constexpr void addNBT(std::vector<uint8_t> &out, const T &data) { data.serialize(out); }
+template<IsNbt T>
+constexpr void addNBT(std::vector<uint8_t> &out, const T &data)
+{
+    data.serialize(out);
+}
 
 constexpr void addIdentifier(std::vector<uint8_t> &out, const std::string &data) { addString(out, data); }
 
@@ -155,7 +161,8 @@ constexpr void addUUID(std::vector<uint8_t> &out, const u128 &data)
     addLong(out, data.least);
 }
 
-template <typename T, void (*add)(std::vector<uint8_t> &, const T &)> constexpr void addArray(std::vector<uint8_t> &out, const std::vector<T> &data)
+template<typename T, void (*add)(std::vector<uint8_t> &, const T &)>
+constexpr void addArray(std::vector<uint8_t> &out, const std::vector<T> &data)
 {
     addVarInt(out, data.size());
 
@@ -166,4 +173,4 @@ template <typename T, void (*add)(std::vector<uint8_t> &, const T &)> constexpr 
 constexpr void addPosition(std::vector<uint8_t> &out, const Position &data) { addLong(out, ((data.x & 0x3FFFFFF) << 38) | ((data.z & 0x3FFFFFF) << 12) | (data.y & 0xFFF)); }
 } // namespace protocol
 
-#endif
+#endif // CUBICSERVER_PROTOCOL_SERIALIZATION_ADDPRIMARYTYPE_HPP

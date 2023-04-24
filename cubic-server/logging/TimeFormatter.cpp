@@ -13,15 +13,15 @@ namespace logging {
  *
  * @note The format is YYYY/MM/DD HH:MM:SS.sss by default
  */
-std::string TimeFormatter::get_time()
+std::string TimeFormatter::getTime()
 {
-    std::chrono::time_point<std::chrono::system_clock> time_point = std::chrono::system_clock::now();
-    const std::time_t now = std::chrono::system_clock::to_time_t(time_point);
+    std::chrono::time_point<std::chrono::system_clock> timePoint = std::chrono::system_clock::now();
+    const std::time_t now = std::chrono::system_clock::to_time_t(timePoint);
     // const std::time_t now = std::time(nullptr);
-    const std::tm *tm_now = std::localtime(&now);
-    int millis = std::chrono::duration_cast<std::chrono::milliseconds>(time_point.time_since_epoch()).count() - (now * 1000);
+    const std::tm *tmNow = std::localtime(&now);
+    int millis = std::chrono::duration_cast<std::chrono::milliseconds>(timePoint.time_since_epoch()).count() - (now * 1000);
     std::stringstream ss;
-    ss << std::put_time(tm_now, "%Y/%m/%d %H:%M:%S.") << std::setfill('0') << std::setw(3) << millis;
+    ss << std::put_time(tmNow, "%Y/%m/%d %H:%M:%S.") << std::setfill('0') << std::setw(3) << millis;
     return ss.str();
 }
 
@@ -34,20 +34,20 @@ std::string TimeFormatter::get_time()
  *
  * @overload std::string Logger::get_time() const
  */
-std::string TimeFormatter::get_time(std::string format)
+std::string TimeFormatter::getTime(std::string format)
 {
-    std::chrono::time_point<std::chrono::system_clock> time_point = std::chrono::system_clock::now();
-    const std::time_t now = std::chrono::system_clock::to_time_t(time_point);
+    std::chrono::time_point<std::chrono::system_clock> timePoint = std::chrono::system_clock::now();
+    const std::time_t now = std::chrono::system_clock::to_time_t(timePoint);
     // const std::time_t now = std::time(nullptr);
-    const std::tm *tm_now = std::localtime(&now);
-    int millis = std::chrono::duration_cast<std::chrono::milliseconds>(time_point.time_since_epoch()).count() - (now * 1000);
+    const std::tm *tmNow = std::localtime(&now);
+    int millis = std::chrono::duration_cast<std::chrono::milliseconds>(timePoint.time_since_epoch()).count() - (now * 1000);
     std::unordered_map<std::string, std::string> values = {
-        {"YYYY", std::to_string(tm_now->tm_year + 1900)},
-        {"MM", tm_now->tm_mon + 1 < 10 ? "0" + std::to_string(tm_now->tm_mon + 1) : std::to_string(tm_now->tm_mon + 1)},
-        {"DD", tm_now->tm_mday < 10 ? "0" + std::to_string(tm_now->tm_mday) : std::to_string(tm_now->tm_mday)},
-        {"HH", tm_now->tm_hour < 10 ? "0" + std::to_string(tm_now->tm_hour) : std::to_string(tm_now->tm_hour)},
-        {"mm", tm_now->tm_min < 10 ? "0" + std::to_string(tm_now->tm_min) : std::to_string(tm_now->tm_min)},
-        {"SS", tm_now->tm_sec < 10 ? "0" + std::to_string(tm_now->tm_sec) : std::to_string(tm_now->tm_sec)},
+        {"YYYY", std::to_string(tmNow->tm_year + 1900)},
+        {"MM", tmNow->tm_mon + 1 < 10 ? "0" + std::to_string(tmNow->tm_mon + 1) : std::to_string(tmNow->tm_mon + 1)},
+        {"DD", tmNow->tm_mday < 10 ? "0" + std::to_string(tmNow->tm_mday) : std::to_string(tmNow->tm_mday)},
+        {"HH", tmNow->tm_hour < 10 ? "0" + std::to_string(tmNow->tm_hour) : std::to_string(tmNow->tm_hour)},
+        {"mm", tmNow->tm_min < 10 ? "0" + std::to_string(tmNow->tm_min) : std::to_string(tmNow->tm_min)},
+        {"SS", tmNow->tm_sec < 10 ? "0" + std::to_string(tmNow->tm_sec) : std::to_string(tmNow->tm_sec)},
         {"sss",
          millis < 10        ? "00" + std::to_string(millis)
              : millis < 100 ? "0" + std::to_string(millis)
@@ -69,20 +69,20 @@ std::string TimeFormatter::get_time(std::string format)
  *
  * @overload std::string Logger::get_time() const
  */
-std::string TimeFormatter::get_time(std::string &format)
+std::string TimeFormatter::getTime(std::string &format)
 {
     std::chrono::time_point<std::chrono::system_clock> time_point = std::chrono::system_clock::now();
     const std::time_t now = std::chrono::system_clock::to_time_t(time_point);
     // const std::time_t now = std::time(nullptr);
-    const std::tm *tm_now = std::localtime(&now);
+    const std::tm *tmNow = std::localtime(&now);
     int millis = std::chrono::duration_cast<std::chrono::milliseconds>(time_point.time_since_epoch()).count() - (now * 1000);
     std::unordered_map<std::string, std::string> values = {
-        {"YYYY", std::to_string(tm_now->tm_year + 1900)},
-        {"MM", tm_now->tm_mon + 1 < 10 ? "0" + std::to_string(tm_now->tm_mon + 1) : std::to_string(tm_now->tm_mon + 1)},
-        {"DD", tm_now->tm_mday < 10 ? "0" + std::to_string(tm_now->tm_mday) : std::to_string(tm_now->tm_mday)},
-        {"HH", tm_now->tm_hour < 10 ? "0" + std::to_string(tm_now->tm_hour) : std::to_string(tm_now->tm_hour)},
-        {"mm", tm_now->tm_min < 10 ? "0" + std::to_string(tm_now->tm_min) : std::to_string(tm_now->tm_min)},
-        {"SS", tm_now->tm_sec < 10 ? "0" + std::to_string(tm_now->tm_sec) : std::to_string(tm_now->tm_sec)},
+        {"YYYY", std::to_string(tmNow->tm_year + 1900)},
+        {"MM", tmNow->tm_mon + 1 < 10 ? "0" + std::to_string(tmNow->tm_mon + 1) : std::to_string(tmNow->tm_mon + 1)},
+        {"DD", tmNow->tm_mday < 10 ? "0" + std::to_string(tmNow->tm_mday) : std::to_string(tmNow->tm_mday)},
+        {"HH", tmNow->tm_hour < 10 ? "0" + std::to_string(tmNow->tm_hour) : std::to_string(tmNow->tm_hour)},
+        {"mm", tmNow->tm_min < 10 ? "0" + std::to_string(tmNow->tm_min) : std::to_string(tmNow->tm_min)},
+        {"SS", tmNow->tm_sec < 10 ? "0" + std::to_string(tmNow->tm_sec) : std::to_string(tmNow->tm_sec)},
         {"sss",
          millis < 10        ? "00" + std::to_string(millis)
              : millis < 100 ? "0" + std::to_string(millis)
@@ -95,16 +95,16 @@ std::string TimeFormatter::get_time(std::string &format)
     return format;
 }
 
-std::string TimeFormatter::get_time(std::string format, std::time_t time, int millis)
+std::string TimeFormatter::getTime(std::string format, std::time_t time, int millis)
 {
-    const std::tm *tm_now = std::localtime(&time);
+    const std::tm *tmNow = std::localtime(&time);
     std::unordered_map<std::string, std::string> values = {
-        {"YYYY", std::to_string(tm_now->tm_year + 1900)},
-        {"MM", tm_now->tm_mon + 1 < 10 ? "0" + std::to_string(tm_now->tm_mon + 1) : std::to_string(tm_now->tm_mon + 1)},
-        {"DD", tm_now->tm_mday < 10 ? "0" + std::to_string(tm_now->tm_mday) : std::to_string(tm_now->tm_mday)},
-        {"HH", tm_now->tm_hour < 10 ? "0" + std::to_string(tm_now->tm_hour) : std::to_string(tm_now->tm_hour)},
-        {"mm", tm_now->tm_min < 10 ? "0" + std::to_string(tm_now->tm_min) : std::to_string(tm_now->tm_min)},
-        {"SS", tm_now->tm_sec < 10 ? "0" + std::to_string(tm_now->tm_sec) : std::to_string(tm_now->tm_sec)},
+        {"YYYY", std::to_string(tmNow->tm_year + 1900)},
+        {"MM", tmNow->tm_mon + 1 < 10 ? "0" + std::to_string(tmNow->tm_mon + 1) : std::to_string(tmNow->tm_mon + 1)},
+        {"DD", tmNow->tm_mday < 10 ? "0" + std::to_string(tmNow->tm_mday) : std::to_string(tmNow->tm_mday)},
+        {"HH", tmNow->tm_hour < 10 ? "0" + std::to_string(tmNow->tm_hour) : std::to_string(tmNow->tm_hour)},
+        {"mm", tmNow->tm_min < 10 ? "0" + std::to_string(tmNow->tm_min) : std::to_string(tmNow->tm_min)},
+        {"SS", tmNow->tm_sec < 10 ? "0" + std::to_string(tmNow->tm_sec) : std::to_string(tmNow->tm_sec)},
         {"sss",
          millis < 10        ? "00" + std::to_string(millis)
              : millis < 100 ? "0" + std::to_string(millis)

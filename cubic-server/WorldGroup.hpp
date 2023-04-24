@@ -2,15 +2,13 @@
 #define CUBICSERVER_WORLDGROUP_HPP
 
 #include <atomic>
+#include <functional>
 #include <memory>
 #include <thread>
 #include <unordered_map>
 
-#include "Chat.hpp"
-#include "logging/Logger.hpp"
-
 class World;
-
+class Chat;
 class SoundSystem;
 
 class WorldGroup {

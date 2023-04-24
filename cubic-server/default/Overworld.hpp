@@ -1,5 +1,5 @@
-#ifndef CUBICSERVER_OVERWORLD_HPP
-#define CUBICSERVER_OVERWORLD_HPP
+#ifndef CUBICSERVER_DEFAULT_OVERWORLD_HPP
+#define CUBICSERVER_DEFAULT_OVERWORLD_HPP
 
 #include <future>
 
@@ -23,4 +23,4 @@ private:
     world_storage::Persistence persistence;
 };
 
-#endif // CUBICSERVER_OVERWORLD_HPP
+#endif // CUBICSERVER_DEFAULT_OVERWORLD_HPP
