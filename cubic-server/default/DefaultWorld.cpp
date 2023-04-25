@@ -1,5 +1,9 @@
 #include "DefaultWorld.hpp"
 
+#include "Overworld.hpp"
+#include "TheEnd.hpp"
+#include "TheNether.hpp"
+
 DefaultWorld::DefaultWorld(WorldGroup *worldGroup):
     World(worldGroup)
 {

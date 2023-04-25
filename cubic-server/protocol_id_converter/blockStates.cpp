@@ -1,7 +1,10 @@
+#include "blockStates.hpp"
+
 #include <filesystem>
 #include <fstream>
 
-#include "blockStates.hpp"
+#include <nlohmann/json.hpp>
+
 #include "logging/Logger.hpp"
 
 void Blocks::GlobalPalette::initialize(const std::string &path)

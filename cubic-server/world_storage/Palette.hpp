@@ -1,9 +1,8 @@
-#ifndef WORLD_STORAGE_PALETTE_HPP
-#define WORLD_STORAGE_PALETTE_HPP
+#ifndef CUBICSERVER_WORLDSTORAGE_PALETTE_HPP
+#define CUBICSERVER_WORLDSTORAGE_PALETTE_HPP
 
 #include <algorithm>
 #include <cstdint>
-#include <map>
 #include <vector>
 
 namespace world_storage {
@@ -89,4 +88,4 @@ public:
 
 } // namespace world_storage
 
-#endif // WORLD_STORAGE_PALETTE_HPP
+#endif // CUBICSERVER_WORLDSTORAGE_PALETTE_HPP

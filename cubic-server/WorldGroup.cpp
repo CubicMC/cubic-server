@@ -1,11 +1,10 @@
 #include "WorldGroup.hpp"
+
+#include "Chat.hpp"
 #include "Server.hpp"
 #include "SoundSystem.hpp"
 #include "World.hpp"
 #include "logging/Logger.hpp"
-
-#include <thread>
-#include <utility>
 
 WorldGroup::WorldGroup(std::shared_ptr<Chat> chat):
     _chat(std::move(chat)),
@@ -29,13 +28,13 @@ void WorldGroup::initialize()
 void WorldGroup::_run()
 {
     while (_running) {
-        auto start_time = std::chrono::system_clock::now();
+        auto startTime = std::chrono::system_clock::now();
         for (auto &[_, world] : _worlds) {
             world->tick();
         }
         _soundSystem->tick();
-        auto end_time = std::chrono::system_clock::now();
-        auto compute_time = end_time - start_time;
+        auto endTime = std::chrono::system_clock::now();
+        auto compute_time = endTime - startTime;
         std::this_thread::sleep_for(std::chrono::milliseconds(MS_PER_TICK) - compute_time);
     }
 }

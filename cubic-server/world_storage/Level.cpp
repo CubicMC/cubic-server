@@ -1,5 +1,4 @@
 #include "Level.hpp"
-#include "logging/Logger.hpp"
 
 namespace world_storage {
 

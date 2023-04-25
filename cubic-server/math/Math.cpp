@@ -1,4 +1,5 @@
 #include "Math.hpp"
+
 #include <stdexcept>
 
 namespace Math_Testing {

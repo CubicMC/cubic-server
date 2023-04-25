@@ -1,5 +1,5 @@
-#ifndef WORLD_EVENT_HPP
-#define WORLD_EVENT_HPP
+#ifndef CUBICSERVER_PROTOCOL_WORLDEVENT_HPP
+#define CUBICSERVER_PROTOCOL_WORLDEVENT_HPP
 
 #include <cstdint>
 
@@ -74,7 +74,7 @@ enum class WorldEventParticle : int32_t {
     CopperScrapeOxidation = 3005,
 };
 
-enum class RecordId : int32_t {
+enum class RecordId : int32_t { // TODO: Change each enum field to PascalCase
     // sound_event
     // 11 =  680,
     // 13 =  681,
@@ -110,4 +110,4 @@ enum class RecordId : int32_t {
 };
 } // namespace protocol
 
-#endif /* WORLD_EVENT_HPP */
+#endif // CUBICSERVER_PROTOCOL_WORLDEVENT_HPP

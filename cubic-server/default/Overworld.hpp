@@ -1,5 +1,5 @@
-#ifndef CUBICSERVER_OVERWORLD_HPP
-#define CUBICSERVER_OVERWORLD_HPP
+#ifndef CUBICSERVER_DEFAULT_OVERWORLD_HPP
+#define CUBICSERVER_DEFAULT_OVERWORLD_HPP
 
 #include <future>
 #include <memory>
@@ -21,4 +21,4 @@ private:
     std::future<void> _worldGenFuture;
 };
 
-#endif // CUBICSERVER_OVERWORLD_HPP
+#endif // CUBICSERVER_DEFAULT_OVERWORLD_HPP

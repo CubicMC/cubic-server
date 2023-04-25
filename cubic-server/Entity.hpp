@@ -5,6 +5,8 @@
 #include "math/Vector3.hpp"
 #include <memory>
 
+class World;
+class WorldGroup;
 class Dimension;
 
 class Entity : public std::enable_shared_from_this<Entity> {
@@ -31,13 +33,15 @@ public:
     virtual ~Entity() {};
     virtual void tick() = 0;
     virtual void setDimension(std::shared_ptr<Dimension> dim);
-    virtual void setPosition(const Vector3<double> &pos);
-    virtual void setPosition(double x, double y, double z);
+    virtual void setPosition(const Vector3<double> &pos, bool on_ground);
+    virtual void setPosition(double x, double y, double z, bool on_ground);
     virtual void forceSetPosition(const Vector3<double> &pos);
     virtual void forceSetPosition(double x, double y, double z);
     virtual void setRotation(const Vector2<uint8_t> &rot);
     virtual void setRotation(uint8_t yaw, uint8_t pitch);
     [[nodiscard]] virtual std::shared_ptr<Dimension> getDimension() const;
+    [[nodiscard]] virtual std::shared_ptr<World> getWorld() const;
+    [[nodiscard]] virtual WorldGroup *getWorldGroup() const;
     [[nodiscard]] virtual int32_t getId() const;
     [[nodiscard]] virtual Vector3<double> &getPosition();
     [[nodiscard]] virtual const Vector3<double> &getPosition() const;

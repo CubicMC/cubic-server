@@ -1,5 +1,5 @@
-#ifndef D23DD5CC_1F28_49BB_B77D_E244C60CC705
-#define D23DD5CC_1F28_49BB_B77D_E244C60CC705
+#ifndef CUBICSERVER_CLIENT_HPP
+#define CUBICSERVER_CLIENT_HPP
 
 #include <arpa/inet.h>
 #include <deque>
@@ -10,10 +10,10 @@
 
 #include "Chat.hpp"
 #include "logging/Logger.hpp"
+#include "chat/Message.hpp"
 #include "protocol/ClientPackets.hpp"
 #include "protocol/ServerPackets.hpp"
 #include "protocol/common.hpp"
-#include "types.hpp"
 
 #define __PCK_CALLBACK_PRIM(type, object) return object->_on##type(std::static_pointer_cast<type>(packet))
 
@@ -28,13 +28,13 @@
 #define PARSER_IT_DECLARE(state) \
     std::unordered_map<protocol::ServerPacketsID, std::function<std::unique_ptr<protocol::BaseServerPacket>(std::vector<uint8_t> &)>>::const_iterator __##state
 
-#define GET_PARSER(state)                                         \
-    __##state = protocol::packetIDToParse##state.find(packet_id); \
-    if (__##state == protocol::packetIDToParse##state.end()) {    \
-        error = true;                                             \
-        break;                                                    \
-    }                                                             \
-    parser = __##state->second;                                   \
+#define GET_PARSER(state)                                        \
+    __##state = protocol::packetIDToParse##state.find(packetId); \
+    if (__##state == protocol::packetIDToParse##state.end()) {   \
+        error = true;                                            \
+        break;                                                   \
+    }                                                            \
+    parser = __##state->second;                                  \
     break
 
 constexpr const char DEFAULT_FAVICON[] =
@@ -103,13 +103,13 @@ private:
 
     const int _sockfd;
     const struct sockaddr_in6 _addr;
-    std::atomic<bool> _is_running;
+    std::atomic<bool> _isRunning;
     protocol::ClientStatus _status;
-    std::vector<uint8_t> _recv_buffer;
-    std::vector<uint8_t> _send_buffer;
+    std::vector<uint8_t> _recvBuffer;
+    std::vector<uint8_t> _sendBuffer;
     std::thread _networkThread;
     std::shared_ptr<Player> _player;
-    std::mutex _write_mutex;
+    std::mutex _writeMutex;
 };
 
-#endif /* D23DD5CC_1F28_49BB_B77D_E244C60CC705 */
+#endif // CUBICSERVER_CLIENT_HPP

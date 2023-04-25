@@ -1,5 +1,5 @@
-#ifndef CUBICSERVER_THENETHER_HPP
-#define CUBICSERVER_THENETHER_HPP
+#ifndef CUBICSERVER_DEFAULT_THENETHER_HPP
+#define CUBICSERVER_DEFAULT_THENETHER_HPP
 
 #include "../Dimension.hpp"
 
@@ -13,4 +13,4 @@ public:
     void initialize() override;
 };
 
-#endif // CUBICSERVER_THENETHER_HPP
+#endif // CUBICSERVER_DEFAULT_THENETHER_HPP

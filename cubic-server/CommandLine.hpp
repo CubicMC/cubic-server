@@ -1,6 +1,7 @@
-#ifndef CUBIC_SERVER_COMMANDLINE_HPP
-#define CUBIC_SERVER_COMMANDLINE_HPP
+#ifndef CUBICSERVER_COMMANDLINE_HPP
+#define CUBICSERVER_COMMANDLINE_HPP
 
+#include <atomic>
 #include <thread>
 
 class CommandLine {
@@ -23,4 +24,4 @@ private:
     std::thread _thread;
 };
 
-#endif // CUBIC_SERVER_COMMANDLINE_HPP
+#endif // CUBICSERVER_COMMANDLINE_HPP

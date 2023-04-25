@@ -1,11 +1,8 @@
-#include <filesystem>
-#include <fstream>
-#include <iostream>
-#include <utility>
-
 #include "Whitelist.hpp"
 
-std::string u128_to_uuidString(u128 u)
+#include "logging/Logger.hpp"
+
+std::string u128ToUuidString(u128 u)
 {
     std::stringstream sstr;
     std::string str;
@@ -35,7 +32,7 @@ void Whitelist::_parseWhitelist(const std::string &path)
     std::ifstream whitelistFile(path);
     try {
         _whitelistData = nlohmann::json::parse(whitelistFile);
-    } catch(const std::exception& e) {
+    } catch (const std::exception &e) {
         LERROR("whitelist parsing failed : " << e.what());
         throw std::runtime_error("whitelist parsing failed");
     }
@@ -56,7 +53,7 @@ void Whitelist::addPlayer(u128 uuid, std::string playerName)
     bool check = isPlayerWhitelisted(uuid, playerName).first;
 
     if (!check) {
-        _whitelistData.push_back({{"name", playerName}, {"uuid", u128_to_uuidString(uuid)}});
+        _whitelistData.push_back({{"name", playerName}, {"uuid", u128ToUuidString(uuid)}});
         std::ofstream whitelistFile(this->_filename);
         whitelistFile << std::setw(4) << _whitelistData << std::endl;
         whitelistFile.close();
@@ -84,7 +81,7 @@ std::pair<bool, int> Whitelist::isPlayerWhitelisted(u128 uuid, std::string playe
 
     for (auto it = _whitelistData.begin(); it != _whitelistData.end(); ++it) {
         ++pos;
-        if (it.value()["uuid"] == u128_to_uuidString(uuid) || it.value()["name"] == playerName) {
+        if (it.value()["uuid"] == u128ToUuidString(uuid) || it.value()["name"] == playerName) {
             check = true;
             playerPos = pos - 1;
         }

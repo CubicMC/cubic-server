@@ -1,5 +1,4 @@
 #include "Task.hpp"
-#include "Pool.hpp"
 
 thread_pool::Task::Task(Id id, std::function<void()> task, thread_pool::Pool *pool):
     _id(id),

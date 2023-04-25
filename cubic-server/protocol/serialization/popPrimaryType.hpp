@@ -4,8 +4,8 @@
 ** https://wiki.vg/index.php?title=Protocol&oldid=17753
 */
 
-#ifndef PROTOCOL_SERIALIZATION_POP_PRIMARYTYPE_HPP
-#define PROTOCOL_SERIALIZATION_POP_PRIMARYTYPE_HPP
+#ifndef CUBICSERVER_PROTOCOL_SERIALIZATION_POPPRIMARYTYPE_HPP
+#define CUBICSERVER_PROTOCOL_SERIALIZATION_POPPRIMARYTYPE_HPP
 
 #include <bitset>
 #include <cstdint>
@@ -16,6 +16,7 @@
 #include "protocol/ParseExceptions.hpp"
 #include "protocol/Structures.hpp"
 #include "protocol/common.hpp"
+#include "types.hpp"
 
 namespace protocol {
 constexpr uint8_t popByte(uint8_t *&at, uint8_t *eof)
@@ -145,14 +146,16 @@ constexpr float popFloat(uint8_t *&at, uint8_t *eof)
     if (eof - at < 3)
         throw PacketEOF("Not enough data in packet to parse a Float");
 
-    float result = 0;
-    std::memcpy(&result, at, sizeof(float));
-    at += sizeof(float);
+    union {
+        float rval;
+        uint32_t data;
+    } val;
+    std::memcpy(&val.rval, at, sizeof(float));
+    at += sizeof(double);
 
-    uint32_t *buf = (uint32_t *) &result;
-    *buf = ntoh32(buf);
+    val.data = ntoh32(&val.data);
 
-    return result;
+    return val.rval;
 }
 
 constexpr uint64_t ntoh64(const uint64_t *input)
@@ -182,14 +185,16 @@ constexpr double popDouble(uint8_t *&at, uint8_t *eof)
     if (eof - at < 7)
         throw PacketEOF("Not enough data in packet to parse a Double");
 
-    double result = 0;
-    std::memcpy(&result, at, sizeof(double));
+    union {
+        double rval;
+        uint64_t data;
+    } val;
+    std::memcpy(&val.rval, at, sizeof(double));
     at += sizeof(double);
 
-    uint64_t *buf = (uint64_t *) &result;
-    *buf = ntoh64(buf);
+    val.data = ntoh64(&val.data);
 
-    return result;
+    return val.rval;
 }
 
 constexpr std::string popString(uint8_t *&at, uint8_t *eof)
@@ -239,7 +244,8 @@ constexpr u128 popUUID(uint8_t *&at, uint8_t *eof)
     return value;
 }
 
-template <typename T, T (*pop)(uint8_t *&begin, uint8_t *end)> constexpr std::vector<T> popArray(uint8_t *&at, uint8_t *eof)
+template<typename T, T (*pop)(uint8_t *&begin, uint8_t *end)>
+constexpr std::vector<T> popArray(uint8_t *&at, uint8_t *eof)
 {
     std::vector<T> array;
     auto length = popVarInt(at, eof);
@@ -267,7 +273,8 @@ constexpr Position popPosition(uint8_t *&at, uint8_t *eof)
  * @param eof The end of the packet
  * @return A bitset of size size
  */
-template <uint64_t size> constexpr std::bitset<size> popBitSet(uint8_t *&at, uint8_t *eof)
+template<uint64_t size>
+constexpr std::bitset<size> popBitSet(uint8_t *&at, uint8_t *eof)
 {
     std::bitset<size> result;
 
@@ -281,4 +288,4 @@ template <uint64_t size> constexpr std::bitset<size> popBitSet(uint8_t *&at, uin
 }
 } // namespace protocol
 
-#endif
+#endif // CUBICSERVER_PROTOCOL_SERIALIZATION_POPPRIMARYTYPE_HPP

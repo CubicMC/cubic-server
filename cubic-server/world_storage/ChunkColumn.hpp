@@ -1,5 +1,5 @@
-#ifndef WORLD_STORAGE_CHUNKCOLUMN_HPP
-#define WORLD_STORAGE_CHUNKCOLUMN_HPP
+#ifndef CUBICSERVER_WORLDSTORAGE_CHUNKCOLUMN_HPP
+#define CUBICSERVER_WORLDSTORAGE_CHUNKCOLUMN_HPP
 
 #include <array>
 #include <cmath>
@@ -60,8 +60,6 @@ constexpr uint64_t calculateBiomeIdx(const Position &pos)
         throw std::runtime_error("Invalid biome position: (" + std::to_string(pos.x) + ", " + std::to_string(y) + ", " + std::to_string(pos.z) + ")");
     return pos.x + (pos.z * BIOME_SECTION_WIDTH) + (y * BIOME_SECTION_2D_SIZE);
 }
-
-struct BlockEntity { };
 
 struct HeightMap {
     // https://wiki.vg/index.php?title=Protocol&oldid=17753#Chunk_Data_and_Update_Light
@@ -134,4 +132,4 @@ private:
 
 } // namespace world_storage
 
-#endif // WORLD_STORAGE_CHUNKCOLUMN_HPP
+#endif // CUBICSERVER_WORLDSTORAGE_CHUNKCOLUMN_HPP

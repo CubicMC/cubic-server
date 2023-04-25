@@ -19,4 +19,6 @@ LambdaBodyIndentation: Signature
 AllowShortLambdasOnASingleLine: None
 AlignEscapedNewlines: Left
 BreakBeforeBinaryOperators: None
+AlwaysBreakTemplateDeclarations: Yes
+SpaceAfterTemplateKeyword: False
 ...

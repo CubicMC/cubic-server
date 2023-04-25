@@ -1,9 +1,9 @@
-#ifndef SOUND_SYSTEM_HPP
-#define SOUND_SYSTEM_HPP
+#ifndef CUBICSERVER_SOUNDSYSTEM_HPP
+#define CUBICSERVER_SOUNDSYSTEM_HPP
 
 #include <cstdint>
 
-#include "WorldGroup.hpp"
+class WorldGroup;
 
 class SoundSystem {
 public:

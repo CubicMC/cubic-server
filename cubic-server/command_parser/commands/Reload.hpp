@@ -1,5 +1,5 @@
-#ifndef RELOAD_HPP_
-#define RELOAD_HPP_
+#ifndef CUBICSERVER_COMMANDPARSER_COMMANDS_RELOAD_HPP
+#define CUBICSERVER_COMMANDPARSER_COMMANDS_RELOAD_HPP
 
 #include "CommandBase.hpp"
 
@@ -28,12 +28,15 @@
 
 namespace command_parser {
 struct Reload : public CommandBase {
-    Reload() : CommandBase("reload", "/reload", true) {}
+    Reload():
+        CommandBase("reload", "/reload", true)
+    {
+    }
 
-    void autocomplete(std::vector<std::string>& args, Player *invoker) const override;
-    void execute(std::vector<std::string>& args, Player *invoker) const override;
-    void help(std::vector<std::string>& args, Player *invoker) const override;
+    void autocomplete(std::vector<std::string> &args, Player *invoker) const override;
+    void execute(std::vector<std::string> &args, Player *invoker) const override;
+    void help(std::vector<std::string> &args, Player *invoker) const override;
 };
 }
 
-#endif /* !RELOAD_HPP_ */
+#endif // CUBICSERVER_COMMANDPARSER_COMMANDS_RELOAD_HPP

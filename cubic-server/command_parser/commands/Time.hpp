@@ -1,8 +1,7 @@
-#ifndef TIME_HPP_
-#define TIME_HPP_
+#ifndef CUBICSERVER_COMMANDPARSER_COMMANDS_TIME_HPP
+#define CUBICSERVER_COMMANDPARSER_COMMANDS_TIME_HPP
 
 #include "CommandBase.hpp"
-#include <string>
 
 /*
 **  The command has three different args: add, query and set
@@ -20,12 +19,15 @@
 
 namespace command_parser {
 struct Time : public CommandBase {
-    Time() : CommandBase("time", "/time", true) {}
+    Time():
+        CommandBase("time", "/time", true)
+    {
+    }
 
-    void autocomplete(std::vector<std::string>& args, Player *invoker) const override;
-    void execute(std::vector<std::string>& args, Player *invoker) const override;
-    void help(std::vector<std::string>& args, Player *invoker) const override;
+    void autocomplete(std::vector<std::string> &args, Player *invoker) const override;
+    void execute(std::vector<std::string> &args, Player *invoker) const override;
+    void help(std::vector<std::string> &args, Player *invoker) const override;
 };
 }
 
-#endif /* !TIME_HPP_ */
+#endif // CUBICSERVER_COMMANDPARSER_COMMANDS_TIME_HPP

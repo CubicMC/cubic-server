@@ -3,7 +3,6 @@
 #include <gtest/gtest.h>
 #include <memory>
 #include <rapidcheck/gtest.h>
-#include <vector>
 
 namespace Nbt_Testing {
 /**
@@ -18,62 +17,62 @@ namespace Nbt_Testing {
 
 RC_GTEST_PROP(RapidCheckTest, NbtByteChecker, (int8_t value))
 {
-    auto to_serialize = nbt::Byte("test", value);
-    auto serialized = to_serialize.serialize();
+    auto toSerialize = nbt::Byte("test", value);
+    auto serialized = toSerialize.serialize();
     auto at = serialized.data();
     auto parsed = nbt::parseByte(at, at + serialized.size() - 1);
-    RC_ASSERT(value == parsed->get_value());
+    RC_ASSERT(value == parsed->getValue());
 }
 
 RC_GTEST_PROP(RapidCheckTest, NbtShortChecker, (int16_t value))
 {
-    auto to_serialize = nbt::Short("test", value);
-    auto serialized = to_serialize.serialize();
+    auto toSerialize = nbt::Short("test", value);
+    auto serialized = toSerialize.serialize();
     auto at = serialized.data();
     auto parsed = nbt::parseShort(at, at + serialized.size() - 1);
-    RC_ASSERT(value == parsed->get_value());
+    RC_ASSERT(value == parsed->getValue());
 }
 
 RC_GTEST_PROP(RapidCheckTest, NbtIntChecker, (int32_t value))
 {
-    auto to_serialize = nbt::Int("test", value);
-    auto serialized = to_serialize.serialize();
+    auto toSerialize = nbt::Int("test", value);
+    auto serialized = toSerialize.serialize();
     auto at = serialized.data();
     auto parsed = nbt::parseInt(at, at + serialized.size() - 1);
-    RC_ASSERT(value == parsed->get_value());
+    RC_ASSERT(value == parsed->getValue());
 }
 
 RC_GTEST_PROP(RapidCheckTest, NbtLongChecker, (int64_t value))
 {
-    auto to_serialize = nbt::Long("test", value);
-    auto serialized = to_serialize.serialize();
+    auto toSerialize = nbt::Long("test", value);
+    auto serialized = toSerialize.serialize();
     auto at = serialized.data();
     auto parsed = nbt::parseLong(at, at + serialized.size() - 1);
-    RC_ASSERT(value == parsed->get_value());
+    RC_ASSERT(value == parsed->getValue());
 }
 
 RC_GTEST_PROP(RapidCheckTest, NbtFloatChecker, (float value))
 {
-    auto to_serialize = nbt::Float("test", value);
-    auto serialized = to_serialize.serialize();
+    auto toSerialize = nbt::Float("test", value);
+    auto serialized = toSerialize.serialize();
     auto at = serialized.data();
     auto parsed = nbt::parseFloat(at, at + serialized.size() - 1);
-    RC_ASSERT(value == parsed->get_value());
+    RC_ASSERT(value == parsed->getValue());
 }
 
 RC_GTEST_PROP(RapidCheckTest, NbtDoubleChecker, (double value))
 {
-    auto to_serialize = nbt::Double("test", value);
-    auto serialized = to_serialize.serialize();
+    auto toSerialize = nbt::Double("test", value);
+    auto serialized = toSerialize.serialize();
     auto at = serialized.data();
     auto parsed = nbt::parseDouble(at, at + serialized.size() - 1);
-    RC_ASSERT(value == parsed->get_value());
+    RC_ASSERT(value == parsed->getValue());
 }
 
 RC_GTEST_PROP(RapidCheckTest, NbtByteArrayChecker, (const std::vector<int8_t> value))
 {
-    auto to_serialize = nbt::ByteArray("test", value);
-    auto serialized = to_serialize.serialize();
+    auto toSerialize = nbt::ByteArray("test", value);
+    auto serialized = toSerialize.serialize();
     auto at = serialized.data();
     auto parsed = nbt::parseByteArray(at, at + serialized.size() - 1);
     RC_ASSERT(value == parsed->getValues());
@@ -81,17 +80,17 @@ RC_GTEST_PROP(RapidCheckTest, NbtByteArrayChecker, (const std::vector<int8_t> va
 
 RC_GTEST_PROP(RapidCheckTest, NbtStringChecker, (const std::string value))
 {
-    auto to_serialize = nbt::String("test", value);
-    auto serialized = to_serialize.serialize();
+    auto toSerialize = nbt::String("test", value);
+    auto serialized = toSerialize.serialize();
     auto at = serialized.data();
     auto parsed = nbt::parseString(at, at + serialized.size() - 1);
-    RC_ASSERT(value == parsed->get_value());
+    RC_ASSERT(value == parsed->getValue());
 }
 
 RC_GTEST_PROP(RapidCheckTest, NbtIntArrayChecker, (const std::vector<int> value))
 {
-    auto to_serialize = nbt::IntArray("test", value);
-    auto serialized = to_serialize.serialize();
+    auto toSerialize = nbt::IntArray("test", value);
+    auto serialized = toSerialize.serialize();
     auto at = serialized.data();
     auto parsed = nbt::parseIntArray(at, at + serialized.size() - 1);
     RC_ASSERT(value == parsed->getValues());
@@ -99,8 +98,8 @@ RC_GTEST_PROP(RapidCheckTest, NbtIntArrayChecker, (const std::vector<int> value)
 
 RC_GTEST_PROP(RapidCheckTest, NbtLongArrayChecker, (const std::vector<int64_t> value))
 {
-    auto to_serialize = nbt::LongArray("test", value);
-    auto serialized = to_serialize.serialize();
+    auto toSerialize = nbt::LongArray("test", value);
+    auto serialized = toSerialize.serialize();
     auto at = serialized.data();
     auto parsed = nbt::parseLongArray(at, at + serialized.size() - 1);
     RC_ASSERT(value == parsed->getValues());
@@ -108,13 +107,13 @@ RC_GTEST_PROP(RapidCheckTest, NbtLongArrayChecker, (const std::vector<int64_t> v
 
 TEST(NbtTest, TestNbt)
 {
-    auto to_serialize = nbt::Compound("hello world", {std::shared_ptr<nbt::String>(new nbt::String("name", "Bananrama"))});
-    auto serialized = to_serialize.serialize();
+    auto toserialize = nbt::Compound("hello world", {std::shared_ptr<nbt::String>(new nbt::String("name", "Bananrama"))});
+    auto serialized = toserialize.serialize();
 
-    std::vector<uint8_t> to_get({0x0a, 0x00, 0x0b, 0x68, 0x65, 0x6c, 0x6c, 0x6f, 0x20, 0x77, 0x6f, 0x72, 0x6c, 0x64, 0x08, 0x00, 0x04,
-                                 0x6e, 0x61, 0x6d, 0x65, 0x00, 0x09, 0x42, 0x61, 0x6e, 0x61, 0x6e, 0x72, 0x61, 0x6d, 0x61, 0x00});
-    EXPECT_EQ(serialized.size(), to_get.size());
-    EXPECT_EQ(serialized, to_get);
+    std::vector<uint8_t> toGet({0x0a, 0x00, 0x0b, 0x68, 0x65, 0x6c, 0x6c, 0x6f, 0x20, 0x77, 0x6f, 0x72, 0x6c, 0x64, 0x08, 0x00, 0x04,
+                                0x6e, 0x61, 0x6d, 0x65, 0x00, 0x09, 0x42, 0x61, 0x6e, 0x61, 0x6e, 0x72, 0x61, 0x6d, 0x61, 0x00});
+    EXPECT_EQ(serialized.size(), toGet.size());
+    EXPECT_EQ(serialized, toGet);
 }
 
 TEST(NbtTest, hello_world)

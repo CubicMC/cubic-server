@@ -1,12 +1,12 @@
-#ifndef A6D3BC50_B45B_4A73_A788_6FF612B06A41
-#define A6D3BC50_B45B_4A73_A788_6FF612B06A41
+#ifndef CUBICSERVER_PROTOCOL_PARSEEXCEPTIONS_HPP
+#define CUBICSERVER_PROTOCOL_PARSEEXCEPTIONS_HPP
 
 #include <stdexcept>
 
 #define DEFINE_EXCEPTION_FROM(name, except)      \
     class name : public except {                 \
     public:                                      \
-        name(char const *const message) throw(): \
+        name(const char *const message) throw(): \
             except(message)                      \
         {                                        \
         }                                        \
@@ -24,4 +24,4 @@ DEFINE_EXCEPTION(OutOfRangeBoolean);
 DEFINE_EXCEPTION(WrongObjectType);
 }
 
-#endif /* A6D3BC50_B45B_4A73_A788_6FF612B06A41 */
+#endif // CUBICSERVER_PROTOCOL_PARSEEXCEPTIONS_HPP

@@ -1,4 +1,6 @@
 #include "LivingEntity.hpp"
+
+#include "Dimension.hpp"
 #include "Player.hpp"
 #include "protocol/ClientPackets.hpp"
 
@@ -44,7 +46,7 @@ void LivingEntity::knockback(const Vector3<double> &source, float force)
     // send entity velocity too connected players (should be optimized)
     for (auto player : _dim->getPlayers()) {
         player->sendEntityVelocity({_id, static_cast<int16_t>(kb.x), static_cast<int16_t>(kb.y), static_cast<int16_t>(kb.z)});
-        player->sendEntityAnimation(protocol::EntityAnimationID::TakeDamage, _id);
+        player->sendEntityAnimation(protocol::EntityAnimation::ID::TakeDamage, _id);
     }
 }
 

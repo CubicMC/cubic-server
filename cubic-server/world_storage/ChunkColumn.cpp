@@ -1,14 +1,8 @@
-#include <PerlinNoise.hpp>
-#include <memory>
-
 #include "ChunkColumn.hpp"
-#include "Palette.hpp"
+
 #include "Server.hpp"
 #include "blocks.hpp"
 #include "generation/overworld.hpp"
-#include "logging/Logger.hpp"
-#include "protocol/serialization/addPrimaryType.hpp"
-#include "types.hpp"
 
 namespace world_storage {
 
@@ -37,7 +31,7 @@ void ChunkColumn::updateBlock(Position pos, BlockId id)
     int startOffset = (blockNumber * HEIGHTMAP_BITS) % 64;
     int endLong = ((blockNumber + 1) * HEIGHTMAP_BITS - 1) / 64;
 
-    if (pos.y > _heightMap.motionBlocking.at(startLong)->get_value() >> startOffset) {
+    if (pos.y > _heightMap.motionBlocking.at(startLong)->getValue() >> startOffset) {
         *_heightMap.motionBlocking[startLong] |= (pos.y << startOffset);
 
         if (startLong != endLong)

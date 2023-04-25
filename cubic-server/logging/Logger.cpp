@@ -1,7 +1,8 @@
+#include "Logger.hpp"
+
 #include <algorithm>
 #include <iostream>
 
-#include "Logger.hpp"
 #include "TimeFormatter.hpp"
 
 namespace logging {
@@ -10,23 +11,23 @@ LogMessage::LogMessage(LogLevel level, std::string message):
     _level(level),
     _message(message)
 {
-    std::chrono::time_point<std::chrono::system_clock> time_point = std::chrono::system_clock::now();
-    const std::time_t now = std::chrono::system_clock::to_time_t(time_point);
+    std::chrono::time_point<std::chrono::system_clock> timePoint = std::chrono::system_clock::now();
+    const std::time_t now = std::chrono::system_clock::to_time_t(timePoint);
     _time = now;
-    _millis = std::chrono::duration_cast<std::chrono::milliseconds>(time_point.time_since_epoch()).count() - (now * 1000);
+    _millis = std::chrono::duration_cast<std::chrono::milliseconds>(timePoint.time_since_epoch()).count() - (now * 1000);
 }
 
-const LogLevel &LogMessage::get_level() const { return _level; }
+const LogLevel &LogMessage::getLevel() const { return _level; }
 
-const std::string &LogMessage::get_message() const { return _message; }
+const std::string &LogMessage::getMessage() const { return _message; }
 
-const std::time_t &LogMessage::get_time() const { return _time; }
+const std::time_t &LogMessage::getTime() const { return _time; }
 
-int LogMessage::get_millis() const { return _millis; }
+int LogMessage::getMillis() const { return _millis; }
 
 std::ostream &operator<<(std::ostream &os, const LogMessage &log)
 {
-    os << TimeFormatter::get_time("[YYYY/MM/DD HH:mm:SS:sss] ", log.get_time(), log.get_millis()) << level_to_string(log.get_level()) << log.get_message();
+    os << TimeFormatter::getTime("[YYYY/MM/DD HH:mm:SS:sss] ", log.getTime(), log.getMillis()) << levelToString(log.getLevel()) << log.getMessage();
     return os;
 }
 
@@ -35,7 +36,7 @@ std::ostream &operator<<(std::ostream &os, const LogMessage &log)
  *
  * @return Logger& the instance of the Logger class as a reference
  */
-Logger *Logger::get_instance()
+Logger *Logger::getInstance()
 {
     static auto instance = Logger();
     return &instance;
@@ -46,21 +47,21 @@ Logger *Logger::get_instance()
  */
 Logger::Logger()
 {
-    this->_file_and_folder_handler.create_folder("logs");
-    std::string filename = TimeFormatter::get_time("YYYY-MM-DD-1.log");
+    this->_fileAndFolderHandler.createFolder("logs");
+    std::string filename = TimeFormatter::getTime("YYYY-MM-DD-1.log");
 
-    for (int i = 1; this->_file_and_folder_handler.file_exist("logs/" + filename); i++)
-        filename = TimeFormatter::get_time("YYYY-MM-DD-" + std::to_string(i) + ".log");
+    for (int i = 1; this->_fileAndFolderHandler.fileExist("logs/" + filename); i++)
+        filename = TimeFormatter::getTime("YYYY-MM-DD-" + std::to_string(i) + ".log");
 
-    this->_file_and_folder_handler.create_file(filename);
-    this->_file_stream.open(this->_file_and_folder_handler.get_file_path(), std::ios::app);
+    this->_fileAndFolderHandler.createFile(filename);
+    this->_fileStream.open(this->_fileAndFolderHandler.getFilePath(), std::ios::app);
 
-    this->_specification_level_in_file = {
+    this->_specificationLevelInFile = {
         {LogLevel::DEBUG, "[DEBUG] "}, {LogLevel::INFO, "[INFO] "}, {LogLevel::WARNING, "[WARNING] "}, {LogLevel::ERROR, "[ERROR] "}, {LogLevel::FATAL, "[FATAL] "}};
-    this->_specification_level_in_console = {
+    this->_specificationLevelInConsole = {
         {LogLevel::DEBUG, "[DEBUG] "}, {LogLevel::INFO, "[INFO] "}, {LogLevel::WARNING, "[WARNING] "}, {LogLevel::ERROR, "[ERROR] "}, {LogLevel::FATAL, "[FATAL] "}};
 
-    this->_buffer_size = 1000;
+    this->_bufferSize = 1000;
 }
 
 /**
@@ -68,7 +69,7 @@ Logger::Logger()
  *
  * @note The file stream will be closed
  */
-Logger::~Logger() { this->_file_stream.close(); }
+Logger::~Logger() { this->_fileStream.close(); }
 
 /**
  * @brief Write a message in the log file
@@ -81,14 +82,14 @@ void Logger::_log(LogLevel level, const std::string &message)
 {
     _loggerMutex.lock();
     LogMessage log(level, message);
-    this->_log_buffer.push(log);
-    if (this->_log_buffer.size() > this->_buffer_size)
-        this->_log_buffer.pop();
+    this->_logBuffer.push(log);
+    if (this->_logBuffer.size() > this->_bufferSize)
+        this->_logBuffer.pop();
 
-    if (this->_specification_level_in_file.find(level) != this->_specification_level_in_file.end())
-        this->_file_stream << log << std::endl;
+    if (this->_specificationLevelInFile.find(level) != this->_specificationLevelInFile.end())
+        this->_fileStream << log << std::endl;
 
-    if (this->_specification_level_in_console.find(level) != this->_specification_level_in_console.end())
+    if (this->_specificationLevelInConsole.find(level) != this->_specificationLevelInConsole.end())
         std::cout << log << std::endl;
     _loggerMutex.unlock();
 }
@@ -143,52 +144,52 @@ void Logger::fatal(const std::string &message) { this->_log(LogLevel::FATAL, mes
  *
  * @param level LogLevel to display in the console
  */
-void Logger::set_display_specification_level_in_console(LogLevel level) { this->_specification_level_in_console.insert({level, level_to_string(level)}); }
+void Logger::setDisplaySpecificationLevelInConsole(LogLevel level) { this->_specificationLevelInConsole.insert({level, levelToString(level)}); }
 
 /**
  * @brief Unset log levels to display in the console
  *
  * @param level LogLevel to not display in the console
  */
-void Logger::unset_display_specification_level_in_console(LogLevel level) { this->_specification_level_in_console.erase(level); }
+void Logger::unsetDisplaySpecificationLevelInConsole(LogLevel level) { this->_specificationLevelInConsole.erase(level); }
 
 /**
  * @brief Get the log display settings of the console
  *
  * @return std::vector<LogLevel> Log levels that are displayed in the console
  */
-const std::unordered_map<LogLevel, std::string> &Logger::get_display_specification_level_in_console() const { return this->_specification_level_in_console; }
+const std::unordered_map<LogLevel, std::string> &Logger::getDisplaySpecificationLevelInConsole() const { return this->_specificationLevelInConsole; }
 
 /**
  * @brief Set log levels to display in the log file
  *
  * @param level LogLevel to display in the log file
  */
-void Logger::set_display_specification_level_in_file(LogLevel level) { this->_specification_level_in_file.insert({level, level_to_string(level)}); }
+void Logger::setDisplaySpecificationLevelInFile(LogLevel level) { this->_specificationLevelInFile.insert({level, levelToString(level)}); }
 
 /**
  * @brief Unset log levels to display in the log file
  *
  * @param level LogLevel to not display in the log file
  */
-void Logger::unset_display_specification_level_in_file(LogLevel level) { this->_specification_level_in_file.erase(level); }
+void Logger::unsetDisplaySpecificationLevelInFile(LogLevel level) { this->_specificationLevelInFile.erase(level); }
 
 /**
  * @brief Get the log display settings of the log file
  *
  * @return std::vector<LogLevel> Log levels that are displayed in the log file
  */
-const std::unordered_map<LogLevel, std::string> &Logger::get_display_specification_level_in_file() const { return this->_specification_level_in_file; }
+const std::unordered_map<LogLevel, std::string> &Logger::getDisplaySpecificationLevelInFile() const { return this->_specificationLevelInFile; }
 
-std::string Logger::get_file_path() const { return this->_file_and_folder_handler.get_file_path(); }
+std::string Logger::getFilePath() const { return this->_fileAndFolderHandler.getFilePath(); }
 
-const std::queue<LogMessage> &Logger::get_logs() const { return this->_log_buffer; }
+const std::queue<LogMessage> &Logger::getLogs() const { return this->_logBuffer; }
 
-int Logger::get_log_buffer_size() const { return this->_buffer_size; }
+int Logger::getLogBufferSize() const { return this->_bufferSize; }
 
-void Logger::set_log_buffer_size(int size) { this->_buffer_size = size; }
+void Logger::setLogBufferSize(int size) { this->_bufferSize = size; }
 
-const char *level_to_string(const LogLevel &level)
+const char *levelToString(const LogLevel &level)
 {
     switch (level) {
     case LogLevel::NONE:

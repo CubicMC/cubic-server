@@ -1,11 +1,12 @@
-#ifndef CUBICSERVER_VECTOR2_H
-#define CUBICSERVER_VECTOR2_H
+#ifndef CUBICSERVER_MATH_VECTOR2_HPP
+#define CUBICSERVER_MATH_VECTOR2_HPP
 
 #include "math/Vector3.hpp"
 #include <cmath>
 #include <iostream>
 
-template <typename T> class Vector2 {
+template<typename T>
+class Vector2 {
 public:
     constexpr Vector2(T nx, T nz) noexcept:
         x(nx),
@@ -43,7 +44,7 @@ public:
         this->z /= mag;
     }
 
-    constexpr T dot_product(const Vector2 &other) noexcept { return this->x * other.x + this->z * other.z; }
+    constexpr T dotProduct(const Vector2 &other) noexcept { return this->x * other.x + this->z * other.z; }
 
     constexpr Vector2 operator+(const Vector2 &other) noexcept { return Vector2<T>(other.x + this->x, other.z + this->z); }
 
@@ -173,11 +174,12 @@ public:
     T z;
 };
 
-template <typename T> constexpr std::ostream &operator<<(std::ostream &o, const Vector2<T> &v)
+template<typename T>
+constexpr std::ostream &operator<<(std::ostream &o, const Vector2<T> &v)
 {
     o << "x : " << v.x << " | "
       << "z : " << v.z;
     return o;
 }
 
-#endif // CUBICSERVER_VECTOR2_H
+#endif // CUBICSERVER_MATH_VECTOR2_HPP

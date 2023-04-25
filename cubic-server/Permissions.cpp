@@ -6,6 +6,8 @@
 #include "Player.hpp"
 #include "Server.hpp"
 #include "World.hpp"
+#include "WorldGroup.hpp"
+#include "Dimension.hpp"
 
 Permissions::Permissions(const std::string &filename):
     _operatorFileName(filename)

@@ -1,11 +1,12 @@
 #include "Dimension.hpp"
 #include "Entity.hpp"
+
 #include "Player.hpp"
-#include "Server.hpp"
 #include "World.hpp"
 #include "logging/Logger.hpp"
 #include "world_storage/ChunkColumn.hpp"
 #include <memory>
+#include "Server.hpp"
 
 Dimension::Dimension(std::shared_ptr<World> world):
     _dimensionLock(std::counting_semaphore<1000>(0)),

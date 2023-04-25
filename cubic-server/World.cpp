@@ -1,10 +1,9 @@
 #include "World.hpp"
+
 #include "Dimension.hpp"
 #include "Player.hpp"
 #include "WorldGroup.hpp"
-#include "protocol/ClientPackets.hpp"
-#include "protocol/typeSerialization.hpp"
-#include <cstdint>
+#include "logging/Logger.hpp"
 
 World::World(WorldGroup *worldGroup):
     _worldGroup(worldGroup),
@@ -90,86 +89,82 @@ void World::updateTime()
 
 void World::sendPlayerInfoAddPlayer(Player *current)
 {
-    std::vector<protocol::_Actions> players_info;
+    // get list of players
+    std::vector<protocol::PlayerInfoUpdate::Action> playersInfo;
 
-    uint8_t actions = (uint8_t) protocol::PlayerInfoUpdateActions::AddPlayer | (uint8_t) protocol::PlayerInfoUpdateActions::InitializeChat |
-        (uint8_t) protocol::PlayerInfoUpdateActions::UpdateGamemode | (uint8_t) protocol::PlayerInfoUpdateActions::UpdateListed |
-        (uint8_t) protocol::PlayerInfoUpdateActions::UpdateLatency | (uint8_t) protocol::PlayerInfoUpdateActions::UpdateDisplayName;
+    uint8_t actions = (uint8_t) protocol::PlayerInfoUpdate::Actions::AddPlayer | (uint8_t) protocol::PlayerInfoUpdate::Actions::InitializeChat |
+        (uint8_t) protocol::PlayerInfoUpdate::Actions::UpdateGamemode | (uint8_t) protocol::PlayerInfoUpdate::Actions::UpdateListed |
+        (uint8_t) protocol::PlayerInfoUpdate::Actions::UpdateLatency | (uint8_t) protocol::PlayerInfoUpdate::Actions::UpdateDisplayName;
 
-    for (auto [_, dim] : this->getDimensions()) {
+    // iterate through the list of players
+    for (auto [_, dim] : _dimensions) {
         for (auto &player : dim->getPlayers()) {
             // send to each player the info of the current added player
+            // clang-format off
             if (player->getId() != current->getId()) {
-
-                player->sendPlayerInfoUpdate(
-                    {.actions = actions,
-                     .numberOfActions = 1,
-                     .actionSets =
-                         {{.uuid = current->getUuid(),
-                           .addPlayer =
-                               {
-                                   .name = current->getUsername(),
-                                   .numberOfProperties = 0,
-                               },
-                           .initializeChat =
-                               {
-                                   .has_sig_data = false,
-                               },
-                           .updateGamemode =
-                               {
-                                   .gamemode = current->getGamemode(),
-                               },
-                           .updateListed =
-                               {
-                                   .listed = true,
-                               },
-                           .updateLatency =
-                               {
-                                   .latency = 0, // TODO
-                               },
-                           .updateDisplayName =
-                               {
-                                   .hasDisplayName = false,
-                                   .displayName = "",
-                               }}}}
-                );
+                player->sendPlayerInfoUpdate({
+                    .actions = actions,
+                    .actionSets = {
+                        {
+                            .uuid = current->getUuid(),
+                            .addPlayer = {
+                                .name = current->getUsername(),
+                                .properties = {},
+                            },
+                        .initializeChat = {
+                                .hasSigData = false,
+                            },
+                        .updateGamemode = {
+                                .gamemode = (int32_t) current->getGamemode(),
+                            },
+                        .updateListed = {
+                                .listed = true,
+                            },
+                        .updateLatency = {
+                                .latency = 0, // TODO
+                            },
+                        .updateDisplayName = {
+                                .hasDisplayName = false,
+                            }
+                        }
+                    }
+                });
             }
 
             // save the content of the iterated player for after
-            players_info.push_back(
-                {.uuid = player->getUuid(),
-                 .addPlayer =
-                     {
-                         .name = player->getUsername(),
-                         .numberOfProperties = 0,
-                     },
-                 .initializeChat =
-                     {
-                         .has_sig_data = false,
-                     },
-                 .updateGamemode =
-                     {
-                         .gamemode = player->getGamemode(),
-                     },
-                 .updateListed =
-                     {
-                         .listed = true,
-                     },
-                 .updateLatency =
-                     {
-                         .latency = 0, // TODO
-                     },
-                 .updateDisplayName =
-                     {
-                         .hasDisplayName = false,
-                         .displayName = "",
-                     }}
-            );
+            playersInfo.push_back({
+                .uuid = player->getUuid(),
+                .addPlayer = {
+                    .name = player->getUsername(),
+                    .properties = {},
+                },
+                .initializeChat = {
+                    .hasSigData = false,
+                },
+                .updateGamemode = {
+                    .gamemode = (int32_t) player->getGamemode(),
+                },
+                .updateListed = {
+                    .listed = true,
+                },
+                .updateLatency = {
+                    .latency = 0, // TODO
+                },
+                .updateDisplayName = {
+                    .hasDisplayName = false,
+                }
+            });
+            // clang-format on
         }
     }
 
     // send the infos of all players to the current added player
-    current->sendPlayerInfoUpdate({.actions = actions, .numberOfActions = (int32_t) players_info.size(), .actionSets = players_info});
+    // clang-format off
+    current->sendPlayerInfoUpdate({
+        .actions = actions,
+        .actionSets = playersInfo
+    });
+    // clang-format on
     LDEBUG("Sent player info to " + current->getUsername());
 }
 
