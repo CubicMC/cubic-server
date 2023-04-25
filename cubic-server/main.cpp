@@ -54,6 +54,14 @@ auto initArgs(int argc, const char * const argv[])
     //     .valueFromEnvironmentVariable("CBSRV_WORLD")
     //     .defaultValue("world");
 
+    program.add("whitelist-enabled")
+        .help("enables the whitelist")
+        .valueFromConfig("general", "whitelist-enabled")
+        .valueFromEnvironmentVariable("CBSRV_WHITELIST_ENABLED")
+        .possibleValues(true, false)
+        .defaultValue(false)
+        .required();
+
     program.add("enforce-whitelist")
         .help("enforces the whitelist")
         .valueFromConfig("general", "enforce-whitelist")
@@ -100,15 +108,15 @@ int main(int argc, char *argv[])
     InterfaceContainer interfaceContainer;
     CommandLine cmd;
 
-    auto logger = logging::Logger::get_instance();
-    logger->unset_display_specification_level_in_console(logging::LogLevel::DEBUG);
-
-    if (program["nogui"] == false)
-        interfaceContainer.launch(argc, argv);
+    auto logger = logging::Logger::getInstance();
+    logger->unsetDisplaySpecificationLevelInConsole(logging::LogLevel::DEBUG);
 
     std::signal(SIGTERM, signalHandler);
     std::signal(SIGINT, signalHandler);
     std::signal(SIGPIPE, SIG_IGN);
+
+    if (program["nogui"] == false)
+        interfaceContainer.launch(argc, argv);
 
     // This should be inside the server
     cmd.launch();

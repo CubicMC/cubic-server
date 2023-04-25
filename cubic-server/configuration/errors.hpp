@@ -6,7 +6,7 @@
 namespace configuration {
 
 DEFINE_EXCEPTION(ConfigurationError);
-DEFINE_EXCEPTION(BadFile);
+DEFINE_EXCEPTION_FROM(BadFile, ConfigurationError);
 
 } // namespace configuration
 

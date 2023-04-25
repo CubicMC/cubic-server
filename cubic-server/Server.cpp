@@ -207,15 +207,11 @@ void Server::_downloadFile(const std::string &url, const std::string &path)
 void Server::_reloadConfig()
 {
     try {
-        _config.parse("./config.yml");
-    } catch (const std::exception &e) {
+        _config.load("./config.yml");
+    } catch (const configuration::ConfigurationError &e) {
         LERROR(e.what());
         return;
     }
-    _maxPlayer = _config.getMaxPlayers();
-    _motd = _config.getMotd();
-    _whitelistEnabled = _config.getWhitelist();
-    _enforceWhitelist = _config.getEnforceWhitelist();
 }
 
 /*
@@ -224,7 +220,7 @@ void Server::_reloadConfig()
 void Server::_reloadWhitelist()
 {
     try {
-        if (_whitelistEnabled) {
+        if (isWhitelistEnabled()) {
             WhitelistHandling::Whitelist whitelistReloaded = WhitelistHandling::Whitelist();
             _whitelist = whitelistReloaded;
         }
@@ -252,7 +248,7 @@ void Server::reload()
 */
 void Server::_enforceWhitelistOnReload()
 {
-    if (!_whitelistEnabled || !_enforceWhitelist)
+    if (!isWhitelistEnabled() || !isWhitelistEnforce())
         return;
     for (auto [_, worldGroup] : _worldGroups) {
         for (auto [_, world] : worldGroup->getWorlds()) {

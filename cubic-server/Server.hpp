@@ -45,15 +45,11 @@ public:
         return _config;
     }
 
-    const bool getEnforceWhitelist() const {
-        return _config["enforce-whitelist"];
-    }
-
     const WhitelistHandling::Whitelist &getWhitelist() const { return _whitelist; }
 
-    bool isWhitelistEnabled() const { return _whitelistEnabled; }
+    bool isWhitelistEnabled() const { return _config["whitelist-enabled"]; }
 
-    bool getEnforceWhitelist() const { return _enforceWhitelist; }
+    bool isWhitelistEnforce() const { return _config["enforce-whitelist"]; }
 
     static Server *getInstance()
     {

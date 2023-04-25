@@ -42,12 +42,20 @@ configuration::Value &configuration::ConfigHandler::add(const std::string &key)
 }
 
 void configuration::ConfigHandler::parse(int argc, const char * const argv[])
+{ this->parse({ argv, argv + argc }); }
+
+void configuration::ConfigHandler::parse(const std::vector<std::string> &args)
 {
     for (auto &[_, value]: this->_values)
         value.addToParser();
 
-    this->_arguments.parse(argc, argv);
+    this->_arguments.parse(args);
 
+    this->parse();
+}
+
+void configuration::ConfigHandler::parse()
+{
     for (auto &[_, value]: this->_values)
         value.parse(this->_config);
 }

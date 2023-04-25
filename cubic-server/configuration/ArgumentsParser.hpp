@@ -28,7 +28,9 @@ public:
     virtual ~_ArgumentsParser() = default;
     virtual bool has(const std::string &argument) const = 0;
     virtual std::string get(const std::string &argument) const = 0;
-    virtual void parse(int argc, char const * const *argv) = 0;
+    void parse(int argc, char const * const *argv)
+    { this->parse({ argv, argv + argc }); }
+    virtual void parse(const std::vector<std::string> &args) = 0;
     virtual Argument &addArgument(const std::string &argument) = 0;
 
 protected:
@@ -47,7 +49,7 @@ public:
     ArgumentsParser(const std::string &name, const std::string &version);
     bool has(const std::string &argument) const override;
     std::string get(const std::string &argument) const override;
-    void parse(int argc, char const * const argv[]) override;
+    void parse(const std::vector<std::string> &args) override;
     Argument &addArgument(const std::string &argument) override;
 };
 

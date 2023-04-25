@@ -10,8 +10,8 @@ bool configuration::ArgumentsParser::has(const std::string &argument) const
 std::string configuration::ArgumentsParser::get(const std::string &argument) const
 { return this->_impl->get<std::string>(argument); }
 
-void configuration::ArgumentsParser::parse(int argc, char const * const argv[])
-{ this->_impl->parse_args(argc, argv); }
+void configuration::ArgumentsParser::parse(const std::vector<std::string> &args)
+{ this->_impl->parse_args(args); }
 
 configuration::ArgumentsParser::Argument &configuration::ArgumentsParser::addArgument(const std::string &argument)
 {
@@ -20,4 +20,4 @@ configuration::ArgumentsParser::Argument &configuration::ArgumentsParser::addArg
 }
 
 std::ostream &configuration::operator<<(std::ostream &os, const configuration::ArgumentsParser &parser)
-{ return os << parser._impl; }
+{ return os << *parser._impl; }

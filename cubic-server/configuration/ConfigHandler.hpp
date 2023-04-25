@@ -56,6 +56,8 @@ public:
      * @param argv
      */
     void parse(int argc, const char * const argv[]);
+    void parse(const std::vector<std::string> &args);
+    void parse();
 
     Value &operator[](const std::string &key);
     const Value &operator[](const std::string &key) const;
