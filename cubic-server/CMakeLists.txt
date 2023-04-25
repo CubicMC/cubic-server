@@ -36,6 +36,8 @@ target_sources (${CMAKE_PROJECT_NAME} PRIVATE
     types.hpp
     types.cpp
     blocks.hpp
+    PluginManager.hpp
+    PluginManager.cpp
 )
 
 if (GTEST)
