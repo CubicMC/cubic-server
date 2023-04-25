@@ -87,7 +87,7 @@ struct Convertor<double>
     double operator()(const std::string &value)
     { return std::stod(value); }
     double operator()(const auto &value)
-    { return std::to_string(value); }
+    { return Convertor<double>()(value); }
 };
 
 template<>

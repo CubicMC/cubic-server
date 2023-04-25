@@ -13,11 +13,11 @@ namespace _details {
  * @tparam T
  */
 template<typename T>
-class _ArgumentHolder : public _Impl<T&> {
+class _ArgumentHolder : public _ImplRef<T> {
 public:
     _ArgumentHolder() = default;
     _ArgumentHolder(T &impl):
-        _Impl<T&>(impl) {}
+        _ImplRef<T>(impl) {}
 
     virtual ~_ArgumentHolder() = default;
     virtual _ArgumentHolder<T> &required() = 0;
@@ -29,11 +29,11 @@ public:
 /**
  * @brief Implementation of the ArgumentHolder for the current parser: argparse
  */
-class ArgumentHolder : public _details::_ArgumentHolder<argparse::Argument&> {
+class ArgumentHolder : public _details::_ArgumentHolder<argparse::Argument> {
 public:
     ArgumentHolder() = default;
     ArgumentHolder(argparse::Argument &impl):
-        _details::_ArgumentHolder<argparse::Argument&>(impl) {}
+        _details::_ArgumentHolder<argparse::Argument>(impl) {}
 
     virtual ArgumentHolder &required() override;
     virtual ArgumentHolder &help(const std::string &help) override;

@@ -15,13 +15,16 @@ namespace _details {
  *
  * @tparam T
  */
-template<typename T, typename A, is_base_of<_details::_ArgumentHolder<A&>> H>
-class _ArgumentsParser : public _Impl<T> {
+template<typename T, typename A, is_base_of<_details::_ArgumentHolder<A>> H>
+class _ArgumentsParser : public _ImplShared<T> {
 public:
     typedef H Argument;
     typedef T Parser;
 
 public:
+    _ArgumentsParser(const std::shared_ptr<T> &parser):
+        _ImplShared<T>(parser)
+    { }
     virtual ~_ArgumentsParser() = default;
     virtual bool has(const std::string &argument) const = 0;
     virtual std::string get(const std::string &argument) const = 0;
@@ -41,9 +44,10 @@ public:
     friend std::ostream &operator<<(std::ostream &os, const ArgumentsParser &parser);
 
 public:
+    ArgumentsParser(const std::string &name, const std::string &version);
     bool has(const std::string &argument) const override;
     std::string get(const std::string &argument) const override;
-    void parse(int argc, char const * const *argv) override;
+    void parse(int argc, char const * const argv[]) override;
     Argument &addArgument(const std::string &argument) override;
 };
 
