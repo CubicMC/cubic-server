@@ -151,7 +151,7 @@ constexpr float popFloat(uint8_t *&at, uint8_t *eof)
         uint32_t data;
     } val;
     std::memcpy(&val.rval, at, sizeof(float));
-    at += sizeof(double);
+    at += sizeof(float);
 
     val.data = ntoh32(&val.data);
 

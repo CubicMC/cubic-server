@@ -1,3 +1,4 @@
+#include <cstdint>
 #include <poll.h>
 #include <stdexcept>
 #include <string>
@@ -288,7 +289,7 @@ void Client::_handlePacket()
         try {
             packet = parser(toParse);
         } catch (std::runtime_error &error) {
-            LERROR("Error during packet parsing :");
+            LERROR("Error during packet ", (int32_t)packetId, " parsing : ");
             LERROR(error.what());
             return;
         }
