@@ -4,8 +4,9 @@
 #include "Player.hpp"
 #include "WorldGroup.hpp"
 #include "logging/Logger.hpp"
+#include <memory>
 
-World::World(WorldGroup *worldGroup):
+World::World(std::shared_ptr<WorldGroup> worldGroup):
     _worldGroup(worldGroup),
     _age(0),
     _time(0),
@@ -51,9 +52,9 @@ bool World::isInitialized() const
     return true;
 }
 
-WorldGroup *World::getWorldGroup() { return _worldGroup; }
+std::shared_ptr<WorldGroup> World::getWorldGroup() { return _worldGroup; }
 
-const WorldGroup *World::getWorldGroup() const { return _worldGroup; }
+const std::shared_ptr<WorldGroup> World::getWorldGroup() const { return _worldGroup; }
 
 std::shared_ptr<Chat> World::getChat() { return _chat; }
 

@@ -2,10 +2,12 @@
 #define CUBICSERVER_DEFAULT_DEFAULTWORLD_HPP
 
 #include "../World.hpp"
+#include "WorldGroup.hpp"
+#include <memory>
 
 class DefaultWorld : public World {
 public:
-    DefaultWorld(WorldGroup *worldGroup);
+    DefaultWorld(std::shared_ptr<WorldGroup> worldGroup);
     void tick() override;
     void initialize() override;
     void stop() override;

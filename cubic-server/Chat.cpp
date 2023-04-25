@@ -45,7 +45,7 @@ void Chat::sendPlayerMessage(const chat::Message &message, const Player *sender)
         return;
     }
 
-    this->_sendMessage(message, sender, sender->getWorldGroup(), chat::message::Type::Chat);
+    this->_sendMessage(message, sender, sender->getWorldGroup().get(), chat::message::Type::Chat);
 }
 
 void Chat::sendSystemMessage(const chat::Message &message, Player *to, bool overlay)
@@ -87,7 +87,7 @@ void Chat::sendSayMessage(const chat::Message &raw, const Player *from)
 
     auto message = chat::Message::fromTranslationKey<chat::message::TranslationKey::ChatTypeAnnouncement>(from, raw);
 
-    this->_sendMessage(message, from, from->getWorldGroup(), chat::message::Type::Announce);
+    this->_sendMessage(message, from, from->getWorldGroup().get(), chat::message::Type::Announce);
 }
 
 void Chat::sendWhisperMessage(const chat::Message &message, Player *sender, Player *to)
@@ -115,7 +115,7 @@ void Chat::sendTeamMessage(const chat::Message &message, const Player *sender)
     }
 
     // TODO: Change this when team chat is implemented
-    this->_sendMessage(message, sender, sender->getWorldGroup(), chat::message::Type::TeamSent);
+    this->_sendMessage(message, sender, sender->getWorldGroup().get(), chat::message::Type::TeamSent);
 }
 
 void Chat::sendTellrawMessage(const chat::Message &message, const Player *from, UNUSED const std::string &selector)
@@ -125,7 +125,7 @@ void Chat::sendTellrawMessage(const chat::Message &message, const Player *from, 
         return;
     }
 
-    this->_sendSystem(message, from->getWorldGroup());
+    this->_sendSystem(message, from->getWorldGroup().get());
 }
 
 void Chat::_sendMessage(const chat::Message &message, const Player *from, Player *to, const chat::message::Type &type)

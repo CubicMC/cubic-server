@@ -21,15 +21,15 @@ constexpr int NB_SPAWN_CHUNKS = 19;
 
 class World : public std::enable_shared_from_this<World> {
 public:
-    World(WorldGroup *worldGroup);
+    World(std::shared_ptr<WorldGroup> worldGroup);
 
     virtual void tick();
     virtual void initialize();
     virtual void stop();
 
     [[nodiscard]] virtual bool isInitialized() const;
-    [[nodiscard]] virtual const WorldGroup *getWorldGroup() const;
-    [[nodiscard]] virtual WorldGroup *getWorldGroup();
+    [[nodiscard]] virtual const std::shared_ptr<WorldGroup>getWorldGroup() const;
+    [[nodiscard]] virtual std::shared_ptr<WorldGroup> getWorldGroup();
     [[nodiscard]] virtual const std::shared_ptr<Chat> getChat() const;
     [[nodiscard]] virtual std::shared_ptr<Chat> getChat();
     [[nodiscard]] virtual std::shared_ptr<Dimension> getDimension(const std::string_view &name);
@@ -64,7 +64,7 @@ public:
 
 protected:
     std::shared_ptr<Chat> _chat;
-    WorldGroup *_worldGroup;
+    std::shared_ptr<WorldGroup> _worldGroup;
     std::unordered_map<std::string_view, std::shared_ptr<Dimension>> _dimensions;
     long _age;
     long _time;

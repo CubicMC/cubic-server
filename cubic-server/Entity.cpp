@@ -64,7 +64,7 @@ std::shared_ptr<Dimension> Entity::getDimension() const { return _dim; }
 
 std::shared_ptr<World> Entity::getWorld() const { return _dim->getWorld(); }
 
-WorldGroup *Entity::getWorldGroup() const { return _dim->getWorld()->getWorldGroup(); }
+std::shared_ptr<WorldGroup> Entity::getWorldGroup() const { return _dim->getWorld()->getWorldGroup(); }
 
 int32_t Entity::getId() const { return _id; }
 

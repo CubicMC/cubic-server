@@ -41,7 +41,7 @@ public:
     virtual void setRotation(uint8_t yaw, uint8_t pitch);
     [[nodiscard]] virtual std::shared_ptr<Dimension> getDimension() const;
     [[nodiscard]] virtual std::shared_ptr<World> getWorld() const;
-    [[nodiscard]] virtual WorldGroup *getWorldGroup() const;
+    [[nodiscard]] virtual std::shared_ptr<WorldGroup> getWorldGroup() const;
     [[nodiscard]] virtual int32_t getId() const;
     [[nodiscard]] virtual Vector3<double> &getPosition();
     [[nodiscard]] virtual const Vector3<double> &getPosition() const;
