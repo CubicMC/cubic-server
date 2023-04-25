@@ -56,11 +56,13 @@ public:
      *
      * @param argc
      * @param argv
-     * @param envp
      */
     void parse(int argc, const char * const *argv);
 
     Value &operator[](const std::string &key);
+    const Value &operator[](const std::string &key) const;
+    // Value &operator[](const char key[])
+    // { return operator[](std::string(key)); }
 
 private:
     std::unordered_map<std::string, Value> _values;

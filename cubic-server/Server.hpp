@@ -35,7 +35,7 @@ class Server {
 public:
     ~Server();
 
-    void launch();
+    void launch(const configuration::ConfigHandler &config);
 
     void stop();
 
@@ -45,7 +45,9 @@ public:
         return _config;
     }
 
-    const Configuration::ConfigHandler &getConfig() const { return _config; }
+    const bool getEnforceWhitelist() const {
+        return _config["enforce-whitelist"];
+    }
 
     const WhitelistHandling::Whitelist &getWhitelist() const { return _whitelist; }
 
@@ -89,12 +91,12 @@ private:
     void _enforceWhitelistOnReload();
 
 private:
-    std::string _host;
-    uint16_t _port;
-    uint32_t _maxPlayer;
-    std::string _motd;
-    bool _whitelistEnabled;
-    bool _enforceWhitelist;
+    // std::string _host;
+    // uint16_t _port;
+    // uint32_t _maxPlayer;
+    // std::string _motd;
+    // bool _enforceWhitelist;
+    configuration::ConfigHandler _config;
     std::atomic<bool> _running;
 
     // Looks like it is thread-safe, if something breaks it is here

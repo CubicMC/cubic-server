@@ -83,17 +83,20 @@ void configuration::Value::addToParser()
 
 void configuration::Value::parse(const Node &rootNode)
 {
+    // Environment variable has the highest priority
     if (_defaultValueEnvironmentVariable.size() > 0) {
         auto envValue = std::getenv(_defaultValueEnvironmentVariable.c_str());
         if (envValue != nullptr)
             _value = {envValue};
     }
 
+    // Then command line argument
     if (_defaultValueArgument.size() > 0) {
         if (_arguments.has(_defaultValueArgument))
             _value = {_arguments.get(_defaultValueArgument)};
     }
 
+    // Then config file
     if (_defaultValueConfig.size() > 0) {
         const auto *node = &rootNode;
         for (auto &key : _defaultValueConfig) {
@@ -105,6 +108,7 @@ void configuration::Value::parse(const Node &rootNode)
         _value = {node->get()};
     }
 
+    // Check if the value is in the possible values list
     if (_possibleValue.size() <= 0)
         return;
 

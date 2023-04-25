@@ -9,6 +9,8 @@ public:
         _impl(impl) {}
     T &getImpl()
     { return this->_impl; }
+    _Impl &operator=(const auto &other)
+    { this->_impl = other; }
     virtual ~_Impl() = default;
 
 protected:

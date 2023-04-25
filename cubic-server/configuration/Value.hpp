@@ -37,6 +37,29 @@ public:
     bool operator==(const T &key) const
     { return configuration::_details::Convertor<T>()(value()) == key; }
 
+    operator bool() const
+    { return configuration::_details::Convertor<bool>()(value()); }
+    operator std::nullptr_t() const
+    { return configuration::_details::Convertor<std::nullptr_t>()(value()); }
+    operator std::string() const
+    { return configuration::_details::Convertor<std::string>()(value()); }
+    operator float() const
+    { return configuration::_details::Convertor<float>()(value()); }
+    operator double() const
+    { return configuration::_details::Convertor<double>()(value()); }
+    operator int8_t() const
+    { return configuration::_details::Convertor<int8_t>()(value()); }
+    operator uint8_t() const
+    { return configuration::_details::Convertor<uint8_t>()(value()); }
+    operator int32_t() const
+    { return configuration::_details::Convertor<int32_t>()(value()); }
+    operator uint32_t() const
+    { return configuration::_details::Convertor<uint32_t>()(value()); }
+    operator int64_t() const
+    { return configuration::_details::Convertor<int64_t>()(value()); }
+    operator uint64_t() const
+    { return configuration::_details::Convertor<uint64_t>()(value()); }
+
     /**
      * @brief Get the Value as the given type.
      *
@@ -44,7 +67,7 @@ public:
      * @return T
      */
     template<typename T>
-    T as();
+    T as() const;
 
     /**
      * @brief Get the Values as the given type.
@@ -129,7 +152,7 @@ Value &Value::valueFromConfig(const std::string &node, T... keys)
 }
 
 template<typename T>
-T Value::as()
+T Value::as() const
 { return _details::Convertor<T>()(isDefault() ? _defaultValue[0] : _value[0]); }
 
 template<typename R, typename T>

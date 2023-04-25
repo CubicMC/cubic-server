@@ -41,7 +41,6 @@ struct Convertor<std::vector<T>>
     }
 };
 
-
 template<>
 struct Convertor<std::string>
 {
@@ -49,6 +48,8 @@ struct Convertor<std::string>
     { return value; }
     std::string operator()(const std::string &value)
     { return value; }
+    std::string operator()(const std::nullptr_t)
+    { return "null"; }
     std::string operator()(const auto &value)
     { return std::to_string(value); }
     std::string operator()(bool value)

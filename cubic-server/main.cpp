@@ -31,12 +31,6 @@
 auto initArgs(int argc, char **argv)
 {
     auto program = configuration::ConfigHandler();
-    program.load("./config.yml");
-
-    // auto node = YAML::LoadFile("config.yml");
-
-    // std::cout << node.IsDefined("general") << std::endl;
-    // std::cout << node.IsMap("general") << std::endl;
 
     program.add("nogui")
         .help("prevents the GUI from displaying")
@@ -50,7 +44,7 @@ auto initArgs(int argc, char **argv)
         // .valueFromArgument("--ip")
         .valueFromConfig("network", "ip")
         .valueFromEnvironmentVariable("CBSRV_IP")
-        // .defaultValue("0.0.0.0");
+        .defaultValue("0.0.0.0")
         .required();
 
     program.add("port")
@@ -58,7 +52,7 @@ auto initArgs(int argc, char **argv)
         // .valueFromArgument("--port")
         .valueFromConfig("network", "port")
         .valueFromEnvironmentVariable("CBSRV_PORT")
-        // .defaultValue(25565);
+        .defaultValue(25565)
         .required();
 
     program.add("max-players")
@@ -66,7 +60,7 @@ auto initArgs(int argc, char **argv)
         // .valueFromArgument("--max-players")
         .valueFromConfig("general", "max_players")
         .valueFromEnvironmentVariable("CBSRV_MAX_PLAYERS")
-        // .defaultValue(20);
+        .defaultValue(20)
         .required();
 
     program.add("motd")
@@ -74,7 +68,7 @@ auto initArgs(int argc, char **argv)
         // .valueFromArgument("--motd")
         .valueFromConfig("general", "motd")
         .valueFromEnvironmentVariable("CBSRV_MOTD")
-        // .defaultValue("A Cubic Server");
+        .defaultValue("A Cubic Server")
         .required();
 
     // program.add("world")
@@ -93,6 +87,17 @@ auto initArgs(int argc, char **argv)
         .defaultValue(false)
         .required();
 
+    try {
+        program.load("./config.yml");
+    } catch (configuration::BadFile) {
+        if (std::filesystem::exists("./config.yml")) {
+            LERROR("Failled to open config file, check permissions");
+            std::exit(1);
+        }
+        LINFO("No config file found, creating one");
+        program.save("./config.yml");
+    }
+
     program.parse(argc, argv);
 
     return program;
@@ -109,14 +114,14 @@ int main(int argc, char **argv)
 {
     auto program = initArgs(argc, argv);
 
-    std::cout << program << std::endl;
-    std::cout << "nogui: " << program["nogui"] << std::boolalpha << ' ' << program["nogui"].as<bool>() << std::endl;
-    std::cout << "ip: " << program["ip"] << std::endl;
-    std::cout << "port: " << program["port"] << std::endl;
-    std::cout << "max-players: " << program["max-players"] << std::endl;
-    std::cout << "motd: " << program["motd"] << std::endl;
-    std::cout << "enforce-whitelist: " << program["enforce-whitelist"] << std::endl;
-    /*
+    // std::cout << program << std::endl;
+    // std::cout << "nogui: " << program["nogui"] << std::boolalpha << ' ' << program["nogui"].as<bool>() << std::endl;
+    // std::cout << "ip: " << program["ip"] << ' ' << program["ip"].value().c_str() << std::endl;
+    // std::cout << "port: " << program["port"] << ' ' << program["port"].as<uint16_t>() << std::endl;
+    // std::cout << "max-players: " << program["max-players"] << ' ' << program["max-players"].as<uint32_t>() << std::endl;
+    // std::cout << "motd: " << program["motd"] << std::endl;
+    // std::cout << "enforce-whitelist: " << program["enforce-whitelist"] << ' ' << std::boolalpha << program["enforce-whitelist"].as<bool>() << std::endl;
+
     auto srv = Server::getInstance();
 
     InterfaceContainer interfaceContainer;
@@ -125,7 +130,7 @@ int main(int argc, char **argv)
     auto logger = logging::Logger::getInstance();
     logger->unsetDisplaySpecificationLevelInConsole(logging::LogLevel::DEBUG);
 
-    if (program["--nogui"] == false)
+    if (program["nogui"] == false)
         interfaceContainer.launch(argc, argv);
 
     std::signal(SIGTERM, signalHandler);
@@ -135,10 +140,9 @@ int main(int argc, char **argv)
     // This should be inside the server
     cmd.launch();
 
-    srv->launch();
+    srv->launch(program);
 
     cmd.stop();
     interfaceContainer.stop();
-    */
     return 0;
 }
