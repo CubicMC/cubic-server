@@ -45,12 +45,6 @@ void Chat::sendPlayerMessage(const chat::Message &message, const Player *sender)
         return;
     }
 
-    nlohmann::json response;
-    response["translate"] = "chat.type.text";
-    response["with"] = nlohmann::json::array();
-    response["with"].push_back({"text", "PlayerName"});
-    response["with"].push_back(message.toJson());
-
     this->_sendMessage(message, sender, sender->getWorldGroup(), chat::message::Type::Chat);
 }
 
