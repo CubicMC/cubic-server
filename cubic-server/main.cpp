@@ -91,39 +91,31 @@ void signalHandler(int sig)
     Server::getInstance()->stop();
 }
 
-int main(int argc, const char * const argv[])
+int main(int argc, char *argv[])
 {
     auto program = initArgs(argc, argv);
 
-    std::cout << program << std::endl;
-    std::cout << "nogui: " << program["nogui"] << std::boolalpha << ' ' << program["nogui"].as<bool>() << std::endl;
-    std::cout << "ip: " << program["ip"] << ' ' << program["ip"].value().c_str() << std::endl;
-    std::cout << "port: " << program["port"] << ' ' << program["port"].as<uint16_t>() << std::endl;
-    std::cout << "max-players: " << program["max-players"] << ' ' << program["max-players"].as<uint32_t>() << std::endl;
-    std::cout << "motd: " << program["motd"] << std::endl;
-    std::cout << "enforce-whitelist: " << program["enforce-whitelist"] << ' ' << std::boolalpha << program["enforce-whitelist"].as<bool>() << std::endl;
+    auto srv = Server::getInstance();
 
-    // auto srv = Server::getInstance();
+    InterfaceContainer interfaceContainer;
+    CommandLine cmd;
 
-    // InterfaceContainer interfaceContainer;
-    // CommandLine cmd;
+    auto logger = logging::Logger::get_instance();
+    logger->unset_display_specification_level_in_console(logging::LogLevel::DEBUG);
 
-    // auto logger = logging::Logger::get_instance();
-    // logger->unset_display_specification_level_in_console(logging::LogLevel::DEBUG);
+    if (program["nogui"] == false)
+        interfaceContainer.launch(argc, argv);
 
-    // if (program["nogui"] == false)
-    //     interfaceContainer.launch(argc, argv);
+    std::signal(SIGTERM, signalHandler);
+    std::signal(SIGINT, signalHandler);
+    std::signal(SIGPIPE, SIG_IGN);
 
-    // std::signal(SIGTERM, signalHandler);
-    // std::signal(SIGINT, signalHandler);
-    // std::signal(SIGPIPE, SIG_IGN);
+    // This should be inside the server
+    cmd.launch();
 
-    // // This should be inside the server
-    // cmd.launch();
+    srv->launch(program);
 
-    // srv->launch(program);
-
-    // cmd.stop();
-    // interfaceContainer.stop();
+    cmd.stop();
+    interfaceContainer.stop();
     return 0;
 }
