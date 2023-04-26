@@ -21,7 +21,7 @@ void command_parser::QuestionMark::execute(std::vector<std::string> &args, Playe
         if (invoker) {
             for (auto &&command : Server::getInstance()->getCommands()) {
                 if (invoker->isOperator())
-                    invoker->getDimension()->getWorld()->getChat()->sendSystemMessage(command->_help, invoker);
+                    invoker->getDimension()->getWorld()->getChat()->sendSystemMessage(command->_help, *invoker);
             }
         } else {
             for (auto &&command : Server::getInstance()->getCommands())
@@ -35,7 +35,7 @@ void command_parser::QuestionMark::execute(std::vector<std::string> &args, Playe
             }
         }
         if (invoker) {
-            invoker->getDimension()->getWorld()->getChat()->sendSystemMessage("Unknown command or insufficient permissions", invoker);
+            invoker->getDimension()->getWorld()->getChat()->sendSystemMessage("Unknown command or insufficient permissions", *invoker);
         } else {
             LINFO("Unknown command or insufficient permissions");
         }
@@ -46,7 +46,7 @@ void command_parser::QuestionMark::help(UNUSED std::vector<std::string> &args, P
 {
     if (invoker) {
         if (invoker->isOperator())
-            invoker->getDimension()->getWorld()->getChat()->sendSystemMessage("/? [<command>]", invoker);
+            invoker->getDimension()->getWorld()->getChat()->sendSystemMessage("/? [<command>]", *invoker);
     } else
         LINFO("/help [<command>]");
 }

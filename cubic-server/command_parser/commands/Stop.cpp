@@ -19,7 +19,7 @@ void command_parser::Stop::execute(UNUSED std::vector<std::string> &args, Player
 {
     if (invoker) {
         if (invoker->isOperator()) {
-            invoker->getDimension()->getWorld()->getChat()->sendSystemMessage("Stopping server...", invoker);
+            invoker->getDimension()->getWorld()->getChat()->sendSystemMessage("Stopping server...", *invoker);
             Server::getInstance()->stop();
         }
     } else
@@ -30,7 +30,7 @@ void command_parser::Stop::help(UNUSED std::vector<std::string> &args, Player *i
 {
     if (invoker) {
         if (invoker->isOperator())
-            invoker->getDimension()->getWorld()->getChat()->sendSystemMessage("/stop", invoker);
+            invoker->getDimension()->getWorld()->getChat()->sendSystemMessage("/stop", *invoker);
     } else
         LINFO("/stop");
 }

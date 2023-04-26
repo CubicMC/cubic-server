@@ -36,7 +36,7 @@ void command_parser::Seed::execute(UNUSED std::vector<std::string> &args, Player
 
     if (invoker) {
         if (invoker->isOperator())
-            invoker->getDimension()->getWorld()->getChat()->sendSystemMessage(message, invoker);
+            invoker->getDimension()->getWorld()->getChat()->sendSystemMessage(message, *invoker);
     } else
         LINFO(seed);
 }
@@ -45,7 +45,7 @@ void command_parser::Seed::help(UNUSED std::vector<std::string> &args, Player *i
 {
     if (invoker) {
         if (invoker->isOperator())
-            invoker->getDimension()->getWorld()->getChat()->sendSystemMessage("/seed", invoker);
+            invoker->getDimension()->getWorld()->getChat()->sendSystemMessage("/seed", *invoker);
     } else
         LINFO("/seed");
 }

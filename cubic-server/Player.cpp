@@ -59,13 +59,13 @@ Player::Player(Client *cli, std::shared_ptr<Dimension> dim, u128 uuid, const std
 
 Player::~Player()
 {
-    chat::Message disconnectMsg = chat::Message::fromTranslationKey<chat::message::TranslationKey::MultiplayerPlayerLeft>(this);
+    chat::Message disconnectMsg = chat::Message::fromTranslationKey<chat::message::TranslationKey::MultiplayerPlayerLeft>(*this);
     this->_cli = nullptr;
 
     this->_dim->getWorld()->sendPlayerInfoRemovePlayer(this);
 
     // Send a disconnect message
-    this->_dim->getWorld()->getChat()->sendSystemMessage(disconnectMsg, this);
+    this->_dim->getWorld()->getChat()->sendSystemMessage(disconnectMsg, *this);
 }
 
 void Player::tick()
@@ -612,7 +612,7 @@ void Player::_onChangeDifficulty(UNUSED const std::shared_ptr<protocol::ChangeDi
 void Player::_onChatMessage(const std::shared_ptr<protocol::ChatMessage> &pck)
 {
     // TODO: verify that the message is valid (signature, etc.)
-    _dim->getWorld()->getChat()->sendPlayerMessage(pck->message, this);
+    _dim->getWorld()->getChat()->sendPlayerMessage(pck->message, *this);
     LDEBUG("Got a Chat Message");
 }
 
@@ -1050,9 +1050,9 @@ void Player::_continueLoginSequence()
     this->teleport({8.5, 100, 8.5}); // TODO: change that to player_attributes::DEFAULT_SPAWN_POINT
 
     // Send login message
-    chat::Message connectionMsg = chat::Message::fromTranslationKey<chat::message::TranslationKey::MultiplayerPlayerJoined>(this);
+    chat::Message connectionMsg = chat::Message::fromTranslationKey<chat::message::TranslationKey::MultiplayerPlayerJoined>(*this);
 
-    this->getWorld()->getChat()->sendSystemMessage(connectionMsg, this);
+    this->getWorld()->getChat()->sendSystemMessage(connectionMsg, *this);
 }
 
 void Player::_unloadChunk(int32_t x, int32_t z)

@@ -28,7 +28,7 @@ int setTimeFromArg(std::string value, int multiplier, Player *invoker)
         return time;
     } catch (const std::exception &e) {
         LERROR("Expected float");
-        invoker->getDimension()->getWorld()->getChat()->sendSystemMessage("Expected float", invoker);
+        invoker->getDimension()->getWorld()->getChat()->sendSystemMessage("Expected float", *invoker);
         return -1;
     }
 }
@@ -58,11 +58,11 @@ int setTimeToAdd(std::string timeToAdd, Player *invoker)
             return time;
         } else if (timeToAdd.front() == '-') {
             LERROR("Tick count must be non-negative");
-            invoker->getDimension()->getWorld()->getChat()->sendSystemMessage("Tick count must be non-negative", invoker);
+            invoker->getDimension()->getWorld()->getChat()->sendSystemMessage("Tick count must be non-negative", *invoker);
             return -1;
         }
         LERROR("Expected float");
-        invoker->getDimension()->getWorld()->getChat()->sendSystemMessage("Expected float", invoker);
+        invoker->getDimension()->getWorld()->getChat()->sendSystemMessage("Expected float", *invoker);
         return -1;
     }
     return time;
@@ -89,11 +89,11 @@ int setTimeToSet(const std::string &timeToSet, Player *invoker)
             return time;
         } else if (timeToSet.front() == '-') {
             LERROR("Tick count must be non-negative");
-            invoker->getDimension()->getWorld()->getChat()->sendSystemMessage("Tick count must be non-negative", invoker);
+            invoker->getDimension()->getWorld()->getChat()->sendSystemMessage("Tick count must be non-negative", *invoker);
             return -1;
         }
         LERROR("Expected float");
-        invoker->getDimension()->getWorld()->getChat()->sendSystemMessage("Expected float", invoker);
+        invoker->getDimension()->getWorld()->getChat()->sendSystemMessage("Expected float", *invoker);
         return -1;
     }
     return time;
@@ -107,14 +107,14 @@ void checkArgsTime(std::vector<std::string> &args, Player *invoker)
         if (time != -1) {
             int added = Server::getInstance()->getWorldGroup("default")->getWorld("default")->addTime(time);
             LINFO("Set the time to " << added);
-            invoker->getDimension()->getWorld()->getChat()->sendSystemMessage("Set the time to " + std::to_string(added), invoker);
+            invoker->getDimension()->getWorld()->getChat()->sendSystemMessage("Set the time to " + std::to_string(added), *invoker);
         }
     } else if (args[0] == "set") {
         time = setTimeToSet(args[1], invoker);
         if (time != -1) {
             Server::getInstance()->getWorldGroup("default")->getWorld("default")->setTime(time);
             LINFO("Set the time to " << time);
-            invoker->getDimension()->getWorld()->getChat()->sendSystemMessage("Set the time to " + std::to_string(time), invoker);
+            invoker->getDimension()->getWorld()->getChat()->sendSystemMessage("Set the time to " + std::to_string(time), *invoker);
         }
     } else if (args[0] == "query") {
         if (args[1] == "daytime")
@@ -125,11 +125,11 @@ void checkArgsTime(std::vector<std::string> &args, Player *invoker)
             time = (Server::getInstance()->getWorldGroup("default")->getWorld("default")->getTime() / 24000) % INT_MAX;
         else {
             LERROR("Incorrect argument for command");
-            invoker->getDimension()->getWorld()->getChat()->sendSystemMessage("Incorrect argument for command", invoker);
+            invoker->getDimension()->getWorld()->getChat()->sendSystemMessage("Incorrect argument for command", *invoker);
             return;
         }
         LINFO("The time is " << time);
-        invoker->getDimension()->getWorld()->getChat()->sendSystemMessage("The time is " + std::to_string(time), invoker);
+        invoker->getDimension()->getWorld()->getChat()->sendSystemMessage("The time is " + std::to_string(time), *invoker);
     }
 }
 
