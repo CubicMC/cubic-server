@@ -63,6 +63,7 @@ void Player::tick()
     _keepAliveClock.tick();
 
     _tickPosition();
+    _foodTick();
 }
 
 void Player::_tickPosition()
@@ -108,8 +109,6 @@ void Player::_tickPosition()
 
     if (_pos.y < -100) // TODO: Change that
         teleport({_pos.x, -58, _pos.z});
-
-    _foodTick();
 }
 
 Client *Player::getClient() const { return _cli; }
