@@ -42,27 +42,23 @@ FetchContent_Declare(
     json
     URL https://github.com/nlohmann/json/releases/download/v3.11.2/json.tar.xz
 )
-# FetchContent_MakeAvailable(json)
 
 FetchContent_Declare(
     noise
     GIT_REPOSITORY https://github.com/Reputeless/PerlinNoise.git
     GIT_TAG v3.0.0
 )
-# FetchContent_MakeAvailable(noise)
 
 FetchContent_Declare(
     argparse
     GIT_REPOSITORY https://github.com/p-ranav/argparse.git
 )
-# FetchContent_MakeAvailable(argparse)
 
 FetchContent_Declare(
     CRCpp
     GIT_REPOSITORY https://github.com/d-bahr/CRCpp.git
     GIT_TAG release-1.2.0.0
 )
-# FetchContent_MakeAvailable(CRCpp)
 
 FetchContent_MakeAvailable(
     yaml-cpp
