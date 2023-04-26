@@ -2,7 +2,6 @@
 #define CHAT_REGISTRY_HPP
 
 #include <cstdint>
-#include <memory>
 #include <string>
 #include <vector>
 

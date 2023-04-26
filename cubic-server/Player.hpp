@@ -1,8 +1,6 @@
 #ifndef CUBICSERVER_PLAYER_HPP
 #define CUBICSERVER_PLAYER_HPP
 
-#include "Chat.hpp"
-#include "Entity.hpp"
 #include "LivingEntity.hpp"
 #include "PlayerAttributes.hpp"
 #include "SoundList.hpp"

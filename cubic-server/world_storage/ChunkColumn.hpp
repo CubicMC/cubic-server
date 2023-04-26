@@ -4,12 +4,9 @@
 #include <array>
 #include <cmath>
 #include <cstdint>
-#include <memory>
-#include <unordered_map>
 #include <vector>
 
 #include "Palette.hpp"
-#include "nbt.hpp"
 #include "protocol/Structures.hpp"
 #include "types.hpp"
 

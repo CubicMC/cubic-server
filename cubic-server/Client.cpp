@@ -1,14 +1,11 @@
-#include <cstdint>
 #include <poll.h>
 #include <stdexcept>
 #include <string>
 #include <unistd.h>
 
-#include <nlohmann/json.hpp>
 
 #include "Client.hpp"
 #include "nbt.hpp"
-#include "nlohmann/json.hpp"
 
 #include "Player.hpp"
 #include "Server.hpp"

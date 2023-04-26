@@ -1,7 +1,6 @@
 #include "nbt.hpp"
 #include <fstream>
 #include <gtest/gtest.h>
-#include <memory>
 #include <rapidcheck/gtest.h>
 
 namespace Nbt_Testing {

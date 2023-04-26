@@ -3,7 +3,6 @@
 #include "Overworld.hpp"
 #include "TheEnd.hpp"
 #include "TheNether.hpp"
-#include <memory>
 
 DefaultWorld::DefaultWorld(std::shared_ptr<WorldGroup> worldGroup):
     World(worldGroup)

@@ -8,8 +8,6 @@
 
 #include "PlayerAttributes.hpp"
 #include "Structures.hpp"
-#include "nbt.hpp"
-#include "typeSerialization.hpp"
 #include "common.hpp"
 #include "types.hpp"
 #include "world_storage/ChunkColumn.hpp"

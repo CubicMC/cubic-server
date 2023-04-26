@@ -2,7 +2,6 @@
 
 #include "Dimension.hpp"
 #include "Player.hpp"
-#include "protocol/ClientPackets.hpp"
 
 /*
  * @brief Attack the entity

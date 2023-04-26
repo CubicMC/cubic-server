@@ -1,11 +1,3 @@
-#include <algorithm>
-#include <cerrno>
-#include <chrono>
-#include <cstring>
-#include <exception>
-#include <fstream>
-#include <iostream>
-#include <memory>
 #include <curl/curl.h>
 #include <netdb.h>
 #include <poll.h>
@@ -13,8 +5,6 @@
 
 #include <CRC.h>
 
-#include "Client.hpp"
-#include "Player.hpp"
 #include "Server.hpp"
 #include "World.hpp"
 

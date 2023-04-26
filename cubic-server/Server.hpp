@@ -8,9 +8,6 @@
 #include <string>
 #include <vector>
 
-#include "protocol/ServerPackets.hpp"
-
-#include "WorldGroup.hpp"
 #include "configuration/ConfigHandler.hpp"
 #include "whitelist/Whitelist.hpp"
 

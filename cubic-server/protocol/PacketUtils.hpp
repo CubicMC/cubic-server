@@ -2,10 +2,6 @@
 #define CUBICSERVER_PROTOCOL_PACKETUTILS_HPP
 
 #include "Server.hpp"
-#include "typeSerialization.hpp"
-#include <functional>
-#include <memory>
-#include <optional>
 #include <cstdint>
 #include <vector>
 

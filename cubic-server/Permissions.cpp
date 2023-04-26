@@ -1,6 +1,4 @@
 #include <fstream>
-#include <iostream>
-#include <memory>
 
 #include "Permissions.hpp"
 #include "Player.hpp"

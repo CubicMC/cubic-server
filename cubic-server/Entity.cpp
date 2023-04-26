@@ -5,7 +5,6 @@
 #include "World.hpp"
 #include "types.hpp"
 #include "Server.hpp"
-#include <memory>
 
 Entity::Entity(std::shared_ptr<Dimension> dim):
     _dim(dim)

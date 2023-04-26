@@ -1,6 +1,4 @@
 #include "ChatRegistry.hpp"
-#include "nbt.hpp"
-#include <memory>
 
 std::shared_ptr<nbt::Compound> chat::_details::ChatType::toNBT() const
 {

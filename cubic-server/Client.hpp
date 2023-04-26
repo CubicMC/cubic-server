@@ -2,14 +2,11 @@
 #define CUBICSERVER_CLIENT_HPP
 
 #include <arpa/inet.h>
-#include <deque>
 #include <memory>
 #include <netinet/in.h>
 #include <thread>
 #include <vector>
 
-#include "Chat.hpp"
-#include "logging/Logger.hpp"
 #include "chat/Message.hpp"
 #include "protocol/ClientPackets.hpp"
 #include "protocol/ServerPackets.hpp"

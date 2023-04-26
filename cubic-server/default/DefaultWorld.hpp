@@ -3,7 +3,6 @@
 
 #include "../World.hpp"
 #include "WorldGroup.hpp"
-#include <memory>
 
 class DefaultWorld : public World {
 public:

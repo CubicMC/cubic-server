@@ -2,7 +2,6 @@
 #define CUBICSERVER_DEFAULT_OVERWORLD_HPP
 
 #include <future>
-#include <memory>
 
 #include "../Dimension.hpp"
 

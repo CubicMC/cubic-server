@@ -1,10 +1,3 @@
-#include <cstdint>
-#include <iostream>
-#include <memory>
-#include <sstream>
-#include <string>
-
-#include "Client.hpp"
 #include "Player.hpp"
 
 #include "Chat.hpp"
@@ -16,9 +9,6 @@
 #include "World.hpp"
 #include "blocks.hpp"
 #include "command_parser/CommandParser.hpp"
-#include "nbt.hpp"
-#include "protocol/ClientPackets.hpp"
-#include <cstdint>
 #include "items/foodItems.hpp"
 #include "logging/Logger.hpp"
 
