@@ -24,6 +24,8 @@ constexpr uint16_t MC_PROTOCOL = 761;
 
 constexpr uint16_t MS_PER_TICK = 50;
 
+#define UNUSED __attribute__((unused))
+
 #define GLOBAL_PALETTE Server::getInstance()->getGlobalPalette()
 
 class Client;
@@ -43,9 +45,9 @@ public:
 
     const WhitelistHandling::Whitelist &getWhitelist() const { return _whitelist; }
 
-    const bool isWhitelistEnabled() const { return _whitelistEnabled; }
+    bool isWhitelistEnabled() const { return _whitelistEnabled; }
 
-    const bool getEnforceWhitelist() const { return _enforceWhitelist; }
+    bool getEnforceWhitelist() const { return _enforceWhitelist; }
 
     static Server *getInstance()
     {
@@ -55,9 +57,11 @@ public:
 
     const std::vector<std::shared_ptr<Client>> &getClients() const { return _clients; }
 
-    const WorldGroup *getWorldGroup(const std::string_view &name) const { return this->_worldGroups.at(name); }
+    std::shared_ptr<WorldGroup> getWorldGroup(const std::string_view &name) { return this->_worldGroups.at(name); }
 
-    const std::vector<CommandBase *> &getCommands() const { return _commands; }
+    const std::shared_ptr<WorldGroup> getWorldGroup(const std::string_view &name) const { return this->_worldGroups.at(name); }
+
+    const std::vector<std::unique_ptr<CommandBase>> &getCommands() const { return _commands; }
 
     bool isRunning() const { return _running; }
 
@@ -65,8 +69,9 @@ public:
 
     const Items::ItemConverter &getItemConverter() const { return _itemConverter; }
 
-    void forEachWorldGroup(std::function<void(WorldGroup &)> callback);
-    void forEachWorldGroupIf(std::function<void(WorldGroup &)> callback, std::function<bool(const WorldGroup &)> predicate);
+    std::unordered_map<std::string_view, std::shared_ptr<WorldGroup>> &getWorldGroups();
+
+    const std::unordered_map<std::string_view, std::shared_ptr<WorldGroup>> &getWorldGroups() const;
 
     Permissions permissions;
 
@@ -96,21 +101,8 @@ private:
 
     Configuration::ConfigHandler _config;
     WhitelistHandling::Whitelist _whitelist;
-    std::unordered_map<std::string_view, WorldGroup *> _worldGroups;
-    // clang-format off
-    std::vector<CommandBase *> _commands = {
-        new command_parser::Help,
-        new command_parser::QuestionMark,
-        new command_parser::Stop,
-        new command_parser::Seed,
-        new command_parser::DumpChunk,
-        new command_parser::Log,
-        new command_parser::Op,
-        new command_parser::Deop,
-        new command_parser::Reload,
-        new command_parser::Time,
-    };
-    // clang-format on
+    std::unordered_map<std::string_view, std::shared_ptr<WorldGroup>> _worldGroups;
+    std::vector<std::unique_ptr<CommandBase>> _commands;
     Blocks::GlobalPalette _globalPalette;
     Items::ItemConverter _itemConverter;
 };

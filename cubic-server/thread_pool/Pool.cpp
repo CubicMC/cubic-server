@@ -43,6 +43,7 @@ void thread_pool::Pool::stop()
     }
 }
 
+// TODO(huntears): Fix whatever the hell is going on here
 void thread_pool::Pool::wait()
 {
     this->_queueMutex.lock();
@@ -54,7 +55,7 @@ void thread_pool::Pool::wait()
     this->_queueMutex.unlock();
 
     for (size_t i = 0; i < this->_workers.size(); ++i) {
-        auto &worker = this->_workers[i];
+        // auto &worker = this->_workers[i];
         while (true) {
             if (this->_isRunning[i] != true)
                 break;

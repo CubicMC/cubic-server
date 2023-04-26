@@ -3,7 +3,7 @@
 
 #include "Entity.hpp"
 
-constexpr float KNOCKBACK_DEFAULT_FORCE = 1000.0f;
+constexpr float KNOCKBACK_DEFAULT_FORCE = 2500.0f;
 
 class LivingEntity : public Entity {
 public:
@@ -15,9 +15,9 @@ public:
     }
     ~LivingEntity() override = default;
 
-    virtual void attack(Vector3<double> source);
+    virtual void attack(const Vector3<double> &source);
     virtual void damage(float damage);
-    virtual void knockback(Vector3<double> source = Vector3<double>(0, 0, 0), float force = KNOCKBACK_DEFAULT_FORCE);
+    virtual void knockback(const Vector3<double> &source = Vector3<double>(0, 0, 0), float force = KNOCKBACK_DEFAULT_FORCE);
 
     virtual void setHealth(float health);
 

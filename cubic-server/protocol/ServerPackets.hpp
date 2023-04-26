@@ -93,22 +93,22 @@ struct Handshake : BaseServerPacket {
         Login = 2,
     } nextState;
 };
-std::shared_ptr<Handshake> parseHandshake(std::vector<uint8_t> &buffer);
+std::unique_ptr<Handshake> parseHandshake(std::vector<uint8_t> &buffer);
 
 struct StatusRequest : BaseServerPacket { };
-std::shared_ptr<StatusRequest> parseStatusRequest(std::vector<uint8_t> &buffer);
+std::unique_ptr<StatusRequest> parseStatusRequest(std::vector<uint8_t> &buffer);
 
 struct PingRequest : BaseServerPacket {
     int64_t payload;
 };
-std::shared_ptr<PingRequest> parsePingRequest(std::vector<uint8_t> &buffer);
+std::unique_ptr<PingRequest> parsePingRequest(std::vector<uint8_t> &buffer);
 
 struct LoginStart : BaseServerPacket {
     std::string name;
     bool hasPlayerUuid;
     u128 playerUuid;
 };
-std::shared_ptr<LoginStart> parseLoginStart(std::vector<uint8_t> &buffer);
+std::unique_ptr<LoginStart> parseLoginStart(std::vector<uint8_t> &buffer);
 
 struct EncryptionResponse : BaseServerPacket {
     std::vector<uint8_t> sharedSecret;
@@ -117,28 +117,28 @@ struct EncryptionResponse : BaseServerPacket {
     int64_t salt;
     std::vector<uint8_t> messageSignature;
 };
-std::shared_ptr<EncryptionResponse> parseEncryptionResponse(std::vector<uint8_t> &buffer);
+std::unique_ptr<EncryptionResponse> parseEncryptionResponse(std::vector<uint8_t> &buffer);
 
 struct ConfirmTeleportation : BaseServerPacket {
     int32_t teleportId;
 };
-std::shared_ptr<ConfirmTeleportation> parseConfirmTeleportation(std::vector<uint8_t> &buffer);
+std::unique_ptr<ConfirmTeleportation> parseConfirmTeleportation(std::vector<uint8_t> &buffer);
 
 struct QueryBlockEntityTag : BaseServerPacket {
     int32_t transactionId;
     Position location;
 };
-std::shared_ptr<QueryBlockEntityTag> parseQueryBlockEntityTag(std::vector<uint8_t> &buffer);
+std::unique_ptr<QueryBlockEntityTag> parseQueryBlockEntityTag(std::vector<uint8_t> &buffer);
 
 struct ChangeDifficulty : BaseServerPacket {
     player_attributes::Gamemode newDifficulty;
 };
-std::shared_ptr<ChangeDifficulty> parseChangeDifficulty(std::vector<uint8_t> &buffer);
+std::unique_ptr<ChangeDifficulty> parseChangeDifficulty(std::vector<uint8_t> &buffer);
 
 struct MessageAcknowledgement : BaseServerPacket {
     int32_t messageCount;
 };
-std::shared_ptr<MessageAcknowledgement> parseMessageAcknowledgement(std::vector<uint8_t> &buffer);
+std::unique_ptr<MessageAcknowledgement> parseMessageAcknowledgement(std::vector<uint8_t> &buffer);
 
 /**
  * @brief this is the link to the packet: https://wiki.vg/Protocol#Chat_Command
@@ -160,9 +160,9 @@ struct ChatCommand : BaseServerPacket {
  * @brief This function is used to parse the chat command packet
  *
  * @param buffer
- * @return std::shared_ptr<ChatCommand>
+ * @return std::unique_ptr<ChatCommand>
  */
-std::shared_ptr<ChatCommand> parseChatCommand(std::vector<uint8_t> &buffer);
+std::unique_ptr<ChatCommand> parseChatCommand(std::vector<uint8_t> &buffer);
 
 struct ChatMessage : BaseServerPacket {
     std::string message;
@@ -173,7 +173,7 @@ struct ChatMessage : BaseServerPacket {
     int32_t messageCount;
     std::bitset<20> acknowledged;
 };
-std::shared_ptr<ChatMessage> parseChatMessage(std::vector<uint8_t> &buffer);
+std::unique_ptr<ChatMessage> parseChatMessage(std::vector<uint8_t> &buffer);
 
 struct ClientCommand : BaseServerPacket {
     enum class ActionID : int32_t {
@@ -181,7 +181,7 @@ struct ClientCommand : BaseServerPacket {
         RequestStats = 1,
     } actionId;
 };
-std::shared_ptr<ClientCommand> parseClientCommand(std::vector<uint8_t> &buffer);
+std::unique_ptr<ClientCommand> parseClientCommand(std::vector<uint8_t> &buffer);
 
 struct ClientInformation : BaseServerPacket {
     std::string locale;
@@ -200,19 +200,19 @@ struct ClientInformation : BaseServerPacket {
     bool enableTextFiltering;
     bool allowServerListings;
 };
-std::shared_ptr<ClientInformation> parseClientInformation(std::vector<uint8_t> &buffer);
+std::unique_ptr<ClientInformation> parseClientInformation(std::vector<uint8_t> &buffer);
 
 struct CommandSuggestionRequest : BaseServerPacket {
     int32_t transactionId;
     std::string text;
 };
-std::shared_ptr<CommandSuggestionRequest> parseCommandSuggestionRequest(std::vector<uint8_t> &buffer);
+std::unique_ptr<CommandSuggestionRequest> parseCommandSuggestionRequest(std::vector<uint8_t> &buffer);
 
 struct ClickContainerButton : BaseServerPacket {
     uint8_t windowId;
     uint8_t buttonId;
 };
-std::shared_ptr<ClickContainerButton> parseClickContainerButton(std::vector<uint8_t> &buffer);
+std::unique_ptr<ClickContainerButton> parseClickContainerButton(std::vector<uint8_t> &buffer);
 
 struct ClickContainer : BaseServerPacket {
     struct SlotWithIndex {
@@ -227,18 +227,18 @@ struct ClickContainer : BaseServerPacket {
     std::vector<SlotWithIndex> arrayOfSlots;
     Slot carriedItem;
 };
-std::shared_ptr<ClickContainer> parseClickContainer(std::vector<uint8_t> &buffer);
+std::unique_ptr<ClickContainer> parseClickContainer(std::vector<uint8_t> &buffer);
 
 struct CloseContainerRequest : BaseServerPacket {
     uint8_t windowId;
 };
-std::shared_ptr<CloseContainerRequest> parseCloseContainerRequest(std::vector<uint8_t> &buffer);
+std::unique_ptr<CloseContainerRequest> parseCloseContainerRequest(std::vector<uint8_t> &buffer);
 
 struct PluginMessage : BaseServerPacket {
     std::string channel;
     std::vector<uint8_t> data;
 };
-std::shared_ptr<PluginMessage> parsePluginMessage(std::vector<uint8_t> &buffer);
+std::unique_ptr<PluginMessage> parsePluginMessage(std::vector<uint8_t> &buffer);
 
 struct EditBook : BaseServerPacket {
     int32_t slot;
@@ -246,13 +246,13 @@ struct EditBook : BaseServerPacket {
     bool hasTitle;
     std::string title;
 };
-std::shared_ptr<EditBook> parseEditBook(std::vector<uint8_t> &buffer);
+std::unique_ptr<EditBook> parseEditBook(std::vector<uint8_t> &buffer);
 
 struct QueryEntityTag : BaseServerPacket {
     int32_t transactionId;
     int32_t entityId;
 };
-std::shared_ptr<QueryEntityTag> parseQueryEntityTag(std::vector<uint8_t> &buffer);
+std::unique_ptr<QueryEntityTag> parseQueryEntityTag(std::vector<uint8_t> &buffer);
 
 struct Interact : BaseServerPacket {
     int32_t entityId;
@@ -270,24 +270,24 @@ struct Interact : BaseServerPacket {
     } hand;
     bool sneaking;
 };
-std::shared_ptr<Interact> parseInteract(std::vector<uint8_t> &buffer);
+std::unique_ptr<Interact> parseInteract(std::vector<uint8_t> &buffer);
 
 struct JigsawGenerate : BaseServerPacket {
     Position location;
     int32_t levels;
     bool keepJigsaws;
 };
-std::shared_ptr<JigsawGenerate> parseJigsawGenerate(std::vector<uint8_t> &buffer);
+std::unique_ptr<JigsawGenerate> parseJigsawGenerate(std::vector<uint8_t> &buffer);
 
 struct KeepAliveResponse : BaseServerPacket {
     int64_t keepAliveId;
 };
-std::shared_ptr<KeepAliveResponse> parseKeepAliveResponse(std::vector<uint8_t> &buffer);
+std::unique_ptr<KeepAliveResponse> parseKeepAliveResponse(std::vector<uint8_t> &buffer);
 
 struct LockDifficulty : BaseServerPacket {
     bool locked;
 };
-std::shared_ptr<LockDifficulty> parseLockDifficulty(std::vector<uint8_t> &buffer);
+std::unique_ptr<LockDifficulty> parseLockDifficulty(std::vector<uint8_t> &buffer);
 
 struct SetPlayerPosition : BaseServerPacket {
     double x;
@@ -295,7 +295,7 @@ struct SetPlayerPosition : BaseServerPacket {
     double z;
     bool onGround;
 };
-std::shared_ptr<SetPlayerPosition> parseSetPlayerPosition(std::vector<uint8_t> &buffer);
+std::unique_ptr<SetPlayerPosition> parseSetPlayerPosition(std::vector<uint8_t> &buffer);
 
 struct SetPlayerPositionAndRotation : BaseServerPacket {
     double x;
@@ -305,19 +305,19 @@ struct SetPlayerPositionAndRotation : BaseServerPacket {
     float pitch;
     bool onGround;
 };
-std::shared_ptr<SetPlayerPositionAndRotation> parseSetPlayerPositionAndRotation(std::vector<uint8_t> &buffer);
+std::unique_ptr<SetPlayerPositionAndRotation> parseSetPlayerPositionAndRotation(std::vector<uint8_t> &buffer);
 
 struct SetPlayerRotation : BaseServerPacket {
     float yaw;
     float pitch;
     bool onGround;
 };
-std::shared_ptr<SetPlayerRotation> parseSetPlayerRotation(std::vector<uint8_t> &buffer);
+std::unique_ptr<SetPlayerRotation> parseSetPlayerRotation(std::vector<uint8_t> &buffer);
 
 struct SetPlayerOnGround : BaseServerPacket {
     bool onGround;
 };
-std::shared_ptr<SetPlayerOnGround> parseSetPlayerOnGround(std::vector<uint8_t> &buffer);
+std::unique_ptr<SetPlayerOnGround> parseSetPlayerOnGround(std::vector<uint8_t> &buffer);
 
 struct MoveVehicle : BaseServerPacket {
     double x;
@@ -326,25 +326,25 @@ struct MoveVehicle : BaseServerPacket {
     float yaw;
     float pitch;
 };
-std::shared_ptr<MoveVehicle> parseMoveVehicle(std::vector<uint8_t> &buffer);
+std::unique_ptr<MoveVehicle> parseMoveVehicle(std::vector<uint8_t> &buffer);
 
 struct PaddleBoat : BaseServerPacket {
     bool leftPaddleTurning;
     bool rightPaddleTurning;
 };
-std::shared_ptr<PaddleBoat> parsePaddleBoat(std::vector<uint8_t> &buffer);
+std::unique_ptr<PaddleBoat> parsePaddleBoat(std::vector<uint8_t> &buffer);
 
 struct PickItem : BaseServerPacket {
     int32_t slotToUse;
 };
-std::shared_ptr<PickItem> parsePickItem(std::vector<uint8_t> &buffer);
+std::unique_ptr<PickItem> parsePickItem(std::vector<uint8_t> &buffer);
 
 struct PlaceRecipe : BaseServerPacket {
     uint8_t windowId;
     std::string recipe;
     bool makeAll;
 };
-std::shared_ptr<PlaceRecipe> parsePlaceRecipe(std::vector<uint8_t> &buffer);
+std::unique_ptr<PlaceRecipe> parsePlaceRecipe(std::vector<uint8_t> &buffer);
 
 struct PlayerAbilities : BaseServerPacket {
     enum Flags : uint8_t {
@@ -355,7 +355,7 @@ struct PlayerAbilities : BaseServerPacket {
     };
     uint8_t flags;
 };
-std::shared_ptr<PlayerAbilities> parsePlayerAbilities(std::vector<uint8_t> &buffer);
+std::unique_ptr<PlayerAbilities> parsePlayerAbilities(std::vector<uint8_t> &buffer);
 
 struct PlayerAction : BaseServerPacket {
     enum class Status : int32_t {
@@ -378,7 +378,7 @@ struct PlayerAction : BaseServerPacket {
     } face;
     int32_t sequence;
 };
-std::shared_ptr<PlayerAction> parsePlayerAction(std::vector<uint8_t> &buffer);
+std::unique_ptr<PlayerAction> parsePlayerAction(std::vector<uint8_t> &buffer);
 
 struct PlayerCommand : BaseServerPacket {
     int32_t entityId;
@@ -395,19 +395,19 @@ struct PlayerCommand : BaseServerPacket {
     } actionId;
     int32_t jumpBoost;
 };
-std::shared_ptr<PlayerCommand> parsePlayerCommand(std::vector<uint8_t> &buffer);
+std::unique_ptr<PlayerCommand> parsePlayerCommand(std::vector<uint8_t> &buffer);
 
 struct PlayerInput : BaseServerPacket {
     float sideways;
     float forward;
     uint8_t flags;
 };
-std::shared_ptr<PlayerInput> parsePlayerInput(std::vector<uint8_t> &buffer);
+std::unique_ptr<PlayerInput> parsePlayerInput(std::vector<uint8_t> &buffer);
 
 struct Pong : BaseServerPacket {
     int32_t id;
 };
-std::shared_ptr<Pong> parsePong(std::vector<uint8_t> &buffer);
+std::unique_ptr<Pong> parsePong(std::vector<uint8_t> &buffer);
 
 struct PlayerSession : BaseServerPacket {
     u128 uuid;
@@ -415,7 +415,7 @@ struct PlayerSession : BaseServerPacket {
     std::vector<uint8_t> publicKey;
     std::vector<uint8_t> signature;
 };
-std::shared_ptr<PlayerSession> parsePlayerSession(std::vector<uint8_t> &buffer);
+std::unique_ptr<PlayerSession> parsePlayerSession(std::vector<uint8_t> &buffer);
 
 struct ChangeRecipeBookSettings : BaseServerPacket {
     enum class BookID : int32_t {
@@ -427,17 +427,17 @@ struct ChangeRecipeBookSettings : BaseServerPacket {
     bool bookOpen;
     bool filterActive;
 };
-std::shared_ptr<ChangeRecipeBookSettings> parseChangeRecipeBookSettings(std::vector<uint8_t> &buffer);
+std::unique_ptr<ChangeRecipeBookSettings> parseChangeRecipeBookSettings(std::vector<uint8_t> &buffer);
 
 struct SetSeenRecipe : BaseServerPacket {
     std::string recipeId;
 };
-std::shared_ptr<SetSeenRecipe> parseSetSeenRecipe(std::vector<uint8_t> &buffer);
+std::unique_ptr<SetSeenRecipe> parseSetSeenRecipe(std::vector<uint8_t> &buffer);
 
 struct RenameItem : BaseServerPacket {
     std::string itemName;
 };
-std::shared_ptr<RenameItem> parseRenameItem(std::vector<uint8_t> &buffer);
+std::unique_ptr<RenameItem> parseRenameItem(std::vector<uint8_t> &buffer);
 
 struct ResourcePack : BaseServerPacket {
     enum class Result : int32_t {
@@ -447,7 +447,7 @@ struct ResourcePack : BaseServerPacket {
         Accepted = 3,
     } result;
 };
-std::shared_ptr<ResourcePack> parseResourcePack(std::vector<uint8_t> &buffer);
+std::unique_ptr<ResourcePack> parseResourcePack(std::vector<uint8_t> &buffer);
 
 struct SeenAdvancements : BaseServerPacket {
     enum class Action : int32_t {
@@ -456,12 +456,12 @@ struct SeenAdvancements : BaseServerPacket {
     } action;
     std::string tabId;
 };
-std::shared_ptr<SeenAdvancements> parseSeenAdvancements(std::vector<uint8_t> &buffer);
+std::unique_ptr<SeenAdvancements> parseSeenAdvancements(std::vector<uint8_t> &buffer);
 
 struct SelectTrade : BaseServerPacket {
     int32_t selectedSlot;
 };
-std::shared_ptr<SelectTrade> parseSelectTrade(std::vector<uint8_t> &buffer);
+std::unique_ptr<SelectTrade> parseSelectTrade(std::vector<uint8_t> &buffer);
 
 struct SetBeaconEffect : BaseServerPacket {
     bool primaryEffectPresent;
@@ -469,12 +469,12 @@ struct SetBeaconEffect : BaseServerPacket {
     bool secondaryEffectPresent;
     int32_t secondaryEffect;
 };
-std::shared_ptr<SetBeaconEffect> parseSetBeaconEffect(std::vector<uint8_t> &buffer);
+std::unique_ptr<SetBeaconEffect> parseSetBeaconEffect(std::vector<uint8_t> &buffer);
 
 struct SetHeldItem : BaseServerPacket {
     uint16_t slot; // Why that a short Mojang ? A byte would have been way enough -_-
 };
-std::shared_ptr<SetHeldItem> parseSetHeldItem(std::vector<uint8_t> &buffer);
+std::unique_ptr<SetHeldItem> parseSetHeldItem(std::vector<uint8_t> &buffer);
 
 struct ProgramCommandBlock : BaseServerPacket {
     Position location;
@@ -486,20 +486,20 @@ struct ProgramCommandBlock : BaseServerPacket {
     } mode;
     uint8_t flags;
 };
-std::shared_ptr<ProgramCommandBlock> parseProgramCommandBlock(std::vector<uint8_t> &buffer);
+std::unique_ptr<ProgramCommandBlock> parseProgramCommandBlock(std::vector<uint8_t> &buffer);
 
 struct ProgramCommandBlockMinecart : BaseServerPacket {
     int32_t entityId;
     std::string command;
     bool trackOutput;
 };
-std::shared_ptr<ProgramCommandBlockMinecart> parseProgramCommandBlockMinecart(std::vector<uint8_t> &buffer);
+std::unique_ptr<ProgramCommandBlockMinecart> parseProgramCommandBlockMinecart(std::vector<uint8_t> &buffer);
 
 struct SetCreativeModeSlot : BaseServerPacket {
     int16_t slot;
     Slot clickedItem;
 };
-std::shared_ptr<SetCreativeModeSlot> parseSetCreativeModeSlot(std::vector<uint8_t> &buffer);
+std::unique_ptr<SetCreativeModeSlot> parseSetCreativeModeSlot(std::vector<uint8_t> &buffer);
 
 struct ProgramJigsawBlock : BaseServerPacket {
     Position location;
@@ -509,7 +509,7 @@ struct ProgramJigsawBlock : BaseServerPacket {
     std::string finalState;
     std::string jointType;
 };
-std::shared_ptr<ProgramJigsawBlock> parseProgramJigsawBlock(std::vector<uint8_t> &buffer);
+std::unique_ptr<ProgramJigsawBlock> parseProgramJigsawBlock(std::vector<uint8_t> &buffer);
 
 struct ProgramStructureBlock : BaseServerPacket {
     Position location;
@@ -548,7 +548,7 @@ struct ProgramStructureBlock : BaseServerPacket {
     int64_t seed;
     uint8_t flags;
 };
-std::shared_ptr<ProgramStructureBlock> parseProgramStructureBlock(std::vector<uint8_t> &buffer);
+std::unique_ptr<ProgramStructureBlock> parseProgramStructureBlock(std::vector<uint8_t> &buffer);
 
 struct UpdateSign : BaseServerPacket {
     Position location;
@@ -557,7 +557,7 @@ struct UpdateSign : BaseServerPacket {
     std::string line3;
     std::string line4;
 };
-std::shared_ptr<UpdateSign> parseUpdateSign(std::vector<uint8_t> &buffer);
+std::unique_ptr<UpdateSign> parseUpdateSign(std::vector<uint8_t> &buffer);
 
 struct SwingArm : BaseServerPacket {
     enum class Hand : int32_t {
@@ -565,12 +565,12 @@ struct SwingArm : BaseServerPacket {
         OffHand = 1,
     } hand;
 };
-std::shared_ptr<SwingArm> parseSwingArm(std::vector<uint8_t> &buffer);
+std::unique_ptr<SwingArm> parseSwingArm(std::vector<uint8_t> &buffer);
 
 struct TeleportToEntity : BaseServerPacket {
     u128 targetPlayer;
 };
-std::shared_ptr<TeleportToEntity> parseTeleportToEntity(std::vector<uint8_t> &buffer);
+std::unique_ptr<TeleportToEntity> parseTeleportToEntity(std::vector<uint8_t> &buffer);
 
 struct UseItemOn : BaseServerPacket {
     enum class Hand : int32_t {
@@ -592,7 +592,7 @@ struct UseItemOn : BaseServerPacket {
     bool insideBlock;
     int32_t sequence;
 };
-std::shared_ptr<UseItemOn> parseUseItemOn(std::vector<uint8_t> &buffer);
+std::unique_ptr<UseItemOn> parseUseItemOn(std::vector<uint8_t> &buffer);
 
 struct UseItem : BaseServerPacket {
     enum class Hand : int32_t {
@@ -601,25 +601,25 @@ struct UseItem : BaseServerPacket {
     } hand;
     int32_t sequence;
 };
-std::shared_ptr<UseItem> parseUseItem(std::vector<uint8_t> &buffer);
+std::unique_ptr<UseItem> parseUseItem(std::vector<uint8_t> &buffer);
 
 // Maps
 
-static const std::unordered_map<ServerPacketsID, std::function<std::shared_ptr<BaseServerPacket>(std::vector<uint8_t> &)>> packetIDToParseInitial = {
+static const std::unordered_map<ServerPacketsID, std::function<std::unique_ptr<BaseServerPacket>(std::vector<uint8_t> &)>> packetIDToParseInitial = {
     {ServerPacketsID::Handshake, parseHandshake},
 };
 
-static const std::unordered_map<ServerPacketsID, std::function<std::shared_ptr<BaseServerPacket>(std::vector<uint8_t> &)>> packetIDToParseStatus = {
+static const std::unordered_map<ServerPacketsID, std::function<std::unique_ptr<BaseServerPacket>(std::vector<uint8_t> &)>> packetIDToParseStatus = {
     {ServerPacketsID::StatusRequest, &parseStatusRequest},
     {ServerPacketsID::PingRequest, &parsePingRequest},
 };
 
-static const std::unordered_map<ServerPacketsID, std::function<std::shared_ptr<BaseServerPacket>(std::vector<uint8_t> &)>> packetIDToParseLogin = {
+static const std::unordered_map<ServerPacketsID, std::function<std::unique_ptr<BaseServerPacket>(std::vector<uint8_t> &)>> packetIDToParseLogin = {
     {ServerPacketsID::LoginStart, &parseLoginStart},
     {ServerPacketsID::EncryptionResponse, &parseEncryptionResponse},
 };
 
-static const std::unordered_map<ServerPacketsID, std::function<std::shared_ptr<BaseServerPacket>(std::vector<uint8_t> &)>> packetIDToParsePlay = {
+static const std::unordered_map<ServerPacketsID, std::function<std::unique_ptr<BaseServerPacket>(std::vector<uint8_t> &)>> packetIDToParsePlay = {
     {ServerPacketsID::ConfirmTeleportation, &parseConfirmTeleportation},
     {ServerPacketsID::QueryBlockEntityTag, &parseQueryBlockEntityTag},
     {ServerPacketsID::ChangeDifficulty, &parseChangeDifficulty},

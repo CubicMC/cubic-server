@@ -4,16 +4,20 @@
 #include "TheEnd.hpp"
 #include "TheNether.hpp"
 
-DefaultWorld::DefaultWorld(WorldGroup *worldGroup):
+DefaultWorld::DefaultWorld(std::shared_ptr<WorldGroup> worldGroup):
     World(worldGroup)
 {
-    this->_dimensions.emplace("end", std::make_shared<TheEnd>(reinterpret_cast<World *>(this)));
-    this->_dimensions.emplace("nether", std::make_shared<TheNether>(reinterpret_cast<World *>(this)));
-    this->_dimensions.emplace("overworld", std::make_shared<Overworld>(reinterpret_cast<World *>(this)));
 }
 
 void DefaultWorld::tick() { World::tick(); }
 
-void DefaultWorld::initialize() { World::initialize(); }
+void DefaultWorld::initialize()
+{
+    this->_dimensions.emplace("end", std::make_shared<TheEnd>(shared_from_this()));
+    this->_dimensions.emplace("nether", std::make_shared<TheNether>(shared_from_this()));
+    this->_dimensions.emplace("overworld", std::make_shared<Overworld>(shared_from_this()));
+
+    World::initialize();
+}
 
 void DefaultWorld::stop() { World::stop(); }

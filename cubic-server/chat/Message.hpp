@@ -124,7 +124,7 @@ public:
      * @return Message
      */
     template<chat::message::TranslationKey key>
-    static Message fromTranslationKey(const Player *player)
+    static Message fromTranslationKey(const Player &player)
     {
         return message::_detail::fromTranslationKey<key>(player);
     }
@@ -138,7 +138,7 @@ public:
      * @return Message
      */
     template<chat::message::TranslationKey key>
-    static Message fromTranslationKey(const Player *player, const Message &message)
+    static Message fromTranslationKey(const Player &player, const Message &message)
     {
         return message::_detail::fromTranslationKey<key>(player, message);
     }

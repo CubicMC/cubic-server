@@ -11,7 +11,7 @@ public:
 
     void addOperator(const std::string &name);
     bool removeOperator(const std::string &name);
-    const bool isOperator(const std::string &name) const;
+    bool isOperator(const std::string &name) const;
 
 private:
     std::string _operatorFileName;

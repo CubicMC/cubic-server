@@ -1,5 +1,6 @@
 #include "ChunkColumn.hpp"
 
+#include "Server.hpp"
 #include "blocks.hpp"
 #include "generation/overworld.hpp"
 
@@ -13,6 +14,10 @@ ChunkColumn::ChunkColumn(const Position2D &chunkPos):
         block = 0;
     for (auto &biome : this->_biomes)
         biome = 0;
+    for (auto i = 0; i < HEIGHTMAP_ARRAY_SIZE; i++) {
+        _heightMap.motionBlocking[i] = std::make_shared<nbt::Long>("", 0);
+        _heightMap.worldSurface[i] = std::make_shared<nbt::Long>("", 0);
+    }
 }
 
 ChunkColumn::~ChunkColumn() { }
@@ -26,11 +31,11 @@ void ChunkColumn::updateBlock(Position pos, BlockId id)
     int startOffset = (blockNumber * HEIGHTMAP_BITS) % 64;
     int endLong = ((blockNumber + 1) * HEIGHTMAP_BITS - 1) / 64;
 
-    if (pos.y > _heightMap.motionBlocking.at(startLong).getValue() >> startOffset) {
-        _heightMap.motionBlocking[startLong] |= (pos.y << startOffset);
+    if (pos.y > _heightMap.motionBlocking.at(startLong)->getValue() >> startOffset) {
+        *_heightMap.motionBlocking[startLong] |= (pos.y << startOffset);
 
         if (startLong != endLong)
-            _heightMap.motionBlocking[endLong] |= (pos.y >> (64 - startOffset));
+            *_heightMap.motionBlocking[endLong] |= (pos.y >> (64 - startOffset));
     }
 
     // Block update
@@ -66,20 +71,6 @@ void ChunkColumn::updateBiome(Position pos, uint8_t biome) { _biomes.at(calculat
 uint8_t ChunkColumn::getBiome(Position pos) const { return _biomes.at(calculateBiomeIdx(pos)); }
 
 const std::array<uint8_t, BIOME_SECTION_3D_SIZE * NB_OF_SECTIONS> &ChunkColumn::getBiomes() const { return _biomes; }
-
-void ChunkColumn::updateBlockEntity(Position pos, protocol::BlockEntity *BlockEntity) { }
-
-void ChunkColumn::addBlockEntity(Position pos, protocol::BlockEntity *BlockEntity)
-{ // entity must be a pointer or a reference ?
-    _blockEntities.push_back(BlockEntity); // TODO: see which of emplace_back of emplace_front is better or push_back or push_front
-    // _blockEntities.emplace_back(std::make_shared<protocol::BlockEntity>(BlockEntity));
-}
-
-void ChunkColumn::removeBlockEntity(Position pos) { }
-
-protocol::BlockEntity *ChunkColumn::getBlockEntity(Position pos) { return _blockEntities.at(0); }
-
-const std::vector<protocol::BlockEntity *> &ChunkColumn::getBlockEntities() const { return _blockEntities; }
 
 int64_t ChunkColumn::getTick() { return _tickData; }
 
@@ -148,7 +139,6 @@ void ChunkColumn::generate(WorldType worldType, Seed seed)
 void ChunkColumn::_generateOverworld(Seed seed)
 {
     auto generator = generation::Overworld(seed);
-    int normalHeight = 100;
     int waterLevel = 86;
 
     // generate blocks
@@ -220,11 +210,11 @@ void ChunkColumn::_generateOverworld(Seed seed)
     }
 }
 
-void ChunkColumn::_generateNether(Seed seed) { }
+void ChunkColumn::_generateNether(UNUSED Seed seed) { }
 
-void ChunkColumn::_generateEnd(Seed seed) { }
+void ChunkColumn::_generateEnd(UNUSED Seed seed) { }
 
-void ChunkColumn::_generateFlat(Seed seed)
+void ChunkColumn::_generateFlat(UNUSED Seed seed)
 {
     // TODO: optimize this
     // This take forever because of the Block constructor
