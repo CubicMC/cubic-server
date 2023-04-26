@@ -5,6 +5,7 @@
 #include "blocks.hpp"
 #include "generation/overworld.hpp"
 #include "logging/Logger.hpp"
+#include "types.hpp"
 
 #define APPEND_CHUNK_TO(neighbours, chunkMap, pos2D)                                        \
     if (chunkMap.contains(_chunkPos + pos2D)) {                                             \
@@ -408,25 +409,8 @@ void ChunkColumn::_generateLakes(generation::Generator &generator)
     _currentState = GenerationState::LAKES;
 }
 
-void ChunkColumn::_generateLocalModifications(generation::Generator &generator) { _currentState = GenerationState::LOCAL_MODIFICATIONS; }
-
-void ChunkColumn::_generateUndergroundStructures(generation::Generator &generator) { _currentState = GenerationState::UNDERGROUND_STRUCTURES; }
-
-void ChunkColumn::_generateSurfaceStructures(generation::Generator &generator) { _currentState = GenerationState::SURFACE_STRUCTURES; }
-
-void ChunkColumn::_generateStrongholds(generation::Generator &generator) { _currentState = GenerationState::STRONGHOLDS; }
-
-void ChunkColumn::_generateUndergroundOres(generation::Generator &generator) { _currentState = GenerationState::UNDERGROUND_ORES; }
-
-void ChunkColumn::_generateUndergroundDecoration(generation::Generator &generator) { _currentState = GenerationState::UNDERGROUND_DECORATION; }
-
-void ChunkColumn::_generateFluidSprings(generation::Generator &generator) { _currentState = GenerationState::FLUID_SPRINGS; }
-
-void ChunkColumn::_generateVegetalDecoration(generation::Generator &generator) { _currentState = GenerationState::VEGETAL_DECORATION; }
-
-void ChunkColumn::_generateTopLayerModification(generation::Generator &generator)
+void ChunkColumn::_generateLocalModifications(generation::Generator &generator)
 {
-    GET_NEIGHBOURS()
     // generate grass
     for (int z = 0; z < SECTION_WIDTH; z++) {
         for (int x = 0; x < SECTION_WIDTH; x++) {
@@ -452,7 +436,56 @@ void ChunkColumn::_generateTopLayerModification(generation::Generator &generator
             }
         }
     }
-    RELEASE_NEIGHBOURS()
+    _currentState = GenerationState::LOCAL_MODIFICATIONS;
+}
+
+void ChunkColumn::_generateUndergroundStructures(generation::Generator &generator) { _currentState = GenerationState::UNDERGROUND_STRUCTURES; }
+
+void ChunkColumn::_generateSurfaceStructures(generation::Generator &generator) { _currentState = GenerationState::SURFACE_STRUCTURES; }
+
+void ChunkColumn::_generateStrongholds(generation::Generator &generator) { _currentState = GenerationState::STRONGHOLDS; }
+
+void ChunkColumn::_generateUndergroundOres(generation::Generator &generator) { _currentState = GenerationState::UNDERGROUND_ORES; }
+
+void ChunkColumn::_generateUndergroundDecoration(generation::Generator &generator) { _currentState = GenerationState::UNDERGROUND_DECORATION; }
+
+void ChunkColumn::_generateFluidSprings(generation::Generator &generator) { _currentState = GenerationState::FLUID_SPRINGS; }
+
+void ChunkColumn::_generateVegetalDecoration(generation::Generator &generator)
+{
+    // GET_NEIGHBOURS()
+    // find where to generate trees on surface
+    std::vector<Position> treeEmplacements;
+    for (int z = 0; z < SECTION_WIDTH; z++) {
+        for (int x = 0; x < SECTION_WIDTH; x++) {
+            for (int y = CHUNK_HEIGHT_MAX - 5; CHUNK_HEIGHT_MIN <= y; y--) {
+                auto block = getBlock({x, y, z});
+                if (block == Blocks::Air::toProtocol())
+                    continue;
+                else {
+                    if (block == Blocks::GrassBlock::toProtocol(Blocks::GrassBlock::Properties::Snowy::FALSE) || block == Blocks::Dirt::toProtocol()) {
+                        if (generator.getNoise(x + this->_chunkPos.x * SECTION_WIDTH, y, z + this->_chunkPos.z * SECTION_WIDTH).noise3D.density > 0.5 &&
+                            generator.getBiome(x + this->_chunkPos.x * SECTION_WIDTH, y, z + this->_chunkPos.z * SECTION_WIDTH))
+                            treeEmplacements.push_back({x, y + 1, z});
+                    }
+                    break;
+                }
+            }
+        }
+    }
+    // test if there is place for a tree
+    for (auto treeEmplacement : treeEmplacements) {
+        if (true) {}
+    }
+    // generate tree
+    // RELEASE_NEIGHBOURS()
+    _currentState = GenerationState::VEGETAL_DECORATION;
+}
+
+void ChunkColumn::_generateTopLayerModification(generation::Generator &generator)
+{
+    // GET_NEIGHBOURS()
+    // RELEASE_NEIGHBOURS()
     _currentState = GenerationState::TOP_LAYER_MODIFICATION;
 }
 

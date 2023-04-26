@@ -21,8 +21,8 @@ generation::Generator::GenerationNoise generation::Generator::getNoise(positionT
     double _z = static_cast<double>(z) * frequency;
 
     // 3D noise
-    // noise.noise3D.temperature = _noiseMaker.octave3D_11(_x, _z, _y, octaves);
-    // noise.noise3D.humidity = _noiseMaker.octave3D_11(_x, _z, _y, octaves);
+    noise.noise3D.temperature = _noiseMaker.octave3D_11(_x, _z, _y, octaves);
+    noise.noise3D.humidity = _noiseMaker.octave3D_11(_x, _z, _y, octaves);
     noise.noise3D.density = _noiseMaker.octave3D_11(_x, _z, _y, octaves);
 
     // Cache, calling it here because the next line create it if it doesn't exist
