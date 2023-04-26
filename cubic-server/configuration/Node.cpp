@@ -25,7 +25,7 @@ void configuration::Node::initSequence()
 
 void configuration::Node::initMap()
 {
-    for (auto node: this->_impl)
+    for (auto node : this->_impl)
         _children.emplace(std::make_pair(node.first.as<std::string>(), Node(node.second)));
 }
 
@@ -40,7 +40,7 @@ void configuration::Node::load(const std::filesystem::path &path)
     if (this->_impl.IsScalar() || this->_impl.IsNull())
         return;
 
-    for (auto node: this->_impl)
+    for (auto node : this->_impl)
         _children.emplace(std::make_pair(node.first.as<std::string>(), Node(node.second)));
 }
 
@@ -62,14 +62,14 @@ void configuration::Node::save(const std::filesystem::path &path)
 configuration::Node &configuration::Node::at(const std::string &key)
 {
     if (_children.find(key) == _children.end())
-            throw configuration::ConfigurationError("Key '" + key + "' not found");
+        throw configuration::ConfigurationError("Key '" + key + "' not found");
     return _children.at(key);
 }
 
 const configuration::Node &configuration::Node::at(const std::string &key) const
 {
     if (_children.find(key) == _children.end())
-            throw configuration::ConfigurationError("Key '" + key + "' not found");
+        throw configuration::ConfigurationError("Key '" + key + "' not found");
     return _children.at(key);
 }
 
@@ -77,11 +77,9 @@ const configuration::Node &configuration::Node::at(const std::string &key) const
 // configuration::_details::Node<T> &configuration::_details::Node<T>::at(const std::string &key, Args... args) const
 // { return at(key).at(args...); }
 
-bool configuration::Node::has(const std::string &key) const
-{ return _impl[key].IsDefined(); }
+bool configuration::Node::has(const std::string &key) const { return _impl[key].IsDefined(); }
 
-bool configuration::Node::isArray() const
-{ return _impl.IsSequence(); }
+bool configuration::Node::isArray() const { return _impl.IsSequence(); }
 
 configuration::Node &configuration::Node::add(const std::string &key)
 {

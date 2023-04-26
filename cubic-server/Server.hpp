@@ -41,9 +41,7 @@ public:
 
     void reload();
 
-    const configuration::ConfigHandler &getConfig() const {
-        return _config;
-    }
+    const configuration::ConfigHandler &getConfig() const { return _config; }
 
     const WhitelistHandling::Whitelist &getWhitelist() const { return _whitelist; }
 

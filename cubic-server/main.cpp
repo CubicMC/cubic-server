@@ -9,10 +9,11 @@
 #include "interface/InterfaceContainer.hpp"
 #include "logging/Logger.hpp"
 
-auto initArgs(int argc, const char * const argv[])
+auto initArgs(int argc, const char *const argv[])
 {
     auto program = configuration::ConfigHandler("CubicServer", "0.1.0");
 
+    // clang-format off
     program.add("nogui")
         .help("prevents the GUI from displaying")
         .valueFromArgument("--nogui")
@@ -69,6 +70,7 @@ auto initArgs(int argc, const char * const argv[])
         .possibleValues(true, false)
         .defaultValue(false)
         .required();
+    // clang-format on
 
     try {
         program.load("./config.yml");
@@ -83,7 +85,7 @@ auto initArgs(int argc, const char * const argv[])
 
     try {
         program.parse(argc, argv);
-    } catch (const std::runtime_error& err) {
+    } catch (const std::runtime_error &err) {
         std::cerr << err.what() << std::endl;
         std::cerr << program;
         std::exit(1);

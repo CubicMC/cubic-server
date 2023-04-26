@@ -1,64 +1,92 @@
 #ifndef CONFIG_VALUE_HPP
 #define CONFIG_VALUE_HPP
 
+#include "ArgumentsParser.hpp"
+#include "Node.hpp"
+#include "concept.hpp"
+#include "conversion.hpp"
+#include "options.hpp"
 #include <string>
 #include <variant>
-#include "concept.hpp"
-#include "ArgumentsParser.hpp"
-#include "conversion.hpp"
-#include "Node.hpp"
 
 namespace configuration {
 class Value {
     friend class ConfigHandler;
 
 public:
+    /**
+     * @brief Set the value as required.
+     *
+     * @return Value&
+     */
     Value &required();
 
-    template<typename T>
-    requires is_one_or_convertible_to_one_of<T, std::string, int, float, bool, std::nullptr_t>
-    Value &defaultValue(const T &defaultValue);
+    /**
+     * @brief Provide a default value for the value.
+     *
+     * @param defaultValue
+     * @return Value&
+     */
+    Value &defaultValue(const auto &defaultValue);
 
-    template<typename... T>
-    Value &valueFromConfig(const std::string &node, T... keys);
+    /**
+     * @brief Set the value from the configuration file.
+     *
+     * @tparam Args...
+     * @param node
+     * @param keys
+     * @return Value&
+     */
+    template<typename... Args>
+    Value &valueFromConfig(const std::string &node, Args... keys);
+
+    /**
+     * @brief Set the value from the configuration file.
+     *
+     * @param key
+     * @return Value&
+     */
     Value &valueFromConfig(const std::string &key);
+
+    /**
+     * @brief Set the value from the command line argument.
+     *
+     * @param argument
+     * @return Value&
+     */
     Value &valueFromArgument(const std::string &argument);
+
+    /**
+     * @brief Set the value from the environment variable.
+     *
+     * @param variable
+     * @return Value&
+     */
     Value &valueFromEnvironmentVariable(const std::string &variable);
+
+    /**
+     * @brief Specify the possible values for the value.
+     *
+     * @tparam T
+     * @tparam Args
+     * @param value
+     * @param values
+     * @return Value&
+     */
     template<typename T, typename... Args>
     Value &possibleValues(const T &value, Args... values);
 
+    /**
+     * @brief Specify a help message for the value.
+     *
+     * @param help
+     * @return Value&
+     */
     Value &help(const std::string &help);
     Value &implicit();
 
-    const std::string &value() const;
+    NODISCARD const std::string &value() const;
     const std::vector<std::string> &values() const;
-
-    template<typename T>
-    bool operator==(const T &key) const
-    { return configuration::_details::Convertor<T>()(value()) == key; }
-
-    operator bool() const
-    { return configuration::_details::Convertor<bool>()(value()); }
-    operator std::nullptr_t() const
-    { return configuration::_details::Convertor<std::nullptr_t>()(value()); }
-    operator std::string() const
-    { return configuration::_details::Convertor<std::string>()(value()); }
-    operator float() const
-    { return configuration::_details::Convertor<float>()(value()); }
-    operator double() const
-    { return configuration::_details::Convertor<double>()(value()); }
-    operator int8_t() const
-    { return configuration::_details::Convertor<int8_t>()(value()); }
-    operator uint8_t() const
-    { return configuration::_details::Convertor<uint8_t>()(value()); }
-    operator int32_t() const
-    { return configuration::_details::Convertor<int32_t>()(value()); }
-    operator uint32_t() const
-    { return configuration::_details::Convertor<uint32_t>()(value()); }
-    operator int64_t() const
-    { return configuration::_details::Convertor<int64_t>()(value()); }
-    operator uint64_t() const
-    { return configuration::_details::Convertor<uint64_t>()(value()); }
 
     /**
      * @brief Get the Value as the given type.
@@ -67,7 +95,7 @@ public:
      * @return T
      */
     template<typename T>
-    T as() const;
+    NODISCARD T as() const;
 
     /**
      * @brief Get the Values as the given type.
@@ -76,8 +104,8 @@ public:
      * @return T
      */
     template<typename R, typename T>
-    requires std::is_same_v<R, std::vector<T>>
-    std::vector<T> as();
+        requires std::is_same_v<R, std::vector<T>>
+    NODISCARD std::vector<T> as();
 
     /**
      * @brief Check if the value is the default one.
@@ -86,7 +114,7 @@ public:
      *
      * @return bool
      */
-    bool isDefault() const;
+    NODISCARD inline bool isDefault() const { return _value.size() <= 0; }
 
     /**
      * @brief Check if the stored value is an array.
@@ -95,7 +123,27 @@ public:
      *
      * @return bool
      */
-    bool isArray() const;
+    NODISCARD inline bool isArray() const { return _value.size() > 1; }
+
+public:
+    // Operators
+    operator bool() const { return configuration::_details::Convertor<bool>()(value()); }
+    operator std::nullptr_t() const { return configuration::_details::Convertor<std::nullptr_t>()(value()); }
+    operator std::string() const { return configuration::_details::Convertor<std::string>()(value()); }
+    operator float() const { return configuration::_details::Convertor<float>()(value()); }
+    operator double() const { return configuration::_details::Convertor<double>()(value()); }
+    operator int8_t() const { return configuration::_details::Convertor<int8_t>()(value()); }
+    operator uint8_t() const { return configuration::_details::Convertor<uint8_t>()(value()); }
+    operator int32_t() const { return configuration::_details::Convertor<int32_t>()(value()); }
+    operator uint32_t() const { return configuration::_details::Convertor<uint32_t>()(value()); }
+    operator int64_t() const { return configuration::_details::Convertor<int64_t>()(value()); }
+    operator uint64_t() const { return configuration::_details::Convertor<uint64_t>()(value()); }
+
+    template<typename T>
+    NODISCARD bool operator==(const T &key) const
+    {
+        return configuration::_details::Convertor<T>()(value()) == key;
+    }
 
 private:
     Value(const std::string &name, ArgumentsParser &arguments);
@@ -121,14 +169,11 @@ private:
 std::ostream &operator<<(std::ostream &os, const Value &value);
 
 template<typename T>
-requires is_one_or_convertible_to_one_of<T, std::string, int, float, bool, std::nullptr_t>
 Value &Value::defaultValue(const T &defaultValue)
 {
-    _defaultValue.resize(1);
-    _defaultValue[0] = _details::Convertor<std::string>()(defaultValue);
+    _defaultValue.push_back(_details::Convertor<std::string>()(defaultValue));
     return *this;
 }
-
 
 template<typename T, typename... Args>
 Value &Value::possibleValues(const T &value, Args... values)
@@ -153,12 +198,16 @@ Value &Value::valueFromConfig(const std::string &node, T... keys)
 
 template<typename T>
 T Value::as() const
-{ return _details::Convertor<T>()(isDefault() ? _defaultValue[0] : _value[0]); }
+{
+    return _details::Convertor<T>()(isDefault() ? _defaultValue[0] : _value[0]);
+}
 
 template<typename R, typename T>
-requires std::is_same_v<R, std::vector<T>>
+    requires std::is_same_v<R, std::vector<T>>
 std::vector<T> Value::as()
-{ return _details::Convertor<std::vector<T>>()(isDefault() ? _defaultValue : _value); }
+{
+    return _details::Convertor<std::vector<T>>()(isDefault() ? _defaultValue : _value);
+}
 
 } // namespace configuration
 

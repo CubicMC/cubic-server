@@ -1,22 +1,23 @@
 #ifndef CUBICSERVER_CONFIGURATION_CONFIGHANDLER_HPP
 #define CUBICSERVER_CONFIGURATION_CONFIGHANDLER_HPP
 
-#include <string>
-#include <map>
-#include <optional>
-#include <yaml-cpp/yaml.h>
-#include <argparse/argparse.hpp>
-#include "logging/Logger.hpp"
-#include "errors.hpp"
-#include "concept.hpp"
 #include "Node.hpp"
 #include "Value.hpp"
+#include "concept.hpp"
+#include "errors.hpp"
+#include "logging/Logger.hpp"
+#include <argparse/argparse.hpp>
+#include <map>
+#include <optional>
+#include <string>
+#include <yaml-cpp/yaml.h>
 
 namespace configuration {
 class ConfigHandler {
 public:
     typedef std::unordered_map<std::string, Value>::iterator iterator;
     friend std::ostream &operator<<(std::ostream &os, const ConfigHandler &config);
+
 public:
     ConfigHandler(const std::string &name = "", const std::string &version = "");
     ~ConfigHandler() = default;
@@ -50,19 +51,29 @@ public:
     Value &add(const std::string &key);
 
     /**
-     * @brief Parse All arguments
+     * @brief Parse All arguments, config file and environment variables
      *
      * @param argc
      * @param argv
      */
-    void parse(int argc, const char * const argv[]);
+    void parse(int argc, const char *const argv[]);
+
+    /**
+     * @brief Parse All arguments, config file and environment variables
+     *
+     * @param args
+     */
     void parse(const std::vector<std::string> &args);
+
+    /**
+     * @brief Parse config file and environment variables
+     */
     void parse();
 
-    Value &operator[](const std::string &key);
-    const Value &operator[](const std::string &key) const;
-    // Value &operator[](const char key[])
-    // { return operator[](std::string(key)); }
+public:
+    // Operators
+    Value &operator[](const auto &key);
+    const Value &operator[](const auto &key) const;
 
 private:
     std::unordered_map<std::string, Value> _values;
@@ -71,6 +82,10 @@ private:
 };
 
 std::ostream &operator<<(std::ostream &os, const ConfigHandler &config);
+
+Value &ConfigHandler::operator[](const auto &key) { return this->_values.at(_details::Convertor<std::string>()(key)); }
+
+const Value &ConfigHandler::operator[](const auto &key) const { return this->_values.at(_details::Convertor<std::string>()(key)); }
 
 } // namespace configuration
 

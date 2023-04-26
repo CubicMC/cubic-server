@@ -1,11 +1,11 @@
 #ifndef CONFIGURATION_ARGUMENTS_PARSER_HPP
 #define CONFIGURATION_ARGUMENTS_PARSER_HPP
 
-#include <argparse/argparse.hpp>
-#include <string>
-#include "details.hpp"
 #include "ArgumentHolder.hpp"
 #include "concept.hpp"
+#include "details.hpp"
+#include <argparse/argparse.hpp>
+#include <string>
 
 namespace configuration {
 namespace _details {
@@ -13,7 +13,9 @@ namespace _details {
 /**
  * @brief Base class for ArgumentsParser, it is used like an interface
  *
- * @tparam T
+ * @tparam T The parser
+ * @tparam A The argument
+ * @tparam H The argument encapsulation class, derived from _ArgumentHolder
  */
 template<typename T, typename A, is_base_of<_details::_ArgumentHolder<A>> H>
 class _ArgumentsParser : public _ImplShared<T> {
@@ -24,14 +26,16 @@ public:
 public:
     _ArgumentsParser(const std::shared_ptr<T> &parser):
         _ImplShared<T>(parser)
-    { }
+    {
+    }
+
     virtual ~_ArgumentsParser() = default;
     virtual bool has(const std::string &argument) const = 0;
     virtual std::string get(const std::string &argument) const = 0;
-    void parse(int argc, char const * const *argv)
-    { this->parse({ argv, argv + argc }); }
     virtual void parse(const std::vector<std::string> &args) = 0;
     virtual Argument &addArgument(const std::string &argument) = 0;
+
+    void parse(int argc, const char *const *argv);
 
 protected:
     std::unordered_map<std::string, Argument> _arguments;
@@ -56,5 +60,11 @@ public:
 std::ostream &operator<<(std::ostream &os, const ArgumentsParser &parser);
 
 } // namespace configuration
+
+template<typename T, typename A, is_base_of<configuration::_details::_ArgumentHolder<A>> H>
+void configuration::_details::_ArgumentsParser<T, A, H>::parse(int argc, const char *const *argv)
+{
+    this->parse({argv, argv + argc});
+}
 
 #endif // CONFIGURATION_ARGUMENTS_PARSER_HPP

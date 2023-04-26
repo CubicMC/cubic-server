@@ -330,13 +330,9 @@ void Client::_onStatusRequest(UNUSED const std::shared_ptr<protocol::StatusReque
     json["version"]["name"] = MC_VERSION;
     json["version"]["protocol"] = MC_PROTOCOL;
     json["players"]["max"] = conf["max-players"].as<int32_t>();
-    json["players"]["online"] = std::count_if(
-            cli.begin(),
-            cli.end(),
-            [](std::shared_ptr<Client> &each) {
-                return each->getStatus() == protocol::ClientStatus::Play;
-            }
-    );
+    json["players"]["online"] = std::count_if(cli.begin(), cli.end(), [](std::shared_ptr<Client> &each) {
+        return each->getStatus() == protocol::ClientStatus::Play;
+    });
 
     sendStatusResponse(json.dump());
 }

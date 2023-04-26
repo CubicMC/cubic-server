@@ -1,6 +1,7 @@
 #ifndef CUBICSERVER_NBT_HPP
 #define CUBICSERVER_NBT_HPP
 
+#include "options.hpp"
 #include <cstdint>
 #include <memory>
 #include <stdexcept>
@@ -39,11 +40,11 @@ public:
         _type(type) {};
     constexpr virtual ~Base() { }
 
-    [[nodiscard]] constexpr const std::string &getName() const { return _name; };
+    NODISCARD constexpr const std::string &getName() const { return _name; };
 
-    [[nodiscard]] constexpr TagType getType() const { return _type; }
+    NODISCARD constexpr TagType getType() const { return _type; }
 
-    [[nodiscard]] constexpr virtual std::vector<uint8_t> serialize() const
+    NODISCARD constexpr virtual std::vector<uint8_t> serialize() const
     {
         std::vector<uint8_t> data;
         serialize(data);
@@ -77,11 +78,11 @@ public:
         _value(value) {};
     ~Int() override = default;
 
-    [[nodiscard]] constexpr int32_t getValue() const { return _value; }
+    NODISCARD constexpr int32_t getValue() const { return _value; }
 
     constexpr void setValue(int32_t value) { _value = value; }
 
-    [[nodiscard]] constexpr std::vector<uint8_t> serialize() const override
+    NODISCARD constexpr std::vector<uint8_t> serialize() const override
     {
         std::vector<uint8_t> data;
         serialize(data);
@@ -106,11 +107,11 @@ public:
         _value(value) {};
     ~Byte() override = default;
 
-    [[nodiscard]] constexpr int8_t getValue() const { return _value; }
+    NODISCARD constexpr int8_t getValue() const { return _value; }
 
     constexpr void setValue(int8_t value) { _value = value; }
 
-    [[nodiscard]] constexpr std::vector<uint8_t> serialize() const override
+    NODISCARD constexpr std::vector<uint8_t> serialize() const override
     {
         std::vector<uint8_t> data;
         serialize(data);
@@ -137,11 +138,11 @@ public:
         _value(std::move(value)) {};
     ~ByteArray() override = default;
 
-    [[nodiscard]] constexpr std::vector<int8_t> &getValues() { return _value; }
+    NODISCARD constexpr std::vector<int8_t> &getValues() { return _value; }
 
-    [[nodiscard]] constexpr const std::vector<int8_t> &getValues() const { return _value; }
+    NODISCARD constexpr const std::vector<int8_t> &getValues() const { return _value; }
 
-    [[nodiscard]] constexpr std::vector<uint8_t> serialize() const override
+    NODISCARD constexpr std::vector<uint8_t> serialize() const override
     {
         std::vector<uint8_t> data;
         serialize(data);
@@ -230,7 +231,7 @@ public:
 
     constexpr const std::vector<std::shared_ptr<Base>> &getValues() const { return _value; }
 
-    [[nodiscard]] constexpr std::vector<uint8_t> serialize() const override
+    NODISCARD constexpr std::vector<uint8_t> serialize() const override
     {
         std::vector<uint8_t> data;
         serialize(data);
@@ -264,11 +265,11 @@ public:
         _value(value) {};
     ~Double() override = default;
 
-    [[nodiscard]] constexpr double getValue() const { return _value; }
+    NODISCARD constexpr double getValue() const { return _value; }
 
     constexpr void setValue(double value) { _value = value; }
 
-    [[nodiscard]] constexpr std::vector<uint8_t> serialize() const override
+    NODISCARD constexpr std::vector<uint8_t> serialize() const override
     {
         std::vector<uint8_t> data;
         serialize(data);
@@ -298,11 +299,11 @@ public:
         _value(value) {};
     ~Float() override = default;
 
-    [[nodiscard]] constexpr float getValue() const { return _value; }
+    NODISCARD constexpr float getValue() const { return _value; }
 
     constexpr void setValue(float value) { _value = value; }
 
-    [[nodiscard]] constexpr std::vector<uint8_t> serialize() const override
+    NODISCARD constexpr std::vector<uint8_t> serialize() const override
     {
         std::vector<uint8_t> data;
         serialize(data);
@@ -332,7 +333,7 @@ public:
         _value(value) {};
     ~Long() override = default;
 
-    [[nodiscard]] constexpr int64_t getValue() const { return _value; }
+    NODISCARD constexpr int64_t getValue() const { return _value; }
 
     constexpr void setValue(int64_t value) { _value = value; }
 
@@ -342,7 +343,7 @@ public:
 
     constexpr void operator=(int64_t value) { this->setValue(value); }
 
-    [[nodiscard]] constexpr std::vector<uint8_t> serialize() const override
+    NODISCARD constexpr std::vector<uint8_t> serialize() const override
     {
         std::vector<uint8_t> data;
         serialize(data);
@@ -367,11 +368,11 @@ public:
         _value(value) {};
     ~Short() override = default;
 
-    [[nodiscard]] constexpr int16_t getValue() const { return _value; }
+    NODISCARD constexpr int16_t getValue() const { return _value; }
 
     constexpr void setValue(int16_t value) { _value = value; }
 
-    [[nodiscard]] constexpr std::vector<uint8_t> serialize() const override
+    NODISCARD constexpr std::vector<uint8_t> serialize() const override
     {
         std::vector<uint8_t> data;
         serialize(data);
@@ -396,13 +397,13 @@ public:
         _value(std::move(value)) {};
     ~String() override = default;
 
-    [[nodiscard]] constexpr const std::string &getValue() const { return _value; }
+    NODISCARD constexpr const std::string &getValue() const { return _value; }
 
     constexpr void setValue(std::string value) { _value = std::move(value); }
 
     constexpr void setValue(std::string &&value) { _value = std::move(value); }
 
-    [[nodiscard]] constexpr std::vector<uint8_t> serialize() const override
+    NODISCARD constexpr std::vector<uint8_t> serialize() const override
     {
         std::vector<uint8_t> data;
         serialize(data);
@@ -432,11 +433,11 @@ public:
         _value(std::move(value)) {};
     ~IntArray() override = default;
 
-    [[nodiscard]] constexpr std::vector<int32_t> &getValues() { return _value; }
+    NODISCARD constexpr std::vector<int32_t> &getValues() { return _value; }
 
-    [[nodiscard]] constexpr const std::vector<int32_t> &getValues() const { return _value; }
+    NODISCARD constexpr const std::vector<int32_t> &getValues() const { return _value; }
 
-    [[nodiscard]] constexpr std::vector<uint8_t> serialize() const override
+    NODISCARD constexpr std::vector<uint8_t> serialize() const override
     {
         std::vector<uint8_t> data;
         serialize(data);
@@ -467,9 +468,9 @@ public:
         _value(std::move(value)) {};
     ~LongArray() override = default;
 
-    [[nodiscard]] constexpr std::vector<int64_t> &getValues() { return _value; }
+    NODISCARD constexpr std::vector<int64_t> &getValues() { return _value; }
 
-    [[nodiscard]] constexpr std::vector<uint8_t> serialize() const override
+    NODISCARD constexpr std::vector<uint8_t> serialize() const override
     {
         std::vector<uint8_t> data;
         serialize(data);
@@ -514,13 +515,19 @@ public:
         _value(value) {};
     ~List() override = default;
 
-    [[nodiscard]] constexpr std::vector<std::shared_ptr<Base>> &getValues() noexcept { return _value; }
+<<<<<<< HEAD
+    NODISCARD constexpr std::vector<std::shared_ptr<Base>> &getValues() noexcept { return _value; }
 
-    [[nodiscard]] constexpr const std::vector<std::shared_ptr<Base>> &getValues() const noexcept { return _value; }
+    NODISCARD constexpr const std::vector<std::shared_ptr<Base>> &getValues() const noexcept { return _value; }
+=======
+    NODISCARD constexpr std::vector<Base *> &getValues() { return _value; }
+
+    NODISCARD constexpr const std::vector<Base *> &getValues() const { return _value; }
+>>>>>>> f55897de (Format and some 'little' tweaks)
 
     inline void push_back(std::shared_ptr<Base> value) { _value.push_back(value); }
 
-    [[nodiscard]] constexpr std::vector<uint8_t> serialize() const override
+    NODISCARD constexpr std::vector<uint8_t> serialize() const override
     {
         std::vector<uint8_t> data;
         serialize(data);

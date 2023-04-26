@@ -1,5 +1,9 @@
 #include "Value.hpp"
 
+const std::string &configuration::Value::value() const { return _value.size() > 0 ? _value[0] : _defaultValue[0]; }
+const std::vector<std::string> &configuration::Value::values() const { return _value.size() > 0 ? _value : _defaultValue; }
+std::ostream &configuration::operator<<(std::ostream &os, const configuration::Value &value) { return os << value.value(); }
+
 configuration::Value::Value(const std::string &name, configuration::ArgumentsParser &parser):
     _required(false),
     _implicit(false),
@@ -50,22 +54,6 @@ configuration::Value &configuration::Value::implicit()
     _defaultValue = {"false"};
     return *this;
 }
-
-const std::string &configuration::Value::value() const
-{ return _value.size() > 0 ? _value[0] : _defaultValue[0]; }
-
-const std::vector<std::string> &configuration::Value::values() const
-{ return _value.size() > 0 ? _value : _defaultValue; }
-
-bool configuration::Value::isDefault() const
-{ return _value.size() <= 0; }
-
-bool configuration::Value::isArray() const
-{ return _value.size() > 1; }
-
-std::ostream &configuration::operator<<(std::ostream &os, const configuration::Value &value)
-{ return os << value.value(); }
-
 
 void configuration::Value::addToParser()
 {
