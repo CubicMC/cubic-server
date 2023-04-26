@@ -1,4 +1,10 @@
-cmake_minimum_required (VERSION 3.24.0)
+if(CMAKE_VERSION VERSION_GREATER_EQUAL 3.24.0)
+    # Suppress warning CMP0135
+    cmake_minimum_required(VERSION 3.24.0)
+else()
+    cmake_minimum_required(VERSION 3.14.0)
+endif()
+
 project(CubicServer VERSION 0.1.0)
 
 set(CMAKE_CXX_STANDARD 20)
