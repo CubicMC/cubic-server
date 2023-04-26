@@ -515,15 +515,9 @@ public:
         _value(value) {};
     ~List() override = default;
 
-<<<<<<< HEAD
     NODISCARD constexpr std::vector<std::shared_ptr<Base>> &getValues() noexcept { return _value; }
 
     NODISCARD constexpr const std::vector<std::shared_ptr<Base>> &getValues() const noexcept { return _value; }
-=======
-    NODISCARD constexpr std::vector<Base *> &getValues() { return _value; }
-
-    NODISCARD constexpr const std::vector<Base *> &getValues() const { return _value; }
->>>>>>> f55897de (Format and some 'little' tweaks)
 
     inline void push_back(std::shared_ptr<Base> value) { _value.push_back(value); }
 

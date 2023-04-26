@@ -74,7 +74,7 @@ auto initArgs(int argc, const char *const argv[])
 
     try {
         program.load("./config.yml");
-    } catch (configuration::BadFile) {
+    } catch (const configuration::BadFile&) {
         if (std::filesystem::exists("./config.yml")) {
             LERROR("Failled to open config file, check permissions");
             std::exit(1);

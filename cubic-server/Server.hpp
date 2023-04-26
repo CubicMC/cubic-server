@@ -17,14 +17,11 @@
 #include "protocol_id_converter/itemConverter.hpp"
 
 #include "Permissions.hpp"
+#include "options.hpp"
 
 constexpr char MC_VERSION[] = "1.19.3";
-
 constexpr uint16_t MC_PROTOCOL = 761;
-
 constexpr uint16_t MS_PER_TICK = 50;
-
-#define UNUSED __attribute__((unused))
 
 #define GLOBAL_PALETTE Server::getInstance()->getGlobalPalette()
 
@@ -85,12 +82,6 @@ private:
     void _enforceWhitelistOnReload();
 
 private:
-    // std::string _host;
-    // uint16_t _port;
-    // uint32_t _maxPlayer;
-    // std::string _motd;
-    // bool _enforceWhitelist;
-    configuration::ConfigHandler _config;
     std::atomic<bool> _running;
 
     // Looks like it is thread-safe, if something breaks it is here
@@ -99,6 +90,7 @@ private:
     int _sockfd;
     struct sockaddr_in6 _addr;
 
+    configuration::ConfigHandler _config;
     WhitelistHandling::Whitelist _whitelist;
     std::unordered_map<std::string_view, std::shared_ptr<WorldGroup>> _worldGroups;
     std::vector<std::unique_ptr<CommandBase>> _commands;
