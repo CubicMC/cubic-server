@@ -32,6 +32,9 @@ public:
     virtual ChildNode &set(const std::string &value) = 0;
     virtual ChildNode &set(const std::vector<std::string> &values) = 0;
     virtual bool isArray() const = 0;
+    virtual bool isScalar() const = 0;
+    virtual bool isMap() const = 0;
+    virtual bool isDefined() const = 0;
 
     template<typename... Args>
     const ChildNode &at(const std::string &key, Args... args) const;
@@ -71,6 +74,9 @@ public:
     Node &set(const std::string &value) override;
     Node &set(const std::vector<std::string> &values) override;
     bool isArray() const override;
+    bool isScalar() const override;
+    bool isMap() const override;
+    bool isDefined() const override;
 
 private:
     void initSequence();

@@ -1,6 +1,5 @@
 #include "Value.hpp"
 
-const std::string &configuration::Value::value() const { return _value.size() > 0 ? _value[0] : _defaultValue[0]; }
 const std::vector<std::string> &configuration::Value::values() const { return _value.size() > 0 ? _value : _defaultValue; }
 std::ostream &configuration::operator<<(std::ostream &os, const configuration::Value &value) { return os << value.value(); }
 
@@ -8,7 +7,7 @@ configuration::Value::Value(const std::string &name, configuration::ArgumentsPar
     _required(false),
     _implicit(false),
     _value(),
-    _defaultValue({""}),
+    _defaultValue({}),
     _help(""),
     _name(name),
     _arguments(parser),
@@ -55,6 +54,15 @@ configuration::Value &configuration::Value::implicit()
     return *this;
 }
 
+const std::string &configuration::Value::value() const
+{
+    if (_value.size() > 0)
+        return _value[0];
+    if (_defaultValue.size() > 0)
+        return _defaultValue[0];
+    throw ConfigurationError("Value '" + _name + "' is not set");
+}
+
 void configuration::Value::addToParser()
 {
     if (_defaultValueArgument.size() <= 0)
@@ -93,12 +101,23 @@ void configuration::Value::parse(const Node &rootNode)
             else
                 break;
         }
-        _value = {node->get()};
+        if (!node->isDefined())
+            throw ConfigurationError("Missing value: " + _name);
+
+        if (node->isArray())
+            _value = node->getArray();
+        else if (node->isScalar())
+            _value = {node->get()};
+        else
+            throw ConfigurationError("Invalid value: '" + _name + "' is not a value or an array of values");
     }
 
     // Check if the value is in the possible values list
     if (_possibleValue.empty())
         return;
+
+    if (_value.empty() && _defaultValue.empty() && _required)
+        throw ConfigurationError("Missing value: " + _name);
 
     for (auto &value : _value) {
         if (std::find(_possibleValue.begin(), _possibleValue.end(), value) == _possibleValue.end())

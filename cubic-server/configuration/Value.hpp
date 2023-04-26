@@ -86,7 +86,7 @@ public:
     Value &implicit();
 
     NODISCARD const std::string &value() const;
-    const std::vector<std::string> &values() const;
+    NODISCARD const std::vector<std::string> &values() const;
 
     /**
      * @brief Get the Value as the given type.

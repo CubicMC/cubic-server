@@ -78,8 +78,10 @@ const configuration::Node &configuration::Node::at(const std::string &key) const
 // { return at(key).at(args...); }
 
 bool configuration::Node::has(const std::string &key) const { return _impl[key].IsDefined(); }
-
-bool configuration::Node::isArray() const { return _impl.IsSequence(); }
+bool configuration::Node::isArray() const { return _impl.IsDefined() && _impl.IsSequence(); }
+bool configuration::Node::isScalar() const { return _impl.IsDefined() && (_impl.IsScalar() || _impl.IsNull()); }
+bool configuration::Node::isMap() const { return _impl.IsDefined() && _impl.IsMap(); }
+bool configuration::Node::isDefined() const { return _impl.IsDefined(); }
 
 configuration::Node &configuration::Node::add(const std::string &key)
 {
