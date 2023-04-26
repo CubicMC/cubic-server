@@ -5,7 +5,7 @@
 
 class TheEnd : public Dimension {
 public:
-    TheEnd(World *world):
+    TheEnd(std::shared_ptr<World> world):
         Dimension(world)
     {
     }

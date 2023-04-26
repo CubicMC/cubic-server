@@ -3,7 +3,7 @@
 
 #include "../WorldGroup.hpp"
 
-class DefaultWorldGroup : public WorldGroup {
+class DefaultWorldGroup : public WorldGroup, public std::enable_shared_from_this<DefaultWorldGroup> {
 public:
     DefaultWorldGroup(std::shared_ptr<Chat> chat);
     void initialize() override;

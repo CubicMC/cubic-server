@@ -5,7 +5,7 @@
 
 class TheNether : public Dimension {
 public:
-    TheNether(World *world):
+    TheNether(std::shared_ptr<World> world):
         Dimension(world)
     {
     }

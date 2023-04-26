@@ -124,15 +124,20 @@ constexpr int64_t popVarLong(uint8_t *&at, uint8_t *eof)
 
 constexpr uint32_t ntoh32(const uint32_t *input)
 {
-    uint32_t rval;
-    uint8_t *data = (uint8_t *) &rval;
+    union {
+        uint32_t rval;
+        uint8_t data[4];
+    } val;
 
-    data[0] = *input >> 24;
-    data[1] = *input >> 16;
-    data[2] = *input >> 8;
-    data[3] = *input >> 0;
+    static_assert(sizeof(val) == sizeof(val.rval), "union too big for rval, padding problem ?");
+    static_assert(sizeof(val) == sizeof(val.data), "union too big for mapped, padding problem ?");
 
-    return rval;
+    val.data[0] = *input >> 24;
+    val.data[1] = *input >> 16;
+    val.data[2] = *input >> 8;
+    val.data[3] = *input >> 0;
+
+    return val.rval;
 }
 
 constexpr float popFloat(uint8_t *&at, uint8_t *eof)
@@ -140,31 +145,38 @@ constexpr float popFloat(uint8_t *&at, uint8_t *eof)
     if (eof - at < 3)
         throw PacketEOF("Not enough data in packet to parse a Float");
 
-    float result = 0;
-    std::memcpy(&result, at, sizeof(float));
+    union {
+        float rval;
+        uint32_t data;
+    } val;
+    std::memcpy(&val.rval, at, sizeof(float));
     at += sizeof(float);
 
-    uint32_t *buf = (uint32_t *) &result;
-    *buf = ntoh32(buf);
+    val.data = ntoh32(&val.data);
 
-    return result;
+    return val.rval;
 }
 
 constexpr uint64_t ntoh64(const uint64_t *input)
 {
-    uint64_t rval;
-    uint8_t *data = (uint8_t *) &rval;
+    union {
+        uint64_t rval;
+        uint8_t data[8];
+    } val;
 
-    data[0] = *input >> 56;
-    data[1] = *input >> 48;
-    data[2] = *input >> 40;
-    data[3] = *input >> 32;
-    data[4] = *input >> 24;
-    data[5] = *input >> 16;
-    data[6] = *input >> 8;
-    data[7] = *input >> 0;
+    static_assert(sizeof(val) == sizeof(val.rval), "union too big for rval, padding problem ?");
+    static_assert(sizeof(val) == sizeof(val.data), "union too big for mapped, padding problem ?");
 
-    return rval;
+    val.data[0] = *input >> 56;
+    val.data[1] = *input >> 48;
+    val.data[2] = *input >> 40;
+    val.data[3] = *input >> 32;
+    val.data[4] = *input >> 24;
+    val.data[5] = *input >> 16;
+    val.data[6] = *input >> 8;
+    val.data[7] = *input >> 0;
+
+    return val.rval;
 }
 
 constexpr double popDouble(uint8_t *&at, uint8_t *eof)
@@ -172,14 +184,16 @@ constexpr double popDouble(uint8_t *&at, uint8_t *eof)
     if (eof - at < 7)
         throw PacketEOF("Not enough data in packet to parse a Double");
 
-    double result = 0;
-    std::memcpy(&result, at, sizeof(double));
+    union {
+        double rval;
+        uint64_t data;
+    } val;
+    std::memcpy(&val.rval, at, sizeof(double));
     at += sizeof(double);
 
-    uint64_t *buf = (uint64_t *) &result;
-    *buf = ntoh64(buf);
+    val.data = ntoh64(&val.data);
 
-    return result;
+    return val.rval;
 }
 
 constexpr std::string popString(uint8_t *&at, uint8_t *eof)

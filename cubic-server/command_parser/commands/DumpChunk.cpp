@@ -9,10 +9,10 @@
 #include "logging/Logger.hpp"
 #include "protocol/serialization/add.hpp"
 #include "protocol/serialization/popPrimaryType.hpp"
+#include <cstdint>
 
-#include <iostream>
 
-void command_parser::DumpChunk::autocomplete(std::vector<std::string> &args, Player *invoker) const { return; }
+void command_parser::DumpChunk::autocomplete(UNUSED std::vector<std::string> &args, UNUSED Player *invoker) const { return; }
 
 void command_parser::DumpChunk::execute(std::vector<std::string> &args, Player *invoker) const
 {
@@ -101,7 +101,7 @@ void command_parser::DumpChunk::execute(std::vector<std::string> &args, Player *
                 auto value = protocol::popVarInt(at, eof);
                 LDEBUG('\t' << '\t' << "Palette entry " << i << ": " << value << " -> " << GLOBAL_PALETTE.fromProtocolIdToBlock(value).name);
                 localPalette.add(value);
-                if (localPalette.getId(value) != i)
+                if (localPalette.getId(value) != (uint64_t) i)
                     LDEBUG('\t' << '\t' << "ERROR: Palette entry is not consistent");
             }
         } else
@@ -164,7 +164,7 @@ void command_parser::DumpChunk::execute(std::vector<std::string> &args, Player *
     LDEBUG("Done");
 }
 
-void command_parser::DumpChunk::help(std::vector<std::string> &args, Player *invoker) const
+void command_parser::DumpChunk::help(UNUSED std::vector<std::string> &args, Player *invoker) const
 {
     if (invoker) {
         // invoker->sendMessage("Usage: /dumpchunk <x> <z>");

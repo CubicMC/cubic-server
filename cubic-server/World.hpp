@@ -19,39 +19,36 @@ class WorldGroup;
 
 constexpr int NB_SPAWN_CHUNKS = 19;
 
-class World {
+class World : public std::enable_shared_from_this<World> {
 public:
-    World(WorldGroup *worldGroup);
+    World(std::shared_ptr<WorldGroup> worldGroup);
 
     virtual void tick();
     virtual void initialize();
     virtual void stop();
 
-    virtual bool isInitialized() const;
-    virtual WorldGroup *getWorldGroup() const;
-    virtual std::shared_ptr<Chat> getChat() const;
-    virtual std::vector<Entity *> getEntities() const;
-    [[nodiscard]] virtual std::vector<Player *> getPlayers() const;
-    virtual std::shared_ptr<Dimension> getDimension(const std::string_view &name) const;
-    virtual void forEachEntity(std::function<void(Entity *)> callback);
-    virtual void forEachEntityIf(std::function<void(Entity *)> callback, std::function<bool(const Entity *)> predicate);
-    virtual void forEachPlayer(std::function<void(Player *)> callback);
-    virtual void forEachPlayerIf(std::function<void(Player *)> callback, std::function<bool(const Entity *)> predicate);
-    virtual void forEachDimension(std::function<void(Dimension &)> callback);
-    virtual void forEachDimensionIf(std::function<void(Dimension &)> callback, std::function<bool(const Dimension &)> predicate);
+    [[nodiscard]] virtual bool isInitialized() const;
+    [[nodiscard]] virtual const std::shared_ptr<WorldGroup>getWorldGroup() const;
+    [[nodiscard]] virtual std::shared_ptr<WorldGroup> getWorldGroup();
+    [[nodiscard]] virtual const std::shared_ptr<Chat> getChat() const;
+    [[nodiscard]] virtual std::shared_ptr<Chat> getChat();
+    [[nodiscard]] virtual std::shared_ptr<Dimension> getDimension(const std::string_view &name);
+    [[nodiscard]] virtual const std::shared_ptr<Dimension> getDimension(const std::string_view &name) const;
+    [[nodiscard]] virtual std::unordered_map<std::string_view, std::shared_ptr<Dimension>> &getDimensions();
+    [[nodiscard]] virtual const std::unordered_map<std::string_view, std::shared_ptr<Dimension>> &getDimensions() const;
 
-    virtual const world_storage::LevelData &getLevelData() const;
+    [[nodiscard]] virtual const world_storage::LevelData &getLevelData() const;
     virtual void setLevelData(const world_storage::LevelData &value);
     virtual void updateTime();
     virtual void sendPlayerInfoAddPlayer(Player *);
     virtual void sendPlayerInfoRemovePlayer(const Player *current);
 
-    virtual thread_pool::Pool &getGenerationPool();
+    [[nodiscard]] virtual thread_pool::Pool &getGenerationPool();
 
-    virtual Seed getSeed() const;
-    virtual uint8_t getRenderDistance() const;
-    virtual long getTime() const;
-    virtual long getAge() const;
+    [[nodiscard]] virtual Seed getSeed() const;
+    [[nodiscard]] virtual uint8_t getRenderDistance() const;
+    [[nodiscard]] virtual long getTime() const;
+    [[nodiscard]] virtual long getAge() const;
 
     /*
     **  Used in the /time command.
@@ -67,7 +64,7 @@ public:
 
 protected:
     std::shared_ptr<Chat> _chat;
-    WorldGroup *_worldGroup;
+    std::shared_ptr<WorldGroup> _worldGroup;
     std::unordered_map<std::string_view, std::shared_ptr<Dimension>> _dimensions;
     long _age;
     long _time;

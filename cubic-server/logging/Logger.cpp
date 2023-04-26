@@ -23,7 +23,7 @@ const std::string &LogMessage::getMessage() const { return _message; }
 
 const std::time_t &LogMessage::getTime() const { return _time; }
 
-const int LogMessage::getMillis() const { return _millis; }
+int LogMessage::getMillis() const { return _millis; }
 
 std::ostream &operator<<(std::ostream &os, const LogMessage &log)
 {
@@ -185,7 +185,7 @@ std::string Logger::getFilePath() const { return this->_fileAndFolderHandler.get
 
 const std::queue<LogMessage> &Logger::getLogs() const { return this->_logBuffer; }
 
-const int Logger::getLogBufferSize() const { return this->_bufferSize; }
+int Logger::getLogBufferSize() const { return this->_bufferSize; }
 
 void Logger::setLogBufferSize(int size) { this->_bufferSize = size; }
 

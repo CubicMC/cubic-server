@@ -66,11 +66,11 @@ public:
     void sendSystemChatMessage(const protocol::SystemChatMessage &packet);
     void sendWorldEvent(const protocol::WorldEvent &packet);
     void playSoundEffect(SoundsList sound, FloatingPosition position, SoundCategory category = SoundCategory::Master);
-    void playSoundEffect(SoundsList sound, const Entity *entity, SoundCategory category = SoundCategory::Master);
+    void playSoundEffect(SoundsList sound, const Entity &entity, SoundCategory category = SoundCategory::Master);
     void playCustomSound(std::string sound, FloatingPosition position, SoundCategory category = SoundCategory::Master);
     void stopSound(uint8_t flags = 0, SoundCategory category = SoundCategory::Ambient, std::string sound = "");
     void sendKeepAlive(long id);
-    void sendSynchronizePosition(Vector3<double> pos);
+    void sendSynchronizePosition(const Vector3<double> &pos);
     void sendSwingArm(bool mainHand, int32_t swingerId);
     void sendTeleportEntity(int32_t id, const Vector3<double> &pos);
     void sendRemoveEntities(const std::vector<int32_t> &entities);
@@ -88,6 +88,7 @@ public:
     void sendFeatureFlags(const protocol::FeatureFlags &packet);
     void sendServerData(const protocol::ServerData &packet);
     void sendGameEvent(const protocol::GameEvent &packet);
+    void sendEntityAnimation(protocol::EntityAnimation::ID animId, int32_t entityID);
     void sendSetContainerContent(const protocol::SetContainerContent &packet);
     void sendUpdateRecipes(const protocol::UpdateRecipes &packet);
     void sendUpdateTags(const protocol::UpdateTags &packet);
@@ -158,6 +159,7 @@ private:
 
 private:
     void _processKeepAlive();
+    void _tickPosition();
     void _updateRenderedChunks(const Position2D &oldChunkPos, const Position2D &newChunkPos);
     void _continueLoginSequence();
     void _unloadChunk(int32_t x, int32_t z);

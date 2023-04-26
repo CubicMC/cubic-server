@@ -1,6 +1,8 @@
 #ifndef CUBICSERVER_CHAT_HPP
 #define CUBICSERVER_CHAT_HPP
 
+#include <functional>
+#include <memory>
 #include <nlohmann/json.hpp>
 
 #include "chat/Message.hpp"
@@ -19,7 +21,7 @@ public:
      * @param message
      * @param from
      */
-    void sendPlayerMessage(const chat::Message &message, const Player *from);
+    void sendPlayerMessage(const chat::Message &message, const Player &from);
 
     /**
      * @brief Used to send a system message to a player from the server
@@ -29,7 +31,7 @@ public:
      * @param to
      * @param overlay A normal message will be displayed in the chat, an overlay message will be displayed in the middle of the screen
      */
-    void sendSystemMessage(const chat::Message &message, Player *to, bool overlay = false);
+    void sendSystemMessage(const chat::Message &message, Player &to, bool overlay = false);
 
     /**
      * @brief Used to send a system message to all players in a worldgroup
@@ -38,7 +40,7 @@ public:
      * @param worldGroup
      * @param overlay A normal message will be displayed in the chat, an overlay message will be displayed in the middle of the screen
      */
-    void sendSystemMessage(const chat::Message &message, const WorldGroup *worldGroup, bool overlay = false);
+    void sendSystemMessage(const chat::Message &message, const WorldGroup &worldGroup, bool overlay = false);
 
     /**
      * @brief Used to send a system message to a list of players
@@ -47,7 +49,7 @@ public:
      * @param to
      * @param overlay A normal message will be displayed in the chat, an overlay message will be displayed in the middle of the screen
      */
-    void sendSystemMessage(const chat::Message &message, const std::vector<Player *> &to, bool overlay = false);
+    void sendSystemMessage(const chat::Message &message, const std::vector<std::reference_wrapper<Player>> &to, bool overlay = false);
 
     /**
      * @brief What is this?
@@ -60,7 +62,7 @@ public:
      * @param message
      * @param from
      */
-    void sendSayMessage(const chat::Message &message, const Player *from);
+    void sendSayMessage(const chat::Message &message, const Player &from);
 
     /**
      * @brief Used to send a whisper message to a player
@@ -69,7 +71,7 @@ public:
      * @param from
      * @param to
      */
-    void sendWhisperMessage(const chat::Message &message, Player *from, Player *to);
+    void sendWhisperMessage(const chat::Message &message, Player &from, Player &to);
 
     /**
      * @brief Used to send a message to the player team
@@ -77,7 +79,7 @@ public:
      * @param message
      * @param sender
      */
-    void sendTeamMessage(const chat::Message &message, const Player *sender);
+    void sendTeamMessage(const chat::Message &message, const Player &sender);
 
     /**
      * @brief What is this? ²
@@ -92,17 +94,17 @@ public:
      * @param from
      * @param selector
      */
-    void sendTellrawMessage(const chat::Message &message, const Player *from, const std::string &selector);
+    void sendTellrawMessage(const chat::Message &message, const Player &from, const std::string &selector);
 
 private:
-    void _sendMessage(const chat::Message &message, const Player *from, Player *to, const chat::message::Type &type);
-    void _sendMessage(const chat::Message &message, const Player *from, const WorldGroup *, const chat::message::Type &type);
-    void _sendMessage(const chat::Message &message, const Player *from, const std::vector<Player *> &, const chat::message::Type &type);
+    void _sendMessage(const chat::Message &message, const Player &from, Player &to, const chat::message::Type &type);
+    void _sendMessage(const chat::Message &message, const Player &from, const WorldGroup &, const chat::message::Type &type);
+    void _sendMessage(const chat::Message &message, const Player &from, const std::vector<std::reference_wrapper<Player>> &, const chat::message::Type &type);
 
     //! I am using the packet System Chat Message, but to send a system message the wiki says to use the packet Disguised Chat Message
-    void _sendSystem(const chat::Message &message, const WorldGroup *worldGroup, bool overlay = false);
-    void _sendSystem(const chat::Message &message, const std::vector<Player *> &players, bool overlay = false);
-    void _sendSystem(const chat::Message &message, Player *player, bool overlay = false);
+    void _sendSystem(const chat::Message &message, const WorldGroup &worldGroup, bool overlay = false);
+    void _sendSystem(const chat::Message &message, const std::vector<std::reference_wrapper<Player>> &players, bool overlay = false);
+    void _sendSystem(const chat::Message &message, Player &player, bool overlay = false);
 
 private:
     std::vector<chat::Message> _messagesLog;

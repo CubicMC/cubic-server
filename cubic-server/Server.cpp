@@ -6,13 +6,16 @@
 #include <CRC.h>
 
 #include "Server.hpp"
+#include "World.hpp"
 
 #include "Chat.hpp"
 #include "Client.hpp"
 #include "Player.hpp"
 #include "WorldGroup.hpp"
+#include "command_parser/commands/Gamemode.hpp"
 #include "default/DefaultWorldGroup.hpp"
 #include "logging/Logger.hpp"
+#include "Dimension.hpp"
 
 static const std::unordered_map<std::string, std::uint32_t> _checksums = {
     {"https://cdn.cubic-mc.com/1.19/blocks-1.19.json", 0x8b138b58},
@@ -21,9 +24,9 @@ static const std::unordered_map<std::string, std::uint32_t> _checksums = {
     {"https://cdn.cubic-mc.com/1.19.3/registries-1.19.3.json", 0xdfabe75c}};
 
 Server::Server():
+    _running(false),
     _sockfd(-1),
-    _config(),
-    _running(false)
+    _config()
 {
     _config.parse("./config.yml");
     _whitelist = WhitelistHandling::Whitelist();
@@ -33,6 +36,19 @@ Server::Server():
     _motd = _config.getMotd();
     _whitelistEnabled = _config.getWhitelist();
     _enforceWhitelist = _config.getEnforceWhitelist();
+
+    _commands.reserve(11);
+    _commands.emplace_back(std::make_unique<command_parser::Help>());
+    _commands.emplace_back(std::make_unique<command_parser::QuestionMark>());
+    _commands.emplace_back(std::make_unique<command_parser::Stop>());
+    _commands.emplace_back(std::make_unique<command_parser::Seed>());
+    _commands.emplace_back(std::make_unique<command_parser::DumpChunk>());
+    _commands.emplace_back(std::make_unique<command_parser::Log>());
+    _commands.emplace_back(std::make_unique<command_parser::Op>());
+    _commands.emplace_back(std::make_unique<command_parser::Deop>());
+    _commands.emplace_back(std::make_unique<command_parser::Reload>());
+    _commands.emplace_back(std::make_unique<command_parser::Time>());
+    _commands.emplace_back(std::make_unique<command_parser::Gamemode>());
 
     LINFO("Server created with host: ", _host, " and port: ", _port);
 }
@@ -88,20 +104,6 @@ void Server::launch()
 
 void Server::stop() { this->_running = false; }
 
-void Server::forEachWorldGroup(std::function<void(WorldGroup &)> callback)
-{
-    for (auto &[_, worldGroup] : this->_worldGroups)
-        callback(*worldGroup);
-}
-
-void Server::forEachWorldGroupIf(std::function<void(WorldGroup &)> callback, std::function<bool(const WorldGroup &)> predicate)
-{
-    for (auto &[_, worldGroup] : this->_worldGroups) {
-        if (predicate(*worldGroup))
-            callback(*worldGroup);
-    }
-}
-
 void Server::_acceptLoop()
 {
     struct pollfd pollSet[1];
@@ -155,12 +157,10 @@ void Server::_stop()
 
     for (auto &[name, worldGroup] : _worldGroups) {
         worldGroup->stop();
-        delete worldGroup;
+        worldGroup.reset();
     }
     if (this->_sockfd != -1)
         close(this->_sockfd);
-    for (auto &command : _commands)
-        delete command;
     LINFO("Server stopped");
 }
 
@@ -172,14 +172,13 @@ void Server::_downloadFile(const std::string &url, const std::string &path)
         LDEBUG("Downloading file " << path);
         CURL *curl;
         FILE *fp;
-        CURLcode res;
         curl = curl_easy_init();
         if (curl) {
             fp = fopen(path.c_str(), "wb");
             curl_easy_setopt(curl, CURLOPT_URL, url.c_str());
             // curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, NULL);
             curl_easy_setopt(curl, CURLOPT_WRITEDATA, fp);
-            res = curl_easy_perform(curl);
+            curl_easy_perform(curl);
             curl_easy_cleanup(curl);
             fclose(fp);
         }
@@ -255,13 +254,21 @@ void Server::reload()
 */
 void Server::_enforceWhitelistOnReload()
 {
-    if (_whitelistEnabled && _enforceWhitelist) {
-        for (auto &client : _clients) {
-            if (!_whitelist.isPlayerWhitelisted(client->getPlayer()->getUuid(), client->getPlayer()->getUsername()).first) {
-                client->disconnect("You are not whitelisted on this server.");
-                return;
+    if (!_whitelistEnabled || !_enforceWhitelist)
+        return;
+    for (auto [_, worldGroup] : _worldGroups) {
+        for (auto [_, world] : worldGroup->getWorlds()) {
+            for (auto [_, dim] : world->getDimensions()) {
+                for (auto player : dim->getPlayers()) {
+                    if (!_whitelist.isPlayerWhitelisted(player->getUuid(), player->getUsername()).first) {
+                        player->disconnect("You are not whitelisted on this server.");
+                    }
+                }
             }
         }
     }
-    return;
 }
+
+std::unordered_map<std::string_view, std::shared_ptr<WorldGroup>> &Server::getWorldGroups() { return _worldGroups; }
+
+const std::unordered_map<std::string_view, std::shared_ptr<WorldGroup>> &Server::getWorldGroups() const { return _worldGroups; }

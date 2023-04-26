@@ -4,13 +4,13 @@
 #include "logging/Logger.hpp"
 #include "nbt.hpp"
 #include "types.hpp"
-#include "world_storage/Block.hpp"
 #include "world_storage/ChunkColumn.hpp"
 #include "world_storage/Level.hpp"
 #include "world_storage/LevelData.hpp"
 #include "world_storage/PlayerData.hpp"
 #include <cstdint>
 #include <filesystem>
+#include <memory>
 #include <mutex>
 #include <netinet/in.h>
 #include <stdexcept>
@@ -25,7 +25,7 @@
         auto __tmp = root->getValue(src);                     \
         if (!__tmp || __tmp->getType() != nbt::TagType::type) \
             throw std::runtime_error("");                     \
-        dest->dst = ((nbt::type *) __tmp)->getValue();       \
+        dest->dst = (std::dynamic_pointer_cast<nbt::type>(__tmp))->getValue();       \
     } while (0)
 
 #define GET_VALUE_TO(type, dst, src, root, dstroot)           \
@@ -33,15 +33,15 @@
         auto __tmp = root->getValue(src);                     \
         if (!__tmp || __tmp->getType() != nbt::TagType::type) \
             throw std::runtime_error("");                     \
-        dstroot.dst = ((nbt::type *) __tmp)->getValue();     \
+        dstroot.dst = (std::dynamic_pointer_cast<nbt::type>(__tmp))->getValue();     \
     } while (0)
 
-template <typename T, nbt::TagType Tag> static inline const T *getConstElement(const nbt::Compound *root, const std::string &name)
+template <typename T, nbt::TagType Tag> static inline const std::shared_ptr<T> getConstElement(const std::shared_ptr<nbt::Compound> root, const std::string &name)
 {
     auto __tmp = root->getValue(name);
     if (!__tmp || __tmp->getType() != Tag)
         throw std::runtime_error(""); // TODO(huntears): Better error message
-    return (const T *) __tmp;
+    return std::dynamic_pointer_cast<T>(__tmp);
 }
 
 using namespace world_storage;
@@ -86,10 +86,10 @@ void Persistence::loadLevelData(LevelData *dest)
 
     // Parse data
     uint8_t *start = unzippedData.data();
-    nbt::Compound *root = nbt::parseCompound(start, start + unzippedData.size() - 1);
+    auto root = nbt::parseCompound(start, start + unzippedData.size() - 1);
 
     // Map data
-    auto data = (nbt::Compound *) root->getValue("Data");
+    auto data = std::dynamic_pointer_cast<nbt::Compound>(root->getValue("Data"));
     if (!data)
         throw std::runtime_error(""); // TODO(huntears): Better error message
 
@@ -116,20 +116,24 @@ void Persistence::loadLevelData(LevelData *dest)
     GET_VALUE(Int, spawnZ, "SpawnZ", data);
     GET_VALUE(Long, time, "Time", data);
 
-    const nbt::Compound *__tmpCompound = getConstElement<nbt::Compound, nbt::TagType::Compound>(data, "Version");
-    GET_VALUE_TO(Int, id, "Id", __tmpCompound, dest->mcVersion);
-    GET_VALUE_TO(String, name, "Name", __tmpCompound, dest->mcVersion);
-    GET_VALUE_TO(String, series, "Series", __tmpCompound, dest->mcVersion);
-    GET_VALUE_TO(Byte, snapshot, "Snapshot", __tmpCompound, dest->mcVersion);
+    {
+        const auto __tmpCompound = getConstElement<nbt::Compound, nbt::TagType::Compound>(data, "Version");
+        GET_VALUE_TO(Int, id, "Id", __tmpCompound, dest->mcVersion);
+        GET_VALUE_TO(String, name, "Name", __tmpCompound, dest->mcVersion);
+        GET_VALUE_TO(String, series, "Series", __tmpCompound, dest->mcVersion);
+        GET_VALUE_TO(Byte, snapshot, "Snapshot", __tmpCompound, dest->mcVersion);
+    }
 
     GET_VALUE(Int, wanderingTraderSpawnChance, "WanderingTraderSpawnChance", data);
     GET_VALUE(Int, wanderingTraderSpawnDelay, "WanderingTraderSpawnDelay", data);
     GET_VALUE(Byte, wasModded, "WasModded", data);
 
-    __tmpCompound = getConstElement<nbt::Compound, nbt::TagType::Compound>(data, "WorldGenSettings");
-    GET_VALUE_TO(Byte, bonus_chest, "bonus_chest", __tmpCompound, dest->worldGenSettings);
-    GET_VALUE_TO(Byte, generateFeatures, "generate_features", __tmpCompound, dest->worldGenSettings);
-    GET_VALUE_TO(Long, seed, "seed", __tmpCompound, dest->worldGenSettings);
+    {
+        const auto __tmpCompound = getConstElement<nbt::Compound, nbt::TagType::Compound>(data, "WorldGenSettings");
+        GET_VALUE_TO(Byte, bonus_chest, "bonus_chest", __tmpCompound, dest->worldGenSettings);
+        GET_VALUE_TO(Byte, generateFeatures, "generate_features", __tmpCompound, dest->worldGenSettings);
+        GET_VALUE_TO(Long, seed, "seed", __tmpCompound, dest->worldGenSettings);
+    }
 
     GET_VALUE(Byte, allowCommands, "allowCommands", data);
     GET_VALUE(Int, clearWeatherTime, "clearWeatherTime", data);
@@ -140,10 +144,6 @@ void Persistence::loadLevelData(LevelData *dest)
     GET_VALUE(Int, thunderTime, "thunderTime", data);
     GET_VALUE(Byte, thundering, "thundering", data);
     GET_VALUE(Int, version, "version", data);
-
-    // Clean temporary data
-    root->destroy();
-    delete root;
 }
 
 LevelData Persistence::loadLevelData()
@@ -166,7 +166,7 @@ void Persistence::loadPlayerData(u128 uuid, PlayerData *dest)
 
     // Parse data
     uint8_t *start = unzippedData.data();
-    nbt::Compound *root = nbt::parseCompound(start, start + unzippedData.size() - 1);
+    auto root = nbt::parseCompound(start, start + unzippedData.size() - 1);
 
     // TODO(huntears): Map the values to the destination object
     GET_VALUE(Float, absorptionAmount, "AbsorptionAmount", root);
@@ -182,28 +182,28 @@ void Persistence::loadPlayerData(u128 uuid, PlayerData *dest)
     GET_VALUE(Short, hurtTime, "HurtTime", root);
     GET_VALUE(Byte, invulnerable, "Invulnerable", root);
     {
-        auto __tmpList = getConstElement<nbt::List, nbt::TagType::List>(root, "Motion");
+        const auto __tmpList = getConstElement<nbt::List, nbt::TagType::List>(root, "Motion");
         if (__tmpList->getValues().size() != 3)
             throw std::runtime_error(""); // TODO(huntears): Better error message
         for (auto i : __tmpList->getValues())
             if (i->getType() != nbt::TagType::Double)
                 throw std::runtime_error(""); // TODO(huntears): Better error message
-        dest->motion.x = ((nbt::Double *) __tmpList->getValues().at(0))->getValue();
-        dest->motion.y = ((nbt::Double *) __tmpList->getValues().at(1))->getValue();
-        dest->motion.z = ((nbt::Double *) __tmpList->getValues().at(2))->getValue();
+        dest->motion.x = (std::dynamic_pointer_cast<nbt::Double>(__tmpList->getValues().at(0)))->getValue();
+        dest->motion.y = (std::dynamic_pointer_cast<nbt::Double>(__tmpList->getValues().at(1)))->getValue();
+        dest->motion.z = (std::dynamic_pointer_cast<nbt::Double>(__tmpList->getValues().at(2)))->getValue();
     }
     GET_VALUE(Byte, onGround, "OnGround", root);
     GET_VALUE(Int, portalCooldown, "PortalCooldown", root);
     {
-        auto __tmpList = getConstElement<nbt::List, nbt::TagType::List>(root, "Pos");
+        const auto __tmpList = getConstElement<nbt::List, nbt::TagType::List>(root, "Pos");
         if (__tmpList->getValues().size() != 3)
             throw std::runtime_error(""); // TODO(huntears): Better error message
         for (auto i : __tmpList->getValues())
             if (i->getType() != nbt::TagType::Double)
                 throw std::runtime_error(""); // TODO(huntears): Better error message
-        dest->pos.x = ((nbt::Double *) __tmpList->getValues().at(0))->getValue();
-        dest->pos.y = ((nbt::Double *) __tmpList->getValues().at(1))->getValue();
-        dest->pos.z = ((nbt::Double *) __tmpList->getValues().at(2))->getValue();
+        dest->pos.x = (std::dynamic_pointer_cast<nbt::Double>(__tmpList->getValues().at(0)))->getValue();
+        dest->pos.y = (std::dynamic_pointer_cast<nbt::Double>(__tmpList->getValues().at(1)))->getValue();
+        dest->pos.z = (std::dynamic_pointer_cast<nbt::Double>(__tmpList->getValues().at(2)))->getValue();
     }
     {
         auto __tmpList = getConstElement<nbt::List, nbt::TagType::List>(root, "Rotation");
@@ -212,8 +212,8 @@ void Persistence::loadPlayerData(u128 uuid, PlayerData *dest)
         for (auto i : __tmpList->getValues())
             if (i->getType() != nbt::TagType::Float)
                 throw std::runtime_error(""); // TODO(huntears): Better error message
-        dest->rotation.yaw = ((nbt::Float *) __tmpList->getValues().at(0))->getValue();
-        dest->rotation.pitch = ((nbt::Float *) __tmpList->getValues().at(1))->getValue();
+        dest->rotation.yaw = (std::dynamic_pointer_cast<nbt::Float>(__tmpList->getValues().at(0)))->getValue();
+        dest->rotation.pitch = (std::dynamic_pointer_cast<nbt::Float>(__tmpList->getValues().at(1)))->getValue();
     }
     GET_VALUE(Int, score, "Score", root);
     GET_VALUE(Int, selectedItemSlot, "SelectedItemSlot", root);
@@ -237,10 +237,6 @@ void Persistence::loadPlayerData(u128 uuid, PlayerData *dest)
     GET_VALUE(Int, foodTickTimer, "foodTickTimer", root);
     GET_VALUE(Int, playerGameType, "playerGameType", root);
     GET_VALUE(Byte, seenCredits, "seenCredits", root);
-
-    // Clean temporary data
-    root->destroy();
-    delete root;
 }
 
 PlayerData Persistence::loadPlayerData(u128 uuid)
@@ -392,27 +388,26 @@ void Persistence::loadRegion(int x, int z)
 
             // Section
             const auto sections = getConstElement<nbt::List, nbt::TagType::List>(data, "sections");
-            for (const nbt::Base *i : sections->getValues()) {
+            for (const std::shared_ptr<nbt::Base> &i : sections->getValues()) {
                 if (i->getType() != nbt::TagType::Compound)
                     throw std::runtime_error("");
-                const nbt::Compound *section = (const nbt::Compound *) i;
+                const auto section = std::dynamic_pointer_cast<nbt::Compound>(i);
                 const auto blockStates = getConstElement<nbt::Compound, nbt::TagType::Compound>(section, "block_states");
                 const auto palette = getConstElement<nbt::List, nbt::TagType::List>(blockStates, "palette");
-                const auto sizePalette = palette->getValues().size();
 
                 BlockPalette paletteMapping;
-                for (const auto ii : palette->getValues()) {
+                for (const auto &ii : palette->getValues()) {
                     if (ii->getType() != nbt::TagType::Compound)
                         throw std::runtime_error("");
-                    const nbt::Compound *pal = (const nbt::Compound *) ii;
+                    const auto pal = std::dynamic_pointer_cast<nbt::Compound>(ii);
 
                     Blocks::Block __tmpBlock = {getConstElement<nbt::String, nbt::TagType::String>(pal, "Name")->getValue(), {}};
 
                     if (pal->hasValue("Properties")) {
-                        for (const auto iii : getConstElement<nbt::Compound, nbt::TagType::Compound>(pal, "Properties")->getValues()) {
+                        for (const auto &iii : getConstElement<nbt::Compound, nbt::TagType::Compound>(pal, "Properties")->getValues()) {
                             if (iii->getType() != nbt::TagType::String)
                                 throw std::runtime_error("");
-                            __tmpBlock.properties.push_back({iii->getName(), ((const nbt::String *) iii)->getValue()});
+                            __tmpBlock.properties.push_back({iii->getName(), (std::dynamic_pointer_cast<nbt::String>(iii))->getValue()});
                         }
                     }
 
@@ -466,21 +461,18 @@ void Persistence::loadRegion(int x, int z)
             const auto heightmaps = getConstElement<nbt::Compound, nbt::TagType::Compound>(data, "Heightmaps");
 
             const auto motionBlocking = getConstElement<nbt::LongArray, nbt::TagType::LongArray>(heightmaps, "MOTION_BLOCKING")->getValues();
-            for (auto i = 0; i < motionBlocking.size(); i++) {
-                chunk->_heightMap.motionBlocking.at(i) = motionBlocking.at(i);
+            for (size_t i = 0; i < motionBlocking.size(); i++) {
+                *chunk->_heightMap.motionBlocking.at(i).get() = motionBlocking.at(i);
             }
 
             const auto worldSurface = getConstElement<nbt::LongArray, nbt::TagType::LongArray>(heightmaps, "WORLD_SURFACE")->getValues();
-            for (auto i = 0; i < worldSurface.size(); i++) {
-                chunk->_heightMap.worldSurface.at(i) = worldSurface.at(i);
+            for (size_t i = 0; i < worldSurface.size(); i++) {
+                *chunk->_heightMap.worldSurface.at(i).get() = worldSurface.at(i);
             }
 
             regionStore.at({x, z})[{cx, cz}] = chunk;
 
             chunk->_ready = true;
-
-            data->destroy();
-            delete data;
         }
     }
     free(buf);

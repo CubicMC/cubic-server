@@ -60,8 +60,8 @@ constexpr uint64_t calculateBiomeIdx(const Position &pos)
 
 struct HeightMap {
     // https://wiki.vg/index.php?title=Protocol&oldid=17753#Chunk_Data_and_Update_Light
-    std::array<nbt::Long, HEIGHTMAP_ARRAY_SIZE> motionBlocking;
-    std::array<nbt::Long, HEIGHTMAP_ARRAY_SIZE> worldSurface;
+    std::array<std::shared_ptr<nbt::Long>, HEIGHTMAP_ARRAY_SIZE> motionBlocking;
+    std::array<std::shared_ptr<nbt::Long>, HEIGHTMAP_ARRAY_SIZE> worldSurface;
 };
 
 enum class WorldType {
@@ -92,12 +92,6 @@ public:
     BiomeId getBiome(Position pos) const;
     const std::array<BiomeId, BIOME_SECTION_3D_SIZE * NB_OF_SECTIONS> &getBiomes() const;
 
-    void updateBlockEntity(Position pos, protocol::BlockEntity *BlockEntity);
-    void addBlockEntity(Position pos, protocol::BlockEntity *BlockEntity);
-    void removeBlockEntity(Position pos);
-    protocol::BlockEntity *getBlockEntity(Position pos);
-    const std::vector<protocol::BlockEntity *> &getBlockEntities() const;
-
     int64_t getTick();
     void setTick(int64_t tick);
     Position2D getChunkPos() const;
@@ -124,7 +118,6 @@ private:
     std::array<uint8_t, BLOCKS_PER_CHUNK> _skyLights;
     std::array<uint8_t, BLOCKS_PER_CHUNK> _blockLights;
     std::array<uint8_t, BIOME_PER_CHUNK> _biomes;
-    std::vector<protocol::BlockEntity *> _blockEntities;
     int64_t _tickData;
     Position2D _chunkPos;
     HeightMap _heightMap;

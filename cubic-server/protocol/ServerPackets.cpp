@@ -5,9 +5,9 @@
 
 using namespace protocol;
 
-std::shared_ptr<Handshake> protocol::parseHandshake(std::vector<uint8_t> &buffer)
+std::unique_ptr<Handshake> protocol::parseHandshake(std::vector<uint8_t> &buffer)
 {
-    auto h = std::make_shared<Handshake>();
+    auto h = std::make_unique<Handshake>();
     auto at = buffer.data();
     // clang-format off
     parse(at, buffer.data() + buffer.size() - 1, *h,
@@ -20,11 +20,11 @@ std::shared_ptr<Handshake> protocol::parseHandshake(std::vector<uint8_t> &buffer
     return h;
 }
 
-std::shared_ptr<StatusRequest> protocol::parseStatusRequest(std::vector<uint8_t> &buffer) { return {}; }
+std::unique_ptr<StatusRequest> protocol::parseStatusRequest(UNUSED std::vector<uint8_t> &buffer) { return {}; }
 
-std::shared_ptr<PingRequest> protocol::parsePingRequest(std::vector<uint8_t> &buffer)
+std::unique_ptr<PingRequest> protocol::parsePingRequest(std::vector<uint8_t> &buffer)
 {
-    auto h = std::make_shared<PingRequest>();
+    auto h = std::make_unique<PingRequest>();
     auto at = buffer.data();
     // clang-format off
     parse(at, buffer.data() + buffer.size() - 1, *h,
@@ -34,9 +34,9 @@ std::shared_ptr<PingRequest> protocol::parsePingRequest(std::vector<uint8_t> &bu
     return h;
 }
 
-std::shared_ptr<LoginStart> protocol::parseLoginStart(std::vector<uint8_t> &buffer)
+std::unique_ptr<LoginStart> protocol::parseLoginStart(std::vector<uint8_t> &buffer)
 {
-    auto h = std::make_shared<LoginStart>();
+    auto h = std::make_unique<LoginStart>();
     auto at = buffer.data();
     // clang-format off
     parse(at, buffer.data() + buffer.size() - 1, *h,
@@ -54,9 +54,9 @@ std::shared_ptr<LoginStart> protocol::parseLoginStart(std::vector<uint8_t> &buff
     return h;
 }
 
-std::shared_ptr<EncryptionResponse> protocol::parseEncryptionResponse(std::vector<uint8_t> &buffer)
+std::unique_ptr<EncryptionResponse> protocol::parseEncryptionResponse(std::vector<uint8_t> &buffer)
 {
-    auto h = std::make_shared<EncryptionResponse>();
+    auto h = std::make_unique<EncryptionResponse>();
     auto at = buffer.data();
     // clang-format off
     parse(at, buffer.data() + buffer.size() - 1, *h,
@@ -76,9 +76,9 @@ std::shared_ptr<EncryptionResponse> protocol::parseEncryptionResponse(std::vecto
     return h;
 }
 
-std::shared_ptr<ConfirmTeleportation> protocol::parseConfirmTeleportation(std::vector<uint8_t> &buffer)
+std::unique_ptr<ConfirmTeleportation> protocol::parseConfirmTeleportation(std::vector<uint8_t> &buffer)
 {
-    auto h = std::make_shared<ConfirmTeleportation>();
+    auto h = std::make_unique<ConfirmTeleportation>();
     auto at = buffer.data();
     // clang-format off
     parse(at, buffer.data() + buffer.size() - 1, *h,
@@ -88,9 +88,9 @@ std::shared_ptr<ConfirmTeleportation> protocol::parseConfirmTeleportation(std::v
     return h;
 }
 
-std::shared_ptr<QueryBlockEntityTag> protocol::parseQueryBlockEntityTag(std::vector<uint8_t> &buffer)
+std::unique_ptr<QueryBlockEntityTag> protocol::parseQueryBlockEntityTag(std::vector<uint8_t> &buffer)
 {
-    auto h = std::make_shared<QueryBlockEntityTag>();
+    auto h = std::make_unique<QueryBlockEntityTag>();
     auto at = buffer.data();
     // clang-format off
     parse(at, buffer.data() + buffer.size() - 1, *h,
@@ -101,9 +101,9 @@ std::shared_ptr<QueryBlockEntityTag> protocol::parseQueryBlockEntityTag(std::vec
     return h;
 }
 
-std::shared_ptr<ChangeDifficulty> protocol::parseChangeDifficulty(std::vector<uint8_t> &buffer)
+std::unique_ptr<ChangeDifficulty> protocol::parseChangeDifficulty(std::vector<uint8_t> &buffer)
 {
-    auto h = std::make_shared<ChangeDifficulty>();
+    auto h = std::make_unique<ChangeDifficulty>();
     auto at = buffer.data();
     // clang-format off
     parse(at, buffer.data() + buffer.size() - 1, *h,
@@ -113,9 +113,9 @@ std::shared_ptr<ChangeDifficulty> protocol::parseChangeDifficulty(std::vector<ui
     return h;
 }
 
-std::shared_ptr<MessageAcknowledgement> protocol::parseMessageAcknowledgement(std::vector<uint8_t> &buffer)
+std::unique_ptr<MessageAcknowledgement> protocol::parseMessageAcknowledgement(std::vector<uint8_t> &buffer)
 {
-    auto h = std::make_shared<MessageAcknowledgement>();
+    auto h = std::make_unique<MessageAcknowledgement>();
     auto at = buffer.data();
     // clang-format off
     parse(at, buffer.data() + buffer.size() - 1, *h,
@@ -125,9 +125,9 @@ std::shared_ptr<MessageAcknowledgement> protocol::parseMessageAcknowledgement(st
     return h;
 }
 
-std::shared_ptr<ChatCommand> protocol::parseChatCommand(std::vector<uint8_t> &buffer)
+std::unique_ptr<ChatCommand> protocol::parseChatCommand(std::vector<uint8_t> &buffer)
 {
-    auto h = std::make_shared<ChatCommand>();
+    auto h = std::make_unique<ChatCommand>();
     auto at = buffer.data();
     // clang-format off
     parse(at, buffer.data() + buffer.size() - 1, *h,
@@ -142,9 +142,9 @@ std::shared_ptr<ChatCommand> protocol::parseChatCommand(std::vector<uint8_t> &bu
     return h;
 }
 
-std::shared_ptr<ChatMessage> protocol::parseChatMessage(std::vector<uint8_t> &buffer)
+std::unique_ptr<ChatMessage> protocol::parseChatMessage(std::vector<uint8_t> &buffer)
 {
-    auto h = std::make_shared<ChatMessage>();
+    auto h = std::make_unique<ChatMessage>();
     auto at = buffer.data();
     // clang-format off
     parse(
@@ -166,9 +166,9 @@ std::shared_ptr<ChatMessage> protocol::parseChatMessage(std::vector<uint8_t> &bu
     return h;
 }
 
-std::shared_ptr<ClientCommand> protocol::parseClientCommand(std::vector<uint8_t> &buffer)
+std::unique_ptr<ClientCommand> protocol::parseClientCommand(std::vector<uint8_t> &buffer)
 {
-    auto h = std::make_shared<ClientCommand>();
+    auto h = std::make_unique<ClientCommand>();
     auto at = buffer.data();
     // clang-format off
     parse(at, buffer.data() + buffer.size() - 1, *h,
@@ -178,9 +178,9 @@ std::shared_ptr<ClientCommand> protocol::parseClientCommand(std::vector<uint8_t>
     return h;
 }
 
-std::shared_ptr<ClientInformation> protocol::parseClientInformation(std::vector<uint8_t> &buffer)
+std::unique_ptr<ClientInformation> protocol::parseClientInformation(std::vector<uint8_t> &buffer)
 {
-    auto h = std::make_shared<ClientInformation>();
+    auto h = std::make_unique<ClientInformation>();
     auto at = buffer.data();
     // clang-format off
     parse(at, buffer.data() + buffer.size() - 1, *h,
@@ -197,9 +197,9 @@ std::shared_ptr<ClientInformation> protocol::parseClientInformation(std::vector<
     return h;
 }
 
-std::shared_ptr<CommandSuggestionRequest> protocol::parseCommandSuggestionRequest(std::vector<uint8_t> &buffer)
+std::unique_ptr<CommandSuggestionRequest> protocol::parseCommandSuggestionRequest(std::vector<uint8_t> &buffer)
 {
-    auto h = std::make_shared<CommandSuggestionRequest>();
+    auto h = std::make_unique<CommandSuggestionRequest>();
     auto at = buffer.data();
     // clang-format off
     parse(at, buffer.data() + buffer.size() - 1, *h,
@@ -210,9 +210,9 @@ std::shared_ptr<CommandSuggestionRequest> protocol::parseCommandSuggestionReques
     return h;
 }
 
-std::shared_ptr<ClickContainerButton> protocol::parseClickContainerButton(std::vector<uint8_t> &buffer)
+std::unique_ptr<ClickContainerButton> protocol::parseClickContainerButton(std::vector<uint8_t> &buffer)
 {
-    auto h = std::make_shared<ClickContainerButton>();
+    auto h = std::make_unique<ClickContainerButton>();
     auto at = buffer.data();
     // clang-format off
     parse(at, buffer.data() + buffer.size() - 1, *h,
@@ -223,9 +223,9 @@ std::shared_ptr<ClickContainerButton> protocol::parseClickContainerButton(std::v
     return h;
 }
 
-std::shared_ptr<ClickContainer> protocol::parseClickContainer(std::vector<uint8_t> &buffer)
+std::unique_ptr<ClickContainer> protocol::parseClickContainer(std::vector<uint8_t> &buffer)
 {
-    auto h = std::make_shared<ClickContainer>();
+    auto h = std::make_unique<ClickContainer>();
     auto at = buffer.data();
     // clang-format off
     parse(at, buffer.data() + buffer.size() - 1, *h,
@@ -241,9 +241,9 @@ std::shared_ptr<ClickContainer> protocol::parseClickContainer(std::vector<uint8_
     return h;
 }
 
-std::shared_ptr<CloseContainerRequest> protocol::parseCloseContainerRequest(std::vector<uint8_t> &buffer)
+std::unique_ptr<CloseContainerRequest> protocol::parseCloseContainerRequest(std::vector<uint8_t> &buffer)
 {
-    auto h = std::make_shared<CloseContainerRequest>();
+    auto h = std::make_unique<CloseContainerRequest>();
     auto at = buffer.data();
     // clang-format off
     parse(at, buffer.data() + buffer.size() - 1, *h,
@@ -253,9 +253,9 @@ std::shared_ptr<CloseContainerRequest> protocol::parseCloseContainerRequest(std:
     return h;
 }
 
-std::shared_ptr<PluginMessage> protocol::parsePluginMessage(std::vector<uint8_t> &buffer)
+std::unique_ptr<PluginMessage> protocol::parsePluginMessage(std::vector<uint8_t> &buffer)
 {
-    auto h = std::make_shared<PluginMessage>();
+    auto h = std::make_unique<PluginMessage>();
     auto at = buffer.data();
     // clang-format off
     parse(at, buffer.data() + buffer.size() - 1, *h,
@@ -269,9 +269,9 @@ std::shared_ptr<PluginMessage> protocol::parsePluginMessage(std::vector<uint8_t>
     return h;
 }
 
-std::shared_ptr<EditBook> protocol::parseEditBook(std::vector<uint8_t> &buffer)
+std::unique_ptr<EditBook> protocol::parseEditBook(std::vector<uint8_t> &buffer)
 {
-    auto h = std::make_shared<EditBook>();
+    auto h = std::make_unique<EditBook>();
     auto at = buffer.data();
     // clang-format off
     parse(at, buffer.data() + buffer.size() - 1, *h,
@@ -288,9 +288,9 @@ std::shared_ptr<EditBook> protocol::parseEditBook(std::vector<uint8_t> &buffer)
     return h;
 }
 
-std::shared_ptr<QueryEntityTag> protocol::parseQueryEntityTag(std::vector<uint8_t> &buffer)
+std::unique_ptr<QueryEntityTag> protocol::parseQueryEntityTag(std::vector<uint8_t> &buffer)
 {
-    auto h = std::make_shared<QueryEntityTag>();
+    auto h = std::make_unique<QueryEntityTag>();
     auto at = buffer.data();
     // clang-format off
     parse(at, buffer.data() + buffer.size() - 1, *h,
@@ -301,9 +301,9 @@ std::shared_ptr<QueryEntityTag> protocol::parseQueryEntityTag(std::vector<uint8_
     return h;
 }
 
-std::shared_ptr<Interact> protocol::parseInteract(std::vector<uint8_t> &buffer)
+std::unique_ptr<Interact> protocol::parseInteract(std::vector<uint8_t> &buffer)
 {
-    auto h = std::make_shared<Interact>();
+    auto h = std::make_unique<Interact>();
     auto at = buffer.data();
     // clang-format off
     parse(at, buffer.data() + buffer.size() - 1, *h,
@@ -329,9 +329,9 @@ std::shared_ptr<Interact> protocol::parseInteract(std::vector<uint8_t> &buffer)
     return h;
 }
 
-std::shared_ptr<JigsawGenerate> protocol::parseJigsawGenerate(std::vector<uint8_t> &buffer)
+std::unique_ptr<JigsawGenerate> protocol::parseJigsawGenerate(std::vector<uint8_t> &buffer)
 {
-    auto h = std::make_shared<JigsawGenerate>();
+    auto h = std::make_unique<JigsawGenerate>();
     auto at = buffer.data();
     // clang-format off
     parse(at, buffer.data() + buffer.size() - 1, *h,
@@ -343,9 +343,9 @@ std::shared_ptr<JigsawGenerate> protocol::parseJigsawGenerate(std::vector<uint8_
     return h;
 }
 
-std::shared_ptr<KeepAliveResponse> protocol::parseKeepAliveResponse(std::vector<uint8_t> &buffer)
+std::unique_ptr<KeepAliveResponse> protocol::parseKeepAliveResponse(std::vector<uint8_t> &buffer)
 {
-    auto h = std::make_shared<KeepAliveResponse>();
+    auto h = std::make_unique<KeepAliveResponse>();
     auto at = buffer.data();
     // clang-format off
     parse(at, buffer.data() + buffer.size() - 1, *h,
@@ -355,9 +355,9 @@ std::shared_ptr<KeepAliveResponse> protocol::parseKeepAliveResponse(std::vector<
     return h;
 }
 
-std::shared_ptr<LockDifficulty> protocol::parseLockDifficulty(std::vector<uint8_t> &buffer)
+std::unique_ptr<LockDifficulty> protocol::parseLockDifficulty(std::vector<uint8_t> &buffer)
 {
-    auto h = std::make_shared<LockDifficulty>();
+    auto h = std::make_unique<LockDifficulty>();
     auto at = buffer.data();
     // clang-format off
     parse(at, buffer.data() + buffer.size() - 1, *h,
@@ -367,9 +367,9 @@ std::shared_ptr<LockDifficulty> protocol::parseLockDifficulty(std::vector<uint8_
     return h;
 }
 
-std::shared_ptr<SetPlayerPosition> protocol::parseSetPlayerPosition(std::vector<uint8_t> &buffer)
+std::unique_ptr<SetPlayerPosition> protocol::parseSetPlayerPosition(std::vector<uint8_t> &buffer)
 {
-    auto h = std::make_shared<SetPlayerPosition>();
+    auto h = std::make_unique<SetPlayerPosition>();
     auto at = buffer.data();
     // clang-format off
     parse(at, buffer.data() + buffer.size() - 1, *h,
@@ -382,9 +382,9 @@ std::shared_ptr<SetPlayerPosition> protocol::parseSetPlayerPosition(std::vector<
     return h;
 }
 
-std::shared_ptr<SetPlayerPositionAndRotation> protocol::parseSetPlayerPositionAndRotation(std::vector<uint8_t> &buffer)
+std::unique_ptr<SetPlayerPositionAndRotation> protocol::parseSetPlayerPositionAndRotation(std::vector<uint8_t> &buffer)
 {
-    auto h = std::make_shared<SetPlayerPositionAndRotation>();
+    auto h = std::make_unique<SetPlayerPositionAndRotation>();
     auto at = buffer.data();
     // clang-format off
     parse(at, buffer.data() + buffer.size() - 1, *h,
@@ -399,9 +399,9 @@ std::shared_ptr<SetPlayerPositionAndRotation> protocol::parseSetPlayerPositionAn
     return h;
 }
 
-std::shared_ptr<SetPlayerRotation> protocol::parseSetPlayerRotation(std::vector<uint8_t> &buffer)
+std::unique_ptr<SetPlayerRotation> protocol::parseSetPlayerRotation(std::vector<uint8_t> &buffer)
 {
-    auto h = std::make_shared<SetPlayerRotation>();
+    auto h = std::make_unique<SetPlayerRotation>();
     auto at = buffer.data();
     // clang-format off
     parse(at, buffer.data() + buffer.size() - 1, *h,
@@ -413,9 +413,9 @@ std::shared_ptr<SetPlayerRotation> protocol::parseSetPlayerRotation(std::vector<
     return h;
 }
 
-std::shared_ptr<SetPlayerOnGround> protocol::parseSetPlayerOnGround(std::vector<uint8_t> &buffer)
+std::unique_ptr<SetPlayerOnGround> protocol::parseSetPlayerOnGround(std::vector<uint8_t> &buffer)
 {
-    auto h = std::make_shared<SetPlayerOnGround>();
+    auto h = std::make_unique<SetPlayerOnGround>();
     auto at = buffer.data();
     // clang-format off
     parse(at, buffer.data() + buffer.size() - 1, *h,
@@ -425,9 +425,9 @@ std::shared_ptr<SetPlayerOnGround> protocol::parseSetPlayerOnGround(std::vector<
     return h;
 }
 
-std::shared_ptr<MoveVehicle> protocol::parseMoveVehicle(std::vector<uint8_t> &buffer)
+std::unique_ptr<MoveVehicle> protocol::parseMoveVehicle(std::vector<uint8_t> &buffer)
 {
-    auto h = std::make_shared<MoveVehicle>();
+    auto h = std::make_unique<MoveVehicle>();
     auto at = buffer.data();
     // clang-format off
     parse(at, buffer.data() + buffer.size() - 1, *h,
@@ -441,9 +441,9 @@ std::shared_ptr<MoveVehicle> protocol::parseMoveVehicle(std::vector<uint8_t> &bu
     return h;
 }
 
-std::shared_ptr<PaddleBoat> protocol::parsePaddleBoat(std::vector<uint8_t> &buffer)
+std::unique_ptr<PaddleBoat> protocol::parsePaddleBoat(std::vector<uint8_t> &buffer)
 {
-    auto h = std::make_shared<PaddleBoat>();
+    auto h = std::make_unique<PaddleBoat>();
     auto at = buffer.data();
     // clang-format off
     parse(at, buffer.data() + buffer.size() - 1, *h,
@@ -454,9 +454,9 @@ std::shared_ptr<PaddleBoat> protocol::parsePaddleBoat(std::vector<uint8_t> &buff
     return h;
 }
 
-std::shared_ptr<PickItem> protocol::parsePickItem(std::vector<uint8_t> &buffer)
+std::unique_ptr<PickItem> protocol::parsePickItem(std::vector<uint8_t> &buffer)
 {
-    auto h = std::make_shared<PickItem>();
+    auto h = std::make_unique<PickItem>();
     auto at = buffer.data();
     // clang-format off
     parse(at, buffer.data() + buffer.size() - 1, *h,
@@ -466,9 +466,9 @@ std::shared_ptr<PickItem> protocol::parsePickItem(std::vector<uint8_t> &buffer)
     return h;
 }
 
-std::shared_ptr<PlaceRecipe> protocol::parsePlaceRecipe(std::vector<uint8_t> &buffer)
+std::unique_ptr<PlaceRecipe> protocol::parsePlaceRecipe(std::vector<uint8_t> &buffer)
 {
-    auto h = std::make_shared<PlaceRecipe>();
+    auto h = std::make_unique<PlaceRecipe>();
     auto at = buffer.data();
     // clang-format off
     parse(at, buffer.data() + buffer.size() - 1, *h,
@@ -480,9 +480,9 @@ std::shared_ptr<PlaceRecipe> protocol::parsePlaceRecipe(std::vector<uint8_t> &bu
     return h;
 }
 
-std::shared_ptr<PlayerAbilities> protocol::parsePlayerAbilities(std::vector<uint8_t> &buffer)
+std::unique_ptr<PlayerAbilities> protocol::parsePlayerAbilities(std::vector<uint8_t> &buffer)
 {
-    auto h = std::make_shared<PlayerAbilities>();
+    auto h = std::make_unique<PlayerAbilities>();
     auto at = buffer.data();
     // clang-format off
     parse(at, buffer.data() + buffer.size() - 1, *h,
@@ -492,9 +492,9 @@ std::shared_ptr<PlayerAbilities> protocol::parsePlayerAbilities(std::vector<uint
     return h;
 }
 
-std::shared_ptr<PlayerAction> protocol::parsePlayerAction(std::vector<uint8_t> &buffer)
+std::unique_ptr<PlayerAction> protocol::parsePlayerAction(std::vector<uint8_t> &buffer)
 {
-    auto h = std::make_shared<PlayerAction>();
+    auto h = std::make_unique<PlayerAction>();
     auto at = buffer.data();
     // clang-format off
     parse(at, buffer.data() + buffer.size() - 1, *h,
@@ -507,9 +507,9 @@ std::shared_ptr<PlayerAction> protocol::parsePlayerAction(std::vector<uint8_t> &
     return h;
 }
 
-std::shared_ptr<PlayerCommand> protocol::parsePlayerCommand(std::vector<uint8_t> &buffer)
+std::unique_ptr<PlayerCommand> protocol::parsePlayerCommand(std::vector<uint8_t> &buffer)
 {
-    auto h = std::make_shared<PlayerCommand>();
+    auto h = std::make_unique<PlayerCommand>();
     auto at = buffer.data();
     // clang-format off
     parse(at, buffer.data() + buffer.size() - 1, *h,
@@ -521,9 +521,9 @@ std::shared_ptr<PlayerCommand> protocol::parsePlayerCommand(std::vector<uint8_t>
     return h;
 }
 
-std::shared_ptr<PlayerInput> protocol::parsePlayerInput(std::vector<uint8_t> &buffer)
+std::unique_ptr<PlayerInput> protocol::parsePlayerInput(std::vector<uint8_t> &buffer)
 {
-    auto h = std::make_shared<PlayerInput>();
+    auto h = std::make_unique<PlayerInput>();
     auto at = buffer.data();
     // clang-format off
     parse(at, buffer.data() + buffer.size() - 1, *h,
@@ -535,9 +535,9 @@ std::shared_ptr<PlayerInput> protocol::parsePlayerInput(std::vector<uint8_t> &bu
     return h;
 }
 
-std::shared_ptr<Pong> protocol::parsePong(std::vector<uint8_t> &buffer)
+std::unique_ptr<Pong> protocol::parsePong(std::vector<uint8_t> &buffer)
 {
-    auto h = std::make_shared<Pong>();
+    auto h = std::make_unique<Pong>();
     auto at = buffer.data();
     // clang-format off
     parse(at, buffer.data() + buffer.size() - 1, *h,
@@ -547,9 +547,9 @@ std::shared_ptr<Pong> protocol::parsePong(std::vector<uint8_t> &buffer)
     return h;
 }
 
-std::shared_ptr<PlayerSession> protocol::parsePlayerSession(std::vector<uint8_t> &buffer)
+std::unique_ptr<PlayerSession> protocol::parsePlayerSession(std::vector<uint8_t> &buffer)
 {
-    auto h = std::make_shared<PlayerSession>();
+    auto h = std::make_unique<PlayerSession>();
     auto at = buffer.data();
     // clang-format off
     parse(at, buffer.data() + buffer.size() - 1, *h,
@@ -562,9 +562,9 @@ std::shared_ptr<PlayerSession> protocol::parsePlayerSession(std::vector<uint8_t>
     return h;
 }
 
-std::shared_ptr<ChangeRecipeBookSettings> protocol::parseChangeRecipeBookSettings(std::vector<uint8_t> &buffer)
+std::unique_ptr<ChangeRecipeBookSettings> protocol::parseChangeRecipeBookSettings(std::vector<uint8_t> &buffer)
 {
-    auto h = std::make_shared<ChangeRecipeBookSettings>();
+    auto h = std::make_unique<ChangeRecipeBookSettings>();
     auto at = buffer.data();
     // clang-format off
     parse(at, buffer.data() + buffer.size() - 1, *h,
@@ -576,9 +576,9 @@ std::shared_ptr<ChangeRecipeBookSettings> protocol::parseChangeRecipeBookSetting
     return h;
 }
 
-std::shared_ptr<SetSeenRecipe> protocol::parseSetSeenRecipe(std::vector<uint8_t> &buffer)
+std::unique_ptr<SetSeenRecipe> protocol::parseSetSeenRecipe(std::vector<uint8_t> &buffer)
 {
-    auto h = std::make_shared<SetSeenRecipe>();
+    auto h = std::make_unique<SetSeenRecipe>();
     auto at = buffer.data();
     // clang-format off
     parse(at, buffer.data() + buffer.size() - 1, *h,
@@ -588,9 +588,9 @@ std::shared_ptr<SetSeenRecipe> protocol::parseSetSeenRecipe(std::vector<uint8_t>
     return h;
 }
 
-std::shared_ptr<RenameItem> protocol::parseRenameItem(std::vector<uint8_t> &buffer)
+std::unique_ptr<RenameItem> protocol::parseRenameItem(std::vector<uint8_t> &buffer)
 {
-    auto h = std::make_shared<RenameItem>();
+    auto h = std::make_unique<RenameItem>();
     auto at = buffer.data();
     // clang-format off
     parse(at, buffer.data() + buffer.size() - 1, *h,
@@ -600,9 +600,9 @@ std::shared_ptr<RenameItem> protocol::parseRenameItem(std::vector<uint8_t> &buff
     return h;
 }
 
-std::shared_ptr<ResourcePack> protocol::parseResourcePack(std::vector<uint8_t> &buffer)
+std::unique_ptr<ResourcePack> protocol::parseResourcePack(std::vector<uint8_t> &buffer)
 {
-    auto h = std::make_shared<ResourcePack>();
+    auto h = std::make_unique<ResourcePack>();
     auto at = buffer.data();
     // clang-format off
     parse(at, buffer.data() + buffer.size() - 1, *h,
@@ -612,9 +612,9 @@ std::shared_ptr<ResourcePack> protocol::parseResourcePack(std::vector<uint8_t> &
     return h;
 }
 
-std::shared_ptr<SeenAdvancements> protocol::parseSeenAdvancements(std::vector<uint8_t> &buffer)
+std::unique_ptr<SeenAdvancements> protocol::parseSeenAdvancements(std::vector<uint8_t> &buffer)
 {
-    auto h = std::make_shared<SeenAdvancements>();
+    auto h = std::make_unique<SeenAdvancements>();
     auto at = buffer.data();
     // clang-format off
     parse(at, buffer.data() + buffer.size() - 1, *h,
@@ -629,9 +629,9 @@ std::shared_ptr<SeenAdvancements> protocol::parseSeenAdvancements(std::vector<ui
     return h;
 }
 
-std::shared_ptr<SelectTrade> protocol::parseSelectTrade(std::vector<uint8_t> &buffer)
+std::unique_ptr<SelectTrade> protocol::parseSelectTrade(std::vector<uint8_t> &buffer)
 {
-    auto h = std::make_shared<SelectTrade>();
+    auto h = std::make_unique<SelectTrade>();
     auto at = buffer.data();
     // clang-format off
     parse(at, buffer.data() + buffer.size() - 1, *h,
@@ -641,9 +641,9 @@ std::shared_ptr<SelectTrade> protocol::parseSelectTrade(std::vector<uint8_t> &bu
     return h;
 }
 
-std::shared_ptr<SetBeaconEffect> protocol::parseSetBeaconEffect(std::vector<uint8_t> &buffer)
+std::unique_ptr<SetBeaconEffect> protocol::parseSetBeaconEffect(std::vector<uint8_t> &buffer)
 {
-    auto h = std::make_shared<SetBeaconEffect>();
+    auto h = std::make_unique<SetBeaconEffect>();
     auto at = buffer.data();
     // clang-format off
     parse(at, buffer.data() + buffer.size() - 1, *h,
@@ -656,9 +656,9 @@ std::shared_ptr<SetBeaconEffect> protocol::parseSetBeaconEffect(std::vector<uint
     return h;
 }
 
-std::shared_ptr<SetHeldItem> protocol::parseSetHeldItem(std::vector<uint8_t> &buffer)
+std::unique_ptr<SetHeldItem> protocol::parseSetHeldItem(std::vector<uint8_t> &buffer)
 {
-    auto h = std::make_shared<SetHeldItem>();
+    auto h = std::make_unique<SetHeldItem>();
     auto at = buffer.data();
     // clang-format off
     parse(at, buffer.data() + buffer.size() - 1, *h,
@@ -668,9 +668,9 @@ std::shared_ptr<SetHeldItem> protocol::parseSetHeldItem(std::vector<uint8_t> &bu
     return h;
 }
 
-std::shared_ptr<ProgramCommandBlock> protocol::parseProgramCommandBlock(std::vector<uint8_t> &buffer)
+std::unique_ptr<ProgramCommandBlock> protocol::parseProgramCommandBlock(std::vector<uint8_t> &buffer)
 {
-    auto h = std::make_shared<ProgramCommandBlock>();
+    auto h = std::make_unique<ProgramCommandBlock>();
     auto at = buffer.data();
     // clang-format off
     parse(at, buffer.data() + buffer.size() - 1, *h,
@@ -683,9 +683,9 @@ std::shared_ptr<ProgramCommandBlock> protocol::parseProgramCommandBlock(std::vec
     return h;
 }
 
-std::shared_ptr<ProgramCommandBlockMinecart> protocol::parseProgramCommandBlockMinecart(std::vector<uint8_t> &buffer)
+std::unique_ptr<ProgramCommandBlockMinecart> protocol::parseProgramCommandBlockMinecart(std::vector<uint8_t> &buffer)
 {
-    auto h = std::make_shared<ProgramCommandBlockMinecart>();
+    auto h = std::make_unique<ProgramCommandBlockMinecart>();
     auto at = buffer.data();
     // clang-format off
     parse(at, buffer.data() + buffer.size() - 1, *h,
@@ -697,9 +697,9 @@ std::shared_ptr<ProgramCommandBlockMinecart> protocol::parseProgramCommandBlockM
     return h;
 }
 
-std::shared_ptr<SetCreativeModeSlot> protocol::parseSetCreativeModeSlot(std::vector<uint8_t> &buffer)
+std::unique_ptr<SetCreativeModeSlot> protocol::parseSetCreativeModeSlot(std::vector<uint8_t> &buffer)
 {
-    auto h = std::make_shared<SetCreativeModeSlot>();
+    auto h = std::make_unique<SetCreativeModeSlot>();
     auto at = buffer.data();
     // clang-format off
     parse(at, buffer.data() + buffer.size() - 1, *h,
@@ -710,9 +710,9 @@ std::shared_ptr<SetCreativeModeSlot> protocol::parseSetCreativeModeSlot(std::vec
     return h;
 }
 
-std::shared_ptr<ProgramJigsawBlock> protocol::parseProgramJigsawBlock(std::vector<uint8_t> &buffer)
+std::unique_ptr<ProgramJigsawBlock> protocol::parseProgramJigsawBlock(std::vector<uint8_t> &buffer)
 {
-    auto h = std::make_shared<ProgramJigsawBlock>();
+    auto h = std::make_unique<ProgramJigsawBlock>();
     auto at = buffer.data();
     // clang-format off
     parse(at, buffer.data() + buffer.size() - 1, *h,
@@ -727,9 +727,9 @@ std::shared_ptr<ProgramJigsawBlock> protocol::parseProgramJigsawBlock(std::vecto
     return h;
 }
 
-std::shared_ptr<ProgramStructureBlock> protocol::parseProgramStructureBlock(std::vector<uint8_t> &buffer)
+std::unique_ptr<ProgramStructureBlock> protocol::parseProgramStructureBlock(std::vector<uint8_t> &buffer)
 {
-    auto h = std::make_shared<ProgramStructureBlock>();
+    auto h = std::make_unique<ProgramStructureBlock>();
     auto at = buffer.data();
     // clang-format off
     parse(at, buffer.data() + buffer.size() - 1, *h,
@@ -753,9 +753,9 @@ std::shared_ptr<ProgramStructureBlock> protocol::parseProgramStructureBlock(std:
     return h;
 }
 
-std::shared_ptr<UpdateSign> protocol::parseUpdateSign(std::vector<uint8_t> &buffer)
+std::unique_ptr<UpdateSign> protocol::parseUpdateSign(std::vector<uint8_t> &buffer)
 {
-    auto h = std::make_shared<UpdateSign>();
+    auto h = std::make_unique<UpdateSign>();
     auto at = buffer.data();
     // clang-format off
     parse(at, buffer.data() + buffer.size() - 1, *h,
@@ -769,9 +769,9 @@ std::shared_ptr<UpdateSign> protocol::parseUpdateSign(std::vector<uint8_t> &buff
     return h;
 }
 
-std::shared_ptr<SwingArm> protocol::parseSwingArm(std::vector<uint8_t> &buffer)
+std::unique_ptr<SwingArm> protocol::parseSwingArm(std::vector<uint8_t> &buffer)
 {
-    auto h = std::make_shared<SwingArm>();
+    auto h = std::make_unique<SwingArm>();
     auto at = buffer.data();
     // clang-format off
     parse(at, buffer.data() + buffer.size() - 1, *h,
@@ -781,9 +781,9 @@ std::shared_ptr<SwingArm> protocol::parseSwingArm(std::vector<uint8_t> &buffer)
     return h;
 }
 
-std::shared_ptr<TeleportToEntity> protocol::parseTeleportToEntity(std::vector<uint8_t> &buffer)
+std::unique_ptr<TeleportToEntity> protocol::parseTeleportToEntity(std::vector<uint8_t> &buffer)
 {
-    auto h = std::make_shared<TeleportToEntity>();
+    auto h = std::make_unique<TeleportToEntity>();
     auto at = buffer.data();
     // clang-format off
     parse(at, buffer.data() + buffer.size() - 1, *h,
@@ -793,9 +793,9 @@ std::shared_ptr<TeleportToEntity> protocol::parseTeleportToEntity(std::vector<ui
     return h;
 }
 
-std::shared_ptr<UseItemOn> protocol::parseUseItemOn(std::vector<uint8_t> &buffer)
+std::unique_ptr<UseItemOn> protocol::parseUseItemOn(std::vector<uint8_t> &buffer)
 {
-    auto h = std::make_shared<UseItemOn>();
+    auto h = std::make_unique<UseItemOn>();
     auto at = buffer.data();
     // clang-format off
     parse(at, buffer.data() + buffer.size() - 1, *h,
@@ -812,9 +812,9 @@ std::shared_ptr<UseItemOn> protocol::parseUseItemOn(std::vector<uint8_t> &buffer
     return h;
 }
 
-std::shared_ptr<UseItem> protocol::parseUseItem(std::vector<uint8_t> &buffer)
+std::unique_ptr<UseItem> protocol::parseUseItem(std::vector<uint8_t> &buffer)
 {
-    auto h = std::make_shared<UseItem>();
+    auto h = std::make_unique<UseItem>();
     auto at = buffer.data();
     // clang-format off
     parse(at, buffer.data() + buffer.size() - 1, *h,

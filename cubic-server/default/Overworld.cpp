@@ -10,13 +10,13 @@ void Overworld::tick()
 {
     _processingMutex.lock();
 
-    auto startProcessing = std::chrono::system_clock::now();
+    // auto startProcessing = std::chrono::system_clock::now();
 
     Dimension::tick();
     // Put the ticking code specific for this dimension here
     // LDEBUG("Tick - Overworld");
 
-    auto endProcessing = std::chrono::system_clock::now();
+    // auto endProcessing = std::chrono::system_clock::now();
     _processingMutex.unlock();
 }
 

@@ -8,7 +8,7 @@
 
 class Overworld : public Dimension {
 public:
-    Overworld(World *world):
+    Overworld(std::shared_ptr<World> world):
         Dimension(world),
         persistence("world2") // TODO(huntears): Make this changeable through the config
     {
