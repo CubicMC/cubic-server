@@ -9,32 +9,12 @@
 #include "Palette.hpp"
 #include "protocol/Structures.hpp"
 #include "types.hpp"
+#include "Section.hpp"
 
 namespace world_storage {
 
-// Chunk
-constexpr int CHUNK_HEIGHT_MIN = -64;
-constexpr int CHUNK_HEIGHT_MAX = 320;
-constexpr int CHUNK_HEIGHT = CHUNK_HEIGHT_MAX - CHUNK_HEIGHT_MIN;
-
-// Section
-constexpr int SECTION_HEIGHT = 16;
-constexpr int SECTION_WIDTH = 16;
-constexpr int SECTION_2D_SIZE = SECTION_WIDTH * SECTION_WIDTH;
-constexpr int SECTION_3D_SIZE = SECTION_2D_SIZE * SECTION_HEIGHT;
-constexpr int NB_OF_SECTIONS = CHUNK_HEIGHT / SECTION_HEIGHT;
-
 // Blocks
 constexpr int BLOCKS_PER_CHUNK = NB_OF_SECTIONS * SECTION_3D_SIZE;
-
-// Biome
-constexpr int BIOME_SECTION_WIDTH = 4;
-constexpr int BIOME_HEIGHT_MIN = CHUNK_HEIGHT_MIN / 4;
-constexpr int BIOME_HEIGHT_MAX = CHUNK_HEIGHT_MAX / 4;
-constexpr int BIOME_HEIGHT = BIOME_HEIGHT_MAX - BIOME_HEIGHT_MIN;
-constexpr int BIOME_SECTION_2D_SIZE = BIOME_SECTION_WIDTH * BIOME_SECTION_WIDTH;
-constexpr int BIOME_SECTION_3D_SIZE = BIOME_SECTION_2D_SIZE * BIOME_SECTION_WIDTH;
-constexpr int BIOME_PER_CHUNK = BIOME_SECTION_3D_SIZE * NB_OF_SECTIONS;
 
 // Heightmap
 constexpr int HEIGHTMAP_BITS = bitsNeeded(CHUNK_HEIGHT + 1);
@@ -58,6 +38,7 @@ constexpr uint64_t calculateBiomeIdx(const Position &pos)
     return pos.x + (pos.z * BIOME_SECTION_WIDTH) + (y * BIOME_SECTION_2D_SIZE);
 }
 
+// TODO: This is completely wrong, redo
 struct HeightMap {
     // https://wiki.vg/index.php?title=Protocol&oldid=17753#Chunk_Data_and_Update_Light
     std::array<std::shared_ptr<nbt::Long>, HEIGHTMAP_ARRAY_SIZE> motionBlocking;
@@ -112,10 +93,9 @@ public:
     void generate(WorldType worldType, Seed seed);
 
 private:
-    std::array<BlockId, BLOCKS_PER_CHUNK> _blocks;
+    std::array<Section, NB_OF_SECTIONS> _sections;
     std::array<uint8_t, BLOCKS_PER_CHUNK> _skyLights;
     std::array<uint8_t, BLOCKS_PER_CHUNK> _blockLights;
-    std::array<uint8_t, BIOME_PER_CHUNK> _biomes;
     int64_t _tickData;
     Position2D _chunkPos;
     HeightMap _heightMap;
