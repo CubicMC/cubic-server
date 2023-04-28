@@ -8,10 +8,11 @@
 #include "Server.hpp"
 #include "interface/InterfaceContainer.hpp"
 #include "logging/Logger.hpp"
+#include "options.hpp"
 
 auto initArgs(int argc, const char *const argv[])
 {
-    auto program = configuration::ConfigHandler("CubicServer", "0.1.0");
+    auto program = configuration::ConfigHandler(PROGRAM_NAME, PROGRAM_VERSION);
 
     // clang-format off
     program.add("nogui")
@@ -76,10 +77,10 @@ auto initArgs(int argc, const char *const argv[])
         program.load("./config.yml");
     } catch (const configuration::BadFile&) {
         if (std::filesystem::exists("./config.yml")) {
-            LERROR("Failled to open config file, check permissions");
+            LERROR("Failed to open config file, check permissions");
             std::exit(1);
         }
-        LINFO("No config file found, creating one");
+        LWARN("No config file found, creating one");
         program.save("./config.yml");
     }
 

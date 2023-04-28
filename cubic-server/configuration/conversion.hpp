@@ -13,30 +13,8 @@ struct Convertor {
     std::vector<T> operator()(const std::vector<std::string> &values);
 
     T operator()(const auto &value);
-    std::vector<T> operator()(const std::vector<auto> &values);
-};
-
-template<typename T>
-struct Convertor<std::vector<T>> {
-    std::vector<T> operator()(const std::vector<std::string> &values)
-    {
-        std::vector<T> convertedValues;
-        auto convertor = Convertor<T>();
-        convertedValues.reserve(values.size());
-        for (const auto &value : values)
-            convertedValues.push_back(convertor(value));
-        return convertedValues;
-    }
-
-    std::vector<std::string> operator()(const std::vector<auto> &values)
-    {
-        std::vector<std::string> convertedValues;
-        auto convertor = Convertor<std::string>();
-        convertedValues.reserve(values.size());
-        for (const auto &value : values)
-            convertedValues.push_back(convertor(value));
-        return convertedValues;
-    }
+    template<typename U>
+    std::vector<T> operator()(const std::vector<U> &values);
 };
 
 template<>
@@ -117,6 +95,30 @@ template<>
 struct Convertor<uint64_t> {
     uint64_t operator()(const std::string &value) { return std::stoul(value); }
     uint64_t operator()(const auto &value) { return Convertor<uint64_t>()(Convertor<std::string>()(value)); }
+};
+
+template<typename T>
+struct Convertor<std::vector<T>> {
+    std::vector<T> operator()(const std::vector<std::string> &values)
+    {
+        std::vector<T> convertedValues;
+        auto convertor = Convertor<T>();
+        convertedValues.reserve(values.size());
+        for (const auto &value : values)
+            convertedValues.push_back(convertor(value));
+        return convertedValues;
+    }
+
+    template<typename U>
+    std::vector<std::string> operator()(const std::vector<U> &values)
+    {
+        std::vector<std::string> convertedValues;
+        auto convertor = Convertor<std::string>();
+        convertedValues.reserve(values.size());
+        for (const auto &value : values)
+            convertedValues.push_back(convertor(value));
+        return convertedValues;
+    }
 };
 
 } // namespace configuration::_details

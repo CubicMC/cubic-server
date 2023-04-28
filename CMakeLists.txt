@@ -76,7 +76,6 @@ if(GTEST) # if the flag GTEST is true
     )
     # For Windows: Prevent overriding the parent project's compiler/linker settings
     set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
-    FetchContent_MakeAvailable(googletest)
 
     FetchContent_Declare(
         rapidcheck
@@ -84,7 +83,11 @@ if(GTEST) # if the flag GTEST is true
     )
     option(RC_ENABLE_GTEST "Enable Google Test integration for RapidCheck library" ON)
     set(RC_ENABLE_GTEST TRUE)
-    FetchContent_MakeAvailable(rapidcheck)
+
+    FetchContent_MakeAvailable(
+        rapidcheck
+        googletest
+    )
 endif()
 
 if(GTEST)
@@ -100,6 +103,10 @@ pkg_check_modules(GTKMM REQUIRED gtkmm-3.0)
 
 add_executable(${CMAKE_PROJECT_NAME})
 target_compile_options(${CMAKE_PROJECT_NAME} PRIVATE -Wall -Wextra -Wno-unknown-pragmas -Wno-restrict -Wno-missing-field-initializers)
+target_compile_definitions(${CMAKE_PROJECT_NAME} PRIVATE
+    PROGRAM_NAME="${CMAKE_PROJECT_NAME}"
+    PROGRAM_VERSION="${CMAKE_PROJECT_VERSION}"
+)
 add_subdirectory(cubic-server)
 
 target_include_directories(${CMAKE_PROJECT_NAME} PRIVATE
