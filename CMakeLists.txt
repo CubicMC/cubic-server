@@ -1,11 +1,8 @@
-if(CMAKE_VERSION VERSION_GREATER_EQUAL 3.24.0)
-    # Suppress warning CMP0135
-    cmake_policy(SET CMP0135 OLD)
-    cmake_minimum_required(VERSION 3.24.0)
-else()
-    cmake_minimum_required(VERSION 3.14.0)
-endif()
+cmake_minimum_required(VERSION 3.14.0)
 
+if(CMAKE_VERSION VERSION_GREATER_EQUAL 3.24.0)
+    cmake_policy(SET CMP0135 OLD)
+endif()
 
 project(CubicServer VERSION 0.1.0)
 
