@@ -33,7 +33,7 @@ chat::Message chat::message::_detail::fromTranslationKey<chat::message::Translat
     chat::Message userName = chat::Message(player.getUsername());
 
     // TODO: Change this to check for the team color
-    if (player.getUsername() == "huntears") // Get fucked Miki :p
+    if (player.getUsername() == "STMiki")
         userName.messageComponent().style().color = "gold";
 
     userName.makeClickEvent<chat::message::event::SuggestCommandClick>("/tell " + player.getUsername() + " ");

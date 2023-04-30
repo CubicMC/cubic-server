@@ -1,58 +1,61 @@
 #include "ConfigHandler.hpp"
-
-#include "logging/Logger.hpp"
+#include "errors.hpp"
 #include <filesystem>
+#include <iostream>
+#include <yaml-cpp/yaml.h>
 
-namespace Configuration {
-constexpr std::string_view fileContent = "network:\n\
-  ip: 0.0.0.0\n\
-  port: 25565\n\
-\n\
-general:\n\
-  max_players: 20\n\
-  motd: A Cubic Server\n\
-  whitelist: false\n\
-  enforce-whitelist: false\
-";
-
-static void defaultConfigContent(const std::string &path)
+configuration::ConfigHandler::ConfigHandler(const std::string &name, const std::string &version):
+    _arguments(name, version)
 {
-    if (!std::filesystem::exists(path)) {
-        std::ofstream configFile(path);
-        configFile << fileContent << std::endl;
-        configFile.close();
-    }
 }
 
-ConfigHandler::ConfigHandler() { }
+void configuration::ConfigHandler::load(const std::filesystem::path &path) { this->_config.load(path); }
 
-void ConfigHandler::parse(const std::string &path)
+void configuration::ConfigHandler::save(const std::filesystem::path &path)
 {
-    YAML::Node config;
-    defaultConfigContent(path);
-    try {
-        _baseNode = YAML::LoadFile(path);
-        _ip = _baseNode["network"]["ip"].as<std::string>();
-        _port = _baseNode["network"]["port"].as<uint16_t>();
-        _maxPlayers = _baseNode["general"]["max_players"].as<uint32_t>();
-        _motd = _baseNode["general"]["motd"].as<std::string>();
-        _whitelist = _baseNode["general"]["whitelist"].as<bool>();
-        _enforceWhitelist = _baseNode["general"]["enforce-whitelist"].as<bool>();
-    } catch (const std::exception &e) {
-        LERROR("config parsing failed : " << e.what());
-        throw std::runtime_error("config parsing failed");
+    for (auto &[_, value] : this->_values) {
+        if (value._defaultValueConfig.empty() || value._defaultValue.empty())
+            continue;
+
+        auto *node = &this->_config;
+        for (auto &key : value._defaultValueConfig) {
+            if (node->has(key))
+                node = &node->at(key);
+            else
+                node = &node->add(key);
+        }
+        if (value._defaultValue.size() > 1)
+            node->set(value._defaultValue);
+        else if (value._defaultValue.size() == 1)
+            node->set(value._defaultValue[0]);
+        else
+            node->set(nullptr);
     }
+    this->_config.save(path);
 }
 
-const std::string &ConfigHandler::getIP() const { return _ip; }
-
-uint16_t ConfigHandler::getPort() const { return _port; }
-
-uint32_t ConfigHandler::getMaxPlayers() const { return _maxPlayers; }
-
-const std::string &ConfigHandler::getMotd() const { return _motd; }
-
-bool ConfigHandler::getEnforceWhitelist() const { return _enforceWhitelist; }
-
-bool ConfigHandler::getWhitelist() const { return _whitelist; }
+configuration::Value &configuration::ConfigHandler::add(const std::string &key)
+{
+    this->_values.emplace(std::make_pair(key, Value(key, this->_arguments)));
+    return this->_values.at(key);
 }
+
+void configuration::ConfigHandler::parse(int argc, const char *const argv[]) { this->parse({argv, argv + argc}); }
+
+void configuration::ConfigHandler::parse(const std::vector<std::string> &args)
+{
+    for (auto &[_, value] : this->_values)
+        value.addToParser();
+
+    this->_arguments.parse(args);
+
+    this->parse();
+}
+
+void configuration::ConfigHandler::parse()
+{
+    for (auto &[_, value] : this->_values)
+        value.parse(this->_config);
+}
+
+std::ostream &configuration::operator<<(std::ostream &os, const configuration::ConfigHandler &config) { return os << config._arguments; }

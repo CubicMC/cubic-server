@@ -8,6 +8,7 @@
 #include <thread>
 #include <vector>
 
+#include "options.hpp"
 #include "thread_pool/Task.hpp"
 #include "world_storage/ChunkColumn.hpp"
 #include "world_storage/Level.hpp"
@@ -32,16 +33,16 @@ public:
     virtual void tick();
     virtual void stop();
 
-    [[nodiscard]] virtual bool isInitialized() const;
-    [[nodiscard]] virtual std::shared_ptr<World> getWorld();
-    [[nodiscard]] virtual const std::shared_ptr<World> getWorld() const;
-    [[nodiscard]] virtual std::counting_semaphore<SEMAPHORE_MAX> &getDimensionLock();
-    [[nodiscard]] virtual std::vector<std::shared_ptr<Player>> &getPlayers();
-    [[nodiscard]] virtual std::vector<std::shared_ptr<Entity>> &getEntities();
-    [[nodiscard]] virtual const std::vector<std::shared_ptr<Player>> &getPlayers() const;
-    [[nodiscard]] virtual const std::vector<std::shared_ptr<Entity>> &getEntities() const;
-    [[nodiscard]] virtual std::shared_ptr<Entity> getEntityByID(int32_t id);
-    [[nodiscard]] virtual const std::shared_ptr<Entity> getEntityByID(int32_t id) const;
+    NODISCARD virtual bool isInitialized() const;
+    NODISCARD virtual std::shared_ptr<World> getWorld();
+    NODISCARD virtual const std::shared_ptr<World> getWorld() const;
+    NODISCARD virtual std::counting_semaphore<SEMAPHORE_MAX> &getDimensionLock();
+    NODISCARD virtual std::vector<std::shared_ptr<Player>> &getPlayers();
+    NODISCARD virtual std::vector<std::shared_ptr<Entity>> &getEntities();
+    NODISCARD virtual const std::vector<std::shared_ptr<Player>> &getPlayers() const;
+    NODISCARD virtual const std::vector<std::shared_ptr<Entity>> &getEntities() const;
+    NODISCARD virtual std::shared_ptr<Entity> getEntityByID(int32_t id);
+    NODISCARD virtual const std::shared_ptr<Entity> getEntityByID(int32_t id) const;
 
     virtual void removeEntity(int32_t entity_id);
     virtual void removePlayer(int32_t entity_id);

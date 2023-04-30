@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "chat/Message.hpp"
+#include "options.hpp"
 #include "protocol/ClientPackets.hpp"
 #include "protocol/ServerPackets.hpp"
 #include "protocol/common.hpp"
@@ -61,9 +62,9 @@ public:
 
     void networkLoop();
 
-    [[nodiscard]] bool isDisconnected() const;
+    NODISCARD bool isDisconnected() const;
 
-    [[nodiscard]] protocol::ClientStatus getStatus() const { return _status; }
+    NODISCARD protocol::ClientStatus getStatus() const { return _status; }
 
     void setStatus(protocol::ClientStatus status) { _status = status; }
 

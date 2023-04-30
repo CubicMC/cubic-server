@@ -27,14 +27,14 @@ Server::Server():
     _sockfd(-1),
     _config()
 {
-    _config.parse("./config.yml");
-    _whitelist = WhitelistHandling::Whitelist();
-    _host = _config.getIP();
-    _port = _config.getPort();
-    _maxPlayer = _config.getMaxPlayers();
-    _motd = _config.getMotd();
-    _whitelistEnabled = _config.getWhitelist();
-    _enforceWhitelist = _config.getEnforceWhitelist();
+    // _config.load("./config.yml");
+    // _config.parse("./config.yml");
+    // _config.parse(2, (const char * const *){"./CubicServer", "--nogui"});
+    // _host = _config.getIP();
+    // _port = _config.getPort();
+    // _maxPlayer = _config.getMaxPlayers();
+    // _motd = _config.getMotd();
+    // _enforceWhitelist = _config.getEnforceWhitelist();
 
     _commands.reserve(10);
     _commands.emplace_back(std::make_unique<command_parser::Help>());
@@ -47,14 +47,14 @@ Server::Server():
     _commands.emplace_back(std::make_unique<command_parser::Deop>());
     _commands.emplace_back(std::make_unique<command_parser::Reload>());
     _commands.emplace_back(std::make_unique<command_parser::Time>());
-
-    LINFO("Server created with host: ", _host, " and port: ", _port);
 }
 
 Server::~Server() { }
 
-void Server::launch()
+void Server::launch(const configuration::ConfigHandler &config)
 {
+    this->_config = config;
+    LINFO("Starting server on ", _config["ip"], ":", _config["port"]);
     int yes = 1;
     int no = 0;
 
@@ -62,11 +62,11 @@ void Server::launch()
     _sockfd = socket(AF_INET6, SOCK_STREAM, getprotobyname("TCP")->p_proto);
 
     // Create the addr for the server
-    if (!inet_pton(AF_INET, _host.c_str(), &(_addr.sin6_addr))) {
+    if (!inet_pton(AF_INET, _config["ip"].value().c_str(), &(_addr.sin6_addr)))
         throw std::runtime_error("Invalid host ip address");
-    }
+
     _addr.sin6_family = AF_INET6;
-    _addr.sin6_port = htons(_port);
+    _addr.sin6_port = htons(_config["port"].as<uint16_t>());
 
     // Bind server socket
     setsockopt(_sockfd, SOL_SOCKET, SO_REUSEADDR, &yes, sizeof(yes));
@@ -207,15 +207,11 @@ void Server::_downloadFile(const std::string &url, const std::string &path)
 void Server::_reloadConfig()
 {
     try {
-        _config.parse("./config.yml");
-    } catch (const std::exception &e) {
+        _config.load("./config.yml");
+    } catch (const configuration::ConfigurationError &e) {
         LERROR(e.what());
         return;
     }
-    _maxPlayer = _config.getMaxPlayers();
-    _motd = _config.getMotd();
-    _whitelistEnabled = _config.getWhitelist();
-    _enforceWhitelist = _config.getEnforceWhitelist();
 }
 
 /*
@@ -224,7 +220,7 @@ void Server::_reloadConfig()
 void Server::_reloadWhitelist()
 {
     try {
-        if (_whitelistEnabled) {
+        if (isWhitelistEnabled()) {
             WhitelistHandling::Whitelist whitelistReloaded = WhitelistHandling::Whitelist();
             _whitelist = whitelistReloaded;
         }
@@ -252,7 +248,7 @@ void Server::reload()
 */
 void Server::_enforceWhitelistOnReload()
 {
-    if (!_whitelistEnabled || !_enforceWhitelist)
+    if (!isWhitelistEnabled() || !isWhitelistEnforce())
         return;
     for (auto [_, worldGroup] : _worldGroups) {
         for (auto [_, world] : worldGroup->getWorlds()) {

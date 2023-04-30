@@ -24,7 +24,8 @@ void CommandLine::run()
 
     while (this->_running) {
         pollSet[0].events = POLLIN;
-        poll(pollSet, 1, 50);
+        if (poll(pollSet, 1, 50) == -1)
+            break;
         if ((pollSet[0].revents & POLLIN) == 0)
             continue;
 

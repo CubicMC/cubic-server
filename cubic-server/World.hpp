@@ -7,6 +7,7 @@
 #include <vector>
 
 #include "TickClock.hpp"
+#include "options.hpp"
 #include "thread_pool/Pool.hpp"
 #include "types.hpp"
 #include "world_storage/LevelData.hpp"
@@ -27,28 +28,28 @@ public:
     virtual void initialize();
     virtual void stop();
 
-    [[nodiscard]] virtual bool isInitialized() const;
-    [[nodiscard]] virtual const std::shared_ptr<WorldGroup>getWorldGroup() const;
-    [[nodiscard]] virtual std::shared_ptr<WorldGroup> getWorldGroup();
-    [[nodiscard]] virtual const std::shared_ptr<Chat> getChat() const;
-    [[nodiscard]] virtual std::shared_ptr<Chat> getChat();
-    [[nodiscard]] virtual std::shared_ptr<Dimension> getDimension(const std::string_view &name);
-    [[nodiscard]] virtual const std::shared_ptr<Dimension> getDimension(const std::string_view &name) const;
-    [[nodiscard]] virtual std::unordered_map<std::string_view, std::shared_ptr<Dimension>> &getDimensions();
-    [[nodiscard]] virtual const std::unordered_map<std::string_view, std::shared_ptr<Dimension>> &getDimensions() const;
+    NODISCARD virtual bool isInitialized() const;
+    NODISCARD virtual const std::shared_ptr<WorldGroup>getWorldGroup() const;
+    NODISCARD virtual std::shared_ptr<WorldGroup> getWorldGroup();
+    NODISCARD virtual const std::shared_ptr<Chat> getChat() const;
+    NODISCARD virtual std::shared_ptr<Chat> getChat();
+    NODISCARD virtual std::shared_ptr<Dimension> getDimension(const std::string_view &name);
+    NODISCARD virtual const std::shared_ptr<Dimension> getDimension(const std::string_view &name) const;
+    NODISCARD virtual std::unordered_map<std::string_view, std::shared_ptr<Dimension>> &getDimensions();
+    NODISCARD virtual const std::unordered_map<std::string_view, std::shared_ptr<Dimension>> &getDimensions() const;
 
-    [[nodiscard]] virtual const world_storage::LevelData &getLevelData() const;
+    NODISCARD virtual const world_storage::LevelData &getLevelData() const;
     virtual void setLevelData(const world_storage::LevelData &value);
     virtual void updateTime();
     virtual void sendPlayerInfoAddPlayer(Player *);
     virtual void sendPlayerInfoRemovePlayer(const Player *current);
 
-    [[nodiscard]] virtual thread_pool::Pool &getGenerationPool();
+    NODISCARD virtual thread_pool::Pool &getGenerationPool();
 
-    [[nodiscard]] virtual Seed getSeed() const;
-    [[nodiscard]] virtual uint8_t getRenderDistance() const;
-    [[nodiscard]] virtual long getTime() const;
-    [[nodiscard]] virtual long getAge() const;
+    NODISCARD virtual Seed getSeed() const;
+    NODISCARD virtual uint8_t getRenderDistance() const;
+    NODISCARD virtual long getTime() const;
+    NODISCARD virtual long getAge() const;
 
     /*
     **  Used in the /time command.
