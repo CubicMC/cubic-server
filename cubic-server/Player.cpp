@@ -170,6 +170,15 @@ void Player::setPosition(const Vector3<double> &pos, bool onGround)
 
 void Player::setPosition(double x, double y, double z, bool onGround) { this->setPosition({x, y, z}, onGround); }
 
+void Player::updatePlayerInfo(const protocol::PlayerInfoUpdate &data)
+{
+    for (auto [_, dim] : this->getWorld()->getDimensions()) {
+        for (auto &player : dim->getPlayers()) {
+            player->sendPlayerInfoUpdate(data);
+        }
+    }
+}
+
 void Player::playSoundEffect(SoundsList sound, FloatingPosition position, SoundCategory category)
 {
     auto pck = protocol::createSoundEffect({

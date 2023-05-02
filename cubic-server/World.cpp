@@ -11,7 +11,7 @@ World::World(std::shared_ptr<WorldGroup> worldGroup):
     _time(0),
     _renderDistance(32), // TODO: Should be loaded from config
     _timeUpdateClock(20, std::bind(&World::updateTime, this)), // 1 second for time updates
-    _generationPool(15, "WorldGen", thread_pool::Pool::Behavior::Cancel)
+    _generationPool(6, "WorldGen", thread_pool::Pool::Behavior::Cancel)
 {
     _timeUpdateClock.start();
     _seed = -721274728; // TODO: Should be loaded from config or generated

@@ -52,6 +52,7 @@ public:
     void setKeepAliveIgnored(uint8_t ign);
     void setOperator(const bool isOp);
     void setKeepAliveId(long id);
+    void updatePlayerInfo(const protocol::PlayerInfoUpdate &data);
 
 public:
     void disconnect(const chat::Message &reason = "Disconnected");
