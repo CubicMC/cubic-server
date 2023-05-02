@@ -1,23 +1,16 @@
-#ifndef WORLD_STORAGE_PALETTE_HPP
-#define WORLD_STORAGE_PALETTE_HPP
+#ifndef CUBICSERVER_WORLDSTORAGE_PALETTE_HPP
+#define CUBICSERVER_WORLDSTORAGE_PALETTE_HPP
 
-#include <vector>
-#include <cstdint>
 #include <algorithm>
-#include <map>
-
-#include "world_storage/Block.hpp"
+#include <cstdint>
+#include <vector>
 
 namespace world_storage {
 
 // https://stackoverflow.com/a/23784921
-constexpr uint8_t bitsNeeded(int32_t n)
-{
-    return n <= 1 ? 0 : 1 + bitsNeeded((n + 1) / 2);
-}
+constexpr uint8_t bitsNeeded(int32_t n) { return n <= 1 ? 0 : 1 + bitsNeeded((n + 1) / 2); }
 
-class Palette
-{
+class Palette {
 public:
     constexpr Palette() = default;
     constexpr ~Palette() = default;
@@ -42,32 +35,19 @@ public:
 
     virtual uint8_t getBytePerEntry() const = 0;
 
-    constexpr uint64_t size() const
-    {
-        return _nameToId.size();
-    }
+    constexpr uint64_t size() const { return _nameToId.size(); }
 
-    constexpr std::vector<int32_t>::const_iterator begin() const
-    {
-        return _nameToId.begin();
-    }
+    constexpr std::vector<int32_t>::const_iterator begin() const { return _nameToId.begin(); }
 
-    constexpr std::vector<int32_t>::const_iterator end() const
-    {
-        return _nameToId.end();
-    }
+    constexpr std::vector<int32_t>::const_iterator end() const { return _nameToId.end(); }
 
-    constexpr const std::vector<int32_t> &data() const
-    {
-        return _nameToId;
-    }
+    constexpr const std::vector<int32_t> &data() const { return _nameToId; }
 
 protected:
     std::vector<int32_t> _nameToId;
 };
 
-class BlockPalette : public Palette
-{
+class BlockPalette : public Palette {
 public:
     constexpr BlockPalette() = default;
     constexpr ~BlockPalette() = default;
@@ -90,8 +70,7 @@ public:
     }
 };
 
-class BiomePalette : public Palette
-{
+class BiomePalette : public Palette {
 public:
     constexpr BiomePalette() = default;
     constexpr ~BiomePalette() = default;
@@ -109,4 +88,4 @@ public:
 
 } // namespace world_storage
 
-#endif // WORLD_STORAGE_PALETTE_HPP
+#endif // CUBICSERVER_WORLDSTORAGE_PALETTE_HPP

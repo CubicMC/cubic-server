@@ -1,5 +1,5 @@
-#include <gtest/gtest.h>
 #include "../LevelData.hpp"
+#include <gtest/gtest.h>
 
 world_storage::LevelData levelData;
 

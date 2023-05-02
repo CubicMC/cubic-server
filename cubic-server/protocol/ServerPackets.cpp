@@ -1,649 +1,826 @@
-#include <optional>
-#include <vector>
-
 #include "ServerPackets.hpp"
-#include "nbt.hpp"
+
 #include "PacketUtils.hpp"
-#include "typeSerialization.hpp"
+#include "serialization/pop.hpp"
 
 using namespace protocol;
 
-std::shared_ptr<Handshake> protocol::parseHandshake(std::vector<uint8_t> &buffer)
+std::unique_ptr<Handshake> protocol::parseHandshake(std::vector<uint8_t> &buffer)
 {
-    auto h = std::make_shared<Handshake>();
+    auto h = std::make_unique<Handshake>();
     auto at = buffer.data();
-
+    // clang-format off
     parse(at, buffer.data() + buffer.size() - 1, *h,
-          popVarInt, &Handshake::prot_version,
-          popString, &Handshake::addr,
-          popShort, &Handshake::port,
-          popVarInt, &Handshake::next_state);
-    return h;
-}
-
-std::shared_ptr<StatusRequest> protocol::parseStatusRequest(std::vector<uint8_t> &buffer)
-{
-    return {};
-}
-
-std::shared_ptr<LoginStart> protocol::parseLoginStart(std::vector<uint8_t> &buffer)
-{
-    auto h = std::make_shared<LoginStart>();
-    auto at = buffer.data();
-
-    parse(at, buffer.data() + buffer.size() - 1, *h,
-          popString, &LoginStart::name,
-          popBoolean, &LoginStart::has_player_uuid);
-    if (h->has_player_uuid)
-        parse(at, buffer.data() + buffer.size() - 1, *h,
-            popUUID, &LoginStart::player_uuid);
-    return h;
-}
-
-std::shared_ptr<PingRequest> protocol::parsePingRequest(std::vector<uint8_t> &buffer)
-{
-    auto h = std::make_shared<PingRequest>();
-    auto at = buffer.data();
-
-    parse(at, buffer.data() + buffer.size() - 1, *h,
-          popLong, &PingRequest::payload);
-    return h;
-}
-
-std::shared_ptr<ConfirmTeleportation> protocol::parseConfirmTeleportation(std::vector<uint8_t> &buffer)
-{
-    auto h = std::make_shared<ConfirmTeleportation>();
-    auto at = buffer.data();
-
-    parse(at, buffer.data() + buffer.size() - 1, *h,
-          popVarInt, &ConfirmTeleportation::teleport_id);
-    return h;
-}
-
-std::shared_ptr<EncryptionResponse> protocol::parseEncryptionResponse(std::vector<uint8_t> &buffer)
-{
-    auto h = std::make_shared<EncryptionResponse>();
-    auto at = buffer.data();
-
-    parse(at, buffer.data() + buffer.size() - 1, *h,
-          popArray<uint8_t, popByte>, &EncryptionResponse::shared_secret,
-          popBoolean, &EncryptionResponse::has_verify_token);
-    if (!h->has_verify_token)
-        return h;
-    parse(at, buffer.data() + buffer.size() - 1, *h,
-          popArray<uint8_t, popByte>, &EncryptionResponse::verify_token,
-          popLong, &EncryptionResponse::salt,
-          popArray<uint8_t, popByte>, &EncryptionResponse::message_signature);
-    return h;
-}
-
-std::shared_ptr<QueryBlockEntityTag> protocol::parseQueryBlockEntityTag(std::vector<uint8_t> &buffer)
-{
-    auto h = std::make_shared<QueryBlockEntityTag>();
-    auto at = buffer.data();
-
-    parse(at, buffer.data() + buffer.size() - 1, *h,
-          popVarInt, &QueryBlockEntityTag::transaction_id,
-          popPosition, &QueryBlockEntityTag::location);
-    return h;
-}
-
-std::shared_ptr<ChangeDifficulty> protocol::parseChangeDifficulty(std::vector<uint8_t> &buffer)
-{
-    auto h = std::make_shared<ChangeDifficulty>();
-    auto at = buffer.data();
-
-    parse(at, buffer.data() + buffer.size() - 1, *h,
-          popByte, &ChangeDifficulty::new_difficulty);
-    return h;
-}
-
-std::shared_ptr<ChatMessage> protocol::parseChatMessage(std::vector<uint8_t> &buffer)
-{
-    auto h = std::make_shared<ChatMessage>();
-    auto at = buffer.data();
-
-    parse(at, buffer.data() + buffer.size() - 1, *h,
-          popString, &ChatMessage::message,
-          popInstantJavaObject, &ChatMessage::timestamp,
-          popLong, &ChatMessage::salt,
-          popArray<uint8_t, popByte>, &ChatMessage::signature,
-          popBoolean, &ChatMessage::isSigned);
-    return h;
-}
-
-std::shared_ptr<ChatCommand> protocol::parseChatCommand(std::vector<uint8_t> &buffer)
-{
-    auto h = std::make_shared<ChatCommand>();
-    auto at = buffer.data();
-
-    parse(at, buffer.data() + buffer.size() - 1, *h,
-          popString, &ChatCommand::command,
-          popLong, &ChatCommand::timestamp,
-          popLong, &ChatCommand::salt,
-          popArray<ArgumentSignature, popArgumentSignature>, &ChatCommand::argumentSignatures,
-          popVarInt, &ChatCommand::messageCount,
-          popBitSet<20>, &ChatCommand::acknowledged
+        popVarInt, &Handshake::protVersion,
+        popString, &Handshake::addr,
+        popShort, &Handshake::port,
+        popVarInt, &Handshake::nextState
     );
+    // clang-format on
     return h;
 }
 
-std::shared_ptr<ClientCommand> protocol::parseClientCommand(std::vector<uint8_t> &buffer)
-{
-    auto h = std::make_shared<ClientCommand>();
-    auto at = buffer.data();
+std::unique_ptr<StatusRequest> protocol::parseStatusRequest(UNUSED std::vector<uint8_t> &buffer) { return {}; }
 
+std::unique_ptr<PingRequest> protocol::parsePingRequest(std::vector<uint8_t> &buffer)
+{
+    auto h = std::make_unique<PingRequest>();
+    auto at = buffer.data();
+    // clang-format off
     parse(at, buffer.data() + buffer.size() - 1, *h,
-          popClientCommandActionID, &ClientCommand::action_id);
+        popLong, &PingRequest::payload
+    );
+    // clang-format ons
     return h;
 }
 
-std::shared_ptr<ClientInformation> protocol::parseClientInformation(std::vector<uint8_t> &buffer)
+std::unique_ptr<LoginStart> protocol::parseLoginStart(std::vector<uint8_t> &buffer)
 {
-    auto h = std::make_shared<ClientInformation>();
+    auto h = std::make_unique<LoginStart>();
     auto at = buffer.data();
-
+    // clang-format off
     parse(at, buffer.data() + buffer.size() - 1, *h,
-          popString, &ClientInformation::locale,
-          popByte, &ClientInformation::view_distance,
-          popClientInformationChatMode, &ClientInformation::chat_mode,
-          popBoolean, &ClientInformation::chat_colors,
-          popByte, &ClientInformation::displayed_skin_parts,
-          popClientInformationMainHand, &ClientInformation::main_hand,
-          popBoolean, &ClientInformation::enable_text_filtering,
-          popBoolean, &ClientInformation::allow_server_listings);
+        popString, &LoginStart::name,
+        popBoolean, &LoginStart::hasPlayerUuid
+    );
+    // clang-format on
+    if (h->hasPlayerUuid) {
+        // clang-format off
+        parse(at, buffer.data() + buffer.size() - 1, *h,
+            popUUID, &LoginStart::playerUuid
+        );
+        // clang-format on
+    }
     return h;
 }
 
-std::shared_ptr<CommandSuggestionRequest> protocol::parseCommandSuggestionRequest(std::vector<uint8_t> &buffer)
+std::unique_ptr<EncryptionResponse> protocol::parseEncryptionResponse(std::vector<uint8_t> &buffer)
 {
-    auto h = std::make_shared<CommandSuggestionRequest>();
+    auto h = std::make_unique<EncryptionResponse>();
     auto at = buffer.data();
-
+    // clang-format off
     parse(at, buffer.data() + buffer.size() - 1, *h,
-          popVarInt, &CommandSuggestionRequest::transaction_id,
-          popString, &CommandSuggestionRequest::text);
+        popArray<uint8_t, popByte>, &EncryptionResponse::sharedSecret,
+        popBoolean, &EncryptionResponse::hasVerifyToken
+    );
+    // clang-format on
+    if (!h->hasVerifyToken)
+        return h;
+    // clang-format off
+    parse(at, buffer.data() + buffer.size() - 1, *h,
+        popArray<uint8_t, popByte>, &EncryptionResponse::verifyToken,
+        popLong, &EncryptionResponse::salt,
+        popArray<uint8_t, popByte>, &EncryptionResponse::messageSignature
+    );
+    // clang-format on
     return h;
 }
 
-std::shared_ptr<ClickContainerButton> protocol::parseClickContainerButton(std::vector<uint8_t> &buffer)
+std::unique_ptr<ConfirmTeleportation> protocol::parseConfirmTeleportation(std::vector<uint8_t> &buffer)
 {
-    auto h = std::make_shared<ClickContainerButton>();
+    auto h = std::make_unique<ConfirmTeleportation>();
     auto at = buffer.data();
-
+    // clang-format off
     parse(at, buffer.data() + buffer.size() - 1, *h,
-          popByte, &ClickContainerButton::window_id,
-          popByte, &ClickContainerButton::button_id);
+        popVarInt, &ConfirmTeleportation::teleportId
+    );
+    // clang-format on
     return h;
 }
 
-std::shared_ptr<CloseContainerRequest> protocol::parseCloseContainerRequest(std::vector<uint8_t> &buffer)
+std::unique_ptr<QueryBlockEntityTag> protocol::parseQueryBlockEntityTag(std::vector<uint8_t> &buffer)
 {
-    auto h = std::make_shared<CloseContainerRequest>();
+    auto h = std::make_unique<QueryBlockEntityTag>();
     auto at = buffer.data();
-
+    // clang-format off
     parse(at, buffer.data() + buffer.size() - 1, *h,
-          popByte, &CloseContainerRequest::window_id);
+        popVarInt, &QueryBlockEntityTag::transactionId,
+        popPosition, &QueryBlockEntityTag::location
+    );
+    // clang-format on
     return h;
 }
 
-std::shared_ptr<PluginMessage> protocol::parsePluginMessage(std::vector<uint8_t> &buffer)
+std::unique_ptr<ChangeDifficulty> protocol::parseChangeDifficulty(std::vector<uint8_t> &buffer)
 {
-    auto h = std::make_shared<PluginMessage>();
+    auto h = std::make_unique<ChangeDifficulty>();
     auto at = buffer.data();
-
+    // clang-format off
     parse(at, buffer.data() + buffer.size() - 1, *h,
-          popString, &PluginMessage::channel);
-        //   popArray<uint8_t, popByte>, &PluginMessage::data);
-        // That line cannot work since this is not a normal byte array
-        // I will let it empty for now
+        popByte, &ChangeDifficulty::newDifficulty
+    );
+    // clang-format on
+    return h;
+}
+
+std::unique_ptr<MessageAcknowledgement> protocol::parseMessageAcknowledgement(std::vector<uint8_t> &buffer)
+{
+    auto h = std::make_unique<MessageAcknowledgement>();
+    auto at = buffer.data();
+    // clang-format off
+    parse(at, buffer.data() + buffer.size() - 1, *h,
+        popVarInt, &MessageAcknowledgement::messageCount
+    );
+    // clang-format on
+    return h;
+}
+
+std::unique_ptr<ChatCommand> protocol::parseChatCommand(std::vector<uint8_t> &buffer)
+{
+    auto h = std::make_unique<ChatCommand>();
+    auto at = buffer.data();
+    // clang-format off
+    parse(at, buffer.data() + buffer.size() - 1, *h,
+        popString, &ChatCommand::command,
+        popLong, &ChatCommand::timestamp,
+        popLong, &ChatCommand::salt,
+        popArray<ChatCommand::ArgumentSignature, popArgumentSignature>, &ChatCommand::argumentSignatures,
+        popVarInt, &ChatCommand::messageCount,
+        popBitSet<20>, &ChatCommand::acknowledged
+    );
+    // clang-format on
+    return h;
+}
+
+std::unique_ptr<ChatMessage> protocol::parseChatMessage(std::vector<uint8_t> &buffer)
+{
+    auto h = std::make_unique<ChatMessage>();
+    auto at = buffer.data();
+    // clang-format off
+    parse(
+        at, buffer.data() + buffer.size() - 1, *h,
+        popString, &ChatMessage::message,
+        popLong, &ChatMessage::timestamp,
+        popLong, &ChatMessage::salt,
+        popBoolean, &ChatMessage::isSigned
+    );
+    if (h->isSigned) {
+        parse(at, buffer.data() + buffer.size() - 1, *h,
+            popArray<uint8_t, popByte>, &ChatMessage::signature
+        );
+    }
+    parse(at, buffer.data() + buffer.size() - 1, *h,
+        popBitSet<20>, &ChatMessage::acknowledged
+    );
+    // clang-format on
+    return h;
+}
+
+std::unique_ptr<ClientCommand> protocol::parseClientCommand(std::vector<uint8_t> &buffer)
+{
+    auto h = std::make_unique<ClientCommand>();
+    auto at = buffer.data();
+    // clang-format off
+    parse(at, buffer.data() + buffer.size() - 1, *h,
+        popVarInt, &ClientCommand::actionId
+    );
+    // clang-format on
+    return h;
+}
+
+std::unique_ptr<ClientInformation> protocol::parseClientInformation(std::vector<uint8_t> &buffer)
+{
+    auto h = std::make_unique<ClientInformation>();
+    auto at = buffer.data();
+    // clang-format off
+    parse(at, buffer.data() + buffer.size() - 1, *h,
+        popString, &ClientInformation::locale,
+        popByte, &ClientInformation::viewDistance,
+        popVarInt, &ClientInformation::chatMode,
+        popBoolean, &ClientInformation::chatColors,
+        popByte, &ClientInformation::displayedSkinParts,
+        popVarInt, &ClientInformation::mainHand,
+        popBoolean, &ClientInformation::enableTextFiltering,
+        popBoolean, &ClientInformation::allowServerListings
+    );
+    // clang-format on
+    return h;
+}
+
+std::unique_ptr<CommandSuggestionRequest> protocol::parseCommandSuggestionRequest(std::vector<uint8_t> &buffer)
+{
+    auto h = std::make_unique<CommandSuggestionRequest>();
+    auto at = buffer.data();
+    // clang-format off
+    parse(at, buffer.data() + buffer.size() - 1, *h,
+        popVarInt, &CommandSuggestionRequest::transactionId,
+        popString, &CommandSuggestionRequest::text
+    );
+    // clang-format on
+    return h;
+}
+
+std::unique_ptr<ClickContainerButton> protocol::parseClickContainerButton(std::vector<uint8_t> &buffer)
+{
+    auto h = std::make_unique<ClickContainerButton>();
+    auto at = buffer.data();
+    // clang-format off
+    parse(at, buffer.data() + buffer.size() - 1, *h,
+        popByte, &ClickContainerButton::windowId,
+        popByte, &ClickContainerButton::buttonId
+    );
+    // clang-format on
+    return h;
+}
+
+std::unique_ptr<ClickContainer> protocol::parseClickContainer(std::vector<uint8_t> &buffer)
+{
+    auto h = std::make_unique<ClickContainer>();
+    auto at = buffer.data();
+    // clang-format off
+    parse(at, buffer.data() + buffer.size() - 1, *h,
+        popByte, &ClickContainer::windowId,
+        popVarInt, &ClickContainer::stateId,
+        popShort, &ClickContainer::slot,
+        popByte, &ClickContainer::button,
+        popVarInt, &ClickContainer::mode,
+        popArray<ClickContainer::SlotWithIndex, popSlotWithIndex>, &ClickContainer::arrayOfSlots,
+        popSlot, &ClickContainer::carriedItem
+    );
+    // clang-format on
+    return h;
+}
+
+std::unique_ptr<CloseContainerRequest> protocol::parseCloseContainerRequest(std::vector<uint8_t> &buffer)
+{
+    auto h = std::make_unique<CloseContainerRequest>();
+    auto at = buffer.data();
+    // clang-format off
+    parse(at, buffer.data() + buffer.size() - 1, *h,
+        popByte, &CloseContainerRequest::windowId
+    );
+    // clang-format on
+    return h;
+}
+
+std::unique_ptr<PluginMessage> protocol::parsePluginMessage(std::vector<uint8_t> &buffer)
+{
+    auto h = std::make_unique<PluginMessage>();
+    auto at = buffer.data();
+    // clang-format off
+    parse(at, buffer.data() + buffer.size() - 1, *h,
+        popString, &PluginMessage::channel
+    );
+    // clang-format on
+    //   popArray<uint8_t, popByte>, &PluginMessage::data);
+    // That line cannot work since this is not a normal byte array
+    // I will let it empty for now
     h->data = std::vector<uint8_t>();
     return h;
 }
 
-std::shared_ptr<EditBook> protocol::parseEditBook(std::vector<uint8_t> &buffer)
+std::unique_ptr<EditBook> protocol::parseEditBook(std::vector<uint8_t> &buffer)
 {
-    auto h = std::make_shared<EditBook>();
+    auto h = std::make_unique<EditBook>();
     auto at = buffer.data();
-
+    // clang-format off
     parse(at, buffer.data() + buffer.size() - 1, *h,
-          popVarInt, &EditBook::slot,
-          popArray<std::string, popString>, &EditBook::entries,
-          popBoolean, &EditBook::has_title);
-    if (h->has_title)
+        popVarInt, &EditBook::slot,
+        popArray<std::string, popString>, &EditBook::entries,
+        popBoolean, &EditBook::hasTitle
+    );
+    if (h->hasTitle) {
         parse(at, buffer.data() + buffer.size() - 1, *h,
-              popString, &EditBook::title);
+            popString, &EditBook::title
+        );
+    }
+    // clang-format on
     return h;
 }
 
-std::shared_ptr<QueryEntityTag> protocol::parseQueryEntityTag(std::vector<uint8_t> &buffer)
+std::unique_ptr<QueryEntityTag> protocol::parseQueryEntityTag(std::vector<uint8_t> &buffer)
 {
-    auto h = std::make_shared<QueryEntityTag>();
+    auto h = std::make_unique<QueryEntityTag>();
     auto at = buffer.data();
-
+    // clang-format off
     parse(at, buffer.data() + buffer.size() - 1, *h,
-          popVarInt, &QueryEntityTag::transaction_id,
-          popVarInt, &QueryEntityTag::entity_id);
+        popVarInt, &QueryEntityTag::transactionId,
+        popVarInt, &QueryEntityTag::entityId
+    );
+    // clang-format on
     return h;
 }
 
-std::shared_ptr<Interact> protocol::parseInteract(std::vector<uint8_t> &buffer)
+std::unique_ptr<Interact> protocol::parseInteract(std::vector<uint8_t> &buffer)
 {
-    auto h = std::make_shared<Interact>();
+    auto h = std::make_unique<Interact>();
     auto at = buffer.data();
-
+    // clang-format off
     parse(at, buffer.data() + buffer.size() - 1, *h,
-          popVarInt, &Interact::entity_id,
-          popVarInt, &Interact::type);
-    if (h->type == 2)
+        popVarInt, &Interact::entityId,
+        popVarInt, &Interact::type
+    );
+    if (h->type == protocol::Interact::Type::InteractAt) {
         parse(at, buffer.data() + buffer.size() - 1, *h,
-              popFloat, &Interact::target_x,
-              popFloat, &Interact::target_y,
-              popFloat, &Interact::target_z);
-    if (h->type != 1)
+            popFloat, &Interact::targetX,
+            popFloat, &Interact::targetY,
+            popFloat, &Interact::targetZ
+        );
+    }
+    if (h->type != protocol::Interact::Type::Attack) {
         parse(at, buffer.data() + buffer.size() - 1, *h,
-              popVarInt, &Interact::hand);
+            popVarInt, &Interact::hand
+        );
+    }
     parse(at, buffer.data() + buffer.size() - 1, *h,
-          popBoolean, &Interact::sneaking);
+        popBoolean, &Interact::sneaking
+    );
+    // clang-format on
     return h;
 }
 
-std::shared_ptr<JigsawGenerate> protocol::parseJigsawGenerate(std::vector<uint8_t> &buffer)
+std::unique_ptr<JigsawGenerate> protocol::parseJigsawGenerate(std::vector<uint8_t> &buffer)
 {
-    auto h = std::make_shared<JigsawGenerate>();
+    auto h = std::make_unique<JigsawGenerate>();
     auto at = buffer.data();
-
+    // clang-format off
     parse(at, buffer.data() + buffer.size() - 1, *h,
-          popPosition, &JigsawGenerate::location,
-          popVarInt, &JigsawGenerate::levels,
-          popBoolean, &JigsawGenerate::keep_jigsaws);
+        popPosition, &JigsawGenerate::location,
+        popVarInt, &JigsawGenerate::levels,
+        popBoolean, &JigsawGenerate::keepJigsaws
+    );
+    // clang-format on
     return h;
 }
 
-std::shared_ptr<KeepAliveResponse> protocol::parseKeepAliveResponse(std::vector<uint8_t> &buffer)
+std::unique_ptr<KeepAliveResponse> protocol::parseKeepAliveResponse(std::vector<uint8_t> &buffer)
 {
-    auto h = std::make_shared<KeepAliveResponse>();
+    auto h = std::make_unique<KeepAliveResponse>();
     auto at = buffer.data();
-
+    // clang-format off
     parse(at, buffer.data() + buffer.size() - 1, *h,
-          popLong, &KeepAliveResponse::keep_alive_id);
+        popLong, &KeepAliveResponse::keepAliveId
+    );
+    // clang-format on
     return h;
 }
 
-std::shared_ptr<LockDifficulty> protocol::parseLockDifficulty(std::vector<uint8_t> &buffer)
+std::unique_ptr<LockDifficulty> protocol::parseLockDifficulty(std::vector<uint8_t> &buffer)
 {
-    auto h = std::make_shared<LockDifficulty>();
+    auto h = std::make_unique<LockDifficulty>();
     auto at = buffer.data();
-
+    // clang-format off
     parse(at, buffer.data() + buffer.size() - 1, *h,
-          popBoolean, &LockDifficulty::locked);
+        popBoolean, &LockDifficulty::locked
+    );
+    // clang-format on
     return h;
 }
 
-std::shared_ptr<SetPlayerPosition> protocol::parseSetPlayerPosition(std::vector<uint8_t> &buffer)
+std::unique_ptr<SetPlayerPosition> protocol::parseSetPlayerPosition(std::vector<uint8_t> &buffer)
 {
-    auto h = std::make_shared<SetPlayerPosition>();
+    auto h = std::make_unique<SetPlayerPosition>();
     auto at = buffer.data();
-
+    // clang-format off
     parse(at, buffer.data() + buffer.size() - 1, *h,
-          popDouble, &SetPlayerPosition::x,
-          popDouble, &SetPlayerPosition::feet_y,
-          popDouble, &SetPlayerPosition::z,
-          popBoolean, &SetPlayerPosition::on_ground);
+        popDouble, &SetPlayerPosition::x,
+        popDouble, &SetPlayerPosition::feetY,
+        popDouble, &SetPlayerPosition::z,
+        popBoolean, &SetPlayerPosition::onGround
+    );
+    // clang-format on
     return h;
 }
 
-std::shared_ptr<SetPlayerPositionAndRotation> protocol::parseSetPlayerPositionAndRotation(std::vector<uint8_t> &buffer)
+std::unique_ptr<SetPlayerPositionAndRotation> protocol::parseSetPlayerPositionAndRotation(std::vector<uint8_t> &buffer)
 {
-    auto h = std::make_shared<SetPlayerPositionAndRotation>();
+    auto h = std::make_unique<SetPlayerPositionAndRotation>();
     auto at = buffer.data();
-
+    // clang-format off
     parse(at, buffer.data() + buffer.size() - 1, *h,
-          popDouble, &SetPlayerPositionAndRotation::x,
-          popDouble, &SetPlayerPositionAndRotation::feet_y,
-          popDouble, &SetPlayerPositionAndRotation::z,
-          popFloat, &SetPlayerPositionAndRotation::yaw,
-          popFloat, &SetPlayerPositionAndRotation::pitch,
-          popBoolean, &SetPlayerPositionAndRotation::on_ground);
+        popDouble, &SetPlayerPositionAndRotation::x,
+        popDouble, &SetPlayerPositionAndRotation::feetY,
+        popDouble, &SetPlayerPositionAndRotation::z,
+        popFloat, &SetPlayerPositionAndRotation::yaw,
+        popFloat, &SetPlayerPositionAndRotation::pitch,
+        popBoolean, &SetPlayerPositionAndRotation::onGround
+    );
+    // clang-format on
     return h;
 }
 
-std::shared_ptr<SetPlayerRotation> protocol::parseSetPlayerRotation(std::vector<uint8_t> &buffer)
+std::unique_ptr<SetPlayerRotation> protocol::parseSetPlayerRotation(std::vector<uint8_t> &buffer)
 {
-    auto h = std::make_shared<SetPlayerRotation>();
+    auto h = std::make_unique<SetPlayerRotation>();
     auto at = buffer.data();
-
+    // clang-format off
     parse(at, buffer.data() + buffer.size() - 1, *h,
-          popFloat, &SetPlayerRotation::yaw,
-          popFloat, &SetPlayerRotation::pitch,
-          popBoolean, &SetPlayerRotation::on_ground);
+        popFloat, &SetPlayerRotation::yaw,
+        popFloat, &SetPlayerRotation::pitch,
+        popBoolean, &SetPlayerRotation::onGround
+    );
+    // clang-format on
     return h;
 }
 
-std::shared_ptr<SetPlayerOnGround> protocol::parseSetPlayerOnGround(std::vector<uint8_t> &buffer)
+std::unique_ptr<SetPlayerOnGround> protocol::parseSetPlayerOnGround(std::vector<uint8_t> &buffer)
 {
-    auto h = std::make_shared<SetPlayerOnGround>();
+    auto h = std::make_unique<SetPlayerOnGround>();
     auto at = buffer.data();
-
+    // clang-format off
     parse(at, buffer.data() + buffer.size() - 1, *h,
-          popBoolean, &SetPlayerOnGround::on_ground);
+        popBoolean, &SetPlayerOnGround::onGround
+    );
+    // clang-format on
     return h;
 }
 
-std::shared_ptr<MoveVehicle> protocol::parseMoveVehicle(std::vector<uint8_t> &buffer)
+std::unique_ptr<MoveVehicle> protocol::parseMoveVehicle(std::vector<uint8_t> &buffer)
 {
-    auto h = std::make_shared<MoveVehicle>();
+    auto h = std::make_unique<MoveVehicle>();
     auto at = buffer.data();
-
+    // clang-format off
     parse(at, buffer.data() + buffer.size() - 1, *h,
-          popDouble, &MoveVehicle::x,
-          popDouble, &MoveVehicle::y,
-          popDouble, &MoveVehicle::z,
-          popFloat, &MoveVehicle::yaw,
-          popFloat, &MoveVehicle::pitch);
+        popDouble, &MoveVehicle::x,
+        popDouble, &MoveVehicle::y,
+        popDouble, &MoveVehicle::z,
+        popFloat, &MoveVehicle::yaw,
+        popFloat, &MoveVehicle::pitch
+    );
+    // clang-format on
     return h;
 }
 
-std::shared_ptr<PaddleBoat> protocol::parsePaddleBoat(std::vector<uint8_t> &buffer)
+std::unique_ptr<PaddleBoat> protocol::parsePaddleBoat(std::vector<uint8_t> &buffer)
 {
-    auto h = std::make_shared<PaddleBoat>();
+    auto h = std::make_unique<PaddleBoat>();
     auto at = buffer.data();
-
+    // clang-format off
     parse(at, buffer.data() + buffer.size() - 1, *h,
-          popBoolean, &PaddleBoat::left_paddle_turning,
-          popBoolean, &PaddleBoat::right_paddle_turning);
+        popBoolean, &PaddleBoat::leftPaddleTurning,
+        popBoolean, &PaddleBoat::rightPaddleTurning
+    );
+    // clang-format on
     return h;
 }
 
-std::shared_ptr<PickItem> protocol::parsePickItem(std::vector<uint8_t> &buffer)
+std::unique_ptr<PickItem> protocol::parsePickItem(std::vector<uint8_t> &buffer)
 {
-    auto h = std::make_shared<PickItem>();
+    auto h = std::make_unique<PickItem>();
     auto at = buffer.data();
-
+    // clang-format off
     parse(at, buffer.data() + buffer.size() - 1, *h,
-          popVarInt, &PickItem::slot_to_use);
+        popVarInt, &PickItem::slotToUse
+    );
+    // clang-format on
     return h;
 }
 
-std::shared_ptr<PlaceRecipe> protocol::parsePlaceRecipe(std::vector<uint8_t> &buffer)
+std::unique_ptr<PlaceRecipe> protocol::parsePlaceRecipe(std::vector<uint8_t> &buffer)
 {
-    auto h = std::make_shared<PlaceRecipe>();
+    auto h = std::make_unique<PlaceRecipe>();
     auto at = buffer.data();
-
+    // clang-format off
     parse(at, buffer.data() + buffer.size() - 1, *h,
-          popByte, &PlaceRecipe::window_id,
-          popString, &PlaceRecipe::recipe,
-          popBoolean, &PlaceRecipe::make_all);
+        popByte, &PlaceRecipe::windowId,
+        popString, &PlaceRecipe::recipe,
+        popBoolean, &PlaceRecipe::makeAll
+    );
+    // clang-format on
     return h;
 }
 
-std::shared_ptr<PlayerAbilities> protocol::parsePlayerAbilities(std::vector<uint8_t> &buffer)
+std::unique_ptr<PlayerAbilities> protocol::parsePlayerAbilities(std::vector<uint8_t> &buffer)
 {
-    auto h = std::make_shared<PlayerAbilities>();
+    auto h = std::make_unique<PlayerAbilities>();
     auto at = buffer.data();
-
+    // clang-format off
     parse(at, buffer.data() + buffer.size() - 1, *h,
-          popByte, &PlayerAbilities::flags);
+        popByte, &PlayerAbilities::flags
+    );
+    // clang-format on
     return h;
 }
 
-std::shared_ptr<PlayerAction> protocol::parsePlayerAction(std::vector<uint8_t> &buffer)
+std::unique_ptr<PlayerAction> protocol::parsePlayerAction(std::vector<uint8_t> &buffer)
 {
-    auto h = std::make_shared<PlayerAction>();
+    auto h = std::make_unique<PlayerAction>();
     auto at = buffer.data();
-
+    // clang-format off
     parse(at, buffer.data() + buffer.size() - 1, *h,
-          popVarInt, &PlayerAction::status,
-          popPosition, &PlayerAction::location,
-          popByte, &PlayerAction::face,
-          popVarInt, &PlayerAction::sequence);
+        popVarInt, &PlayerAction::status,
+        popPosition, &PlayerAction::location,
+        popByte, &PlayerAction::face,
+        popVarInt, &PlayerAction::sequence
+    );
+    // clang-format on
     return h;
 }
 
-std::shared_ptr<PlayerCommand> protocol::parsePlayerCommand(std::vector<uint8_t> &buffer)
+std::unique_ptr<PlayerCommand> protocol::parsePlayerCommand(std::vector<uint8_t> &buffer)
 {
-    auto h = std::make_shared<PlayerCommand>();
+    auto h = std::make_unique<PlayerCommand>();
     auto at = buffer.data();
-
+    // clang-format off
     parse(at, buffer.data() + buffer.size() - 1, *h,
-          popVarInt, &PlayerCommand::entity_id,
-          popVarInt, &PlayerCommand::action_id,
-          popVarInt, &PlayerCommand::jump_boost);
+        popVarInt, &PlayerCommand::entityId,
+        popVarInt, &PlayerCommand::actionId,
+        popVarInt, &PlayerCommand::jumpBoost
+    );
+    // clang-format on
     return h;
 }
 
-std::shared_ptr<PlayerInput> protocol::parsePlayerInput(std::vector<uint8_t> &buffer)
+std::unique_ptr<PlayerInput> protocol::parsePlayerInput(std::vector<uint8_t> &buffer)
 {
-    auto h = std::make_shared<PlayerInput>();
+    auto h = std::make_unique<PlayerInput>();
     auto at = buffer.data();
-
+    // clang-format off
     parse(at, buffer.data() + buffer.size() - 1, *h,
-          popFloat, &PlayerInput::sideways,
-          popFloat, &PlayerInput::forward,
-          popByte, &PlayerInput::flags);
+        popFloat, &PlayerInput::sideways,
+        popFloat, &PlayerInput::forward,
+        popByte, &PlayerInput::flags
+    );
+    // clang-format on
     return h;
 }
 
-std::shared_ptr<Pong> protocol::parsePong(std::vector<uint8_t> &buffer)
+std::unique_ptr<Pong> protocol::parsePong(std::vector<uint8_t> &buffer)
 {
-    auto h = std::make_shared<Pong>();
+    auto h = std::make_unique<Pong>();
     auto at = buffer.data();
-
+    // clang-format off
     parse(at, buffer.data() + buffer.size() - 1, *h,
-          popInt, &Pong::id);
+        popInt, &Pong::id
+    );
+    // clang-format on
     return h;
 }
 
-std::shared_ptr<ChangeRecipeBookSettings> protocol::parseChangeRecipeBookSettings(std::vector<uint8_t> &buffer)
+std::unique_ptr<PlayerSession> protocol::parsePlayerSession(std::vector<uint8_t> &buffer)
 {
-    auto h = std::make_shared<ChangeRecipeBookSettings>();
+    auto h = std::make_unique<PlayerSession>();
     auto at = buffer.data();
-
+    // clang-format off
     parse(at, buffer.data() + buffer.size() - 1, *h,
-          popVarInt, &ChangeRecipeBookSettings::book_id,
-          popBoolean, &ChangeRecipeBookSettings::book_open,
-          popBoolean, &ChangeRecipeBookSettings::filter_active);
+        popUUID, &PlayerSession::uuid,
+        popLong, &PlayerSession::expiresAt,
+        popArray<uint8_t, popByte>, &PlayerSession::publicKey,
+        popArray<uint8_t, popByte>, &PlayerSession::signature
+    );
+    // clang-format on
     return h;
 }
 
-std::shared_ptr<SetSeenRecipe> protocol::parseSetSeenRecipe(std::vector<uint8_t> &buffer)
+std::unique_ptr<ChangeRecipeBookSettings> protocol::parseChangeRecipeBookSettings(std::vector<uint8_t> &buffer)
 {
-    auto h = std::make_shared<SetSeenRecipe>();
+    auto h = std::make_unique<ChangeRecipeBookSettings>();
     auto at = buffer.data();
-
+    // clang-format off
     parse(at, buffer.data() + buffer.size() - 1, *h,
-          popString, &SetSeenRecipe::recipe_id);
+        popVarInt, &ChangeRecipeBookSettings::bookId,
+        popBoolean, &ChangeRecipeBookSettings::bookOpen,
+        popBoolean, &ChangeRecipeBookSettings::filterActive
+    );
+    // clang-format on
     return h;
 }
 
-std::shared_ptr<RenameItem> protocol::parseRenameItem(std::vector<uint8_t> &buffer)
+std::unique_ptr<SetSeenRecipe> protocol::parseSetSeenRecipe(std::vector<uint8_t> &buffer)
 {
-    auto h = std::make_shared<RenameItem>();
+    auto h = std::make_unique<SetSeenRecipe>();
     auto at = buffer.data();
-
+    // clang-format off
     parse(at, buffer.data() + buffer.size() - 1, *h,
-          popString, &RenameItem::item_name);
+        popString, &SetSeenRecipe::recipeId
+    );
+    // clang-format on
     return h;
 }
 
-std::shared_ptr<ResourcePack> protocol::parseResourcePack(std::vector<uint8_t> &buffer)
+std::unique_ptr<RenameItem> protocol::parseRenameItem(std::vector<uint8_t> &buffer)
 {
-    auto h = std::make_shared<ResourcePack>();
+    auto h = std::make_unique<RenameItem>();
     auto at = buffer.data();
-
+    // clang-format off
     parse(at, buffer.data() + buffer.size() - 1, *h,
-          popVarInt, &ResourcePack::result);
+        popString, &RenameItem::itemName
+    );
+    // clang-format on
     return h;
 }
 
-std::shared_ptr<SeenAdvancements> protocol::parseSeenAdvancements(std::vector<uint8_t> &buffer)
+std::unique_ptr<ResourcePack> protocol::parseResourcePack(std::vector<uint8_t> &buffer)
 {
-    auto h = std::make_shared<SeenAdvancements>();
+    auto h = std::make_unique<ResourcePack>();
     auto at = buffer.data();
-
+    // clang-format off
     parse(at, buffer.data() + buffer.size() - 1, *h,
-          popVarInt, &SeenAdvancements::action);
-    if (h->action == 0)
+        popVarInt, &ResourcePack::result
+    );
+    // clang-format on
+    return h;
+}
+
+std::unique_ptr<SeenAdvancements> protocol::parseSeenAdvancements(std::vector<uint8_t> &buffer)
+{
+    auto h = std::make_unique<SeenAdvancements>();
+    auto at = buffer.data();
+    // clang-format off
+    parse(at, buffer.data() + buffer.size() - 1, *h,
+        popVarInt, &SeenAdvancements::action
+    );
+    if (h->action == protocol::SeenAdvancements::Action::OpenedTab) {
         parse(at, buffer.data() + buffer.size() - 1, *h,
-              popString, &SeenAdvancements::tab_id);
+            popString, &SeenAdvancements::tabId
+        );
+    }
+    // clang-format on
     return h;
 }
 
-std::shared_ptr<SelectTrade> protocol::parseSelectTrade(std::vector<uint8_t> &buffer)
+std::unique_ptr<SelectTrade> protocol::parseSelectTrade(std::vector<uint8_t> &buffer)
 {
-    auto h = std::make_shared<SelectTrade>();
+    auto h = std::make_unique<SelectTrade>();
     auto at = buffer.data();
-
+    // clang-format off
     parse(at, buffer.data() + buffer.size() - 1, *h,
-          popVarInt, &SelectTrade::selected_slot);
+        popVarInt, &SelectTrade::selectedSlot
+    );
+    // clang-format on
     return h;
 }
 
-std::shared_ptr<SetBeaconEffect> protocol::parseSetBeaconEffect(std::vector<uint8_t> &buffer)
+std::unique_ptr<SetBeaconEffect> protocol::parseSetBeaconEffect(std::vector<uint8_t> &buffer)
 {
-    auto h = std::make_shared<SetBeaconEffect>();
+    auto h = std::make_unique<SetBeaconEffect>();
     auto at = buffer.data();
-
+    // clang-format off
     parse(at, buffer.data() + buffer.size() - 1, *h,
-          popBoolean, &SetBeaconEffect::primary_effect_present,
-          popVarInt, &SetBeaconEffect::primary_effect,
-          popBoolean, &SetBeaconEffect::secondary_effect_present,
-          popVarInt, &SetBeaconEffect::secondary_effect);
+        popBoolean, &SetBeaconEffect::primaryEffectPresent,
+        popVarInt, &SetBeaconEffect::primaryEffect,
+        popBoolean, &SetBeaconEffect::secondaryEffectPresent,
+        popVarInt, &SetBeaconEffect::secondaryEffect
+    );
+    // clang-format on
     return h;
 }
 
-std::shared_ptr<SetHeldItem> protocol::parseSetHeldItem(std::vector<uint8_t> &buffer)
+std::unique_ptr<SetHeldItem> protocol::parseSetHeldItem(std::vector<uint8_t> &buffer)
 {
-    auto h = std::make_shared<SetHeldItem>();
+    auto h = std::make_unique<SetHeldItem>();
     auto at = buffer.data();
-
+    // clang-format off
     parse(at, buffer.data() + buffer.size() - 1, *h,
-          popShort, &SetHeldItem::slot);
+        popShort, &SetHeldItem::slot
+    );
+    // clang-format on
     return h;
 }
 
-std::shared_ptr<ProgramCommandBlock> protocol::parseProgramCommandBlock(std::vector<uint8_t> &buffer)
+std::unique_ptr<ProgramCommandBlock> protocol::parseProgramCommandBlock(std::vector<uint8_t> &buffer)
 {
-    auto h = std::make_shared<ProgramCommandBlock>();
+    auto h = std::make_unique<ProgramCommandBlock>();
     auto at = buffer.data();
-
+    // clang-format off
     parse(at, buffer.data() + buffer.size() - 1, *h,
-          popPosition, &ProgramCommandBlock::location,
-          popString, &ProgramCommandBlock::command,
-          popVarInt, &ProgramCommandBlock::mode,
-          popByte, &ProgramCommandBlock::flags);
+        popPosition, &ProgramCommandBlock::location,
+        popString, &ProgramCommandBlock::command,
+        popVarInt, &ProgramCommandBlock::mode,
+        popByte, &ProgramCommandBlock::flags
+    );
+    // clang-format on
     return h;
 }
 
-std::shared_ptr<ProgramCommandBlockMinecart> protocol::parseProgramCommandBlockMinecart(std::vector<uint8_t> &buffer)
+std::unique_ptr<ProgramCommandBlockMinecart> protocol::parseProgramCommandBlockMinecart(std::vector<uint8_t> &buffer)
 {
-    auto h = std::make_shared<ProgramCommandBlockMinecart>();
+    auto h = std::make_unique<ProgramCommandBlockMinecart>();
     auto at = buffer.data();
-
+    // clang-format off
     parse(at, buffer.data() + buffer.size() - 1, *h,
-          popVarInt, &ProgramCommandBlockMinecart::entity_id,
-          popString, &ProgramCommandBlockMinecart::command,
-          popBoolean, &ProgramCommandBlockMinecart::track_output);
+        popVarInt, &ProgramCommandBlockMinecart::entityId,
+        popString, &ProgramCommandBlockMinecart::command,
+        popBoolean, &ProgramCommandBlockMinecart::trackOutput
+    );
+    // clang-format on
     return h;
 }
 
-std::shared_ptr<ProgramJigsawBlock> protocol::parseProgramJigsawBlock(std::vector<uint8_t> &buffer)
+std::unique_ptr<SetCreativeModeSlot> protocol::parseSetCreativeModeSlot(std::vector<uint8_t> &buffer)
 {
-    auto h = std::make_shared<ProgramJigsawBlock>();
+    auto h = std::make_unique<SetCreativeModeSlot>();
     auto at = buffer.data();
-
+    // clang-format off
     parse(at, buffer.data() + buffer.size() - 1, *h,
-          popPosition, &ProgramJigsawBlock::location,
-          popString, &ProgramJigsawBlock::name,
-          popString, &ProgramJigsawBlock::target,
-          popString, &ProgramJigsawBlock::pool,
-          popString, &ProgramJigsawBlock::final_state,
-          popString, &ProgramJigsawBlock::joint_type);
+        popShort, &SetCreativeModeSlot::slot,
+        popSlot, &SetCreativeModeSlot::clickedItem
+    );
+    // clang-format on
     return h;
 }
 
-std::shared_ptr<ProgramStructureBlock> protocol::parseProgramStructureBlock(std::vector<uint8_t> &buffer)
+std::unique_ptr<ProgramJigsawBlock> protocol::parseProgramJigsawBlock(std::vector<uint8_t> &buffer)
 {
-    auto h = std::make_shared<ProgramStructureBlock>();
+    auto h = std::make_unique<ProgramJigsawBlock>();
     auto at = buffer.data();
-
+    // clang-format off
     parse(at, buffer.data() + buffer.size() - 1, *h,
-          popPosition, &ProgramStructureBlock::location,
-          popVarInt, &ProgramStructureBlock::action,
-          popVarInt, &ProgramStructureBlock::mode,
-          popByte, &ProgramStructureBlock::offset_x,
-          popByte, &ProgramStructureBlock::offset_y,
-          popByte, &ProgramStructureBlock::offset_z,
-          popByte, &ProgramStructureBlock::size_x,
-          popByte, &ProgramStructureBlock::size_y,
-          popByte, &ProgramStructureBlock::size_z,
-          popVarInt, &ProgramStructureBlock::mirror,
-          popVarInt, &ProgramStructureBlock::rotation,
-          popString, &ProgramStructureBlock::metadata,
-          popFloat, &ProgramStructureBlock::integrity,
-          popVarLong, &ProgramStructureBlock::seed,
-          popByte, &ProgramStructureBlock::flags);
+        popPosition, &ProgramJigsawBlock::location,
+        popString, &ProgramJigsawBlock::name,
+        popString, &ProgramJigsawBlock::target,
+        popString, &ProgramJigsawBlock::pool,
+        popString, &ProgramJigsawBlock::finalState,
+        popString, &ProgramJigsawBlock::jointType
+    );
+    // clang-format on
     return h;
 }
 
-std::shared_ptr<UpdateSign> protocol::parseUpdateSign(std::vector<uint8_t> &buffer)
+std::unique_ptr<ProgramStructureBlock> protocol::parseProgramStructureBlock(std::vector<uint8_t> &buffer)
 {
-    auto h = std::make_shared<UpdateSign>();
+    auto h = std::make_unique<ProgramStructureBlock>();
     auto at = buffer.data();
-
+    // clang-format off
     parse(at, buffer.data() + buffer.size() - 1, *h,
-          popPosition, &UpdateSign::location,
-          popString, &UpdateSign::line_1,
-          popString, &UpdateSign::line_2,
-          popString, &UpdateSign::line_3,
-          popString, &UpdateSign::line_4);
+        popPosition, &ProgramStructureBlock::location,
+        popVarInt, &ProgramStructureBlock::action,
+        popVarInt, &ProgramStructureBlock::mode,
+        popByte, &ProgramStructureBlock::offsetX,
+        popByte, &ProgramStructureBlock::offsetY,
+        popByte, &ProgramStructureBlock::offsetZ,
+        popByte, &ProgramStructureBlock::sizeX,
+        popByte, &ProgramStructureBlock::sizeY,
+        popByte, &ProgramStructureBlock::sizeZ,
+        popVarInt, &ProgramStructureBlock::mirror,
+        popVarInt, &ProgramStructureBlock::rotation,
+        popString, &ProgramStructureBlock::metadata,
+        popFloat, &ProgramStructureBlock::integrity,
+        popVarLong, &ProgramStructureBlock::seed,
+        popByte, &ProgramStructureBlock::flags
+    );
+    // clang-format on
     return h;
 }
 
-std::shared_ptr<SwingArm> protocol::parseSwingArm(std::vector<uint8_t> &buffer)
+std::unique_ptr<UpdateSign> protocol::parseUpdateSign(std::vector<uint8_t> &buffer)
 {
-    auto h = std::make_shared<SwingArm>();
+    auto h = std::make_unique<UpdateSign>();
     auto at = buffer.data();
-
+    // clang-format off
     parse(at, buffer.data() + buffer.size() - 1, *h,
-          popVarInt, &SwingArm::hand);
+        popPosition, &UpdateSign::location,
+        popString, &UpdateSign::line1,
+        popString, &UpdateSign::line2,
+        popString, &UpdateSign::line3,
+        popString, &UpdateSign::line4
+    );
+    // clang-format on
     return h;
 }
 
-std::shared_ptr<TeleportToEntity> protocol::parseTeleportToEntity(std::vector<uint8_t> &buffer)
+std::unique_ptr<SwingArm> protocol::parseSwingArm(std::vector<uint8_t> &buffer)
 {
-    auto h = std::make_shared<TeleportToEntity>();
+    auto h = std::make_unique<SwingArm>();
     auto at = buffer.data();
-
+    // clang-format off
     parse(at, buffer.data() + buffer.size() - 1, *h,
-          popUUID, &TeleportToEntity::target_player);
+        popVarInt, &SwingArm::hand
+    );
+    // clang-format on
     return h;
 }
 
-std::shared_ptr<UseItemOn> protocol::parseUseItemOn(std::vector<uint8_t> &buffer)
+std::unique_ptr<TeleportToEntity> protocol::parseTeleportToEntity(std::vector<uint8_t> &buffer)
 {
-    auto h = std::make_shared<UseItemOn>();
+    auto h = std::make_unique<TeleportToEntity>();
     auto at = buffer.data();
-
+    // clang-format off
     parse(at, buffer.data() + buffer.size() - 1, *h,
-          popVarInt, &UseItemOn::hand,
-          popPosition, &UseItemOn::location,
-          popVarInt, &UseItemOn::face,
-          popFloat, &UseItemOn::cursor_position_x,
-          popFloat, &UseItemOn::cursor_position_y,
-          popFloat, &UseItemOn::cursor_position_z,
-          popBoolean, &UseItemOn::inside_block,
-          popVarInt, &UseItemOn::sequence);
+        popUUID, &TeleportToEntity::targetPlayer
+    );
+    // clang-format on
     return h;
 }
 
-std::shared_ptr<UseItem> protocol::parseUseItem(std::vector<uint8_t> &buffer)
+std::unique_ptr<UseItemOn> protocol::parseUseItemOn(std::vector<uint8_t> &buffer)
 {
-    auto h = std::make_shared<UseItem>();
+    auto h = std::make_unique<UseItemOn>();
     auto at = buffer.data();
-
+    // clang-format off
     parse(at, buffer.data() + buffer.size() - 1, *h,
-          popVarInt, &UseItem::hand,
-          popVarInt, &UseItem::sequence);
+        popVarInt, &UseItemOn::hand,
+        popPosition, &UseItemOn::location,
+        popVarInt, &UseItemOn::face,
+        popFloat, &UseItemOn::cursorPositionX,
+        popFloat, &UseItemOn::cursorPositionY,
+        popFloat, &UseItemOn::cursorPositionZ,
+        popBoolean, &UseItemOn::insideBlock,
+        popVarInt, &UseItemOn::sequence
+    );
+    // clang-format on
+    return h;
+}
+
+std::unique_ptr<UseItem> protocol::parseUseItem(std::vector<uint8_t> &buffer)
+{
+    auto h = std::make_unique<UseItem>();
+    auto at = buffer.data();
+    // clang-format off
+    parse(at, buffer.data() + buffer.size() - 1, *h,
+        popVarInt, &UseItem::hand,
+        popVarInt, &UseItem::sequence
+    );
+    // clang-format on
     return h;
 }

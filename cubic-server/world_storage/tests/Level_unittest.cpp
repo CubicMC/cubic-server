@@ -1,6 +1,6 @@
-#include <gtest/gtest.h>
 #include "../Level.hpp"
 #include "types.hpp"
+#include <gtest/gtest.h>
 
 world_storage::Level level;
 

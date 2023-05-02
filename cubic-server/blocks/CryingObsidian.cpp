@@ -2,10 +2,8 @@
 #include <stdexcept>
 
 namespace Blocks {
-    namespace CryingObsidian {
-        BlockId toProtocol() {
-            return 18821;
-        }
-    }
+namespace CryingObsidian {
+BlockId toProtocol() { return 18821; }
+}
 
 }

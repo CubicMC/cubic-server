@@ -1,14 +1,13 @@
-#include <string>
 #include <iostream>
 #include <poll.h>
+#include <string>
 
 #include "CommandLine.hpp"
+
+#include "Server.hpp"
 #include "command_parser/CommandParser.hpp"
 
-void CommandLine::launch()
-{
-    this->_thread = std::thread(&CommandLine::run, this);
-}
+void CommandLine::launch() { this->_thread = std::thread(&CommandLine::run, this); }
 
 void CommandLine::stop()
 {
@@ -20,16 +19,18 @@ void CommandLine::stop()
 void CommandLine::run()
 {
     std::string command = "";
-    pollfd poll_set[1];
-    poll_set[0].fd = STDIN_FILENO;
+    pollfd pollSet[1];
+    pollSet[0].fd = STDIN_FILENO;
 
     while (this->_running) {
-        poll_set[0].events = POLLIN;
-        poll(poll_set, 1, 50);
-        if ((poll_set[0].revents & POLLIN) == 0)
+        pollSet[0].events = POLLIN;
+        if (poll(pollSet, 1, 50) == -1)
+            break;
+        if ((pollSet[0].revents & POLLIN) == 0)
             continue;
 
-        std::getline(std::cin, command);
+        if (!std::getline(std::cin, command))
+            break;
 
         command_parser::parseCommand(command, nullptr);
     }

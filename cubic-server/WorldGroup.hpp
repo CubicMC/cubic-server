@@ -1,19 +1,17 @@
 #ifndef CUBICSERVER_WORLDGROUP_HPP
 #define CUBICSERVER_WORLDGROUP_HPP
 
-#include <memory>
-#include <unordered_map>
 #include <atomic>
+#include <functional>
+#include <memory>
 #include <thread>
-
-#include "Chat.hpp"
-#include "logging/Logger.hpp"
+#include <unordered_map>
 
 class World;
-
+class Chat;
 class SoundSystem;
-class WorldGroup
-{
+
+class WorldGroup {
 public:
     WorldGroup(std::shared_ptr<Chat> chat);
     virtual ~WorldGroup();
@@ -22,13 +20,14 @@ public:
     virtual void stop();
     virtual std::shared_ptr<Chat> getChat() const;
     virtual std::shared_ptr<World> getWorld(const std::string_view &name) const;
-    virtual std::unordered_map<std::string_view, std::shared_ptr<World>> getWorlds() const;
+    virtual std::unordered_map<std::string_view, std::shared_ptr<World>> &getWorlds();
+    virtual const std::unordered_map<std::string_view, std::shared_ptr<World>> &getWorlds() const;
+
     virtual bool isInitialized() const;
 
 protected:
     virtual void _run();
 
-protected:
     std::shared_ptr<Chat> _chat;
     std::unordered_map<std::string_view, std::shared_ptr<World>> _worlds;
     SoundSystem *_soundSystem;
@@ -36,5 +35,4 @@ protected:
     std::thread _thread;
 };
 
-
-#endif //CUBICSERVER_WORLDGROUP_HPP
+#endif // CUBICSERVER_WORLDGROUP_HPP

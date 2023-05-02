@@ -1,57 +1,71 @@
 #ifndef CUBICSERVER_WORLD_HPP
 #define CUBICSERVER_WORLD_HPP
 
-#include <vector>
-#include <algorithm>
-#include <thread>
-#include <memory>
 #include <functional>
+#include <memory>
+#include <thread>
+#include <vector>
 
-#include "Entity.hpp"
-#include "Chat.hpp"
-#include "logging/Logger.hpp"
-#include "world_storage/LevelData.hpp"
 #include "TickClock.hpp"
+#include "options.hpp"
 #include "thread_pool/Pool.hpp"
 #include "types.hpp"
+#include "world_storage/LevelData.hpp"
 
-class WorldGroup;
+class Chat;
 class Dimension;
+class Entity;
+class Player;
+class WorldGroup;
 
 constexpr int NB_SPAWN_CHUNKS = 19;
 
-class World
-{
+class World : public std::enable_shared_from_this<World> {
 public:
-    World(WorldGroup *worldGroup);
+    World(std::shared_ptr<WorldGroup> worldGroup);
 
     virtual void tick();
     virtual void initialize();
     virtual void stop();
 
-    virtual bool isInitialized() const;
-    virtual WorldGroup *getWorldGroup() const;
-    virtual std::shared_ptr<Chat> getChat() const;
-    virtual std::vector<Entity *> getEntities() const;
-    [[nodiscard]] virtual std::vector<Player *> getPlayers() const;
-    virtual std::shared_ptr<Dimension> getDimension(const std::string_view &name) const;
-    virtual void forEachEntity(std::function<void(Entity *)> callback);
-    virtual void forEachEntityIf(std::function<void(Entity *)> callback, std::function<bool(const Entity *)> predicate);
+    NODISCARD virtual bool isInitialized() const;
+    NODISCARD virtual const std::shared_ptr<WorldGroup>getWorldGroup() const;
+    NODISCARD virtual std::shared_ptr<WorldGroup> getWorldGroup();
+    NODISCARD virtual const std::shared_ptr<Chat> getChat() const;
+    NODISCARD virtual std::shared_ptr<Chat> getChat();
+    NODISCARD virtual std::shared_ptr<Dimension> getDimension(const std::string_view &name);
+    NODISCARD virtual const std::shared_ptr<Dimension> getDimension(const std::string_view &name) const;
+    NODISCARD virtual std::unordered_map<std::string_view, std::shared_ptr<Dimension>> &getDimensions();
+    NODISCARD virtual const std::unordered_map<std::string_view, std::shared_ptr<Dimension>> &getDimensions() const;
 
-    virtual const world_storage::LevelData &getLevelData() const;
+    NODISCARD virtual const world_storage::LevelData &getLevelData() const;
     virtual void setLevelData(const world_storage::LevelData &value);
     virtual void updateTime();
     virtual void sendPlayerInfoAddPlayer(Player *);
     virtual void sendPlayerInfoRemovePlayer(const Player *current);
 
-    virtual thread_pool::Pool &getGenerationPool();
+    NODISCARD virtual thread_pool::Pool &getGenerationPool();
 
-    virtual Seed getSeed() const;
-    virtual uint8_t getRenderDistance() const;
+    NODISCARD virtual Seed getSeed() const;
+    NODISCARD virtual uint8_t getRenderDistance() const;
+    NODISCARD virtual long getTime() const;
+    NODISCARD virtual long getAge() const;
+
+    /*
+    **  Used in the /time command.
+    **  Adds time to the current world time
+    */
+    virtual int addTime(int time);
+
+    /*
+    **  Used in the /time command.
+    **  Sets the current world time to the given time
+    */
+    virtual void setTime(int time);
 
 protected:
     std::shared_ptr<Chat> _chat;
-    WorldGroup *_worldGroup;
+    std::shared_ptr<WorldGroup> _worldGroup;
     std::unordered_map<std::string_view, std::shared_ptr<Dimension>> _dimensions;
     long _age;
     long _time;
@@ -62,5 +76,4 @@ protected:
     thread_pool::Pool _generationPool;
 };
 
-
-#endif //CUBICSERVER_WORLD_HPP
+#endif // CUBICSERVER_WORLD_HPP

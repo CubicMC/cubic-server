@@ -1,12 +1,10 @@
-#ifndef TICK_CLOCK_HPP
-#define TICK_CLOCK_HPP
+#ifndef CUBICSERVER_TICKCLOCK_HPP
+#define CUBICSERVER_TICKCLOCK_HPP
 
 #include <cstdint>
 #include <functional>
-#include <vector>
 
-class TickClock
-{
+class TickClock {
 public:
     TickClock() = default;
     ~TickClock() = default;
@@ -30,4 +28,4 @@ private:
     uint16_t _tick;
 };
 
-#endif // TICK_CLOCK_HPP
+#endif // CUBICSERVER_TICKCLOCK_HPP

@@ -2,10 +2,8 @@
 #include <stdexcept>
 
 namespace Blocks {
-    namespace WhiteTulip {
-        BlockId toProtocol() {
-            return 2031;
-        }
-    }
+namespace WhiteTulip {
+BlockId toProtocol() { return 2031; }
+}
 
 }

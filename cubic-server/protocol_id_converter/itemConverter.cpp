@@ -1,16 +1,20 @@
-#include <fstream>
-#include <filesystem>
-
 #include "itemConverter.hpp"
+
+#include <filesystem>
+#include <fstream>
+
+#include <nlohmann/json.hpp>
+
 #include "logging/Logger.hpp"
 
-void Items::ItemConverter::initialize(const std::string &path) {
+void Items::ItemConverter::initialize(const std::string &path)
+{
     if (!std::filesystem::exists(path)) {
         LERROR("File " << path << " not found !");
         return;
     }
     nlohmann::json file = nlohmann::json::parse(std::ifstream(path));
-    for(auto item : file["minecraft:item"]["entries"].items()) {
+    for (auto item : file["minecraft:item"]["entries"].items()) {
         Items::InternalItem i;
         i.name = item.key();
         i.protocolId = item.value()["protocol_id"];
@@ -18,7 +22,8 @@ void Items::ItemConverter::initialize(const std::string &path) {
     }
 }
 
-ItemId Items::ItemConverter::fromItemToProtocolId(const std::string &name) const {
+ItemId Items::ItemConverter::fromItemToProtocolId(const std::string &name) const
+{
     auto item = std::find_if(this->_items.begin(), this->_items.end(), [&name](const Items::InternalItem &i) {
         return i.name == name;
     });
@@ -29,7 +34,8 @@ ItemId Items::ItemConverter::fromItemToProtocolId(const std::string &name) const
     return item->protocolId;
 }
 
-std::string Items::ItemConverter::fromProtocolIdToItem(ItemId id) const {
+std::string Items::ItemConverter::fromProtocolIdToItem(ItemId id) const
+{
     auto item = std::find_if(this->_items.begin(), this->_items.end(), [&id](const Items::InternalItem &i) {
         return i.protocolId == id;
     });

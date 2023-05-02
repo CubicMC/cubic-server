@@ -1,0 +1,24 @@
+# Format Style Options - Created with Clang Power Tools
+---
+BasedOnStyle: Webkit
+NamespaceIndentation: None
+IndentWidth: 4
+ColumnLimit: 180
+AlignAfterOpenBracket: BlockIndent
+BreakConstructorInitializers: AfterColon
+Cpp11BracedListStyle: true
+PackConstructorInitializers: Never
+PointerAlignment: Right
+QualifierAlignment: Left
+SpaceAfterCStyleCast: true
+SpaceAfterLogicalNot: false
+SpaceBeforeCtorInitializerColon: false
+AllowShortEnumsOnASingleLine: false
+ReferenceAlignment: Right
+LambdaBodyIndentation: Signature
+AllowShortLambdasOnASingleLine: None
+AlignEscapedNewlines: Left
+BreakBeforeBinaryOperators: None
+AlwaysBreakTemplateDeclarations: Yes
+SpaceAfterTemplateKeyword: False
+...

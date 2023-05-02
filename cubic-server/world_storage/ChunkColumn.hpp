@@ -1,16 +1,13 @@
-#ifndef WORLD_STORAGE_CHUNKCOLUMN_HPP
-#define WORLD_STORAGE_CHUNKCOLUMN_HPP
+#ifndef CUBICSERVER_WORLDSTORAGE_CHUNKCOLUMN_HPP
+#define CUBICSERVER_WORLDSTORAGE_CHUNKCOLUMN_HPP
 
-#include <cstdint>
 #include <array>
-#include <vector>
-#include <unordered_map>
 #include <cmath>
+#include <cstdint>
+#include <vector>
 
-// #include "Entity.hpp"
-#include "protocol/Structures.hpp"
-#include "Block.hpp"
 #include "Palette.hpp"
+#include "protocol/Structures.hpp"
 #include "types.hpp"
 
 namespace world_storage {
@@ -35,9 +32,9 @@ constexpr int BIOME_SECTION_WIDTH = 4;
 constexpr int BIOME_HEIGHT_MIN = CHUNK_HEIGHT_MIN / 4;
 constexpr int BIOME_HEIGHT_MAX = CHUNK_HEIGHT_MAX / 4;
 constexpr int BIOME_HEIGHT = BIOME_HEIGHT_MAX - BIOME_HEIGHT_MIN;
-constexpr int BIOME_SECTION_2D_SIZE = BIOME_SECTION_WIDTH*BIOME_SECTION_WIDTH;
-constexpr int BIOME_SECTION_3D_SIZE = BIOME_SECTION_2D_SIZE*BIOME_SECTION_WIDTH;
-constexpr int BIOME_PER_CHUNK = BIOME_SECTION_3D_SIZE*NB_OF_SECTIONS;
+constexpr int BIOME_SECTION_2D_SIZE = BIOME_SECTION_WIDTH * BIOME_SECTION_WIDTH;
+constexpr int BIOME_SECTION_3D_SIZE = BIOME_SECTION_2D_SIZE * BIOME_SECTION_WIDTH;
+constexpr int BIOME_PER_CHUNK = BIOME_SECTION_3D_SIZE * NB_OF_SECTIONS;
 
 // Heightmap
 constexpr int HEIGHTMAP_BITS = bitsNeeded(CHUNK_HEIGHT + 1);
@@ -61,13 +58,10 @@ constexpr uint64_t calculateBiomeIdx(const Position &pos)
     return pos.x + (pos.z * BIOME_SECTION_WIDTH) + (y * BIOME_SECTION_2D_SIZE);
 }
 
-struct BlockEntity {
-};
-
 struct HeightMap {
     // https://wiki.vg/index.php?title=Protocol&oldid=17753#Chunk_Data_and_Update_Light
-    std::array<nbt::Long, HEIGHTMAP_ARRAY_SIZE> motionBlocking;
-    std::array<nbt::Long, HEIGHTMAP_ARRAY_SIZE> worldSurface;
+    std::array<std::shared_ptr<nbt::Long>, HEIGHTMAP_ARRAY_SIZE> motionBlocking;
+    std::array<std::shared_ptr<nbt::Long>, HEIGHTMAP_ARRAY_SIZE> worldSurface;
 };
 
 enum class WorldType {
@@ -77,8 +71,7 @@ enum class WorldType {
     FLAT
 };
 
-class ChunkColumn
-{
+class ChunkColumn {
 public:
     ChunkColumn(const Position2D &chunkPos);
     ~ChunkColumn();
@@ -98,12 +91,6 @@ public:
     void updateBiome(Position pos, BiomeId biome);
     BiomeId getBiome(Position pos) const;
     const std::array<BiomeId, BIOME_SECTION_3D_SIZE * NB_OF_SECTIONS> &getBiomes() const;
-
-    void updateBlockEntity(Position pos, BlockEntity *BlockEntity);
-    void addBlockEntity(Position pos, BlockEntity *BlockEntity);
-    void removeBlockEntity(Position pos);
-    BlockEntity *getBlockEntity(Position pos);
-    const std::vector<BlockEntity *> &getBlockEntities() const;
 
     int64_t getTick();
     void setTick(int64_t tick);
@@ -129,7 +116,6 @@ private:
     std::array<uint8_t, BLOCKS_PER_CHUNK> _skyLights;
     std::array<uint8_t, BLOCKS_PER_CHUNK> _blockLights;
     std::array<uint8_t, BIOME_PER_CHUNK> _biomes;
-    std::vector<BlockEntity *> _blockEntities;
     int64_t _tickData;
     Position2D _chunkPos;
     HeightMap _heightMap;
@@ -143,4 +129,4 @@ private:
 
 } // namespace world_storage
 
-#endif // WORLD_STORAGE_CHUNKCOLUMN_HPP
+#endif // CUBICSERVER_WORLDSTORAGE_CHUNKCOLUMN_HPP

@@ -2,10 +2,8 @@
 #include <stdexcept>
 
 namespace Blocks {
-    namespace DeadHornCoralBlock {
-        BlockId toProtocol() {
-            return 12179;
-        }
-    }
+namespace DeadHornCoralBlock {
+BlockId toProtocol() { return 12179; }
+}
 
 }

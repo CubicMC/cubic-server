@@ -2,10 +2,8 @@
 #include <stdexcept>
 
 namespace Blocks {
-    namespace DripstoneBlock {
-        BlockId toProtocol() {
-            return 21442;
-        }
-    }
+namespace DripstoneBlock {
+BlockId toProtocol() { return 21442; }
+}
 
 }

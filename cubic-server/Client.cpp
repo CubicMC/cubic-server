@@ -1,132 +1,131 @@
-#include <iostream>
-#include <stdexcept>
-#include <unistd.h>
 #include <poll.h>
-#include <cstring>
+#include <stdexcept>
 #include <string>
-#include <memory>
+#include <unistd.h>
+
 
 #include "Client.hpp"
-#include "protocol/ServerPackets.hpp"
-#include "nlohmann/json.hpp"
-#include "protocol/ClientPackets.hpp"
+#include "nbt.hpp"
+
+#include "Player.hpp"
 #include "Server.hpp"
+#include "Dimension.hpp"
 #include "World.hpp"
-#include "whitelist/Whitelist.hpp"
+#include "WorldGroup.hpp"
+#include "chat/ChatRegistry.hpp"
+#include "logging/Logger.hpp"
+#include "protocol/ClientPackets.hpp"
+#include "protocol/ServerPackets.hpp"
+#include "protocol/serialization/popPrimaryType.hpp"
 
 Client::Client(int sockfd, struct sockaddr_in6 addr):
     _sockfd(sockfd),
     _addr(addr),
+    _isRunning(true),
     _status(protocol::ClientStatus::Initial),
-    _recv_buffer(0),
-    _send_buffer(0),
+    _recvBuffer(0),
+    _sendBuffer(0),
     _networkThread(&Client::networkLoop, this),
-    _player(nullptr),
-    _is_running(true)
+    _player(nullptr)
 {
 }
 
 Client::~Client()
 {
+    LDEBUG("Destroying client");
     // Stop the thread
-    _is_running = false;
+    _isRunning = false;
     if (this->_networkThread.joinable())
         this->_networkThread.join();
 
     // Close the socket
-    int error_code;
-    uint32_t error_code_size = sizeof(error_code);
-    getsockopt(_sockfd, SOL_SOCKET, SO_ERROR, &error_code, &error_code_size);
-    if (error_code == 0) {
+    int errorCode;
+    uint32_t errorCodeSize = sizeof(errorCode);
+    getsockopt(_sockfd, SOL_SOCKET, SO_ERROR, &errorCode, &errorCodeSize);
+    if (errorCode == 0) {
         this->_tryFlushAllSendData();
         close(_sockfd);
     }
 
-    // Remove the player from the world
     if (!_player)
         return;
-    delete _player;
+    this->_player->_dim->removeEntity(_player->_id);
+    this->_player->_dim->removePlayer(_player->_id);
+    this->_player->_cli = nullptr;
 }
 
 void Client::networkLoop()
 {
-    struct pollfd poll_set[1];
-    uint8_t in_buffer[2048];
+    struct pollfd pollSet[1];
+    uint8_t inBuffer[2048];
 
-    poll_set[0].fd = _sockfd;
-    while (_is_running)
-    {
-        poll_set[0].events = POLLIN;
-        if (!_send_buffer.empty())
-            poll_set[0].events |= POLLOUT;
-        poll(poll_set, 1, 50); // TODO: Check how this can be changed
-        if (poll_set[0].revents & POLLIN)
-        {
-            int read_size = read(_sockfd, in_buffer, 2048);
-            if (read_size == -1)
+    pollSet[0].fd = _sockfd;
+    while (_isRunning) {
+        pollSet[0].events = POLLIN;
+        if (!_sendBuffer.empty())
+            pollSet[0].events |= POLLOUT;
+        poll(pollSet, 1, 50); // TODO: Check how this can be changed
+        if (pollSet[0].revents & POLLIN) {
+            int readSize = read(_sockfd, inBuffer, 2048);
+            if (readSize == -1)
                 LERROR("Read error", strerror(errno));
-            else if (read_size == 0)
+            else if (readSize == 0)
                 break;
-            else
-            {
+            else {
                 // TODO: This is extremely inefficient but it will do for now
-                for (int i = 0; i < read_size; i++)
-                    _recv_buffer.push_back(in_buffer[i]);
+                for (int i = 0; i < readSize; i++)
+                    _recvBuffer.push_back(inBuffer[i]);
                 _handlePacket();
             }
         }
-        if (poll_set[0].revents & POLLOUT)
-        {
+        if (pollSet[0].revents & POLLOUT) {
             _flushSendData();
         }
     }
-    _is_running = false;
+    _isRunning = false;
 }
 
-bool Client::isDisconnected() const
-{
-    return !_is_running;
-}
+bool Client::isDisconnected() const { return !_isRunning; }
 
 void Client::_sendData(const std::vector<uint8_t> &data)
 {
     // This is extremely inefficient but it will do for now
-    _write_mutex.lock();
+    _writeMutex.lock();
     for (const auto i : data)
-        _send_buffer.push_back(i);
-    _write_mutex.unlock();
+        _sendBuffer.push_back(i);
+    _writeMutex.unlock();
 }
 
 void Client::_flushSendData()
 {
-    _write_mutex.lock();
-    char send_buffer[2048];
-    size_t to_send = std::min(_send_buffer.size(), (size_t)2048);
-    std::copy(_send_buffer.begin(), _send_buffer.begin() + to_send, send_buffer);
+    _writeMutex.lock();
+    char sendBuffer[2048];
+    size_t toSend = std::min(_sendBuffer.size(), (size_t) 2048);
+    std::copy(_sendBuffer.begin(), _sendBuffer.begin() + toSend, sendBuffer);
 
-    ssize_t write_return = write(_sockfd, send_buffer, to_send);
-    if (write_return == -1)
+    ssize_t writeReturn = write(_sockfd, sendBuffer, toSend);
+    if (writeReturn == -1)
         LERROR("Write error", strerror(errno));
 
-    if (write_return <= 0) {
-        _write_mutex.unlock();
+    if (writeReturn <= 0) {
+        _writeMutex.unlock();
         return;
     }
 
-    _send_buffer.erase(_send_buffer.begin(), _send_buffer.begin() + write_return);
-    _write_mutex.unlock();
+    _sendBuffer.erase(_sendBuffer.begin(), _sendBuffer.begin() + writeReturn);
+    _writeMutex.unlock();
 }
 
 void Client::_tryFlushAllSendData()
 {
-    pollfd poll_set[1];
-    poll_set[0].fd = _sockfd;
-    poll_set[0].events = POLLOUT;
+    pollfd pollSet[1];
+    pollSet[0].fd = _sockfd;
+    pollSet[0].events = POLLOUT;
 
-    while (!_send_buffer.empty()) {
-        if (poll(poll_set, 1, 0) == -1)
+    while (!_sendBuffer.empty()) {
+        if (poll(pollSet, 1, 0) == -1)
             return;
-        if (poll_set[0].revents & POLLOUT)
+        if (pollSet[0].revents & POLLOUT)
             _flushSendData();
         else
             return;
@@ -136,17 +135,13 @@ void Client::_tryFlushAllSendData()
 void Client::switchToPlayState(u128 playerUuid, const std::string &username)
 {
     this->setStatus(protocol::ClientStatus::Play);
+    LDEBUG("Switched to play state");
     // TODO: get the player dimension from the world by his uuid
-    this->_player = new Player(
-        this,
-        Server::getInstance()->getWorldGroup("default")->getWorld("default")->getDimension("overworld"),
-        playerUuid,
-        username
-    );
+    this->_player = std::make_shared<Player>(this, Server::getInstance()->getWorldGroup("default")->getWorld("default")->getDimension("overworld"), playerUuid, username);
+    LDEBUG("Created player");
 }
 
-void Client::handleParsedClientPacket(const std::shared_ptr<protocol::BaseServerPacket> &packet,
-                                      protocol::ServerPacketsID packetID)
+void Client::handleParsedClientPacket(const std::shared_ptr<protocol::BaseServerPacket> &packet, protocol::ServerPacketsID packetID)
 {
     using namespace protocol;
 
@@ -190,6 +185,7 @@ void Client::handleParsedClientPacket(const std::shared_ptr<protocol::BaseServer
             PCK_CALLBACK_PLAY(ClientInformation);
             PCK_CALLBACK_PLAY(CommandSuggestionRequest);
             PCK_CALLBACK_PLAY(ClickContainerButton);
+            PCK_CALLBACK_PLAY(ClickContainer);
             PCK_CALLBACK_PLAY(CloseContainerRequest);
             PCK_CALLBACK_PLAY(EditBook);
             PCK_CALLBACK_PLAY(QueryEntityTag);
@@ -207,9 +203,11 @@ void Client::handleParsedClientPacket(const std::shared_ptr<protocol::BaseServer
             PCK_CALLBACK_PLAY(PlaceRecipe);
             PCK_CALLBACK_PLAY(PlayerAbilities);
             PCK_CALLBACK_PLAY(PlayerAction);
+            PCK_CALLBACK_PLAY(MessageAcknowledgement);
             PCK_CALLBACK_PLAY(PlayerCommand);
             PCK_CALLBACK_PLAY(PlayerInput);
             PCK_CALLBACK_PLAY(Pong);
+            PCK_CALLBACK_PLAY(PlayerSession);
             PCK_CALLBACK_PLAY(ChangeRecipeBookSettings);
             PCK_CALLBACK_PLAY(SetSeenRecipe);
             PCK_CALLBACK_PLAY(RenameItem);
@@ -220,6 +218,7 @@ void Client::handleParsedClientPacket(const std::shared_ptr<protocol::BaseServer
             PCK_CALLBACK_PLAY(SetHeldItem);
             PCK_CALLBACK_PLAY(ProgramCommandBlock);
             PCK_CALLBACK_PLAY(ProgramCommandBlockMinecart);
+            PCK_CALLBACK_PLAY(SetCreativeModeSlot);
             PCK_CALLBACK_PLAY(ProgramJigsawBlock);
             PCK_CALLBACK_PLAY(ProgramStructureBlock);
             PCK_CALLBACK_PLAY(UpdateSign);
@@ -233,20 +232,19 @@ void Client::handleParsedClientPacket(const std::shared_ptr<protocol::BaseServer
         }
         break;
     }
-    LERROR("Unhandled packet: ", static_cast<int>(packetID) +
-        " in status ", static_cast<int>(_status)); // TODO: Properly handle the unknown packet
+    LERROR("Unhandled packet: ", static_cast<int>(packetID), " in status ", static_cast<int>(_status)); // TODO: Properly handle the unknown packet
 }
 
 void Client::_handlePacket()
 {
-    auto &data = _recv_buffer;
+    auto &data = _recvBuffer;
     while (true) {
         // Get the length of the packet stored
-        auto buffer_length = data.size();
-        if (buffer_length == 0)
+        auto bufferLength = data.size();
+        if (bufferLength == 0)
             break;
         uint8_t *at = data.data();
-        uint8_t *eof = at + buffer_length;
+        uint8_t *eof = at + bufferLength;
         int32_t length = 0;
         try {
             length = protocol::popVarInt(at, eof);
@@ -259,10 +257,10 @@ void Client::_handlePacket()
         } catch (const protocol::PacketEOF &_) {
             break; // Not enough data in buffer to parse the length of the packet
         }
-        const uint8_t *start_payload = at;
+        const uint8_t *startPayload = at;
         bool error = false;
         // Handle the packet if the length is there
-        const auto packet_id = static_cast<protocol::ServerPacketsID>(protocol::popVarInt(at, eof));
+        const auto packetId = static_cast<protocol::ServerPacketsID>(protocol::popVarInt(at, eof));
         std::function<std::shared_ptr<protocol::BaseServerPacket>(std::vector<uint8_t> &)> parser;
         PARSER_IT_DECLARE(Initial);
         PARSER_IT_DECLARE(Login);
@@ -278,36 +276,35 @@ void Client::_handlePacket()
         case protocol::ClientStatus::Play:
             GET_PARSER(Play);
         }
-        std::vector<uint8_t> to_parse(data.begin() + (at - data.data()), data.end());
-        data.erase(data.begin(), data.begin() + (start_payload - data.data()) + length);
+        std::vector<uint8_t> toParse(data.begin() + (at - data.data()), data.end());
+        data.erase(data.begin(), data.begin() + (startPayload - data.data()) + length);
         if (error) {
-            LWARN("Unhandled packet: ", static_cast<int>(packet_id), " in status ", static_cast<int>(_status));
+            LWARN("Unhandled packet: ", static_cast<int>(packetId), " in status ", static_cast<int>(_status));
             return;
         }
         std::shared_ptr<protocol::BaseServerPacket> packet;
         try {
-            packet = parser(to_parse);
-        }
-        catch (std::runtime_error &error) {
-            LERROR("Error during packet parsing :");
+            packet = parser(toParse);
+        } catch (std::runtime_error &error) {
+            LERROR("Error during packet ", (int32_t)packetId, " parsing : ");
             LERROR(error.what());
             return;
         }
         // Callback to handle the packet
-        handleParsedClientPacket(packet, packet_id);
+        handleParsedClientPacket(packet, packetId);
     }
 }
 
-void Client::_onHandshake(const std::shared_ptr<protocol::Handshake>& pck)
+void Client::_onHandshake(const std::shared_ptr<protocol::Handshake> &pck)
 {
     LDEBUG("Got an handshake");
-    if (pck->next_state == 1)
+    if (pck->nextState == protocol::Handshake::State::Status)
         this->setStatus(protocol::ClientStatus::Status);
-    else if (pck->next_state == 2)
+    else if (pck->nextState == protocol::Handshake::State::Login)
         this->setStatus(protocol::ClientStatus::Login);
 }
 
-void Client::_onStatusRequest(const std::shared_ptr<protocol::StatusRequest> &pck)
+void Client::_onStatusRequest(UNUSED const std::shared_ptr<protocol::StatusRequest> &pck)
 {
     LDEBUG("Got a status request");
 
@@ -321,7 +318,7 @@ void Client::_onStatusRequest(const std::shared_ptr<protocol::StatusRequest> &pc
 
     json["previewsChat"] = false;
     json["favicon"] = DEFAULT_FAVICON; // TODO: Understand how this works, cause right now it is witchcraft
-    json["description"]["text"] = conf.getMotd();
+    json["description"]["text"] = conf["motd"].value();
     json["enforcesSecureChat"] = false;
 
     // Old
@@ -332,14 +329,10 @@ void Client::_onStatusRequest(const std::shared_ptr<protocol::StatusRequest> &pc
 
     json["version"]["name"] = MC_VERSION;
     json["version"]["protocol"] = MC_PROTOCOL;
-    json["players"]["max"] = conf.getMaxPlayers();
-    json["players"]["online"] = std::count_if(
-            cli.begin(),
-            cli.end(),
-            [](std::shared_ptr<Client> &each) {
-                return each->getStatus() == protocol::ClientStatus::Play;
-            }
-    );
+    json["players"]["max"] = conf["max-players"].as<int32_t>();
+    json["players"]["online"] = std::count_if(cli.begin(), cli.end(), [](std::shared_ptr<Client> &each) {
+        return each->getStatus() == protocol::ClientStatus::Play;
+    });
 
     sendStatusResponse(json.dump());
 }
@@ -355,37 +348,27 @@ void Client::_onLoginStart(const std::shared_ptr<protocol::LoginStart> &pck)
 {
     LDEBUG("Got a Login Start");
     protocol::LoginSuccess resPck;
-    WhitelistHandling::Whitelist whitelist;
-    // TODO: Move this to the server
-    nlohmann::json whitelistData = whitelist.parseWhitelist(whitelist.getFilename());
 
-    resPck.uuid = pck->has_player_uuid ? pck->player_uuid : u128{std::hash<std::string>{}("OfflinePlayer:"), std::hash<std::string>{}(pck->name)};
+    resPck.uuid = pck->hasPlayerUuid ? pck->playerUuid : u128 {std::hash<std::string> {}("OfflinePlayer:"), std::hash<std::string> {}(pck->name)};
     resPck.username = pck->name;
     resPck.numberOfProperties = 0;
-    resPck.name = ""; // TODO: figure out what to put there
-    resPck.value = ""; // TODO: figure out what to put there
-    resPck.isSigned = false;
+    resPck.properties = {}; // TODO: figure out what to put there
 
     if (!Server::getInstance()->getWorldGroup("default")->isInitialized()) {
         this->disconnect("Server is not initialized yet.");
         return;
-    } else if (Server::getInstance()->getEnforceWhitelist() && !whitelist.isPlayer(resPck.uuid, resPck.username, whitelistData).first) {
+    } else if (Server::getInstance()->isWhitelistEnabled() && !Server::getInstance()->getWhitelist().isPlayerWhitelisted(resPck.uuid, resPck.username).first) {
         this->disconnect("You are not whitelisted on this server.");
         return;
     }
-    sendLoginSuccess(resPck);
+    this->_loginSequence(resPck);
 }
 
-void Client::_onEncryptionResponse(const std::shared_ptr<protocol::EncryptionResponse> &pck)
-{
-    LDEBUG("Got a Encryption Response");
-}
+void Client::_onEncryptionResponse(UNUSED const std::shared_ptr<protocol::EncryptionResponse> &pck) { LDEBUG("Got a Encryption Response"); }
 
 void Client::sendStatusResponse(const std::string &json)
 {
-    auto pck = protocol::createStatusResponse({
-        json
-    });
+    auto pck = protocol::createStatusResponse({json});
     _sendData(*pck);
 
     LDEBUG("Sent status response");
@@ -393,9 +376,7 @@ void Client::sendStatusResponse(const std::string &json)
 
 void Client::sendPingResponse(int64_t payload)
 {
-    auto pck = protocol::createPingResponse({
-        payload
-    });
+    auto pck = protocol::createPingResponse({payload});
     _sendData(*pck);
 
     LDEBUG("Sent a ping response");
@@ -406,130 +387,131 @@ void Client::sendLoginSuccess(const protocol::LoginSuccess &packet)
     auto pck = protocol::createLoginSuccess(packet);
     _sendData(*pck);
     LDEBUG("Sent a login success");
+}
 
-    switchToPlayState(packet.uuid, packet.username);
-    LDEBUG("Switched to play state");
-
+void Client::sendLoginPlay()
+{
     protocol::LoginPlay resPck = {
-            .entityID = _player->getId(), // TODO: figure out what is this
-            .isHardcore = false, // TODO: something like this this->_player->_dim->getWorld()->getDifficulty(); Thats not difficulty tho (peaceful, easy, normal, hard)
-            .gamemode = this->_player->getGamemode(),
-            .previousGamemode = 0, // TODO: something like this this->_player->getPreviousGamemode().has_value() ? this->_player->getPreviousGamemode() : -1;
-            .dimensionNames = std::vector<std::string>({"minecraft:overworld"}), // TODO: something like this this->_player->_dim->getWorld()->getDimensions();
-            .registryCodec = nbt::Compound("", {
-                new nbt::Compound("minecraft:dimension_type", {
-                    new nbt::String("type", "minecraft:dimension_type"),
-                    new nbt::List("value", {
-                        new nbt::Compound("", {
-                            new nbt::String("name", "minecraft:overworld"),
-                            new nbt::Int("id", 0),
-                            new nbt::Compound("element", {
-                                new nbt::Byte("ultrawarm", 0),
-                                new nbt::Int("logical_height", 256),
-                                new nbt::String("infiniburn", "#minecraft:infiniburn_overworld"),
-                                new nbt::Byte("piglin_safe", 0),
-                                new nbt::Float("ambient_light", 0.0),
-                                new nbt::Byte("has_skylight", 1),
-                                new nbt::String("effects", "minecraft:overworld"),
-                                new nbt::Byte("has_raids", 1),
-                                new nbt::Int("monster_spawn_block_light_limit", 0),
-                                new nbt::Byte("respawn_anchor_works", 0),
-                                new nbt::Int("height", 384),
-                                new nbt::Byte("has_ceiling", 0),
-                                new nbt::Compound("monster_spawn_light_level", {
-                                    new nbt::String("type", "minecraft:uniform"),
-                                    new nbt::Compound("value", {
-                                        new nbt::Int("max_inclusive", 7),
-                                        new nbt::Int("min_inclusive", 0),
-                                    })
-                                }),
-                                new nbt::Byte("natural", 1),
-                                new nbt::Int("min_y", -64),
-                                new nbt::Float("coordinate_scale", 1.0),
-                                new nbt::Byte("bed_works", 1),
-                            }),
-                        }),
-                    })
-                }),
-                new nbt::Compound("minecraft:worldgen/biome", {
-                    new nbt::String("type", "minecraft:worldgen/biome"),
-                    new nbt::List("value", {
-                        new nbt::Compound("", {
-                            new nbt::String("name", "minecraft:plains"),
-                            new nbt::Int("id", 0),
-                            new nbt::Compound("element", {
-                                new nbt::String("precipitation", "none"),
-                                new nbt::Float("temperature", 0.8),
-                                new nbt::Float("downfall", 0.4),
-                                new nbt::Compound("effects", {
-                                    new nbt::Int("sky_color", 7907327),
-                                    new nbt::Int("water_fog_color", 329011),
-                                    new nbt::Int("fog_color", 12638463),
-                                    new nbt::Int("water_color", 4159204),
+        .entityID = _player->getId(), // TODO: figure out what is this
+        .isHardcore = false, // TODO: something like this this->_player->_dim->getWorld()->getDifficulty(); Thats not difficulty tho (peaceful, easy, normal, hard)
+        .gamemode = this->_player->getGamemode(),
+        .previousGamemode =
+            player_attributes::Gamemode::Survival, // TODO: something like this this->_player->getPreviousGamemode().has_value() ? this->_player->getPreviousGamemode() : -1;
+        .dimensionNames = std::vector<std::string>({"minecraft:overworld"}), // TODO: something like this this->_player->_dim->getWorld()->getDimensions();
+        // clang-format off
+        .registryCodec = std::shared_ptr<nbt::Compound>(new nbt::Compound("", {
+            NBT_MAKE(nbt::Compound, "minecraft:dimension_type", {
+                NBT_MAKE(nbt::String, "type", "minecraft:dimension_type"),
+                NBT_MAKE(nbt::List, "value", {
+                    NBT_MAKE(nbt::Compound, "", {
+                        NBT_MAKE(nbt::String, "name", "minecraft:overworld"),
+                        NBT_MAKE(nbt::Int, "id", 0),
+                        NBT_MAKE(nbt::Compound, "element", {
+                            NBT_MAKE(nbt::Byte, "ultrawarm", 0),
+                            NBT_MAKE(nbt::Int, "logical_height", 256),
+                            NBT_MAKE(nbt::String, "infiniburn", "#minecraft:infiniburn_overworld"),
+                            NBT_MAKE(nbt::Byte, "piglin_safe", 0),
+                            NBT_MAKE(nbt::Float, "ambient_light", 0.0),
+                            NBT_MAKE(nbt::Byte, "has_skylight", 1),
+                            NBT_MAKE(nbt::String, "effects", "minecraft:overworld"),
+                            NBT_MAKE(nbt::Byte, "has_raids", 1),
+                            NBT_MAKE(nbt::Int, "monster_spawn_block_light_limit", 0),
+                            NBT_MAKE(nbt::Byte, "respawn_anchor_works", 0),
+                            NBT_MAKE(nbt::Int, "height", 384),
+                            NBT_MAKE(nbt::Byte, "has_ceiling", 0),
+                            NBT_MAKE(nbt::Compound, "monster_spawn_light_level", {
+                                NBT_MAKE(nbt::String, "type", "minecraft:uniform"),
+                                NBT_MAKE(nbt::Compound, "value", {
+                                    NBT_MAKE(nbt::Int, "max_inclusive", 7),
+                                    NBT_MAKE(nbt::Int, "min_inclusive", 0)
                                 })
                             }),
-                        }),
-                        new nbt::Compound("", {
-                            new nbt::String("name", "minecraft:my_super_cool_biome_lol_haha"),
-                            new nbt::Int("id", 1),
-                            new nbt::Compound("element", {
-                                new nbt::String("precipitation", "none"),
-                                new nbt::Float("temperature", 0.8),
-                                new nbt::Float("downfall", 0.4),
-                                new nbt::Compound("effects", {
-                                    new nbt::Int("sky_color", 7907327),
-                                    new nbt::Int("water_fog_color", 329011),
-                                    new nbt::Int("fog_color", 12638463),
-                                    new nbt::Int("water_color", 4159204),
-                                })
-                            }),
-                        })
-                    })
-                }),
-                new nbt::Compound("minecraft:chat_type", {
-                    new nbt::String("type", "minecraft:chat_type"),
-                    new nbt::List("value", {
-                        new nbt::Compound("", {
-                            new nbt::String("name", "minecraft:chat"),
-                            new nbt::Int("id", 0),
-                            new nbt::Compound("element", {
-                                new nbt::Compound("chat", {
-                                    new nbt::List("parameters", {
-                                        new nbt::String("", "sender"),
-                                        new nbt::String("", "content")
-                                    }),
-                                    new nbt::String("translation_key", "chat.type.text"),
-                                }),
-                                new nbt::Compound("narration", {
-                                    new nbt::List("parameters", {
-                                        new nbt::String("", "sender"),
-                                        new nbt::String("", "content")
-                                    }),
-                                    new nbt::String("translation_key", "chat.type.text.narrate"),
-                                })
-                            })
+                            NBT_MAKE(nbt::Byte, "natural", 1),
+                            NBT_MAKE(nbt::Int, "min_y", -64),
+                            NBT_MAKE(nbt::Float, "coordinate_scale", 1.0),
+                            NBT_MAKE(nbt::Byte, "bed_works", 1)
                         })
                     })
                 })
             }),
-            .dimensionType = "minecraft:overworld", // TODO: something like this this->_player->_dim->getDimensionType();
-            .dimensionName = "overworld", // TODO: something like this this->_player->getDimension()->name;
-            .hashedSeed = 0, // TODO: something like this this->_player->_dim->getWorld()->getHashedSeed();
-            .maxPlayers = 20, // TODO: something like this this->_player->_dim->getWorld()->maxPlayers;
-            .viewDistance = 16, // TODO: something like this->_player->_dim->getWorld()->getViewDistance();
-            .simulationDistance = 16, // TODO: something like this->_player->_dim->getWorld()->getSimulationDistance();
-            .reducedDebugInfo = false, // false for developpment only
-            .enableRespawnScreen = true, // TODO: implement gamerules !this->_player->_dim->getWorld()->getGamerules()["doImmediateRespawn"];
-            .isDebug = false, // TODO: something like this->_player->_dim->getWorld()->isDebugModeWorld;
-            .isFlat = false, // TODO: something like this->_player->_dim->isFlat;
-            .hasDeathLocation = false // TODO: something like this->_player->hasDeathLocation;
+            NBT_MAKE(nbt::Compound, "minecraft:worldgen/biome", {
+                NBT_MAKE(nbt::String, "type", "minecraft:worldgen/biome"),
+                NBT_MAKE(nbt::List, "value", {
+                    NBT_MAKE(nbt::Compound, "", {
+                        NBT_MAKE(nbt::String, "name", "minecraft:plains"),
+                        NBT_MAKE(nbt::Int, "id", 0),
+                        NBT_MAKE(nbt::Compound, "element", {
+                            NBT_MAKE(nbt::String, "precipitation", "none"),
+                            NBT_MAKE(nbt::Float, "temperature", 0.8),
+                            NBT_MAKE(nbt::Float, "downfall", 0.4),
+                            NBT_MAKE(nbt::Compound, "effects", {
+                                NBT_MAKE(nbt::Int, "sky_color", 7907327),
+                                NBT_MAKE(nbt::Int, "water_fog_color", 329011),
+                                NBT_MAKE(nbt::Int, "fog_color", 12638463),
+                                NBT_MAKE(nbt::Int, "water_color", 4159204),
+                            })
+                        }),
+                    }),
+                    NBT_MAKE(nbt::Compound, "", {
+                        NBT_MAKE(nbt::String, "name", "minecraft:my_super_cool_biome_lol_haha"),
+                        NBT_MAKE(nbt::Int, "id", 1),
+                        NBT_MAKE(nbt::Compound, "element", {
+                            NBT_MAKE(nbt::String, "precipitation", "none"),
+                            NBT_MAKE(nbt::Float, "temperature", 0.8),
+                            NBT_MAKE(nbt::Float, "downfall", 0.4),
+                            NBT_MAKE(nbt::Compound, "effects", {
+                                NBT_MAKE(nbt::Int, "sky_color", 7907327),
+                                NBT_MAKE(nbt::Int, "water_fog_color", 329011),
+                                NBT_MAKE(nbt::Int, "fog_color", 12638463),
+                                NBT_MAKE(nbt::Int, "water_color", 4159204),
+                            })
+                        }),
+                    })
+                })
+            }),
+            NBT_MAKE(nbt::Compound, "minecraft:chat_type", {
+                NBT_MAKE(nbt::String, "type", "minecraft:chat_type"),
+                NBT_MAKE(nbt::List, "value", {
+                    NBT_MAKE(nbt::Compound, "", {
+                        NBT_MAKE(nbt::String, "name", "minecraft:chat"),
+                        NBT_MAKE(nbt::Int, "id", 0),
+                        NBT_MAKE(nbt::Compound, "element", {
+                            NBT_MAKE(nbt::Compound, "chat", {
+                                NBT_MAKE(nbt::List, "parameters", {
+                                    NBT_MAKE(nbt::String, "", "sender"),
+                                    NBT_MAKE(nbt::String, "", "content")
+                                }),
+                                NBT_MAKE(nbt::String, "translation_key", "chat.type.text"),
+                            }),
+                            NBT_MAKE(nbt::Compound, "narration", {
+                                NBT_MAKE(nbt::List, "parameters", {
+                                    NBT_MAKE(nbt::String, "", "sender"),
+                                    NBT_MAKE(nbt::String, "", "content")
+                                }),
+                                NBT_MAKE(nbt::String, "translation_key", "chat.type.text.narrate"),
+                            })
+                        })
+                    })
+                })
+            })
+        })),
+        // clang-format on
+        .dimensionType = "minecraft:overworld", // TODO: something like this this->_player->_dim->getDimensionType();
+        .dimensionName = "overworld", // TODO: something like this this->_player->getDimension()->name;
+        .hashedSeed = 0, // TODO: something like this this->_player->_dim->getWorld()->getHashedSeed();
+        .maxPlayers = 20, // TODO: something like this this->_player->_dim->getWorld()->maxPlayers;
+        .viewDistance = 16, // TODO: something like this->_player->_dim->getWorld()->getViewDistance();
+        .simulationDistance = 16, // TODO: something like this->_player->_dim->getWorld()->getSimulationDistance();
+        .reducedDebugInfo = false, // false for developpment only
+        .enableRespawnScreen = true, // TODO: implement gamerules !this->_player->_dim->getWorld()->getGamerules()["doImmediateRespawn"];
+        .isDebug = false, // TODO: something like this->_player->_dim->getWorld()->isDebugModeWorld;
+        .isFlat = false, // TODO: something like this->_player->_dim->isFlat;
+        .hasDeathLocation = false, // TODO: something like this->_player->hasDeathLocation;
+        .deathDimensionName = "",
+        .deathLocation = {0, 0, 0},
     };
-    if (resPck.hasDeathLocation) {
-        resPck.deathDimensionName = ""; // TODO: something like this->_player->deathDimensionName;
-        resPck.deathLocation = {0, 0, 0}; // TODO: something like this->_player->deathLocation;
-    }
     _player->sendLoginPlay(resPck);
-    resPck.registryCodec.destroy();
+    // resPck.registryCodec.destroy();
 }
 
 void Client::disconnect(const chat::Message &reason)
@@ -539,11 +521,9 @@ void Client::disconnect(const chat::Message &reason)
         return;
     }
 
-    auto pck = protocol::createLoginDisconnect({
-        reason.serialize()
-    });
+    auto pck = protocol::createLoginDisconnect({reason.serialize()});
     _sendData(*pck);
-    _is_running = false;
+    _isRunning = false;
     LDEBUG("Sent a disconnect login packet");
 }
 
@@ -553,3 +533,17 @@ void Client::stop(const chat::Message &reason)
     if (this->_networkThread.joinable())
         this->_networkThread.join();
 }
+
+void Client::_loginSequence(const protocol::LoginSuccess &pck)
+{
+    // Encryption request
+    // Set Compression
+    this->sendLoginSuccess(pck);
+    this->switchToPlayState(pck.uuid, pck.username);
+    this->sendLoginPlay();
+    this->_player->_continueLoginSequence();
+}
+
+std::shared_ptr<Player> Client::getPlayer() { return _player; }
+
+const std::shared_ptr<Player> Client::getPlayer() const { return _player; }

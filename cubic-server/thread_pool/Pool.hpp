@@ -1,26 +1,22 @@
-#ifndef THREADPOOL_POOL_HPP
-#define THREADPOOL_POOL_HPP
+#ifndef CUBICSERVER_THREADPOOL_POOL_HPP
+#define CUBICSERVER_THREADPOOL_POOL_HPP
 
 #include <atomic>
 #include <condition_variable>
-#include <functional>
+#include <deque>
 #include <mutex>
-#include <queue>
 #include <thread>
 #include <vector>
 
-#include <bits/stl_construct.h>
+// #include <bits/stl_construct.h>
 
 #include "Task.hpp"
 
-namespace thread_pool
-{
+namespace thread_pool {
 
-class Pool
-{
+class Pool {
 public:
-    enum Behavior
-    {
+    enum Behavior {
         Wait,
         Cancel
     };
@@ -40,10 +36,10 @@ public:
      * @param task function to execute
      * @param args arguments to pass to the function
      */
-    template <typename F, typename... Args>
-    std::shared_ptr<thread_pool::Task> add(F &&task, Args &&... args);
+    template<typename F, typename... Args>
+    std::shared_ptr<Task> add(F &&task, Args &&...args);
 
-    void cancel(thread_pool::Task::Id id);
+    void cancel(Task::Id id);
 
     void resize(size_t nbThreads);
     void grow(size_t nbThreads);
@@ -59,7 +55,7 @@ public:
     const Behavior &behavior() const;
 
     // Can't be const because of the mutex
-    std::vector<std::shared_ptr<thread_pool::Task>> tasks();
+    std::vector<std::shared_ptr<Task>> tasks();
 
 private:
     // no copy
@@ -70,7 +66,7 @@ private:
 private:
     std::vector<std::thread> _workers;
     std::unordered_map<int, bool> _isRunning;
-    std::deque<std::shared_ptr<thread_pool::Task>> _tasks;
+    std::deque<std::shared_ptr<Task>> _tasks;
     std::string _name;
 
     std::mutex _queueMutex;
@@ -82,8 +78,8 @@ private:
 };
 
 // add new work item to the pool
-template <typename F, typename... Args>
-std::shared_ptr<Task> Pool::add(F &&taskFunction, Args &&... args)
+template<typename F, typename... Args>
+std::shared_ptr<Task> Pool::add(F &&taskFunction, Args &&...args)
 {
     auto boundTask = std::bind(std::forward<F>(taskFunction), std::forward<Args>(args)...);
     std::shared_ptr<Task> task = nullptr;
@@ -103,4 +99,4 @@ std::shared_ptr<Task> Pool::add(F &&taskFunction, Args &&... args)
 
 } // namespace ThreadPool
 
-#endif //THREADPOOL_HPP
+#endif // CUBICSERVER_THREADPOOL_POOL_HPP

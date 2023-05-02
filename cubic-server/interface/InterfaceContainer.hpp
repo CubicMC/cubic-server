@@ -1,14 +1,13 @@
-#ifndef INTERFACE_CONTAINER_HPP
-#define INTERFACE_CONTAINER_HPP
+#ifndef CUBICSERVER_INTERFACE_INTERFACECONTAINER_HPP
+#define CUBICSERVER_INTERFACE_INTERFACECONTAINER_HPP
 
 #include <gtkmm.h>
-#include <thread>
 #include <memory>
+#include <thread>
 
 #include "ManagementInterface.hpp"
 
-class InterfaceContainer
-{
+class InterfaceContainer {
 public:
     void launch(int argc, char **argv);
     void stop();
@@ -19,4 +18,4 @@ private:
     Glib::RefPtr<Gtk::Application> _app;
 };
 
-#endif
+#endif // CUBICSERVER_INTERFACE_INTERFACECONTAINER_HPP

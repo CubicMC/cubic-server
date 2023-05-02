@@ -6,8 +6,7 @@
 
 namespace world_storage {
 
-class LevelData
-{
+class LevelData {
 public:
     LevelData();
     ~LevelData();
@@ -58,10 +57,10 @@ public:
     uint64_t getTime() const;
     void setTime(uint64_t value);
 
-    const std::string& getGeneratorName() const;
+    const std::string &getGeneratorName() const;
     void setGeneratorName(const std::string &value);
 
-    const std::string& getLevelName() const;
+    const std::string &getLevelName() const;
     void setLevelName(const std::string &value);
 
 private:

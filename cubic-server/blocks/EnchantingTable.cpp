@@ -2,10 +2,8 @@
 #include <stdexcept>
 
 namespace Blocks {
-    namespace EnchantingTable {
-        BlockId toProtocol() {
-            return 7159;
-        }
-    }
+namespace EnchantingTable {
+BlockId toProtocol() { return 7159; }
+}
 
 }

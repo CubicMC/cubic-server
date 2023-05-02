@@ -1,59 +1,60 @@
-#include <fstream>
-#include <iostream>
-#include <netdb.h>
-#include <cerrno>
-#include <sys/socket.h>
-#include <poll.h>
-#include <chrono>
-#include <exception>
-#include <cstring>
-#include <algorithm>
-
 #include <curl/curl.h>
-
-#include <nlohmann/json.hpp>
+#include <netdb.h>
+#include <poll.h>
+#include <sys/socket.h>
 
 #include <CRC.h>
 
 #include "Server.hpp"
+#include "World.hpp"
 
-#include "protocol/typeSerialization.hpp"
-#include "protocol/ServerPackets.hpp"
-#include "protocol/ClientPackets.hpp"
-
-#include "logging/Logger.hpp"
+#include "Chat.hpp"
+#include "Client.hpp"
+#include "Player.hpp"
 #include "WorldGroup.hpp"
 #include "default/DefaultWorldGroup.hpp"
+#include "logging/Logger.hpp"
+#include "Dimension.hpp"
 
 static const std::unordered_map<std::string, std::uint32_t> _checksums = {
     {"https://cdn.cubic-mc.com/1.19/blocks-1.19.json", 0x8b138b58},
     {"https://cdn.cubic-mc.com/1.19/registries-1.19.json", 0x30407a82},
     {"https://cdn.cubic-mc.com/1.19.3/blocks-1.19.3.json", 0xb8a10fa2},
-    {"https://cdn.cubic-mc.com/1.19.3/registries-1.19.3.json", 0xdfabe75c}
-};
+    {"https://cdn.cubic-mc.com/1.19.3/registries-1.19.3.json", 0xdfabe75c}};
 
 Server::Server():
+    _running(false),
     _sockfd(-1),
-    _config(),
-    _running(true)
+    _config()
 {
-    _config.parse("./config.yml");
-    _host = _config.getIP();
-    _port = _config.getPort();
-    _maxPlayer = _config.getMaxPlayers();
-    _motd = _config.getMotd();
-    _enforceWhitelist = _config.getEnforceWhitelist();
+    // _config.load("./config.yml");
+    // _config.parse("./config.yml");
+    // _config.parse(2, (const char * const *){"./CubicServer", "--nogui"});
+    // _host = _config.getIP();
+    // _port = _config.getPort();
+    // _maxPlayer = _config.getMaxPlayers();
+    // _motd = _config.getMotd();
+    // _enforceWhitelist = _config.getEnforceWhitelist();
 
-    LINFO("Server created with host: ", _host, " and port: ", _port);
+    _commands.reserve(10);
+    _commands.emplace_back(std::make_unique<command_parser::Help>());
+    _commands.emplace_back(std::make_unique<command_parser::QuestionMark>());
+    _commands.emplace_back(std::make_unique<command_parser::Stop>());
+    _commands.emplace_back(std::make_unique<command_parser::Seed>());
+    _commands.emplace_back(std::make_unique<command_parser::DumpChunk>());
+    _commands.emplace_back(std::make_unique<command_parser::Log>());
+    _commands.emplace_back(std::make_unique<command_parser::Op>());
+    _commands.emplace_back(std::make_unique<command_parser::Deop>());
+    _commands.emplace_back(std::make_unique<command_parser::Reload>());
+    _commands.emplace_back(std::make_unique<command_parser::Time>());
 }
 
-Server::~Server()
-{
+Server::~Server() { }
 
-}
-
-void Server::launch()
+void Server::launch(const configuration::ConfigHandler &config)
 {
+    this->_config = config;
+    LINFO("Starting server on ", _config["ip"], ":", _config["port"]);
     int yes = 1;
     int no = 0;
 
@@ -61,12 +62,11 @@ void Server::launch()
     _sockfd = socket(AF_INET6, SOCK_STREAM, getprotobyname("TCP")->p_proto);
 
     // Create the addr for the server
-    if (!inet_pton(AF_INET, _host.c_str(), &(_addr.sin6_addr)))
-    {
+    if (!inet_pton(AF_INET, _config["ip"].value().c_str(), &(_addr.sin6_addr)))
         throw std::runtime_error("Invalid host ip address");
-    }
+
     _addr.sin6_family = AF_INET6;
-    _addr.sin6_port = htons(_port);
+    _addr.sin6_port = htons(_config["port"].as<uint16_t>());
 
     // Bind server socket
     setsockopt(_sockfd, SOL_SOCKET, SO_REUSEADDR, &yes, sizeof(yes));
@@ -93,56 +93,51 @@ void Server::launch()
     _worldGroups.emplace("default", new DefaultWorldGroup(defaultChat));
     _worldGroups.at("default")->initialize();
 
+    this->_running = true;
+
     _acceptLoop();
 
     this->_stop();
 }
 
-void Server::stop()
-{
-    this->_running = false;
-}
+void Server::stop() { this->_running = false; }
 
 void Server::_acceptLoop()
 {
-    struct pollfd poll_set[1];
+    struct pollfd pollSet[1];
 
-    poll_set[0].fd = _sockfd;
-    poll_set[0].events = POLLIN;
+    pollSet[0].fd = _sockfd;
+    pollSet[0].events = POLLIN;
     while (this->_running) {
-        poll(poll_set, 1, 50);
-        if (poll_set[0].revents & POLLIN)
-        {
-            struct sockaddr_in6 client_addr{};
-            socklen_t client_addr_size = sizeof(client_addr);
-            int client_fd = accept(
-                _sockfd,
-                reinterpret_cast<struct sockaddr *>(&client_addr),
-                &client_addr_size);
-            if (client_fd == -1)
-            {
+        poll(pollSet, 1, 50);
+        if (pollSet[0].revents & POLLIN) {
+            struct sockaddr_in6 clientAddr { };
+            socklen_t clientAddrSize = sizeof(clientAddr);
+            int clientFd = accept(_sockfd, reinterpret_cast<struct sockaddr *>(&clientAddr), &clientAddrSize);
+            if (clientFd == -1) {
                 throw std::runtime_error(strerror(errno));
             }
             // Add accepted client to the vector of clients
-            // auto cli = std::make_shared<Client>(client_fd, client_addr);
+            // auto cli = std::make_shared<Client>(clientFd, clientAddr);
             // _clients.push_back(cli);
-            _clients.push_back(std::make_shared<Client>(client_fd, client_addr));
+            _clients.push_back(std::make_shared<Client>(clientFd, clientAddr));
 
             // Emplace_back is not working, I don't know why
-            // _clients.emplace_back(client_fd, client_addr);
+            // _clients.emplace_back(clientFd, clientAddr);
 
             // That line is kinda borked, but I'll check one day how to fix it
-            // auto *cli_thread = new std::thread(&Client::networkLoop, &(*cli));
+            // auto *cliThread = new std::thread(&Client::networkLoop, &(*cli));
             // That is 99.99% a data race, but aight, it will probably
             // never happen
-            // cli->setRunningThread(cli_thread);
+            // cli->setRunningThread(cliThread);
         }
 
         _clients.erase(
             std::remove_if(
-                _clients.begin(),
-                _clients.end(),
-                [](const std::shared_ptr<Client> &cli){ return cli->isDisconnected(); }
+                _clients.begin(), _clients.end(),
+                [](const std::shared_ptr<Client> &cli) {
+                    return cli->isDisconnected();
+                }
             ),
             _clients.end()
         );
@@ -151,7 +146,7 @@ void Server::_acceptLoop()
 
 void Server::_stop()
 {
-    //Disconect all clients
+    // Disconect all clients
     for (auto &client : _clients)
         client->stop("Server Closed");
 
@@ -160,12 +155,10 @@ void Server::_stop()
 
     for (auto &[name, worldGroup] : _worldGroups) {
         worldGroup->stop();
-        delete worldGroup;
+        worldGroup.reset();
     }
     if (this->_sockfd != -1)
         close(this->_sockfd);
-    for (auto &command : _commands)
-        delete command;
     LINFO("Server stopped");
 }
 
@@ -177,14 +170,13 @@ void Server::_downloadFile(const std::string &url, const std::string &path)
         LDEBUG("Downloading file " << path);
         CURL *curl;
         FILE *fp;
-        CURLcode res;
         curl = curl_easy_init();
         if (curl) {
-            fp = fopen(path.c_str(),"wb");
+            fp = fopen(path.c_str(), "wb");
             curl_easy_setopt(curl, CURLOPT_URL, url.c_str());
             // curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, NULL);
             curl_easy_setopt(curl, CURLOPT_WRITEDATA, fp);
-            res = curl_easy_perform(curl);
+            curl_easy_perform(curl);
             curl_easy_cleanup(curl);
             fclose(fp);
         }
@@ -208,3 +200,69 @@ void Server::_downloadFile(const std::string &url, const std::string &path)
         return;
     }
 }
+
+/*
+**  Reloads the config if no error within the new file
+*/
+void Server::_reloadConfig()
+{
+    try {
+        _config.load("./config.yml");
+    } catch (const configuration::ConfigurationError &e) {
+        LERROR(e.what());
+        return;
+    }
+}
+
+/*
+**  Reloads the whitelist if no error within the new file
+*/
+void Server::_reloadWhitelist()
+{
+    try {
+        if (isWhitelistEnabled()) {
+            WhitelistHandling::Whitelist whitelistReloaded = WhitelistHandling::Whitelist();
+            _whitelist = whitelistReloaded;
+        }
+    } catch (const std::exception &e) {
+        LERROR(e.what());
+    }
+}
+
+/*
+**  Reloads the server. Used in the /reload command.
+**  More details in *Reload.hpp*.
+*/
+void Server::reload()
+{
+    _reloadConfig();
+    _reloadWhitelist();
+    _enforceWhitelistOnReload();
+    /* Reload datapacks + plugins */
+}
+
+/*
+**  If the server gets a /reload, players not on the whitelist
+**  must be kicked out from the server if enforce-whitelist is
+**   true & the whitelist is in effect
+*/
+void Server::_enforceWhitelistOnReload()
+{
+    if (!isWhitelistEnabled() || !isWhitelistEnforce())
+        return;
+    for (auto [_, worldGroup] : _worldGroups) {
+        for (auto [_, world] : worldGroup->getWorlds()) {
+            for (auto [_, dim] : world->getDimensions()) {
+                for (auto player : dim->getPlayers()) {
+                    if (!_whitelist.isPlayerWhitelisted(player->getUuid(), player->getUsername()).first) {
+                        player->disconnect("You are not whitelisted on this server.");
+                    }
+                }
+            }
+        }
+    }
+}
+
+std::unordered_map<std::string_view, std::shared_ptr<WorldGroup>> &Server::getWorldGroups() { return _worldGroups; }
+
+const std::unordered_map<std::string_view, std::shared_ptr<WorldGroup>> &Server::getWorldGroups() const { return _worldGroups; }

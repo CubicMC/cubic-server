@@ -1,16 +1,20 @@
-#include <fstream>
-#include <filesystem>
-
 #include "blockStates.hpp"
+
+#include <filesystem>
+#include <fstream>
+
+#include <nlohmann/json.hpp>
+
 #include "logging/Logger.hpp"
 
-void Blocks::GlobalPalette::initialize(const std::string &path) {
+void Blocks::GlobalPalette::initialize(const std::string &path)
+{
     if (!std::filesystem::exists(path)) {
         LERROR("File " << path << " not found !");
         return;
     }
     nlohmann::json file = nlohmann::json::parse(std::ifstream(path));
-    for(auto block : file.items()) {
+    for (auto block : file.items()) {
         Blocks::InternalBlock b;
         b.name = block.key();
         if (block.value().size() == 2) {
@@ -34,7 +38,8 @@ void Blocks::GlobalPalette::initialize(const std::string &path) {
     }
 }
 
-BlockId Blocks::GlobalPalette::fromBlockToProtocolId(const Blocks::Block &block) const {
+BlockId Blocks::GlobalPalette::fromBlockToProtocolId(const Blocks::Block &block) const
+{
     auto internalBlock = std::find_if(this->_blocks.begin(), this->_blocks.end(), [&block](const Blocks::InternalBlock &b) {
         return b.name == block.name;
     });
@@ -68,7 +73,8 @@ BlockId Blocks::GlobalPalette::fromBlockToProtocolId(const Blocks::Block &block)
     return id;
 }
 
-Blocks::Block Blocks::GlobalPalette::fromProtocolIdToBlock(BlockId id) const {
+Blocks::Block Blocks::GlobalPalette::fromProtocolIdToBlock(BlockId id) const
+{
     for (auto b : this->_blocks) {
         if (id < b.baseProtocolId || id > b.maxProtocolId)
             continue;

@@ -1,17 +1,25 @@
 target_sources (${CMAKE_PROJECT_NAME} PRIVATE
     CommandBase.hpp
-    Help.hpp
-    Help.cpp
-    QuestionMark.hpp
-    QuestionMark.cpp
-    Stop.hpp
-    Stop.cpp
-    Seed.hpp
-    Seed.cpp
-    DumpChunk.hpp
+    Deop.hpp
+    Deop.cpp
     DumpChunk.cpp
-    Log.hpp
+    DumpChunk.hpp
+    Help.cpp
+    Help.hpp
     Log.cpp
+    Log.hpp
+    Op.hpp
+    Op.cpp
+    QuestionMark.cpp
+    QuestionMark.hpp
+    Reload.cpp
+    Reload.hpp
+    Seed.cpp
+    Seed.hpp
+    Stop.cpp
+    Stop.hpp
+    Time.cpp
+    Time.hpp
     Loot.hpp
     Loot.cpp
 )

@@ -2,10 +2,8 @@
 #include <stdexcept>
 
 namespace Blocks {
-    namespace Cornflower {
-        BlockId toProtocol() {
-            return 2034;
-        }
-    }
+namespace Cornflower {
+BlockId toProtocol() { return 2034; }
+}
 
 }

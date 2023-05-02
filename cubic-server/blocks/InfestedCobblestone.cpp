@@ -2,10 +2,8 @@
 #include <stdexcept>
 
 namespace Blocks {
-    namespace InfestedCobblestone {
-        BlockId toProtocol() {
-            return 6315;
-        }
-    }
+namespace InfestedCobblestone {
+BlockId toProtocol() { return 6315; }
+}
 
 }

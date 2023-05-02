@@ -2,10 +2,8 @@
 #include <stdexcept>
 
 namespace Blocks {
-    namespace Bookshelf {
-        BlockId toProtocol() {
-            return 2044;
-        }
-    }
+namespace Bookshelf {
+BlockId toProtocol() { return 2044; }
+}
 
 }
