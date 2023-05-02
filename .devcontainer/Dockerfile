@@ -26,8 +26,8 @@ RUN sudo apt-get update
 
 RUN sudo apt-get install -y gcc-12 g++-12 cmake pkg-config gtkmm-3.0 clang-15 clangd clang-format-15
 
-RUN echo 'export CC=/usr/bin/gcc-12' >> ~/.bashrc
+RUN sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-12 12
 
-RUN echo 'export CXX=/usr/bin/g++-12' >> ~/.bashrc
+RUN sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-12 12
 
 RUN echo 'alias format-all="find cubic-server/ -iname *.hpp -o -iname *.cpp | xargs clang-format-15 --style=file -i"' >> ~/.bashrc
