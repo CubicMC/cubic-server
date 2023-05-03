@@ -104,9 +104,9 @@ world_storage::Level &Dimension::getLevel() { return _level; }
 
 void Dimension::generateChunk(UNUSED int x, UNUSED int z) { }
 
-std::shared_ptr<thread_pool::Task> Dimension::loadOrGenerateChunk(int x, int z, std::shared_ptr<Player> player)
+/*std::shared_ptr<thread_pool::Task>*/ void Dimension::loadOrGenerateChunk(int x, int z, std::shared_ptr<Player> player)
 {
-    this->_loadingChunksMutex.lock();
+    std::lock_guard<std::mutex> _(_loadingChunksMutex);
     if (this->_loadingChunks.contains({x, z})) {
         if (std::find_if(this->_loadingChunks[{x, z}].players.begin(), this->_loadingChunks[{x, z}].players.end(), [player](const std::weak_ptr<Player> current_weak_player) {
                 if (auto current_player = current_weak_player.lock())
@@ -115,31 +115,28 @@ std::shared_ptr<thread_pool::Task> Dimension::loadOrGenerateChunk(int x, int z, 
             }) == this->_loadingChunks[{x, z}].players.end()) {
             this->_loadingChunks[{x, z}].players.push_back(player);
         }
-        this->_loadingChunksMutex.unlock();
-        return this->_loadingChunks[{x, z}].task;
+        return /*this->_loadingChunks[{x, z}].task*/;
     }
 
-    auto task = this->_world->getGenerationPool().add([this, x, z] {
+    /* auto task = */ this->_world->getGenerationPool().addJob([this, x, z] {
         // TODO: load chunk from disk if it exists
         this->generateChunk(x, z);
 
         // This send the chunk to the players that are loading it
-        this->_loadingChunksMutex.lock();
+        std::lock_guard<std::mutex> _(_loadingChunksMutex);
         for (auto weak_player : this->_loadingChunks[{x, z}].players) {
             if (auto player = weak_player.lock()) {
                 player->sendChunkAndLightUpdate(this->_level.getChunkColumn(x, z));
             }
         }
         this->_loadingChunks.erase({x, z});
-        this->_loadingChunksMutex.unlock();
     });
 
-    auto request = ChunkRequest {task, {player}};
+    auto request = ChunkRequest {/* task, */ {player}};
 
     this->_loadingChunks[{x, z}] = request;
-    this->_loadingChunksMutex.unlock();
 
-    return request.task;
+    return /*request.task*/;
 }
 
 void Dimension::_run()
@@ -181,7 +178,8 @@ void Dimension::removePlayerFromLoadingChunk(const Position2D &pos, std::shared_
     );
 
     if (this->_loadingChunks[pos].players.empty()) {
-        this->_loadingChunks[pos].task->cancel();
+        // this->_loadingChunks[pos].task->cancel();
+        // This could be replaced using either an iterator, or something else (maybe an if condition inside the job? or simply integrated inside the overlay.)
         this->_loadingChunks.erase(pos);
     }
     this->_loadingChunksMutex.unlock();
