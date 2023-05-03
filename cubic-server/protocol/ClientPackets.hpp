@@ -242,7 +242,7 @@ struct SpawnEntity {
     int16_t velocityY;
     int16_t velocityZ;
 };
-std::shared_ptr<std::vector<uint8_t>> createSpawnEntity(const SpawnEntity &);
+std::unique_ptr<std::vector<uint8_t>> createSpawnEntity(const SpawnEntity &);
 
 struct SpawnPlayer {
     int32_t entityId;

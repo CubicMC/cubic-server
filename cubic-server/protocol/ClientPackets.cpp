@@ -76,7 +76,7 @@ std::unique_ptr<std::vector<uint8_t>> protocol::createPingResponse(const PingRes
     return packet;
 }
 
-std::shared_ptr<std::vector<uint8_t>> protocol::createSpawnEntity(const SpawnEntity &in)
+std::unique_ptr<std::vector<uint8_t>> protocol::createSpawnEntity(const SpawnEntity &in)
 {
     std::vector<uint8_t> payload;
     // clang-format off
@@ -96,13 +96,13 @@ std::shared_ptr<std::vector<uint8_t>> protocol::createSpawnEntity(const SpawnEnt
         in.velocityZ, addShort
     );
     // clang-format on
-    auto packet = std::make_shared<std::vector<uint8_t>>();
+    auto packet = std::make_unique<std::vector<uint8_t>>();
     finalize(*packet, payload, ClientPacketID::SpawnEntity);
 
     return packet;
 }
 
-std::shared_ptr<std::vector<uint8_t>> protocol::createSpawnPlayer(const SpawnPlayer &in)
+std::unique_ptr<std::vector<uint8_t>> protocol::createSpawnPlayer(const SpawnPlayer &in)
 {
     std::vector<uint8_t> payload;
     // clang-format off
