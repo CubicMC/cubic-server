@@ -455,7 +455,7 @@ void ChunkColumn::_generateVegetalDecoration(generation::Generator &generator)
 {
     // GET_NEIGHBOURS()
     // find where to generate trees on surface
-    std::vector<Position> treeEmplacements;
+    std::deque<Position> treeEmplacements;
     for (int z = 0; z < SECTION_WIDTH; z++) {
         for (int x = 0; x < SECTION_WIDTH; x++) {
             for (int y = CHUNK_HEIGHT_MAX - 5; CHUNK_HEIGHT_MIN <= y; y--) {
@@ -474,10 +474,32 @@ void ChunkColumn::_generateVegetalDecoration(generation::Generator &generator)
         }
     }
     // test if there is place for a tree
-    for (auto treeEmplacement : treeEmplacements) {
-        if (true) {}
+    for (auto treeEmplacement = treeEmplacements.begin(); treeEmplacement != treeEmplacements.end(); treeEmplacement++) {
+        for (int i = 0; i <= 5; i++) {
+            auto block = getBlock({treeEmplacement->x, treeEmplacement->y + i, treeEmplacement->z});
+            // Test for transparent blocks (with tags ?)
+            if (block != Blocks::Air::toProtocol()) {
+                if (treeEmplacement == treeEmplacements.begin()) {
+                    treeEmplacements.pop_front();
+                    treeEmplacement = treeEmplacements.begin();
+                } else {
+                    auto previous = treeEmplacement -= 1;
+                    treeEmplacements.erase(treeEmplacement);
+                    treeEmplacement = previous;
+                }
+            }
+        }
     }
+    LINFO("There is : " << treeEmplacements.size() << " emplacements for trees in this chunk");
     // generate tree
+    for (auto treeEmplacement : treeEmplacements) {
+        // auto tree = generator.getTree(treeEmplacement.x + this->_chunkPos.x * SECTION_WIDTH, treeEmplacement.y, treeEmplacement.z + this->_chunkPos.z * SECTION_WIDTH);
+        // for (auto block : tree) {
+        // updateBlock({treeEmplacement.x + block.x, treeEmplacement.y + block.y, treeEmplacement.z + block.z}, block.block);
+        // }
+        // this code is for testing only
+        updateBlock({treeEmplacement.x, treeEmplacement.y, treeEmplacement.z}, Blocks::OakLog::toProtocol(Blocks::OakLog::Properties::Axis::Y));
+    }
     // RELEASE_NEIGHBOURS()
     _currentState = GenerationState::VEGETAL_DECORATION;
 }

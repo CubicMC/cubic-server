@@ -1,22 +1,20 @@
 #ifndef CUBICSERVER_GENERATION_FEATURES_TREE_TREE_HPP
 #define CUBICSERVER_GENERATION_FEATURES_TREE_TREE_HPP
 
-#include <cstdint>
+#include <vector>
 
 #include "types.hpp"
 
-class Tree {
-public:
-    Tree(Seed seed, Position pos, uint8_t height, uint8_t radius);
-    virtual ~Tree() = default;
+struct Tree {
+    Tree(Position2D chunkPos):
+        _chunkPos(chunkPos)
+    {
+    }
+    virtual std::vector<Position> getPosForTreeGeneration();
+    virtual std::vector<Position> &filterTreeGrowSpace(std::vector<Position> &);
+    virtual void generateTrees(std::vector<Position> &);
 
-    virtual void generate(void) = 0;
-
-protected:
-    Seed _seed;
-    Position _pos;
-    uint8_t _height;
-    uint8_t _radius;
+    Position2D _chunkPos;
 };
 
 #endif // CUBICSERVER_GENERATION_FEATURES_TREE_TREE_HPP

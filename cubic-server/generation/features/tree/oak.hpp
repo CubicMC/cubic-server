@@ -3,12 +3,10 @@
 
 #include "tree.hpp"
 
-class OakTree : public Tree {
-public:
-    OakTree(Seed seed, Position pos, uint8_t height, uint8_t radius);
-    ~OakTree() = default;
-
-    void generate(void) override;
+struct OakTree : public Tree {
+    virtual std::vector<Position> getPosForTreeGeneration() override;
+    virtual std::vector<Position> &filterTreeGrowSpace(std::vector<Position> &) override;
+    virtual void generateTrees(std::vector<Position> &) override;
 };
 
 #endif // CUBICSERVER_GENERATION_FEATURES_TREE_OAK_HPP
