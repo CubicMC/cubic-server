@@ -176,6 +176,15 @@ constexpr void addArray(std::vector<uint8_t> &out, const std::vector<T> &data)
         add(out, i);
 }
 
+template<typename T, void (*add)(std::vector<uint8_t> &, const T &), uint64_t Size>
+constexpr void addArray(std::vector<uint8_t> &out, const std::array<T, Size> &data)
+{
+    addVarInt(out, data.size());
+
+    for (const T &i : data)
+        add(out, i);
+}
+
 constexpr void addPosition(std::vector<uint8_t> &out, const Position &data) { addLong(out, ((data.x & 0x3FFFFFF) << 38) | ((data.z & 0x3FFFFFF) << 12) | (data.y & 0xFFF)); }
 } // namespace protocol
 

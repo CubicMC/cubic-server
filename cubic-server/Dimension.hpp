@@ -81,6 +81,7 @@ public:
      * @return world_storage::ChunkColumn&
      */
     virtual world_storage::ChunkColumn &getChunk(int x, int z);
+    virtual const world_storage::ChunkColumn &getChunk(int x, int z) const;
 
     /**
      * @brief Loads a chunk from the world save or generates it if it doesn't exist

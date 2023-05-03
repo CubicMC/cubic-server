@@ -7,9 +7,9 @@
 #include <vector>
 
 #include "Palette.hpp"
+#include "Section.hpp"
 #include "protocol/Structures.hpp"
 #include "types.hpp"
-#include "Section.hpp"
 
 namespace world_storage {
 
@@ -18,7 +18,10 @@ constexpr int BLOCKS_PER_CHUNK = NB_OF_SECTIONS * SECTION_3D_SIZE;
 
 // Heightmap
 constexpr int HEIGHTMAP_BITS = bitsNeeded(CHUNK_HEIGHT + 1);
-constexpr int HEIGHTMAP_ARRAY_SIZE = SECTION_2D_SIZE * HEIGHTMAP_BITS / 64;
+constexpr int HEIGHTMAP_ARRAY_SIZE = (SECTION_2D_SIZE * HEIGHTMAP_BITS / 64) + ((SECTION_2D_SIZE * HEIGHTMAP_BITS % 64) != 0);
+
+constexpr uint8_t getSectionIndex(const Position &pos) { return (pos.y - CHUNK_HEIGHT_MIN) / SECTION_HEIGHT; }
+constexpr uint8_t getBiomeSectionIndex(const Position &pos) { return (pos.y - BIOME_HEIGHT_MIN) / BIOME_SECTION_WIDTH; }
 
 // TODO: Accept negative position for y
 constexpr uint64_t calculateBlockIdx(const Position &pos)
@@ -59,7 +62,6 @@ public:
 
     void updateBlock(Position pos, BlockId id);
     BlockId getBlock(Position pos) const;
-    const std::array<BlockId, SECTION_3D_SIZE * NB_OF_SECTIONS> &getBlocks() const;
 
     void updateSkyLight(Position pos, uint8_t light);
     uint8_t getSkyLight(Position pos) const;
@@ -71,7 +73,12 @@ public:
 
     void updateBiome(Position pos, BiomeId biome);
     BiomeId getBiome(Position pos) const;
-    const std::array<BiomeId, BIOME_SECTION_3D_SIZE * NB_OF_SECTIONS> &getBiomes() const;
+
+    constexpr Section &getSection(uint8_t index) { return _sections.at(index); }
+    constexpr const Section &getSection(uint8_t index) const { return _sections.at(index); }
+
+    constexpr std::array<Section, NB_OF_SECTIONS> &getSections() { return _sections; }
+    constexpr const std::array<Section, NB_OF_SECTIONS> &getSections() const { return _sections; }
 
     int64_t getTick();
     void setTick(int64_t tick);
@@ -93,6 +100,12 @@ public:
     void generate(WorldType worldType, Seed seed);
 
 private:
+    void _generateOverworld(Seed seed);
+    void _generateNether(Seed seed);
+    void _generateEnd(Seed seed);
+    void _generateFlat(Seed seed);
+
+private:
     std::array<Section, NB_OF_SECTIONS> _sections;
     std::array<uint8_t, BLOCKS_PER_CHUNK> _skyLights;
     std::array<uint8_t, BLOCKS_PER_CHUNK> _blockLights;
@@ -100,11 +113,7 @@ private:
     Position2D _chunkPos;
     HeightMap _heightMap;
     bool _ready;
-
-    void _generateOverworld(Seed seed);
-    void _generateNether(Seed seed);
-    void _generateEnd(Seed seed);
-    void _generateFlat(Seed seed);
+    // std::mutex _mutex;
 };
 
 } // namespace world_storage

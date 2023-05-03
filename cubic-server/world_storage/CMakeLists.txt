@@ -6,6 +6,9 @@ target_sources (${CMAKE_PROJECT_NAME} PRIVATE
     LevelData.cpp
     LevelData.hpp
     Palette.hpp
+    Palette.cpp
+    Section.cpp
+    Section.hpp
 )
 
 if (GTEST)
@@ -16,6 +19,13 @@ if (GTEST)
         levelData_test
         LevelData.cpp
         tests/LevelData_unittest.cpp
+        tests/DynamicStorage_test.cpp
+    )
+
+    target_include_directories(
+        levelData_test
+        PRIVATE
+        ${CMAKE_SOURCE_DIR}/cubic-server
     )
 
     target_link_libraries(

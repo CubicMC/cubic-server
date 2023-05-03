@@ -14,7 +14,7 @@ include(CheckIPOSupported)
 
 # if debug mode is enabled, add -g3 flag
 if (CMAKE_BUILD_TYPE MATCHES Debug)
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g3")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -ggdb3")
 endif()
 
 if (CMAKE_BUILD_TYPE MATCHES Release)

@@ -1,5 +1,6 @@
 #include <argparse/argparse.hpp>
 #include <csignal>
+#include <cstdint>
 #include <cstring>
 #include <iostream>
 #include <thread>
@@ -105,6 +106,35 @@ void signalHandler(int sig)
 int main(int argc, char *argv[])
 {
     auto program = initArgs(argc, argv);
+
+    // world_storage::DynamicStorage<uint64_t, world_storage::SECTION_3D_SIZE> storage(4);
+    // const uint64_t maxValue = (1 << 3) - 1;
+
+    // for (uint64_t i = 0; i < world_storage::SECTION_3D_SIZE; i++) {
+    //     storage.set(i, i % maxValue);
+    //     if (storage.get(i) != i % maxValue)
+    //         throw std::runtime_error("Storage is not working");
+    // }
+    // for (uint64_t i = 0; i < world_storage::SECTION_3D_SIZE; i++) {
+    //     if (storage.get(i) != i % maxValue)
+    //         throw std::runtime_error("Storage is not working 2");
+    // }
+    // storage.setValueSize(5);
+    // for (uint64_t i = 0; i < world_storage::SECTION_3D_SIZE; i++) {
+    //     if (storage.get(i) != i % maxValue)
+    //         throw std::runtime_error("Storage is not working 3");
+    // }
+    // storage.setValueSize(3);
+    // for (uint64_t i = 0; i < world_storage::SECTION_3D_SIZE; i++) {
+    //     if (storage.get(i) != i % maxValue)
+    //         throw std::runtime_error("Storage is not working 4");
+    // }
+    // storage.setValueSize(4);
+    // for (uint64_t i = 0; i < world_storage::SECTION_3D_SIZE; i++) {
+    //     if (storage.get(i) != i % maxValue)
+    //         throw std::runtime_error("Storage is not working 5");
+    // }
+    // return 0;
 
     auto srv = Server::getInstance();
 

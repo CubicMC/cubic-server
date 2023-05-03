@@ -1,21 +1,23 @@
 #include "Level.hpp"
+#include "world_storage/ChunkColumn.hpp"
 
 namespace world_storage {
 
 Level::~Level() { }
 
-ChunkColumn &Level::addChunkColumn(Position2D pos, const ChunkColumn &chunkColumn)
-{
-    std::lock_guard<std::mutex> _(_chunkColumnsMutex);
-    _chunkColumns.insert({pos, chunkColumn});
-    return _chunkColumns.at(pos);
-}
+// ChunkColumn &Level::addChunkColumn(Position2D pos, const ChunkColumn &chunkColumn)
+// {
+//     _chunkColumnsMutex.lock();
+//     _chunkColumns.emplace(pos, chunkColumn);
+//     _chunkColumnsMutex.unlock();
+//     return _chunkColumns.at(pos);
+// }
 
 ChunkColumn &Level::addChunkColumn(Position2D pos)
 {
-    std::lock_guard<std::mutex> _(_chunkColumnsMutex);
-
-    _chunkColumns.insert({pos, {pos}});
+    _chunkColumnsMutex.lock();
+    _chunkColumns.emplace(pos, pos);
+    _chunkColumnsMutex.unlock();
     return _chunkColumns.at(pos);
 }
 

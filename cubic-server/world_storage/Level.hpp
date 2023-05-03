@@ -16,7 +16,7 @@ public:
     Level() = default;
     ~Level();
 
-    ChunkColumn &addChunkColumn(Position2D pos, const ChunkColumn &chunkColumn);
+    // ChunkColumn &addChunkColumn(Position2D pos, const ChunkColumn &chunkColumn);
     ChunkColumn &addChunkColumn(Position2D pos);
 
     bool hasChunkColumn(const Position2D &pos) const;
