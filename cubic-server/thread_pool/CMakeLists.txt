@@ -3,4 +3,6 @@ target_sources (${CMAKE_PROJECT_NAME} PRIVATE
     Pool.hpp
     Task.cpp
     Task.hpp
+    ThreadPool.cpp
+    ThreadWorker.cpp
 )
