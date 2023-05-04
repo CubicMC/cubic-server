@@ -4,6 +4,7 @@
 #include "Server.hpp"
 #include "World.hpp"
 #include "blocks.hpp"
+#include "generation/features/tree/oak.hpp"
 #include "generation/overworld.hpp"
 #include "logging/Logger.hpp"
 #include "types.hpp"
@@ -54,11 +55,11 @@ ChunkColumn::ChunkColumn(const Position2D &chunkPos, std::shared_ptr<Dimension> 
 }
 
 ChunkColumn::ChunkColumn(const ChunkColumn &other):
+    std::enable_shared_from_this<ChunkColumn>(other),
     _blocks(other._blocks),
     _skyLights(other._skyLights),
     _blockLights(other._blockLights),
     _biomes(other._biomes),
-    // _blockEntities(other._blockEntities),
     _tickData(other._tickData),
     _chunkPos(other._chunkPos),
     _heightMap(other._heightMap),
@@ -368,52 +369,11 @@ void ChunkColumn::_generateFluidSprings(UNUSED generation::Generator &generator)
 void ChunkColumn::_generateVegetalDecoration(generation::Generator &generator)
 {
     // GET_NEIGHBOURS()
-    // find where to generate trees on surface
-    std::deque<Position> treeEmplacements;
-    for (int z = 0; z < SECTION_WIDTH; z++) {
-        for (int x = 0; x < SECTION_WIDTH; x++) {
-            for (int y = CHUNK_HEIGHT_MAX - 5; CHUNK_HEIGHT_MIN <= y; y--) {
-                auto block = getBlock({x, y, z});
-                if (block == Blocks::Air::toProtocol())
-                    continue;
-                else {
-                    if (block == Blocks::GrassBlock::toProtocol(Blocks::GrassBlock::Properties::Snowy::FALSE) || block == Blocks::Dirt::toProtocol()) {
-                        if (generator.getNoise(x + this->_chunkPos.x * SECTION_WIDTH, y, z + this->_chunkPos.z * SECTION_WIDTH).noise3D.density > 0.5 &&
-                            generator.getBiome(x + this->_chunkPos.x * SECTION_WIDTH, y, z + this->_chunkPos.z * SECTION_WIDTH))
-                            treeEmplacements.push_back({x, y + 1, z});
-                    }
-                    break;
-                }
-            }
-        }
-    }
-    // test if there is place for a tree
-    for (auto treeEmplacement = treeEmplacements.begin(); treeEmplacement != treeEmplacements.end(); treeEmplacement++) {
-        for (int i = 0; i <= 5; i++) {
-            auto block = getBlock({treeEmplacement->x, treeEmplacement->y + i, treeEmplacement->z});
-            // Test for transparent blocks (with tags ?)
-            if (block != Blocks::Air::toProtocol()) {
-                if (treeEmplacement == treeEmplacements.begin()) {
-                    treeEmplacements.pop_front();
-                    treeEmplacement = treeEmplacements.begin();
-                } else {
-                    auto previous = treeEmplacement -= 1;
-                    treeEmplacements.erase(treeEmplacement);
-                    treeEmplacement = previous;
-                }
-            }
-        }
-    }
-    LDEBUG("There is : " << treeEmplacements.size() << " emplacements for trees in this chunk");
-    // generate tree
-    for (auto treeEmplacement : treeEmplacements) {
-        // auto tree = generator.getTree(treeEmplacement.x + this->_chunkPos.x * SECTION_WIDTH, treeEmplacement.y, treeEmplacement.z + this->_chunkPos.z * SECTION_WIDTH);
-        // for (auto block : tree) {
-        // updateBlock({treeEmplacement.x + block.x, treeEmplacement.y + block.y, treeEmplacement.z + block.z}, block.block);
-        // }
-        // this code is for testing only
-        updateBlock({treeEmplacement.x, treeEmplacement.y, treeEmplacement.z}, Blocks::OakLog::toProtocol(Blocks::OakLog::Properties::Axis::Y));
-    }
+    generation::trees::OakTree oakTree(shared_from_this(), generator);
+    oakTree.getPosForTreeGeneration();
+    while (!oakTree.filterTreeGrowSpace().empty())
+        oakTree.generateTree();
+
     // RELEASE_NEIGHBOURS()
     _currentState = GenerationState::VEGETAL_DECORATION;
 }
