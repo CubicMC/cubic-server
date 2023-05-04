@@ -3,7 +3,9 @@
 #include "Dimension.hpp"
 #include "Player.hpp"
 #include "World.hpp"
+#include "options.hpp"
 #include "types.hpp"
+#include "Server.hpp"
 
 Entity::Entity(std::shared_ptr<Dimension> dim):
     _dim(dim)
@@ -33,7 +35,7 @@ Entity::Entity(std::shared_ptr<Dimension> dim):
 
 void Entity::setDimension(std::shared_ptr<Dimension> dim) { _dim = dim; }
 
-void Entity::setPosition(const Vector3<double> &pos, bool onGround) { _pos = pos; }
+void Entity::setPosition(const Vector3<double> &pos, UNUSED bool onGround) { _pos = pos; }
 
 void Entity::setPosition(double x, double y, double z, bool onGround) { this->setPosition({x, y, z}, onGround); }
 
@@ -53,16 +55,16 @@ void Entity::setRotation(const Vector2<uint8_t> &rot)
     while (yawTmp > 360)
         yawTmp -= 360;
     _rot.x = yawTmp;
-    _rot.y = rot.y / 1.5;
+    _rot.z = rot.z / 1.5;
 }
 
 void Entity::setRotation(uint8_t yaw, uint8_t pitch) { this->setRotation({yaw, pitch}); }
 
 std::shared_ptr<Dimension> Entity::getDimension() const { return _dim; }
 
-World *Entity::getWorld() const { return _dim->getWorld(); }
+std::shared_ptr<World> Entity::getWorld() const { return _dim->getWorld(); }
 
-WorldGroup *Entity::getWorldGroup() const { return _dim->getWorld()->getWorldGroup(); }
+std::shared_ptr<WorldGroup> Entity::getWorldGroup() const { return _dim->getWorld()->getWorldGroup(); }
 
 int32_t Entity::getId() const { return _id; }
 
@@ -82,7 +84,7 @@ void Entity::teleport(const Vector3<double> &pos)
 {
     this->forceSetPosition(pos);
 
-    for (auto i : this->getDimension()->getPlayerList()) {
+    for (auto i : this->getDimension()->getPlayers()) {
         if (i->getId() == this->getId())
             continue;
         i->sendTeleportEntity(this->getId(), pos);

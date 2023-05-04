@@ -1,8 +1,8 @@
 #include "TickClock.hpp"
 
 TickClock::TickClock(uint16_t tickRate):
-    _tickRate(tickRate),
     _started(false),
+    _tickRate(tickRate),
     _tick(0)
 {
 }

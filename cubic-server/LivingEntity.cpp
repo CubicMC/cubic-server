@@ -9,7 +9,7 @@
  * @param damage The damage to deal
  * @param source The source of the damage
  */
-void LivingEntity::attack(Vector3<double> source)
+void LivingEntity::attack(const Vector3<double> &source)
 {
     //  TODO : think about how to deal with damage calculation later
     this->damage(1);
@@ -29,16 +29,23 @@ void LivingEntity::damage(float damage) { _health -= damage; }
  * @param source The source of the knockback
  * @param force The force of the knockback
  */
-void LivingEntity::knockback(Vector3<double> source, float force)
+void LivingEntity::knockback(const Vector3<double> &source, float force)
 {
     // compute knockback
-    Vector3<double> direction = (source - _pos) * force;
-
+    // TODO(huntears): Change how the knockback is calculated to be more "vanilla like"
+    Vector2<double> pos2d = _pos;
+    Vector2<double> source2d = source;
+    Vector2<double> direction = source2d - pos2d;
     direction.normalize();
 
+    Vector3<double> kb(direction.x, 1.0f, direction.z);
+
+    kb *= force;
+
     // send entity velocity too connected players (should be optimized)
-    for (auto &player : _dim->getPlayerList()) {
-        player->sendEntityVelocity({_id, static_cast<int16_t>(direction.x), static_cast<int16_t>(direction.y), static_cast<int16_t>(direction.z)});
+    for (auto player : _dim->getPlayers()) {
+        player->sendEntityVelocity({_id, static_cast<int16_t>(kb.x), static_cast<int16_t>(kb.y), static_cast<int16_t>(kb.z)});
+        player->sendEntityAnimation(protocol::EntityAnimation::ID::TakeDamage, _id);
     }
 }
 

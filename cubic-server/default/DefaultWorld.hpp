@@ -6,7 +6,7 @@
 
 class DefaultWorld : public World {
 public:
-    DefaultWorld(WorldGroup *worldGroup, world_storage::WorldType worldType);
+    DefaultWorld(std::shared_ptr<WorldGroup> worldGroup, world_storage::WorldType worldType);
     void tick() override;
     void initialize() override;
     void stop() override;

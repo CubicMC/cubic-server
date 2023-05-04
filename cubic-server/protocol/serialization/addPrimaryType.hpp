@@ -96,18 +96,24 @@ constexpr void addVarLong(std::vector<uint8_t> &out, const int64_t &data)
 
 constexpr void addFloat(std::vector<uint8_t> &out, const float &data)
 {
-    // addInt(out, static_cast<int32_t>(data));
-    const uint8_t *p = (const uint8_t *) &data;
+    union {
+        float f;
+        uint8_t u[4];
+    } d;
+    d.f = data;
     for (int i = 3; i >= 0; i--)
-        out.push_back(p[i]);
+        out.push_back(d.u[i]);
 }
 
 constexpr void addDouble(std::vector<uint8_t> &out, const double &data)
 {
-    // addLong(out, static_cast<int64_t>(data));
-    const uint8_t *p = (const uint8_t *) &data;
+    union {
+        double f;
+        uint8_t u[8];
+    } d;
+    d.f = data;
     for (int i = 7; i >= 0; i--)
-        out.push_back(p[i]);
+        out.push_back(d.u[i]);
 }
 
 // Add string with a varint length

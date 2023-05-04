@@ -3,12 +3,13 @@
 #include <string>
 #include <unistd.h>
 
-#include <nlohmann/json.hpp>
 
 #include "Client.hpp"
+#include "nbt.hpp"
 
 #include "Player.hpp"
 #include "Server.hpp"
+#include "Dimension.hpp"
 #include "World.hpp"
 #include "WorldGroup.hpp"
 #include "chat/ChatRegistry.hpp"
@@ -20,17 +21,18 @@
 Client::Client(int sockfd, struct sockaddr_in6 addr):
     _sockfd(sockfd),
     _addr(addr),
+    _isRunning(true),
     _status(protocol::ClientStatus::Initial),
     _recvBuffer(0),
     _sendBuffer(0),
     _networkThread(&Client::networkLoop, this),
-    _player(nullptr),
-    _isRunning(true)
+    _player(nullptr)
 {
 }
 
 Client::~Client()
 {
+    LDEBUG("Destroying client");
     // Stop the thread
     _isRunning = false;
     if (this->_networkThread.joinable())
@@ -45,10 +47,11 @@ Client::~Client()
         close(_sockfd);
     }
 
-    // Remove the player from the world
     if (!_player)
         return;
-    delete _player;
+    this->_player->_dim->removeEntity(_player->_id);
+    this->_player->_dim->removePlayer(_player->_id);
+    this->_player->_cli = nullptr;
 }
 
 void Client::networkLoop()
@@ -134,7 +137,7 @@ void Client::switchToPlayState(u128 playerUuid, const std::string &username)
     this->setStatus(protocol::ClientStatus::Play);
     LDEBUG("Switched to play state");
     // TODO: get the player dimension from the world by his uuid
-    this->_player = new Player(this, Server::getInstance()->getWorldGroup("default")->getWorld("default")->getDimension("overworld"), playerUuid, username);
+    this->_player = std::make_shared<Player>(this, Server::getInstance()->getWorldGroup("default")->getWorld("default")->getDimension("overworld"), playerUuid, username);
     LDEBUG("Created player");
 }
 
@@ -283,7 +286,7 @@ void Client::_handlePacket()
         try {
             packet = parser(toParse);
         } catch (std::runtime_error &error) {
-            LERROR("Error during packet parsing :");
+            LERROR("Error during packet ", (int32_t)packetId, " parsing : ");
             LERROR(error.what());
             return;
         }
@@ -301,7 +304,7 @@ void Client::_onHandshake(const std::shared_ptr<protocol::Handshake> &pck)
         this->setStatus(protocol::ClientStatus::Login);
 }
 
-void Client::_onStatusRequest(const std::shared_ptr<protocol::StatusRequest> &pck)
+void Client::_onStatusRequest(UNUSED const std::shared_ptr<protocol::StatusRequest> &pck)
 {
     LDEBUG("Got a status request");
 
@@ -315,7 +318,7 @@ void Client::_onStatusRequest(const std::shared_ptr<protocol::StatusRequest> &pc
 
     json["previewsChat"] = false;
     json["favicon"] = DEFAULT_FAVICON; // TODO: Understand how this works, cause right now it is witchcraft
-    json["description"]["text"] = conf.getMotd();
+    json["description"]["text"] = conf["motd"].value();
     json["enforcesSecureChat"] = false;
 
     // Old
@@ -326,7 +329,7 @@ void Client::_onStatusRequest(const std::shared_ptr<protocol::StatusRequest> &pc
 
     json["version"]["name"] = MC_VERSION;
     json["version"]["protocol"] = MC_PROTOCOL;
-    json["players"]["max"] = conf.getMaxPlayers();
+    json["players"]["max"] = conf["max-players"].as<int32_t>();
     json["players"]["online"] = std::count_if(cli.begin(), cli.end(), [](std::shared_ptr<Client> &each) {
         return each->getStatus() == protocol::ClientStatus::Play;
     });
@@ -361,7 +364,7 @@ void Client::_onLoginStart(const std::shared_ptr<protocol::LoginStart> &pck)
     this->_loginSequence(resPck);
 }
 
-void Client::_onEncryptionResponse(const std::shared_ptr<protocol::EncryptionResponse> &pck) { LDEBUG("Got a Encryption Response"); }
+void Client::_onEncryptionResponse(UNUSED const std::shared_ptr<protocol::EncryptionResponse> &pck) { LDEBUG("Got a Encryption Response"); }
 
 void Client::sendStatusResponse(const std::string &json)
 {
@@ -396,78 +399,102 @@ void Client::sendLoginPlay()
             player_attributes::Gamemode::Survival, // TODO: something like this this->_player->getPreviousGamemode().has_value() ? this->_player->getPreviousGamemode() : -1;
         .dimensionNames = std::vector<std::string>({"minecraft:overworld"}), // TODO: something like this this->_player->_dim->getWorld()->getDimensions();
         // clang-format off
-        .registryCodec = nbt::Compound("", {
-            chat::_details::getChatRegistry(),
-            new nbt::Compound("minecraft:dimension_type", {
-                new nbt::String("type", "minecraft:dimension_type"),
-                new nbt::List("value", {
-                    new nbt::Compound("", {
-                        new nbt::String("name", "minecraft:overworld"),
-                        new nbt::Int("id", 0),
-                        new nbt::Compound("element", {
-                            new nbt::Byte("ultrawarm", 0),
-                            new nbt::Int("logical_height", 256),
-                            new nbt::String("infiniburn", "#minecraft:infiniburn_overworld"),
-                            new nbt::Byte("piglin_safe", 0),
-                            new nbt::Float("ambient_light", 0.0),
-                            new nbt::Byte("has_skylight", 1),
-                            new nbt::String("effects", "minecraft:overworld"),
-                            new nbt::Byte("has_raids", 1),
-                            new nbt::Int("monster_spawn_block_light_limit", 0),
-                            new nbt::Byte("respawn_anchor_works", 0),
-                            new nbt::Int("height", 384),
-                            new nbt::Byte("has_ceiling", 0),
-                            new nbt::Compound("monster_spawn_light_level", {
-                                new nbt::String("type", "minecraft:uniform"),
-                                new nbt::Compound("value", {
-                                    new nbt::Int("max_inclusive", 7),
-                                    new nbt::Int("min_inclusive", 0),
+        .registryCodec = std::shared_ptr<nbt::Compound>(new nbt::Compound("", {
+            NBT_MAKE(nbt::Compound, "minecraft:dimension_type", {
+                NBT_MAKE(nbt::String, "type", "minecraft:dimension_type"),
+                NBT_MAKE(nbt::List, "value", {
+                    NBT_MAKE(nbt::Compound, "", {
+                        NBT_MAKE(nbt::String, "name", "minecraft:overworld"),
+                        NBT_MAKE(nbt::Int, "id", 0),
+                        NBT_MAKE(nbt::Compound, "element", {
+                            NBT_MAKE(nbt::Byte, "ultrawarm", 0),
+                            NBT_MAKE(nbt::Int, "logical_height", 256),
+                            NBT_MAKE(nbt::String, "infiniburn", "#minecraft:infiniburn_overworld"),
+                            NBT_MAKE(nbt::Byte, "piglin_safe", 0),
+                            NBT_MAKE(nbt::Float, "ambient_light", 0.0),
+                            NBT_MAKE(nbt::Byte, "has_skylight", 1),
+                            NBT_MAKE(nbt::String, "effects", "minecraft:overworld"),
+                            NBT_MAKE(nbt::Byte, "has_raids", 1),
+                            NBT_MAKE(nbt::Int, "monster_spawn_block_light_limit", 0),
+                            NBT_MAKE(nbt::Byte, "respawn_anchor_works", 0),
+                            NBT_MAKE(nbt::Int, "height", 384),
+                            NBT_MAKE(nbt::Byte, "has_ceiling", 0),
+                            NBT_MAKE(nbt::Compound, "monster_spawn_light_level", {
+                                NBT_MAKE(nbt::String, "type", "minecraft:uniform"),
+                                NBT_MAKE(nbt::Compound, "value", {
+                                    NBT_MAKE(nbt::Int, "max_inclusive", 7),
+                                    NBT_MAKE(nbt::Int, "min_inclusive", 0)
                                 })
                             }),
-                            new nbt::Byte("natural", 1),
-                            new nbt::Int("min_y", -64),
-                            new nbt::Float("coordinate_scale", 1.0),
-                            new nbt::Byte("bed_works", 1),
-                        }),
-                    }),
+                            NBT_MAKE(nbt::Byte, "natural", 1),
+                            NBT_MAKE(nbt::Int, "min_y", -64),
+                            NBT_MAKE(nbt::Float, "coordinate_scale", 1.0),
+                            NBT_MAKE(nbt::Byte, "bed_works", 1)
+                        })
+                    })
                 })
             }),
-            new nbt::Compound("minecraft:worldgen/biome", {
-                new nbt::String("type", "minecraft:worldgen/biome"),
-                new nbt::List("value", {
-                    new nbt::Compound("", {
-                        new nbt::String("name", "minecraft:plains"),
-                        new nbt::Int("id", 0),
-                        new nbt::Compound("element", {
-                            new nbt::String("precipitation", "none"),
-                            new nbt::Float("temperature", 0.8),
-                            new nbt::Float("downfall", 0.4),
-                            new nbt::Compound("effects", {
-                                new nbt::Int("sky_color", 7907327),
-                                new nbt::Int("water_fog_color", 329011),
-                                new nbt::Int("fog_color", 12638463),
-                                new nbt::Int("water_color", 4159204),
+            NBT_MAKE(nbt::Compound, "minecraft:worldgen/biome", {
+                NBT_MAKE(nbt::String, "type", "minecraft:worldgen/biome"),
+                NBT_MAKE(nbt::List, "value", {
+                    NBT_MAKE(nbt::Compound, "", {
+                        NBT_MAKE(nbt::String, "name", "minecraft:plains"),
+                        NBT_MAKE(nbt::Int, "id", 0),
+                        NBT_MAKE(nbt::Compound, "element", {
+                            NBT_MAKE(nbt::String, "precipitation", "none"),
+                            NBT_MAKE(nbt::Float, "temperature", 0.8),
+                            NBT_MAKE(nbt::Float, "downfall", 0.4),
+                            NBT_MAKE(nbt::Compound, "effects", {
+                                NBT_MAKE(nbt::Int, "sky_color", 7907327),
+                                NBT_MAKE(nbt::Int, "water_fog_color", 329011),
+                                NBT_MAKE(nbt::Int, "fog_color", 12638463),
+                                NBT_MAKE(nbt::Int, "water_color", 4159204),
                             })
                         }),
                     }),
-                    new nbt::Compound("", {
-                        new nbt::String("name", "minecraft:my_super_cool_biome_lol_haha"),
-                        new nbt::Int("id", 1),
-                        new nbt::Compound("element", {
-                            new nbt::String("precipitation", "none"),
-                            new nbt::Float("temperature", 0.8),
-                            new nbt::Float("downfall", 0.4),
-                            new nbt::Compound("effects", {
-                                new nbt::Int("sky_color", 7907327),
-                                new nbt::Int("water_fog_color", 329011),
-                                new nbt::Int("fog_color", 12638463),
-                                new nbt::Int("water_color", 4159204),
+                    NBT_MAKE(nbt::Compound, "", {
+                        NBT_MAKE(nbt::String, "name", "minecraft:my_super_cool_biome_lol_haha"),
+                        NBT_MAKE(nbt::Int, "id", 1),
+                        NBT_MAKE(nbt::Compound, "element", {
+                            NBT_MAKE(nbt::String, "precipitation", "none"),
+                            NBT_MAKE(nbt::Float, "temperature", 0.8),
+                            NBT_MAKE(nbt::Float, "downfall", 0.4),
+                            NBT_MAKE(nbt::Compound, "effects", {
+                                NBT_MAKE(nbt::Int, "sky_color", 7907327),
+                                NBT_MAKE(nbt::Int, "water_fog_color", 329011),
+                                NBT_MAKE(nbt::Int, "fog_color", 12638463),
+                                NBT_MAKE(nbt::Int, "water_color", 4159204),
                             })
                         }),
                     })
                 })
             }),
-        }),
+            NBT_MAKE(nbt::Compound, "minecraft:chat_type", {
+                NBT_MAKE(nbt::String, "type", "minecraft:chat_type"),
+                NBT_MAKE(nbt::List, "value", {
+                    NBT_MAKE(nbt::Compound, "", {
+                        NBT_MAKE(nbt::String, "name", "minecraft:chat"),
+                        NBT_MAKE(nbt::Int, "id", 0),
+                        NBT_MAKE(nbt::Compound, "element", {
+                            NBT_MAKE(nbt::Compound, "chat", {
+                                NBT_MAKE(nbt::List, "parameters", {
+                                    NBT_MAKE(nbt::String, "", "sender"),
+                                    NBT_MAKE(nbt::String, "", "content")
+                                }),
+                                NBT_MAKE(nbt::String, "translation_key", "chat.type.text"),
+                            }),
+                            NBT_MAKE(nbt::Compound, "narration", {
+                                NBT_MAKE(nbt::List, "parameters", {
+                                    NBT_MAKE(nbt::String, "", "sender"),
+                                    NBT_MAKE(nbt::String, "", "content")
+                                }),
+                                NBT_MAKE(nbt::String, "translation_key", "chat.type.text.narrate"),
+                            })
+                        })
+                    })
+                })
+            })
+        })),
         // clang-format on
         .dimensionType = "minecraft:overworld", // TODO: something like this this->_player->_dim->getDimensionType();
         .dimensionName = "overworld", // TODO: something like this this->_player->getDimension()->name;
@@ -479,14 +506,12 @@ void Client::sendLoginPlay()
         .enableRespawnScreen = true, // TODO: implement gamerules !this->_player->_dim->getWorld()->getGamerules()["doImmediateRespawn"];
         .isDebug = false, // TODO: something like this->_player->_dim->getWorld()->isDebugModeWorld;
         .isFlat = false, // TODO: something like this->_player->_dim->isFlat;
-        .hasDeathLocation = false // TODO: something like this->_player->hasDeathLocation;
+        .hasDeathLocation = false, // TODO: something like this->_player->hasDeathLocation;
+        .deathDimensionName = "",
+        .deathLocation = {0, 0, 0},
     };
-    if (resPck.hasDeathLocation) {
-        resPck.deathDimensionName = ""; // TODO: something like this->_player->deathDimensionName;
-        resPck.deathLocation = {0, 0, 0}; // TODO: something like this->_player->deathLocation;
-    }
     _player->sendLoginPlay(resPck);
-    resPck.registryCodec.destroy();
+    // resPck.registryCodec.destroy();
 }
 
 void Client::disconnect(const chat::Message &reason)
@@ -519,4 +544,6 @@ void Client::_loginSequence(const protocol::LoginSuccess &pck)
     this->_player->_continueLoginSequence();
 }
 
-Player *Client::getPlayer() const { return _player; }
+std::shared_ptr<Player> Client::getPlayer() { return _player; }
+
+const std::shared_ptr<Player> Client::getPlayer() const { return _player; }

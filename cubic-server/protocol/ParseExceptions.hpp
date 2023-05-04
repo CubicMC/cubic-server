@@ -1,18 +1,7 @@
 #ifndef CUBICSERVER_PROTOCOL_PARSEEXCEPTIONS_HPP
 #define CUBICSERVER_PROTOCOL_PARSEEXCEPTIONS_HPP
 
-#include <stdexcept>
-
-#define DEFINE_EXCEPTION_FROM(name, except)      \
-    class name : public except {                 \
-    public:                                      \
-        name(const char *const message) throw(): \
-            except(message)                      \
-        {                                        \
-        }                                        \
-    }
-
-#define DEFINE_EXCEPTION(name) DEFINE_EXCEPTION_FROM(name, std::runtime_error)
+#include "exceptions.hpp"
 
 namespace protocol {
 DEFINE_EXCEPTION(VarIntOverflow);

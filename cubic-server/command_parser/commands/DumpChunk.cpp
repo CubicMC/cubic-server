@@ -9,9 +9,8 @@
 #include "protocol/serialization/add.hpp"
 #include "protocol/serialization/popPrimaryType.hpp"
 
-#include <iostream>
 
-void command_parser::DumpChunk::autocomplete(std::vector<std::string> &args, Player *invoker) const { return; }
+void command_parser::DumpChunk::autocomplete(UNUSED std::vector<std::string> &args, UNUSED Player *invoker) const { return; }
 
 void command_parser::DumpChunk::execute(std::vector<std::string> &args, Player *invoker) const
 {
@@ -39,8 +38,8 @@ void command_parser::DumpChunk::execute(std::vector<std::string> &args, Player *
 
     for (const auto &block : blocks) {
         auto name = GLOBAL_PALETTE.fromProtocolIdToBlock(block).name;
-        if (GLOBAL_PALETTE.fromBlockToProtocolId({name}) != block || (block == 0 && name != "minecraft:air"))
-            LDEBUG("ERROR: " << name << " has id " << block << " but should have id " << GLOBAL_PALETTE.fromBlockToProtocolId({name}));
+        if (GLOBAL_PALETTE.fromBlockToProtocolId({name, {}}) != block || (block == 0 && name != "minecraft:air"))
+            LDEBUG("ERROR: " << name << " has id " << block << " but should have id " << GLOBAL_PALETTE.fromBlockToProtocolId({name, {}}));
     }
     LDEBUG("--- CHUNK DATA ---");
     {
@@ -141,7 +140,7 @@ void command_parser::DumpChunk::execute(std::vector<std::string> &args, Player *
     LDEBUG("Done");
 }
 
-void command_parser::DumpChunk::help(std::vector<std::string> &args, Player *invoker) const
+void command_parser::DumpChunk::help(UNUSED std::vector<std::string> &args, Player *invoker) const
 {
     if (invoker) {
         // invoker->sendMessage("Usage: /dumpchunk <x> <z>");

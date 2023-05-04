@@ -1,6 +1,7 @@
 #include "Entity.hpp"
+#include "Server.hpp"
 
-std::shared_ptr<chat::message::event::EntityHover> chat::message::event::EntityHover::fromJson(const nlohmann::json &json)
+std::shared_ptr<chat::message::event::EntityHover> chat::message::event::EntityHover::fromJson(UNUSED const nlohmann::json &json)
 {
     std::shared_ptr<EntityHover> event = std::make_shared<EntityHover>();
 

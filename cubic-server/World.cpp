@@ -5,7 +5,7 @@
 #include "WorldGroup.hpp"
 #include "logging/Logger.hpp"
 
-World::World(WorldGroup *worldGroup, world_storage::WorldType worldType):
+World::World(std::shared_ptr<WorldGroup> worldGroup, world_storage::WorldType worldType):
     _worldGroup(worldGroup),
     _age(0),
     _time(0),
@@ -52,77 +52,21 @@ bool World::isInitialized() const
     return true;
 }
 
-WorldGroup *World::getWorldGroup() const { return _worldGroup; }
+std::shared_ptr<WorldGroup> World::getWorldGroup() { return _worldGroup; }
 
-std::shared_ptr<Chat> World::getChat() const { return _chat; }
+const std::shared_ptr<WorldGroup> World::getWorldGroup() const { return _worldGroup; }
 
-std::shared_ptr<Dimension> World::getDimension(const std::string_view &name) const { return this->_dimensions.at(name); }
+std::shared_ptr<Chat> World::getChat() { return _chat; }
 
-std::vector<Entity *> World::getEntities() const
-{
-    std::vector<Entity *> entities;
-    for (auto _dimension : _dimensions)
-        for (auto _entity : _dimension.second->getEntities())
-            entities.push_back(_entity);
-    return entities;
-}
+const std::shared_ptr<Chat> World::getChat() const { return _chat; }
 
-std::vector<Player *> World::getPlayers() const
-{
-    std::vector<Player *> players;
+std::shared_ptr<Dimension> World::getDimension(const std::string_view &name) { return this->_dimensions.at(name); }
 
-    for (auto &entity : this->getEntities()) {
-        auto player = dynamic_cast<Player *>(entity);
+const std::shared_ptr<Dimension> World::getDimension(const std::string_view &name) const { return this->_dimensions.at(name); }
 
-        if (player != nullptr) {
-            players.push_back(player);
-        }
-    }
-    return players;
-}
+std::unordered_map<std::string_view, std::shared_ptr<Dimension>> &World::getDimensions() { return _dimensions; }
 
-void World::forEachEntity(std::function<void(Entity *)> callback)
-{
-    for (auto &_dimension : _dimensions)
-        _dimension.second->forEachEntity(callback);
-}
-
-void World::forEachEntityIf(std::function<void(Entity *)> callback, std::function<bool(const Entity *)> predicate)
-{
-    for (auto &_dimension : _dimensions)
-        _dimension.second->forEachEntityIf(callback, predicate);
-}
-
-void World::forEachPlayer(std::function<void(Player *)> callback)
-{
-    std::vector<Player *> players = this->getPlayers();
-
-    for (auto player : players)
-        callback(player);
-}
-
-void World::forEachPlayerIf(std::function<void(Player *)> callback, std::function<bool(const Entity *)> predicate)
-{
-    std::vector<Player *> players = this->getPlayers();
-
-    for (auto player : players)
-        if (predicate(player))
-            callback(player);
-}
-
-void World::forEachDimension(std::function<void(Dimension &)> callback)
-{
-    for (auto &[_, dimension] : _dimensions)
-        callback(*dimension);
-}
-
-void World::forEachDimensionIf(std::function<void(Dimension &)> callback, std::function<bool(const Dimension &)> predicate)
-{
-    for (auto &[_, dimension] : _dimensions) {
-        if (predicate(*dimension))
-            callback(*dimension);
-    }
-}
+const std::unordered_map<std::string_view, std::shared_ptr<Dimension>> &World::getDimensions() const { return _dimensions; }
 
 const world_storage::LevelData &World::getLevelData() const { return _levelData; }
 
@@ -137,11 +81,8 @@ void World::updateTime()
     if (_time > 24000)
         _time -= 24000;
 
-    // send packets to clients (missing clients in architecture)
-    for (auto &entity : this->getEntities()) {
-        auto player = dynamic_cast<Player *>(entity);
-
-        if (player) {
+    for (auto [_, dim] : this->_dimensions) {
+        for (auto player : dim->getPlayers()) {
             player->sendUpdateTime({_age, _time});
         }
     }
@@ -150,7 +91,6 @@ void World::updateTime()
 void World::sendPlayerInfoAddPlayer(Player *current)
 {
     // get list of players
-    std::vector<Player *> players = this->getPlayers();
     std::vector<protocol::PlayerInfoUpdate::Action> playersInfo;
 
     uint8_t actions = (uint8_t) protocol::PlayerInfoUpdate::Actions::AddPlayer | (uint8_t) protocol::PlayerInfoUpdate::Actions::InitializeChat |
@@ -158,63 +98,65 @@ void World::sendPlayerInfoAddPlayer(Player *current)
         (uint8_t) protocol::PlayerInfoUpdate::Actions::UpdateLatency | (uint8_t) protocol::PlayerInfoUpdate::Actions::UpdateDisplayName;
 
     // iterate through the list of players
-    for (auto &player : players) {
-        // send to each player the info of the current added player
-        // clang-format off
-        if (player->getId() != current->getId()) {
-            player->sendPlayerInfoUpdate({
-                .actions = actions,
-                .actionSets = {
-                    {
-                        .uuid = current->getUuid(),
-                        .addPlayer = {
-                            .name = current->getUsername(),
-                            .properties = {},
-                        },
-                       .initializeChat = {
-                            .hasSigData = false,
-                        },
-                       .updateGamemode = {
-                            .gamemode = (int32_t) current->getGamemode(),
-                        },
-                       .updateListed = {
-                            .listed = true,
-                        },
-                       .updateLatency = {
-                            .latency = 0, // TODO
-                        },
-                       .updateDisplayName = {
-                            .hasDisplayName = false,
+    for (auto [_, dim] : _dimensions) {
+        for (auto &player : dim->getPlayers()) {
+            // send to each player the info of the current added player
+            // clang-format off
+            if (player->getId() != current->getId()) {
+                player->sendPlayerInfoUpdate({
+                    .actions = actions,
+                    .actionSets = {
+                        {
+                            .uuid = current->getUuid(),
+                            .addPlayer = {
+                                .name = current->getUsername(),
+                                .properties = {},
+                            },
+                        .initializeChat = {
+                                .hasSigData = false,
+                            },
+                        .updateGamemode = {
+                                .gamemode = (int32_t) current->getGamemode(),
+                            },
+                        .updateListed = {
+                                .listed = true,
+                            },
+                        .updateLatency = {
+                                .latency = 0, // TODO
+                            },
+                        .updateDisplayName = {
+                                .hasDisplayName = false,
+                            }
                         }
                     }
+                });
+            }
+
+            // save the content of the iterated player for after
+            playersInfo.push_back({
+                .uuid = player->getUuid(),
+                .addPlayer = {
+                    .name = player->getUsername(),
+                    .properties = {},
+                },
+                .initializeChat = {
+                    .hasSigData = false,
+                },
+                .updateGamemode = {
+                    .gamemode = (int32_t) player->getGamemode(),
+                },
+                .updateListed = {
+                    .listed = true,
+                },
+                .updateLatency = {
+                    .latency = 0, // TODO
+                },
+                .updateDisplayName = {
+                    .hasDisplayName = false,
                 }
             });
+            // clang-format on
         }
-
-        // save the content of the iterated player for after
-        playersInfo.push_back({
-            .uuid = player->getUuid(),
-            .addPlayer = {
-                .name = player->getUsername(),
-                .properties = {},
-            },
-            .initializeChat = {
-                .hasSigData = false,
-            },
-            .updateGamemode = {
-                .gamemode = (int32_t) player->getGamemode(),
-            },
-            .updateListed = {
-                .listed = true,
-            },
-            .updateLatency = {
-                .latency = 0, // TODO
-            },
-            .updateDisplayName = {
-                .hasDisplayName = false,
-            }
-        });
-        // clang-format on
     }
 
     // send the infos of all players to the current added player
@@ -229,14 +171,12 @@ void World::sendPlayerInfoAddPlayer(Player *current)
 
 void World::sendPlayerInfoRemovePlayer(const Player *current)
 {
-    // get list of players
-    std::vector<Player *> players = this->getPlayers();
-
-    // iterate through the list of players
-    for (auto &player : players) {
-        // send to each player the info of the current removed player
-        if (player->getId() != current->getId()) {
-            player->sendPlayerInfoRemove({std::vector<u128>({current->getUuid()})});
+    for (auto [_, dim] : _dimensions) {
+        for (auto &player : dim->getPlayers()) {
+            // send to each player the info of the current removed player
+            if (player->getId() != current->getId()) {
+                player->sendPlayerInfoRemove({std::vector<u128>({current->getUuid()})});
+            }
         }
     }
     LDEBUG("Sent player info to ", current->getUsername());

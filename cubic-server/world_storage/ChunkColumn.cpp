@@ -1,6 +1,7 @@
 #include "ChunkColumn.hpp"
 
 #include "Dimension.hpp"
+#include "Server.hpp"
 #include "World.hpp"
 #include "blocks.hpp"
 #include "generation/overworld.hpp"
@@ -46,6 +47,10 @@ ChunkColumn::ChunkColumn(const Position2D &chunkPos, std::shared_ptr<Dimension> 
         block = 0;
     for (auto &biome : this->_biomes)
         biome = 0;
+    for (auto i = 0; i < HEIGHTMAP_ARRAY_SIZE; i++) {
+        _heightMap.motionBlocking[i] = std::make_shared<nbt::Long>("", 0);
+        _heightMap.worldSurface[i] = std::make_shared<nbt::Long>("", 0);
+    }
 }
 
 ChunkColumn::ChunkColumn(const ChunkColumn &other):
@@ -53,7 +58,7 @@ ChunkColumn::ChunkColumn(const ChunkColumn &other):
     _skyLights(other._skyLights),
     _blockLights(other._blockLights),
     _biomes(other._biomes),
-    _blockEntities(other._blockEntities),
+    // _blockEntities(other._blockEntities),
     _tickData(other._tickData),
     _chunkPos(other._chunkPos),
     _heightMap(other._heightMap),
@@ -74,11 +79,11 @@ void ChunkColumn::updateBlock(Position pos, BlockId id)
     int startOffset = (blockNumber * HEIGHTMAP_BITS) % 64;
     int endLong = ((blockNumber + 1) * HEIGHTMAP_BITS - 1) / 64;
 
-    if (pos.y > _heightMap.motionBlocking.at(startLong).getValue() >> startOffset) {
-        _heightMap.motionBlocking[startLong] |= (pos.y << startOffset);
+    if (pos.y > _heightMap.motionBlocking.at(startLong)->getValue() >> startOffset) {
+        *_heightMap.motionBlocking[startLong] |= (pos.y << startOffset);
 
         if (startLong != endLong)
-            _heightMap.motionBlocking[endLong] |= (pos.y >> (64 - startOffset));
+            *_heightMap.motionBlocking[endLong] |= (pos.y >> (64 - startOffset));
     }
 
     // Block update
@@ -114,20 +119,6 @@ void ChunkColumn::updateBiome(Position pos, uint8_t biome) { _biomes.at(calculat
 uint8_t ChunkColumn::getBiome(Position pos) const { return _biomes.at(calculateBiomeIdx(pos)); }
 
 const std::array<uint8_t, BIOME_SECTION_3D_SIZE * NB_OF_SECTIONS> &ChunkColumn::getBiomes() const { return _biomes; }
-
-void ChunkColumn::updateBlockEntity(Position pos, protocol::BlockEntity *BlockEntity) { }
-
-void ChunkColumn::addBlockEntity(Position pos, protocol::BlockEntity *BlockEntity)
-{ // entity must be a pointer or a reference ?
-    _blockEntities.push_back(BlockEntity); // TODO: see which of emplace_back of emplace_front is better or push_back or push_front
-    // _blockEntities.emplace_back(std::make_shared<protocol::BlockEntity>(BlockEntity));
-}
-
-void ChunkColumn::removeBlockEntity(Position pos) { }
-
-protocol::BlockEntity *ChunkColumn::getBlockEntity(Position pos) { return _blockEntities.at(0); }
-
-const std::vector<protocol::BlockEntity *> &ChunkColumn::getBlockEntities() const { return _blockEntities; }
 
 int64_t ChunkColumn::getTick() { return _tickData; }
 
@@ -189,7 +180,11 @@ void ChunkColumn::generate(GenerationState goalState)
         case DimensionType::END:
             _generateEnd(goalState);
             break;
+        default:
+            LERROR("Unknown dimension type");
+            break;
         }
+        break;
     case WorldType::SUPERFLAT:
         _generateFlat(goalState);
         break;
@@ -198,6 +193,7 @@ void ChunkColumn::generate(GenerationState goalState)
     case WorldType::SINGLEBIOME:
     case WorldType::DEBUG:
         LERROR("World type not implemented yet");
+        break;
     default:
         LERROR("Unknown world type");
         break;
@@ -254,11 +250,11 @@ void ChunkColumn::_generateOverworld(GenerationState goalState)
     }
 }
 
-void ChunkColumn::_generateNether(GenerationState goalState) { }
+void ChunkColumn::_generateNether(UNUSED GenerationState goalState) { }
 
-void ChunkColumn::_generateEnd(GenerationState goalState) { }
+void ChunkColumn::_generateEnd(UNUSED GenerationState goalState) { }
 
-void ChunkColumn::_generateFlat(GenerationState goalState)
+void ChunkColumn::_generateFlat(UNUSED GenerationState goalState)
 {
     // TODO: optimize this
     // This take forever because of the Block constructor
@@ -271,89 +267,7 @@ void ChunkColumn::_generateFlat(GenerationState goalState)
                     updateBlock({x, y + CHUNK_HEIGHT_MIN, z}, Blocks::Dirt::toProtocol());
                 } else if (y == 3) {
                     updateBlock({x, y + CHUNK_HEIGHT_MIN, z}, Blocks::GrassBlock::toProtocol(Blocks::GrassBlock::Properties::Snowy::FALSE));
-                } // else if ((y == 4 || y == 5 || y == 6) && z == 8 && x == 8) {
-                //     updateBlock({x, y + CHUNK_HEIGHT_MIN, z}, Blocks::OakLog::toProtocol(Blocks::OakLog::Properties::Axis::Y));
-                // } else if (y == 7 || y == 8) {
-                //     switch (x + (z * 16)) {
-                //     case 6 + 6 * 16:
-                //     case 7 + 6 * 16:
-                //     case 8 + 6 * 16:
-                //     case 9 + 6 * 16:
-                //     case 10 + 6 * 16:
-                //         updateBlock(
-                //             {x, y + CHUNK_HEIGHT_MIN, z},
-                //             Blocks::OakLeaves::toProtocol(
-                //                 Blocks::OakLeaves::Properties::Distance::ONE, Blocks::OakLeaves::Properties::Persistent::FALSE, Blocks::OakLeaves::Properties::Waterlogged::FALSE
-                //             )
-                //         );
-                //         break;
-                //     case 6 + 7 * 16:
-                //     case 7 + 7 * 16:
-                //     case 8 + 7 * 16:
-                //     case 9 + 7 * 16:
-                //     case 10 + 7 * 16:
-                //         updateBlock(
-                //             {x, y + CHUNK_HEIGHT_MIN, z},
-                //             Blocks::OakLeaves::toProtocol(
-                //                 Blocks::OakLeaves::Properties::Distance::ONE, Blocks::OakLeaves::Properties::Persistent::FALSE, Blocks::OakLeaves::Properties::Waterlogged::FALSE
-                //             )
-                //         );
-                //         break;
-                //     case 6 + 8 * 16:
-                //     case 7 + 8 * 16:
-                //     case 9 + 8 * 16:
-                //     case 10 + 8 * 16:
-                //         updateBlock(
-                //             {x, y + CHUNK_HEIGHT_MIN, z},
-                //             Blocks::OakLeaves::toProtocol(
-                //                 Blocks::OakLeaves::Properties::Distance::ONE, Blocks::OakLeaves::Properties::Persistent::FALSE, Blocks::OakLeaves::Properties::Waterlogged::FALSE
-                //             )
-                //         );
-                //         break;
-                //     case 6 + 9 * 16:
-                //     case 7 + 9 * 16:
-                //     case 8 + 9 * 16:
-                //     case 9 + 9 * 16:
-                //     case 10 + 9 * 16:
-                //         updateBlock(
-                //             {x, y + CHUNK_HEIGHT_MIN, z},
-                //             Blocks::OakLeaves::toProtocol(
-                //                 Blocks::OakLeaves::Properties::Distance::ONE, Blocks::OakLeaves::Properties::Persistent::FALSE, Blocks::OakLeaves::Properties::Waterlogged::FALSE
-                //             )
-                //         );
-                //         break;
-                //     case 6 + 10 * 16:
-                //     case 7 + 10 * 16:
-                //     case 8 + 10 * 16:
-                //     case 9 + 10 * 16:
-                //     case 10 + 10 * 16:
-                //         updateBlock(
-                //             {x, y + CHUNK_HEIGHT_MIN, z},
-                //             Blocks::OakLeaves::toProtocol(
-                //                 Blocks::OakLeaves::Properties::Distance::ONE, Blocks::OakLeaves::Properties::Persistent::FALSE, Blocks::OakLeaves::Properties::Waterlogged::FALSE
-                //             )
-                //         );
-                //         break;
-                //     case 8 + 8 * 16:
-                //         updateBlock({x, y + CHUNK_HEIGHT_MIN, z}, Blocks::OakLog::toProtocol(Blocks::OakLog::Properties::Axis::Y));
-                //         break;
-                //     }
-                // } else if (y == 9 || y == 10) {
-                //     switch (x + (z * 16)) {
-                //     case 8 + 7 * 16:
-                //     case 7 + 8 * 16:
-                //     case 9 + 8 * 16:
-                //     case 8 + 9 * 16:
-                //     case 8 + 8 * 16:
-                //         updateBlock(
-                //             {x, y + CHUNK_HEIGHT_MIN, z},
-                //             Blocks::OakLeaves::toProtocol(
-                //                 Blocks::OakLeaves::Properties::Distance::ONE, Blocks::OakLeaves::Properties::Persistent::FALSE, Blocks::OakLeaves::Properties::Waterlogged::FALSE
-                //             )
-                //         );
-                //         break;
-                //     }
-                // }
+                }
             }
         }
     }
@@ -391,7 +305,7 @@ void ChunkColumn::_generateRawGeneration(generation::Generator &generator)
     _currentState = GenerationState::RAW_GENERATION;
 }
 
-void ChunkColumn::_generateLakes(generation::Generator &generator)
+void ChunkColumn::_generateLakes(UNUSED generation::Generator &generator)
 {
     int waterLevel = 86;
 
@@ -409,7 +323,7 @@ void ChunkColumn::_generateLakes(generation::Generator &generator)
     _currentState = GenerationState::LAKES;
 }
 
-void ChunkColumn::_generateLocalModifications(generation::Generator &generator)
+void ChunkColumn::_generateLocalModifications(UNUSED generation::Generator &generator)
 {
     // generate grass
     for (int z = 0; z < SECTION_WIDTH; z++) {
@@ -439,17 +353,17 @@ void ChunkColumn::_generateLocalModifications(generation::Generator &generator)
     _currentState = GenerationState::LOCAL_MODIFICATIONS;
 }
 
-void ChunkColumn::_generateUndergroundStructures(generation::Generator &generator) { _currentState = GenerationState::UNDERGROUND_STRUCTURES; }
+void ChunkColumn::_generateUndergroundStructures(UNUSED generation::Generator &generator) { _currentState = GenerationState::UNDERGROUND_STRUCTURES; }
 
-void ChunkColumn::_generateSurfaceStructures(generation::Generator &generator) { _currentState = GenerationState::SURFACE_STRUCTURES; }
+void ChunkColumn::_generateSurfaceStructures(UNUSED generation::Generator &generator) { _currentState = GenerationState::SURFACE_STRUCTURES; }
 
-void ChunkColumn::_generateStrongholds(generation::Generator &generator) { _currentState = GenerationState::STRONGHOLDS; }
+void ChunkColumn::_generateStrongholds(UNUSED generation::Generator &generator) { _currentState = GenerationState::STRONGHOLDS; }
 
-void ChunkColumn::_generateUndergroundOres(generation::Generator &generator) { _currentState = GenerationState::UNDERGROUND_ORES; }
+void ChunkColumn::_generateUndergroundOres(UNUSED generation::Generator &generator) { _currentState = GenerationState::UNDERGROUND_ORES; }
 
-void ChunkColumn::_generateUndergroundDecoration(generation::Generator &generator) { _currentState = GenerationState::UNDERGROUND_DECORATION; }
+void ChunkColumn::_generateUndergroundDecoration(UNUSED generation::Generator &generator) { _currentState = GenerationState::UNDERGROUND_DECORATION; }
 
-void ChunkColumn::_generateFluidSprings(generation::Generator &generator) { _currentState = GenerationState::FLUID_SPRINGS; }
+void ChunkColumn::_generateFluidSprings(UNUSED generation::Generator &generator) { _currentState = GenerationState::FLUID_SPRINGS; }
 
 void ChunkColumn::_generateVegetalDecoration(generation::Generator &generator)
 {
@@ -490,7 +404,7 @@ void ChunkColumn::_generateVegetalDecoration(generation::Generator &generator)
             }
         }
     }
-    LINFO("There is : " << treeEmplacements.size() << " emplacements for trees in this chunk");
+    LDEBUG("There is : " << treeEmplacements.size() << " emplacements for trees in this chunk");
     // generate tree
     for (auto treeEmplacement : treeEmplacements) {
         // auto tree = generator.getTree(treeEmplacement.x + this->_chunkPos.x * SECTION_WIDTH, treeEmplacement.y, treeEmplacement.z + this->_chunkPos.z * SECTION_WIDTH);
@@ -504,7 +418,7 @@ void ChunkColumn::_generateVegetalDecoration(generation::Generator &generator)
     _currentState = GenerationState::VEGETAL_DECORATION;
 }
 
-void ChunkColumn::_generateTopLayerModification(generation::Generator &generator)
+void ChunkColumn::_generateTopLayerModification(UNUSED generation::Generator &generator)
 {
     // GET_NEIGHBOURS()
     // RELEASE_NEIGHBOURS()
