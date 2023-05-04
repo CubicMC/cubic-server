@@ -7,7 +7,7 @@
 
 void Overworld::tick()
 {
-    _processingMutex.lock();
+    std::lock_guard<std::mutex> _(_processingMutex);
 
     // auto startProcessing = std::chrono::system_clock::now();
 
@@ -16,7 +16,6 @@ void Overworld::tick()
     // LDEBUG("Tick - Overworld");
 
     // auto endProcessing = std::chrono::system_clock::now();
-    _processingMutex.unlock();
 }
 
 void Overworld::initialize()

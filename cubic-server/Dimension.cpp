@@ -159,11 +159,9 @@ bool Dimension::hasChunkLoaded(int x, int z) const { return this->_level.hasChun
 
 void Dimension::removePlayerFromLoadingChunk(const Position2D &pos, std::shared_ptr<Player> player)
 {
-    this->_loadingChunksMutex.lock();
-    if (!this->_loadingChunks.contains(pos)) {
-        this->_loadingChunksMutex.unlock();
+    std::lock_guard<std::mutex> _(_loadingChunksMutex);
+    if (!this->_loadingChunks.contains(pos))
         return;
-    }
 
     this->_loadingChunks[pos].players.erase(
         std::remove_if(
@@ -182,7 +180,6 @@ void Dimension::removePlayerFromLoadingChunk(const Position2D &pos, std::shared_
         // This could be replaced using either an iterator, or something else (maybe an if condition inside the job? or simply integrated inside the overlay.)
         this->_loadingChunks.erase(pos);
     }
-    this->_loadingChunksMutex.unlock();
 }
 
 world_storage::ChunkColumn &Dimension::getChunk(int x, int z) { return this->_level.getChunkColumn(x, z); }

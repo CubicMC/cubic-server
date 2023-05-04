@@ -8,7 +8,7 @@ void TheNether::initialize()
 
 void TheNether::tick()
 {
-    _processingMutex.lock();
+    std::lock_guard<std::mutex> _(_processingMutex);
 
     // auto startProcessing = std::chrono::system_clock::now();
 
@@ -17,5 +17,4 @@ void TheNether::tick()
     //    LDEBUG("Tick - TheNether");
 
     // auto endProcessing = std::chrono::system_clock::now();
-    _processingMutex.unlock();
 }

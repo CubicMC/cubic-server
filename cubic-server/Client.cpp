@@ -90,15 +90,14 @@ bool Client::isDisconnected() const { return !_isRunning; }
 void Client::_sendData(const std::vector<uint8_t> &data)
 {
     // This is extremely inefficient but it will do for now
-    _writeMutex.lock();
-    for (const auto i : data)
-        _sendBuffer.push_back(i);
-    _writeMutex.unlock();
+    std::lock_guard<std::mutex> _(_writeMutex);
+    for (const auto &i : data)
+        _sendBuffer.emplace_back(i);
 }
 
 void Client::_flushSendData()
 {
-    _writeMutex.lock();
+    std::lock_guard<std::mutex> _(_writeMutex);
     char sendBuffer[2048];
     size_t toSend = std::min(_sendBuffer.size(), (size_t) 2048);
     std::copy(_sendBuffer.begin(), _sendBuffer.begin() + toSend, sendBuffer);
@@ -108,12 +107,10 @@ void Client::_flushSendData()
         LERROR("Write error", strerror(errno));
 
     if (writeReturn <= 0) {
-        _writeMutex.unlock();
         return;
     }
 
     _sendBuffer.erase(_sendBuffer.begin(), _sendBuffer.begin() + writeReturn);
-    _writeMutex.unlock();
 }
 
 void Client::_tryFlushAllSendData()
