@@ -23,7 +23,6 @@ class Entity;
 class Dimension {
 private:
     struct ChunkRequest {
-        // std::shared_ptr<thread_pool::Task> task;
         std::vector<std::weak_ptr<Player>> players;
     };
 
@@ -92,9 +91,8 @@ public:
      *
      * @param x int32_t
      * @param z int32_t
-     * @return size_t a job id,
      */
-    virtual /*std::shared_ptr<thread_pool::Task>*/ void loadOrGenerateChunk(int x, int z, std::shared_ptr<Player> player);
+    virtual void loadOrGenerateChunk(int x, int z, std::shared_ptr<Player> player);
 
 protected:
     virtual void _run();

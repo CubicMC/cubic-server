@@ -104,7 +104,7 @@ world_storage::Level &Dimension::getLevel() { return _level; }
 
 void Dimension::generateChunk(UNUSED int x, UNUSED int z) { }
 
-/*std::shared_ptr<thread_pool::Task>*/ void Dimension::loadOrGenerateChunk(int x, int z, std::shared_ptr<Player> player)
+void Dimension::loadOrGenerateChunk(int x, int z, std::shared_ptr<Player> player)
 {
     std::lock_guard<std::mutex> _(_loadingChunksMutex);
     if (this->_loadingChunks.contains({x, z})) {
@@ -115,10 +115,10 @@ void Dimension::generateChunk(UNUSED int x, UNUSED int z) { }
             }) == this->_loadingChunks[{x, z}].players.end()) {
             this->_loadingChunks[{x, z}].players.push_back(player);
         }
-        return /*this->_loadingChunks[{x, z}].task*/;
+        return;
     }
 
-    /* auto task = */ this->_world->getGenerationPool().addJob([this, x, z] {
+    this->_world->getGenerationPool().addJob([this, x, z] {
         // TODO: load chunk from disk if it exists
         this->generateChunk(x, z);
 
@@ -132,11 +132,11 @@ void Dimension::generateChunk(UNUSED int x, UNUSED int z) { }
         this->_loadingChunks.erase({x, z});
     });
 
-    auto request = ChunkRequest {/* task, */ {player}};
+    auto request = ChunkRequest {{player}};
 
     this->_loadingChunks[{x, z}] = request;
 
-    return /*request.task*/;
+    return;
 }
 
 void Dimension::_run()

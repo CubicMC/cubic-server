@@ -11,7 +11,7 @@ World::World(std::shared_ptr<WorldGroup> worldGroup):
     _time(0),
     _renderDistance(8), // TODO: Should be loaded from config
     _timeUpdateClock(20, std::bind(&World::updateTime, this)), // 1 second for time updates
-    _generationPool(4, "WorldGen"/*, thread_pool::Pool::Behavior::Cancel*/)
+    _generationPool(4, "WorldGen")
 {
     _timeUpdateClock.start();
     _seed = -721274728; // TODO: Should be loaded from config or generated
@@ -35,8 +35,6 @@ void World::initialize()
 void World::stop()
 {
     _generationPool.waitUntilJobsDone();
-    // this->_generationPool.stop();
-    // this->_generationPool.wait();
 
     for (auto &[_, dim] : _dimensions)
         dim->stop();

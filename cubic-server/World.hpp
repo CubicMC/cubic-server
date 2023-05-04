@@ -73,7 +73,6 @@ protected:
     world_storage::LevelData _levelData;
     TickClock _timeUpdateClock;
     Seed _seed;
-    // thread_pool::Pool _oldGenerationPool;
     thread_pool::ThreadPool _generationPool;
 };
 
