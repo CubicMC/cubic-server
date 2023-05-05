@@ -270,6 +270,14 @@ void Player::sendPlayerInfoRemove(const protocol::PlayerInfoRemove &data)
     LDEBUG("Sent a Player Info packet");
 }
 
+void Player::sendSpawnEntity(const protocol::SpawnEntity &data)
+{
+    auto pck = protocol::createSpawnEntity(data);
+    this->_cli->_sendData(*pck);
+
+    LDEBUG("Sent a Spawn Entity packet");
+}
+
 void Player::sendSpawnPlayer(const protocol::SpawnPlayer &data)
 {
     auto pck = protocol::createSpawnPlayer(data);

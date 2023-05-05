@@ -76,6 +76,32 @@ std::unique_ptr<std::vector<uint8_t>> protocol::createPingResponse(const PingRes
     return packet;
 }
 
+std::unique_ptr<std::vector<uint8_t>> protocol::createSpawnEntity(const SpawnEntity &in)
+{
+    std::vector<uint8_t> payload;
+    // clang-format off
+    serialize(payload,
+        in.entityId, addVarInt,
+        in.entityUuid, addUUID,
+        in.type, addVarInt,
+        in.x, addDouble,
+        in.y, addDouble,
+        in.z, addDouble,
+        in.pitch, addByte,
+        in.yaw, addByte,
+        in.headYaw, addByte,
+        in.data, addVarInt,
+        in.velocityX, addShort,
+        in.velocityY, addShort,
+        in.velocityZ, addShort
+    );
+    // clang-format on
+    auto packet = std::make_unique<std::vector<uint8_t>>();
+    finalize(*packet, payload, ClientPacketID::SpawnEntity);
+
+    return packet;
+}
+
 std::unique_ptr<std::vector<uint8_t>> protocol::createSpawnPlayer(const SpawnPlayer &in)
 {
     std::vector<uint8_t> payload;

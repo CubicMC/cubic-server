@@ -59,7 +59,7 @@ void Server::launch(const configuration::ConfigHandler &config)
     int no = 0;
 
     // Get the socket for the server
-    _sockfd = socket(AF_INET6, SOCK_STREAM, getprotobyname("TCP")->p_proto);
+    _sockfd = socket(AF_INET6, SOCK_STREAM, getprotobyname("tcp")->p_proto);
 
     // Create the addr for the server
     if (!inet_pton(AF_INET, _config["ip"].value().c_str(), &(_addr.sin6_addr)))
