@@ -1,9 +1,9 @@
 #include "Gravel.hpp"
-#include <stdexcept>
-
 namespace Blocks {
-namespace Gravel {
-BlockId toProtocol() { return 111; }
-}
+    namespace Gravel {
+        BlockId toProtocol() {
+            return 111;
+        }
+    }
 
 }

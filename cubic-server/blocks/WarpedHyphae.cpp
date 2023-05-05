@@ -1,20 +1,17 @@
 #include "WarpedHyphae.hpp"
-#include <stdexcept>
-
 namespace Blocks {
-namespace WarpedHyphae {
-BlockId toProtocol(Properties::Axis axis)
-{
-    switch (axis) {
-    case Properties::Axis::X:
-        return 17957;
-    case Properties::Axis::Y:
-        return 17958;
-    case Properties::Axis::Z:
-        return 17959;
+    namespace WarpedHyphae {
+        BlockId toProtocol(Properties::Axis axis) {
+            switch (axis) {
+            case Properties::Axis::X:
+                return 17957;
+            case Properties::Axis::Y:
+                return 17958;
+            case Properties::Axis::Z:
+                return 17959;
+            }
+            return 0;
+        }
     }
-    return 0;
-}
-}
 
 }

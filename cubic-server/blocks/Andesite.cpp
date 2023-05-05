@@ -1,9 +1,9 @@
 #include "Andesite.hpp"
-#include <stdexcept>
-
 namespace Blocks {
-namespace Andesite {
-BlockId toProtocol() { return 6; }
-}
+    namespace Andesite {
+        BlockId toProtocol() {
+            return 6;
+        }
+    }
 
 }

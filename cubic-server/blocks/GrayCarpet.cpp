@@ -1,9 +1,9 @@
 #include "GrayCarpet.hpp"
-#include <stdexcept>
-
 namespace Blocks {
-namespace GrayCarpet {
-BlockId toProtocol() { return 10258; }
-}
+    namespace GrayCarpet {
+        BlockId toProtocol() {
+            return 10258;
+        }
+    }
 
 }

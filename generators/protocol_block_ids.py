@@ -244,11 +244,7 @@ def load_json(filename):
 
 def create_block_files(path, block):
     with open(path + "/blocks/" + block.name.split(":")[1].title().replace("_", "") + ".hpp", "w") as f:
-        writer("#include <string>\n", f)
         writer("#include <cstdint>\n", f)
-        writer("#include <vector>\n", f)
-        writer("#include <unordered_map>\n", f)
-        writer("#include <functional>\n\n", f)
 
         writer("namespace Blocks {\n", f)
         writer("typedef int32_t BlockId;\n\n", f)
@@ -258,7 +254,6 @@ def create_block_files(path, block):
 
     with open(path + "/blocks/" + block.name.split(":")[1].title().replace("_", "") + ".cpp", "w") as f:
         writer("#include \"" + block.name.split(":")[1].title().replace("_", "") + ".hpp\"\n", f)
-        writer("#include <stdexcept>\n\n", f)
 
         writer("namespace Blocks {\n", f)
         writer(block.namespaceForSourceFile(), f)
@@ -266,122 +261,17 @@ def create_block_files(path, block):
 
 
 def create_blockStates_files(filename, blocks):
-    with open(filename + ".cpp", "w") as f:
-        writer("#include \"" + os.path.basename(filename) + ".hpp\"\n", f)
-        writer("#include <stdexcept>\n\n", f)
-
-        writer("namespace Blocks {\n", f)
-        writer("static const std::unordered_map<std::string, std::function<BlockId(std::vector<std::pair<std::string, std::string>>)>> toProtocol = {\n", f)
-        for block in blocks:
-            writer(block.nameToProtocolId(), f)
-        writer("};\n\n", f)
-
-        writer("BlockId fromNameToProtocolId(Block block) {\n", f)
-        writer("return toProtocol.at(block.name)(block.properties);\n", f)
-        writer("}\n\n", f)
-
-        blocks.sort(key=lambda block: block.protocolId)
-        writer("static const Block toBlock [" + str(blocks[-1].lastProtocolId + 1) + "] {\n", f)
-        i = 0
-        for block in blocks:
-            while i < block.protocolId:
-                writer("{\"minecraft:air\", {}},\n", f)
-                i += 1
-            writer(block.toName(), f)
-            i = block.lastProtocolId + 1
-        writer("};\n\n", f)
-
-        writer("Block fromProtocolIdToName(BlockId id) {\n", f)
-        writer("return toBlock[id];\n", f)
-        writer("}\n", f)
-        writer("}\n", f)
-
-    with open(filename + ".hpp", "w") as f:
+    with open(filename + "/blocks.hpp", "w") as f:
         for block in blocks:
             writer("#include \"blocks/" + block.name.split(":")[1].title().replace("_", "") + ".hpp\"\n", f)
-        writer("\n", f)
-        writer("namespace Blocks {\n", f)
-        writer("struct Block {", f)
-        writer("std::string name;\n", f)
-        writer("std::vector<std::pair<std::string, std::string>> properties;\n", f)
-        writer("};\n\n", f)
 
-        # writer("extern const std::unordered_map<std::string, std::function<BlockId(std::vector<std::pair<std::string, std::string>>)>> toProtocol;\n", f)
-        writer("BlockId fromNameToProtocolId(Block block);\n", f)
-        writer("Block toName(BlockId id);\n", f)
-        writer("constexpr int NUMBER_OF_PROTOCOL_IDS = " + str(number_of_protocol_ids) + ";\n", f)
-        writer("}\n", f)
-
-    with open(os.path.dirname(filename) + "/CMakeLists.txt", "w") as f:
-        writer("target_sources (${CMAKE_PROJECT_NAME} PRIVATE\n", f)
-        writer(os.path.basename(filename) + ".cpp\n", f)
-        writer(os.path.basename(filename) + ".hpp\n", f)
-        writer(")\n", f)
-        writer("add_subdirectory (blocks)\n", f)
-
-    with open(os.path.dirname(filename) + "/blocks/CMakeLists.txt", "w") as f:
+    with open(filename + "/blocks/CMakeLists.txt", "w") as f:
         writer("add_library(Blocks\n", f)
         for block in blocks:
             writer(block.name.split(":")[1].title().replace("_", "") + ".cpp\n", f)
             writer(block.name.split(":")[1].title().replace("_", "") + ".hpp\n", f)
         writer(")\n", f)
-        writer("target_include_directories (ConfigHandler PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})\n", f)
-
-# write the header file
-def write_header_file(filename, blocks):
-    with open(filename + ".hpp", "w") as f:
-        writer("#include <string>\n", f)
-        writer("#include <cstdint>\n", f)
-        writer("#include <vector>\n", f)
-        writer("#include <stdexcept>\n", f)
-        writer("#include <unordered_map>\n", f)
-        writer("#include <functional>\n\n", f)
-
-        writer("namespace Blocks {\n", f)
-        writer("typedef int32_t BlockId;\n\n", f)
-
-        writer("struct Block {", f)
-        writer("std::string name;\n", f)
-        writer("std::vector<std::pair<std::string, std::string>> properties;\n", f)
-        writer("};\n\n", f)
-
-        for block in blocks :
-            writer(block.namespaceForHeaderFile(), f)
-
-        writer("extern const std::unordered_map<std::string, std::function<BlockId(std::vector<std::pair<std::string, std::string>>)>> nameToProtocolId;", f)
-
-        writer("BlockId fromNameToProtocolId(Block block);\n", f)
-        writer("Block toName(BlockId id);\n", f)
-
-        writer("constexpr int NUMBER_OF_PROTOCOL_IDS = " + str(number_of_protocol_ids) + ";\n", f)
-        writer("}\n", f)
-
-# write the source file
-def write_source_file(filename, blocks):
-    with open(filename + ".cpp", 'w') as f:
-        writer("#include \"" + filename.split("/")[-1] + ".hpp\"\n\n", f)
-
-        writer("namespace Blocks {\n", f)
-        for block in blocks :
-            writer(block.namespaceForSourceFile(), f)
-
-        writer("const std::unordered_map<std::string, std::function<BlockId(std::vector<std::pair<std::string, std::string>>)>> nameToProtocolId {\n", f)
-        for block in blocks :
-            writer(block.nameToProtocolId(), f)
-        writer("};\n\n", f)
-
-        writer("BlockId fromNameToProtocolId(Block block) {\n", f)
-        writer("return nameToProtocolId.at(block.name)(block.properties); // this may throw an exception\n", f)
-        writer("}\n\n", f)
-
-        writer("Block toName(BlockId id) {\n", f)
-        writer("switch (id) {\n", f)
-        for block in blocks :
-            writer(block.toName(), f)
-        writer("}\n", f)
-        writer("return {\"minecraft:air\", {}};\n", f)
-        writer("}\n", f)
-        writer("}\n", f)
+        writer("target_include_directories (Blocks PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})\n", f)
 
 # get different option you can pass to the script
 def parse_args(options):
@@ -405,9 +295,7 @@ def main():
     os.makedirs(os.path.dirname(options["output"]) + "/blocks", exist_ok=True)
     for block in blocks:
         create_block_files(os.path.dirname(options["output"]), block)
-    create_blockStates_files(options["output"], blocks)
-    # write_header_file(options["output"], blocks)
-    # write_source_file(options["output"], blocks)
+    create_blockStates_files(os.path.dirname(options["output"]), blocks)
 
 if __name__ == "__main__":
     main()

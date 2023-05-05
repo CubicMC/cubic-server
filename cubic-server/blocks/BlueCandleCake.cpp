@@ -1,18 +1,15 @@
 #include "BlueCandleCake.hpp"
-#include <stdexcept>
-
 namespace Blocks {
-namespace BlueCandleCake {
-BlockId toProtocol(Properties::Lit lit)
-{
-    switch (lit) {
-    case Properties::Lit::TRUE:
-        return 20393;
-    case Properties::Lit::FALSE:
-        return 20394;
+    namespace BlueCandleCake {
+        BlockId toProtocol(Properties::Lit lit) {
+            switch (lit) {
+            case Properties::Lit::TRUE:
+                return 20393;
+            case Properties::Lit::FALSE:
+                return 20394;
+            }
+            return 0;
+        }
     }
-    return 0;
-}
-}
 
 }

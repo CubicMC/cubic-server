@@ -1,9 +1,9 @@
 #include "TubeCoralBlock.hpp"
-#include <stdexcept>
-
 namespace Blocks {
-namespace TubeCoralBlock {
-BlockId toProtocol() { return 12180; }
-}
+    namespace TubeCoralBlock {
+        BlockId toProtocol() {
+            return 12180;
+        }
+    }
 
 }

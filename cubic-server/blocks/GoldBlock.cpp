@@ -1,9 +1,9 @@
 #include "GoldBlock.hpp"
-#include <stdexcept>
-
 namespace Blocks {
-namespace GoldBlock {
-BlockId toProtocol() { return 2039; }
-}
+    namespace GoldBlock {
+        BlockId toProtocol() {
+            return 2039;
+        }
+    }
 
 }

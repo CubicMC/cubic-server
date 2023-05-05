@@ -1,9 +1,9 @@
 #include "Air.hpp"
-#include <stdexcept>
-
 namespace Blocks {
-namespace Air {
-BlockId toProtocol() { return 0; }
-}
+    namespace Air {
+        BlockId toProtocol() {
+            return 0;
+        }
+    }
 
 }

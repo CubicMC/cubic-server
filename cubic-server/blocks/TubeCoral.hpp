@@ -1,20 +1,15 @@
 #include <cstdint>
-#include <functional>
-#include <string>
-#include <unordered_map>
-#include <vector>
-
 namespace Blocks {
-typedef int32_t BlockId;
+    typedef int32_t BlockId;
 
-namespace TubeCoral {
-namespace Properties {
-enum class Waterlogged {
-    TRUE,
-    FALSE
-};
-}
-BlockId toProtocol(Properties::Waterlogged waterlogged);
-}
+    namespace TubeCoral {
+        namespace Properties {
+            enum class Waterlogged {
+                TRUE,
+                FALSE
+            };
+        }
+        BlockId toProtocol(Properties::Waterlogged waterlogged);
+    }
 
 }

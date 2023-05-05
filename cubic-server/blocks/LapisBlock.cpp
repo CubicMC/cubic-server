@@ -1,9 +1,9 @@
 #include "LapisBlock.hpp"
-#include <stdexcept>
-
 namespace Blocks {
-namespace LapisBlock {
-BlockId toProtocol() { return 471; }
-}
+    namespace LapisBlock {
+        BlockId toProtocol() {
+            return 471;
+        }
+    }
 
 }

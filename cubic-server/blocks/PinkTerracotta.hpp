@@ -1,14 +1,9 @@
 #include <cstdint>
-#include <functional>
-#include <string>
-#include <unordered_map>
-#include <vector>
-
 namespace Blocks {
-typedef int32_t BlockId;
+    typedef int32_t BlockId;
 
-namespace PinkTerracotta {
-BlockId toProtocol();
-}
+    namespace PinkTerracotta {
+        BlockId toProtocol();
+    }
 
 }

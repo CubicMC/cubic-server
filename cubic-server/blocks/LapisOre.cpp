@@ -1,9 +1,9 @@
 #include "LapisOre.hpp"
-#include <stdexcept>
-
 namespace Blocks {
-namespace LapisOre {
-BlockId toProtocol() { return 469; }
-}
+    namespace LapisOre {
+        BlockId toProtocol() {
+            return 469;
+        }
+    }
 
 }
