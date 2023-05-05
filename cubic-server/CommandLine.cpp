@@ -20,7 +20,7 @@ void CommandLine::run()
 {
     std::string command = "";
     pollfd pollSet[1];
-    pollSet[0].fd = STDIN_FILENO;
+    pollSet[0].fd = 0;
 
     while (this->_running) {
         pollSet[0].events = POLLIN;
