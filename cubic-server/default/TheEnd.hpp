@@ -9,6 +9,8 @@ public:
         Dimension(world)
     {
     }
+    ~TheEnd() override = default;
+
     void tick() override;
     void initialize() override;
 };

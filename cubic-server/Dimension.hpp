@@ -25,6 +25,7 @@ private:
 
 public:
     Dimension(std::shared_ptr<World> world);
+    virtual ~Dimension() = default;
     virtual void initialize();
     virtual void tick();
     virtual void stop();
