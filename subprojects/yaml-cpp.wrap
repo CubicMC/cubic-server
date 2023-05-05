@@ -1,0 +1,4 @@
+[wrap-git]
+url = https://github.com/jbeder/yaml-cpp.git
+revision = 4ae4cb7309c07b2d8623d7e4f01efa6321441366
+depth = 1
