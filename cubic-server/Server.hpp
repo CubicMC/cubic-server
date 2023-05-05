@@ -76,7 +76,6 @@ private:
     Server();
     void _acceptLoop();
     void _stop();
-    void _downloadFile(const std::string &url, const std::string &path);
     void _reloadWhitelist();
     void _reloadConfig();
     void _enforceWhitelistOnReload();

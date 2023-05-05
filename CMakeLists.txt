@@ -6,6 +6,8 @@ endif()
 
 project(CubicServer VERSION 0.1.0)
 
+set(MINECRAFT_VERSION "1.19.3")
+
 set(CMAKE_CXX_STANDARD 20)
 
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
@@ -53,19 +55,18 @@ FetchContent_Declare(
     GIT_REPOSITORY https://github.com/p-ranav/argparse.git
 )
 
-FetchContent_Declare(
-    CRCpp
-    GIT_REPOSITORY https://github.com/d-bahr/CRCpp.git
-    GIT_TAG release-1.2.0.0
-)
-
 FetchContent_MakeAvailable(
     yaml-cpp
     json
     noise
     argparse
-    CRCpp
 )
+execute_process(COMMAND wget -q https://cdn.cubic-mc.com/${MINECRAFT_VERSION}/blocks-${MINECRAFT_VERSION}.json -O ${CMAKE_CURRENT_BINARY_DIR}/blocks-${MINECRAFT_VERSION}.json)
+execute_process(COMMAND wget -q https://cdn.cubic-mc.com/${MINECRAFT_VERSION}/blocks-${MINECRAFT_VERSION}.json.sha256 -O ${CMAKE_CURRENT_BINARY_DIR}/blocks-${MINECRAFT_VERSION}.json.sha256)
+execute_process(COMMAND cd ${CMAKE_CURRENT_BINARY_DIR} && sha256sum --check blocks-${MINECRAFT_VERSION}.json.sha256)
+execute_process(COMMAND wget -q https://cdn.cubic-mc.com/${MINECRAFT_VERSION}/registries-${MINECRAFT_VERSION}.json -O ${CMAKE_CURRENT_BINARY_DIR}/registries-${MINECRAFT_VERSION}.json)
+execute_process(COMMAND wget -q https://cdn.cubic-mc.com/${MINECRAFT_VERSION}/registries-${MINECRAFT_VERSION}.json.sha256 -O ${CMAKE_CURRENT_BINARY_DIR}/registries-${MINECRAFT_VERSION}.json.sha256)
+execute_process(COMMAND cd ${CMAKE_CURRENT_BINARY_DIR} && sha256sum --check registries-${MINECRAFT_VERSION}.json.sha256)
 
 if(GTEST) # if the flag GTEST is true
     FetchContent_Declare(
@@ -120,6 +121,4 @@ target_link_libraries (${CMAKE_PROJECT_NAME} PRIVATE
     ${GTKMM_LIBRARIES}
     argparse
     yaml-cpp
-    curl
-    CRCpp
 )
