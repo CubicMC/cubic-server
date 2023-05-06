@@ -1,9 +1,9 @@
 #include "KelpPlant.hpp"
 namespace Blocks {
-    namespace KelpPlant {
-        BlockId toProtocol() {
-            return 12161;
-        }
-    }
+namespace KelpPlant {
+BlockId toProtocol() {
+    return 12161;
+}
+}
 
 }

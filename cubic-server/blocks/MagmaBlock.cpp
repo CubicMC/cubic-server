@@ -1,9 +1,9 @@
 #include "MagmaBlock.hpp"
 namespace Blocks {
-    namespace MagmaBlock {
-        BlockId toProtocol() {
-            return 11918;
-        }
-    }
+namespace MagmaBlock {
+BlockId toProtocol() {
+    return 11918;
+}
+}
 
 }

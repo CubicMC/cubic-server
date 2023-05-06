@@ -1,9 +1,9 @@
 #include "CrimsonNylium.hpp"
 namespace Blocks {
-    namespace CrimsonNylium {
-        BlockId toProtocol() {
-            return 17980;
-        }
-    }
+namespace CrimsonNylium {
+BlockId toProtocol() {
+    return 17980;
+}
+}
 
 }

@@ -1,9 +1,9 @@
 #include "AncientDebris.hpp"
 namespace Blocks {
-    namespace AncientDebris {
-        BlockId toProtocol() {
-            return 18820;
-        }
-    }
+namespace AncientDebris {
+BlockId toProtocol() {
+    return 18820;
+}
+}
 
 }

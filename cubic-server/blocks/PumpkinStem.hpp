@@ -1,21 +1,21 @@
 #include <cstdint>
 namespace Blocks {
-    typedef int32_t BlockId;
+typedef int32_t BlockId;
 
-    namespace PumpkinStem {
-        namespace Properties {
-            enum class Age {
-                ZERO,
-                ONE,
-                TWO,
-                THREE,
-                FOUR,
-                FIVE,
-                SIX,
-                SEVEN
-            };
-        }
-        BlockId toProtocol(Properties::Age age);
-    }
+namespace PumpkinStem {
+namespace Properties {
+enum class Age {
+    ZERO,
+    ONE,
+    TWO,
+    THREE,
+    FOUR,
+    FIVE,
+    SIX,
+    SEVEN
+};
+}
+BlockId toProtocol(Properties::Age age);
+}
 
 }

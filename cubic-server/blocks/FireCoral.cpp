@@ -1,17 +1,17 @@
 #include "FireCoral.hpp"
 namespace Blocks {
-    namespace FireCoral {
-        BlockId toProtocol(Properties::Waterlogged waterlogged) {
-            switch (waterlogged) {
-            case Properties::Waterlogged::TRUE:
-                return 12201;
-            case Properties::Waterlogged::FALSE:
-                return 12202;
-            default:
-                return 0;
-            }
-            return 0;
-        }
+namespace FireCoral {
+BlockId toProtocol(Properties::Waterlogged waterlogged) {
+    switch (waterlogged) {
+    case Properties::Waterlogged::TRUE:
+        return 12201;
+    case Properties::Waterlogged::FALSE:
+        return 12202;
+    default:
+        return 0;
     }
+    return 0;
+}
+}
 
 }

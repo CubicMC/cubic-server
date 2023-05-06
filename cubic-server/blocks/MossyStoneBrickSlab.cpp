@@ -1,40 +1,40 @@
 #include "MossyStoneBrickSlab.hpp"
 namespace Blocks {
-    namespace MossyStoneBrickSlab {
-        BlockId toProtocol(Properties::Type type, Properties::Waterlogged waterlogged) {
-            switch (type) {
-            case Properties::Type::TOP:
-                switch (waterlogged) {
-                case Properties::Waterlogged::TRUE:
-                    return 13466;
-                case Properties::Waterlogged::FALSE:
-                    return 13467;
-                default:
-                    return 0;
-                }
-            case Properties::Type::BOTTOM:
-                switch (waterlogged) {
-                case Properties::Waterlogged::TRUE:
-                    return 13468;
-                case Properties::Waterlogged::FALSE:
-                    return 13469;
-                default:
-                    return 0;
-                }
-            case Properties::Type::DOUBLE:
-                switch (waterlogged) {
-                case Properties::Waterlogged::TRUE:
-                    return 13470;
-                case Properties::Waterlogged::FALSE:
-                    return 13471;
-                default:
-                    return 0;
-                }
-            default:
-                return 0;
-            }
+namespace MossyStoneBrickSlab {
+BlockId toProtocol(Properties::Type type, Properties::Waterlogged waterlogged) {
+    switch (type) {
+    case Properties::Type::TOP:
+        switch (waterlogged) {
+        case Properties::Waterlogged::TRUE:
+            return 13466;
+        case Properties::Waterlogged::FALSE:
+            return 13467;
+        default:
             return 0;
         }
+    case Properties::Type::BOTTOM:
+        switch (waterlogged) {
+        case Properties::Waterlogged::TRUE:
+            return 13468;
+        case Properties::Waterlogged::FALSE:
+            return 13469;
+        default:
+            return 0;
+        }
+    case Properties::Type::DOUBLE:
+        switch (waterlogged) {
+        case Properties::Waterlogged::TRUE:
+            return 13470;
+        case Properties::Waterlogged::FALSE:
+            return 13471;
+        default:
+            return 0;
+        }
+    default:
+        return 0;
     }
+    return 0;
+}
+}
 
 }

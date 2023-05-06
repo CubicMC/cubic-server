@@ -1,9 +1,9 @@
 #include "BlueWool.hpp"
 namespace Blocks {
-    namespace BlueWool {
-        BlockId toProtocol() {
-            return 2007;
-        }
-    }
+namespace BlueWool {
+BlockId toProtocol() {
+    return 2007;
+}
+}
 
 }

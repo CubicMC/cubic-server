@@ -1,9 +1,9 @@
 #include "SoulSoil.hpp"
 namespace Blocks {
-    namespace SoulSoil {
-        BlockId toProtocol() {
-            return 5686;
-        }
-    }
+namespace SoulSoil {
+BlockId toProtocol() {
+    return 5686;
+}
+}
 
 }

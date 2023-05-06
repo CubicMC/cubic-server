@@ -1,9 +1,9 @@
 #include <cstdint>
 namespace Blocks {
-    typedef int32_t BlockId;
+typedef int32_t BlockId;
 
-    namespace CryingObsidian {
-        BlockId toProtocol();
-    }
+namespace CryingObsidian {
+BlockId toProtocol();
+}
 
 }

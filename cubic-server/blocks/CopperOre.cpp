@@ -1,9 +1,9 @@
 #include "CopperOre.hpp"
 namespace Blocks {
-    namespace CopperOre {
-        BlockId toProtocol() {
-            return 20696;
-        }
-    }
+namespace CopperOre {
+BlockId toProtocol() {
+    return 20696;
+}
+}
 
 }

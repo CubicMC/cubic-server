@@ -1,9 +1,9 @@
 #include "BrownCarpet.hpp"
 namespace Blocks {
-    namespace BrownCarpet {
-        BlockId toProtocol() {
-            return 10263;
-        }
-    }
+namespace BrownCarpet {
+BlockId toProtocol() {
+    return 10263;
+}
+}
 
 }

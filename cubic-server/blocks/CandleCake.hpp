@@ -1,15 +1,15 @@
 #include <cstdint>
 namespace Blocks {
-    typedef int32_t BlockId;
+typedef int32_t BlockId;
 
-    namespace CandleCake {
-        namespace Properties {
-            enum class Lit {
-                TRUE,
-                FALSE
-            };
-        }
-        BlockId toProtocol(Properties::Lit lit);
-    }
+namespace CandleCake {
+namespace Properties {
+enum class Lit {
+    TRUE,
+    FALSE
+};
+}
+BlockId toProtocol(Properties::Lit lit);
+}
 
 }

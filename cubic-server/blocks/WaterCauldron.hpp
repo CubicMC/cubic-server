@@ -1,16 +1,16 @@
 #include <cstdint>
 namespace Blocks {
-    typedef int32_t BlockId;
+typedef int32_t BlockId;
 
-    namespace WaterCauldron {
-        namespace Properties {
-            enum class Level {
-                ONE,
-                TWO,
-                THREE
-            };
-        }
-        BlockId toProtocol(Properties::Level level);
-    }
+namespace WaterCauldron {
+namespace Properties {
+enum class Level {
+    ONE,
+    TWO,
+    THREE
+};
+}
+BlockId toProtocol(Properties::Level level);
+}
 
 }

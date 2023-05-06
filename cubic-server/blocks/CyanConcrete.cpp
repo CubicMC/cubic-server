@@ -1,9 +1,9 @@
 #include "CyanConcrete.hpp"
 namespace Blocks {
-    namespace CyanConcrete {
-        BlockId toProtocol() {
-            return 12112;
-        }
-    }
+namespace CyanConcrete {
+BlockId toProtocol() {
+    return 12112;
+}
+}
 
 }

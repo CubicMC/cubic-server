@@ -1,17 +1,17 @@
 #include <cstdint>
 namespace Blocks {
-    typedef int32_t BlockId;
+typedef int32_t BlockId;
 
-    namespace LightBlueWallBanner {
-        namespace Properties {
-            enum class Facing {
-                NORTH,
-                SOUTH,
-                WEST,
-                EAST
-            };
-        }
-        BlockId toProtocol(Properties::Facing facing);
-    }
+namespace LightBlueWallBanner {
+namespace Properties {
+enum class Facing {
+    NORTH,
+    SOUTH,
+    WEST,
+    EAST
+};
+}
+BlockId toProtocol(Properties::Facing facing);
+}
 
 }

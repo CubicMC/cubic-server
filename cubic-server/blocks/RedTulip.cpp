@@ -1,9 +1,9 @@
 #include "RedTulip.hpp"
 namespace Blocks {
-    namespace RedTulip {
-        BlockId toProtocol() {
-            return 2029;
-        }
-    }
+namespace RedTulip {
+BlockId toProtocol() {
+    return 2029;
+}
+}
 
 }

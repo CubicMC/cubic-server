@@ -1,9 +1,9 @@
 #include "SmithingTable.hpp"
 namespace Blocks {
-    namespace SmithingTable {
-        BlockId toProtocol() {
-            return 17838;
-        }
-    }
+namespace SmithingTable {
+BlockId toProtocol() {
+    return 17838;
+}
+}
 
 }

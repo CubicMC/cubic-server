@@ -1,9 +1,9 @@
 #include "PolishedAndesite.hpp"
 namespace Blocks {
-    namespace PolishedAndesite {
-        BlockId toProtocol() {
-            return 7;
-        }
-    }
+namespace PolishedAndesite {
+BlockId toProtocol() {
+    return 7;
+}
+}
 
 }

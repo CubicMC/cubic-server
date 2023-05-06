@@ -1,16 +1,16 @@
 #include <cstdint>
 namespace Blocks {
-    typedef int32_t BlockId;
+typedef int32_t BlockId;
 
-    namespace StrippedBirchWood {
-        namespace Properties {
-            enum class Axis {
-                X,
-                Y,
-                Z
-            };
-        }
-        BlockId toProtocol(Properties::Axis axis);
-    }
+namespace StrippedBirchWood {
+namespace Properties {
+enum class Axis {
+    X,
+    Y,
+    Z
+};
+}
+BlockId toProtocol(Properties::Axis axis);
+}
 
 }

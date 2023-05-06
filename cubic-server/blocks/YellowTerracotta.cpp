@@ -1,9 +1,9 @@
 #include "YellowTerracotta.hpp"
 namespace Blocks {
-    namespace YellowTerracotta {
-        BlockId toProtocol() {
-            return 8964;
-        }
-    }
+namespace YellowTerracotta {
+BlockId toProtocol() {
+    return 8964;
+}
+}
 
 }

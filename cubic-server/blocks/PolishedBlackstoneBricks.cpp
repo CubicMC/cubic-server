@@ -1,9 +1,9 @@
 #include "PolishedBlackstoneBricks.hpp"
 namespace Blocks {
-    namespace PolishedBlackstoneBricks {
-        BlockId toProtocol() {
-            return 19244;
-        }
-    }
+namespace PolishedBlackstoneBricks {
+BlockId toProtocol() {
+    return 19244;
+}
+}
 
 }

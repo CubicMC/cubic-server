@@ -1,9 +1,9 @@
 #include "InfestedChiseledStoneBricks.hpp"
 namespace Blocks {
-    namespace InfestedChiseledStoneBricks {
-        BlockId toProtocol() {
-            return 6319;
-        }
-    }
+namespace InfestedChiseledStoneBricks {
+BlockId toProtocol() {
+    return 6319;
+}
+}
 
 }

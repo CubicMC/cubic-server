@@ -1,21 +1,21 @@
 #include "BrownGlazedTerracotta.hpp"
 namespace Blocks {
-    namespace BrownGlazedTerracotta {
-        BlockId toProtocol(Properties::Facing facing) {
-            switch (facing) {
-            case Properties::Facing::NORTH:
-                return 12087;
-            case Properties::Facing::SOUTH:
-                return 12088;
-            case Properties::Facing::WEST:
-                return 12089;
-            case Properties::Facing::EAST:
-                return 12090;
-            default:
-                return 0;
-            }
-            return 0;
-        }
+namespace BrownGlazedTerracotta {
+BlockId toProtocol(Properties::Facing facing) {
+    switch (facing) {
+    case Properties::Facing::NORTH:
+        return 12087;
+    case Properties::Facing::SOUTH:
+        return 12088;
+    case Properties::Facing::WEST:
+        return 12089;
+    case Properties::Facing::EAST:
+        return 12090;
+    default:
+        return 0;
     }
+    return 0;
+}
+}
 
 }

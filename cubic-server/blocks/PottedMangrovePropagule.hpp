@@ -1,9 +1,9 @@
 #include <cstdint>
 namespace Blocks {
-    typedef int32_t BlockId;
+typedef int32_t BlockId;
 
-    namespace PottedMangrovePropagule {
-        BlockId toProtocol();
-    }
+namespace PottedMangrovePropagule {
+BlockId toProtocol();
+}
 
 }

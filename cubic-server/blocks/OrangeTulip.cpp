@@ -1,9 +1,9 @@
 #include "OrangeTulip.hpp"
 namespace Blocks {
-    namespace OrangeTulip {
-        BlockId toProtocol() {
-            return 2030;
-        }
-    }
+namespace OrangeTulip {
+BlockId toProtocol() {
+    return 2030;
+}
+}
 
 }

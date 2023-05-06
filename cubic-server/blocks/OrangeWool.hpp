@@ -1,9 +1,9 @@
 #include <cstdint>
 namespace Blocks {
-    typedef int32_t BlockId;
+typedef int32_t BlockId;
 
-    namespace OrangeWool {
-        BlockId toProtocol();
-    }
+namespace OrangeWool {
+BlockId toProtocol();
+}
 
 }

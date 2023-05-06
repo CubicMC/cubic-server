@@ -40,6 +40,8 @@ def writer(data, file):
                     indentation += 4
                 if line[-1] == ";" and line.startswith("return") and is_switch > 0:
                     indentation -= 4
+                if line[-1] == "{" and line.startswith("namespace"):
+                    indentation -= 4
                 if line[-1] == "{" and is_switch == 0:
                     indentation += 4
     else:
@@ -255,6 +257,10 @@ def create_block_files(path, block):
 
         writer(block.namespaceForHeaderFile(), f)
         writer("}\n", f)
+    global indentation
+    global is_switch
+    indentation = 0
+    is_switch = 0
 
     with open(path + "/blocks/" + block.name.split(":")[1].title().replace("_", "") + ".cpp", "w") as f:
         writer("#include \"" + block.name.split(":")[1].title().replace("_", "") + ".hpp\"\n", f)
@@ -262,6 +268,9 @@ def create_block_files(path, block):
         writer("namespace Blocks {\n", f)
         writer(block.namespaceForSourceFile(), f)
         writer("}\n", f)
+
+    indentation = 0
+    is_switch = 0
 
 
 def create_blockStates_files(filename, blocks):
