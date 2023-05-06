@@ -1,0 +1,6 @@
+# prevents the push of submodules
+*
+
+# allows for the push of the wraps
+!*.wrap
+!.gitignore
