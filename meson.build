@@ -1,6 +1,6 @@
 project('cubic-server', 'cpp',
   version : '0.1',
-  default_options : ['warning_level=3',
+  default_options : ['warning_level=everything',
                      'cpp_std=c++20'])
 
 #======================
@@ -11,6 +11,7 @@ cxxflags =          []
 ldflags  =          []
 cubic_include =     []
 cubic_src =         []
+cubic_deps =        []
 
 #=================================
 # use libc++ on clang if installed
@@ -27,14 +28,21 @@ if get_option('libcpp_clang')
 endif
 
 #=====================
+# set name and version
+#=====================
+
+cxxflags += ['-DPROGRAM_NAME="CubicServer"', '-DPROGRAM_VERSION="' + meson.project_version() + '"' ]
+
+#=====================
 # Manage dependencies.
 #=====================
 
 # pkgconfig is required for meson to work correctly.
 # dependencies might not be found without it on linux.
 
-thread = dependency('threads', required: true)
-gtkmm =  dependency('gtkmm-3.0',   required: true)
+thread = dependency('threads',   required: true)
+gtkmm =  dependency('gtkmm-3.0', required: true)
+curl =   dependency('libcurl', required: true)
 
 yaml     = dependency('yaml-cpp',      required: false)
 json     = dependency('nlohmann_json', required: false)
@@ -62,11 +70,11 @@ if not json.found()
   json = dependency('nlohmann_json')
 endif
 
-# we need to create a patch fot this one.
-# if not noise.found()
-#   noise_subproj = cmake.subproject('perlin_noise')
-#   noise = noise_subproj.dependency('perlin_noise')
-# endif
+we need to create a patch fot this one.
+if not noise.found()
+  noise_subproj = cmake.subproject('perlin_noise')
+  noise = noise_subproj.dependency('perlin_noise')
+endif
 
 if not argparse.found()
   argparse = dependency('argparse')
@@ -77,6 +85,8 @@ if not crcpp.found()
   crcpp = crcpp_subproj.dependency('CRCpp')
 endif
 
+cubic_deps += [ thread, gtkmm, curl, yaml, json, argparse, crcpp ] # need to add perlin
+
 if get_option('buildtype') == 'debug' and get_option('test')
   if not gtest.found()
     gtest = dependency('gtest', main: true)
@@ -86,11 +96,23 @@ if get_option('buildtype') == 'debug' and get_option('test')
     rapidcheck_subproj = cmake.subproject('rapidcheck')
     rapidcheck = rapidcheck_subproj.dependency('rapidcheck')
   endif
+  cubic_deps += [ gtest, rapidcheck ]
 endif
+
+#============================
+# Fetch internal dependencies
+#============================
+
+subdir('cubic-server')
 
 #=================================
 # TODO
 #=================================
 
 exe = executable('cubic_server',
+  cubic_src,
+  include_directories: cubic_include,
+  dependencies : cubic_deps,
+  cpp_args: cxxflags,
+  link_args: ldflags,
   install : true)
