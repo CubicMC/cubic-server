@@ -1,7 +1,8 @@
 #include "EmeraldBlock.hpp"
 namespace Blocks {
 namespace EmeraldBlock {
-BlockId toProtocol() {
+BlockId toProtocol()
+{
     return 7435;
 }
 }

@@ -1,7 +1,8 @@
 #include "PottedCrimsonRoots.hpp"
 namespace Blocks {
 namespace PottedCrimsonRoots {
-BlockId toProtocol() {
+BlockId toProtocol()
+{
     return 18829;
 }
 }

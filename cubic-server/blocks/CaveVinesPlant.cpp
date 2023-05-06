@@ -1,7 +1,8 @@
 #include "CaveVinesPlant.hpp"
 namespace Blocks {
 namespace CaveVinesPlant {
-BlockId toProtocol(Properties::Berries berries) {
+BlockId toProtocol(Properties::Berries berries)
+{
     switch (berries) {
     case Properties::Berries::TRUE:
         return 21495;

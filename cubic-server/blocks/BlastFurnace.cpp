@@ -1,7 +1,8 @@
 #include "BlastFurnace.hpp"
 namespace Blocks {
 namespace BlastFurnace {
-BlockId toProtocol(Properties::Facing facing, Properties::Lit lit) {
+BlockId toProtocol(Properties::Facing facing, Properties::Lit lit)
+{
     switch (facing) {
     case Properties::Facing::NORTH:
         switch (lit) {

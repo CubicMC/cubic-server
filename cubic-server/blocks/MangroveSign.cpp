@@ -1,7 +1,8 @@
 #include "MangroveSign.hpp"
 namespace Blocks {
 namespace MangroveSign {
-BlockId toProtocol(Properties::Rotation rotation, Properties::Waterlogged waterlogged) {
+BlockId toProtocol(Properties::Rotation rotation, Properties::Waterlogged waterlogged)
+{
     switch (rotation) {
     case Properties::Rotation::ZERO:
         switch (waterlogged) {

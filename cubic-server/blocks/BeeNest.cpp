@@ -1,7 +1,8 @@
 #include "BeeNest.hpp"
 namespace Blocks {
 namespace BeeNest {
-BlockId toProtocol(Properties::Facing facing, Properties::Honey_level honey_level) {
+BlockId toProtocol(Properties::Facing facing, Properties::Honey_level honey_level)
+{
     switch (facing) {
     case Properties::Facing::NORTH:
         switch (honey_level) {

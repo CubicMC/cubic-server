@@ -1,7 +1,8 @@
 #include "LimeConcretePowder.hpp"
 namespace Blocks {
 namespace LimeConcretePowder {
-BlockId toProtocol() {
+BlockId toProtocol()
+{
     return 12124;
 }
 }

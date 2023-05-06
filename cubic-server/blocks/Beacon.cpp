@@ -1,7 +1,8 @@
 #include "Beacon.hpp"
 namespace Blocks {
 namespace Beacon {
-BlockId toProtocol() {
+BlockId toProtocol()
+{
     return 7688;
 }
 }

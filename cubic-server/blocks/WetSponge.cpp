@@ -1,7 +1,8 @@
 #include "WetSponge.hpp"
 namespace Blocks {
 namespace WetSponge {
-BlockId toProtocol() {
+BlockId toProtocol()
+{
     return 467;
 }
 }

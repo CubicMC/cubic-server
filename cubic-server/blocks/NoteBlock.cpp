@@ -1,7 +1,8 @@
 #include "NoteBlock.hpp"
 namespace Blocks {
 namespace NoteBlock {
-BlockId toProtocol(Properties::Instrument instrument, Properties::Note note, Properties::Powered powered) {
+BlockId toProtocol(Properties::Instrument instrument, Properties::Note note, Properties::Powered powered)
+{
     switch (instrument) {
     case Properties::Instrument::HARP:
         switch (note) {

@@ -1,7 +1,8 @@
 #include "LightGrayCarpet.hpp"
 namespace Blocks {
 namespace LightGrayCarpet {
-BlockId toProtocol() {
+BlockId toProtocol()
+{
     return 10259;
 }
 }

@@ -1,7 +1,8 @@
 #include "PurpleShulkerBox.hpp"
 namespace Blocks {
 namespace PurpleShulkerBox {
-BlockId toProtocol(Properties::Facing facing) {
+BlockId toProtocol(Properties::Facing facing)
+{
     switch (facing) {
     case Properties::Facing::NORTH:
         return 12003;

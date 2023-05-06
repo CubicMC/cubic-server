@@ -1,7 +1,8 @@
 #include "LimeBed.hpp"
 namespace Blocks {
 namespace LimeBed {
-BlockId toProtocol(Properties::Facing facing, Properties::Occupied occupied, Properties::Part part) {
+BlockId toProtocol(Properties::Facing facing, Properties::Occupied occupied, Properties::Part part)
+{
     switch (facing) {
     case Properties::Facing::NORTH:
         switch (occupied) {

@@ -1,7 +1,8 @@
 #include "StructureBlock.hpp"
 namespace Blocks {
 namespace StructureBlock {
-BlockId toProtocol(Properties::Mode mode) {
+BlockId toProtocol(Properties::Mode mode)
+{
     switch (mode) {
     case Properties::Mode::SAVE:
         return 18728;

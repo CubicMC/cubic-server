@@ -1,7 +1,8 @@
 #include "GreenConcrete.hpp"
 namespace Blocks {
 namespace GreenConcrete {
-BlockId toProtocol() {
+BlockId toProtocol()
+{
     return 12116;
 }
 }

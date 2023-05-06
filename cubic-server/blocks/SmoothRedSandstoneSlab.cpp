@@ -1,7 +1,8 @@
 #include "SmoothRedSandstoneSlab.hpp"
 namespace Blocks {
 namespace SmoothRedSandstoneSlab {
-BlockId toProtocol(Properties::Type type, Properties::Waterlogged waterlogged) {
+BlockId toProtocol(Properties::Type type, Properties::Waterlogged waterlogged)
+{
     switch (type) {
     case Properties::Type::TOP:
         switch (waterlogged) {

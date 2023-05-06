@@ -1,7 +1,8 @@
 #include "Lectern.hpp"
 namespace Blocks {
 namespace Lectern {
-BlockId toProtocol(Properties::Facing facing, Properties::Has_book has_book, Properties::Powered powered) {
+BlockId toProtocol(Properties::Facing facing, Properties::Has_book has_book, Properties::Powered powered)
+{
     switch (facing) {
     case Properties::Facing::NORTH:
         switch (has_book) {

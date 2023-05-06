@@ -1,7 +1,8 @@
 #include "PottedFern.hpp"
 namespace Blocks {
 namespace PottedFern {
-BlockId toProtocol() {
+BlockId toProtocol()
+{
     return 8345;
 }
 }

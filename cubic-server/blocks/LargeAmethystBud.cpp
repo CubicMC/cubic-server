@@ -1,7 +1,8 @@
 #include "LargeAmethystBud.hpp"
 namespace Blocks {
 namespace LargeAmethystBud {
-BlockId toProtocol(Properties::Facing facing, Properties::Waterlogged waterlogged) {
+BlockId toProtocol(Properties::Facing facing, Properties::Waterlogged waterlogged)
+{
     switch (facing) {
     case Properties::Facing::NORTH:
         switch (waterlogged) {

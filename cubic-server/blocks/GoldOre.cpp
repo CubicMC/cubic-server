@@ -1,7 +1,8 @@
 #include "GoldOre.hpp"
 namespace Blocks {
 namespace GoldOre {
-BlockId toProtocol() {
+BlockId toProtocol()
+{
     return 112;
 }
 }

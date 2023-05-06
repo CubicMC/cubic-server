@@ -1,7 +1,8 @@
 #include "CartographyTable.hpp"
 namespace Blocks {
 namespace CartographyTable {
-BlockId toProtocol() {
+BlockId toProtocol()
+{
     return 17808;
 }
 }

@@ -1,7 +1,8 @@
 #include "DamagedAnvil.hpp"
 namespace Blocks {
 namespace DamagedAnvil {
-BlockId toProtocol(Properties::Facing facing) {
+BlockId toProtocol(Properties::Facing facing)
+{
     switch (facing) {
     case Properties::Facing::NORTH:
         return 8719;

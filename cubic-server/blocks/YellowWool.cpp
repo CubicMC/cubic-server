@@ -1,7 +1,8 @@
 #include "YellowWool.hpp"
 namespace Blocks {
 namespace YellowWool {
-BlockId toProtocol() {
+BlockId toProtocol()
+{
     return 2000;
 }
 }

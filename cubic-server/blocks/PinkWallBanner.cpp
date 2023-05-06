@@ -1,7 +1,8 @@
 #include "PinkWallBanner.hpp"
 namespace Blocks {
 namespace PinkWallBanner {
-BlockId toProtocol(Properties::Facing facing) {
+BlockId toProtocol(Properties::Facing facing)
+{
     switch (facing) {
     case Properties::Facing::NORTH:
         return 10562;

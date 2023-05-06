@@ -1,7 +1,8 @@
 #include "EndPortal.hpp"
 namespace Blocks {
 namespace EndPortal {
-BlockId toProtocol() {
+BlockId toProtocol()
+{
     return 7176;
 }
 }

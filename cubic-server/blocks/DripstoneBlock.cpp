@@ -1,7 +1,8 @@
 #include "DripstoneBlock.hpp"
 namespace Blocks {
 namespace DripstoneBlock {
-BlockId toProtocol() {
+BlockId toProtocol()
+{
     return 21442;
 }
 }

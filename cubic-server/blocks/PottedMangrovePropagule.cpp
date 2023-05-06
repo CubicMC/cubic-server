@@ -1,7 +1,8 @@
 #include "PottedMangrovePropagule.hpp"
 namespace Blocks {
 namespace PottedMangrovePropagule {
-BlockId toProtocol() {
+BlockId toProtocol()
+{
     return 8344;
 }
 }

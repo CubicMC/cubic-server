@@ -1,7 +1,8 @@
 #include "Jigsaw.hpp"
 namespace Blocks {
 namespace Jigsaw {
-BlockId toProtocol(Properties::Orientation orientation) {
+BlockId toProtocol(Properties::Orientation orientation)
+{
     switch (orientation) {
     case Properties::Orientation::DOWN_EAST:
         return 18732;

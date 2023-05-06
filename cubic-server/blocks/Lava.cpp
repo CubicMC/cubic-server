@@ -1,7 +1,8 @@
 #include "Lava.hpp"
 namespace Blocks {
 namespace Lava {
-BlockId toProtocol(Properties::Level level) {
+BlockId toProtocol(Properties::Level level)
+{
     switch (level) {
     case Properties::Level::ZERO:
         return 93;

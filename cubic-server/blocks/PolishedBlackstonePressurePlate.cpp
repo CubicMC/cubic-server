@@ -1,7 +1,8 @@
 #include "PolishedBlackstonePressurePlate.hpp"
 namespace Blocks {
 namespace PolishedBlackstonePressurePlate {
-BlockId toProtocol(Properties::Powered powered) {
+BlockId toProtocol(Properties::Powered powered)
+{
     switch (powered) {
     case Properties::Powered::TRUE:
         return 19744;

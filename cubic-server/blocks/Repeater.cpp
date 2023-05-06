@@ -1,7 +1,8 @@
 #include "Repeater.hpp"
 namespace Blocks {
 namespace Repeater {
-BlockId toProtocol(Properties::Delay delay, Properties::Facing facing, Properties::Locked locked, Properties::Powered powered) {
+BlockId toProtocol(Properties::Delay delay, Properties::Facing facing, Properties::Locked locked, Properties::Powered powered)
+{
     switch (delay) {
     case Properties::Delay::ONE:
         switch (facing) {

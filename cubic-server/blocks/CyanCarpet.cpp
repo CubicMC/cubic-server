@@ -1,7 +1,8 @@
 #include "CyanCarpet.hpp"
 namespace Blocks {
 namespace CyanCarpet {
-BlockId toProtocol() {
+BlockId toProtocol()
+{
     return 10260;
 }
 }

@@ -1,7 +1,8 @@
 #include "Cactus.hpp"
 namespace Blocks {
 namespace Cactus {
-BlockId toProtocol(Properties::Age age) {
+BlockId toProtocol(Properties::Age age)
+{
     switch (age) {
     case Properties::Age::ZERO:
         return 5616;

@@ -1,7 +1,8 @@
 #include "PinkConcrete.hpp"
 namespace Blocks {
 namespace PinkConcrete {
-BlockId toProtocol() {
+BlockId toProtocol()
+{
     return 12109;
 }
 }

@@ -1,7 +1,8 @@
 #include "Dirt.hpp"
 namespace Blocks {
 namespace Dirt {
-BlockId toProtocol() {
+BlockId toProtocol()
+{
     return 10;
 }
 }

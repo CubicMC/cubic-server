@@ -1,7 +1,8 @@
 #include "SweetBerryBush.hpp"
 namespace Blocks {
 namespace SweetBerryBush {
-BlockId toProtocol(Properties::Age age) {
+BlockId toProtocol(Properties::Age age)
+{
     switch (age) {
     case Properties::Age::ZERO:
         return 17947;

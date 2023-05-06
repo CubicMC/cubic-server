@@ -1,7 +1,8 @@
 #include "Hopper.hpp"
 namespace Blocks {
 namespace Hopper {
-BlockId toProtocol(Properties::Enabled enabled, Properties::Facing facing) {
+BlockId toProtocol(Properties::Enabled enabled, Properties::Facing facing)
+{
     switch (enabled) {
     case Properties::Enabled::TRUE:
         switch (facing) {

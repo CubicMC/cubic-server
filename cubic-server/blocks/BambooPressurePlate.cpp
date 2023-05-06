@@ -1,7 +1,8 @@
 #include "BambooPressurePlate.hpp"
 namespace Blocks {
 namespace BambooPressurePlate {
-BlockId toProtocol(Properties::Powered powered) {
+BlockId toProtocol(Properties::Powered powered)
+{
     switch (powered) {
     case Properties::Powered::TRUE:
         return 5566;

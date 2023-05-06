@@ -1,7 +1,8 @@
 #include "BrownTerracotta.hpp"
 namespace Blocks {
 namespace BrownTerracotta {
-BlockId toProtocol() {
+BlockId toProtocol()
+{
     return 8972;
 }
 }

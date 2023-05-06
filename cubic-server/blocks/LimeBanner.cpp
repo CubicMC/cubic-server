@@ -1,7 +1,8 @@
 #include "LimeBanner.hpp"
 namespace Blocks {
 namespace LimeBanner {
-BlockId toProtocol(Properties::Rotation rotation) {
+BlockId toProtocol(Properties::Rotation rotation)
+{
     switch (rotation) {
     case Properties::Rotation::ZERO:
         return 10362;

@@ -1,7 +1,8 @@
 #include "TallSeagrass.hpp"
 namespace Blocks {
 namespace TallSeagrass {
-BlockId toProtocol(Properties::Half half) {
+BlockId toProtocol(Properties::Half half)
+{
     switch (half) {
     case Properties::Half::UPPER:
         return 1958;

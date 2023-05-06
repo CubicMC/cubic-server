@@ -1,7 +1,8 @@
 #include "Piston.hpp"
 namespace Blocks {
 namespace Piston {
-BlockId toProtocol(Properties::Extended extended, Properties::Facing facing) {
+BlockId toProtocol(Properties::Extended extended, Properties::Facing facing)
+{
     switch (extended) {
     case Properties::Extended::TRUE:
         switch (facing) {

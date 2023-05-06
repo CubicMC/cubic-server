@@ -1,7 +1,8 @@
 #include "PinkTulip.hpp"
 namespace Blocks {
 namespace PinkTulip {
-BlockId toProtocol() {
+BlockId toProtocol()
+{
     return 2032;
 }
 }

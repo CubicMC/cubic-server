@@ -1,7 +1,8 @@
 #include "ChiseledDeepslate.hpp"
 namespace Blocks {
 namespace ChiseledDeepslate {
-BlockId toProtocol() {
+BlockId toProtocol()
+{
     return 23209;
 }
 }

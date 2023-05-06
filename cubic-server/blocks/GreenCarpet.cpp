@@ -1,7 +1,8 @@
 #include "GreenCarpet.hpp"
 namespace Blocks {
 namespace GreenCarpet {
-BlockId toProtocol() {
+BlockId toProtocol()
+{
     return 10264;
 }
 }

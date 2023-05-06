@@ -1,7 +1,8 @@
 #include "BrewingStand.hpp"
 namespace Blocks {
 namespace BrewingStand {
-BlockId toProtocol(Properties::Has_bottle_0 has_bottle_0, Properties::Has_bottle_1 has_bottle_1, Properties::Has_bottle_2 has_bottle_2) {
+BlockId toProtocol(Properties::Has_bottle_0 has_bottle_0, Properties::Has_bottle_1 has_bottle_1, Properties::Has_bottle_2 has_bottle_2)
+{
     switch (has_bottle_0) {
     case Properties::Has_bottle_0::TRUE:
         switch (has_bottle_1) {

@@ -1,7 +1,8 @@
 #include "PolishedDiorite.hpp"
 namespace Blocks {
 namespace PolishedDiorite {
-BlockId toProtocol() {
+BlockId toProtocol()
+{
     return 5;
 }
 }

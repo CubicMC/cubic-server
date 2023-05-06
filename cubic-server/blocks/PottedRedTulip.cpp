@@ -1,7 +1,8 @@
 #include "PottedRedTulip.hpp"
 namespace Blocks {
 namespace PottedRedTulip {
-BlockId toProtocol() {
+BlockId toProtocol()
+{
     return 8351;
 }
 }

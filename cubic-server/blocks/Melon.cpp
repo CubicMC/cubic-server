@@ -1,7 +1,8 @@
 #include "Melon.hpp"
 namespace Blocks {
 namespace Melon {
-BlockId toProtocol() {
+BlockId toProtocol()
+{
     return 6582;
 }
 }

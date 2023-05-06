@@ -1,7 +1,8 @@
 #include "OrangeCarpet.hpp"
 namespace Blocks {
 namespace OrangeCarpet {
-BlockId toProtocol() {
+BlockId toProtocol()
+{
     return 10252;
 }
 }

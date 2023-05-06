@@ -1,7 +1,8 @@
 #include "WitherSkeletonSkull.hpp"
 namespace Blocks {
 namespace WitherSkeletonSkull {
-BlockId toProtocol(Properties::Rotation rotation) {
+BlockId toProtocol(Properties::Rotation rotation)
+{
     switch (rotation) {
     case Properties::Rotation::ZERO:
         return 8591;

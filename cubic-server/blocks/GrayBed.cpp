@@ -1,7 +1,8 @@
 #include "GrayBed.hpp"
 namespace Blocks {
 namespace GrayBed {
-BlockId toProtocol(Properties::Facing facing, Properties::Occupied occupied, Properties::Part part) {
+BlockId toProtocol(Properties::Facing facing, Properties::Occupied occupied, Properties::Part part)
+{
     switch (facing) {
     case Properties::Facing::NORTH:
         switch (occupied) {

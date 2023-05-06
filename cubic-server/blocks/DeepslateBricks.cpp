@@ -1,7 +1,8 @@
 #include "DeepslateBricks.hpp"
 namespace Blocks {
 namespace DeepslateBricks {
-BlockId toProtocol() {
+BlockId toProtocol()
+{
     return 22798;
 }
 }

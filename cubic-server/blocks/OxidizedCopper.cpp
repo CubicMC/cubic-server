@@ -1,7 +1,8 @@
 #include "OxidizedCopper.hpp"
 namespace Blocks {
 namespace OxidizedCopper {
-BlockId toProtocol() {
+BlockId toProtocol()
+{
     return 20692;
 }
 }

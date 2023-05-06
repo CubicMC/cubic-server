@@ -1,7 +1,8 @@
 #include "YellowCandleCake.hpp"
 namespace Blocks {
 namespace YellowCandleCake {
-BlockId toProtocol(Properties::Lit lit) {
+BlockId toProtocol(Properties::Lit lit)
+{
     switch (lit) {
     case Properties::Lit::TRUE:
         return 20379;

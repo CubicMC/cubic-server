@@ -1,7 +1,8 @@
 #include "DeepslateIronOre.hpp"
 namespace Blocks {
 namespace DeepslateIronOre {
-BlockId toProtocol() {
+BlockId toProtocol()
+{
     return 115;
 }
 }

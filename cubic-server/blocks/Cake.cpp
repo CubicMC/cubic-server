@@ -1,7 +1,8 @@
 #include "Cake.hpp"
 namespace Blocks {
 namespace Cake {
-BlockId toProtocol(Properties::Bites bites) {
+BlockId toProtocol(Properties::Bites bites)
+{
     switch (bites) {
     case Properties::Bites::ZERO:
         return 5709;

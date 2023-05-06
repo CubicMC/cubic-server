@@ -1,7 +1,8 @@
 #include "DarkOakButton.hpp"
 namespace Blocks {
 namespace DarkOakButton {
-BlockId toProtocol(Properties::Face face, Properties::Facing facing, Properties::Powered powered) {
+BlockId toProtocol(Properties::Face face, Properties::Facing facing, Properties::Powered powered)
+{
     switch (face) {
     case Properties::Face::FLOOR:
         switch (facing) {

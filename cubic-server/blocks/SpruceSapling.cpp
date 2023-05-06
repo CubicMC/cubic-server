@@ -1,7 +1,8 @@
 #include "SpruceSapling.hpp"
 namespace Blocks {
 namespace SpruceSapling {
-BlockId toProtocol(Properties::Stage stage) {
+BlockId toProtocol(Properties::Stage stage)
+{
     switch (stage) {
     case Properties::Stage::ZERO:
         return 26;

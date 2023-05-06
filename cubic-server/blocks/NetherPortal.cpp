@@ -1,7 +1,8 @@
 #include "NetherPortal.hpp"
 namespace Blocks {
 namespace NetherPortal {
-BlockId toProtocol(Properties::Axis axis) {
+BlockId toProtocol(Properties::Axis axis)
+{
     switch (axis) {
     case Properties::Axis::X:
         return 5699;

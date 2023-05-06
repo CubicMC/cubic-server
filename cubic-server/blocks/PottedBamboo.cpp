@@ -1,7 +1,8 @@
 #include "PottedBamboo.hpp"
 namespace Blocks {
 namespace PottedBamboo {
-BlockId toProtocol() {
+BlockId toProtocol()
+{
     return 12329;
 }
 }

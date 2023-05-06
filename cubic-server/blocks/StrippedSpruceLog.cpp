@@ -1,7 +1,8 @@
 #include "StrippedSpruceLog.hpp"
 namespace Blocks {
 namespace StrippedSpruceLog {
-BlockId toProtocol(Properties::Axis axis) {
+BlockId toProtocol(Properties::Axis axis)
+{
     switch (axis) {
     case Properties::Axis::X:
         return 148;

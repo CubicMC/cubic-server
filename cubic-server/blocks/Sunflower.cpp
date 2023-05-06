@@ -1,7 +1,8 @@
 #include "Sunflower.hpp"
 namespace Blocks {
 namespace Sunflower {
-BlockId toProtocol(Properties::Half half) {
+BlockId toProtocol(Properties::Half half)
+{
     switch (half) {
     case Properties::Half::UPPER:
         return 10270;

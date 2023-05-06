@@ -1,7 +1,8 @@
 #include "DeepslateCoalOre.hpp"
 namespace Blocks {
 namespace DeepslateCoalOre {
-BlockId toProtocol() {
+BlockId toProtocol()
+{
     return 117;
 }
 }

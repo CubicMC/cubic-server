@@ -1,7 +1,8 @@
 #include "BubbleCoral.hpp"
 namespace Blocks {
 namespace BubbleCoral {
-BlockId toProtocol(Properties::Waterlogged waterlogged) {
+BlockId toProtocol(Properties::Waterlogged waterlogged)
+{
     switch (waterlogged) {
     case Properties::Waterlogged::TRUE:
         return 12199;

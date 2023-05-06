@@ -1,7 +1,8 @@
 #include "RedstoneLamp.hpp"
 namespace Blocks {
 namespace RedstoneLamp {
-BlockId toProtocol(Properties::Lit lit) {
+BlockId toProtocol(Properties::Lit lit)
+{
     switch (lit) {
     case Properties::Lit::TRUE:
         return 7187;

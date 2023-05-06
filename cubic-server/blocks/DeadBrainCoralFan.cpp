@@ -1,7 +1,8 @@
 #include "DeadBrainCoralFan.hpp"
 namespace Blocks {
 namespace DeadBrainCoralFan {
-BlockId toProtocol(Properties::Waterlogged waterlogged) {
+BlockId toProtocol(Properties::Waterlogged waterlogged)
+{
     switch (waterlogged) {
     case Properties::Waterlogged::TRUE:
         return 12207;

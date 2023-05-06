@@ -1,7 +1,8 @@
 #include "CopperBlock.hpp"
 namespace Blocks {
 namespace CopperBlock {
-BlockId toProtocol() {
+BlockId toProtocol()
+{
     return 20695;
 }
 }

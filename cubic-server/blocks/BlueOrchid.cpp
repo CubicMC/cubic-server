@@ -1,7 +1,8 @@
 #include "BlueOrchid.hpp"
 namespace Blocks {
 namespace BlueOrchid {
-BlockId toProtocol() {
+BlockId toProtocol()
+{
     return 2026;
 }
 }

@@ -1,7 +1,8 @@
 #include "PearlescentFroglight.hpp"
 namespace Blocks {
 namespace PearlescentFroglight {
-BlockId toProtocol(Properties::Axis axis) {
+BlockId toProtocol(Properties::Axis axis)
+{
     switch (axis) {
     case Properties::Axis::X:
         return 23227;

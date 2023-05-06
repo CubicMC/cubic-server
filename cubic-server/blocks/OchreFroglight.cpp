@@ -1,7 +1,8 @@
 #include "OchreFroglight.hpp"
 namespace Blocks {
 namespace OchreFroglight {
-BlockId toProtocol(Properties::Axis axis) {
+BlockId toProtocol(Properties::Axis axis)
+{
     switch (axis) {
     case Properties::Axis::X:
         return 23221;

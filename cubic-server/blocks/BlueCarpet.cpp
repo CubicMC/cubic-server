@@ -1,7 +1,8 @@
 #include "BlueCarpet.hpp"
 namespace Blocks {
 namespace BlueCarpet {
-BlockId toProtocol() {
+BlockId toProtocol()
+{
     return 10262;
 }
 }

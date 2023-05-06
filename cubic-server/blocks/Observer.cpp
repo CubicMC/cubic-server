@@ -1,7 +1,8 @@
 #include "Observer.hpp"
 namespace Blocks {
 namespace Observer {
-BlockId toProtocol(Properties::Facing facing, Properties::Powered powered) {
+BlockId toProtocol(Properties::Facing facing, Properties::Powered powered)
+{
     switch (facing) {
     case Properties::Facing::NORTH:
         switch (powered) {

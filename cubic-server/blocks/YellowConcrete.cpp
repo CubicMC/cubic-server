@@ -1,7 +1,8 @@
 #include "YellowConcrete.hpp"
 namespace Blocks {
 namespace YellowConcrete {
-BlockId toProtocol() {
+BlockId toProtocol()
+{
     return 12107;
 }
 }

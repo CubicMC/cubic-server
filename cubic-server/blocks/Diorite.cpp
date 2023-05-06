@@ -1,7 +1,8 @@
 #include "Diorite.hpp"
 namespace Blocks {
 namespace Diorite {
-BlockId toProtocol() {
+BlockId toProtocol()
+{
     return 4;
 }
 }

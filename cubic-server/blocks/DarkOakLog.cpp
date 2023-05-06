@@ -1,7 +1,8 @@
 #include "DarkOakLog.hpp"
 namespace Blocks {
 namespace DarkOakLog {
-BlockId toProtocol(Properties::Axis axis) {
+BlockId toProtocol(Properties::Axis axis)
+{
     switch (axis) {
     case Properties::Axis::X:
         return 134;

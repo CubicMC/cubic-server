@@ -1,7 +1,8 @@
 #include "DarkOakSign.hpp"
 namespace Blocks {
 namespace DarkOakSign {
-BlockId toProtocol(Properties::Rotation rotation, Properties::Waterlogged waterlogged) {
+BlockId toProtocol(Properties::Rotation rotation, Properties::Waterlogged waterlogged)
+{
     switch (rotation) {
     case Properties::Rotation::ZERO:
         switch (waterlogged) {

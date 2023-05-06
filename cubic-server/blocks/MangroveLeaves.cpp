@@ -1,7 +1,8 @@
 #include "MangroveLeaves.hpp"
 namespace Blocks {
 namespace MangroveLeaves {
-BlockId toProtocol(Properties::Distance distance, Properties::Persistent persistent, Properties::Waterlogged waterlogged) {
+BlockId toProtocol(Properties::Distance distance, Properties::Persistent persistent, Properties::Waterlogged waterlogged)
+{
     switch (distance) {
     case Properties::Distance::ONE:
         switch (persistent) {

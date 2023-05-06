@@ -1,7 +1,8 @@
 #include "ChorusPlant.hpp"
 namespace Blocks {
 namespace ChorusPlant {
-BlockId toProtocol(Properties::Down down, Properties::East east, Properties::North north, Properties::South south, Properties::Up up, Properties::West west) {
+BlockId toProtocol(Properties::Down down, Properties::East east, Properties::North north, Properties::South south, Properties::Up up, Properties::West west)
+{
     switch (down) {
     case Properties::Down::TRUE:
         switch (east) {

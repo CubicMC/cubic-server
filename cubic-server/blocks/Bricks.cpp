@@ -1,7 +1,8 @@
 #include "Bricks.hpp"
 namespace Blocks {
 namespace Bricks {
-BlockId toProtocol() {
+BlockId toProtocol()
+{
     return 2041;
 }
 }

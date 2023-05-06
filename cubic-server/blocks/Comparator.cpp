@@ -1,7 +1,8 @@
 #include "Comparator.hpp"
 namespace Blocks {
 namespace Comparator {
-BlockId toProtocol(Properties::Facing facing, Properties::Mode mode, Properties::Powered powered) {
+BlockId toProtocol(Properties::Facing facing, Properties::Mode mode, Properties::Powered powered)
+{
     switch (facing) {
     case Properties::Facing::NORTH:
         switch (mode) {

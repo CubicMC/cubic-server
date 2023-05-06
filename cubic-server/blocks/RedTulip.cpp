@@ -1,7 +1,8 @@
 #include "RedTulip.hpp"
 namespace Blocks {
 namespace RedTulip {
-BlockId toProtocol() {
+BlockId toProtocol()
+{
     return 2029;
 }
 }

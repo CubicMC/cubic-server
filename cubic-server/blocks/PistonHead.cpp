@@ -1,7 +1,8 @@
 #include "PistonHead.hpp"
 namespace Blocks {
 namespace PistonHead {
-BlockId toProtocol(Properties::Type type, Properties::Facing facing, Properties::Short_ short_) {
+BlockId toProtocol(Properties::Type type, Properties::Facing facing, Properties::Short_ short_)
+{
     switch (type) {
     case Properties::Type::NORMAL:
         switch (facing) {

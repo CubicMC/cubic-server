@@ -1,7 +1,8 @@
 #include "WarpedNylium.hpp"
 namespace Blocks {
 namespace WarpedNylium {
-BlockId toProtocol() {
+BlockId toProtocol()
+{
     return 17963;
 }
 }

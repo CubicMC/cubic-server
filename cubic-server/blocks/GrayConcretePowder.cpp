@@ -1,7 +1,8 @@
 #include "GrayConcretePowder.hpp"
 namespace Blocks {
 namespace GrayConcretePowder {
-BlockId toProtocol() {
+BlockId toProtocol()
+{
     return 12126;
 }
 }

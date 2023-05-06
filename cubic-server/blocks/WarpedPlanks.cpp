@@ -1,7 +1,8 @@
 #include "WarpedPlanks.hpp"
 namespace Blocks {
 namespace WarpedPlanks {
-BlockId toProtocol() {
+BlockId toProtocol()
+{
     return 18039;
 }
 }

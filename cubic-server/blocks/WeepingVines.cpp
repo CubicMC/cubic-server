@@ -1,7 +1,8 @@
 #include "WeepingVines.hpp"
 namespace Blocks {
 namespace WeepingVines {
-BlockId toProtocol(Properties::Age age) {
+BlockId toProtocol(Properties::Age age)
+{
     switch (age) {
     case Properties::Age::ZERO:
         return 17983;

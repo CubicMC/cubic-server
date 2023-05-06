@@ -1,7 +1,8 @@
 #include "DeepslateTiles.hpp"
 namespace Blocks {
 namespace DeepslateTiles {
-BlockId toProtocol() {
+BlockId toProtocol()
+{
     return 22387;
 }
 }

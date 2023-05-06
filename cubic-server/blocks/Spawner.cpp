@@ -1,7 +1,8 @@
 #include "Spawner.hpp"
 namespace Blocks {
 namespace Spawner {
-BlockId toProtocol() {
+BlockId toProtocol()
+{
     return 2821;
 }
 }

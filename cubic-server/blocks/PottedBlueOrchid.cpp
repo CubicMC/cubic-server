@@ -1,7 +1,8 @@
 #include "PottedBlueOrchid.hpp"
 namespace Blocks {
 namespace PottedBlueOrchid {
-BlockId toProtocol() {
+BlockId toProtocol()
+{
     return 8348;
 }
 }

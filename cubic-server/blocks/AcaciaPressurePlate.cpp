@@ -1,7 +1,8 @@
 #include "AcaciaPressurePlate.hpp"
 namespace Blocks {
 namespace AcaciaPressurePlate {
-BlockId toProtocol(Properties::Powered powered) {
+BlockId toProtocol(Properties::Powered powered)
+{
     switch (powered) {
     case Properties::Powered::TRUE:
         return 5560;

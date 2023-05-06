@@ -1,7 +1,8 @@
 #include "StrippedBirchLog.hpp"
 namespace Blocks {
 namespace StrippedBirchLog {
-BlockId toProtocol(Properties::Axis axis) {
+BlockId toProtocol(Properties::Axis axis)
+{
     switch (axis) {
     case Properties::Axis::X:
         return 151;

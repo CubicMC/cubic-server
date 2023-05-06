@@ -1,7 +1,8 @@
 #include "LimeCarpet.hpp"
 namespace Blocks {
 namespace LimeCarpet {
-BlockId toProtocol() {
+BlockId toProtocol()
+{
     return 10256;
 }
 }

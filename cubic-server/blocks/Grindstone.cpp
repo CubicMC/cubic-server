@@ -1,7 +1,8 @@
 #include "Grindstone.hpp"
 namespace Blocks {
 namespace Grindstone {
-BlockId toProtocol(Properties::Face face, Properties::Facing facing) {
+BlockId toProtocol(Properties::Face face, Properties::Facing facing)
+{
     switch (face) {
     case Properties::Face::FLOOR:
         switch (facing) {

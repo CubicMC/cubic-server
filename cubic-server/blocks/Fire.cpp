@@ -1,7 +1,8 @@
 #include "Fire.hpp"
 namespace Blocks {
 namespace Fire {
-BlockId toProtocol(Properties::Age age, Properties::East east, Properties::North north, Properties::South south, Properties::Up up, Properties::West west) {
+BlockId toProtocol(Properties::Age age, Properties::East east, Properties::North north, Properties::South south, Properties::Up up, Properties::West west)
+{
     switch (age) {
     case Properties::Age::ZERO:
         switch (east) {

@@ -1,7 +1,8 @@
 #include "DeadBubbleCoralWallFan.hpp"
 namespace Blocks {
 namespace DeadBubbleCoralWallFan {
-BlockId toProtocol(Properties::Facing facing, Properties::Waterlogged waterlogged) {
+BlockId toProtocol(Properties::Facing facing, Properties::Waterlogged waterlogged)
+{
     switch (facing) {
     case Properties::Facing::NORTH:
         switch (waterlogged) {

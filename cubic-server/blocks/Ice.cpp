@@ -1,7 +1,8 @@
 #include "Ice.hpp"
 namespace Blocks {
 namespace Ice {
-BlockId toProtocol() {
+BlockId toProtocol()
+{
     return 5614;
 }
 }

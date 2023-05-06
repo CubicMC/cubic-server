@@ -1,7 +1,8 @@
 #include "YellowCarpet.hpp"
 namespace Blocks {
 namespace YellowCarpet {
-BlockId toProtocol() {
+BlockId toProtocol()
+{
     return 10255;
 }
 }

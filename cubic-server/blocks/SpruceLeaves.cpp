@@ -1,7 +1,8 @@
 #include "SpruceLeaves.hpp"
 namespace Blocks {
 namespace SpruceLeaves {
-BlockId toProtocol(Properties::Distance distance, Properties::Persistent persistent, Properties::Waterlogged waterlogged) {
+BlockId toProtocol(Properties::Distance distance, Properties::Persistent persistent, Properties::Waterlogged waterlogged)
+{
     switch (distance) {
     case Properties::Distance::ONE:
         switch (persistent) {

@@ -1,7 +1,8 @@
 #include "Cocoa.hpp"
 namespace Blocks {
 namespace Cocoa {
-BlockId toProtocol(Properties::Age age, Properties::Facing facing) {
+BlockId toProtocol(Properties::Age age, Properties::Facing facing)
+{
     switch (age) {
     case Properties::Age::ZERO:
         switch (facing) {

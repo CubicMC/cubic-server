@@ -1,7 +1,8 @@
 #include "GrayWool.hpp"
 namespace Blocks {
 namespace GrayWool {
-BlockId toProtocol() {
+BlockId toProtocol()
+{
     return 2003;
 }
 }

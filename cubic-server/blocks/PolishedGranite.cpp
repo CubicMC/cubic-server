@@ -1,7 +1,8 @@
 #include "PolishedGranite.hpp"
 namespace Blocks {
 namespace PolishedGranite {
-BlockId toProtocol() {
+BlockId toProtocol()
+{
     return 3;
 }
 }

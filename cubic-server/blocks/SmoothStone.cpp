@@ -1,7 +1,8 @@
 #include "SmoothStone.hpp"
 namespace Blocks {
 namespace SmoothStone {
-BlockId toProtocol() {
+BlockId toProtocol()
+{
     return 10823;
 }
 }

@@ -1,7 +1,8 @@
 #include "PurpurPillar.hpp"
 namespace Blocks {
 namespace PurpurPillar {
-BlockId toProtocol(Properties::Axis axis) {
+BlockId toProtocol(Properties::Axis axis)
+{
     switch (axis) {
     case Properties::Axis::X:
         return 11800;

@@ -1,7 +1,8 @@
 #include "MangroveRoots.hpp"
 namespace Blocks {
 namespace MangroveRoots {
-BlockId toProtocol(Properties::Waterlogged waterlogged) {
+BlockId toProtocol(Properties::Waterlogged waterlogged)
+{
     switch (waterlogged) {
     case Properties::Waterlogged::TRUE:
         return 140;

@@ -1,7 +1,8 @@
 #include "Stonecutter.hpp"
 namespace Blocks {
 namespace Stonecutter {
-BlockId toProtocol(Properties::Facing facing) {
+BlockId toProtocol(Properties::Facing facing)
+{
     switch (facing) {
     case Properties::Facing::NORTH:
         return 17839;

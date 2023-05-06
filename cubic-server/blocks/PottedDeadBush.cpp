@@ -1,7 +1,8 @@
 #include "PottedDeadBush.hpp"
 namespace Blocks {
 namespace PottedDeadBush {
-BlockId toProtocol() {
+BlockId toProtocol()
+{
     return 8361;
 }
 }

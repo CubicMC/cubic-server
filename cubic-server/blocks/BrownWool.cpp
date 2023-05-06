@@ -1,7 +1,8 @@
 #include "BrownWool.hpp"
 namespace Blocks {
 namespace BrownWool {
-BlockId toProtocol() {
+BlockId toProtocol()
+{
     return 2008;
 }
 }

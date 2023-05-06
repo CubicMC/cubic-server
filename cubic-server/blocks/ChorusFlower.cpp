@@ -1,7 +1,8 @@
 #include "ChorusFlower.hpp"
 namespace Blocks {
 namespace ChorusFlower {
-BlockId toProtocol(Properties::Age age) {
+BlockId toProtocol(Properties::Age age)
+{
     switch (age) {
     case Properties::Age::ZERO:
         return 11793;

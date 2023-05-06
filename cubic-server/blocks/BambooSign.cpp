@@ -1,7 +1,8 @@
 #include "BambooSign.hpp"
 namespace Blocks {
 namespace BambooSign {
-BlockId toProtocol(Properties::Rotation rotation, Properties::Waterlogged waterlogged) {
+BlockId toProtocol(Properties::Rotation rotation, Properties::Waterlogged waterlogged)
+{
     switch (rotation) {
     case Properties::Rotation::ZERO:
         switch (waterlogged) {

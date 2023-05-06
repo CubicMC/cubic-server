@@ -1,7 +1,8 @@
 #include "SeaLantern.hpp"
 namespace Blocks {
 namespace SeaLantern {
-BlockId toProtocol() {
+BlockId toProtocol()
+{
     return 10247;
 }
 }

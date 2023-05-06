@@ -1,7 +1,8 @@
 #include "DeepslateRedstoneOre.hpp"
 namespace Blocks {
 namespace DeepslateRedstoneOre {
-BlockId toProtocol(Properties::Lit lit) {
+BlockId toProtocol(Properties::Lit lit)
+{
     switch (lit) {
     case Properties::Lit::TRUE:
         return 5570;

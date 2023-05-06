@@ -1,7 +1,8 @@
 #include "Mycelium.hpp"
 namespace Blocks {
 namespace Mycelium {
-BlockId toProtocol(Properties::Snowy snowy) {
+BlockId toProtocol(Properties::Snowy snowy)
+{
     switch (snowy) {
     case Properties::Snowy::TRUE:
         return 7039;

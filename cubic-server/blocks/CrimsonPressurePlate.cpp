@@ -1,7 +1,8 @@
 #include "CrimsonPressurePlate.hpp"
 namespace Blocks {
 namespace CrimsonPressurePlate {
-BlockId toProtocol(Properties::Powered powered) {
+BlockId toProtocol(Properties::Powered powered)
+{
     switch (powered) {
     case Properties::Powered::TRUE:
         return 18052;

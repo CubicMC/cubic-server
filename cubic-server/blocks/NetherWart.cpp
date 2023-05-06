@@ -1,7 +1,8 @@
 #include "NetherWart.hpp"
 namespace Blocks {
 namespace NetherWart {
-BlockId toProtocol(Properties::Age age) {
+BlockId toProtocol(Properties::Age age)
+{
     switch (age) {
     case Properties::Age::ZERO:
         return 7155;

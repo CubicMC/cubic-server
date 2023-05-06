@@ -1,7 +1,8 @@
 #include "RawGoldBlock.hpp"
 namespace Blocks {
 namespace RawGoldBlock {
-BlockId toProtocol() {
+BlockId toProtocol()
+{
     return 23218;
 }
 }

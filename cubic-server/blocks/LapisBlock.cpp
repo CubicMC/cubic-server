@@ -1,7 +1,8 @@
 #include "LapisBlock.hpp"
 namespace Blocks {
 namespace LapisBlock {
-BlockId toProtocol() {
+BlockId toProtocol()
+{
     return 471;
 }
 }

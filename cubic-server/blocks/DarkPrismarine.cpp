@@ -1,7 +1,8 @@
 #include "DarkPrismarine.hpp"
 namespace Blocks {
 namespace DarkPrismarine {
-BlockId toProtocol() {
+BlockId toProtocol()
+{
     return 9988;
 }
 }

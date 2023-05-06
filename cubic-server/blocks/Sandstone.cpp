@@ -1,7 +1,8 @@
 #include "Sandstone.hpp"
 namespace Blocks {
 namespace Sandstone {
-BlockId toProtocol() {
+BlockId toProtocol()
+{
     return 484;
 }
 }

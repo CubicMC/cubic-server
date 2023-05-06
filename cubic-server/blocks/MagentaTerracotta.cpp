@@ -1,7 +1,8 @@
 #include "MagentaTerracotta.hpp"
 namespace Blocks {
 namespace MagentaTerracotta {
-BlockId toProtocol() {
+BlockId toProtocol()
+{
     return 8962;
 }
 }

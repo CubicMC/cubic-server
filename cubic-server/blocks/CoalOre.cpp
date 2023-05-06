@@ -1,7 +1,8 @@
 #include "CoalOre.hpp"
 namespace Blocks {
 namespace CoalOre {
-BlockId toProtocol() {
+BlockId toProtocol()
+{
     return 116;
 }
 }

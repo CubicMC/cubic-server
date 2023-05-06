@@ -1,7 +1,8 @@
 #include "MangroveHangingSign.hpp"
 namespace Blocks {
 namespace MangroveHangingSign {
-BlockId toProtocol(Properties::Attached attached, Properties::Rotation rotation, Properties::Waterlogged waterlogged) {
+BlockId toProtocol(Properties::Attached attached, Properties::Rotation rotation, Properties::Waterlogged waterlogged)
+{
     switch (attached) {
     case Properties::Attached::TRUE:
         switch (rotation) {

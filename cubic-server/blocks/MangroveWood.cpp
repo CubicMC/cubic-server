@@ -1,7 +1,8 @@
 #include "MangroveWood.hpp"
 namespace Blocks {
 namespace MangroveWood {
-BlockId toProtocol(Properties::Axis axis) {
+BlockId toProtocol(Properties::Axis axis)
+{
     switch (axis) {
     case Properties::Axis::X:
         return 190;

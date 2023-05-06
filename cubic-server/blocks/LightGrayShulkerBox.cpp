@@ -1,7 +1,8 @@
 #include "LightGrayShulkerBox.hpp"
 namespace Blocks {
 namespace LightGrayShulkerBox {
-BlockId toProtocol(Properties::Facing facing) {
+BlockId toProtocol(Properties::Facing facing)
+{
     switch (facing) {
     case Properties::Facing::NORTH:
         return 11991;

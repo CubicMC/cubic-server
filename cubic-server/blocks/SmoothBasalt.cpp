@@ -1,7 +1,8 @@
 #include "SmoothBasalt.hpp"
 namespace Blocks {
 namespace SmoothBasalt {
-BlockId toProtocol() {
+BlockId toProtocol()
+{
     return 23215;
 }
 }

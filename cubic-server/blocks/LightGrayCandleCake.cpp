@@ -1,7 +1,8 @@
 #include "LightGrayCandleCake.hpp"
 namespace Blocks {
 namespace LightGrayCandleCake {
-BlockId toProtocol(Properties::Lit lit) {
+BlockId toProtocol(Properties::Lit lit)
+{
     switch (lit) {
     case Properties::Lit::TRUE:
         return 20387;

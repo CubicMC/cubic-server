@@ -1,7 +1,8 @@
 #include "DarkOakLeaves.hpp"
 namespace Blocks {
 namespace DarkOakLeaves {
-BlockId toProtocol(Properties::Distance distance, Properties::Persistent persistent, Properties::Waterlogged waterlogged) {
+BlockId toProtocol(Properties::Distance distance, Properties::Persistent persistent, Properties::Waterlogged waterlogged)
+{
     switch (distance) {
     case Properties::Distance::ONE:
         switch (persistent) {

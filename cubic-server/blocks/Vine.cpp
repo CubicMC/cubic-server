@@ -1,7 +1,8 @@
 #include "Vine.hpp"
 namespace Blocks {
 namespace Vine {
-BlockId toProtocol(Properties::East east, Properties::North north, Properties::South south, Properties::Up up, Properties::West west) {
+BlockId toProtocol(Properties::East east, Properties::North north, Properties::South south, Properties::Up up, Properties::West west)
+{
     switch (east) {
     case Properties::East::TRUE:
         switch (north) {

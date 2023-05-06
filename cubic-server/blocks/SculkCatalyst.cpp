@@ -1,7 +1,8 @@
 #include "SculkCatalyst.hpp"
 namespace Blocks {
 namespace SculkCatalyst {
-BlockId toProtocol(Properties::Bloom bloom) {
+BlockId toProtocol(Properties::Bloom bloom)
+{
     switch (bloom) {
     case Properties::Bloom::TRUE:
         return 20682;

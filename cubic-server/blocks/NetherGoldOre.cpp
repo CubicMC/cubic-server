@@ -1,7 +1,8 @@
 #include "NetherGoldOre.hpp"
 namespace Blocks {
 namespace NetherGoldOre {
-BlockId toProtocol() {
+BlockId toProtocol()
+{
     return 118;
 }
 }

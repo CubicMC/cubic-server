@@ -1,7 +1,8 @@
 #include "WhiteTulip.hpp"
 namespace Blocks {
 namespace WhiteTulip {
-BlockId toProtocol() {
+BlockId toProtocol()
+{
     return 2031;
 }
 }

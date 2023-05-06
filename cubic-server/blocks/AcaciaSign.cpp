@@ -1,7 +1,8 @@
 #include "AcaciaSign.hpp"
 namespace Blocks {
 namespace AcaciaSign {
-BlockId toProtocol(Properties::Rotation rotation, Properties::Waterlogged waterlogged) {
+BlockId toProtocol(Properties::Rotation rotation, Properties::Waterlogged waterlogged)
+{
     switch (rotation) {
     case Properties::Rotation::ZERO:
         switch (waterlogged) {

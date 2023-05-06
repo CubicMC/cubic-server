@@ -1,7 +1,8 @@
 #include "SoulSand.hpp"
 namespace Blocks {
 namespace SoulSand {
-BlockId toProtocol() {
+BlockId toProtocol()
+{
     return 5685;
 }
 }

@@ -1,7 +1,8 @@
 #include "WhiteConcrete.hpp"
 namespace Blocks {
 namespace WhiteConcrete {
-BlockId toProtocol() {
+BlockId toProtocol()
+{
     return 12103;
 }
 }

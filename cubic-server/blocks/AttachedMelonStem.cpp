@@ -1,7 +1,8 @@
 #include "AttachedMelonStem.hpp"
 namespace Blocks {
 namespace AttachedMelonStem {
-BlockId toProtocol(Properties::Facing facing) {
+BlockId toProtocol(Properties::Facing facing)
+{
     switch (facing) {
     case Properties::Facing::NORTH:
         return 6587;

@@ -1,7 +1,8 @@
 #include "Farmland.hpp"
 namespace Blocks {
 namespace Farmland {
-BlockId toProtocol(Properties::Moisture moisture) {
+BlockId toProtocol(Properties::Moisture moisture)
+{
     switch (moisture) {
     case Properties::Moisture::ZERO:
         return 4234;

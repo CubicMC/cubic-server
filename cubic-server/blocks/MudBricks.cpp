@@ -1,7 +1,8 @@
 #include "MudBricks.hpp"
 namespace Blocks {
 namespace MudBricks {
-BlockId toProtocol() {
+BlockId toProtocol()
+{
     return 6313;
 }
 }

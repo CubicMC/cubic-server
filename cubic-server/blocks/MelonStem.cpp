@@ -1,7 +1,8 @@
 #include "MelonStem.hpp"
 namespace Blocks {
 namespace MelonStem {
-BlockId toProtocol(Properties::Age age) {
+BlockId toProtocol(Properties::Age age)
+{
     switch (age) {
     case Properties::Age::ZERO:
         return 6599;

@@ -1,7 +1,8 @@
 #include "SnowBlock.hpp"
 namespace Blocks {
 namespace SnowBlock {
-BlockId toProtocol() {
+BlockId toProtocol()
+{
     return 5615;
 }
 }

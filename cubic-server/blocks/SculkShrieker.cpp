@@ -1,7 +1,8 @@
 #include "SculkShrieker.hpp"
 namespace Blocks {
 namespace SculkShrieker {
-BlockId toProtocol(Properties::Can_summon can_summon, Properties::Shrieking shrieking, Properties::Waterlogged waterlogged) {
+BlockId toProtocol(Properties::Can_summon can_summon, Properties::Shrieking shrieking, Properties::Waterlogged waterlogged)
+{
     switch (can_summon) {
     case Properties::Can_summon::TRUE:
         switch (shrieking) {

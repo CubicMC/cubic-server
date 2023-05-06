@@ -1,7 +1,8 @@
 #include "Composter.hpp"
 namespace Blocks {
 namespace Composter {
-BlockId toProtocol(Properties::Level level) {
+BlockId toProtocol(Properties::Level level)
+{
     switch (level) {
     case Properties::Level::ZERO:
         return 18744;

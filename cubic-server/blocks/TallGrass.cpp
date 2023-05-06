@@ -1,7 +1,8 @@
 #include "TallGrass.hpp"
 namespace Blocks {
 namespace TallGrass {
-BlockId toProtocol(Properties::Half half) {
+BlockId toProtocol(Properties::Half half)
+{
     switch (half) {
     case Properties::Half::UPPER:
         return 10278;

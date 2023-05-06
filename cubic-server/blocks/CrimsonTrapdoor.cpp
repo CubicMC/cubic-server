@@ -1,7 +1,8 @@
 #include "CrimsonTrapdoor.hpp"
 namespace Blocks {
 namespace CrimsonTrapdoor {
-BlockId toProtocol(Properties::Facing facing, Properties::Half half, Properties::Open open, Properties::Powered powered, Properties::Waterlogged waterlogged) {
+BlockId toProtocol(Properties::Facing facing, Properties::Half half, Properties::Open open, Properties::Powered powered, Properties::Waterlogged waterlogged)
+{
     switch (facing) {
     case Properties::Facing::NORTH:
         switch (half) {

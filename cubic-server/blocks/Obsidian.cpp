@@ -1,7 +1,8 @@
 #include "Obsidian.hpp"
 namespace Blocks {
 namespace Obsidian {
-BlockId toProtocol() {
+BlockId toProtocol()
+{
     return 2302;
 }
 }

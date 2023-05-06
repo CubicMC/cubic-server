@@ -1,7 +1,8 @@
 #include "PottedCrimsonFungus.hpp"
 namespace Blocks {
 namespace PottedCrimsonFungus {
-BlockId toProtocol() {
+BlockId toProtocol()
+{
     return 18827;
 }
 }

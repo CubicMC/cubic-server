@@ -1,7 +1,8 @@
 #include "TripwireHook.hpp"
 namespace Blocks {
 namespace TripwireHook {
-BlockId toProtocol(Properties::Attached attached, Properties::Facing facing, Properties::Powered powered) {
+BlockId toProtocol(Properties::Attached attached, Properties::Facing facing, Properties::Powered powered)
+{
     switch (attached) {
     case Properties::Attached::TRUE:
         switch (facing) {

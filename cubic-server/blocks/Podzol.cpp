@@ -1,7 +1,8 @@
 #include "Podzol.hpp"
 namespace Blocks {
 namespace Podzol {
-BlockId toProtocol(Properties::Snowy snowy) {
+BlockId toProtocol(Properties::Snowy snowy)
+{
     switch (snowy) {
     case Properties::Snowy::TRUE:
         return 12;

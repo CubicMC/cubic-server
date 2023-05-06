@@ -1,7 +1,8 @@
 #include "JungleLog.hpp"
 namespace Blocks {
 namespace JungleLog {
-BlockId toProtocol(Properties::Axis axis) {
+BlockId toProtocol(Properties::Axis axis)
+{
     switch (axis) {
     case Properties::Axis::X:
         return 128;

@@ -1,7 +1,8 @@
 #include "RedSand.hpp"
 namespace Blocks {
 namespace RedSand {
-BlockId toProtocol() {
+BlockId toProtocol()
+{
     return 110;
 }
 }

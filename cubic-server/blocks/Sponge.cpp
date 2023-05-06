@@ -1,7 +1,8 @@
 #include "Sponge.hpp"
 namespace Blocks {
 namespace Sponge {
-BlockId toProtocol() {
+BlockId toProtocol()
+{
     return 466;
 }
 }

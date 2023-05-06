@@ -1,7 +1,8 @@
 #include "HornCoral.hpp"
 namespace Blocks {
 namespace HornCoral {
-BlockId toProtocol(Properties::Waterlogged waterlogged) {
+BlockId toProtocol(Properties::Waterlogged waterlogged)
+{
     switch (waterlogged) {
     case Properties::Waterlogged::TRUE:
         return 12203;

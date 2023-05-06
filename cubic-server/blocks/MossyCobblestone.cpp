@@ -1,7 +1,8 @@
 #include "MossyCobblestone.hpp"
 namespace Blocks {
 namespace MossyCobblestone {
-BlockId toProtocol() {
+BlockId toProtocol()
+{
     return 2301;
 }
 }

@@ -1,7 +1,8 @@
 #include "Tnt.hpp"
 namespace Blocks {
 namespace Tnt {
-BlockId toProtocol(Properties::Unstable unstable) {
+BlockId toProtocol(Properties::Unstable unstable)
+{
     switch (unstable) {
     case Properties::Unstable::TRUE:
         return 2042;

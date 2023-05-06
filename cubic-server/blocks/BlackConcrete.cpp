@@ -1,7 +1,8 @@
 #include "BlackConcrete.hpp"
 namespace Blocks {
 namespace BlackConcrete {
-BlockId toProtocol() {
+BlockId toProtocol()
+{
     return 12118;
 }
 }

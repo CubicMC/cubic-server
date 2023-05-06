@@ -1,7 +1,8 @@
 #include "BubbleColumn.hpp"
 namespace Blocks {
 namespace BubbleColumn {
-BlockId toProtocol(Properties::Drag drag) {
+BlockId toProtocol(Properties::Drag drag)
+{
     switch (drag) {
     case Properties::Drag::TRUE:
         return 12332;

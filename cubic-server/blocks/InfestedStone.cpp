@@ -1,7 +1,8 @@
 #include "InfestedStone.hpp"
 namespace Blocks {
 namespace InfestedStone {
-BlockId toProtocol() {
+BlockId toProtocol()
+{
     return 6314;
 }
 }

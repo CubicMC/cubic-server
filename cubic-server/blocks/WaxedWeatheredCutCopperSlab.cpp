@@ -1,7 +1,8 @@
 #include "WaxedWeatheredCutCopperSlab.hpp"
 namespace Blocks {
 namespace WaxedWeatheredCutCopperSlab {
-BlockId toProtocol(Properties::Type type, Properties::Waterlogged waterlogged) {
+BlockId toProtocol(Properties::Type type, Properties::Waterlogged waterlogged)
+{
     switch (type) {
     case Properties::Type::TOP:
         switch (waterlogged) {

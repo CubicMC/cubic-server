@@ -1,7 +1,8 @@
 #include "Granite.hpp"
 namespace Blocks {
 namespace Granite {
-BlockId toProtocol() {
+BlockId toProtocol()
+{
     return 2;
 }
 }

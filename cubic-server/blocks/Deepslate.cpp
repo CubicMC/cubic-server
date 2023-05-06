@@ -1,7 +1,8 @@
 #include "Deepslate.hpp"
 namespace Blocks {
 namespace Deepslate {
-BlockId toProtocol(Properties::Axis axis) {
+BlockId toProtocol(Properties::Axis axis)
+{
     switch (axis) {
     case Properties::Axis::X:
         return 21562;

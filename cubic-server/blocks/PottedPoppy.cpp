@@ -1,7 +1,8 @@
 #include "PottedPoppy.hpp"
 namespace Blocks {
 namespace PottedPoppy {
-BlockId toProtocol() {
+BlockId toProtocol()
+{
     return 8347;
 }
 }

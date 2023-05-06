@@ -1,7 +1,8 @@
 #include "Conduit.hpp"
 namespace Blocks {
 namespace Conduit {
-BlockId toProtocol(Properties::Waterlogged waterlogged) {
+BlockId toProtocol(Properties::Waterlogged waterlogged)
+{
     switch (waterlogged) {
     case Properties::Waterlogged::TRUE:
         return 12314;

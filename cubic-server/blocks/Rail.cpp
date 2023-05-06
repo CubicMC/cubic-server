@@ -1,7 +1,8 @@
 #include "Rail.hpp"
 namespace Blocks {
 namespace Rail {
-BlockId toProtocol(Properties::Shape shape, Properties::Waterlogged waterlogged) {
+BlockId toProtocol(Properties::Shape shape, Properties::Waterlogged waterlogged)
+{
     switch (shape) {
     case Properties::Shape::NORTH_SOUTH:
         switch (waterlogged) {

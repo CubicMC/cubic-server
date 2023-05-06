@@ -1,7 +1,8 @@
 #include "Water.hpp"
 namespace Blocks {
 namespace Water {
-BlockId toProtocol(Properties::Level level) {
+BlockId toProtocol(Properties::Level level)
+{
     switch (level) {
     case Properties::Level::ZERO:
         return 77;

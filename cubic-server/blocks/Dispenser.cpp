@@ -1,7 +1,8 @@
 #include "Dispenser.hpp"
 namespace Blocks {
 namespace Dispenser {
-BlockId toProtocol(Properties::Facing facing, Properties::Triggered triggered) {
+BlockId toProtocol(Properties::Facing facing, Properties::Triggered triggered)
+{
     switch (facing) {
     case Properties::Facing::NORTH:
         switch (triggered) {

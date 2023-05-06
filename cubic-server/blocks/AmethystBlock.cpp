@@ -1,7 +1,8 @@
 #include "AmethystBlock.hpp"
 namespace Blocks {
 namespace AmethystBlock {
-BlockId toProtocol() {
+BlockId toProtocol()
+{
     return 20403;
 }
 }

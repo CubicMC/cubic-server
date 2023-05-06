@@ -1,7 +1,8 @@
 #include "Tripwire.hpp"
 namespace Blocks {
 namespace Tripwire {
-BlockId toProtocol(Properties::Attached attached, Properties::Disarmed disarmed, Properties::East east, Properties::North north, Properties::Powered powered, Properties::South south, Properties::West west) {
+BlockId toProtocol(Properties::Attached attached, Properties::Disarmed disarmed, Properties::East east, Properties::North north, Properties::Powered powered, Properties::South south, Properties::West west)
+{
     switch (attached) {
     case Properties::Attached::TRUE:
         switch (disarmed) {

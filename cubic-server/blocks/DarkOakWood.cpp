@@ -1,7 +1,8 @@
 #include "DarkOakWood.hpp"
 namespace Blocks {
 namespace DarkOakWood {
-BlockId toProtocol(Properties::Axis axis) {
+BlockId toProtocol(Properties::Axis axis)
+{
     switch (axis) {
     case Properties::Axis::X:
         return 187;

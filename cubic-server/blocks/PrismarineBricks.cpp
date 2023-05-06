@@ -1,7 +1,8 @@
 #include "PrismarineBricks.hpp"
 namespace Blocks {
 namespace PrismarineBricks {
-BlockId toProtocol() {
+BlockId toProtocol()
+{
     return 9987;
 }
 }

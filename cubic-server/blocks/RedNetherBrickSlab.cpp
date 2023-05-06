@@ -1,7 +1,8 @@
 #include "RedNetherBrickSlab.hpp"
 namespace Blocks {
 namespace RedNetherBrickSlab {
-BlockId toProtocol(Properties::Type type, Properties::Waterlogged waterlogged) {
+BlockId toProtocol(Properties::Type type, Properties::Waterlogged waterlogged)
+{
     switch (type) {
     case Properties::Type::TOP:
         switch (waterlogged) {

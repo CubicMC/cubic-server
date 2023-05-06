@@ -1,7 +1,8 @@
 #include "FrostedIce.hpp"
 namespace Blocks {
 namespace FrostedIce {
-BlockId toProtocol(Properties::Age age) {
+BlockId toProtocol(Properties::Age age)
+{
     switch (age) {
     case Properties::Age::ZERO:
         return 11914;

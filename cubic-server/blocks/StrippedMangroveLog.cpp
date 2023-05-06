@@ -1,7 +1,8 @@
 #include "StrippedMangroveLog.hpp"
 namespace Blocks {
 namespace StrippedMangroveLog {
-BlockId toProtocol(Properties::Axis axis) {
+BlockId toProtocol(Properties::Axis axis)
+{
     switch (axis) {
     case Properties::Axis::X:
         return 166;

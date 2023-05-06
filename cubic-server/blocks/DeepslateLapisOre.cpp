@@ -1,7 +1,8 @@
 #include "DeepslateLapisOre.hpp"
 namespace Blocks {
 namespace DeepslateLapisOre {
-BlockId toProtocol() {
+BlockId toProtocol()
+{
     return 470;
 }
 }

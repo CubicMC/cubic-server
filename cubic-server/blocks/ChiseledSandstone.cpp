@@ -1,7 +1,8 @@
 #include "ChiseledSandstone.hpp"
 namespace Blocks {
 namespace ChiseledSandstone {
-BlockId toProtocol() {
+BlockId toProtocol()
+{
     return 485;
 }
 }

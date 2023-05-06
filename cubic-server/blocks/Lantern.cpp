@@ -1,7 +1,8 @@
 #include "Lantern.hpp"
 namespace Blocks {
 namespace Lantern {
-BlockId toProtocol(Properties::Hanging hanging, Properties::Waterlogged waterlogged) {
+BlockId toProtocol(Properties::Hanging hanging, Properties::Waterlogged waterlogged)
+{
     switch (hanging) {
     case Properties::Hanging::TRUE:
         switch (waterlogged) {

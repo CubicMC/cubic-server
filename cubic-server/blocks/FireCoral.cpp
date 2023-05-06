@@ -1,7 +1,8 @@
 #include "FireCoral.hpp"
 namespace Blocks {
 namespace FireCoral {
-BlockId toProtocol(Properties::Waterlogged waterlogged) {
+BlockId toProtocol(Properties::Waterlogged waterlogged)
+{
     switch (waterlogged) {
     case Properties::Waterlogged::TRUE:
         return 12201;

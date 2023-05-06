@@ -1,7 +1,8 @@
 #include "TrappedChest.hpp"
 namespace Blocks {
 namespace TrappedChest {
-BlockId toProtocol(Properties::Type type, Properties::Facing facing, Properties::Waterlogged waterlogged) {
+BlockId toProtocol(Properties::Type type, Properties::Facing facing, Properties::Waterlogged waterlogged)
+{
     switch (type) {
     case Properties::Type::SINGLE:
         switch (facing) {

@@ -1,7 +1,8 @@
 #include "GreenTerracotta.hpp"
 namespace Blocks {
 namespace GreenTerracotta {
-BlockId toProtocol() {
+BlockId toProtocol()
+{
     return 8973;
 }
 }

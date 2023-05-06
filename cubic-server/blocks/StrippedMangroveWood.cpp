@@ -1,7 +1,8 @@
 #include "StrippedMangroveWood.hpp"
 namespace Blocks {
 namespace StrippedMangroveWood {
-BlockId toProtocol(Properties::Axis axis) {
+BlockId toProtocol(Properties::Axis axis)
+{
     switch (axis) {
     case Properties::Axis::X:
         return 211;

@@ -1,7 +1,8 @@
 #include "RedstoneOre.hpp"
 namespace Blocks {
 namespace RedstoneOre {
-BlockId toProtocol(Properties::Lit lit) {
+BlockId toProtocol(Properties::Lit lit)
+{
     switch (lit) {
     case Properties::Lit::TRUE:
         return 5568;

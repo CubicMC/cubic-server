@@ -1,7 +1,8 @@
 #include "LimeCandle.hpp"
 namespace Blocks {
 namespace LimeCandle {
-BlockId toProtocol(Properties::Candles candles, Properties::Lit lit, Properties::Waterlogged waterlogged) {
+BlockId toProtocol(Properties::Candles candles, Properties::Lit lit, Properties::Waterlogged waterlogged)
+{
     switch (candles) {
     case Properties::Candles::ONE:
         switch (lit) {

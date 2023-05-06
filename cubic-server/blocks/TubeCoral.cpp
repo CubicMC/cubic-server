@@ -1,7 +1,8 @@
 #include "TubeCoral.hpp"
 namespace Blocks {
 namespace TubeCoral {
-BlockId toProtocol(Properties::Waterlogged waterlogged) {
+BlockId toProtocol(Properties::Waterlogged waterlogged)
+{
     switch (waterlogged) {
     case Properties::Waterlogged::TRUE:
         return 12195;

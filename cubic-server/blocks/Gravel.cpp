@@ -1,7 +1,8 @@
 #include "Gravel.hpp"
 namespace Blocks {
 namespace Gravel {
-BlockId toProtocol() {
+BlockId toProtocol()
+{
     return 111;
 }
 }

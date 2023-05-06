@@ -1,7 +1,8 @@
 #include "Stone.hpp"
 namespace Blocks {
 namespace Stone {
-BlockId toProtocol() {
+BlockId toProtocol()
+{
     return 1;
 }
 }

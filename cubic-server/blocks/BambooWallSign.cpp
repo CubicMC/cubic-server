@@ -1,7 +1,8 @@
 #include "BambooWallSign.hpp"
 namespace Blocks {
 namespace BambooWallSign {
-BlockId toProtocol(Properties::Facing facing, Properties::Waterlogged waterlogged) {
+BlockId toProtocol(Properties::Facing facing, Properties::Waterlogged waterlogged)
+{
     switch (facing) {
     case Properties::Facing::NORTH:
         switch (waterlogged) {

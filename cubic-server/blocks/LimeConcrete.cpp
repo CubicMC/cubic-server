@@ -1,7 +1,8 @@
 #include "LimeConcrete.hpp"
 namespace Blocks {
 namespace LimeConcrete {
-BlockId toProtocol() {
+BlockId toProtocol()
+{
     return 12108;
 }
 }

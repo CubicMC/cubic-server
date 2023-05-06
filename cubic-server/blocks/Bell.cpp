@@ -1,7 +1,8 @@
 #include "Bell.hpp"
 namespace Blocks {
 namespace Bell {
-BlockId toProtocol(Properties::Attachment attachment, Properties::Facing facing, Properties::Powered powered) {
+BlockId toProtocol(Properties::Attachment attachment, Properties::Facing facing, Properties::Powered powered)
+{
     switch (attachment) {
     case Properties::Attachment::FLOOR:
         switch (facing) {

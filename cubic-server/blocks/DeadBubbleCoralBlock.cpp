@@ -1,7 +1,8 @@
 #include "DeadBubbleCoralBlock.hpp"
 namespace Blocks {
 namespace DeadBubbleCoralBlock {
-BlockId toProtocol() {
+BlockId toProtocol()
+{
     return 12177;
 }
 }

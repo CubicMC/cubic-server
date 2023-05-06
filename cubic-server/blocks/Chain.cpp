@@ -1,7 +1,8 @@
 #include "Chain.hpp"
 namespace Blocks {
 namespace Chain {
-BlockId toProtocol(Properties::Axis axis, Properties::Waterlogged waterlogged) {
+BlockId toProtocol(Properties::Axis axis, Properties::Waterlogged waterlogged)
+{
     switch (axis) {
     case Properties::Axis::X:
         switch (waterlogged) {

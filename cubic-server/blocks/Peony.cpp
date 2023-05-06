@@ -1,7 +1,8 @@
 #include "Peony.hpp"
 namespace Blocks {
 namespace Peony {
-BlockId toProtocol(Properties::Half half) {
+BlockId toProtocol(Properties::Half half)
+{
     switch (half) {
     case Properties::Half::UPPER:
         return 10276;

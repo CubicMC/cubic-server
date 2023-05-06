@@ -1,7 +1,8 @@
 #include "HangingRoots.hpp"
 namespace Blocks {
 namespace HangingRoots {
-BlockId toProtocol(Properties::Waterlogged waterlogged) {
+BlockId toProtocol(Properties::Waterlogged waterlogged)
+{
     switch (waterlogged) {
     case Properties::Waterlogged::TRUE:
         return 21558;

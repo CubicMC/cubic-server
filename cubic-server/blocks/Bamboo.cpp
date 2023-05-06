@@ -1,7 +1,8 @@
 #include "Bamboo.hpp"
 namespace Blocks {
 namespace Bamboo {
-BlockId toProtocol(Properties::Age age, Properties::Leaves leaves, Properties::Stage stage) {
+BlockId toProtocol(Properties::Age age, Properties::Leaves leaves, Properties::Stage stage)
+{
     switch (age) {
     case Properties::Age::ZERO:
         switch (leaves) {

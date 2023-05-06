@@ -1,7 +1,8 @@
 #include "StructureVoid.hpp"
 namespace Blocks {
 namespace StructureVoid {
-BlockId toProtocol() {
+BlockId toProtocol()
+{
     return 11924;
 }
 }

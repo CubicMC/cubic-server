@@ -1,7 +1,8 @@
 #include "Bedrock.hpp"
 namespace Blocks {
 namespace Bedrock {
-BlockId toProtocol() {
+BlockId toProtocol()
+{
     return 76;
 }
 }

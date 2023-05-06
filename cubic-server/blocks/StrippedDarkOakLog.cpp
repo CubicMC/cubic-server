@@ -1,7 +1,8 @@
 #include "StrippedDarkOakLog.hpp"
 namespace Blocks {
 namespace StrippedDarkOakLog {
-BlockId toProtocol(Properties::Axis axis) {
+BlockId toProtocol(Properties::Axis axis)
+{
     switch (axis) {
     case Properties::Axis::X:
         return 160;

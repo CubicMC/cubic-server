@@ -1,7 +1,8 @@
 #include "JungleDoor.hpp"
 namespace Blocks {
 namespace JungleDoor {
-BlockId toProtocol(Properties::Facing facing, Properties::Half half, Properties::Hinge hinge, Properties::Open open, Properties::Powered powered) {
+BlockId toProtocol(Properties::Facing facing, Properties::Half half, Properties::Hinge hinge, Properties::Open open, Properties::Powered powered)
+{
     switch (facing) {
     case Properties::Facing::NORTH:
         switch (half) {

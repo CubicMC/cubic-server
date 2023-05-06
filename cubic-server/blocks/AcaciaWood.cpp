@@ -1,7 +1,8 @@
 #include "AcaciaWood.hpp"
 namespace Blocks {
 namespace AcaciaWood {
-BlockId toProtocol(Properties::Axis axis) {
+BlockId toProtocol(Properties::Axis axis)
+{
     switch (axis) {
     case Properties::Axis::X:
         return 184;

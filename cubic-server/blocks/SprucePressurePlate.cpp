@@ -1,7 +1,8 @@
 #include "SprucePressurePlate.hpp"
 namespace Blocks {
 namespace SprucePressurePlate {
-BlockId toProtocol(Properties::Powered powered) {
+BlockId toProtocol(Properties::Powered powered)
+{
     switch (powered) {
     case Properties::Powered::TRUE:
         return 5554;

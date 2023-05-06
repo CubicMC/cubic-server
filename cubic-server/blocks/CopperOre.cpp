@@ -1,7 +1,8 @@
 #include "CopperOre.hpp"
 namespace Blocks {
 namespace CopperOre {
-BlockId toProtocol() {
+BlockId toProtocol()
+{
     return 20696;
 }
 }

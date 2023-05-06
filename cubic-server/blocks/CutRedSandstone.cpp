@@ -1,7 +1,8 @@
 #include "CutRedSandstone.hpp"
 namespace Blocks {
 namespace CutRedSandstone {
-BlockId toProtocol() {
+BlockId toProtocol()
+{
     return 10604;
 }
 }

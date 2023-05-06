@@ -1,7 +1,8 @@
 #include "PottedJungleSapling.hpp"
 namespace Blocks {
 namespace PottedJungleSapling {
-BlockId toProtocol() {
+BlockId toProtocol()
+{
     return 8341;
 }
 }

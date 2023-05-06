@@ -1,7 +1,8 @@
 #include "PottedAllium.hpp"
 namespace Blocks {
 namespace PottedAllium {
-BlockId toProtocol() {
+BlockId toProtocol()
+{
     return 8349;
 }
 }

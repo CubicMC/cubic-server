@@ -1,7 +1,8 @@
 #include "OrangeConcrete.hpp"
 namespace Blocks {
 namespace OrangeConcrete {
-BlockId toProtocol() {
+BlockId toProtocol()
+{
     return 12104;
 }
 }

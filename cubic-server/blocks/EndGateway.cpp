@@ -1,7 +1,8 @@
 #include "EndGateway.hpp"
 namespace Blocks {
 namespace EndGateway {
-BlockId toProtocol() {
+BlockId toProtocol()
+{
     return 11889;
 }
 }

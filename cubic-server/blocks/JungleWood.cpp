@@ -1,7 +1,8 @@
 #include "JungleWood.hpp"
 namespace Blocks {
 namespace JungleWood {
-BlockId toProtocol(Properties::Axis axis) {
+BlockId toProtocol(Properties::Axis axis)
+{
     switch (axis) {
     case Properties::Axis::X:
         return 181;

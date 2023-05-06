@@ -1,7 +1,8 @@
 #include "MagentaBanner.hpp"
 namespace Blocks {
 namespace MagentaBanner {
-BlockId toProtocol(Properties::Rotation rotation) {
+BlockId toProtocol(Properties::Rotation rotation)
+{
     switch (rotation) {
     case Properties::Rotation::ZERO:
         return 10314;

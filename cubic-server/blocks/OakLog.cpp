@@ -1,7 +1,8 @@
 #include "OakLog.hpp"
 namespace Blocks {
 namespace OakLog {
-BlockId toProtocol(Properties::Axis axis) {
+BlockId toProtocol(Properties::Axis axis)
+{
     switch (axis) {
     case Properties::Axis::X:
         return 119;

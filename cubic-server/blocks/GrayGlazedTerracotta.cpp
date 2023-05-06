@@ -1,7 +1,8 @@
 #include "GrayGlazedTerracotta.hpp"
 namespace Blocks {
 namespace GrayGlazedTerracotta {
-BlockId toProtocol(Properties::Facing facing) {
+BlockId toProtocol(Properties::Facing facing)
+{
     switch (facing) {
     case Properties::Facing::NORTH:
         return 12067;

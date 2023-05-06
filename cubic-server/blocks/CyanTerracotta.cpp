@@ -1,7 +1,8 @@
 #include "CyanTerracotta.hpp"
 namespace Blocks {
 namespace CyanTerracotta {
-BlockId toProtocol() {
+BlockId toProtocol()
+{
     return 8969;
 }
 }

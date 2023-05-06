@@ -1,7 +1,8 @@
 #include "Pumpkin.hpp"
 namespace Blocks {
 namespace Pumpkin {
-BlockId toProtocol() {
+BlockId toProtocol()
+{
     return 5683;
 }
 }

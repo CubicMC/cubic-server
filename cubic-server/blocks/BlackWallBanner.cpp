@@ -1,7 +1,8 @@
 #include "BlackWallBanner.hpp"
 namespace Blocks {
 namespace BlackWallBanner {
-BlockId toProtocol(Properties::Facing facing) {
+BlockId toProtocol(Properties::Facing facing)
+{
     switch (facing) {
     case Properties::Facing::NORTH:
         return 10598;

@@ -1,7 +1,8 @@
 #include "AzaleaLeaves.hpp"
 namespace Blocks {
 namespace AzaleaLeaves {
-BlockId toProtocol(Properties::Distance distance, Properties::Persistent persistent, Properties::Waterlogged waterlogged) {
+BlockId toProtocol(Properties::Distance distance, Properties::Persistent persistent, Properties::Waterlogged waterlogged)
+{
     switch (distance) {
     case Properties::Distance::ONE:
         switch (persistent) {

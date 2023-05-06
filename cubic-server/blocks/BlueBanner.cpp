@@ -1,7 +1,8 @@
 #include "BlueBanner.hpp"
 namespace Blocks {
 namespace BlueBanner {
-BlockId toProtocol(Properties::Rotation rotation) {
+BlockId toProtocol(Properties::Rotation rotation)
+{
     switch (rotation) {
     case Properties::Rotation::ZERO:
         return 10458;

@@ -1,7 +1,8 @@
 #include "LightBlueWool.hpp"
 namespace Blocks {
 namespace LightBlueWool {
-BlockId toProtocol() {
+BlockId toProtocol()
+{
     return 1999;
 }
 }

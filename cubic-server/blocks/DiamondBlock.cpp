@@ -1,7 +1,8 @@
 #include "DiamondBlock.hpp"
 namespace Blocks {
 namespace DiamondBlock {
-BlockId toProtocol() {
+BlockId toProtocol()
+{
     return 4224;
 }
 }

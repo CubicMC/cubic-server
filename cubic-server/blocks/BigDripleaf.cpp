@@ -1,7 +1,8 @@
 #include "BigDripleaf.hpp"
 namespace Blocks {
 namespace BigDripleaf {
-BlockId toProtocol(Properties::Facing facing, Properties::Tilt tilt, Properties::Waterlogged waterlogged) {
+BlockId toProtocol(Properties::Facing facing, Properties::Tilt tilt, Properties::Waterlogged waterlogged)
+{
     switch (facing) {
     case Properties::Facing::NORTH:
         switch (tilt) {

@@ -1,7 +1,8 @@
 #include "PottedOxeyeDaisy.hpp"
 namespace Blocks {
 namespace PottedOxeyeDaisy {
-BlockId toProtocol() {
+BlockId toProtocol()
+{
     return 8355;
 }
 }

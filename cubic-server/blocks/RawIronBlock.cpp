@@ -1,7 +1,8 @@
 #include "RawIronBlock.hpp"
 namespace Blocks {
 namespace RawIronBlock {
-BlockId toProtocol() {
+BlockId toProtocol()
+{
     return 23216;
 }
 }

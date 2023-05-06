@@ -1,7 +1,8 @@
 #include "DarkPrismarineSlab.hpp"
 namespace Blocks {
 namespace DarkPrismarineSlab {
-BlockId toProtocol(Properties::Type type, Properties::Waterlogged waterlogged) {
+BlockId toProtocol(Properties::Type type, Properties::Waterlogged waterlogged)
+{
     switch (type) {
     case Properties::Type::TOP:
         switch (waterlogged) {

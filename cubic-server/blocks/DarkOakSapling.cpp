@@ -1,7 +1,8 @@
 #include "DarkOakSapling.hpp"
 namespace Blocks {
 namespace DarkOakSapling {
-BlockId toProtocol(Properties::Stage stage) {
+BlockId toProtocol(Properties::Stage stage)
+{
     switch (stage) {
     case Properties::Stage::ZERO:
         return 34;

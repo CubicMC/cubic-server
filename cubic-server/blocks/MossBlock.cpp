@@ -1,7 +1,8 @@
 #include "MossBlock.hpp"
 namespace Blocks {
 namespace MossBlock {
-BlockId toProtocol() {
+BlockId toProtocol()
+{
     return 21501;
 }
 }

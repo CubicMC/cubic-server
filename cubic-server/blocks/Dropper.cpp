@@ -1,7 +1,8 @@
 #include "Dropper.hpp"
 namespace Blocks {
 namespace Dropper {
-BlockId toProtocol(Properties::Facing facing, Properties::Triggered triggered) {
+BlockId toProtocol(Properties::Facing facing, Properties::Triggered triggered)
+{
     switch (facing) {
     case Properties::Facing::NORTH:
         switch (triggered) {

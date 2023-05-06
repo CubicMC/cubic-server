@@ -1,7 +1,8 @@
 #include "WaxedWeatheredCutCopperStairs.hpp"
 namespace Blocks {
 namespace WaxedWeatheredCutCopperStairs {
-BlockId toProtocol(Properties::Facing facing, Properties::Half half, Properties::Shape shape, Properties::Waterlogged waterlogged) {
+BlockId toProtocol(Properties::Facing facing, Properties::Half half, Properties::Shape shape, Properties::Waterlogged waterlogged)
+{
     switch (facing) {
     case Properties::Facing::NORTH:
         switch (half) {

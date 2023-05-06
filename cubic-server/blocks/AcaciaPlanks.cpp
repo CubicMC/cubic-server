@@ -1,7 +1,8 @@
 #include "AcaciaPlanks.hpp"
 namespace Blocks {
 namespace AcaciaPlanks {
-BlockId toProtocol() {
+BlockId toProtocol()
+{
     return 19;
 }
 }

@@ -1,7 +1,8 @@
 #include "LightBlueConcretePowder.hpp"
 namespace Blocks {
 namespace LightBlueConcretePowder {
-BlockId toProtocol() {
+BlockId toProtocol()
+{
     return 12122;
 }
 }

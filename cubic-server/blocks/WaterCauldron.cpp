@@ -1,7 +1,8 @@
 #include "WaterCauldron.hpp"
 namespace Blocks {
 namespace WaterCauldron {
-BlockId toProtocol(Properties::Level level) {
+BlockId toProtocol(Properties::Level level)
+{
     switch (level) {
     case Properties::Level::ONE:
         return 7169;

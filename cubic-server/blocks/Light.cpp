@@ -1,7 +1,8 @@
 #include "Light.hpp"
 namespace Blocks {
 namespace Light {
-BlockId toProtocol(Properties::Level level, Properties::Waterlogged waterlogged) {
+BlockId toProtocol(Properties::Level level, Properties::Waterlogged waterlogged)
+{
     switch (level) {
     case Properties::Level::ZERO:
         switch (waterlogged) {

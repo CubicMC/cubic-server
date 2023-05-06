@@ -1,7 +1,8 @@
 #include "RedShulkerBox.hpp"
 namespace Blocks {
 namespace RedShulkerBox {
-BlockId toProtocol(Properties::Facing facing) {
+BlockId toProtocol(Properties::Facing facing)
+{
     switch (facing) {
     case Properties::Facing::NORTH:
         return 12027;

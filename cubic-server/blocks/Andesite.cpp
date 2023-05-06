@@ -1,7 +1,8 @@
 #include "Andesite.hpp"
 namespace Blocks {
 namespace Andesite {
-BlockId toProtocol() {
+BlockId toProtocol()
+{
     return 6;
 }
 }

@@ -1,7 +1,8 @@
 #include "CaveVines.hpp"
 namespace Blocks {
 namespace CaveVines {
-BlockId toProtocol(Properties::Age age, Properties::Berries berries) {
+BlockId toProtocol(Properties::Age age, Properties::Berries berries)
+{
     switch (age) {
     case Properties::Age::ZERO:
         switch (berries) {

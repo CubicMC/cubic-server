@@ -1,7 +1,8 @@
 #include "DirtPath.hpp"
 namespace Blocks {
 namespace DirtPath {
-BlockId toProtocol() {
+BlockId toProtocol()
+{
     return 11888;
 }
 }

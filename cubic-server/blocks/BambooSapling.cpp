@@ -1,7 +1,8 @@
 #include "BambooSapling.hpp"
 namespace Blocks {
 namespace BambooSapling {
-BlockId toProtocol() {
+BlockId toProtocol()
+{
     return 12316;
 }
 }

@@ -1,7 +1,8 @@
 #include "SeaPickle.hpp"
 namespace Blocks {
 namespace SeaPickle {
-BlockId toProtocol(Properties::Pickles pickles, Properties::Waterlogged waterlogged) {
+BlockId toProtocol(Properties::Pickles pickles, Properties::Waterlogged waterlogged)
+{
     switch (pickles) {
     case Properties::Pickles::ONE:
         switch (waterlogged) {

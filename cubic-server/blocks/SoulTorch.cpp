@@ -1,7 +1,8 @@
 #include "SoulTorch.hpp"
 namespace Blocks {
 namespace SoulTorch {
-BlockId toProtocol() {
+BlockId toProtocol()
+{
     return 5693;
 }
 }

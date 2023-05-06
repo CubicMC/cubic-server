@@ -1,7 +1,8 @@
 #include "CaveAir.hpp"
 namespace Blocks {
 namespace CaveAir {
-BlockId toProtocol() {
+BlockId toProtocol()
+{
     return 12331;
 }
 }

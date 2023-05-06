@@ -1,7 +1,8 @@
 #include "PottedCactus.hpp"
 namespace Blocks {
 namespace PottedCactus {
-BlockId toProtocol() {
+BlockId toProtocol()
+{
     return 8362;
 }
 }

@@ -1,7 +1,8 @@
 #include "DetectorRail.hpp"
 namespace Blocks {
 namespace DetectorRail {
-BlockId toProtocol(Properties::Powered powered, Properties::Shape shape, Properties::Waterlogged waterlogged) {
+BlockId toProtocol(Properties::Powered powered, Properties::Shape shape, Properties::Waterlogged waterlogged)
+{
     switch (powered) {
     case Properties::Powered::TRUE:
         switch (shape) {

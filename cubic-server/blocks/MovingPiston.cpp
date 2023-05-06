@@ -1,7 +1,8 @@
 #include "MovingPiston.hpp"
 namespace Blocks {
 namespace MovingPiston {
-BlockId toProtocol(Properties::Type type, Properties::Facing facing) {
+BlockId toProtocol(Properties::Type type, Properties::Facing facing)
+{
     switch (type) {
     case Properties::Type::NORMAL:
         switch (facing) {

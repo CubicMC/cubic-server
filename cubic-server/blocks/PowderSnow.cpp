@@ -1,7 +1,8 @@
 #include "PowderSnow.hpp"
 namespace Blocks {
 namespace PowderSnow {
-BlockId toProtocol() {
+BlockId toProtocol()
+{
     return 20456;
 }
 }

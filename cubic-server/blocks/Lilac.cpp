@@ -1,7 +1,8 @@
 #include "Lilac.hpp"
 namespace Blocks {
 namespace Lilac {
-BlockId toProtocol(Properties::Half half) {
+BlockId toProtocol(Properties::Half half)
+{
     switch (half) {
     case Properties::Half::UPPER:
         return 10272;

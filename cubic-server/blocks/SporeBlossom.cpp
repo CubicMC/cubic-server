@@ -1,7 +1,8 @@
 #include "SporeBlossom.hpp"
 namespace Blocks {
 namespace SporeBlossom {
-BlockId toProtocol() {
+BlockId toProtocol()
+{
     return 21497;
 }
 }

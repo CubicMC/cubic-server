@@ -1,7 +1,8 @@
 #include "LightBlueCarpet.hpp"
 namespace Blocks {
 namespace LightBlueCarpet {
-BlockId toProtocol() {
+BlockId toProtocol()
+{
     return 10254;
 }
 }

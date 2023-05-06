@@ -1,7 +1,8 @@
 #include "RespawnAnchor.hpp"
 namespace Blocks {
 namespace RespawnAnchor {
-BlockId toProtocol(Properties::Charges charges) {
+BlockId toProtocol(Properties::Charges charges)
+{
     switch (charges) {
     case Properties::Charges::ZERO:
         return 18822;

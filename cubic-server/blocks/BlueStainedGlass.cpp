@@ -1,7 +1,8 @@
 #include "BlueStainedGlass.hpp"
 namespace Blocks {
 namespace BlueStainedGlass {
-BlockId toProtocol() {
+BlockId toProtocol()
+{
     return 5791;
 }
 }

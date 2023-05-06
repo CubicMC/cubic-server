@@ -1,7 +1,8 @@
 #include "TurtleEgg.hpp"
 namespace Blocks {
 namespace TurtleEgg {
-BlockId toProtocol(Properties::Eggs eggs, Properties::Hatch hatch) {
+BlockId toProtocol(Properties::Eggs eggs, Properties::Hatch hatch)
+{
     switch (eggs) {
     case Properties::Eggs::ONE:
         switch (hatch) {

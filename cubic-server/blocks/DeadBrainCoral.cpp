@@ -1,7 +1,8 @@
 #include "DeadBrainCoral.hpp"
 namespace Blocks {
 namespace DeadBrainCoral {
-BlockId toProtocol(Properties::Waterlogged waterlogged) {
+BlockId toProtocol(Properties::Waterlogged waterlogged)
+{
     switch (waterlogged) {
     case Properties::Waterlogged::TRUE:
         return 12187;

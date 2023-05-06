@@ -1,7 +1,8 @@
 #include "Barrel.hpp"
 namespace Blocks {
 namespace Barrel {
-BlockId toProtocol(Properties::Facing facing, Properties::Open open) {
+BlockId toProtocol(Properties::Facing facing, Properties::Open open)
+{
     switch (facing) {
     case Properties::Facing::NORTH:
         switch (open) {

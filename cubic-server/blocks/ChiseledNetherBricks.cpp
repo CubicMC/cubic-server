@@ -1,7 +1,8 @@
 #include "ChiseledNetherBricks.hpp"
 namespace Blocks {
 namespace ChiseledNetherBricks {
-BlockId toProtocol() {
+BlockId toProtocol()
+{
     return 20094;
 }
 }

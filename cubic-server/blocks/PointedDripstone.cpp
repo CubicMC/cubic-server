@@ -1,7 +1,8 @@
 #include "PointedDripstone.hpp"
 namespace Blocks {
 namespace PointedDripstone {
-BlockId toProtocol(Properties::Thickness thickness, Properties::Vertical_direction vertical_direction, Properties::Waterlogged waterlogged) {
+BlockId toProtocol(Properties::Thickness thickness, Properties::Vertical_direction vertical_direction, Properties::Waterlogged waterlogged)
+{
     switch (thickness) {
     case Properties::Thickness::TIP_MERGE:
         switch (vertical_direction) {

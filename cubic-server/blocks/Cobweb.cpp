@@ -1,7 +1,8 @@
 #include "Cobweb.hpp"
 namespace Blocks {
 namespace Cobweb {
-BlockId toProtocol() {
+BlockId toProtocol()
+{
     return 1953;
 }
 }

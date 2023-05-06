@@ -1,7 +1,8 @@
 #include "ChainCommandBlock.hpp"
 namespace Blocks {
 namespace ChainCommandBlock {
-BlockId toProtocol(Properties::Conditional conditional, Properties::Facing facing) {
+BlockId toProtocol(Properties::Conditional conditional, Properties::Facing facing)
+{
     switch (conditional) {
     case Properties::Conditional::TRUE:
         switch (facing) {

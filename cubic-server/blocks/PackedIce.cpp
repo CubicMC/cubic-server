@@ -1,7 +1,8 @@
 #include "PackedIce.hpp"
 namespace Blocks {
 namespace PackedIce {
-BlockId toProtocol() {
+BlockId toProtocol()
+{
     return 10269;
 }
 }

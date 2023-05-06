@@ -1,7 +1,8 @@
 #include "MagentaCandleCake.hpp"
 namespace Blocks {
 namespace MagentaCandleCake {
-BlockId toProtocol(Properties::Lit lit) {
+BlockId toProtocol(Properties::Lit lit)
+{
     switch (lit) {
     case Properties::Lit::TRUE:
         return 20375;

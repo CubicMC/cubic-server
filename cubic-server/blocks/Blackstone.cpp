@@ -1,7 +1,8 @@
 #include "Blackstone.hpp"
 namespace Blocks {
 namespace Blackstone {
-BlockId toProtocol() {
+BlockId toProtocol()
+{
     return 18832;
 }
 }

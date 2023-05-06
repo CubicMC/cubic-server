@@ -1,7 +1,8 @@
 #include "RootedDirt.hpp"
 namespace Blocks {
 namespace RootedDirt {
-BlockId toProtocol() {
+BlockId toProtocol()
+{
     return 21560;
 }
 }

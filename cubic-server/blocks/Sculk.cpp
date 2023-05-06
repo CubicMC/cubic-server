@@ -1,7 +1,8 @@
 #include "Sculk.hpp"
 namespace Blocks {
 namespace Sculk {
-BlockId toProtocol() {
+BlockId toProtocol()
+{
     return 20553;
 }
 }

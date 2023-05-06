@@ -1,7 +1,8 @@
 #include "WaxedWeatheredCutCopper.hpp"
 namespace Blocks {
 namespace WaxedWeatheredCutCopper {
-BlockId toProtocol() {
+BlockId toProtocol()
+{
     return 21051;
 }
 }

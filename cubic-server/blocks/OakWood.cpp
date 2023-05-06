@@ -1,7 +1,8 @@
 #include "OakWood.hpp"
 namespace Blocks {
 namespace OakWood {
-BlockId toProtocol(Properties::Axis axis) {
+BlockId toProtocol(Properties::Axis axis)
+{
     switch (axis) {
     case Properties::Axis::X:
         return 172;

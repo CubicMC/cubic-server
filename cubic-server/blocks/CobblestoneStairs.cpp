@@ -1,7 +1,8 @@
 #include "CobblestoneStairs.hpp"
 namespace Blocks {
 namespace CobblestoneStairs {
-BlockId toProtocol(Properties::Facing facing, Properties::Half half, Properties::Shape shape, Properties::Waterlogged waterlogged) {
+BlockId toProtocol(Properties::Facing facing, Properties::Half half, Properties::Shape shape, Properties::Waterlogged waterlogged)
+{
     switch (facing) {
     case Properties::Facing::NORTH:
         switch (half) {

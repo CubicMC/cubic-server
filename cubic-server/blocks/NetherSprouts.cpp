@@ -1,7 +1,8 @@
 #include "NetherSprouts.hpp"
 namespace Blocks {
 namespace NetherSprouts {
-BlockId toProtocol() {
+BlockId toProtocol()
+{
     return 17967;
 }
 }

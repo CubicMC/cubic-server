@@ -1,7 +1,8 @@
 #include "PottedAzaleaBush.hpp"
 namespace Blocks {
 namespace PottedAzaleaBush {
-BlockId toProtocol() {
+BlockId toProtocol()
+{
     return 23219;
 }
 }

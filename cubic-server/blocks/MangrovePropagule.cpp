@@ -1,7 +1,8 @@
 #include "MangrovePropagule.hpp"
 namespace Blocks {
 namespace MangrovePropagule {
-BlockId toProtocol(Properties::Age age, Properties::Hanging hanging, Properties::Stage stage, Properties::Waterlogged waterlogged) {
+BlockId toProtocol(Properties::Age age, Properties::Hanging hanging, Properties::Stage stage, Properties::Waterlogged waterlogged)
+{
     switch (age) {
     case Properties::Age::ZERO:
         switch (hanging) {

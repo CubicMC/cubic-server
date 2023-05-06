@@ -1,7 +1,8 @@
 #include "DarkOakPlanks.hpp"
 namespace Blocks {
 namespace DarkOakPlanks {
-BlockId toProtocol() {
+BlockId toProtocol()
+{
     return 20;
 }
 }

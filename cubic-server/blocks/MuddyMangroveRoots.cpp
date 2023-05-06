@@ -1,7 +1,8 @@
 #include "MuddyMangroveRoots.hpp"
 namespace Blocks {
 namespace MuddyMangroveRoots {
-BlockId toProtocol(Properties::Axis axis) {
+BlockId toProtocol(Properties::Axis axis)
+{
     switch (axis) {
     case Properties::Axis::X:
         return 142;

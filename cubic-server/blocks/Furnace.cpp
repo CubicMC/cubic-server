@@ -1,7 +1,8 @@
 #include "Furnace.hpp"
 namespace Blocks {
 namespace Furnace {
-BlockId toProtocol(Properties::Facing facing, Properties::Lit lit) {
+BlockId toProtocol(Properties::Facing facing, Properties::Lit lit)
+{
     switch (facing) {
     case Properties::Facing::NORTH:
         switch (lit) {

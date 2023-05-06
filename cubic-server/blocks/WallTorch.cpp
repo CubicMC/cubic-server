@@ -1,7 +1,8 @@
 #include "WallTorch.hpp"
 namespace Blocks {
 namespace WallTorch {
-BlockId toProtocol(Properties::Facing facing) {
+BlockId toProtocol(Properties::Facing facing)
+{
     switch (facing) {
     case Properties::Facing::NORTH:
         return 2304;

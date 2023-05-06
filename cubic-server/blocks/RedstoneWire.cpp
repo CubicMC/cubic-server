@@ -1,7 +1,8 @@
 #include "RedstoneWire.hpp"
 namespace Blocks {
 namespace RedstoneWire {
-BlockId toProtocol(Properties::East east, Properties::North north, Properties::Power power, Properties::South south, Properties::West west) {
+BlockId toProtocol(Properties::East east, Properties::North north, Properties::Power power, Properties::South south, Properties::West west)
+{
     switch (east) {
     case Properties::East::UP:
         switch (north) {

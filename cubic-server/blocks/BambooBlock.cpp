@@ -1,7 +1,8 @@
 #include "BambooBlock.hpp"
 namespace Blocks {
 namespace BambooBlock {
-BlockId toProtocol(Properties::Axis axis) {
+BlockId toProtocol(Properties::Axis axis)
+{
     switch (axis) {
     case Properties::Axis::X:
         return 145;

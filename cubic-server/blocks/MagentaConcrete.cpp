@@ -1,7 +1,8 @@
 #include "MagentaConcrete.hpp"
 namespace Blocks {
 namespace MagentaConcrete {
-BlockId toProtocol() {
+BlockId toProtocol()
+{
     return 12105;
 }
 }

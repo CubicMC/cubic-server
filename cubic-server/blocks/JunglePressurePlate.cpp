@@ -1,7 +1,8 @@
 #include "JunglePressurePlate.hpp"
 namespace Blocks {
 namespace JunglePressurePlate {
-BlockId toProtocol(Properties::Powered powered) {
+BlockId toProtocol(Properties::Powered powered)
+{
     switch (powered) {
     case Properties::Powered::TRUE:
         return 5558;

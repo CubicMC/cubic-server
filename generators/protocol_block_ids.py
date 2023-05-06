@@ -144,7 +144,7 @@ class Block:
             for prop in self.properties:
                 data += "Properties::" + prop.capitalize() + " " + prop + ", "
             data = data[:-2]
-        data += ") {\n"
+        data += ")\n{\n"
         if self.properties != []:
             all_props = []
             for prop in self.properties:

@@ -1,7 +1,8 @@
 #include "SugarCane.hpp"
 namespace Blocks {
 namespace SugarCane {
-BlockId toProtocol(Properties::Age age) {
+BlockId toProtocol(Properties::Age age)
+{
     switch (age) {
     case Properties::Age::ZERO:
         return 5633;

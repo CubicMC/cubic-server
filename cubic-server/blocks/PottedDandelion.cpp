@@ -1,7 +1,8 @@
 #include "PottedDandelion.hpp"
 namespace Blocks {
 namespace PottedDandelion {
-BlockId toProtocol() {
+BlockId toProtocol()
+{
     return 8346;
 }
 }

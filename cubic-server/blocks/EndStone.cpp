@@ -1,7 +1,8 @@
 #include "EndStone.hpp"
 namespace Blocks {
 namespace EndStone {
-BlockId toProtocol() {
+BlockId toProtocol()
+{
     return 7185;
 }
 }

@@ -1,7 +1,8 @@
 #include "StrippedAcaciaLog.hpp"
 namespace Blocks {
 namespace StrippedAcaciaLog {
-BlockId toProtocol(Properties::Axis axis) {
+BlockId toProtocol(Properties::Axis axis)
+{
     switch (axis) {
     case Properties::Axis::X:
         return 157;

@@ -1,7 +1,8 @@
 #include "AzureBluet.hpp"
 namespace Blocks {
 namespace AzureBluet {
-BlockId toProtocol() {
+BlockId toProtocol()
+{
     return 2028;
 }
 }

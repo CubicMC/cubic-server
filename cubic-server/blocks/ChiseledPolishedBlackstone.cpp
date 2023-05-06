@@ -1,7 +1,8 @@
 #include "ChiseledPolishedBlackstone.hpp"
 namespace Blocks {
 namespace ChiseledPolishedBlackstone {
-BlockId toProtocol() {
+BlockId toProtocol()
+{
     return 19246;
 }
 }

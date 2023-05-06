@@ -1,7 +1,8 @@
 #include "BirchPressurePlate.hpp"
 namespace Blocks {
 namespace BirchPressurePlate {
-BlockId toProtocol(Properties::Powered powered) {
+BlockId toProtocol(Properties::Powered powered)
+{
     switch (powered) {
     case Properties::Powered::TRUE:
         return 5556;

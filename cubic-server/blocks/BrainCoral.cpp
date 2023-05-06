@@ -1,7 +1,8 @@
 #include "BrainCoral.hpp"
 namespace Blocks {
 namespace BrainCoral {
-BlockId toProtocol(Properties::Waterlogged waterlogged) {
+BlockId toProtocol(Properties::Waterlogged waterlogged)
+{
     switch (waterlogged) {
     case Properties::Waterlogged::TRUE:
         return 12197;

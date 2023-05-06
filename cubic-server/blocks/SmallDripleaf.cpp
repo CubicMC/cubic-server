@@ -1,7 +1,8 @@
 #include "SmallDripleaf.hpp"
 namespace Blocks {
 namespace SmallDripleaf {
-BlockId toProtocol(Properties::Facing facing, Properties::Half half, Properties::Waterlogged waterlogged) {
+BlockId toProtocol(Properties::Facing facing, Properties::Half half, Properties::Waterlogged waterlogged)
+{
     switch (facing) {
     case Properties::Facing::NORTH:
         switch (half) {

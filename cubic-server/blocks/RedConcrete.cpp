@@ -1,7 +1,8 @@
 #include "RedConcrete.hpp"
 namespace Blocks {
 namespace RedConcrete {
-BlockId toProtocol() {
+BlockId toProtocol()
+{
     return 12117;
 }
 }

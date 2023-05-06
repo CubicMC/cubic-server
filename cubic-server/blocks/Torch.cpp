@@ -1,7 +1,8 @@
 #include "Torch.hpp"
 namespace Blocks {
 namespace Torch {
-BlockId toProtocol() {
+BlockId toProtocol()
+{
     return 2303;
 }
 }

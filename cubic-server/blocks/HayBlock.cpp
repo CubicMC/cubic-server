@@ -1,7 +1,8 @@
 #include "HayBlock.hpp"
 namespace Blocks {
 namespace HayBlock {
-BlockId toProtocol(Properties::Axis axis) {
+BlockId toProtocol(Properties::Axis axis)
+{
     switch (axis) {
     case Properties::Axis::X:
         return 10248;

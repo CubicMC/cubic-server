@@ -1,7 +1,8 @@
 #include "SculkSensor.hpp"
 namespace Blocks {
 namespace SculkSensor {
-BlockId toProtocol(Properties::Power power, Properties::Sculk_sensor_phase sculk_sensor_phase, Properties::Waterlogged waterlogged) {
+BlockId toProtocol(Properties::Power power, Properties::Sculk_sensor_phase sculk_sensor_phase, Properties::Waterlogged waterlogged)
+{
     switch (power) {
     case Properties::Power::ZERO:
         switch (sculk_sensor_phase) {

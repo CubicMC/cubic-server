@@ -1,7 +1,8 @@
 #include "MediumAmethystBud.hpp"
 namespace Blocks {
 namespace MediumAmethystBud {
-BlockId toProtocol(Properties::Facing facing, Properties::Waterlogged waterlogged) {
+BlockId toProtocol(Properties::Facing facing, Properties::Waterlogged waterlogged)
+{
     switch (facing) {
     case Properties::Facing::NORTH:
         switch (waterlogged) {

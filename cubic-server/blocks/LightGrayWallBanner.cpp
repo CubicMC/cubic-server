@@ -1,7 +1,8 @@
 #include "LightGrayWallBanner.hpp"
 namespace Blocks {
 namespace LightGrayWallBanner {
-BlockId toProtocol(Properties::Facing facing) {
+BlockId toProtocol(Properties::Facing facing)
+{
     switch (facing) {
     case Properties::Facing::NORTH:
         return 10570;

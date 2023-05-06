@@ -1,7 +1,8 @@
 #include "MangrovePressurePlate.hpp"
 namespace Blocks {
 namespace MangrovePressurePlate {
-BlockId toProtocol(Properties::Powered powered) {
+BlockId toProtocol(Properties::Powered powered)
+{
     switch (powered) {
     case Properties::Powered::TRUE:
         return 5564;

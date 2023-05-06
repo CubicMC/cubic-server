@@ -1,7 +1,8 @@
 #include "GrassBlock.hpp"
 namespace Blocks {
 namespace GrassBlock {
-BlockId toProtocol(Properties::Snowy snowy) {
+BlockId toProtocol(Properties::Snowy snowy)
+{
     switch (snowy) {
     case Properties::Snowy::TRUE:
         return 8;

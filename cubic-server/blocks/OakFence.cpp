@@ -1,7 +1,8 @@
 #include "OakFence.hpp"
 namespace Blocks {
 namespace OakFence {
-BlockId toProtocol(Properties::East east, Properties::North north, Properties::South south, Properties::Waterlogged waterlogged, Properties::West west) {
+BlockId toProtocol(Properties::East east, Properties::North north, Properties::South south, Properties::Waterlogged waterlogged, Properties::West west)
+{
     switch (east) {
     case Properties::East::TRUE:
         switch (north) {

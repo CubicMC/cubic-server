@@ -1,7 +1,8 @@
 #include "MagentaShulkerBox.hpp"
 namespace Blocks {
 namespace MagentaShulkerBox {
-BlockId toProtocol(Properties::Facing facing) {
+BlockId toProtocol(Properties::Facing facing)
+{
     switch (facing) {
     case Properties::Facing::NORTH:
         return 11955;

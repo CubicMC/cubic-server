@@ -1,7 +1,8 @@
 #include "BrickWall.hpp"
 namespace Blocks {
 namespace BrickWall {
-BlockId toProtocol(Properties::East east, Properties::North north, Properties::South south, Properties::Up up, Properties::Waterlogged waterlogged, Properties::West west) {
+BlockId toProtocol(Properties::East east, Properties::North north, Properties::South south, Properties::Up up, Properties::Waterlogged waterlogged, Properties::West west)
+{
     switch (east) {
     case Properties::East::NONE:
         switch (north) {

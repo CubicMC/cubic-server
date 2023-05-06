@@ -1,7 +1,8 @@
 #include "PottedBrownMushroom.hpp"
 namespace Blocks {
 namespace PottedBrownMushroom {
-BlockId toProtocol() {
+BlockId toProtocol()
+{
     return 8360;
 }
 }

@@ -1,7 +1,8 @@
 #include "InfestedMossyStoneBricks.hpp"
 namespace Blocks {
 namespace InfestedMossyStoneBricks {
-BlockId toProtocol() {
+BlockId toProtocol()
+{
     return 6317;
 }
 }

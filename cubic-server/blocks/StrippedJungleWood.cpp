@@ -1,7 +1,8 @@
 #include "StrippedJungleWood.hpp"
 namespace Blocks {
 namespace StrippedJungleWood {
-BlockId toProtocol(Properties::Axis axis) {
+BlockId toProtocol(Properties::Axis axis)
+{
     switch (axis) {
     case Properties::Axis::X:
         return 202;

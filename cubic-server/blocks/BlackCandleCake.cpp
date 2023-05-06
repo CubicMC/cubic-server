@@ -1,7 +1,8 @@
 #include "BlackCandleCake.hpp"
 namespace Blocks {
 namespace BlackCandleCake {
-BlockId toProtocol(Properties::Lit lit) {
+BlockId toProtocol(Properties::Lit lit)
+{
     switch (lit) {
     case Properties::Lit::TRUE:
         return 20401;

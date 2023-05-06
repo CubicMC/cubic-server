@@ -1,7 +1,8 @@
 #include "Snow.hpp"
 namespace Blocks {
 namespace Snow {
-BlockId toProtocol(Properties::Layers layers) {
+BlockId toProtocol(Properties::Layers layers)
+{
     switch (layers) {
     case Properties::Layers::ONE:
         return 5606;

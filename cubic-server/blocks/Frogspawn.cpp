@@ -1,7 +1,8 @@
 #include "Frogspawn.hpp"
 namespace Blocks {
 namespace Frogspawn {
-BlockId toProtocol() {
+BlockId toProtocol()
+{
     return 23230;
 }
 }

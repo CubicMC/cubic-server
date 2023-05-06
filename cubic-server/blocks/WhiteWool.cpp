@@ -1,7 +1,8 @@
 #include "WhiteWool.hpp"
 namespace Blocks {
 namespace WhiteWool {
-BlockId toProtocol() {
+BlockId toProtocol()
+{
     return 1996;
 }
 }

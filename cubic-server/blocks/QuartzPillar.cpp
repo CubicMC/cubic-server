@@ -1,7 +1,8 @@
 #include "QuartzPillar.hpp"
 namespace Blocks {
 namespace QuartzPillar {
-BlockId toProtocol(Properties::Axis axis) {
+BlockId toProtocol(Properties::Axis axis)
+{
     switch (axis) {
     case Properties::Axis::X:
         return 8841;

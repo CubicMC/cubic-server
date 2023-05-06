@@ -1,7 +1,8 @@
 #include "Target.hpp"
 namespace Blocks {
 namespace Target {
-BlockId toProtocol(Properties::Power power) {
+BlockId toProtocol(Properties::Power power)
+{
     switch (power) {
     case Properties::Power::ZERO:
         return 18753;

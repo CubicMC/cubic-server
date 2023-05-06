@@ -1,7 +1,8 @@
 #include "Scaffolding.hpp"
 namespace Blocks {
 namespace Scaffolding {
-BlockId toProtocol(Properties::Bottom bottom, Properties::Distance distance, Properties::Waterlogged waterlogged) {
+BlockId toProtocol(Properties::Bottom bottom, Properties::Distance distance, Properties::Waterlogged waterlogged)
+{
     switch (bottom) {
     case Properties::Bottom::TRUE:
         switch (distance) {

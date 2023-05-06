@@ -1,7 +1,8 @@
 #include "Cobblestone.hpp"
 namespace Blocks {
 namespace Cobblestone {
-BlockId toProtocol() {
+BlockId toProtocol()
+{
     return 14;
 }
 }

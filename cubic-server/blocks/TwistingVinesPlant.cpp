@@ -1,7 +1,8 @@
 #include "TwistingVinesPlant.hpp"
 namespace Blocks {
 namespace TwistingVinesPlant {
-BlockId toProtocol() {
+BlockId toProtocol()
+{
     return 18036;
 }
 }

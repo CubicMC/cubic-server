@@ -1,7 +1,8 @@
 #include "LightningRod.hpp"
 namespace Blocks {
 namespace LightningRod {
-BlockId toProtocol(Properties::Facing facing, Properties::Powered powered, Properties::Waterlogged waterlogged) {
+BlockId toProtocol(Properties::Facing facing, Properties::Powered powered, Properties::Waterlogged waterlogged)
+{
     switch (facing) {
     case Properties::Facing::NORTH:
         switch (powered) {

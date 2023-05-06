@@ -1,7 +1,8 @@
 #include "PiglinWallHead.hpp"
 namespace Blocks {
 namespace PiglinWallHead {
-BlockId toProtocol(Properties::Facing facing) {
+BlockId toProtocol(Properties::Facing facing)
+{
     switch (facing) {
     case Properties::Facing::NORTH:
         return 8707;

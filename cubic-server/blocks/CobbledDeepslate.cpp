@@ -1,7 +1,8 @@
 #include "CobbledDeepslate.hpp"
 namespace Blocks {
 namespace CobbledDeepslate {
-BlockId toProtocol() {
+BlockId toProtocol()
+{
     return 21565;
 }
 }

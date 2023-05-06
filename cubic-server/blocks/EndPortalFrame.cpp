@@ -1,7 +1,8 @@
 #include "EndPortalFrame.hpp"
 namespace Blocks {
 namespace EndPortalFrame {
-BlockId toProtocol(Properties::Eye eye, Properties::Facing facing) {
+BlockId toProtocol(Properties::Eye eye, Properties::Facing facing)
+{
     switch (eye) {
     case Properties::Eye::TRUE:
         switch (facing) {

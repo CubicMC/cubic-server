@@ -1,7 +1,8 @@
 #include "ZombieHead.hpp"
 namespace Blocks {
 namespace ZombieHead {
-BlockId toProtocol(Properties::Rotation rotation) {
+BlockId toProtocol(Properties::Rotation rotation)
+{
     switch (rotation) {
     case Properties::Rotation::ZERO:
         return 8611;

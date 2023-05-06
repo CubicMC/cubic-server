@@ -1,7 +1,8 @@
 #include "OakFenceGate.hpp"
 namespace Blocks {
 namespace OakFenceGate {
-BlockId toProtocol(Properties::Facing facing, Properties::In_wall in_wall, Properties::Open open, Properties::Powered powered) {
+BlockId toProtocol(Properties::Facing facing, Properties::In_wall in_wall, Properties::Open open, Properties::Powered powered)
+{
     switch (facing) {
     case Properties::Facing::NORTH:
         switch (in_wall) {

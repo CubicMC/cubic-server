@@ -1,7 +1,8 @@
 #include "PowderSnowCauldron.hpp"
 namespace Blocks {
 namespace PowderSnowCauldron {
-BlockId toProtocol(Properties::Level level) {
+BlockId toProtocol(Properties::Level level)
+{
     switch (level) {
     case Properties::Level::ONE:
         return 7173;

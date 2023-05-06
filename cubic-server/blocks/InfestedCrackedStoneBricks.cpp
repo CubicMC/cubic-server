@@ -1,7 +1,8 @@
 #include "InfestedCrackedStoneBricks.hpp"
 namespace Blocks {
 namespace InfestedCrackedStoneBricks {
-BlockId toProtocol() {
+BlockId toProtocol()
+{
     return 6318;
 }
 }
