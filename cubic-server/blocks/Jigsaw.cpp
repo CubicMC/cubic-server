@@ -27,6 +27,8 @@ namespace Blocks {
                 return 18742;
             case Properties::Orientation::SOUTH_UP:
                 return 18743;
+            default:
+                return 0;
             }
             return 0;
         }

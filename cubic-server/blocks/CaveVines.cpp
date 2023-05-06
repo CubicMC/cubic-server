@@ -9,6 +9,8 @@ namespace Blocks {
                     return 21443;
                 case Properties::Berries::FALSE:
                     return 21444;
+                default:
+                    return 0;
                 }
             case Properties::Age::ONE:
                 switch (berries) {
@@ -16,6 +18,8 @@ namespace Blocks {
                     return 21445;
                 case Properties::Berries::FALSE:
                     return 21446;
+                default:
+                    return 0;
                 }
             case Properties::Age::TWO:
                 switch (berries) {
@@ -23,6 +27,8 @@ namespace Blocks {
                     return 21447;
                 case Properties::Berries::FALSE:
                     return 21448;
+                default:
+                    return 0;
                 }
             case Properties::Age::THREE:
                 switch (berries) {
@@ -30,6 +36,8 @@ namespace Blocks {
                     return 21449;
                 case Properties::Berries::FALSE:
                     return 21450;
+                default:
+                    return 0;
                 }
             case Properties::Age::FOUR:
                 switch (berries) {
@@ -37,6 +45,8 @@ namespace Blocks {
                     return 21451;
                 case Properties::Berries::FALSE:
                     return 21452;
+                default:
+                    return 0;
                 }
             case Properties::Age::FIVE:
                 switch (berries) {
@@ -44,6 +54,8 @@ namespace Blocks {
                     return 21453;
                 case Properties::Berries::FALSE:
                     return 21454;
+                default:
+                    return 0;
                 }
             case Properties::Age::SIX:
                 switch (berries) {
@@ -51,6 +63,8 @@ namespace Blocks {
                     return 21455;
                 case Properties::Berries::FALSE:
                     return 21456;
+                default:
+                    return 0;
                 }
             case Properties::Age::SEVEN:
                 switch (berries) {
@@ -58,6 +72,8 @@ namespace Blocks {
                     return 21457;
                 case Properties::Berries::FALSE:
                     return 21458;
+                default:
+                    return 0;
                 }
             case Properties::Age::EIGHT:
                 switch (berries) {
@@ -65,6 +81,8 @@ namespace Blocks {
                     return 21459;
                 case Properties::Berries::FALSE:
                     return 21460;
+                default:
+                    return 0;
                 }
             case Properties::Age::NINE:
                 switch (berries) {
@@ -72,6 +90,8 @@ namespace Blocks {
                     return 21461;
                 case Properties::Berries::FALSE:
                     return 21462;
+                default:
+                    return 0;
                 }
             case Properties::Age::TEN:
                 switch (berries) {
@@ -79,6 +99,8 @@ namespace Blocks {
                     return 21463;
                 case Properties::Berries::FALSE:
                     return 21464;
+                default:
+                    return 0;
                 }
             case Properties::Age::ELEVEN:
                 switch (berries) {
@@ -86,6 +108,8 @@ namespace Blocks {
                     return 21465;
                 case Properties::Berries::FALSE:
                     return 21466;
+                default:
+                    return 0;
                 }
             case Properties::Age::TWELVE:
                 switch (berries) {
@@ -93,6 +117,8 @@ namespace Blocks {
                     return 21467;
                 case Properties::Berries::FALSE:
                     return 21468;
+                default:
+                    return 0;
                 }
             case Properties::Age::THIRTEEN:
                 switch (berries) {
@@ -100,6 +126,8 @@ namespace Blocks {
                     return 21469;
                 case Properties::Berries::FALSE:
                     return 21470;
+                default:
+                    return 0;
                 }
             case Properties::Age::FOURTEEN:
                 switch (berries) {
@@ -107,6 +135,8 @@ namespace Blocks {
                     return 21471;
                 case Properties::Berries::FALSE:
                     return 21472;
+                default:
+                    return 0;
                 }
             case Properties::Age::FIFTEEN:
                 switch (berries) {
@@ -114,6 +144,8 @@ namespace Blocks {
                     return 21473;
                 case Properties::Berries::FALSE:
                     return 21474;
+                default:
+                    return 0;
                 }
             case Properties::Age::SIXTEEN:
                 switch (berries) {
@@ -121,6 +153,8 @@ namespace Blocks {
                     return 21475;
                 case Properties::Berries::FALSE:
                     return 21476;
+                default:
+                    return 0;
                 }
             case Properties::Age::SEVENTEEN:
                 switch (berries) {
@@ -128,6 +162,8 @@ namespace Blocks {
                     return 21477;
                 case Properties::Berries::FALSE:
                     return 21478;
+                default:
+                    return 0;
                 }
             case Properties::Age::EIGHTEEN:
                 switch (berries) {
@@ -135,6 +171,8 @@ namespace Blocks {
                     return 21479;
                 case Properties::Berries::FALSE:
                     return 21480;
+                default:
+                    return 0;
                 }
             case Properties::Age::NINETEEN:
                 switch (berries) {
@@ -142,6 +180,8 @@ namespace Blocks {
                     return 21481;
                 case Properties::Berries::FALSE:
                     return 21482;
+                default:
+                    return 0;
                 }
             case Properties::Age::TWENTY:
                 switch (berries) {
@@ -149,6 +189,8 @@ namespace Blocks {
                     return 21483;
                 case Properties::Berries::FALSE:
                     return 21484;
+                default:
+                    return 0;
                 }
             case Properties::Age::TWENTY_ONE:
                 switch (berries) {
@@ -156,6 +198,8 @@ namespace Blocks {
                     return 21485;
                 case Properties::Berries::FALSE:
                     return 21486;
+                default:
+                    return 0;
                 }
             case Properties::Age::TWENTY_TWO:
                 switch (berries) {
@@ -163,6 +207,8 @@ namespace Blocks {
                     return 21487;
                 case Properties::Berries::FALSE:
                     return 21488;
+                default:
+                    return 0;
                 }
             case Properties::Age::TWENTY_THREE:
                 switch (berries) {
@@ -170,6 +216,8 @@ namespace Blocks {
                     return 21489;
                 case Properties::Berries::FALSE:
                     return 21490;
+                default:
+                    return 0;
                 }
             case Properties::Age::TWENTY_FOUR:
                 switch (berries) {
@@ -177,6 +225,8 @@ namespace Blocks {
                     return 21491;
                 case Properties::Berries::FALSE:
                     return 21492;
+                default:
+                    return 0;
                 }
             case Properties::Age::TWENTY_FIVE:
                 switch (berries) {
@@ -184,7 +234,11 @@ namespace Blocks {
                     return 21493;
                 case Properties::Berries::FALSE:
                     return 21494;
+                default:
+                    return 0;
                 }
+            default:
+                return 0;
             }
             return 0;
         }

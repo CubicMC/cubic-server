@@ -13,6 +13,8 @@ namespace Blocks {
                 return 18825;
             case Properties::Charges::FOUR:
                 return 18826;
+            default:
+                return 0;
             }
             return 0;
         }

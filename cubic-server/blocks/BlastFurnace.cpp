@@ -9,6 +9,8 @@ namespace Blocks {
                     return 17800;
                 case Properties::Lit::FALSE:
                     return 17801;
+                default:
+                    return 0;
                 }
             case Properties::Facing::SOUTH:
                 switch (lit) {
@@ -16,6 +18,8 @@ namespace Blocks {
                     return 17802;
                 case Properties::Lit::FALSE:
                     return 17803;
+                default:
+                    return 0;
                 }
             case Properties::Facing::WEST:
                 switch (lit) {
@@ -23,6 +27,8 @@ namespace Blocks {
                     return 17804;
                 case Properties::Lit::FALSE:
                     return 17805;
+                default:
+                    return 0;
                 }
             case Properties::Facing::EAST:
                 switch (lit) {
@@ -30,7 +36,11 @@ namespace Blocks {
                     return 17806;
                 case Properties::Lit::FALSE:
                     return 17807;
+                default:
+                    return 0;
                 }
+            default:
+                return 0;
             }
             return 0;
         }

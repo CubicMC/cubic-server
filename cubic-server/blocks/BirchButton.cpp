@@ -11,6 +11,8 @@ namespace Blocks {
                         return 8427;
                     case Properties::Powered::FALSE:
                         return 8428;
+                    default:
+                        return 0;
                     }
                 case Properties::Facing::SOUTH:
                     switch (powered) {
@@ -18,6 +20,8 @@ namespace Blocks {
                         return 8429;
                     case Properties::Powered::FALSE:
                         return 8430;
+                    default:
+                        return 0;
                     }
                 case Properties::Facing::WEST:
                     switch (powered) {
@@ -25,6 +29,8 @@ namespace Blocks {
                         return 8431;
                     case Properties::Powered::FALSE:
                         return 8432;
+                    default:
+                        return 0;
                     }
                 case Properties::Facing::EAST:
                     switch (powered) {
@@ -32,7 +38,11 @@ namespace Blocks {
                         return 8433;
                     case Properties::Powered::FALSE:
                         return 8434;
+                    default:
+                        return 0;
                     }
+                default:
+                    return 0;
                 }
             case Properties::Face::WALL:
                 switch (facing) {
@@ -42,6 +52,8 @@ namespace Blocks {
                         return 8435;
                     case Properties::Powered::FALSE:
                         return 8436;
+                    default:
+                        return 0;
                     }
                 case Properties::Facing::SOUTH:
                     switch (powered) {
@@ -49,6 +61,8 @@ namespace Blocks {
                         return 8437;
                     case Properties::Powered::FALSE:
                         return 8438;
+                    default:
+                        return 0;
                     }
                 case Properties::Facing::WEST:
                     switch (powered) {
@@ -56,6 +70,8 @@ namespace Blocks {
                         return 8439;
                     case Properties::Powered::FALSE:
                         return 8440;
+                    default:
+                        return 0;
                     }
                 case Properties::Facing::EAST:
                     switch (powered) {
@@ -63,7 +79,11 @@ namespace Blocks {
                         return 8441;
                     case Properties::Powered::FALSE:
                         return 8442;
+                    default:
+                        return 0;
                     }
+                default:
+                    return 0;
                 }
             case Properties::Face::CEILING:
                 switch (facing) {
@@ -73,6 +93,8 @@ namespace Blocks {
                         return 8443;
                     case Properties::Powered::FALSE:
                         return 8444;
+                    default:
+                        return 0;
                     }
                 case Properties::Facing::SOUTH:
                     switch (powered) {
@@ -80,6 +102,8 @@ namespace Blocks {
                         return 8445;
                     case Properties::Powered::FALSE:
                         return 8446;
+                    default:
+                        return 0;
                     }
                 case Properties::Facing::WEST:
                     switch (powered) {
@@ -87,6 +111,8 @@ namespace Blocks {
                         return 8447;
                     case Properties::Powered::FALSE:
                         return 8448;
+                    default:
+                        return 0;
                     }
                 case Properties::Facing::EAST:
                     switch (powered) {
@@ -94,8 +120,14 @@ namespace Blocks {
                         return 8449;
                     case Properties::Powered::FALSE:
                         return 8450;
+                    default:
+                        return 0;
                     }
+                default:
+                    return 0;
                 }
+            default:
+                return 0;
             }
             return 0;
         }

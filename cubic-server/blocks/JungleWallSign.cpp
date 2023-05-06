@@ -9,6 +9,8 @@ namespace Blocks {
                     return 4710;
                 case Properties::Waterlogged::FALSE:
                     return 4711;
+                default:
+                    return 0;
                 }
             case Properties::Facing::SOUTH:
                 switch (waterlogged) {
@@ -16,6 +18,8 @@ namespace Blocks {
                     return 4712;
                 case Properties::Waterlogged::FALSE:
                     return 4713;
+                default:
+                    return 0;
                 }
             case Properties::Facing::WEST:
                 switch (waterlogged) {
@@ -23,6 +27,8 @@ namespace Blocks {
                     return 4714;
                 case Properties::Waterlogged::FALSE:
                     return 4715;
+                default:
+                    return 0;
                 }
             case Properties::Facing::EAST:
                 switch (waterlogged) {
@@ -30,7 +36,11 @@ namespace Blocks {
                     return 4716;
                 case Properties::Waterlogged::FALSE:
                     return 4717;
+                default:
+                    return 0;
                 }
+            default:
+                return 0;
             }
             return 0;
         }

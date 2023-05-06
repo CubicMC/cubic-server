@@ -19,6 +19,8 @@ namespace Blocks {
                 return 5612;
             case Properties::Layers::EIGHT:
                 return 5613;
+            default:
+                return 0;
             }
             return 0;
         }

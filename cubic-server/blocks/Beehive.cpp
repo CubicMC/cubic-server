@@ -17,6 +17,8 @@ namespace Blocks {
                     return 18797;
                 case Properties::Honey_level::FIVE:
                     return 18798;
+                default:
+                    return 0;
                 }
             case Properties::Facing::SOUTH:
                 switch (honey_level) {
@@ -32,6 +34,8 @@ namespace Blocks {
                     return 18803;
                 case Properties::Honey_level::FIVE:
                     return 18804;
+                default:
+                    return 0;
                 }
             case Properties::Facing::WEST:
                 switch (honey_level) {
@@ -47,6 +51,8 @@ namespace Blocks {
                     return 18809;
                 case Properties::Honey_level::FIVE:
                     return 18810;
+                default:
+                    return 0;
                 }
             case Properties::Facing::EAST:
                 switch (honey_level) {
@@ -62,7 +68,11 @@ namespace Blocks {
                     return 18815;
                 case Properties::Honey_level::FIVE:
                     return 18816;
+                default:
+                    return 0;
                 }
+            default:
+                return 0;
             }
             return 0;
         }

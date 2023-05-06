@@ -11,6 +11,8 @@ namespace Blocks {
                         return 1701;
                     case Properties::Part::FOOT:
                         return 1702;
+                    default:
+                        return 0;
                     }
                 case Properties::Occupied::FALSE:
                     switch (part) {
@@ -18,7 +20,11 @@ namespace Blocks {
                         return 1703;
                     case Properties::Part::FOOT:
                         return 1704;
+                    default:
+                        return 0;
                     }
+                default:
+                    return 0;
                 }
             case Properties::Facing::SOUTH:
                 switch (occupied) {
@@ -28,6 +34,8 @@ namespace Blocks {
                         return 1705;
                     case Properties::Part::FOOT:
                         return 1706;
+                    default:
+                        return 0;
                     }
                 case Properties::Occupied::FALSE:
                     switch (part) {
@@ -35,7 +43,11 @@ namespace Blocks {
                         return 1707;
                     case Properties::Part::FOOT:
                         return 1708;
+                    default:
+                        return 0;
                     }
+                default:
+                    return 0;
                 }
             case Properties::Facing::WEST:
                 switch (occupied) {
@@ -45,6 +57,8 @@ namespace Blocks {
                         return 1709;
                     case Properties::Part::FOOT:
                         return 1710;
+                    default:
+                        return 0;
                     }
                 case Properties::Occupied::FALSE:
                     switch (part) {
@@ -52,7 +66,11 @@ namespace Blocks {
                         return 1711;
                     case Properties::Part::FOOT:
                         return 1712;
+                    default:
+                        return 0;
                     }
+                default:
+                    return 0;
                 }
             case Properties::Facing::EAST:
                 switch (occupied) {
@@ -62,6 +80,8 @@ namespace Blocks {
                         return 1713;
                     case Properties::Part::FOOT:
                         return 1714;
+                    default:
+                        return 0;
                     }
                 case Properties::Occupied::FALSE:
                     switch (part) {
@@ -69,8 +89,14 @@ namespace Blocks {
                         return 1715;
                     case Properties::Part::FOOT:
                         return 1716;
+                    default:
+                        return 0;
                     }
+                default:
+                    return 0;
                 }
+            default:
+                return 0;
             }
             return 0;
         }

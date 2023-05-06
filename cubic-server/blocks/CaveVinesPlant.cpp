@@ -7,6 +7,8 @@ namespace Blocks {
                 return 21495;
             case Properties::Berries::FALSE:
                 return 21496;
+            default:
+                return 0;
             }
             return 0;
         }

@@ -17,6 +17,8 @@ namespace Blocks {
                     return 7680;
                 case Properties::Facing::DOWN:
                     return 7681;
+                default:
+                    return 0;
                 }
             case Properties::Conditional::FALSE:
                 switch (facing) {
@@ -32,7 +34,11 @@ namespace Blocks {
                     return 7686;
                 case Properties::Facing::DOWN:
                     return 7687;
+                default:
+                    return 0;
                 }
+            default:
+                return 0;
             }
             return 0;
         }

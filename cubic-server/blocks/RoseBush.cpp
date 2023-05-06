@@ -7,6 +7,8 @@ namespace Blocks {
                 return 10274;
             case Properties::Half::LOWER:
                 return 10275;
+            default:
+                return 0;
             }
             return 0;
         }

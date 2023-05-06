@@ -13,6 +13,8 @@ namespace Blocks {
                     return 17812;
                 case Properties::Facing::EAST:
                     return 17813;
+                default:
+                    return 0;
                 }
             case Properties::Face::WALL:
                 switch (facing) {
@@ -24,6 +26,8 @@ namespace Blocks {
                     return 17816;
                 case Properties::Facing::EAST:
                     return 17817;
+                default:
+                    return 0;
                 }
             case Properties::Face::CEILING:
                 switch (facing) {
@@ -35,7 +39,11 @@ namespace Blocks {
                     return 17820;
                 case Properties::Facing::EAST:
                     return 17821;
+                default:
+                    return 0;
                 }
+            default:
+                return 0;
             }
             return 0;
         }

@@ -7,6 +7,8 @@ namespace Blocks {
                 return 12;
             case Properties::Snowy::FALSE:
                 return 13;
+            default:
+                return 0;
             }
             return 0;
         }

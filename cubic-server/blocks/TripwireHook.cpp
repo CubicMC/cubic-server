@@ -11,6 +11,8 @@ namespace Blocks {
                         return 7291;
                     case Properties::Powered::FALSE:
                         return 7292;
+                    default:
+                        return 0;
                     }
                 case Properties::Facing::SOUTH:
                     switch (powered) {
@@ -18,6 +20,8 @@ namespace Blocks {
                         return 7293;
                     case Properties::Powered::FALSE:
                         return 7294;
+                    default:
+                        return 0;
                     }
                 case Properties::Facing::WEST:
                     switch (powered) {
@@ -25,6 +29,8 @@ namespace Blocks {
                         return 7295;
                     case Properties::Powered::FALSE:
                         return 7296;
+                    default:
+                        return 0;
                     }
                 case Properties::Facing::EAST:
                     switch (powered) {
@@ -32,7 +38,11 @@ namespace Blocks {
                         return 7297;
                     case Properties::Powered::FALSE:
                         return 7298;
+                    default:
+                        return 0;
                     }
+                default:
+                    return 0;
                 }
             case Properties::Attached::FALSE:
                 switch (facing) {
@@ -42,6 +52,8 @@ namespace Blocks {
                         return 7299;
                     case Properties::Powered::FALSE:
                         return 7300;
+                    default:
+                        return 0;
                     }
                 case Properties::Facing::SOUTH:
                     switch (powered) {
@@ -49,6 +61,8 @@ namespace Blocks {
                         return 7301;
                     case Properties::Powered::FALSE:
                         return 7302;
+                    default:
+                        return 0;
                     }
                 case Properties::Facing::WEST:
                     switch (powered) {
@@ -56,6 +70,8 @@ namespace Blocks {
                         return 7303;
                     case Properties::Powered::FALSE:
                         return 7304;
+                    default:
+                        return 0;
                     }
                 case Properties::Facing::EAST:
                     switch (powered) {
@@ -63,8 +79,14 @@ namespace Blocks {
                         return 7305;
                     case Properties::Powered::FALSE:
                         return 7306;
+                    default:
+                        return 0;
                     }
+                default:
+                    return 0;
                 }
+            default:
+                return 0;
             }
             return 0;
         }

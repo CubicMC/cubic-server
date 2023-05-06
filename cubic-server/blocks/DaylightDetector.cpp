@@ -37,6 +37,8 @@ namespace Blocks {
                     return 8809;
                 case Properties::Power::FIFTEEN:
                     return 8810;
+                default:
+                    return 0;
                 }
             case Properties::Inverted::FALSE:
                 switch (power) {
@@ -72,7 +74,11 @@ namespace Blocks {
                     return 8825;
                 case Properties::Power::FIFTEEN:
                     return 8826;
+                default:
+                    return 0;
                 }
+            default:
+                return 0;
             }
             return 0;
         }

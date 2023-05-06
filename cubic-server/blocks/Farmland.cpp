@@ -19,6 +19,8 @@ namespace Blocks {
                 return 4240;
             case Properties::Moisture::SEVEN:
                 return 4241;
+            default:
+                return 0;
             }
             return 0;
         }

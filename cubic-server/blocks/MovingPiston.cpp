@@ -17,6 +17,8 @@ namespace Blocks {
                     return 2020;
                 case Properties::Facing::DOWN:
                     return 2022;
+                default:
+                    return 0;
                 }
             case Properties::Type::STICKY:
                 switch (facing) {
@@ -32,7 +34,11 @@ namespace Blocks {
                     return 2021;
                 case Properties::Facing::DOWN:
                     return 2023;
+                default:
+                    return 0;
                 }
+            default:
+                return 0;
             }
             return 0;
         }

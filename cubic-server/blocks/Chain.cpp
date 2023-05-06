@@ -9,6 +9,8 @@ namespace Blocks {
                     return 6544;
                 case Properties::Waterlogged::FALSE:
                     return 6545;
+                default:
+                    return 0;
                 }
             case Properties::Axis::Y:
                 switch (waterlogged) {
@@ -16,6 +18,8 @@ namespace Blocks {
                     return 6546;
                 case Properties::Waterlogged::FALSE:
                     return 6547;
+                default:
+                    return 0;
                 }
             case Properties::Axis::Z:
                 switch (waterlogged) {
@@ -23,7 +27,11 @@ namespace Blocks {
                     return 6548;
                 case Properties::Waterlogged::FALSE:
                     return 6549;
+                default:
+                    return 0;
                 }
+            default:
+                return 0;
             }
             return 0;
         }

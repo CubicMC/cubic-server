@@ -21,6 +21,8 @@ namespace Blocks {
                 return 18751;
             case Properties::Level::EIGHT:
                 return 18752;
+            default:
+                return 0;
             }
             return 0;
         }

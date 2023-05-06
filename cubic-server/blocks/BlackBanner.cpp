@@ -35,6 +35,8 @@ namespace Blocks {
                 return 10536;
             case Properties::Rotation::FIFTEEN:
                 return 10537;
+            default:
+                return 0;
             }
             return 0;
         }

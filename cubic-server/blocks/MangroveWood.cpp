@@ -9,6 +9,8 @@ namespace Blocks {
                 return 191;
             case Properties::Axis::Z:
                 return 192;
+            default:
+                return 0;
             }
             return 0;
         }

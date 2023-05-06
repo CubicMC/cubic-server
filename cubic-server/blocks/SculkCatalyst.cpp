@@ -7,6 +7,8 @@ namespace Blocks {
                 return 20682;
             case Properties::Bloom::FALSE:
                 return 20683;
+            default:
+                return 0;
             }
             return 0;
         }

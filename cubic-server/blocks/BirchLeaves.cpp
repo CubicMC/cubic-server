@@ -11,6 +11,8 @@ namespace Blocks {
                         return 270;
                     case Properties::Waterlogged::FALSE:
                         return 271;
+                    default:
+                        return 0;
                     }
                 case Properties::Persistent::FALSE:
                     switch (waterlogged) {
@@ -18,7 +20,11 @@ namespace Blocks {
                         return 272;
                     case Properties::Waterlogged::FALSE:
                         return 273;
+                    default:
+                        return 0;
                     }
+                default:
+                    return 0;
                 }
             case Properties::Distance::TWO:
                 switch (persistent) {
@@ -28,6 +34,8 @@ namespace Blocks {
                         return 274;
                     case Properties::Waterlogged::FALSE:
                         return 275;
+                    default:
+                        return 0;
                     }
                 case Properties::Persistent::FALSE:
                     switch (waterlogged) {
@@ -35,7 +43,11 @@ namespace Blocks {
                         return 276;
                     case Properties::Waterlogged::FALSE:
                         return 277;
+                    default:
+                        return 0;
                     }
+                default:
+                    return 0;
                 }
             case Properties::Distance::THREE:
                 switch (persistent) {
@@ -45,6 +57,8 @@ namespace Blocks {
                         return 278;
                     case Properties::Waterlogged::FALSE:
                         return 279;
+                    default:
+                        return 0;
                     }
                 case Properties::Persistent::FALSE:
                     switch (waterlogged) {
@@ -52,7 +66,11 @@ namespace Blocks {
                         return 280;
                     case Properties::Waterlogged::FALSE:
                         return 281;
+                    default:
+                        return 0;
                     }
+                default:
+                    return 0;
                 }
             case Properties::Distance::FOUR:
                 switch (persistent) {
@@ -62,6 +80,8 @@ namespace Blocks {
                         return 282;
                     case Properties::Waterlogged::FALSE:
                         return 283;
+                    default:
+                        return 0;
                     }
                 case Properties::Persistent::FALSE:
                     switch (waterlogged) {
@@ -69,7 +89,11 @@ namespace Blocks {
                         return 284;
                     case Properties::Waterlogged::FALSE:
                         return 285;
+                    default:
+                        return 0;
                     }
+                default:
+                    return 0;
                 }
             case Properties::Distance::FIVE:
                 switch (persistent) {
@@ -79,6 +103,8 @@ namespace Blocks {
                         return 286;
                     case Properties::Waterlogged::FALSE:
                         return 287;
+                    default:
+                        return 0;
                     }
                 case Properties::Persistent::FALSE:
                     switch (waterlogged) {
@@ -86,7 +112,11 @@ namespace Blocks {
                         return 288;
                     case Properties::Waterlogged::FALSE:
                         return 289;
+                    default:
+                        return 0;
                     }
+                default:
+                    return 0;
                 }
             case Properties::Distance::SIX:
                 switch (persistent) {
@@ -96,6 +126,8 @@ namespace Blocks {
                         return 290;
                     case Properties::Waterlogged::FALSE:
                         return 291;
+                    default:
+                        return 0;
                     }
                 case Properties::Persistent::FALSE:
                     switch (waterlogged) {
@@ -103,7 +135,11 @@ namespace Blocks {
                         return 292;
                     case Properties::Waterlogged::FALSE:
                         return 293;
+                    default:
+                        return 0;
                     }
+                default:
+                    return 0;
                 }
             case Properties::Distance::SEVEN:
                 switch (persistent) {
@@ -113,6 +149,8 @@ namespace Blocks {
                         return 294;
                     case Properties::Waterlogged::FALSE:
                         return 295;
+                    default:
+                        return 0;
                     }
                 case Properties::Persistent::FALSE:
                     switch (waterlogged) {
@@ -120,8 +158,14 @@ namespace Blocks {
                         return 296;
                     case Properties::Waterlogged::FALSE:
                         return 297;
+                    default:
+                        return 0;
                     }
+                default:
+                    return 0;
                 }
+            default:
+                return 0;
             }
             return 0;
         }

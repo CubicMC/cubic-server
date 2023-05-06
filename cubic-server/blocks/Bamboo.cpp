@@ -11,6 +11,8 @@ namespace Blocks {
                         return 12317;
                     case Properties::Stage::ONE:
                         return 12318;
+                    default:
+                        return 0;
                     }
                 case Properties::Leaves::SMALL:
                     switch (stage) {
@@ -18,6 +20,8 @@ namespace Blocks {
                         return 12319;
                     case Properties::Stage::ONE:
                         return 12320;
+                    default:
+                        return 0;
                     }
                 case Properties::Leaves::LARGE:
                     switch (stage) {
@@ -25,7 +29,11 @@ namespace Blocks {
                         return 12321;
                     case Properties::Stage::ONE:
                         return 12322;
+                    default:
+                        return 0;
                     }
+                default:
+                    return 0;
                 }
             case Properties::Age::ONE:
                 switch (leaves) {
@@ -35,6 +43,8 @@ namespace Blocks {
                         return 12323;
                     case Properties::Stage::ONE:
                         return 12324;
+                    default:
+                        return 0;
                     }
                 case Properties::Leaves::SMALL:
                     switch (stage) {
@@ -42,6 +52,8 @@ namespace Blocks {
                         return 12325;
                     case Properties::Stage::ONE:
                         return 12326;
+                    default:
+                        return 0;
                     }
                 case Properties::Leaves::LARGE:
                     switch (stage) {
@@ -49,8 +61,14 @@ namespace Blocks {
                         return 12327;
                     case Properties::Stage::ONE:
                         return 12328;
+                    default:
+                        return 0;
                     }
+                default:
+                    return 0;
                 }
+            default:
+                return 0;
             }
             return 0;
         }

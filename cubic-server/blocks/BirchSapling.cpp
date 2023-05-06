@@ -7,6 +7,8 @@ namespace Blocks {
                 return 28;
             case Properties::Stage::ONE:
                 return 29;
+            default:
+                return 0;
             }
             return 0;
         }

@@ -11,6 +11,8 @@ namespace Blocks {
                         return 7160;
                     case Properties::Has_bottle_2::FALSE:
                         return 7161;
+                    default:
+                        return 0;
                     }
                 case Properties::Has_bottle_1::FALSE:
                     switch (has_bottle_2) {
@@ -18,7 +20,11 @@ namespace Blocks {
                         return 7162;
                     case Properties::Has_bottle_2::FALSE:
                         return 7163;
+                    default:
+                        return 0;
                     }
+                default:
+                    return 0;
                 }
             case Properties::Has_bottle_0::FALSE:
                 switch (has_bottle_1) {
@@ -28,6 +34,8 @@ namespace Blocks {
                         return 7164;
                     case Properties::Has_bottle_2::FALSE:
                         return 7165;
+                    default:
+                        return 0;
                     }
                 case Properties::Has_bottle_1::FALSE:
                     switch (has_bottle_2) {
@@ -35,8 +43,14 @@ namespace Blocks {
                         return 7166;
                     case Properties::Has_bottle_2::FALSE:
                         return 7167;
+                    default:
+                        return 0;
                     }
+                default:
+                    return 0;
                 }
+            default:
+                return 0;
             }
             return 0;
         }

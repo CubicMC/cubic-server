@@ -9,6 +9,8 @@ namespace Blocks {
                     return 17780;
                 case Properties::Open::FALSE:
                     return 17781;
+                default:
+                    return 0;
                 }
             case Properties::Facing::EAST:
                 switch (open) {
@@ -16,6 +18,8 @@ namespace Blocks {
                     return 17782;
                 case Properties::Open::FALSE:
                     return 17783;
+                default:
+                    return 0;
                 }
             case Properties::Facing::SOUTH:
                 switch (open) {
@@ -23,6 +27,8 @@ namespace Blocks {
                     return 17784;
                 case Properties::Open::FALSE:
                     return 17785;
+                default:
+                    return 0;
                 }
             case Properties::Facing::WEST:
                 switch (open) {
@@ -30,6 +36,8 @@ namespace Blocks {
                     return 17786;
                 case Properties::Open::FALSE:
                     return 17787;
+                default:
+                    return 0;
                 }
             case Properties::Facing::UP:
                 switch (open) {
@@ -37,6 +45,8 @@ namespace Blocks {
                     return 17788;
                 case Properties::Open::FALSE:
                     return 17789;
+                default:
+                    return 0;
                 }
             case Properties::Facing::DOWN:
                 switch (open) {
@@ -44,7 +54,11 @@ namespace Blocks {
                     return 17790;
                 case Properties::Open::FALSE:
                     return 17791;
+                default:
+                    return 0;
                 }
+            default:
+                return 0;
             }
             return 0;
         }

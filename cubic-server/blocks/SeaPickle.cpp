@@ -9,6 +9,8 @@ namespace Blocks {
                     return 12305;
                 case Properties::Waterlogged::FALSE:
                     return 12306;
+                default:
+                    return 0;
                 }
             case Properties::Pickles::TWO:
                 switch (waterlogged) {
@@ -16,6 +18,8 @@ namespace Blocks {
                     return 12307;
                 case Properties::Waterlogged::FALSE:
                     return 12308;
+                default:
+                    return 0;
                 }
             case Properties::Pickles::THREE:
                 switch (waterlogged) {
@@ -23,6 +27,8 @@ namespace Blocks {
                     return 12309;
                 case Properties::Waterlogged::FALSE:
                     return 12310;
+                default:
+                    return 0;
                 }
             case Properties::Pickles::FOUR:
                 switch (waterlogged) {
@@ -30,7 +36,11 @@ namespace Blocks {
                     return 12311;
                 case Properties::Waterlogged::FALSE:
                     return 12312;
+                default:
+                    return 0;
                 }
+            default:
+                return 0;
             }
             return 0;
         }

@@ -15,6 +15,8 @@ namespace Blocks {
                 return 12001;
             case Properties::Facing::DOWN:
                 return 12002;
+            default:
+                return 0;
             }
             return 0;
         }

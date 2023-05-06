@@ -36,6 +36,8 @@ def writer(data, file):
                         indentation -= 4
                 if line[-1] == ":" and line.startswith("case") and is_switch > 0:
                     indentation += 4
+                if line[-1] == ":" and line.startswith("default") and is_switch > 0:
+                    indentation += 4
                 if line[-1] == ";" and line.startswith("return") and is_switch > 0:
                     indentation -= 4
                 if line[-1] == "{" and is_switch == 0:
@@ -111,6 +113,8 @@ class Block:
                 else:
                     state = change_item_in_list(state, (remaining_props[0], each))
                     data += "return " + self.get_protocol_id_from_state(state) + ";\n"
+        data += "default:\n"
+        data += "return 0;\n"
         data += "}\n"
         return data
 

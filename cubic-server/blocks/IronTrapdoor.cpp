@@ -15,6 +15,8 @@ namespace Blocks {
                                 return 9922;
                             case Properties::Waterlogged::FALSE:
                                 return 9923;
+                            default:
+                                return 0;
                             }
                         case Properties::Powered::FALSE:
                             switch (waterlogged) {
@@ -22,7 +24,11 @@ namespace Blocks {
                                 return 9924;
                             case Properties::Waterlogged::FALSE:
                                 return 9925;
+                            default:
+                                return 0;
                             }
+                        default:
+                            return 0;
                         }
                     case Properties::Open::FALSE:
                         switch (powered) {
@@ -32,6 +38,8 @@ namespace Blocks {
                                 return 9926;
                             case Properties::Waterlogged::FALSE:
                                 return 9927;
+                            default:
+                                return 0;
                             }
                         case Properties::Powered::FALSE:
                             switch (waterlogged) {
@@ -39,8 +47,14 @@ namespace Blocks {
                                 return 9928;
                             case Properties::Waterlogged::FALSE:
                                 return 9929;
+                            default:
+                                return 0;
                             }
+                        default:
+                            return 0;
                         }
+                    default:
+                        return 0;
                     }
                 case Properties::Half::BOTTOM:
                     switch (open) {
@@ -52,6 +66,8 @@ namespace Blocks {
                                 return 9930;
                             case Properties::Waterlogged::FALSE:
                                 return 9931;
+                            default:
+                                return 0;
                             }
                         case Properties::Powered::FALSE:
                             switch (waterlogged) {
@@ -59,7 +75,11 @@ namespace Blocks {
                                 return 9932;
                             case Properties::Waterlogged::FALSE:
                                 return 9933;
+                            default:
+                                return 0;
                             }
+                        default:
+                            return 0;
                         }
                     case Properties::Open::FALSE:
                         switch (powered) {
@@ -69,6 +89,8 @@ namespace Blocks {
                                 return 9934;
                             case Properties::Waterlogged::FALSE:
                                 return 9935;
+                            default:
+                                return 0;
                             }
                         case Properties::Powered::FALSE:
                             switch (waterlogged) {
@@ -76,9 +98,17 @@ namespace Blocks {
                                 return 9936;
                             case Properties::Waterlogged::FALSE:
                                 return 9937;
+                            default:
+                                return 0;
                             }
+                        default:
+                            return 0;
                         }
+                    default:
+                        return 0;
                     }
+                default:
+                    return 0;
                 }
             case Properties::Facing::SOUTH:
                 switch (half) {
@@ -92,6 +122,8 @@ namespace Blocks {
                                 return 9938;
                             case Properties::Waterlogged::FALSE:
                                 return 9939;
+                            default:
+                                return 0;
                             }
                         case Properties::Powered::FALSE:
                             switch (waterlogged) {
@@ -99,7 +131,11 @@ namespace Blocks {
                                 return 9940;
                             case Properties::Waterlogged::FALSE:
                                 return 9941;
+                            default:
+                                return 0;
                             }
+                        default:
+                            return 0;
                         }
                     case Properties::Open::FALSE:
                         switch (powered) {
@@ -109,6 +145,8 @@ namespace Blocks {
                                 return 9942;
                             case Properties::Waterlogged::FALSE:
                                 return 9943;
+                            default:
+                                return 0;
                             }
                         case Properties::Powered::FALSE:
                             switch (waterlogged) {
@@ -116,8 +154,14 @@ namespace Blocks {
                                 return 9944;
                             case Properties::Waterlogged::FALSE:
                                 return 9945;
+                            default:
+                                return 0;
                             }
+                        default:
+                            return 0;
                         }
+                    default:
+                        return 0;
                     }
                 case Properties::Half::BOTTOM:
                     switch (open) {
@@ -129,6 +173,8 @@ namespace Blocks {
                                 return 9946;
                             case Properties::Waterlogged::FALSE:
                                 return 9947;
+                            default:
+                                return 0;
                             }
                         case Properties::Powered::FALSE:
                             switch (waterlogged) {
@@ -136,7 +182,11 @@ namespace Blocks {
                                 return 9948;
                             case Properties::Waterlogged::FALSE:
                                 return 9949;
+                            default:
+                                return 0;
                             }
+                        default:
+                            return 0;
                         }
                     case Properties::Open::FALSE:
                         switch (powered) {
@@ -146,6 +196,8 @@ namespace Blocks {
                                 return 9950;
                             case Properties::Waterlogged::FALSE:
                                 return 9951;
+                            default:
+                                return 0;
                             }
                         case Properties::Powered::FALSE:
                             switch (waterlogged) {
@@ -153,9 +205,17 @@ namespace Blocks {
                                 return 9952;
                             case Properties::Waterlogged::FALSE:
                                 return 9953;
+                            default:
+                                return 0;
                             }
+                        default:
+                            return 0;
                         }
+                    default:
+                        return 0;
                     }
+                default:
+                    return 0;
                 }
             case Properties::Facing::WEST:
                 switch (half) {
@@ -169,6 +229,8 @@ namespace Blocks {
                                 return 9954;
                             case Properties::Waterlogged::FALSE:
                                 return 9955;
+                            default:
+                                return 0;
                             }
                         case Properties::Powered::FALSE:
                             switch (waterlogged) {
@@ -176,7 +238,11 @@ namespace Blocks {
                                 return 9956;
                             case Properties::Waterlogged::FALSE:
                                 return 9957;
+                            default:
+                                return 0;
                             }
+                        default:
+                            return 0;
                         }
                     case Properties::Open::FALSE:
                         switch (powered) {
@@ -186,6 +252,8 @@ namespace Blocks {
                                 return 9958;
                             case Properties::Waterlogged::FALSE:
                                 return 9959;
+                            default:
+                                return 0;
                             }
                         case Properties::Powered::FALSE:
                             switch (waterlogged) {
@@ -193,8 +261,14 @@ namespace Blocks {
                                 return 9960;
                             case Properties::Waterlogged::FALSE:
                                 return 9961;
+                            default:
+                                return 0;
                             }
+                        default:
+                            return 0;
                         }
+                    default:
+                        return 0;
                     }
                 case Properties::Half::BOTTOM:
                     switch (open) {
@@ -206,6 +280,8 @@ namespace Blocks {
                                 return 9962;
                             case Properties::Waterlogged::FALSE:
                                 return 9963;
+                            default:
+                                return 0;
                             }
                         case Properties::Powered::FALSE:
                             switch (waterlogged) {
@@ -213,7 +289,11 @@ namespace Blocks {
                                 return 9964;
                             case Properties::Waterlogged::FALSE:
                                 return 9965;
+                            default:
+                                return 0;
                             }
+                        default:
+                            return 0;
                         }
                     case Properties::Open::FALSE:
                         switch (powered) {
@@ -223,6 +303,8 @@ namespace Blocks {
                                 return 9966;
                             case Properties::Waterlogged::FALSE:
                                 return 9967;
+                            default:
+                                return 0;
                             }
                         case Properties::Powered::FALSE:
                             switch (waterlogged) {
@@ -230,9 +312,17 @@ namespace Blocks {
                                 return 9968;
                             case Properties::Waterlogged::FALSE:
                                 return 9969;
+                            default:
+                                return 0;
                             }
+                        default:
+                            return 0;
                         }
+                    default:
+                        return 0;
                     }
+                default:
+                    return 0;
                 }
             case Properties::Facing::EAST:
                 switch (half) {
@@ -246,6 +336,8 @@ namespace Blocks {
                                 return 9970;
                             case Properties::Waterlogged::FALSE:
                                 return 9971;
+                            default:
+                                return 0;
                             }
                         case Properties::Powered::FALSE:
                             switch (waterlogged) {
@@ -253,7 +345,11 @@ namespace Blocks {
                                 return 9972;
                             case Properties::Waterlogged::FALSE:
                                 return 9973;
+                            default:
+                                return 0;
                             }
+                        default:
+                            return 0;
                         }
                     case Properties::Open::FALSE:
                         switch (powered) {
@@ -263,6 +359,8 @@ namespace Blocks {
                                 return 9974;
                             case Properties::Waterlogged::FALSE:
                                 return 9975;
+                            default:
+                                return 0;
                             }
                         case Properties::Powered::FALSE:
                             switch (waterlogged) {
@@ -270,8 +368,14 @@ namespace Blocks {
                                 return 9976;
                             case Properties::Waterlogged::FALSE:
                                 return 9977;
+                            default:
+                                return 0;
                             }
+                        default:
+                            return 0;
                         }
+                    default:
+                        return 0;
                     }
                 case Properties::Half::BOTTOM:
                     switch (open) {
@@ -283,6 +387,8 @@ namespace Blocks {
                                 return 9978;
                             case Properties::Waterlogged::FALSE:
                                 return 9979;
+                            default:
+                                return 0;
                             }
                         case Properties::Powered::FALSE:
                             switch (waterlogged) {
@@ -290,7 +396,11 @@ namespace Blocks {
                                 return 9980;
                             case Properties::Waterlogged::FALSE:
                                 return 9981;
+                            default:
+                                return 0;
                             }
+                        default:
+                            return 0;
                         }
                     case Properties::Open::FALSE:
                         switch (powered) {
@@ -300,6 +410,8 @@ namespace Blocks {
                                 return 9982;
                             case Properties::Waterlogged::FALSE:
                                 return 9983;
+                            default:
+                                return 0;
                             }
                         case Properties::Powered::FALSE:
                             switch (waterlogged) {
@@ -307,10 +419,20 @@ namespace Blocks {
                                 return 9984;
                             case Properties::Waterlogged::FALSE:
                                 return 9985;
+                            default:
+                                return 0;
                             }
+                        default:
+                            return 0;
                         }
+                    default:
+                        return 0;
                     }
+                default:
+                    return 0;
                 }
+            default:
+                return 0;
             }
             return 0;
         }

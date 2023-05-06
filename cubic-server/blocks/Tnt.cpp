@@ -7,6 +7,8 @@ namespace Blocks {
                 return 2042;
             case Properties::Unstable::FALSE:
                 return 2043;
+            default:
+                return 0;
             }
             return 0;
         }

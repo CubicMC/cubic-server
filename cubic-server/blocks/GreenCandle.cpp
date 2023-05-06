@@ -11,6 +11,8 @@ namespace Blocks {
                         return 20321;
                     case Properties::Waterlogged::FALSE:
                         return 20322;
+                    default:
+                        return 0;
                     }
                 case Properties::Lit::FALSE:
                     switch (waterlogged) {
@@ -18,7 +20,11 @@ namespace Blocks {
                         return 20323;
                     case Properties::Waterlogged::FALSE:
                         return 20324;
+                    default:
+                        return 0;
                     }
+                default:
+                    return 0;
                 }
             case Properties::Candles::TWO:
                 switch (lit) {
@@ -28,6 +34,8 @@ namespace Blocks {
                         return 20325;
                     case Properties::Waterlogged::FALSE:
                         return 20326;
+                    default:
+                        return 0;
                     }
                 case Properties::Lit::FALSE:
                     switch (waterlogged) {
@@ -35,7 +43,11 @@ namespace Blocks {
                         return 20327;
                     case Properties::Waterlogged::FALSE:
                         return 20328;
+                    default:
+                        return 0;
                     }
+                default:
+                    return 0;
                 }
             case Properties::Candles::THREE:
                 switch (lit) {
@@ -45,6 +57,8 @@ namespace Blocks {
                         return 20329;
                     case Properties::Waterlogged::FALSE:
                         return 20330;
+                    default:
+                        return 0;
                     }
                 case Properties::Lit::FALSE:
                     switch (waterlogged) {
@@ -52,7 +66,11 @@ namespace Blocks {
                         return 20331;
                     case Properties::Waterlogged::FALSE:
                         return 20332;
+                    default:
+                        return 0;
                     }
+                default:
+                    return 0;
                 }
             case Properties::Candles::FOUR:
                 switch (lit) {
@@ -62,6 +80,8 @@ namespace Blocks {
                         return 20333;
                     case Properties::Waterlogged::FALSE:
                         return 20334;
+                    default:
+                        return 0;
                     }
                 case Properties::Lit::FALSE:
                     switch (waterlogged) {
@@ -69,8 +89,14 @@ namespace Blocks {
                         return 20335;
                     case Properties::Waterlogged::FALSE:
                         return 20336;
+                    default:
+                        return 0;
                     }
+                default:
+                    return 0;
                 }
+            default:
+                return 0;
             }
             return 0;
         }

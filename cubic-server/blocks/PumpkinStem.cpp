@@ -19,6 +19,8 @@ namespace Blocks {
                 return 6597;
             case Properties::Age::SEVEN:
                 return 6598;
+            default:
+                return 0;
             }
             return 0;
         }

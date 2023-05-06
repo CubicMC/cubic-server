@@ -7,6 +7,8 @@ namespace Blocks {
                 return 12185;
             case Properties::Waterlogged::FALSE:
                 return 12186;
+            default:
+                return 0;
             }
             return 0;
         }

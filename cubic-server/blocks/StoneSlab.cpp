@@ -9,6 +9,8 @@ namespace Blocks {
                     return 10739;
                 case Properties::Waterlogged::FALSE:
                     return 10740;
+                default:
+                    return 0;
                 }
             case Properties::Type::BOTTOM:
                 switch (waterlogged) {
@@ -16,6 +18,8 @@ namespace Blocks {
                     return 10741;
                 case Properties::Waterlogged::FALSE:
                     return 10742;
+                default:
+                    return 0;
                 }
             case Properties::Type::DOUBLE:
                 switch (waterlogged) {
@@ -23,7 +27,11 @@ namespace Blocks {
                     return 10743;
                 case Properties::Waterlogged::FALSE:
                     return 10744;
+                default:
+                    return 0;
                 }
+            default:
+                return 0;
             }
             return 0;
         }

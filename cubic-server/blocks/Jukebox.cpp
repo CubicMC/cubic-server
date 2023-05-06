@@ -7,6 +7,8 @@ namespace Blocks {
                 return 5649;
             case Properties::Has_record::FALSE:
                 return 5650;
+            default:
+                return 0;
             }
             return 0;
         }

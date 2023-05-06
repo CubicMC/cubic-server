@@ -11,6 +11,8 @@ namespace Blocks {
                         return 21542;
                     case Properties::Waterlogged::FALSE:
                         return 21543;
+                    default:
+                        return 0;
                     }
                 case Properties::Half::LOWER:
                     switch (waterlogged) {
@@ -18,7 +20,11 @@ namespace Blocks {
                         return 21544;
                     case Properties::Waterlogged::FALSE:
                         return 21545;
+                    default:
+                        return 0;
                     }
+                default:
+                    return 0;
                 }
             case Properties::Facing::SOUTH:
                 switch (half) {
@@ -28,6 +34,8 @@ namespace Blocks {
                         return 21546;
                     case Properties::Waterlogged::FALSE:
                         return 21547;
+                    default:
+                        return 0;
                     }
                 case Properties::Half::LOWER:
                     switch (waterlogged) {
@@ -35,7 +43,11 @@ namespace Blocks {
                         return 21548;
                     case Properties::Waterlogged::FALSE:
                         return 21549;
+                    default:
+                        return 0;
                     }
+                default:
+                    return 0;
                 }
             case Properties::Facing::WEST:
                 switch (half) {
@@ -45,6 +57,8 @@ namespace Blocks {
                         return 21550;
                     case Properties::Waterlogged::FALSE:
                         return 21551;
+                    default:
+                        return 0;
                     }
                 case Properties::Half::LOWER:
                     switch (waterlogged) {
@@ -52,7 +66,11 @@ namespace Blocks {
                         return 21552;
                     case Properties::Waterlogged::FALSE:
                         return 21553;
+                    default:
+                        return 0;
                     }
+                default:
+                    return 0;
                 }
             case Properties::Facing::EAST:
                 switch (half) {
@@ -62,6 +80,8 @@ namespace Blocks {
                         return 21554;
                     case Properties::Waterlogged::FALSE:
                         return 21555;
+                    default:
+                        return 0;
                     }
                 case Properties::Half::LOWER:
                     switch (waterlogged) {
@@ -69,8 +89,14 @@ namespace Blocks {
                         return 21556;
                     case Properties::Waterlogged::FALSE:
                         return 21557;
+                    default:
+                        return 0;
                     }
+                default:
+                    return 0;
                 }
+            default:
+                return 0;
             }
             return 0;
         }

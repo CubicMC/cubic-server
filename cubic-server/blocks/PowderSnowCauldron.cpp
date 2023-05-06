@@ -9,6 +9,8 @@ namespace Blocks {
                 return 7174;
             case Properties::Level::THREE:
                 return 7175;
+            default:
+                return 0;
             }
             return 0;
         }

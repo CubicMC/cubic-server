@@ -35,6 +35,8 @@ namespace Blocks {
                 return 8777;
             case Properties::Power::FIFTEEN:
                 return 8778;
+            default:
+                return 0;
             }
             return 0;
         }

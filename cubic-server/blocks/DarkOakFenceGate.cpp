@@ -13,6 +13,8 @@ namespace Blocks {
                             return 10955;
                         case Properties::Powered::FALSE:
                             return 10956;
+                        default:
+                            return 0;
                         }
                     case Properties::Open::FALSE:
                         switch (powered) {
@@ -20,7 +22,11 @@ namespace Blocks {
                             return 10957;
                         case Properties::Powered::FALSE:
                             return 10958;
+                        default:
+                            return 0;
                         }
+                    default:
+                        return 0;
                     }
                 case Properties::In_wall::FALSE:
                     switch (open) {
@@ -30,6 +36,8 @@ namespace Blocks {
                             return 10959;
                         case Properties::Powered::FALSE:
                             return 10960;
+                        default:
+                            return 0;
                         }
                     case Properties::Open::FALSE:
                         switch (powered) {
@@ -37,8 +45,14 @@ namespace Blocks {
                             return 10961;
                         case Properties::Powered::FALSE:
                             return 10962;
+                        default:
+                            return 0;
                         }
+                    default:
+                        return 0;
                     }
+                default:
+                    return 0;
                 }
             case Properties::Facing::SOUTH:
                 switch (in_wall) {
@@ -50,6 +64,8 @@ namespace Blocks {
                             return 10963;
                         case Properties::Powered::FALSE:
                             return 10964;
+                        default:
+                            return 0;
                         }
                     case Properties::Open::FALSE:
                         switch (powered) {
@@ -57,7 +73,11 @@ namespace Blocks {
                             return 10965;
                         case Properties::Powered::FALSE:
                             return 10966;
+                        default:
+                            return 0;
                         }
+                    default:
+                        return 0;
                     }
                 case Properties::In_wall::FALSE:
                     switch (open) {
@@ -67,6 +87,8 @@ namespace Blocks {
                             return 10967;
                         case Properties::Powered::FALSE:
                             return 10968;
+                        default:
+                            return 0;
                         }
                     case Properties::Open::FALSE:
                         switch (powered) {
@@ -74,8 +96,14 @@ namespace Blocks {
                             return 10969;
                         case Properties::Powered::FALSE:
                             return 10970;
+                        default:
+                            return 0;
                         }
+                    default:
+                        return 0;
                     }
+                default:
+                    return 0;
                 }
             case Properties::Facing::WEST:
                 switch (in_wall) {
@@ -87,6 +115,8 @@ namespace Blocks {
                             return 10971;
                         case Properties::Powered::FALSE:
                             return 10972;
+                        default:
+                            return 0;
                         }
                     case Properties::Open::FALSE:
                         switch (powered) {
@@ -94,7 +124,11 @@ namespace Blocks {
                             return 10973;
                         case Properties::Powered::FALSE:
                             return 10974;
+                        default:
+                            return 0;
                         }
+                    default:
+                        return 0;
                     }
                 case Properties::In_wall::FALSE:
                     switch (open) {
@@ -104,6 +138,8 @@ namespace Blocks {
                             return 10975;
                         case Properties::Powered::FALSE:
                             return 10976;
+                        default:
+                            return 0;
                         }
                     case Properties::Open::FALSE:
                         switch (powered) {
@@ -111,8 +147,14 @@ namespace Blocks {
                             return 10977;
                         case Properties::Powered::FALSE:
                             return 10978;
+                        default:
+                            return 0;
                         }
+                    default:
+                        return 0;
                     }
+                default:
+                    return 0;
                 }
             case Properties::Facing::EAST:
                 switch (in_wall) {
@@ -124,6 +166,8 @@ namespace Blocks {
                             return 10979;
                         case Properties::Powered::FALSE:
                             return 10980;
+                        default:
+                            return 0;
                         }
                     case Properties::Open::FALSE:
                         switch (powered) {
@@ -131,7 +175,11 @@ namespace Blocks {
                             return 10981;
                         case Properties::Powered::FALSE:
                             return 10982;
+                        default:
+                            return 0;
                         }
+                    default:
+                        return 0;
                     }
                 case Properties::In_wall::FALSE:
                     switch (open) {
@@ -141,6 +189,8 @@ namespace Blocks {
                             return 10983;
                         case Properties::Powered::FALSE:
                             return 10984;
+                        default:
+                            return 0;
                         }
                     case Properties::Open::FALSE:
                         switch (powered) {
@@ -148,9 +198,17 @@ namespace Blocks {
                             return 10985;
                         case Properties::Powered::FALSE:
                             return 10986;
+                        default:
+                            return 0;
                         }
+                    default:
+                        return 0;
                     }
+                default:
+                    return 0;
                 }
+            default:
+                return 0;
             }
             return 0;
         }

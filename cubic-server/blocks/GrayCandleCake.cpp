@@ -7,6 +7,8 @@ namespace Blocks {
                 return 20385;
             case Properties::Lit::FALSE:
                 return 20386;
+            default:
+                return 0;
             }
             return 0;
         }

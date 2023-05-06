@@ -13,6 +13,8 @@ namespace Blocks {
                             return 20942;
                         case Properties::Waterlogged::FALSE:
                             return 20943;
+                        default:
+                            return 0;
                         }
                     case Properties::Shape::INNER_LEFT:
                         switch (waterlogged) {
@@ -20,6 +22,8 @@ namespace Blocks {
                             return 20944;
                         case Properties::Waterlogged::FALSE:
                             return 20945;
+                        default:
+                            return 0;
                         }
                     case Properties::Shape::INNER_RIGHT:
                         switch (waterlogged) {
@@ -27,6 +31,8 @@ namespace Blocks {
                             return 20946;
                         case Properties::Waterlogged::FALSE:
                             return 20947;
+                        default:
+                            return 0;
                         }
                     case Properties::Shape::OUTER_LEFT:
                         switch (waterlogged) {
@@ -34,6 +40,8 @@ namespace Blocks {
                             return 20948;
                         case Properties::Waterlogged::FALSE:
                             return 20949;
+                        default:
+                            return 0;
                         }
                     case Properties::Shape::OUTER_RIGHT:
                         switch (waterlogged) {
@@ -41,7 +49,11 @@ namespace Blocks {
                             return 20950;
                         case Properties::Waterlogged::FALSE:
                             return 20951;
+                        default:
+                            return 0;
                         }
+                    default:
+                        return 0;
                     }
                 case Properties::Half::BOTTOM:
                     switch (shape) {
@@ -51,6 +63,8 @@ namespace Blocks {
                             return 20952;
                         case Properties::Waterlogged::FALSE:
                             return 20953;
+                        default:
+                            return 0;
                         }
                     case Properties::Shape::INNER_LEFT:
                         switch (waterlogged) {
@@ -58,6 +72,8 @@ namespace Blocks {
                             return 20954;
                         case Properties::Waterlogged::FALSE:
                             return 20955;
+                        default:
+                            return 0;
                         }
                     case Properties::Shape::INNER_RIGHT:
                         switch (waterlogged) {
@@ -65,6 +81,8 @@ namespace Blocks {
                             return 20956;
                         case Properties::Waterlogged::FALSE:
                             return 20957;
+                        default:
+                            return 0;
                         }
                     case Properties::Shape::OUTER_LEFT:
                         switch (waterlogged) {
@@ -72,6 +90,8 @@ namespace Blocks {
                             return 20958;
                         case Properties::Waterlogged::FALSE:
                             return 20959;
+                        default:
+                            return 0;
                         }
                     case Properties::Shape::OUTER_RIGHT:
                         switch (waterlogged) {
@@ -79,8 +99,14 @@ namespace Blocks {
                             return 20960;
                         case Properties::Waterlogged::FALSE:
                             return 20961;
+                        default:
+                            return 0;
                         }
+                    default:
+                        return 0;
                     }
+                default:
+                    return 0;
                 }
             case Properties::Facing::SOUTH:
                 switch (half) {
@@ -92,6 +118,8 @@ namespace Blocks {
                             return 20962;
                         case Properties::Waterlogged::FALSE:
                             return 20963;
+                        default:
+                            return 0;
                         }
                     case Properties::Shape::INNER_LEFT:
                         switch (waterlogged) {
@@ -99,6 +127,8 @@ namespace Blocks {
                             return 20964;
                         case Properties::Waterlogged::FALSE:
                             return 20965;
+                        default:
+                            return 0;
                         }
                     case Properties::Shape::INNER_RIGHT:
                         switch (waterlogged) {
@@ -106,6 +136,8 @@ namespace Blocks {
                             return 20966;
                         case Properties::Waterlogged::FALSE:
                             return 20967;
+                        default:
+                            return 0;
                         }
                     case Properties::Shape::OUTER_LEFT:
                         switch (waterlogged) {
@@ -113,6 +145,8 @@ namespace Blocks {
                             return 20968;
                         case Properties::Waterlogged::FALSE:
                             return 20969;
+                        default:
+                            return 0;
                         }
                     case Properties::Shape::OUTER_RIGHT:
                         switch (waterlogged) {
@@ -120,7 +154,11 @@ namespace Blocks {
                             return 20970;
                         case Properties::Waterlogged::FALSE:
                             return 20971;
+                        default:
+                            return 0;
                         }
+                    default:
+                        return 0;
                     }
                 case Properties::Half::BOTTOM:
                     switch (shape) {
@@ -130,6 +168,8 @@ namespace Blocks {
                             return 20972;
                         case Properties::Waterlogged::FALSE:
                             return 20973;
+                        default:
+                            return 0;
                         }
                     case Properties::Shape::INNER_LEFT:
                         switch (waterlogged) {
@@ -137,6 +177,8 @@ namespace Blocks {
                             return 20974;
                         case Properties::Waterlogged::FALSE:
                             return 20975;
+                        default:
+                            return 0;
                         }
                     case Properties::Shape::INNER_RIGHT:
                         switch (waterlogged) {
@@ -144,6 +186,8 @@ namespace Blocks {
                             return 20976;
                         case Properties::Waterlogged::FALSE:
                             return 20977;
+                        default:
+                            return 0;
                         }
                     case Properties::Shape::OUTER_LEFT:
                         switch (waterlogged) {
@@ -151,6 +195,8 @@ namespace Blocks {
                             return 20978;
                         case Properties::Waterlogged::FALSE:
                             return 20979;
+                        default:
+                            return 0;
                         }
                     case Properties::Shape::OUTER_RIGHT:
                         switch (waterlogged) {
@@ -158,8 +204,14 @@ namespace Blocks {
                             return 20980;
                         case Properties::Waterlogged::FALSE:
                             return 20981;
+                        default:
+                            return 0;
                         }
+                    default:
+                        return 0;
                     }
+                default:
+                    return 0;
                 }
             case Properties::Facing::WEST:
                 switch (half) {
@@ -171,6 +223,8 @@ namespace Blocks {
                             return 20982;
                         case Properties::Waterlogged::FALSE:
                             return 20983;
+                        default:
+                            return 0;
                         }
                     case Properties::Shape::INNER_LEFT:
                         switch (waterlogged) {
@@ -178,6 +232,8 @@ namespace Blocks {
                             return 20984;
                         case Properties::Waterlogged::FALSE:
                             return 20985;
+                        default:
+                            return 0;
                         }
                     case Properties::Shape::INNER_RIGHT:
                         switch (waterlogged) {
@@ -185,6 +241,8 @@ namespace Blocks {
                             return 20986;
                         case Properties::Waterlogged::FALSE:
                             return 20987;
+                        default:
+                            return 0;
                         }
                     case Properties::Shape::OUTER_LEFT:
                         switch (waterlogged) {
@@ -192,6 +250,8 @@ namespace Blocks {
                             return 20988;
                         case Properties::Waterlogged::FALSE:
                             return 20989;
+                        default:
+                            return 0;
                         }
                     case Properties::Shape::OUTER_RIGHT:
                         switch (waterlogged) {
@@ -199,7 +259,11 @@ namespace Blocks {
                             return 20990;
                         case Properties::Waterlogged::FALSE:
                             return 20991;
+                        default:
+                            return 0;
                         }
+                    default:
+                        return 0;
                     }
                 case Properties::Half::BOTTOM:
                     switch (shape) {
@@ -209,6 +273,8 @@ namespace Blocks {
                             return 20992;
                         case Properties::Waterlogged::FALSE:
                             return 20993;
+                        default:
+                            return 0;
                         }
                     case Properties::Shape::INNER_LEFT:
                         switch (waterlogged) {
@@ -216,6 +282,8 @@ namespace Blocks {
                             return 20994;
                         case Properties::Waterlogged::FALSE:
                             return 20995;
+                        default:
+                            return 0;
                         }
                     case Properties::Shape::INNER_RIGHT:
                         switch (waterlogged) {
@@ -223,6 +291,8 @@ namespace Blocks {
                             return 20996;
                         case Properties::Waterlogged::FALSE:
                             return 20997;
+                        default:
+                            return 0;
                         }
                     case Properties::Shape::OUTER_LEFT:
                         switch (waterlogged) {
@@ -230,6 +300,8 @@ namespace Blocks {
                             return 20998;
                         case Properties::Waterlogged::FALSE:
                             return 20999;
+                        default:
+                            return 0;
                         }
                     case Properties::Shape::OUTER_RIGHT:
                         switch (waterlogged) {
@@ -237,8 +309,14 @@ namespace Blocks {
                             return 21000;
                         case Properties::Waterlogged::FALSE:
                             return 21001;
+                        default:
+                            return 0;
                         }
+                    default:
+                        return 0;
                     }
+                default:
+                    return 0;
                 }
             case Properties::Facing::EAST:
                 switch (half) {
@@ -250,6 +328,8 @@ namespace Blocks {
                             return 21002;
                         case Properties::Waterlogged::FALSE:
                             return 21003;
+                        default:
+                            return 0;
                         }
                     case Properties::Shape::INNER_LEFT:
                         switch (waterlogged) {
@@ -257,6 +337,8 @@ namespace Blocks {
                             return 21004;
                         case Properties::Waterlogged::FALSE:
                             return 21005;
+                        default:
+                            return 0;
                         }
                     case Properties::Shape::INNER_RIGHT:
                         switch (waterlogged) {
@@ -264,6 +346,8 @@ namespace Blocks {
                             return 21006;
                         case Properties::Waterlogged::FALSE:
                             return 21007;
+                        default:
+                            return 0;
                         }
                     case Properties::Shape::OUTER_LEFT:
                         switch (waterlogged) {
@@ -271,6 +355,8 @@ namespace Blocks {
                             return 21008;
                         case Properties::Waterlogged::FALSE:
                             return 21009;
+                        default:
+                            return 0;
                         }
                     case Properties::Shape::OUTER_RIGHT:
                         switch (waterlogged) {
@@ -278,7 +364,11 @@ namespace Blocks {
                             return 21010;
                         case Properties::Waterlogged::FALSE:
                             return 21011;
+                        default:
+                            return 0;
                         }
+                    default:
+                        return 0;
                     }
                 case Properties::Half::BOTTOM:
                     switch (shape) {
@@ -288,6 +378,8 @@ namespace Blocks {
                             return 21012;
                         case Properties::Waterlogged::FALSE:
                             return 21013;
+                        default:
+                            return 0;
                         }
                     case Properties::Shape::INNER_LEFT:
                         switch (waterlogged) {
@@ -295,6 +387,8 @@ namespace Blocks {
                             return 21014;
                         case Properties::Waterlogged::FALSE:
                             return 21015;
+                        default:
+                            return 0;
                         }
                     case Properties::Shape::INNER_RIGHT:
                         switch (waterlogged) {
@@ -302,6 +396,8 @@ namespace Blocks {
                             return 21016;
                         case Properties::Waterlogged::FALSE:
                             return 21017;
+                        default:
+                            return 0;
                         }
                     case Properties::Shape::OUTER_LEFT:
                         switch (waterlogged) {
@@ -309,6 +405,8 @@ namespace Blocks {
                             return 21018;
                         case Properties::Waterlogged::FALSE:
                             return 21019;
+                        default:
+                            return 0;
                         }
                     case Properties::Shape::OUTER_RIGHT:
                         switch (waterlogged) {
@@ -316,9 +414,17 @@ namespace Blocks {
                             return 21020;
                         case Properties::Waterlogged::FALSE:
                             return 21021;
+                        default:
+                            return 0;
                         }
+                    default:
+                        return 0;
                     }
+                default:
+                    return 0;
                 }
+            default:
+                return 0;
             }
             return 0;
         }

@@ -11,6 +11,8 @@ namespace Blocks {
                 return 10580;
             case Properties::Facing::EAST:
                 return 10581;
+            default:
+                return 0;
             }
             return 0;
         }

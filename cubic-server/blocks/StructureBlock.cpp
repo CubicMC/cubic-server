@@ -11,6 +11,8 @@ namespace Blocks {
                 return 18730;
             case Properties::Mode::DATA:
                 return 18731;
+            default:
+                return 0;
             }
             return 0;
         }

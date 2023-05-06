@@ -11,6 +11,8 @@ namespace Blocks {
                         return 19746;
                     case Properties::Powered::FALSE:
                         return 19747;
+                    default:
+                        return 0;
                     }
                 case Properties::Facing::SOUTH:
                     switch (powered) {
@@ -18,6 +20,8 @@ namespace Blocks {
                         return 19748;
                     case Properties::Powered::FALSE:
                         return 19749;
+                    default:
+                        return 0;
                     }
                 case Properties::Facing::WEST:
                     switch (powered) {
@@ -25,6 +29,8 @@ namespace Blocks {
                         return 19750;
                     case Properties::Powered::FALSE:
                         return 19751;
+                    default:
+                        return 0;
                     }
                 case Properties::Facing::EAST:
                     switch (powered) {
@@ -32,7 +38,11 @@ namespace Blocks {
                         return 19752;
                     case Properties::Powered::FALSE:
                         return 19753;
+                    default:
+                        return 0;
                     }
+                default:
+                    return 0;
                 }
             case Properties::Face::WALL:
                 switch (facing) {
@@ -42,6 +52,8 @@ namespace Blocks {
                         return 19754;
                     case Properties::Powered::FALSE:
                         return 19755;
+                    default:
+                        return 0;
                     }
                 case Properties::Facing::SOUTH:
                     switch (powered) {
@@ -49,6 +61,8 @@ namespace Blocks {
                         return 19756;
                     case Properties::Powered::FALSE:
                         return 19757;
+                    default:
+                        return 0;
                     }
                 case Properties::Facing::WEST:
                     switch (powered) {
@@ -56,6 +70,8 @@ namespace Blocks {
                         return 19758;
                     case Properties::Powered::FALSE:
                         return 19759;
+                    default:
+                        return 0;
                     }
                 case Properties::Facing::EAST:
                     switch (powered) {
@@ -63,7 +79,11 @@ namespace Blocks {
                         return 19760;
                     case Properties::Powered::FALSE:
                         return 19761;
+                    default:
+                        return 0;
                     }
+                default:
+                    return 0;
                 }
             case Properties::Face::CEILING:
                 switch (facing) {
@@ -73,6 +93,8 @@ namespace Blocks {
                         return 19762;
                     case Properties::Powered::FALSE:
                         return 19763;
+                    default:
+                        return 0;
                     }
                 case Properties::Facing::SOUTH:
                     switch (powered) {
@@ -80,6 +102,8 @@ namespace Blocks {
                         return 19764;
                     case Properties::Powered::FALSE:
                         return 19765;
+                    default:
+                        return 0;
                     }
                 case Properties::Facing::WEST:
                     switch (powered) {
@@ -87,6 +111,8 @@ namespace Blocks {
                         return 19766;
                     case Properties::Powered::FALSE:
                         return 19767;
+                    default:
+                        return 0;
                     }
                 case Properties::Facing::EAST:
                     switch (powered) {
@@ -94,8 +120,14 @@ namespace Blocks {
                         return 19768;
                     case Properties::Powered::FALSE:
                         return 19769;
+                    default:
+                        return 0;
                     }
+                default:
+                    return 0;
                 }
+            default:
+                return 0;
             }
             return 0;
         }

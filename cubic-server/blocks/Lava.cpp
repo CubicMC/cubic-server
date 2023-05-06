@@ -35,6 +35,8 @@ namespace Blocks {
                 return 107;
             case Properties::Level::FIFTEEN:
                 return 108;
+            default:
+                return 0;
             }
             return 0;
         }
