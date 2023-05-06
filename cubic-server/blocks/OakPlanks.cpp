@@ -1,9 +1,10 @@
 #include "OakPlanks.hpp"
-#include <stdexcept>
-
 namespace Blocks {
 namespace OakPlanks {
-BlockId toProtocol() { return 15; }
+BlockId toProtocol()
+{
+    return 15;
+}
 }
 
 }

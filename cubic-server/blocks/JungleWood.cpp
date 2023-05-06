@@ -1,6 +1,4 @@
 #include "JungleWood.hpp"
-#include <stdexcept>
-
 namespace Blocks {
 namespace JungleWood {
 BlockId toProtocol(Properties::Axis axis)
@@ -12,6 +10,8 @@ BlockId toProtocol(Properties::Axis axis)
         return 182;
     case Properties::Axis::Z:
         return 183;
+    default:
+        return 0;
     }
     return 0;
 }

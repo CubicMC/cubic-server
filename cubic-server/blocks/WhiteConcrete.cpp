@@ -1,9 +1,10 @@
 #include "WhiteConcrete.hpp"
-#include <stdexcept>
-
 namespace Blocks {
 namespace WhiteConcrete {
-BlockId toProtocol() { return 12103; }
+BlockId toProtocol()
+{
+    return 12103;
+}
 }
 
 }

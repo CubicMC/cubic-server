@@ -1,6 +1,4 @@
 #include "PiglinHead.hpp"
-#include <stdexcept>
-
 namespace Blocks {
 namespace PiglinHead {
 BlockId toProtocol(Properties::Rotation rotation)
@@ -38,6 +36,8 @@ BlockId toProtocol(Properties::Rotation rotation)
         return 8705;
     case Properties::Rotation::FIFTEEN:
         return 8706;
+    default:
+        return 0;
     }
     return 0;
 }

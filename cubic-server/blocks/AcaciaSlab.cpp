@@ -1,6 +1,4 @@
 #include "AcaciaSlab.hpp"
-#include <stdexcept>
-
 namespace Blocks {
 namespace AcaciaSlab {
 BlockId toProtocol(Properties::Type type, Properties::Waterlogged waterlogged)
@@ -12,6 +10,8 @@ BlockId toProtocol(Properties::Type type, Properties::Waterlogged waterlogged)
             return 10709;
         case Properties::Waterlogged::FALSE:
             return 10710;
+        default:
+            return 0;
         }
     case Properties::Type::BOTTOM:
         switch (waterlogged) {
@@ -19,6 +19,8 @@ BlockId toProtocol(Properties::Type type, Properties::Waterlogged waterlogged)
             return 10711;
         case Properties::Waterlogged::FALSE:
             return 10712;
+        default:
+            return 0;
         }
     case Properties::Type::DOUBLE:
         switch (waterlogged) {
@@ -26,7 +28,11 @@ BlockId toProtocol(Properties::Type type, Properties::Waterlogged waterlogged)
             return 10713;
         case Properties::Waterlogged::FALSE:
             return 10714;
+        default:
+            return 0;
         }
+    default:
+        return 0;
     }
     return 0;
 }

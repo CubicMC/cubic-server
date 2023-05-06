@@ -1,6 +1,4 @@
 #include "FrostedIce.hpp"
-#include <stdexcept>
-
 namespace Blocks {
 namespace FrostedIce {
 BlockId toProtocol(Properties::Age age)
@@ -14,6 +12,8 @@ BlockId toProtocol(Properties::Age age)
         return 11916;
     case Properties::Age::THREE:
         return 11917;
+    default:
+        return 0;
     }
     return 0;
 }

@@ -1,6 +1,4 @@
 #include "Grindstone.hpp"
-#include <stdexcept>
-
 namespace Blocks {
 namespace Grindstone {
 BlockId toProtocol(Properties::Face face, Properties::Facing facing)
@@ -16,6 +14,8 @@ BlockId toProtocol(Properties::Face face, Properties::Facing facing)
             return 17812;
         case Properties::Facing::EAST:
             return 17813;
+        default:
+            return 0;
         }
     case Properties::Face::WALL:
         switch (facing) {
@@ -27,6 +27,8 @@ BlockId toProtocol(Properties::Face face, Properties::Facing facing)
             return 17816;
         case Properties::Facing::EAST:
             return 17817;
+        default:
+            return 0;
         }
     case Properties::Face::CEILING:
         switch (facing) {
@@ -38,7 +40,11 @@ BlockId toProtocol(Properties::Face face, Properties::Facing facing)
             return 17820;
         case Properties::Facing::EAST:
             return 17821;
+        default:
+            return 0;
         }
+    default:
+        return 0;
     }
     return 0;
 }

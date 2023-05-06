@@ -1,6 +1,4 @@
 #include "ZombieHead.hpp"
-#include <stdexcept>
-
 namespace Blocks {
 namespace ZombieHead {
 BlockId toProtocol(Properties::Rotation rotation)
@@ -38,6 +36,8 @@ BlockId toProtocol(Properties::Rotation rotation)
         return 8625;
     case Properties::Rotation::FIFTEEN:
         return 8626;
+    default:
+        return 0;
     }
     return 0;
 }

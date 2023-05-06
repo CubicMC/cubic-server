@@ -1,6 +1,4 @@
 #include "StrippedCrimsonHyphae.hpp"
-#include <stdexcept>
-
 namespace Blocks {
 namespace StrippedCrimsonHyphae {
 BlockId toProtocol(Properties::Axis axis)
@@ -12,6 +10,8 @@ BlockId toProtocol(Properties::Axis axis)
         return 17978;
     case Properties::Axis::Z:
         return 17979;
+    default:
+        return 0;
     }
     return 0;
 }

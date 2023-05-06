@@ -1,6 +1,4 @@
 #include "BambooPressurePlate.hpp"
-#include <stdexcept>
-
 namespace Blocks {
 namespace BambooPressurePlate {
 BlockId toProtocol(Properties::Powered powered)
@@ -10,6 +8,8 @@ BlockId toProtocol(Properties::Powered powered)
         return 5566;
     case Properties::Powered::FALSE:
         return 5567;
+    default:
+        return 0;
     }
     return 0;
 }

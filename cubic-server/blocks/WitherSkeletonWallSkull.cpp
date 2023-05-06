@@ -1,6 +1,4 @@
 #include "WitherSkeletonWallSkull.hpp"
-#include <stdexcept>
-
 namespace Blocks {
 namespace WitherSkeletonWallSkull {
 BlockId toProtocol(Properties::Facing facing)
@@ -14,6 +12,8 @@ BlockId toProtocol(Properties::Facing facing)
         return 8609;
     case Properties::Facing::EAST:
         return 8610;
+    default:
+        return 0;
     }
     return 0;
 }

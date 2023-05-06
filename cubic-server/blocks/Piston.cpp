@@ -1,6 +1,4 @@
 #include "Piston.hpp"
-#include <stdexcept>
-
 namespace Blocks {
 namespace Piston {
 BlockId toProtocol(Properties::Extended extended, Properties::Facing facing)
@@ -20,6 +18,8 @@ BlockId toProtocol(Properties::Extended extended, Properties::Facing facing)
             return 1964;
         case Properties::Facing::DOWN:
             return 1965;
+        default:
+            return 0;
         }
     case Properties::Extended::FALSE:
         switch (facing) {
@@ -35,7 +35,11 @@ BlockId toProtocol(Properties::Extended extended, Properties::Facing facing)
             return 1970;
         case Properties::Facing::DOWN:
             return 1971;
+        default:
+            return 0;
         }
+    default:
+        return 0;
     }
     return 0;
 }

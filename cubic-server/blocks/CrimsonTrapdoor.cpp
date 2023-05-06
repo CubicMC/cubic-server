@@ -1,6 +1,4 @@
 #include "CrimsonTrapdoor.hpp"
-#include <stdexcept>
-
 namespace Blocks {
 namespace CrimsonTrapdoor {
 BlockId toProtocol(Properties::Facing facing, Properties::Half half, Properties::Open open, Properties::Powered powered, Properties::Waterlogged waterlogged)
@@ -18,6 +16,8 @@ BlockId toProtocol(Properties::Facing facing, Properties::Half half, Properties:
                         return 18120;
                     case Properties::Waterlogged::FALSE:
                         return 18121;
+                    default:
+                        return 0;
                     }
                 case Properties::Powered::FALSE:
                     switch (waterlogged) {
@@ -25,7 +25,11 @@ BlockId toProtocol(Properties::Facing facing, Properties::Half half, Properties:
                         return 18122;
                     case Properties::Waterlogged::FALSE:
                         return 18123;
+                    default:
+                        return 0;
                     }
+                default:
+                    return 0;
                 }
             case Properties::Open::FALSE:
                 switch (powered) {
@@ -35,6 +39,8 @@ BlockId toProtocol(Properties::Facing facing, Properties::Half half, Properties:
                         return 18124;
                     case Properties::Waterlogged::FALSE:
                         return 18125;
+                    default:
+                        return 0;
                     }
                 case Properties::Powered::FALSE:
                     switch (waterlogged) {
@@ -42,8 +48,14 @@ BlockId toProtocol(Properties::Facing facing, Properties::Half half, Properties:
                         return 18126;
                     case Properties::Waterlogged::FALSE:
                         return 18127;
+                    default:
+                        return 0;
                     }
+                default:
+                    return 0;
                 }
+            default:
+                return 0;
             }
         case Properties::Half::BOTTOM:
             switch (open) {
@@ -55,6 +67,8 @@ BlockId toProtocol(Properties::Facing facing, Properties::Half half, Properties:
                         return 18128;
                     case Properties::Waterlogged::FALSE:
                         return 18129;
+                    default:
+                        return 0;
                     }
                 case Properties::Powered::FALSE:
                     switch (waterlogged) {
@@ -62,7 +76,11 @@ BlockId toProtocol(Properties::Facing facing, Properties::Half half, Properties:
                         return 18130;
                     case Properties::Waterlogged::FALSE:
                         return 18131;
+                    default:
+                        return 0;
                     }
+                default:
+                    return 0;
                 }
             case Properties::Open::FALSE:
                 switch (powered) {
@@ -72,6 +90,8 @@ BlockId toProtocol(Properties::Facing facing, Properties::Half half, Properties:
                         return 18132;
                     case Properties::Waterlogged::FALSE:
                         return 18133;
+                    default:
+                        return 0;
                     }
                 case Properties::Powered::FALSE:
                     switch (waterlogged) {
@@ -79,9 +99,17 @@ BlockId toProtocol(Properties::Facing facing, Properties::Half half, Properties:
                         return 18134;
                     case Properties::Waterlogged::FALSE:
                         return 18135;
+                    default:
+                        return 0;
                     }
+                default:
+                    return 0;
                 }
+            default:
+                return 0;
             }
+        default:
+            return 0;
         }
     case Properties::Facing::SOUTH:
         switch (half) {
@@ -95,6 +123,8 @@ BlockId toProtocol(Properties::Facing facing, Properties::Half half, Properties:
                         return 18136;
                     case Properties::Waterlogged::FALSE:
                         return 18137;
+                    default:
+                        return 0;
                     }
                 case Properties::Powered::FALSE:
                     switch (waterlogged) {
@@ -102,7 +132,11 @@ BlockId toProtocol(Properties::Facing facing, Properties::Half half, Properties:
                         return 18138;
                     case Properties::Waterlogged::FALSE:
                         return 18139;
+                    default:
+                        return 0;
                     }
+                default:
+                    return 0;
                 }
             case Properties::Open::FALSE:
                 switch (powered) {
@@ -112,6 +146,8 @@ BlockId toProtocol(Properties::Facing facing, Properties::Half half, Properties:
                         return 18140;
                     case Properties::Waterlogged::FALSE:
                         return 18141;
+                    default:
+                        return 0;
                     }
                 case Properties::Powered::FALSE:
                     switch (waterlogged) {
@@ -119,8 +155,14 @@ BlockId toProtocol(Properties::Facing facing, Properties::Half half, Properties:
                         return 18142;
                     case Properties::Waterlogged::FALSE:
                         return 18143;
+                    default:
+                        return 0;
                     }
+                default:
+                    return 0;
                 }
+            default:
+                return 0;
             }
         case Properties::Half::BOTTOM:
             switch (open) {
@@ -132,6 +174,8 @@ BlockId toProtocol(Properties::Facing facing, Properties::Half half, Properties:
                         return 18144;
                     case Properties::Waterlogged::FALSE:
                         return 18145;
+                    default:
+                        return 0;
                     }
                 case Properties::Powered::FALSE:
                     switch (waterlogged) {
@@ -139,7 +183,11 @@ BlockId toProtocol(Properties::Facing facing, Properties::Half half, Properties:
                         return 18146;
                     case Properties::Waterlogged::FALSE:
                         return 18147;
+                    default:
+                        return 0;
                     }
+                default:
+                    return 0;
                 }
             case Properties::Open::FALSE:
                 switch (powered) {
@@ -149,6 +197,8 @@ BlockId toProtocol(Properties::Facing facing, Properties::Half half, Properties:
                         return 18148;
                     case Properties::Waterlogged::FALSE:
                         return 18149;
+                    default:
+                        return 0;
                     }
                 case Properties::Powered::FALSE:
                     switch (waterlogged) {
@@ -156,9 +206,17 @@ BlockId toProtocol(Properties::Facing facing, Properties::Half half, Properties:
                         return 18150;
                     case Properties::Waterlogged::FALSE:
                         return 18151;
+                    default:
+                        return 0;
                     }
+                default:
+                    return 0;
                 }
+            default:
+                return 0;
             }
+        default:
+            return 0;
         }
     case Properties::Facing::WEST:
         switch (half) {
@@ -172,6 +230,8 @@ BlockId toProtocol(Properties::Facing facing, Properties::Half half, Properties:
                         return 18152;
                     case Properties::Waterlogged::FALSE:
                         return 18153;
+                    default:
+                        return 0;
                     }
                 case Properties::Powered::FALSE:
                     switch (waterlogged) {
@@ -179,7 +239,11 @@ BlockId toProtocol(Properties::Facing facing, Properties::Half half, Properties:
                         return 18154;
                     case Properties::Waterlogged::FALSE:
                         return 18155;
+                    default:
+                        return 0;
                     }
+                default:
+                    return 0;
                 }
             case Properties::Open::FALSE:
                 switch (powered) {
@@ -189,6 +253,8 @@ BlockId toProtocol(Properties::Facing facing, Properties::Half half, Properties:
                         return 18156;
                     case Properties::Waterlogged::FALSE:
                         return 18157;
+                    default:
+                        return 0;
                     }
                 case Properties::Powered::FALSE:
                     switch (waterlogged) {
@@ -196,8 +262,14 @@ BlockId toProtocol(Properties::Facing facing, Properties::Half half, Properties:
                         return 18158;
                     case Properties::Waterlogged::FALSE:
                         return 18159;
+                    default:
+                        return 0;
                     }
+                default:
+                    return 0;
                 }
+            default:
+                return 0;
             }
         case Properties::Half::BOTTOM:
             switch (open) {
@@ -209,6 +281,8 @@ BlockId toProtocol(Properties::Facing facing, Properties::Half half, Properties:
                         return 18160;
                     case Properties::Waterlogged::FALSE:
                         return 18161;
+                    default:
+                        return 0;
                     }
                 case Properties::Powered::FALSE:
                     switch (waterlogged) {
@@ -216,7 +290,11 @@ BlockId toProtocol(Properties::Facing facing, Properties::Half half, Properties:
                         return 18162;
                     case Properties::Waterlogged::FALSE:
                         return 18163;
+                    default:
+                        return 0;
                     }
+                default:
+                    return 0;
                 }
             case Properties::Open::FALSE:
                 switch (powered) {
@@ -226,6 +304,8 @@ BlockId toProtocol(Properties::Facing facing, Properties::Half half, Properties:
                         return 18164;
                     case Properties::Waterlogged::FALSE:
                         return 18165;
+                    default:
+                        return 0;
                     }
                 case Properties::Powered::FALSE:
                     switch (waterlogged) {
@@ -233,9 +313,17 @@ BlockId toProtocol(Properties::Facing facing, Properties::Half half, Properties:
                         return 18166;
                     case Properties::Waterlogged::FALSE:
                         return 18167;
+                    default:
+                        return 0;
                     }
+                default:
+                    return 0;
                 }
+            default:
+                return 0;
             }
+        default:
+            return 0;
         }
     case Properties::Facing::EAST:
         switch (half) {
@@ -249,6 +337,8 @@ BlockId toProtocol(Properties::Facing facing, Properties::Half half, Properties:
                         return 18168;
                     case Properties::Waterlogged::FALSE:
                         return 18169;
+                    default:
+                        return 0;
                     }
                 case Properties::Powered::FALSE:
                     switch (waterlogged) {
@@ -256,7 +346,11 @@ BlockId toProtocol(Properties::Facing facing, Properties::Half half, Properties:
                         return 18170;
                     case Properties::Waterlogged::FALSE:
                         return 18171;
+                    default:
+                        return 0;
                     }
+                default:
+                    return 0;
                 }
             case Properties::Open::FALSE:
                 switch (powered) {
@@ -266,6 +360,8 @@ BlockId toProtocol(Properties::Facing facing, Properties::Half half, Properties:
                         return 18172;
                     case Properties::Waterlogged::FALSE:
                         return 18173;
+                    default:
+                        return 0;
                     }
                 case Properties::Powered::FALSE:
                     switch (waterlogged) {
@@ -273,8 +369,14 @@ BlockId toProtocol(Properties::Facing facing, Properties::Half half, Properties:
                         return 18174;
                     case Properties::Waterlogged::FALSE:
                         return 18175;
+                    default:
+                        return 0;
                     }
+                default:
+                    return 0;
                 }
+            default:
+                return 0;
             }
         case Properties::Half::BOTTOM:
             switch (open) {
@@ -286,6 +388,8 @@ BlockId toProtocol(Properties::Facing facing, Properties::Half half, Properties:
                         return 18176;
                     case Properties::Waterlogged::FALSE:
                         return 18177;
+                    default:
+                        return 0;
                     }
                 case Properties::Powered::FALSE:
                     switch (waterlogged) {
@@ -293,7 +397,11 @@ BlockId toProtocol(Properties::Facing facing, Properties::Half half, Properties:
                         return 18178;
                     case Properties::Waterlogged::FALSE:
                         return 18179;
+                    default:
+                        return 0;
                     }
+                default:
+                    return 0;
                 }
             case Properties::Open::FALSE:
                 switch (powered) {
@@ -303,6 +411,8 @@ BlockId toProtocol(Properties::Facing facing, Properties::Half half, Properties:
                         return 18180;
                     case Properties::Waterlogged::FALSE:
                         return 18181;
+                    default:
+                        return 0;
                     }
                 case Properties::Powered::FALSE:
                     switch (waterlogged) {
@@ -310,10 +420,20 @@ BlockId toProtocol(Properties::Facing facing, Properties::Half half, Properties:
                         return 18182;
                     case Properties::Waterlogged::FALSE:
                         return 18183;
+                    default:
+                        return 0;
                     }
+                default:
+                    return 0;
                 }
+            default:
+                return 0;
             }
+        default:
+            return 0;
         }
+    default:
+        return 0;
     }
     return 0;
 }

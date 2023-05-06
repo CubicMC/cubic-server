@@ -1,6 +1,4 @@
 #include "StrippedDarkOakWood.hpp"
-#include <stdexcept>
-
 namespace Blocks {
 namespace StrippedDarkOakWood {
 BlockId toProtocol(Properties::Axis axis)
@@ -12,6 +10,8 @@ BlockId toProtocol(Properties::Axis axis)
         return 209;
     case Properties::Axis::Z:
         return 210;
+    default:
+        return 0;
     }
     return 0;
 }

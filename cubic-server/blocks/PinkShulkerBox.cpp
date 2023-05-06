@@ -1,6 +1,4 @@
 #include "PinkShulkerBox.hpp"
-#include <stdexcept>
-
 namespace Blocks {
 namespace PinkShulkerBox {
 BlockId toProtocol(Properties::Facing facing)
@@ -18,6 +16,8 @@ BlockId toProtocol(Properties::Facing facing)
         return 11983;
     case Properties::Facing::DOWN:
         return 11984;
+    default:
+        return 0;
     }
     return 0;
 }

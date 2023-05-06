@@ -1,6 +1,4 @@
 #include "LimeCandleCake.hpp"
-#include <stdexcept>
-
 namespace Blocks {
 namespace LimeCandleCake {
 BlockId toProtocol(Properties::Lit lit)
@@ -10,6 +8,8 @@ BlockId toProtocol(Properties::Lit lit)
         return 20381;
     case Properties::Lit::FALSE:
         return 20382;
+    default:
+        return 0;
     }
     return 0;
 }

@@ -1,6 +1,4 @@
 #include "LimeShulkerBox.hpp"
-#include <stdexcept>
-
 namespace Blocks {
 namespace LimeShulkerBox {
 BlockId toProtocol(Properties::Facing facing)
@@ -18,6 +16,8 @@ BlockId toProtocol(Properties::Facing facing)
         return 11977;
     case Properties::Facing::DOWN:
         return 11978;
+    default:
+        return 0;
     }
     return 0;
 }

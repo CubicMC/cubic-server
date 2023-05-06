@@ -1,9 +1,10 @@
 #include "Calcite.hpp"
-#include <stdexcept>
-
 namespace Blocks {
 namespace Calcite {
-BlockId toProtocol() { return 20454; }
+BlockId toProtocol()
+{
+    return 20454;
+}
 }
 
 }

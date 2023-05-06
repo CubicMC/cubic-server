@@ -1,6 +1,4 @@
 #include "BambooMosaicSlab.hpp"
-#include <stdexcept>
-
 namespace Blocks {
 namespace BambooMosaicSlab {
 BlockId toProtocol(Properties::Type type, Properties::Waterlogged waterlogged)
@@ -12,6 +10,8 @@ BlockId toProtocol(Properties::Type type, Properties::Waterlogged waterlogged)
             return 10733;
         case Properties::Waterlogged::FALSE:
             return 10734;
+        default:
+            return 0;
         }
     case Properties::Type::BOTTOM:
         switch (waterlogged) {
@@ -19,6 +19,8 @@ BlockId toProtocol(Properties::Type type, Properties::Waterlogged waterlogged)
             return 10735;
         case Properties::Waterlogged::FALSE:
             return 10736;
+        default:
+            return 0;
         }
     case Properties::Type::DOUBLE:
         switch (waterlogged) {
@@ -26,7 +28,11 @@ BlockId toProtocol(Properties::Type type, Properties::Waterlogged waterlogged)
             return 10737;
         case Properties::Waterlogged::FALSE:
             return 10738;
+        default:
+            return 0;
         }
+    default:
+        return 0;
     }
     return 0;
 }

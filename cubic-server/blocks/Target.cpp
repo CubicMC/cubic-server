@@ -1,6 +1,4 @@
 #include "Target.hpp"
-#include <stdexcept>
-
 namespace Blocks {
 namespace Target {
 BlockId toProtocol(Properties::Power power)
@@ -38,6 +36,8 @@ BlockId toProtocol(Properties::Power power)
         return 18767;
     case Properties::Power::FIFTEEN:
         return 18768;
+    default:
+        return 0;
     }
     return 0;
 }

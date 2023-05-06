@@ -1,9 +1,10 @@
 #include "SprucePlanks.hpp"
-#include <stdexcept>
-
 namespace Blocks {
 namespace SprucePlanks {
-BlockId toProtocol() { return 16; }
+BlockId toProtocol()
+{
+    return 16;
+}
 }
 
 }

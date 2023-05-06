@@ -1,6 +1,4 @@
 #include "MagentaShulkerBox.hpp"
-#include <stdexcept>
-
 namespace Blocks {
 namespace MagentaShulkerBox {
 BlockId toProtocol(Properties::Facing facing)
@@ -18,6 +16,8 @@ BlockId toProtocol(Properties::Facing facing)
         return 11959;
     case Properties::Facing::DOWN:
         return 11960;
+    default:
+        return 0;
     }
     return 0;
 }

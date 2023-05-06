@@ -1,6 +1,4 @@
 #include "InfestedDeepslate.hpp"
-#include <stdexcept>
-
 namespace Blocks {
 namespace InfestedDeepslate {
 BlockId toProtocol(Properties::Axis axis)
@@ -12,6 +10,8 @@ BlockId toProtocol(Properties::Axis axis)
         return 23213;
     case Properties::Axis::Z:
         return 23214;
+    default:
+        return 0;
     }
     return 0;
 }

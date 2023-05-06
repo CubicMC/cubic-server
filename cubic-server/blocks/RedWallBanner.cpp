@@ -1,6 +1,4 @@
 #include "RedWallBanner.hpp"
-#include <stdexcept>
-
 namespace Blocks {
 namespace RedWallBanner {
 BlockId toProtocol(Properties::Facing facing)
@@ -14,6 +12,8 @@ BlockId toProtocol(Properties::Facing facing)
         return 10596;
     case Properties::Facing::EAST:
         return 10597;
+    default:
+        return 0;
     }
     return 0;
 }

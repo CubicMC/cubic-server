@@ -1,6 +1,4 @@
 #include "BirchWood.hpp"
-#include <stdexcept>
-
 namespace Blocks {
 namespace BirchWood {
 BlockId toProtocol(Properties::Axis axis)
@@ -12,6 +10,8 @@ BlockId toProtocol(Properties::Axis axis)
         return 179;
     case Properties::Axis::Z:
         return 180;
+    default:
+        return 0;
     }
     return 0;
 }

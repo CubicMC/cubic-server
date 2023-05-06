@@ -1,6 +1,4 @@
 #include "JackOLantern.hpp"
-#include <stdexcept>
-
 namespace Blocks {
 namespace JackOLantern {
 BlockId toProtocol(Properties::Facing facing)
@@ -14,6 +12,8 @@ BlockId toProtocol(Properties::Facing facing)
         return 5707;
     case Properties::Facing::EAST:
         return 5708;
+    default:
+        return 0;
     }
     return 0;
 }

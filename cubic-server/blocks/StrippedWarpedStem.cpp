@@ -1,6 +1,4 @@
 #include "StrippedWarpedStem.hpp"
-#include <stdexcept>
-
 namespace Blocks {
 namespace StrippedWarpedStem {
 BlockId toProtocol(Properties::Axis axis)
@@ -12,6 +10,8 @@ BlockId toProtocol(Properties::Axis axis)
         return 17955;
     case Properties::Axis::Z:
         return 17956;
+    default:
+        return 0;
     }
     return 0;
 }

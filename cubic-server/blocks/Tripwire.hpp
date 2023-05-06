@@ -1,9 +1,4 @@
 #include <cstdint>
-#include <functional>
-#include <string>
-#include <unordered_map>
-#include <vector>
-
 namespace Blocks {
 typedef int32_t BlockId;
 
@@ -38,10 +33,7 @@ enum class West {
     FALSE
 };
 }
-BlockId toProtocol(
-    Properties::Attached attached, Properties::Disarmed disarmed, Properties::East east, Properties::North north, Properties::Powered powered, Properties::South south,
-    Properties::West west
-);
+BlockId toProtocol(Properties::Attached attached, Properties::Disarmed disarmed, Properties::East east, Properties::North north, Properties::Powered powered, Properties::South south, Properties::West west);
 }
 
 }

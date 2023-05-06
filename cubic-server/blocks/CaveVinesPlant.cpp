@@ -1,6 +1,4 @@
 #include "CaveVinesPlant.hpp"
-#include <stdexcept>
-
 namespace Blocks {
 namespace CaveVinesPlant {
 BlockId toProtocol(Properties::Berries berries)
@@ -10,6 +8,8 @@ BlockId toProtocol(Properties::Berries berries)
         return 21495;
     case Properties::Berries::FALSE:
         return 21496;
+    default:
+        return 0;
     }
     return 0;
 }

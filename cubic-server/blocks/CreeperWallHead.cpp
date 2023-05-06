@@ -1,6 +1,4 @@
 #include "CreeperWallHead.hpp"
-#include <stdexcept>
-
 namespace Blocks {
 namespace CreeperWallHead {
 BlockId toProtocol(Properties::Facing facing)
@@ -14,6 +12,8 @@ BlockId toProtocol(Properties::Facing facing)
         return 8669;
     case Properties::Facing::EAST:
         return 8670;
+    default:
+        return 0;
     }
     return 0;
 }

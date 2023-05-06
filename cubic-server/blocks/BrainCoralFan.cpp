@@ -1,6 +1,4 @@
 #include "BrainCoralFan.hpp"
-#include <stdexcept>
-
 namespace Blocks {
 namespace BrainCoralFan {
 BlockId toProtocol(Properties::Waterlogged waterlogged)
@@ -10,6 +8,8 @@ BlockId toProtocol(Properties::Waterlogged waterlogged)
         return 12217;
     case Properties::Waterlogged::FALSE:
         return 12218;
+    default:
+        return 0;
     }
     return 0;
 }

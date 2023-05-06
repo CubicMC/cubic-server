@@ -1,6 +1,4 @@
 #include "MagentaWallBanner.hpp"
-#include <stdexcept>
-
 namespace Blocks {
 namespace MagentaWallBanner {
 BlockId toProtocol(Properties::Facing facing)
@@ -14,6 +12,8 @@ BlockId toProtocol(Properties::Facing facing)
         return 10548;
     case Properties::Facing::EAST:
         return 10549;
+    default:
+        return 0;
     }
     return 0;
 }

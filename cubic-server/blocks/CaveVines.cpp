@@ -1,6 +1,4 @@
 #include "CaveVines.hpp"
-#include <stdexcept>
-
 namespace Blocks {
 namespace CaveVines {
 BlockId toProtocol(Properties::Age age, Properties::Berries berries)
@@ -12,6 +10,8 @@ BlockId toProtocol(Properties::Age age, Properties::Berries berries)
             return 21443;
         case Properties::Berries::FALSE:
             return 21444;
+        default:
+            return 0;
         }
     case Properties::Age::ONE:
         switch (berries) {
@@ -19,6 +19,8 @@ BlockId toProtocol(Properties::Age age, Properties::Berries berries)
             return 21445;
         case Properties::Berries::FALSE:
             return 21446;
+        default:
+            return 0;
         }
     case Properties::Age::TWO:
         switch (berries) {
@@ -26,6 +28,8 @@ BlockId toProtocol(Properties::Age age, Properties::Berries berries)
             return 21447;
         case Properties::Berries::FALSE:
             return 21448;
+        default:
+            return 0;
         }
     case Properties::Age::THREE:
         switch (berries) {
@@ -33,6 +37,8 @@ BlockId toProtocol(Properties::Age age, Properties::Berries berries)
             return 21449;
         case Properties::Berries::FALSE:
             return 21450;
+        default:
+            return 0;
         }
     case Properties::Age::FOUR:
         switch (berries) {
@@ -40,6 +46,8 @@ BlockId toProtocol(Properties::Age age, Properties::Berries berries)
             return 21451;
         case Properties::Berries::FALSE:
             return 21452;
+        default:
+            return 0;
         }
     case Properties::Age::FIVE:
         switch (berries) {
@@ -47,6 +55,8 @@ BlockId toProtocol(Properties::Age age, Properties::Berries berries)
             return 21453;
         case Properties::Berries::FALSE:
             return 21454;
+        default:
+            return 0;
         }
     case Properties::Age::SIX:
         switch (berries) {
@@ -54,6 +64,8 @@ BlockId toProtocol(Properties::Age age, Properties::Berries berries)
             return 21455;
         case Properties::Berries::FALSE:
             return 21456;
+        default:
+            return 0;
         }
     case Properties::Age::SEVEN:
         switch (berries) {
@@ -61,6 +73,8 @@ BlockId toProtocol(Properties::Age age, Properties::Berries berries)
             return 21457;
         case Properties::Berries::FALSE:
             return 21458;
+        default:
+            return 0;
         }
     case Properties::Age::EIGHT:
         switch (berries) {
@@ -68,6 +82,8 @@ BlockId toProtocol(Properties::Age age, Properties::Berries berries)
             return 21459;
         case Properties::Berries::FALSE:
             return 21460;
+        default:
+            return 0;
         }
     case Properties::Age::NINE:
         switch (berries) {
@@ -75,6 +91,8 @@ BlockId toProtocol(Properties::Age age, Properties::Berries berries)
             return 21461;
         case Properties::Berries::FALSE:
             return 21462;
+        default:
+            return 0;
         }
     case Properties::Age::TEN:
         switch (berries) {
@@ -82,6 +100,8 @@ BlockId toProtocol(Properties::Age age, Properties::Berries berries)
             return 21463;
         case Properties::Berries::FALSE:
             return 21464;
+        default:
+            return 0;
         }
     case Properties::Age::ELEVEN:
         switch (berries) {
@@ -89,6 +109,8 @@ BlockId toProtocol(Properties::Age age, Properties::Berries berries)
             return 21465;
         case Properties::Berries::FALSE:
             return 21466;
+        default:
+            return 0;
         }
     case Properties::Age::TWELVE:
         switch (berries) {
@@ -96,6 +118,8 @@ BlockId toProtocol(Properties::Age age, Properties::Berries berries)
             return 21467;
         case Properties::Berries::FALSE:
             return 21468;
+        default:
+            return 0;
         }
     case Properties::Age::THIRTEEN:
         switch (berries) {
@@ -103,6 +127,8 @@ BlockId toProtocol(Properties::Age age, Properties::Berries berries)
             return 21469;
         case Properties::Berries::FALSE:
             return 21470;
+        default:
+            return 0;
         }
     case Properties::Age::FOURTEEN:
         switch (berries) {
@@ -110,6 +136,8 @@ BlockId toProtocol(Properties::Age age, Properties::Berries berries)
             return 21471;
         case Properties::Berries::FALSE:
             return 21472;
+        default:
+            return 0;
         }
     case Properties::Age::FIFTEEN:
         switch (berries) {
@@ -117,6 +145,8 @@ BlockId toProtocol(Properties::Age age, Properties::Berries berries)
             return 21473;
         case Properties::Berries::FALSE:
             return 21474;
+        default:
+            return 0;
         }
     case Properties::Age::SIXTEEN:
         switch (berries) {
@@ -124,6 +154,8 @@ BlockId toProtocol(Properties::Age age, Properties::Berries berries)
             return 21475;
         case Properties::Berries::FALSE:
             return 21476;
+        default:
+            return 0;
         }
     case Properties::Age::SEVENTEEN:
         switch (berries) {
@@ -131,6 +163,8 @@ BlockId toProtocol(Properties::Age age, Properties::Berries berries)
             return 21477;
         case Properties::Berries::FALSE:
             return 21478;
+        default:
+            return 0;
         }
     case Properties::Age::EIGHTEEN:
         switch (berries) {
@@ -138,6 +172,8 @@ BlockId toProtocol(Properties::Age age, Properties::Berries berries)
             return 21479;
         case Properties::Berries::FALSE:
             return 21480;
+        default:
+            return 0;
         }
     case Properties::Age::NINETEEN:
         switch (berries) {
@@ -145,6 +181,8 @@ BlockId toProtocol(Properties::Age age, Properties::Berries berries)
             return 21481;
         case Properties::Berries::FALSE:
             return 21482;
+        default:
+            return 0;
         }
     case Properties::Age::TWENTY:
         switch (berries) {
@@ -152,6 +190,8 @@ BlockId toProtocol(Properties::Age age, Properties::Berries berries)
             return 21483;
         case Properties::Berries::FALSE:
             return 21484;
+        default:
+            return 0;
         }
     case Properties::Age::TWENTY_ONE:
         switch (berries) {
@@ -159,6 +199,8 @@ BlockId toProtocol(Properties::Age age, Properties::Berries berries)
             return 21485;
         case Properties::Berries::FALSE:
             return 21486;
+        default:
+            return 0;
         }
     case Properties::Age::TWENTY_TWO:
         switch (berries) {
@@ -166,6 +208,8 @@ BlockId toProtocol(Properties::Age age, Properties::Berries berries)
             return 21487;
         case Properties::Berries::FALSE:
             return 21488;
+        default:
+            return 0;
         }
     case Properties::Age::TWENTY_THREE:
         switch (berries) {
@@ -173,6 +217,8 @@ BlockId toProtocol(Properties::Age age, Properties::Berries berries)
             return 21489;
         case Properties::Berries::FALSE:
             return 21490;
+        default:
+            return 0;
         }
     case Properties::Age::TWENTY_FOUR:
         switch (berries) {
@@ -180,6 +226,8 @@ BlockId toProtocol(Properties::Age age, Properties::Berries berries)
             return 21491;
         case Properties::Berries::FALSE:
             return 21492;
+        default:
+            return 0;
         }
     case Properties::Age::TWENTY_FIVE:
         switch (berries) {
@@ -187,7 +235,11 @@ BlockId toProtocol(Properties::Age age, Properties::Berries berries)
             return 21493;
         case Properties::Berries::FALSE:
             return 21494;
+        default:
+            return 0;
         }
+    default:
+        return 0;
     }
     return 0;
 }

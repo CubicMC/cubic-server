@@ -1,9 +1,10 @@
 #include "PackedIce.hpp"
-#include <stdexcept>
-
 namespace Blocks {
 namespace PackedIce {
-BlockId toProtocol() { return 10269; }
+BlockId toProtocol()
+{
+    return 10269;
+}
 }
 
 }

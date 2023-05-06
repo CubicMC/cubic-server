@@ -1,6 +1,4 @@
 #include "StrippedJungleWood.hpp"
-#include <stdexcept>
-
 namespace Blocks {
 namespace StrippedJungleWood {
 BlockId toProtocol(Properties::Axis axis)
@@ -12,6 +10,8 @@ BlockId toProtocol(Properties::Axis axis)
         return 203;
     case Properties::Axis::Z:
         return 204;
+    default:
+        return 0;
     }
     return 0;
 }

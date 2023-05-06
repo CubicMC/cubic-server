@@ -1,6 +1,4 @@
 #include "LightGrayBanner.hpp"
-#include <stdexcept>
-
 namespace Blocks {
 namespace LightGrayBanner {
 BlockId toProtocol(Properties::Rotation rotation)
@@ -38,6 +36,8 @@ BlockId toProtocol(Properties::Rotation rotation)
         return 10424;
     case Properties::Rotation::FIFTEEN:
         return 10425;
+    default:
+        return 0;
     }
     return 0;
 }

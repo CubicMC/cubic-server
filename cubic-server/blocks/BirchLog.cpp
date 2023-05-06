@@ -1,6 +1,4 @@
 #include "BirchLog.hpp"
-#include <stdexcept>
-
 namespace Blocks {
 namespace BirchLog {
 BlockId toProtocol(Properties::Axis axis)
@@ -12,6 +10,8 @@ BlockId toProtocol(Properties::Axis axis)
         return 126;
     case Properties::Axis::Z:
         return 127;
+    default:
+        return 0;
     }
     return 0;
 }

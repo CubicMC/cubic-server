@@ -1,6 +1,4 @@
 #include "CommandBlock.hpp"
-#include <stdexcept>
-
 namespace Blocks {
 namespace CommandBlock {
 BlockId toProtocol(Properties::Conditional conditional, Properties::Facing facing)
@@ -20,6 +18,8 @@ BlockId toProtocol(Properties::Conditional conditional, Properties::Facing facin
             return 7680;
         case Properties::Facing::DOWN:
             return 7681;
+        default:
+            return 0;
         }
     case Properties::Conditional::FALSE:
         switch (facing) {
@@ -35,7 +35,11 @@ BlockId toProtocol(Properties::Conditional conditional, Properties::Facing facin
             return 7686;
         case Properties::Facing::DOWN:
             return 7687;
+        default:
+            return 0;
         }
+    default:
+        return 0;
     }
     return 0;
 }

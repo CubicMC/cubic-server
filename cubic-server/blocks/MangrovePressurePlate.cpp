@@ -1,6 +1,4 @@
 #include "MangrovePressurePlate.hpp"
-#include <stdexcept>
-
 namespace Blocks {
 namespace MangrovePressurePlate {
 BlockId toProtocol(Properties::Powered powered)
@@ -10,6 +8,8 @@ BlockId toProtocol(Properties::Powered powered)
         return 5564;
     case Properties::Powered::FALSE:
         return 5565;
+    default:
+        return 0;
     }
     return 0;
 }

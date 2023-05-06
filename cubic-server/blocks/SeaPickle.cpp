@@ -1,6 +1,4 @@
 #include "SeaPickle.hpp"
-#include <stdexcept>
-
 namespace Blocks {
 namespace SeaPickle {
 BlockId toProtocol(Properties::Pickles pickles, Properties::Waterlogged waterlogged)
@@ -12,6 +10,8 @@ BlockId toProtocol(Properties::Pickles pickles, Properties::Waterlogged waterlog
             return 12305;
         case Properties::Waterlogged::FALSE:
             return 12306;
+        default:
+            return 0;
         }
     case Properties::Pickles::TWO:
         switch (waterlogged) {
@@ -19,6 +19,8 @@ BlockId toProtocol(Properties::Pickles pickles, Properties::Waterlogged waterlog
             return 12307;
         case Properties::Waterlogged::FALSE:
             return 12308;
+        default:
+            return 0;
         }
     case Properties::Pickles::THREE:
         switch (waterlogged) {
@@ -26,6 +28,8 @@ BlockId toProtocol(Properties::Pickles pickles, Properties::Waterlogged waterlog
             return 12309;
         case Properties::Waterlogged::FALSE:
             return 12310;
+        default:
+            return 0;
         }
     case Properties::Pickles::FOUR:
         switch (waterlogged) {
@@ -33,7 +37,11 @@ BlockId toProtocol(Properties::Pickles pickles, Properties::Waterlogged waterlog
             return 12311;
         case Properties::Waterlogged::FALSE:
             return 12312;
+        default:
+            return 0;
         }
+    default:
+        return 0;
     }
     return 0;
 }

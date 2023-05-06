@@ -1,6 +1,4 @@
 #include "StructureBlock.hpp"
-#include <stdexcept>
-
 namespace Blocks {
 namespace StructureBlock {
 BlockId toProtocol(Properties::Mode mode)
@@ -14,6 +12,8 @@ BlockId toProtocol(Properties::Mode mode)
         return 18730;
     case Properties::Mode::DATA:
         return 18731;
+    default:
+        return 0;
     }
     return 0;
 }

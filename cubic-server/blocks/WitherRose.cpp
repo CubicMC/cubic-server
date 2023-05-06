@@ -1,9 +1,10 @@
 #include "WitherRose.hpp"
-#include <stdexcept>
-
 namespace Blocks {
 namespace WitherRose {
-BlockId toProtocol() { return 2035; }
+BlockId toProtocol()
+{
+    return 2035;
+}
 }
 
 }

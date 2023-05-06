@@ -1,6 +1,4 @@
 #include "MuddyMangroveRoots.hpp"
-#include <stdexcept>
-
 namespace Blocks {
 namespace MuddyMangroveRoots {
 BlockId toProtocol(Properties::Axis axis)
@@ -12,6 +10,8 @@ BlockId toProtocol(Properties::Axis axis)
         return 143;
     case Properties::Axis::Z:
         return 144;
+    default:
+        return 0;
     }
     return 0;
 }

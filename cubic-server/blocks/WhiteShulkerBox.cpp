@@ -1,6 +1,4 @@
 #include "WhiteShulkerBox.hpp"
-#include <stdexcept>
-
 namespace Blocks {
 namespace WhiteShulkerBox {
 BlockId toProtocol(Properties::Facing facing)
@@ -18,6 +16,8 @@ BlockId toProtocol(Properties::Facing facing)
         return 11947;
     case Properties::Facing::DOWN:
         return 11948;
+    default:
+        return 0;
     }
     return 0;
 }

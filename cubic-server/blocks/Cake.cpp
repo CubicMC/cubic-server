@@ -1,6 +1,4 @@
 #include "Cake.hpp"
-#include <stdexcept>
-
 namespace Blocks {
 namespace Cake {
 BlockId toProtocol(Properties::Bites bites)
@@ -20,6 +18,8 @@ BlockId toProtocol(Properties::Bites bites)
         return 5714;
     case Properties::Bites::SIX:
         return 5715;
+    default:
+        return 0;
     }
     return 0;
 }

@@ -1,6 +1,4 @@
 #include "HornCoralWallFan.hpp"
-#include <stdexcept>
-
 namespace Blocks {
 namespace HornCoralWallFan {
 BlockId toProtocol(Properties::Facing facing, Properties::Waterlogged waterlogged)
@@ -12,6 +10,8 @@ BlockId toProtocol(Properties::Facing facing, Properties::Waterlogged waterlogge
             return 12297;
         case Properties::Waterlogged::FALSE:
             return 12298;
+        default:
+            return 0;
         }
     case Properties::Facing::SOUTH:
         switch (waterlogged) {
@@ -19,6 +19,8 @@ BlockId toProtocol(Properties::Facing facing, Properties::Waterlogged waterlogge
             return 12299;
         case Properties::Waterlogged::FALSE:
             return 12300;
+        default:
+            return 0;
         }
     case Properties::Facing::WEST:
         switch (waterlogged) {
@@ -26,6 +28,8 @@ BlockId toProtocol(Properties::Facing facing, Properties::Waterlogged waterlogge
             return 12301;
         case Properties::Waterlogged::FALSE:
             return 12302;
+        default:
+            return 0;
         }
     case Properties::Facing::EAST:
         switch (waterlogged) {
@@ -33,7 +37,11 @@ BlockId toProtocol(Properties::Facing facing, Properties::Waterlogged waterlogge
             return 12303;
         case Properties::Waterlogged::FALSE:
             return 12304;
+        default:
+            return 0;
         }
+    default:
+        return 0;
     }
     return 0;
 }

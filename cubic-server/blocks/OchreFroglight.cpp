@@ -1,6 +1,4 @@
 #include "OchreFroglight.hpp"
-#include <stdexcept>
-
 namespace Blocks {
 namespace OchreFroglight {
 BlockId toProtocol(Properties::Axis axis)
@@ -12,6 +10,8 @@ BlockId toProtocol(Properties::Axis axis)
         return 23222;
     case Properties::Axis::Z:
         return 23223;
+    default:
+        return 0;
     }
     return 0;
 }

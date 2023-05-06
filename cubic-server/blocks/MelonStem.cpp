@@ -1,6 +1,4 @@
 #include "MelonStem.hpp"
-#include <stdexcept>
-
 namespace Blocks {
 namespace MelonStem {
 BlockId toProtocol(Properties::Age age)
@@ -22,6 +20,8 @@ BlockId toProtocol(Properties::Age age)
         return 6605;
     case Properties::Age::SEVEN:
         return 6606;
+    default:
+        return 0;
     }
     return 0;
 }

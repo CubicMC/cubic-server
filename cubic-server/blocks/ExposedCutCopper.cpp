@@ -1,9 +1,10 @@
 #include "ExposedCutCopper.hpp"
-#include <stdexcept>
-
 namespace Blocks {
 namespace ExposedCutCopper {
-BlockId toProtocol() { return 20700; }
+BlockId toProtocol()
+{
+    return 20700;
+}
 }
 
 }

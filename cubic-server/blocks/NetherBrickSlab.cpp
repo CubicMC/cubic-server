@@ -1,6 +1,4 @@
 #include "NetherBrickSlab.hpp"
-#include <stdexcept>
-
 namespace Blocks {
 namespace NetherBrickSlab {
 BlockId toProtocol(Properties::Type type, Properties::Waterlogged waterlogged)
@@ -12,6 +10,8 @@ BlockId toProtocol(Properties::Type type, Properties::Waterlogged waterlogged)
             return 10793;
         case Properties::Waterlogged::FALSE:
             return 10794;
+        default:
+            return 0;
         }
     case Properties::Type::BOTTOM:
         switch (waterlogged) {
@@ -19,6 +19,8 @@ BlockId toProtocol(Properties::Type type, Properties::Waterlogged waterlogged)
             return 10795;
         case Properties::Waterlogged::FALSE:
             return 10796;
+        default:
+            return 0;
         }
     case Properties::Type::DOUBLE:
         switch (waterlogged) {
@@ -26,7 +28,11 @@ BlockId toProtocol(Properties::Type type, Properties::Waterlogged waterlogged)
             return 10797;
         case Properties::Waterlogged::FALSE:
             return 10798;
+        default:
+            return 0;
         }
+    default:
+        return 0;
     }
     return 0;
 }
