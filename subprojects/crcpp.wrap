@@ -1,0 +1,7 @@
+[wrap-git]
+url = https://github.com/d-bahr/CRCpp.git
+revision = release-1.2.0.0
+depth = 1
+
+[provide]
+crcpp = crcpp_dep

@@ -4,4 +4,4 @@
 
 option('libcpp_clang',     type : 'boolean', value : false, description : 'use libc++ if compiling with clang and the library is available')
 option('test',             type : 'boolean', value : false, description : 'activate tests (debug only)')
-option('download_missing', type : 'combo',  choices: ['minimal', 'full'], value : 'required', description : 'activate tests (debug only)')
+option('download_missing', type : 'combo',  choices: ['minimal', 'full'], value : 'minimal', description : 'activate tests (debug only)')
