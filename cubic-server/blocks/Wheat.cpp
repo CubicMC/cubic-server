@@ -1,6 +1,4 @@
 #include "Wheat.hpp"
-#include <stdexcept>
-
 namespace Blocks {
 namespace Wheat {
 BlockId toProtocol(Properties::Age age)
@@ -22,6 +20,8 @@ BlockId toProtocol(Properties::Age age)
         return 4232;
     case Properties::Age::SEVEN:
         return 4233;
+    default:
+        return 0;
     }
     return 0;
 }

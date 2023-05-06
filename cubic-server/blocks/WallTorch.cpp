@@ -1,6 +1,4 @@
 #include "WallTorch.hpp"
-#include <stdexcept>
-
 namespace Blocks {
 namespace WallTorch {
 BlockId toProtocol(Properties::Facing facing)
@@ -14,6 +12,8 @@ BlockId toProtocol(Properties::Facing facing)
         return 2306;
     case Properties::Facing::EAST:
         return 2307;
+    default:
+        return 0;
     }
     return 0;
 }

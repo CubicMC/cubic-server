@@ -1,6 +1,4 @@
 #include "LightWeightedPressurePlate.hpp"
-#include <stdexcept>
-
 namespace Blocks {
 namespace LightWeightedPressurePlate {
 BlockId toProtocol(Properties::Power power)
@@ -38,6 +36,8 @@ BlockId toProtocol(Properties::Power power)
         return 8761;
     case Properties::Power::FIFTEEN:
         return 8762;
+    default:
+        return 0;
     }
     return 0;
 }

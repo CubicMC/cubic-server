@@ -1,6 +1,4 @@
 #include "PolishedDeepslateSlab.hpp"
-#include <stdexcept>
-
 namespace Blocks {
 namespace PolishedDeepslateSlab {
 BlockId toProtocol(Properties::Type type, Properties::Waterlogged waterlogged)
@@ -12,6 +10,8 @@ BlockId toProtocol(Properties::Type type, Properties::Waterlogged waterlogged)
             return 22057;
         case Properties::Waterlogged::FALSE:
             return 22058;
+        default:
+            return 0;
         }
     case Properties::Type::BOTTOM:
         switch (waterlogged) {
@@ -19,6 +19,8 @@ BlockId toProtocol(Properties::Type type, Properties::Waterlogged waterlogged)
             return 22059;
         case Properties::Waterlogged::FALSE:
             return 22060;
+        default:
+            return 0;
         }
     case Properties::Type::DOUBLE:
         switch (waterlogged) {
@@ -26,7 +28,11 @@ BlockId toProtocol(Properties::Type type, Properties::Waterlogged waterlogged)
             return 22061;
         case Properties::Waterlogged::FALSE:
             return 22062;
+        default:
+            return 0;
         }
+    default:
+        return 0;
     }
     return 0;
 }

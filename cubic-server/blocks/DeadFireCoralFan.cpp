@@ -1,6 +1,4 @@
 #include "DeadFireCoralFan.hpp"
-#include <stdexcept>
-
 namespace Blocks {
 namespace DeadFireCoralFan {
 BlockId toProtocol(Properties::Waterlogged waterlogged)
@@ -10,6 +8,8 @@ BlockId toProtocol(Properties::Waterlogged waterlogged)
         return 12211;
     case Properties::Waterlogged::FALSE:
         return 12212;
+    default:
+        return 0;
     }
     return 0;
 }

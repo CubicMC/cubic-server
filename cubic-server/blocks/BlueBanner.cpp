@@ -1,6 +1,4 @@
 #include "BlueBanner.hpp"
-#include <stdexcept>
-
 namespace Blocks {
 namespace BlueBanner {
 BlockId toProtocol(Properties::Rotation rotation)
@@ -38,6 +36,8 @@ BlockId toProtocol(Properties::Rotation rotation)
         return 10472;
     case Properties::Rotation::FIFTEEN:
         return 10473;
+    default:
+        return 0;
     }
     return 0;
 }

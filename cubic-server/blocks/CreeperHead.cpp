@@ -1,6 +1,4 @@
 #include "CreeperHead.hpp"
-#include <stdexcept>
-
 namespace Blocks {
 namespace CreeperHead {
 BlockId toProtocol(Properties::Rotation rotation)
@@ -38,6 +36,8 @@ BlockId toProtocol(Properties::Rotation rotation)
         return 8665;
     case Properties::Rotation::FIFTEEN:
         return 8666;
+    default:
+        return 0;
     }
     return 0;
 }

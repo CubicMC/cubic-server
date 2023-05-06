@@ -1,6 +1,4 @@
 #include "SpruceLog.hpp"
-#include <stdexcept>
-
 namespace Blocks {
 namespace SpruceLog {
 BlockId toProtocol(Properties::Axis axis)
@@ -12,6 +10,8 @@ BlockId toProtocol(Properties::Axis axis)
         return 123;
     case Properties::Axis::Z:
         return 124;
+    default:
+        return 0;
     }
     return 0;
 }

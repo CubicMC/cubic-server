@@ -1,6 +1,4 @@
 #include "Hopper.hpp"
-#include <stdexcept>
-
 namespace Blocks {
 namespace Hopper {
 BlockId toProtocol(Properties::Enabled enabled, Properties::Facing facing)
@@ -18,6 +16,8 @@ BlockId toProtocol(Properties::Enabled enabled, Properties::Facing facing)
             return 8832;
         case Properties::Facing::EAST:
             return 8833;
+        default:
+            return 0;
         }
     case Properties::Enabled::FALSE:
         switch (facing) {
@@ -31,7 +31,11 @@ BlockId toProtocol(Properties::Enabled enabled, Properties::Facing facing)
             return 8837;
         case Properties::Facing::EAST:
             return 8838;
+        default:
+            return 0;
         }
+    default:
+        return 0;
     }
     return 0;
 }

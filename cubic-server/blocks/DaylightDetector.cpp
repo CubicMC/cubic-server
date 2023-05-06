@@ -1,6 +1,4 @@
 #include "DaylightDetector.hpp"
-#include <stdexcept>
-
 namespace Blocks {
 namespace DaylightDetector {
 BlockId toProtocol(Properties::Inverted inverted, Properties::Power power)
@@ -40,6 +38,8 @@ BlockId toProtocol(Properties::Inverted inverted, Properties::Power power)
             return 8809;
         case Properties::Power::FIFTEEN:
             return 8810;
+        default:
+            return 0;
         }
     case Properties::Inverted::FALSE:
         switch (power) {
@@ -75,7 +75,11 @@ BlockId toProtocol(Properties::Inverted inverted, Properties::Power power)
             return 8825;
         case Properties::Power::FIFTEEN:
             return 8826;
+        default:
+            return 0;
         }
+    default:
+        return 0;
     }
     return 0;
 }

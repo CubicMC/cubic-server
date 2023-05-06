@@ -1,6 +1,4 @@
 #include "CrimsonSlab.hpp"
-#include <stdexcept>
-
 namespace Blocks {
 namespace CrimsonSlab {
 BlockId toProtocol(Properties::Type type, Properties::Waterlogged waterlogged)
@@ -12,6 +10,8 @@ BlockId toProtocol(Properties::Type type, Properties::Waterlogged waterlogged)
             return 18040;
         case Properties::Waterlogged::FALSE:
             return 18041;
+        default:
+            return 0;
         }
     case Properties::Type::BOTTOM:
         switch (waterlogged) {
@@ -19,6 +19,8 @@ BlockId toProtocol(Properties::Type type, Properties::Waterlogged waterlogged)
             return 18042;
         case Properties::Waterlogged::FALSE:
             return 18043;
+        default:
+            return 0;
         }
     case Properties::Type::DOUBLE:
         switch (waterlogged) {
@@ -26,7 +28,11 @@ BlockId toProtocol(Properties::Type type, Properties::Waterlogged waterlogged)
             return 18044;
         case Properties::Waterlogged::FALSE:
             return 18045;
+        default:
+            return 0;
         }
+    default:
+        return 0;
     }
     return 0;
 }

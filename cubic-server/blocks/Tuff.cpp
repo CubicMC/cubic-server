@@ -1,9 +1,10 @@
 #include "Tuff.hpp"
-#include <stdexcept>
-
 namespace Blocks {
 namespace Tuff {
-BlockId toProtocol() { return 20453; }
+BlockId toProtocol()
+{
+    return 20453;
+}
 }
 
 }

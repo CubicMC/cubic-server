@@ -1,6 +1,4 @@
 #include "Potatoes.hpp"
-#include <stdexcept>
-
 namespace Blocks {
 namespace Potatoes {
 BlockId toProtocol(Properties::Age age)
@@ -22,6 +20,8 @@ BlockId toProtocol(Properties::Age age)
         return 8377;
     case Properties::Age::SEVEN:
         return 8378;
+    default:
+        return 0;
     }
     return 0;
 }

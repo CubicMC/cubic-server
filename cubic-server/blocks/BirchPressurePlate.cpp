@@ -1,6 +1,4 @@
 #include "BirchPressurePlate.hpp"
-#include <stdexcept>
-
 namespace Blocks {
 namespace BirchPressurePlate {
 BlockId toProtocol(Properties::Powered powered)
@@ -10,6 +8,8 @@ BlockId toProtocol(Properties::Powered powered)
         return 5556;
     case Properties::Powered::FALSE:
         return 5557;
+    default:
+        return 0;
     }
     return 0;
 }

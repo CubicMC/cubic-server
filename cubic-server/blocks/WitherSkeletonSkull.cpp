@@ -1,6 +1,4 @@
 #include "WitherSkeletonSkull.hpp"
-#include <stdexcept>
-
 namespace Blocks {
 namespace WitherSkeletonSkull {
 BlockId toProtocol(Properties::Rotation rotation)
@@ -38,6 +36,8 @@ BlockId toProtocol(Properties::Rotation rotation)
         return 8605;
     case Properties::Rotation::FIFTEEN:
         return 8606;
+    default:
+        return 0;
     }
     return 0;
 }

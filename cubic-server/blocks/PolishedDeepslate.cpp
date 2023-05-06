@@ -1,9 +1,10 @@
 #include "PolishedDeepslate.hpp"
-#include <stdexcept>
-
 namespace Blocks {
 namespace PolishedDeepslate {
-BlockId toProtocol() { return 21976; }
+BlockId toProtocol()
+{
+    return 21976;
+}
 }
 
 }

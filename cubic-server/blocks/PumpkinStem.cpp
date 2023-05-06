@@ -1,6 +1,4 @@
 #include "PumpkinStem.hpp"
-#include <stdexcept>
-
 namespace Blocks {
 namespace PumpkinStem {
 BlockId toProtocol(Properties::Age age)
@@ -22,6 +20,8 @@ BlockId toProtocol(Properties::Age age)
         return 6597;
     case Properties::Age::SEVEN:
         return 6598;
+    default:
+        return 0;
     }
     return 0;
 }

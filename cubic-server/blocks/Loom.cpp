@@ -1,6 +1,4 @@
 #include "Loom.hpp"
-#include <stdexcept>
-
 namespace Blocks {
 namespace Loom {
 BlockId toProtocol(Properties::Facing facing)
@@ -14,6 +12,8 @@ BlockId toProtocol(Properties::Facing facing)
         return 17778;
     case Properties::Facing::EAST:
         return 17779;
+    default:
+        return 0;
     }
     return 0;
 }

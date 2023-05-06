@@ -1,6 +1,4 @@
 #include "PoweredRail.hpp"
-#include <stdexcept>
-
 namespace Blocks {
 namespace PoweredRail {
 BlockId toProtocol(Properties::Powered powered, Properties::Shape shape, Properties::Waterlogged waterlogged)
@@ -14,6 +12,8 @@ BlockId toProtocol(Properties::Powered powered, Properties::Shape shape, Propert
                 return 1893;
             case Properties::Waterlogged::FALSE:
                 return 1894;
+            default:
+                return 0;
             }
         case Properties::Shape::EAST_WEST:
             switch (waterlogged) {
@@ -21,6 +21,8 @@ BlockId toProtocol(Properties::Powered powered, Properties::Shape shape, Propert
                 return 1895;
             case Properties::Waterlogged::FALSE:
                 return 1896;
+            default:
+                return 0;
             }
         case Properties::Shape::ASCENDING_EAST:
             switch (waterlogged) {
@@ -28,6 +30,8 @@ BlockId toProtocol(Properties::Powered powered, Properties::Shape shape, Propert
                 return 1897;
             case Properties::Waterlogged::FALSE:
                 return 1898;
+            default:
+                return 0;
             }
         case Properties::Shape::ASCENDING_WEST:
             switch (waterlogged) {
@@ -35,6 +39,8 @@ BlockId toProtocol(Properties::Powered powered, Properties::Shape shape, Propert
                 return 1899;
             case Properties::Waterlogged::FALSE:
                 return 1900;
+            default:
+                return 0;
             }
         case Properties::Shape::ASCENDING_NORTH:
             switch (waterlogged) {
@@ -42,6 +48,8 @@ BlockId toProtocol(Properties::Powered powered, Properties::Shape shape, Propert
                 return 1901;
             case Properties::Waterlogged::FALSE:
                 return 1902;
+            default:
+                return 0;
             }
         case Properties::Shape::ASCENDING_SOUTH:
             switch (waterlogged) {
@@ -49,7 +57,11 @@ BlockId toProtocol(Properties::Powered powered, Properties::Shape shape, Propert
                 return 1903;
             case Properties::Waterlogged::FALSE:
                 return 1904;
+            default:
+                return 0;
             }
+        default:
+            return 0;
         }
     case Properties::Powered::FALSE:
         switch (shape) {
@@ -59,6 +71,8 @@ BlockId toProtocol(Properties::Powered powered, Properties::Shape shape, Propert
                 return 1905;
             case Properties::Waterlogged::FALSE:
                 return 1906;
+            default:
+                return 0;
             }
         case Properties::Shape::EAST_WEST:
             switch (waterlogged) {
@@ -66,6 +80,8 @@ BlockId toProtocol(Properties::Powered powered, Properties::Shape shape, Propert
                 return 1907;
             case Properties::Waterlogged::FALSE:
                 return 1908;
+            default:
+                return 0;
             }
         case Properties::Shape::ASCENDING_EAST:
             switch (waterlogged) {
@@ -73,6 +89,8 @@ BlockId toProtocol(Properties::Powered powered, Properties::Shape shape, Propert
                 return 1909;
             case Properties::Waterlogged::FALSE:
                 return 1910;
+            default:
+                return 0;
             }
         case Properties::Shape::ASCENDING_WEST:
             switch (waterlogged) {
@@ -80,6 +98,8 @@ BlockId toProtocol(Properties::Powered powered, Properties::Shape shape, Propert
                 return 1911;
             case Properties::Waterlogged::FALSE:
                 return 1912;
+            default:
+                return 0;
             }
         case Properties::Shape::ASCENDING_NORTH:
             switch (waterlogged) {
@@ -87,6 +107,8 @@ BlockId toProtocol(Properties::Powered powered, Properties::Shape shape, Propert
                 return 1913;
             case Properties::Waterlogged::FALSE:
                 return 1914;
+            default:
+                return 0;
             }
         case Properties::Shape::ASCENDING_SOUTH:
             switch (waterlogged) {
@@ -94,8 +116,14 @@ BlockId toProtocol(Properties::Powered powered, Properties::Shape shape, Propert
                 return 1915;
             case Properties::Waterlogged::FALSE:
                 return 1916;
+            default:
+                return 0;
             }
+        default:
+            return 0;
         }
+    default:
+        return 0;
     }
     return 0;
 }

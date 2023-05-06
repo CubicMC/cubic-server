@@ -1,6 +1,4 @@
 #include "Beetroots.hpp"
-#include <stdexcept>
-
 namespace Blocks {
 namespace Beetroots {
 BlockId toProtocol(Properties::Age age)
@@ -14,6 +12,8 @@ BlockId toProtocol(Properties::Age age)
         return 11886;
     case Properties::Age::THREE:
         return 11887;
+    default:
+        return 0;
     }
     return 0;
 }

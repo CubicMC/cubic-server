@@ -1,6 +1,4 @@
 #include "WarpedHyphae.hpp"
-#include <stdexcept>
-
 namespace Blocks {
 namespace WarpedHyphae {
 BlockId toProtocol(Properties::Axis axis)
@@ -12,6 +10,8 @@ BlockId toProtocol(Properties::Axis axis)
         return 17958;
     case Properties::Axis::Z:
         return 17959;
+    default:
+        return 0;
     }
     return 0;
 }

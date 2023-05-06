@@ -1,6 +1,4 @@
 #include "GrayWallBanner.hpp"
-#include <stdexcept>
-
 namespace Blocks {
 namespace GrayWallBanner {
 BlockId toProtocol(Properties::Facing facing)
@@ -14,6 +12,8 @@ BlockId toProtocol(Properties::Facing facing)
         return 10568;
     case Properties::Facing::EAST:
         return 10569;
+    default:
+        return 0;
     }
     return 0;
 }

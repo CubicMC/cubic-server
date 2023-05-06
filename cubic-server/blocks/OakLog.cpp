@@ -1,6 +1,4 @@
 #include "OakLog.hpp"
-#include <stdexcept>
-
 namespace Blocks {
 namespace OakLog {
 BlockId toProtocol(Properties::Axis axis)
@@ -12,6 +10,8 @@ BlockId toProtocol(Properties::Axis axis)
         return 120;
     case Properties::Axis::Z:
         return 121;
+    default:
+        return 0;
     }
     return 0;
 }

@@ -1,6 +1,4 @@
 #include "EndStoneBrickSlab.hpp"
-#include <stdexcept>
-
 namespace Blocks {
 namespace EndStoneBrickSlab {
 BlockId toProtocol(Properties::Type type, Properties::Waterlogged waterlogged)
@@ -12,6 +10,8 @@ BlockId toProtocol(Properties::Type type, Properties::Waterlogged waterlogged)
             return 13484;
         case Properties::Waterlogged::FALSE:
             return 13485;
+        default:
+            return 0;
         }
     case Properties::Type::BOTTOM:
         switch (waterlogged) {
@@ -19,6 +19,8 @@ BlockId toProtocol(Properties::Type type, Properties::Waterlogged waterlogged)
             return 13486;
         case Properties::Waterlogged::FALSE:
             return 13487;
+        default:
+            return 0;
         }
     case Properties::Type::DOUBLE:
         switch (waterlogged) {
@@ -26,7 +28,11 @@ BlockId toProtocol(Properties::Type type, Properties::Waterlogged waterlogged)
             return 13488;
         case Properties::Waterlogged::FALSE:
             return 13489;
+        default:
+            return 0;
         }
+    default:
+        return 0;
     }
     return 0;
 }

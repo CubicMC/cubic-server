@@ -1,6 +1,4 @@
 #include "YellowShulkerBox.hpp"
-#include <stdexcept>
-
 namespace Blocks {
 namespace YellowShulkerBox {
 BlockId toProtocol(Properties::Facing facing)
@@ -18,6 +16,8 @@ BlockId toProtocol(Properties::Facing facing)
         return 11971;
     case Properties::Facing::DOWN:
         return 11972;
+    default:
+        return 0;
     }
     return 0;
 }

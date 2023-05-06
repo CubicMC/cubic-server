@@ -1,6 +1,4 @@
 #include "Ladder.hpp"
-#include <stdexcept>
-
 namespace Blocks {
 namespace Ladder {
 BlockId toProtocol(Properties::Facing facing, Properties::Waterlogged waterlogged)
@@ -12,6 +10,8 @@ BlockId toProtocol(Properties::Facing facing, Properties::Waterlogged waterlogge
             return 4570;
         case Properties::Waterlogged::FALSE:
             return 4571;
+        default:
+            return 0;
         }
     case Properties::Facing::SOUTH:
         switch (waterlogged) {
@@ -19,6 +19,8 @@ BlockId toProtocol(Properties::Facing facing, Properties::Waterlogged waterlogge
             return 4572;
         case Properties::Waterlogged::FALSE:
             return 4573;
+        default:
+            return 0;
         }
     case Properties::Facing::WEST:
         switch (waterlogged) {
@@ -26,6 +28,8 @@ BlockId toProtocol(Properties::Facing facing, Properties::Waterlogged waterlogge
             return 4574;
         case Properties::Waterlogged::FALSE:
             return 4575;
+        default:
+            return 0;
         }
     case Properties::Facing::EAST:
         switch (waterlogged) {
@@ -33,7 +37,11 @@ BlockId toProtocol(Properties::Facing facing, Properties::Waterlogged waterlogge
             return 4576;
         case Properties::Waterlogged::FALSE:
             return 4577;
+        default:
+            return 0;
         }
+    default:
+        return 0;
     }
     return 0;
 }

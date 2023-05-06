@@ -1,6 +1,4 @@
 #include "MagentaCandleCake.hpp"
-#include <stdexcept>
-
 namespace Blocks {
 namespace MagentaCandleCake {
 BlockId toProtocol(Properties::Lit lit)
@@ -10,6 +8,8 @@ BlockId toProtocol(Properties::Lit lit)
         return 20375;
     case Properties::Lit::FALSE:
         return 20376;
+    default:
+        return 0;
     }
     return 0;
 }

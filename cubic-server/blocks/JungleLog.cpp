@@ -1,6 +1,4 @@
 #include "JungleLog.hpp"
-#include <stdexcept>
-
 namespace Blocks {
 namespace JungleLog {
 BlockId toProtocol(Properties::Axis axis)
@@ -12,6 +10,8 @@ BlockId toProtocol(Properties::Axis axis)
         return 129;
     case Properties::Axis::Z:
         return 130;
+    default:
+        return 0;
     }
     return 0;
 }

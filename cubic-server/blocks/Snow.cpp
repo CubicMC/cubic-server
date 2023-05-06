@@ -1,6 +1,4 @@
 #include "Snow.hpp"
-#include <stdexcept>
-
 namespace Blocks {
 namespace Snow {
 BlockId toProtocol(Properties::Layers layers)
@@ -22,6 +20,8 @@ BlockId toProtocol(Properties::Layers layers)
         return 5612;
     case Properties::Layers::EIGHT:
         return 5613;
+    default:
+        return 0;
     }
     return 0;
 }

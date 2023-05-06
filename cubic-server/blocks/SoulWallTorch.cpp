@@ -1,6 +1,4 @@
 #include "SoulWallTorch.hpp"
-#include <stdexcept>
-
 namespace Blocks {
 namespace SoulWallTorch {
 BlockId toProtocol(Properties::Facing facing)
@@ -14,6 +12,8 @@ BlockId toProtocol(Properties::Facing facing)
         return 5696;
     case Properties::Facing::EAST:
         return 5697;
+    default:
+        return 0;
     }
     return 0;
 }

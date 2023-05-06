@@ -1,6 +1,4 @@
 #include "TurtleEgg.hpp"
-#include <stdexcept>
-
 namespace Blocks {
 namespace TurtleEgg {
 BlockId toProtocol(Properties::Eggs eggs, Properties::Hatch hatch)
@@ -14,6 +12,8 @@ BlockId toProtocol(Properties::Eggs eggs, Properties::Hatch hatch)
             return 12164;
         case Properties::Hatch::TWO:
             return 12165;
+        default:
+            return 0;
         }
     case Properties::Eggs::TWO:
         switch (hatch) {
@@ -23,6 +23,8 @@ BlockId toProtocol(Properties::Eggs eggs, Properties::Hatch hatch)
             return 12167;
         case Properties::Hatch::TWO:
             return 12168;
+        default:
+            return 0;
         }
     case Properties::Eggs::THREE:
         switch (hatch) {
@@ -32,6 +34,8 @@ BlockId toProtocol(Properties::Eggs eggs, Properties::Hatch hatch)
             return 12170;
         case Properties::Hatch::TWO:
             return 12171;
+        default:
+            return 0;
         }
     case Properties::Eggs::FOUR:
         switch (hatch) {
@@ -41,7 +45,11 @@ BlockId toProtocol(Properties::Eggs eggs, Properties::Hatch hatch)
             return 12173;
         case Properties::Hatch::TWO:
             return 12174;
+        default:
+            return 0;
         }
+    default:
+        return 0;
     }
     return 0;
 }

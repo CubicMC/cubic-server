@@ -1,6 +1,4 @@
 #include "SweetBerryBush.hpp"
-#include <stdexcept>
-
 namespace Blocks {
 namespace SweetBerryBush {
 BlockId toProtocol(Properties::Age age)
@@ -14,6 +12,8 @@ BlockId toProtocol(Properties::Age age)
         return 17949;
     case Properties::Age::THREE:
         return 17950;
+    default:
+        return 0;
     }
     return 0;
 }

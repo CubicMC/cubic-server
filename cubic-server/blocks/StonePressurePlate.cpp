@@ -1,6 +1,4 @@
 #include "StonePressurePlate.hpp"
-#include <stdexcept>
-
 namespace Blocks {
 namespace StonePressurePlate {
 BlockId toProtocol(Properties::Powered powered)
@@ -10,6 +8,8 @@ BlockId toProtocol(Properties::Powered powered)
         return 5486;
     case Properties::Powered::FALSE:
         return 5487;
+    default:
+        return 0;
     }
     return 0;
 }

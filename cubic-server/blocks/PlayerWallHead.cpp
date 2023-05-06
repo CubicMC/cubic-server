@@ -1,6 +1,4 @@
 #include "PlayerWallHead.hpp"
-#include <stdexcept>
-
 namespace Blocks {
 namespace PlayerWallHead {
 BlockId toProtocol(Properties::Facing facing)
@@ -14,6 +12,8 @@ BlockId toProtocol(Properties::Facing facing)
         return 8649;
     case Properties::Facing::EAST:
         return 8650;
+    default:
+        return 0;
     }
     return 0;
 }

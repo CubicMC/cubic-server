@@ -1,6 +1,4 @@
 #include "Water.hpp"
-#include <stdexcept>
-
 namespace Blocks {
 namespace Water {
 BlockId toProtocol(Properties::Level level)
@@ -38,6 +36,8 @@ BlockId toProtocol(Properties::Level level)
         return 91;
     case Properties::Level::FIFTEEN:
         return 92;
+    default:
+        return 0;
     }
     return 0;
 }

@@ -1,6 +1,4 @@
 #include "TubeCoralWallFan.hpp"
-#include <stdexcept>
-
 namespace Blocks {
 namespace TubeCoralWallFan {
 BlockId toProtocol(Properties::Facing facing, Properties::Waterlogged waterlogged)
@@ -12,6 +10,8 @@ BlockId toProtocol(Properties::Facing facing, Properties::Waterlogged waterlogge
             return 12265;
         case Properties::Waterlogged::FALSE:
             return 12266;
+        default:
+            return 0;
         }
     case Properties::Facing::SOUTH:
         switch (waterlogged) {
@@ -19,6 +19,8 @@ BlockId toProtocol(Properties::Facing facing, Properties::Waterlogged waterlogge
             return 12267;
         case Properties::Waterlogged::FALSE:
             return 12268;
+        default:
+            return 0;
         }
     case Properties::Facing::WEST:
         switch (waterlogged) {
@@ -26,6 +28,8 @@ BlockId toProtocol(Properties::Facing facing, Properties::Waterlogged waterlogge
             return 12269;
         case Properties::Waterlogged::FALSE:
             return 12270;
+        default:
+            return 0;
         }
     case Properties::Facing::EAST:
         switch (waterlogged) {
@@ -33,7 +37,11 @@ BlockId toProtocol(Properties::Facing facing, Properties::Waterlogged waterlogge
             return 12271;
         case Properties::Waterlogged::FALSE:
             return 12272;
+        default:
+            return 0;
         }
+    default:
+        return 0;
     }
     return 0;
 }

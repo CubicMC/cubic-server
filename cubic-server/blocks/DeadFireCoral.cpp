@@ -1,6 +1,4 @@
 #include "DeadFireCoral.hpp"
-#include <stdexcept>
-
 namespace Blocks {
 namespace DeadFireCoral {
 BlockId toProtocol(Properties::Waterlogged waterlogged)
@@ -10,6 +8,8 @@ BlockId toProtocol(Properties::Waterlogged waterlogged)
         return 12191;
     case Properties::Waterlogged::FALSE:
         return 12192;
+    default:
+        return 0;
     }
     return 0;
 }

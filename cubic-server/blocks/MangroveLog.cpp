@@ -1,6 +1,4 @@
 #include "MangroveLog.hpp"
-#include <stdexcept>
-
 namespace Blocks {
 namespace MangroveLog {
 BlockId toProtocol(Properties::Axis axis)
@@ -12,6 +10,8 @@ BlockId toProtocol(Properties::Axis axis)
         return 138;
     case Properties::Axis::Z:
         return 139;
+    default:
+        return 0;
     }
     return 0;
 }

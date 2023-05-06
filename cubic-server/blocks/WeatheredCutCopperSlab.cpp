@@ -1,6 +1,4 @@
 #include "WeatheredCutCopperSlab.hpp"
-#include <stdexcept>
-
 namespace Blocks {
 namespace WeatheredCutCopperSlab {
 BlockId toProtocol(Properties::Type type, Properties::Waterlogged waterlogged)
@@ -12,6 +10,8 @@ BlockId toProtocol(Properties::Type type, Properties::Waterlogged waterlogged)
             return 21028;
         case Properties::Waterlogged::FALSE:
             return 21029;
+        default:
+            return 0;
         }
     case Properties::Type::BOTTOM:
         switch (waterlogged) {
@@ -19,6 +19,8 @@ BlockId toProtocol(Properties::Type type, Properties::Waterlogged waterlogged)
             return 21030;
         case Properties::Waterlogged::FALSE:
             return 21031;
+        default:
+            return 0;
         }
     case Properties::Type::DOUBLE:
         switch (waterlogged) {
@@ -26,7 +28,11 @@ BlockId toProtocol(Properties::Type type, Properties::Waterlogged waterlogged)
             return 21032;
         case Properties::Waterlogged::FALSE:
             return 21033;
+        default:
+            return 0;
         }
+    default:
+        return 0;
     }
     return 0;
 }

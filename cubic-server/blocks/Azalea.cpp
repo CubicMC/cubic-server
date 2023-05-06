@@ -1,9 +1,10 @@
 #include "Azalea.hpp"
-#include <stdexcept>
-
 namespace Blocks {
 namespace Azalea {
-BlockId toProtocol() { return 21498; }
+BlockId toProtocol()
+{
+    return 21498;
+}
 }
 
 }

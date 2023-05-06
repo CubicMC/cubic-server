@@ -1,6 +1,4 @@
 #include "AcaciaWood.hpp"
-#include <stdexcept>
-
 namespace Blocks {
 namespace AcaciaWood {
 BlockId toProtocol(Properties::Axis axis)
@@ -12,6 +10,8 @@ BlockId toProtocol(Properties::Axis axis)
         return 185;
     case Properties::Axis::Z:
         return 186;
+    default:
+        return 0;
     }
     return 0;
 }

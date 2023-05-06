@@ -1,6 +1,4 @@
 #include "CarvedPumpkin.hpp"
-#include <stdexcept>
-
 namespace Blocks {
 namespace CarvedPumpkin {
 BlockId toProtocol(Properties::Facing facing)
@@ -14,6 +12,8 @@ BlockId toProtocol(Properties::Facing facing)
         return 5703;
     case Properties::Facing::EAST:
         return 5704;
+    default:
+        return 0;
     }
     return 0;
 }

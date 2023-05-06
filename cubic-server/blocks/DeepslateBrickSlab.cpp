@@ -1,6 +1,4 @@
 #include "DeepslateBrickSlab.hpp"
-#include <stdexcept>
-
 namespace Blocks {
 namespace DeepslateBrickSlab {
 BlockId toProtocol(Properties::Type type, Properties::Waterlogged waterlogged)
@@ -12,6 +10,8 @@ BlockId toProtocol(Properties::Type type, Properties::Waterlogged waterlogged)
             return 22879;
         case Properties::Waterlogged::FALSE:
             return 22880;
+        default:
+            return 0;
         }
     case Properties::Type::BOTTOM:
         switch (waterlogged) {
@@ -19,6 +19,8 @@ BlockId toProtocol(Properties::Type type, Properties::Waterlogged waterlogged)
             return 22881;
         case Properties::Waterlogged::FALSE:
             return 22882;
+        default:
+            return 0;
         }
     case Properties::Type::DOUBLE:
         switch (waterlogged) {
@@ -26,7 +28,11 @@ BlockId toProtocol(Properties::Type type, Properties::Waterlogged waterlogged)
             return 22883;
         case Properties::Waterlogged::FALSE:
             return 22884;
+        default:
+            return 0;
         }
+    default:
+        return 0;
     }
     return 0;
 }

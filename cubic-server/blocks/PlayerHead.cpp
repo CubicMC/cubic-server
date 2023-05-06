@@ -1,6 +1,4 @@
 #include "PlayerHead.hpp"
-#include <stdexcept>
-
 namespace Blocks {
 namespace PlayerHead {
 BlockId toProtocol(Properties::Rotation rotation)
@@ -38,6 +36,8 @@ BlockId toProtocol(Properties::Rotation rotation)
         return 8645;
     case Properties::Rotation::FIFTEEN:
         return 8646;
+    default:
+        return 0;
     }
     return 0;
 }

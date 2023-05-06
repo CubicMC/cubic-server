@@ -1,6 +1,4 @@
 #include "RespawnAnchor.hpp"
-#include <stdexcept>
-
 namespace Blocks {
 namespace RespawnAnchor {
 BlockId toProtocol(Properties::Charges charges)
@@ -16,6 +14,8 @@ BlockId toProtocol(Properties::Charges charges)
         return 18825;
     case Properties::Charges::FOUR:
         return 18826;
+    default:
+        return 0;
     }
     return 0;
 }

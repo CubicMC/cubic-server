@@ -1,9 +1,10 @@
 #include "Terracotta.hpp"
-#include <stdexcept>
-
 namespace Blocks {
 namespace Terracotta {
-BlockId toProtocol() { return 10267; }
+BlockId toProtocol()
+{
+    return 10267;
+}
 }
 
 }
