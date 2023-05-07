@@ -180,7 +180,7 @@ void World::sendPlayerInfoRemovePlayer(const Player *current)
     LDEBUG("Sent player info to ", current->getUsername());
 }
 
-thread_pool::ThreadPool &World::getGenerationPool() { return _generationPool; }
+thread_pool::PriorityThreadPool &World::getGenerationPool() { return _generationPool; }
 
 Seed World::getSeed() const { return _seed; }
 

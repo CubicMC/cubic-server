@@ -5,4 +5,6 @@ target_sources (${CMAKE_PROJECT_NAME} PRIVATE
     Task.hpp
     ThreadPool.cpp
     ThreadWorker.cpp
+    PriorityThreadPool.cpp
+    PriorityThreadWorker.cpp
 )

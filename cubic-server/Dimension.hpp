@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "options.hpp"
-#include "thread_pool/Task.hpp"
 #include "world_storage/ChunkColumn.hpp"
 #include "world_storage/Level.hpp"
 

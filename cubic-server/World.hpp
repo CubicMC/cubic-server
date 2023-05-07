@@ -8,7 +8,7 @@
 
 #include "TickClock.hpp"
 #include "options.hpp"
-#include "thread_pool/ThreadPool.hpp"
+#include "thread_pool/PriorityThreadPool.hpp"
 #include "types.hpp"
 #include "world_storage/LevelData.hpp"
 
@@ -44,7 +44,7 @@ public:
     virtual void sendPlayerInfoAddPlayer(Player *);
     virtual void sendPlayerInfoRemovePlayer(const Player *current);
 
-    NODISCARD virtual thread_pool::ThreadPool &getGenerationPool();
+    NODISCARD virtual thread_pool::PriorityThreadPool &getGenerationPool();
 
     NODISCARD virtual Seed getSeed() const;
     NODISCARD virtual uint8_t getRenderDistance() const;
@@ -73,7 +73,7 @@ protected:
     world_storage::LevelData _levelData;
     TickClock _timeUpdateClock;
     Seed _seed;
-    thread_pool::ThreadPool _generationPool;
+    thread_pool::PriorityThreadPool _generationPool;
 };
 
 #endif // CUBICSERVER_WORLD_HPP

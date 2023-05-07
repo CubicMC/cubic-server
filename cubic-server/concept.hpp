@@ -2,6 +2,8 @@
 #define CONCEPT_HPP
 
 #include "nbt.hpp"
+#include <functional>
+#include <concepts>
 
 // clang-format off
 
@@ -28,6 +30,26 @@ concept is_one_of = sizeof...(Args) != 0 && (std::is_same_v<T, Args> || ...);
 
 template<typename T, typename... Args>
 concept is_one_or_convertible_to_one_of = sizeof...(Args) != 0 && (std::is_convertible_v<T, Args> || ...);
+
+template<typename ret>
+struct helperSameFunction;
+
+template<typename ret, typename ...args>
+struct helperSameFunction<ret(args...)> {
+    using retType = ret;
+    using argsType = std::tuple<args...>;
+    using function = std::function<ret(args...)>;
+};
+
+template<typename From, typename Help>
+concept sameFunction = requires (Help::argsType args, From from) {
+    static_cast<Help::function>(std::declval<From>());
+    requires std::same_as<
+    decltype(std::apply(typename Help::function(), args)),
+    decltype(std::apply(from, args))
+    >;
+};
+
 // clang-format on
 
 #endif // CONCEPT_HPP
