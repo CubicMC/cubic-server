@@ -1,10 +1,7 @@
 #include "Dandelion.hpp"
 namespace Blocks {
 namespace Dandelion {
-BlockId toProtocol()
-{
-    return 2024;
-}
+BlockId toProtocol() { return 2024; }
 }
 
 }

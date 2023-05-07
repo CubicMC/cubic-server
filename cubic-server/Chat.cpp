@@ -1,11 +1,11 @@
 #include "Chat.hpp"
 
+#include "Dimension.hpp"
 #include "Player.hpp"
 #include "Server.hpp"
 #include "World.hpp"
 #include "WorldGroup.hpp"
 #include "logging/Logger.hpp"
-#include "Dimension.hpp"
 #include <functional>
 
 static protocol::PlayerChatMessage buildPacket(const Player &from, size_t messageLogSize, const chat::Message &message, const chat::message::Type &type)
@@ -39,20 +39,11 @@ static protocol::PlayerChatMessage buildPacket(const Player &from, size_t messag
 
 Chat::Chat() { }
 
-void Chat::sendPlayerMessage(const chat::Message &message, const Player &sender)
-{
-    this->_sendMessage(message, sender, *sender.getWorldGroup(), chat::message::Type::Chat);
-}
+void Chat::sendPlayerMessage(const chat::Message &message, const Player &sender) { this->_sendMessage(message, sender, *sender.getWorldGroup(), chat::message::Type::Chat); }
 
-void Chat::sendSystemMessage(const chat::Message &message, Player &to, bool overlay)
-{
-    this->_sendSystem(message, to, overlay);
-}
+void Chat::sendSystemMessage(const chat::Message &message, Player &to, bool overlay) { this->_sendSystem(message, to, overlay); }
 
-void Chat::sendSystemMessage(const chat::Message &message, const WorldGroup &worldGroup, bool overlay)
-{
-    this->_sendSystem(message, worldGroup, overlay);
-}
+void Chat::sendSystemMessage(const chat::Message &message, const WorldGroup &worldGroup, bool overlay) { this->_sendSystem(message, worldGroup, overlay); }
 
 void Chat::sendSystemMessage(const chat::Message &message, const std::vector<std::reference_wrapper<Player>> &players, bool overlay)
 {
@@ -81,10 +72,7 @@ void Chat::sendTeamMessage(const chat::Message &message, const Player &sender)
     this->_sendMessage(message, sender, *sender.getWorldGroup(), chat::message::Type::TeamSent);
 }
 
-void Chat::sendTellrawMessage(const chat::Message &message, const Player &from, UNUSED const std::string &selector)
-{
-    this->_sendSystem(message, *from.getWorldGroup());
-}
+void Chat::sendTellrawMessage(const chat::Message &message, const Player &from, UNUSED const std::string &selector) { this->_sendSystem(message, *from.getWorldGroup()); }
 
 void Chat::_sendMessage(const chat::Message &message, const Player &from, Player &to, const chat::message::Type &type)
 {

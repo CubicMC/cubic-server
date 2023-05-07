@@ -2,8 +2,8 @@
 #define CONCEPT_HPP
 
 #include "nbt.hpp"
-#include <functional>
 #include <concepts>
+#include <functional>
 
 // clang-format off
 

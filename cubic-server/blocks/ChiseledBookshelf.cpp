@@ -1,7 +1,10 @@
 #include "ChiseledBookshelf.hpp"
 namespace Blocks {
 namespace ChiseledBookshelf {
-BlockId toProtocol(Properties::Facing facing, Properties::Slot_0_occupied slot_0_occupied, Properties::Slot_1_occupied slot_1_occupied, Properties::Slot_2_occupied slot_2_occupied, Properties::Slot_3_occupied slot_3_occupied, Properties::Slot_4_occupied slot_4_occupied, Properties::Slot_5_occupied slot_5_occupied)
+BlockId toProtocol(
+    Properties::Facing facing, Properties::Slot_0_occupied slot_0_occupied, Properties::Slot_1_occupied slot_1_occupied, Properties::Slot_2_occupied slot_2_occupied,
+    Properties::Slot_3_occupied slot_3_occupied, Properties::Slot_4_occupied slot_4_occupied, Properties::Slot_5_occupied slot_5_occupied
+)
 {
     switch (facing) {
     case Properties::Facing::NORTH:

@@ -29,7 +29,7 @@ public:
     virtual void stop();
 
     NODISCARD virtual bool isInitialized() const;
-    NODISCARD virtual const std::shared_ptr<WorldGroup>getWorldGroup() const;
+    NODISCARD virtual const std::shared_ptr<WorldGroup> getWorldGroup() const;
     NODISCARD virtual std::shared_ptr<WorldGroup> getWorldGroup();
     NODISCARD virtual const std::shared_ptr<Chat> getChat() const;
     NODISCARD virtual std::shared_ptr<Chat> getChat();

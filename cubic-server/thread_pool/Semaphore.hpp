@@ -6,55 +6,69 @@
 
 namespace thread_pool {
 
-   class ReverseSemaphore {
-   private:
-      std::atomic<bool> _notifier {true};
-      int _books {0};
-      std::mutex _bookMutex;
-   public:
-      void increment(int nb = 1) { std::lock_guard<std::mutex> _(_bookMutex); _books += nb; _notifier = false; }
-      void decrement() { std::lock_guard<std::mutex> _(_bookMutex); --_books; if (_books == 0) { _notifier = true; _notifier.notify_all(); } }
+class ReverseSemaphore {
+private:
+    std::atomic<bool> _notifier {true};
+    int _books {0};
+    std::mutex _bookMutex;
 
-      void wait()
-      {
-         while (true) {
+public:
+    void increment(int nb = 1)
+    {
+        std::lock_guard<std::mutex> _(_bookMutex);
+        _books += nb;
+        _notifier = false;
+    }
+    void decrement()
+    {
+        std::lock_guard<std::mutex> _(_bookMutex);
+        --_books;
+        if (_books == 0) {
+            _notifier = true;
+            _notifier.notify_all();
+        }
+    }
+
+    void wait()
+    {
+        while (true) {
             _notifier.wait(false, std::memory_order::relaxed);
             std::lock_guard<std::mutex> guard(_bookMutex);
             if (_books != 0)
-               continue;
+                continue;
             return;
-         }
-      }
-   };
+        }
+    }
+};
 
-   // light semaphore recoded. might have some bugs
-   class Semaphore {
-   private:
-      std::atomic<std::ptrdiff_t> _counter {};
-      std::mutex _counterMutex {};
-   public:
+// light semaphore recoded. might have some bugs
+class Semaphore {
+private:
+    std::atomic<std::ptrdiff_t> _counter {};
+    std::mutex _counterMutex {};
 
-      std::ptrdiff_t getCounter() const noexcept { return _counter; }
+public:
+    std::ptrdiff_t getCounter() const noexcept { return _counter; }
 
-      void release(std::ptrdiff_t n = 1)
-      {
-         _counter += n;
-         _counter.notify_all();
-      }
+    void release(std::ptrdiff_t n = 1)
+    {
+        _counter += n;
+        _counter.notify_all();
+    }
 
-      void acquire()
-      {
-         while (true) {
+    void acquire()
+    {
+        while (true) {
             _counter.wait(0, std::memory_order::relaxed);
 
             std::lock_guard<std::mutex> guard(_counterMutex);
             if (_counter == 0)
-               continue;
+                continue;
             --_counter;
             return;
-         }
-      }
-   };
+        }
+    }
+};
 }
 
 #endif /* ZENITH_SEMAPHORE_HPP */

@@ -1,10 +1,7 @@
 #include "Azalea.hpp"
 namespace Blocks {
 namespace Azalea {
-BlockId toProtocol()
-{
-    return 21498;
-}
+BlockId toProtocol() { return 21498; }
 }
 
 }

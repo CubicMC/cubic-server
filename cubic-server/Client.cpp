@@ -3,13 +3,12 @@
 #include <string>
 #include <unistd.h>
 
-
 #include "Client.hpp"
 #include "nbt.hpp"
 
+#include "Dimension.hpp"
 #include "Player.hpp"
 #include "Server.hpp"
-#include "Dimension.hpp"
 #include "World.hpp"
 #include "WorldGroup.hpp"
 #include "chat/ChatRegistry.hpp"
@@ -283,7 +282,7 @@ void Client::_handlePacket()
         try {
             packet = parser(toParse);
         } catch (std::runtime_error &error) {
-            LERROR("Error during packet ", (int32_t)packetId, " parsing : ");
+            LERROR("Error during packet ", (int32_t) packetId, " parsing : ");
             LERROR(error.what());
             return;
         }

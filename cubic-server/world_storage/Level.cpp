@@ -14,7 +14,7 @@ ChunkColumn &Level::addChunkColumn(Position2D pos, const ChunkColumn &chunkColum
 ChunkColumn &Level::addChunkColumn(Position2D pos)
 {
     std::lock_guard<std::mutex> _(_chunkColumnsMutex);
-    
+
     _chunkColumns.insert({pos, {pos}});
     return _chunkColumns.at(pos);
 }
