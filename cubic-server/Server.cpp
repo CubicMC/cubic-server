@@ -93,6 +93,9 @@ void Server::launch(const configuration::ConfigHandler &config)
     _worldGroups.emplace("default", new DefaultWorldGroup(defaultChat));
     _worldGroups.at("default")->initialize();
 
+    // Initialize default recipes
+    this->recipes.initialize();
+
     this->_running = true;
 
     _acceptLoop();

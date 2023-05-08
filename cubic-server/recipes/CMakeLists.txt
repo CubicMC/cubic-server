@@ -1,0 +1,20 @@
+target_sources (${CMAKE_PROJECT_NAME} PRIVATE
+    Recipes.cpp
+    Recipes.hpp
+    Blasting.cpp
+    Blasting.hpp
+    CampfireCooking.cpp
+    CampfireCooking.hpp
+    CraftingShaped.cpp
+    CraftingShaped.hpp
+    CraftingShapeless.cpp
+    CraftingShapeless.hpp
+    Smelting.cpp
+    Smelting.hpp
+    Smithing.cpp
+    Smithing.hpp
+    Smoking.cpp
+    Smoking.hpp
+    StoneCutting.cpp
+    StoneCutting.hpp
+)
