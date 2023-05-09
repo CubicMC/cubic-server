@@ -43,7 +43,7 @@ jobs:
       with:
         usesh: true
         prepare: |
-          pkg install -y gcc cmake pkgconf gtkmm30 ccache
+          pkg install -y gcc cmake pkgconf gtkmm30 ccache git
 
         run: |
           cmake -S ${{github.workspace}} -B ${{github.workspace}}/build -D CMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -D CMAKE_C_COMPILER_LAUNCHER=ccache -D CMAKE_CXX_COMPILER_LAUNCHER=ccache
