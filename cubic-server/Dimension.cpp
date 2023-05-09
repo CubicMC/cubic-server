@@ -108,12 +108,12 @@ void Dimension::loadOrGenerateChunk(int x, int z, std::shared_ptr<Player> player
 {
     std::lock_guard<std::mutex> _(_loadingChunksMutex);
     if (this->_loadingChunks.contains({x, z})) {
-        if (std::find_if(this->_loadingChunks[{x, z}].players.begin(), this->_loadingChunks[{x, z}].players.end(), [player](const std::weak_ptr<Player> current_weak_player) {
+        if (std::find_if(this->_loadingChunks[{x, z}].begin(), this->_loadingChunks[{x, z}].end(), [player](const std::weak_ptr<Player> current_weak_player) {
                 if (auto current_player = current_weak_player.lock())
                     return current_player->getId() == player->getId();
                 return false;
-            }) == this->_loadingChunks[{x, z}].players.end()) {
-            this->_loadingChunks[{x, z}].players.push_back(player);
+            }) == this->_loadingChunks[{x, z}].end()) {
+            this->_loadingChunks[{x, z}].push_back(player);
         }
         return;
     }
@@ -124,7 +124,7 @@ void Dimension::loadOrGenerateChunk(int x, int z, std::shared_ptr<Player> player
 
         // This send the chunk to the players that are loading it
         std::lock_guard<std::mutex> _(_loadingChunksMutex);
-        for (auto weak_player : this->_loadingChunks[{x, z}].players) {
+        for (auto weak_player : this->_loadingChunks[{x, z}]) {
             if (auto player = weak_player.lock()) {
                 player->sendChunkAndLightUpdate(this->_level.getChunkColumn(x, z));
             }
@@ -163,19 +163,19 @@ void Dimension::removePlayerFromLoadingChunk(const Position2D &pos, std::shared_
     if (!this->_loadingChunks.contains(pos))
         return;
 
-    this->_loadingChunks[pos].players.erase(
+    this->_loadingChunks[pos].erase(
         std::remove_if(
-            this->_loadingChunks[pos].players.begin(), this->_loadingChunks[pos].players.end(),
+            this->_loadingChunks[pos].begin(), this->_loadingChunks[pos].end(),
             [player](const std::weak_ptr<Player> current_weak_player) {
                 if (auto current_player = current_weak_player.lock())
                     return current_player->getId() == player->getId();
                 return true;
             }
         ),
-        this->_loadingChunks[pos].players.end()
+        this->_loadingChunks[pos].end()
     );
 
-    if (this->_loadingChunks[pos].players.empty()) {
+    if (this->_loadingChunks[pos].empty()) {
         // this->_loadingChunks[pos].task->cancel();
         // This could be replaced using either an iterator, or something else (maybe an if condition inside the job? or simply integrated inside the overlay.)
         this->_loadingChunks.erase(pos);

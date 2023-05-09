@@ -21,9 +21,7 @@ class Entity;
 
 class Dimension {
 private:
-    struct ChunkRequest {
-        std::vector<std::weak_ptr<Player>> players;
-    };
+    using ChunkRequest = std::vector<std::weak_ptr<Player>>;
 
 public:
     Dimension(std::shared_ptr<World> world);
