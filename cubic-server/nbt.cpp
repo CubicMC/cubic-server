@@ -1,6 +1,10 @@
 #include "nbt.hpp"
 #include <optional>
 
+#ifdef __AVX2__
+    #include <immintrin.h>
+#endif
+
 using namespace nbt;
 
 static std::optional<std::string> parseName(uint8_t *&at, const uint8_t *end)
@@ -202,10 +206,9 @@ std::shared_ptr<ByteArray> nbt::parseByteArray(uint8_t *&at, const uint8_t *end,
     if (end - at < size - 1)
         return nullptr;
 
-    std::vector<int8_t> data;
-    for (int i = 0; i < size; i++) {
-        int8_t val = *at++;
-        data.push_back(val);
+    std::vector<int8_t> data(size);
+    for (int i = 0; i < size; ++i, ++at) {
+        data[i] = *at;
     }
 
     return std::make_shared<ByteArray>(name, data);
@@ -373,13 +376,53 @@ std::shared_ptr<IntArray> nbt::parseIntArray(uint8_t *&at, const uint8_t *end, b
         return nullptr;
 
     std::vector<int32_t> data;
+#ifndef __AVX2__
+    // letting the default implementation untouched even tho it should be resized directly to avoid cpu cache misses
+    // and have everything preallocated to avoid reallocation or fragmentation in a multithreaded or just unlucky context
     for (int i = 0; i < size; i++) {
         int32_t val = 0;
         for (int y = 0; y < 4; y++)
             val = (val << 8) | *at++;
         data.push_back(val);
     }
+#else
+    // The SIMD implementation should be at least 8x times faster
+    // When arrays are of at least size >= 4
 
+    data.resize(size);
+    int32_t unaligned;
+    int32_t i = 0;
+
+    if (size >= 8) goto aligned8;
+    else if (size >= 4) goto aligned4;
+    else {
+        unaligned = size;
+        goto unaligned;
+    }
+
+aligned8: {
+    unaligned = size % 8;
+    for (const int32_t aligned = size - unaligned; i < aligned; i += 8, at += 8)
+        _mm256_storeu_si256((__m256i*)&data[i], mm256_loadu_si256((__m256i*)at);
+    if (unaligned >= 4) goto aligned4;
+    else goto unaligned;
+}
+
+aligned4: {
+    unaligned = size % 4;
+    for (const int32_t aligned = size - unaligned;; i < aligned; i += 4, at += 4)
+        _mm_storeu_si128((__m128i*)&data[i], _mm_loadu_si128((__m128i*)at));
+}
+
+unaligned: {
+    while (i < unaligned) {
+        // __builtin_memcpy system have higher chance to go faster when using avx2 and may not even loop
+        // Pretty high chance also that x86 call is directly builtin into the cpu
+        memcpy(&data[i++], at, sizeof(int32_t)); // Could maybe cause endianess problem did not check a lot into that
+        at += sizeof(int32_t); // incrementing directly by four is faster than the loop
+    }
+}
+#endif
     return std::make_shared<IntArray>(name, std::move(data));
 }
 
