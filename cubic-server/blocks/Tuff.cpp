@@ -1,10 +1,7 @@
 #include "Tuff.hpp"
 namespace Blocks {
 namespace Tuff {
-BlockId toProtocol()
-{
-    return 20453;
-}
+BlockId toProtocol() { return 20453; }
 }
 
 }

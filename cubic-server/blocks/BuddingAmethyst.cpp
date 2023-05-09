@@ -1,10 +1,7 @@
 #include "BuddingAmethyst.hpp"
 namespace Blocks {
 namespace BuddingAmethyst {
-BlockId toProtocol()
-{
-    return 20404;
-}
+BlockId toProtocol() { return 20404; }
 }
 
 }

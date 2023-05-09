@@ -1,10 +1,7 @@
 #include "MagentaWool.hpp"
 namespace Blocks {
 namespace MagentaWool {
-BlockId toProtocol()
-{
-    return 1998;
-}
+BlockId toProtocol() { return 1998; }
 }
 
 }

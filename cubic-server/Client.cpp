@@ -3,13 +3,12 @@
 #include <string>
 #include <unistd.h>
 
-
 #include "Client.hpp"
 #include "nbt.hpp"
 
+#include "Dimension.hpp"
 #include "Player.hpp"
 #include "Server.hpp"
-#include "Dimension.hpp"
 #include "World.hpp"
 #include "WorldGroup.hpp"
 #include "chat/ChatRegistry.hpp"
@@ -90,15 +89,14 @@ bool Client::isDisconnected() const { return !_isRunning; }
 void Client::_sendData(const std::vector<uint8_t> &data)
 {
     // This is extremely inefficient but it will do for now
-    _writeMutex.lock();
-    for (const auto i : data)
-        _sendBuffer.push_back(i);
-    _writeMutex.unlock();
+    std::lock_guard<std::mutex> _(_writeMutex);
+    for (const auto &i : data)
+        _sendBuffer.emplace_back(i);
 }
 
 void Client::_flushSendData()
 {
-    _writeMutex.lock();
+    std::lock_guard<std::mutex> _(_writeMutex);
     char sendBuffer[2048];
     size_t toSend = std::min(_sendBuffer.size(), (size_t) 2048);
     std::copy(_sendBuffer.begin(), _sendBuffer.begin() + toSend, sendBuffer);
@@ -108,12 +106,10 @@ void Client::_flushSendData()
         LERROR("Write error", strerror(errno));
 
     if (writeReturn <= 0) {
-        _writeMutex.unlock();
         return;
     }
 
     _sendBuffer.erase(_sendBuffer.begin(), _sendBuffer.begin() + writeReturn);
-    _writeMutex.unlock();
 }
 
 void Client::_tryFlushAllSendData()
@@ -286,7 +282,7 @@ void Client::_handlePacket()
         try {
             packet = parser(toParse);
         } catch (std::runtime_error &error) {
-            LERROR("Error during packet ", (int32_t)packetId, " parsing : ");
+            LERROR("Error during packet ", (int32_t) packetId, " parsing : ");
             LERROR(error.what());
             return;
         }

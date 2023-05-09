@@ -33,7 +33,10 @@ enum class West {
     FALSE
 };
 }
-BlockId toProtocol(Properties::Attached attached, Properties::Disarmed disarmed, Properties::East east, Properties::North north, Properties::Powered powered, Properties::South south, Properties::West west);
+BlockId toProtocol(
+    Properties::Attached attached, Properties::Disarmed disarmed, Properties::East east, Properties::North north, Properties::Powered powered, Properties::South south,
+    Properties::West west
+);
 }
 
 }

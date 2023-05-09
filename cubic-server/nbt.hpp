@@ -565,7 +565,7 @@ public:
     }
 };
 
-template <typename Child, typename Base>
+template<typename Child, typename Base>
 concept is_base_of = std::is_base_of_v<Base, Child>;
 
 #define NBT_MAKE(nbt_type, ...) std::shared_ptr<nbt::Base>(new nbt_type(__VA_ARGS__))

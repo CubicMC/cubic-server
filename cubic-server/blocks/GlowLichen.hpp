@@ -33,7 +33,9 @@ enum class West {
     FALSE
 };
 }
-BlockId toProtocol(Properties::Down down, Properties::East east, Properties::North north, Properties::South south, Properties::Up up, Properties::Waterlogged waterlogged, Properties::West west);
+BlockId toProtocol(
+    Properties::Down down, Properties::East east, Properties::North north, Properties::South south, Properties::Up up, Properties::Waterlogged waterlogged, Properties::West west
+);
 }
 
 }

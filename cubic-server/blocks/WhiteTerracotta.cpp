@@ -1,10 +1,7 @@
 #include "WhiteTerracotta.hpp"
 namespace Blocks {
 namespace WhiteTerracotta {
-BlockId toProtocol()
-{
-    return 8960;
-}
+BlockId toProtocol() { return 8960; }
 }
 
 }

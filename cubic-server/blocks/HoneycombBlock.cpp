@@ -1,10 +1,7 @@
 #include "HoneycombBlock.hpp"
 namespace Blocks {
 namespace HoneycombBlock {
-BlockId toProtocol()
-{
-    return 18818;
-}
+BlockId toProtocol() { return 18818; }
 }
 
 }

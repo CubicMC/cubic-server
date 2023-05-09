@@ -1,10 +1,7 @@
 #include "FlowerPot.hpp"
 namespace Blocks {
 namespace FlowerPot {
-BlockId toProtocol()
-{
-    return 8337;
-}
+BlockId toProtocol() { return 8337; }
 }
 
 }

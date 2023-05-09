@@ -1,10 +1,7 @@
 #include "PottedLilyOfTheValley.hpp"
 namespace Blocks {
 namespace PottedLilyOfTheValley {
-BlockId toProtocol()
-{
-    return 8357;
-}
+BlockId toProtocol() { return 8357; }
 }
 
 }

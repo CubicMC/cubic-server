@@ -1,10 +1,7 @@
 #include "RedstoneBlock.hpp"
 namespace Blocks {
 namespace RedstoneBlock {
-BlockId toProtocol()
-{
-    return 8827;
-}
+BlockId toProtocol() { return 8827; }
 }
 
 }
