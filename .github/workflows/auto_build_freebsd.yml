@@ -1,0 +1,50 @@
+# Name the workflow
+name: Auto build FreeBSD
+
+on:
+  # Trigger the workflow on push on the master branch
+  push:
+    branches: [ "master" ]
+  # Trigger the workflow on pull request events
+  pull_request:
+    branches: [ "*" ]
+
+# Define some environment variables for the workflow
+env:
+  # Customize the default CMake build type here (Release, Debug, RelWithDebInfo, etc.)
+  BUILD_TYPE: Release
+
+jobs:
+  build:
+    strategy:
+      matrix:
+        BuildType: [Debug, Release]
+        include:
+          - CCcompiler: "gcc-12"
+            CXXcompiler: "g++-12"
+        #   - CCcompiler: "clang-15"
+        #     CXXcompiler: "clang++-15"
+
+    runs-on: macos-12
+    env:
+      CC: ${{ matrix.CCcompiler }}
+      CXX: ${{ matrix.CXXcompiler }}
+      BUILD_TYPE: ${{ matrix.BuildType }}
+
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: ccache
+      uses: hendrikmuhs/ccache-action@v1.2
+
+    - name: Test in FreeBSD
+      id: test
+      uses: vmactions/freebsd-vm@v0
+      with:
+        usesh: true
+        prepare: |
+          pkg install -y gcc cmake pkgconf gtkmm30 ccache
+
+        run: |
+          cmake -S ${{github.workspace}} -B ${{github.workspace}}/build -D CMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -D CMAKE_C_COMPILER_LAUNCHER=ccache -D CMAKE_CXX_COMPILER_LAUNCHER=ccache
+          cmake --build ${{github.workspace}}/build --config ${{env.BUILD_TYPE}} -j2
