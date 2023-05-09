@@ -4,6 +4,8 @@
 world_storage::Section::Section() noexcept:
     _blocks(4),
     _biomes(3)
+    // _blockLight(4),
+    // _skyLight(4)
 {
     this->_blockPalette.setCount(0, SECTION_3D_SIZE);
     this->_biomePalette.setCount(0, BIOME_SECTION_3D_SIZE);

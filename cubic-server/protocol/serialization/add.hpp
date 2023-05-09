@@ -68,7 +68,12 @@ constexpr void addPalette(std::vector<uint8_t> &out, const world_storage::Palett
 // https://wiki.vg/Chunk_Format#Serializing
 constexpr void addChunkColumn(std::vector<uint8_t> &out, const world_storage::ChunkColumn &data)
 {
+    // Heightmap
+    addNBT<nbt::Compound>(out, data.getHeightMap());
+
+    // Chunk sections
     std::vector<uint8_t> chunkData;
+
 
     for (const auto &section : data.getSections()) {
         // Blocks
@@ -86,15 +91,33 @@ constexpr void addChunkColumn(std::vector<uint8_t> &out, const world_storage::Ch
         else
             addVarInt(chunkData, 0);
     }
-    // for (uint8_t sectionIdx = 0; sectionIdx < world_storage::NB_OF_SECTIONS; sectionIdx++) {
-    //     auto blockSection = data.getBlocks().begin() + (sectionIdx * world_storage::SECTION_3D_SIZE);
-    //     auto biomeSection = data.getBiomes().begin() + (sectionIdx * world_storage::BIOME_SECTION_3D_SIZE);
-    //     addBlockSection(chunkData, blockSection);
-    //     addBiomeSection(chunkData, biomeSection);
-    // }
 
     // Add the chunk data
     addArray<uint8_t, addByte>(out, chunkData);
+
+    // Block Entities
+    // addBlockEntities(out, data.getBlockEntities());
+    addBlockEntities(out, {});
+
+    addBoolean(out, true); // Trust edges
+
+    // Light mask
+    // addArray<int64_t, addLong>(out, data.getSkyLightMask());
+    // addArray<int64_t, addLong>(out, data.getBlockLightMask());
+    addArray<int64_t, addLong>(out, {});
+    addArray<int64_t, addLong>(out, {});
+
+    // Light empty mask
+    // addArray<int64_t, addLong>(out, data.getEmptySkyLightMask());
+    // addArray<int64_t, addLong>(out, data.getEmptyBlockLightMask());
+    addArray<int64_t, addLong>(out, {});
+    addArray<int64_t, addLong>(out, {});
+
+    // Light arrays
+    // addLightArray(out, data.getSkyLight());
+    // addLightArray(out, data.getBlockLight());
+    addLightArray(out, {});
+    addLightArray(out, {});
 }
 constexpr void addAttributesPropertyModifier(std::vector<uint8_t> &out, const protocol::UpdateAttributes::Property::Modifier &data)
 {

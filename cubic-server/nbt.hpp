@@ -1,6 +1,8 @@
 #ifndef CUBICSERVER_NBT_HPP
 #define CUBICSERVER_NBT_HPP
 
+#include "concept.hpp"
+#include "exceptions.hpp"
 #include "options.hpp"
 #include <cstdint>
 #include <memory>
@@ -9,6 +11,10 @@
 #include <vector>
 
 namespace nbt {
+
+DEFINE_EXCEPTION(TypeMismatch);
+DEFINE_EXCEPTION(BufferEOF);
+DEFINE_EXCEPTION(UnknownType);
 
 enum class TagType {
     End,
@@ -27,9 +33,8 @@ enum class TagType {
 };
 
 class Base {
-protected:
-    const std::string _name;
-    const TagType _type;
+public:
+    static constexpr auto type = TagType::End;
 
 public:
     constexpr Base(std::string name, TagType type):
@@ -66,11 +71,15 @@ public:
         for (const auto &i : _name)
             data.push_back(i);
     }
+
+protected:
+    const std::string _name;
+    const TagType _type;
 };
 
 class Int : public Base {
-private:
-    int32_t _value;
+public:
+    static constexpr auto type = TagType::Int;
 
 public:
     explicit constexpr Int(const std::string &name, int32_t value = 0):
@@ -95,11 +104,14 @@ public:
         for (int i = 0; i < 4; i++)
             data.push_back((_value >> (24 - i * 8)) & 0xFF);
     }
+
+private:
+    int32_t _value;
 };
 
 class Byte : public Base {
-private:
-    int8_t _value;
+public:
+    static constexpr auto type = TagType::Byte;
 
 public:
     explicit constexpr Byte(std::string name, int8_t value = 0):
@@ -123,11 +135,14 @@ public:
         Base::preSerialize(data, includeName);
         data.push_back(_value);
     }
+
+private:
+    int8_t _value;
 };
 
 class ByteArray : public Base {
-private:
-    std::vector<int8_t> _value;
+public:
+    static constexpr auto type = TagType::ByteArray;
 
 public:
     explicit constexpr ByteArray(std::string name, std::vector<int8_t> value = std::vector<int8_t>()):
@@ -159,11 +174,14 @@ public:
         for (auto i : _value)
             data.push_back(i);
     }
+
+private:
+    std::vector<int8_t> _value;
 };
 
 class Compound : public Base {
-private:
-    std::vector<std::shared_ptr<Base>> _value;
+public:
+    static constexpr auto type = TagType::Compound;
 
 public:
     constexpr Compound(std::string name, std::vector<std::shared_ptr<Base>> &&value = std::vector<std::shared_ptr<Base>>()):
@@ -227,6 +245,19 @@ public:
         return nullptr;
     }
 
+    template<isBaseOf<nbt::Base> T>
+    constexpr std::shared_ptr<T> getValueAs(const std::string_view &str)
+    {
+        for (auto &&i : _value) {
+            if (i->getName() != str)
+                continue;
+            if (i->getType() == T::type)
+                return std::dynamic_pointer_cast<T>(i);
+            throw TypeMismatch("Provided type does not match the type of the NBT Tag");
+        }
+        return nullptr;
+    }
+
     constexpr std::vector<std::shared_ptr<Base>> &getValues() { return _value; }
 
     constexpr const std::vector<std::shared_ptr<Base>> &getValues() const { return _value; }
@@ -253,11 +284,14 @@ public:
         // Ends the TAG_Compound with a TAG_End
         data.push_back(0);
     }
+
+private:
+    std::vector<std::shared_ptr<Base>> _value;
 };
 
 class Double : public Base {
-private:
-    double _value;
+public:
+    static constexpr auto type = TagType::Double;
 
 public:
     explicit constexpr Double(std::string name, double value = 0):
@@ -287,11 +321,14 @@ public:
         for (int i = 7; i >= 0; i--)
             data.push_back(d.u[i]);
     }
+
+private:
+    double _value;
 };
 
 class Float : public Base {
-private:
-    float _value;
+public:
+    static constexpr auto type = TagType::Float;
 
 public:
     explicit constexpr Float(std::string name, float value = 0):
@@ -321,11 +358,14 @@ public:
         for (int i = 3; i >= 0; i--)
             data.push_back(d.u[i]);
     }
+
+private:
+    float _value;
 };
 
 class Long : public Base {
-private:
-    int64_t _value;
+public:
+    static constexpr auto type = TagType::Long;
 
 public:
     explicit constexpr Long(std::string name, int64_t value = 0):
@@ -356,11 +396,14 @@ public:
         for (int i = 0; i < 8; i++)
             data.push_back((_value >> (56 - i * 8)) & 0xFF);
     }
+
+private:
+    int64_t _value;
 };
 
 class Short : public Base {
-private:
-    int16_t _value;
+public:
+    static constexpr auto type = TagType::Short;
 
 public:
     explicit constexpr Short(std::string name, int16_t value = 0):
@@ -385,11 +428,14 @@ public:
         data.push_back(_value >> 8);
         data.push_back(_value & 0xFF);
     }
+
+private:
+    int16_t _value;
 };
 
 class String : public Base {
-private:
-    std::string _value;
+public:
+    static constexpr auto type = TagType::String;
 
 public:
     explicit constexpr String(std::string name, std::string value = ""):
@@ -421,11 +467,14 @@ public:
             data.push_back(i);
         }
     }
+
+private:
+    std::string _value;
 };
 
 class IntArray : public Base {
-private:
-    std::vector<int32_t> _value;
+public:
+    static constexpr auto type = TagType::IntArray;
 
 public:
     explicit constexpr IntArray(std::string name, std::vector<int32_t> value = std::vector<int32_t>()):
@@ -456,11 +505,14 @@ public:
                 data.push_back((d >> (24 - i * 8)) & 0xFF);
         }
     }
+
+private:
+    std::vector<int32_t> _value;
 };
 
 class LongArray : public Base {
-private:
-    std::vector<int64_t> _value;
+public:
+    static constexpr auto type = TagType::LongArray;
 
 public:
     explicit constexpr LongArray(std::string name, std::vector<int64_t> value = std::vector<int64_t>()):
@@ -489,19 +541,14 @@ public:
                 data.push_back((d >> (56 - i * 8)) & 0xFF);
         }
     }
-};
 
-class TypeMismatch : public std::runtime_error {
-public:
-    TypeMismatch(const char *const message) throw():
-        std::runtime_error(message)
-    {
-    }
+private:
+    std::vector<int64_t> _value;
 };
 
 class List : public Base {
-private:
-    std::vector<std::shared_ptr<Base>> _value;
+public:
+    static constexpr auto type = TagType::List;
 
 public:
     explicit constexpr List(std::string name, std::vector<std::shared_ptr<Base>> &&value = std::vector<std::shared_ptr<Base>>()):
@@ -528,10 +575,21 @@ public:
         return data;
     }
 
+    template<isBaseOf<nbt::Base> T>
+    constexpr std::shared_ptr<T> getValueAs(size_t index) const
+    {
+        if (index >= _value.size())
+            throw std::out_of_range("nbt::List index out of range");
+        if (_value[index]->getType() != T::type)
+            throw TypeMismatch("nbt::List contains a different type");
+        return std::dynamic_pointer_cast<T>(_value[index]);
+    }
+
     void serialize(std::vector<uint8_t> &data, bool includeName = true) const override
     {
         Base::preSerialize(data, includeName);
         TagType current = TagType::End;
+        // TODO(@huntears): What if the list is empty ?
         // serialize the type of the first componant of the list
         data.push_back((uint8_t) _value[0]->getType());
         // Serialize the length of the data as int32
@@ -547,26 +605,10 @@ public:
             i->serialize(data, false);
         }
     }
-};
 
-class BufferEOF : public std::runtime_error {
-public:
-    BufferEOF(const char *const message) throw():
-        std::runtime_error(message)
-    {
-    }
+private:
+    std::vector<std::shared_ptr<Base>> _value;
 };
-
-class UnknownType : public std::runtime_error {
-public:
-    UnknownType(const char *const message) throw():
-        std::runtime_error(message)
-    {
-    }
-};
-
-template<typename Child, typename Base>
-concept is_base_of = std::is_base_of_v<Base, Child>;
 
 #define NBT_MAKE(nbt_type, ...) std::shared_ptr<nbt::Base>(new nbt_type(__VA_ARGS__))
 

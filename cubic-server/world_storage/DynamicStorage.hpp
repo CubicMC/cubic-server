@@ -31,8 +31,6 @@ public:
 public:
     constexpr DynamicStorage(uint8_t valueSize);
 
-    // constexpr uint64_t maxSize() const;
-
     constexpr void setValueSize(uint8_t valueSize);
 
     constexpr void set(uint64_t idx, StoreType value);
@@ -63,20 +61,6 @@ constexpr DynamicStorage<StoreType, ArraySize>::DynamicStorage(uint8_t valueSize
     _store.resize(ArraySize / (StoreTypeSize / valueSize) + (ArraySize % (StoreTypeSize / valueSize) ? 1 : 0));
 }
 
-// template<typename StoreType, uint64_t ArraySize>
-//     requires std::is_fundamental_v<StoreType>
-// constexpr uint64_t DynamicStorage<StoreType, ArraySize>::size() const
-// {
-//     return _size;
-// }
-
-// template<typename StoreType, uint64_t ArraySize>
-//     requires std::is_fundamental_v<StoreType>
-// constexpr uint64_t DynamicStorage<StoreType, ArraySize>::maxSize() const
-// {
-//     return _store.size();
-// }
-
 template<typename StoreType, uint64_t ArraySize>
     requires std::is_fundamental_v<StoreType>
 constexpr void DynamicStorage<StoreType, ArraySize>::setValueSize(uint8_t valueSize)
@@ -91,29 +75,6 @@ constexpr void DynamicStorage<StoreType, ArraySize>::setValueSize(uint8_t valueS
         newStore.set(i, get(i));
 
     *this = newStore;
-
-    //* Tried to make it fancy, it didn't work :(
-    // Array newStore;
-    // newStore.resize(ArraySize / (StoreTypeSize / valueSize));
-    // StoreType oldMask = ((1 << _valueSize) - 1);
-    // StoreType newMask = ((1 << valueSize) - 1);
-    // auto valuePerEntry = StoreTypeSize / _valueSize;
-    // auto newValuePerEntry = StoreTypeSize / valueSize;
-    // uint64_t counter = 0;
-
-    // auto it = newStore.begin();
-    // for (uint64_t i = 0; i < ArraySize; ++i) {
-    //     for (uint8_t j = 0; j < valuePerEntry; ++j) {
-    //         uint64_t entryNumber = (i * valuePerEntry) + j;
-    //         int8_t startOffset = (entryNumber % valuePerEntry) * _valueSize;
-    //         int8_t newStartOffset = (entryNumber % newValuePerEntry) * valueSize;
-    //         if (counter % newValuePerEntry == 0 && counter != 0)
-    //             it++;
-    //         *it |= ((_store[i] >> startOffset & oldMask) & newMask<< newStartOffset);
-    //         counter++;
-    //     }
-    // }
-    // this->_valueSize = valueSize;
 }
 
 template<typename StoreType, uint64_t ArraySize>

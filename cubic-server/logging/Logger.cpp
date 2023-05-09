@@ -54,7 +54,7 @@ Logger::Logger()
         filename = TimeFormatter::getTime("YYYY-MM-DD-" + std::to_string(i) + ".log");
 
     this->_fileAndFolderHandler.createFile(filename);
-    this->_fileStream.open(this->_fileAndFolderHandler.getFilePath(), std::ios::app);
+    this->_fileStream = std::ofstream(this->_fileAndFolderHandler.getFilePath(), std::ios::app);
     std::cout << "Log file: " << this->_fileAndFolderHandler.getFolderPath() << "/latest.log" << std::endl;
     this->_lattestStream = std::ofstream(this->_fileAndFolderHandler.getFolderPath() + "/latest.log", std::ios::trunc);
 

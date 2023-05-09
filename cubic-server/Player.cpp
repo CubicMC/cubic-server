@@ -439,35 +439,27 @@ void Player::sendChunkAndLightUpdate(int32_t x, int32_t z)
 void Player::sendChunkAndLightUpdate(const world_storage::ChunkColumn &chunk)
 {
     GET_CLIENT();
-    auto heightMap = chunk.getHeightMap();
+    // auto heightMap = chunk.getHeightMap();
     auto chunkPos = chunk.getChunkPos();
 
-    std::vector<std::shared_ptr<nbt::Base>> motionBlocking;
-    std::vector<std::shared_ptr<nbt::Base>> worldSurface;
-    motionBlocking.reserve(heightMap.motionBlocking.size());
-    worldSurface.reserve(heightMap.worldSurface.size());
+    // std::vector<std::shared_ptr<nbt::Base>> motionBlocking;
+    // std::vector<std::shared_ptr<nbt::Base>> worldSurface;
+    // motionBlocking.reserve(heightMap.motionBlocking.size());
+    // worldSurface.reserve(heightMap.worldSurface.size());
 
-    for (auto i = 0; i < world_storage::HEIGHTMAP_ARRAY_SIZE; i++) {
-        motionBlocking.push_back(heightMap.motionBlocking.at(i));
-        worldSurface.push_back(heightMap.worldSurface.at(i));
-    }
+    // for (auto i = 0; i < world_storage::HEIGHTMAP_ARRAY_SIZE; i++) {
+    //     motionBlocking.push_back(heightMap.motionBlocking.at(i));
+    //     worldSurface.push_back(heightMap.worldSurface.at(i));
+    // }
 
-    auto motionBlockingList = NBT_MAKE(nbt::List, "MOTION_BLOCKING", motionBlocking);
-    auto worldSurfaceList = NBT_MAKE(nbt::List, "WORLD_SURFACE", worldSurface);
+    // auto motionBlockingList = NBT_MAKE(nbt::List, "MOTION_BLOCKING", motionBlocking);
+    // auto worldSurfaceList = NBT_MAKE(nbt::List, "WORLD_SURFACE", worldSurface);
 
     auto packet = protocol::createChunkDataAndLightUpdate({
         chunkPos.x,
         chunkPos.z,
-        std::shared_ptr<nbt::Compound>(new nbt::Compound("", {motionBlockingList, worldSurfaceList})),
-        chunk,
-        {}, // TODO: BlockEntities
-        false, // Trust Edges: If edges should be trusted for light updates.
-        {}, // TODO: Sky light mask
-        {}, // TODO: Block light mask
-        {}, // TODO: empty sky light mask
-        {}, // TODO: empty block light mask
-        {}, // TODO: sky light
-        {} // TODO: block light
+        // std::shared_ptr<nbt::Compound>(new nbt::Compound("", {motionBlockingList, worldSurfaceList})),
+        chunk
     });
     client->_sendData(*packet);
 

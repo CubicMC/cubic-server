@@ -38,6 +38,8 @@ class Section {
 public:
     typedef DynamicStorage<uint64_t, SECTION_3D_SIZE> BlockStorage;
     typedef DynamicStorage<uint64_t, BIOME_SECTION_3D_SIZE> BiomeStorage;
+    // typedef DynamicStorage<uint8_t, SECTION_3D_SIZE / 2> BlockLight;
+    // typedef DynamicStorage<uint8_t, SECTION_3D_SIZE / 2> SkyLight;
 
 public:
     Section() noexcept;
@@ -69,6 +71,21 @@ public:
     [[nodiscard]] inline const BlockPalette &getBlockPalette() const { return _blockPalette; }
     [[nodiscard]] inline const BiomePalette &getBiomePalette() const { return _biomePalette; }
 
+    // [[nodiscard]] inline bool hasSkyLight() const { return _hasSkyLight; }
+    // [[nodiscard]] inline bool hasBlockLight() const { return _hasBlockLight; }
+
+    // [[nodiscard]] inline BlockLight &getBlockLight() { return _blockLight; }
+    // [[nodiscard]] inline SkyLight &getSkyLight() { return _skyLight; }
+
+    // [[nodiscard]] inline const BlockLight &getBlockLight() const { return _blockLight; }
+    // [[nodiscard]] inline const SkyLight &getSkyLight() const { return _skyLight; }
+
+    // void setBlockLight(const Position &pos, uint8_t light);
+    // void setSkyLight(const Position &pos, uint8_t light);
+
+    // void recalculateSkyLight();
+    // void recalculateBlockLight();
+
 private:
     void _reCalculatePalette();
 
@@ -77,6 +94,10 @@ private:
     BiomeStorage _biomes;
     BlockPalette _blockPalette;
     BiomePalette _biomePalette;
+    // BlockLight _blockLight;
+    // SkyLight _skyLight;
+    // bool _hasSkyLight;
+    // bool _hasBlockLight;
 };
 
 } // namespace world_storage

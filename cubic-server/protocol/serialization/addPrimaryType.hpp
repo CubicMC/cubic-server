@@ -152,7 +152,7 @@ constexpr void addSlot(std::vector<uint8_t> &out, const Slot &data)
     }
 }
 
-template<IsNbt T>
+template<isBaseOf<nbt::Base> T>
 constexpr void addNBT(std::vector<uint8_t> &out, const T &data)
 {
     data.serialize(out);
