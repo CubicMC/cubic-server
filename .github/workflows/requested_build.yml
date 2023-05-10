@@ -57,18 +57,18 @@ jobs:
     # Checkout the repository
     - uses: actions/checkout@v3
 
-    # - name: Add clang-15 repos
-    #   run: |
-    #     echo "deb http://apt.llvm.org/jammy/ llvm-toolchain-jammy-15 main" | sudo tee -a /etc/apt/sources.list
-    #     echo "deb-src http://apt.llvm.org/jammy/ llvm-toolchain-jammy-15 main" | sudo tee -a /etc/apt/sources.list
-    #     wget -O - https://apt.llvm.org/llvm-snapshot.gpg.key | sudo apt-key add -
+    - name: Add clang-15 repos
+      run: |
+        echo "deb http://apt.llvm.org/jammy/ llvm-toolchain-jammy-15 main" | sudo tee -a /etc/apt/sources.list
+        echo "deb-src http://apt.llvm.org/jammy/ llvm-toolchain-jammy-15 main" | sudo tee -a /etc/apt/sources.list
+        wget -O - https://apt.llvm.org/llvm-snapshot.gpg.key | sudo apt-key add -
 
     # install dependencies if needed
     - name: install all if not self-hosted
       if: ${{ !contains(github.repository, 'self-hosted') }}
       run: |
         sudo apt-get update
-        sudo apt-get install -y gcc-12 g++-12 cmake pkg-config gtkmm-3.0 libcurl4-openssl-dev
+        sudo apt-get install -y gcc-12 g++-12 clang-15 cmake pkg-config gtkmm-3.0 libcurl4-openssl-dev
 
     # Test if there is a custom build type and if so set the coresponding environment variable to the custom build type
     - name: Setup build type
@@ -92,8 +92,10 @@ jobs:
       # See https://cmake.org/cmake/help/latest/variable/CMAKE_BUILD_TYPE.html?highlight=cmake_build_type
     - name: Configure CMake
       run: |
-        cmake -S ${{github.workspace}} -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}}
+        cmake -S ${{github.workspace}} -B ${{github.workspace}}/build-gcc -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}}
+        cmake -S ${{github.workspace}} -B ${{github.workspace}}/build-clang -D CMAKE_C_COMPILER=clang -D CMAKE_CXX_COMPILER=clang++ -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}}
 
       # Build the program with the given configuration
     - name: Build
-      run: cmake --build ${{github.workspace}}/build --config ${{env.BUILD_TYPE}} -j2
+      run: cmake --build ${{github.workspace}}/build-gcc --config ${{env.BUILD_TYPE}} -j2
+      run: cmake --build ${{github.workspace}}/build-clang --config ${{env.BUILD_TYPE}} -j2
