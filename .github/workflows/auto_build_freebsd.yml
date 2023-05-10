@@ -20,8 +20,8 @@ jobs:
       matrix:
         BuildType: [Debug, Release]
         include:
-          - CCcompiler: "gcc-12"
-            CXXcompiler: "g++-12"
+          - CCcompiler: "gcc"
+            CXXcompiler: "g++"
         #   - CCcompiler: "clang-15"
         #     CXXcompiler: "clang++-15"
 
@@ -43,6 +43,8 @@ jobs:
       with:
         envs: 'CC CXX BUILD_TYPE'
         usesh: true
+        mem: 2048
+        release: 13.1
         prepare: |
           pkg install -y gcc cmake pkgconf gtkmm30 ccache git
 
