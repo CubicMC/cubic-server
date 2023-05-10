@@ -41,6 +41,7 @@ jobs:
       id: test
       uses: vmactions/freebsd-vm@v0
       with:
+        envs: 'CC CXX BUILD_TYPE'
         usesh: true
         prepare: |
           pkg install -y gcc cmake pkgconf gtkmm30 ccache git
