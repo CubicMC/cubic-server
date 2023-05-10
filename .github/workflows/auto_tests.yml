@@ -54,13 +54,15 @@ jobs:
     # Configure CMake in a 'build' subdirectory. `CMAKE_BUILD_TYPE` is only required if you are using a single-configuration generator such as make.
     # See https://cmake.org/cmake/help/latest/variable/CMAKE_BUILD_TYPE.html?highlight=cmake_build_type
     - name: Configure CMake
-      run: cmake -S ${{github.workspace}} -B ${{github.workspace}}/build-gcc -D CMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -D CMAKE_C_COMPILER_LAUNCHER=ccache -D CMAKE_CXX_COMPILER_LAUNCHER=ccache -D GTEST=true
-      run: cmake -S ${{github.workspace}} -B ${{github.workspace}}/build-clang -D CMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -D CMAKE_C_COMPILER=clang -D CMAKE_CXX_COMPILER=clang++ -D CMAKE_C_COMPILER_LAUNCHER=ccache -D CMAKE_CXX_COMPILER_LAUNCHER=ccache -D GTEST=true
+      run: |
+        cmake -S ${{github.workspace}} -B ${{github.workspace}}/build-gcc -D CMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -D CMAKE_C_COMPILER_LAUNCHER=ccache -D CMAKE_CXX_COMPILER_LAUNCHER=ccache -D GTEST=true
+        cmake -S ${{github.workspace}} -B ${{github.workspace}}/build-clang -D CMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -D CMAKE_C_COMPILER=clang -D CMAKE_CXX_COMPILER=clang++ -D CMAKE_C_COMPILER_LAUNCHER=ccache -D CMAKE_CXX_COMPILER_LAUNCHER=ccache -D GTEST=true
 
       # Build the program with the given configuration
     - name: Build
-      run: cmake --build ${{github.workspace}}/build-gcc --config ${{env.BUILD_TYPE}} -j2
-      run: cmake --build ${{github.workspace}}/build-clang --config ${{env.BUILD_TYPE}} -j2
+      run: |
+        cmake --build ${{github.workspace}}/build-gcc --config ${{env.BUILD_TYPE}} -j2
+        cmake --build ${{github.workspace}}/build-clang --config ${{env.BUILD_TYPE}} -j2
 
       # Execute tests defined by the CMake configuration.
       # See https://cmake.org/cmake/help/latest/manual/ctest.1.html for more detail

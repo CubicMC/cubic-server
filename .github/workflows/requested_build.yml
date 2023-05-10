@@ -97,5 +97,6 @@ jobs:
 
       # Build the program with the given configuration
     - name: Build
-      run: cmake --build ${{github.workspace}}/build-gcc --config ${{env.BUILD_TYPE}} -j2
-      run: cmake --build ${{github.workspace}}/build-clang --config ${{env.BUILD_TYPE}} -j2
+      run: |
+        cmake --build ${{github.workspace}}/build-gcc --config ${{env.BUILD_TYPE}} -j2
+        cmake --build ${{github.workspace}}/build-clang --config ${{env.BUILD_TYPE}} -j2
