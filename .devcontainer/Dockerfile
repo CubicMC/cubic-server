@@ -30,4 +30,8 @@ RUN sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-12 12
 
 RUN sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-12 12
 
-RUN echo 'alias format-all="find cubic-server/ -iname *.hpp -o -iname *.cpp | xargs clang-format-15 --style=file -i"' >> ~/.bashrc
+RUN sudo update-alternatives --install /usr/bin/clang clang /usr/bin/clang-15 15
+
+RUN sudo update-alternatives --install /usr/bin/clang++ clang++ /usr/bin/clang++-15 15
+
+RUN echo 'alias format-all="find cubic-server/ -iname *.hpp -o -iname *.cpp | xargs clang-format-15 --style=file -i"' >> /home/vscode/.bashrc
