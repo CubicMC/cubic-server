@@ -1,6 +1,6 @@
 project('cubic-server', 'cpp',
   version : '0.1',
-  default_options : ['warning_level=everything',
+  default_options : ['warning_level=3',
                      'cpp_std=c++20'])
 
 #======================
@@ -70,10 +70,9 @@ if not json.found()
   json = dependency('nlohmann_json')
 endif
 
-we need to create a patch fot this one.
+# we need to create a patch fot this one.
 if not noise.found()
-  noise_subproj = cmake.subproject('perlin_noise')
-  noise = noise_subproj.dependency('perlin_noise')
+  noise = dependency('perlin_noise')
 endif
 
 if not argparse.found()
@@ -85,7 +84,7 @@ if not crcpp.found()
   crcpp = crcpp_subproj.dependency('CRCpp')
 endif
 
-cubic_deps += [ thread, gtkmm, curl, yaml, json, argparse, crcpp ] # need to add perlin
+cubic_deps += [ thread, gtkmm, curl, yaml, json, noise, argparse, crcpp ] # need to add perlin
 
 if get_option('buildtype') == 'debug' and get_option('test')
   if not gtest.found()
