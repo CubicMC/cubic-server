@@ -1,6 +1,4 @@
 #include "PiglinWallHead.hpp"
-#include <stdexcept>
-
 namespace Blocks {
 namespace PiglinWallHead {
 BlockId toProtocol(Properties::Facing facing)
@@ -14,6 +12,8 @@ BlockId toProtocol(Properties::Facing facing)
         return 8709;
     case Properties::Facing::EAST:
         return 8710;
+    default:
+        return 0;
     }
     return 0;
 }

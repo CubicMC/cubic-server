@@ -1,6 +1,4 @@
 #include "NetherPortal.hpp"
-#include <stdexcept>
-
 namespace Blocks {
 namespace NetherPortal {
 BlockId toProtocol(Properties::Axis axis)
@@ -10,6 +8,8 @@ BlockId toProtocol(Properties::Axis axis)
         return 5699;
     case Properties::Axis::Z:
         return 5700;
+    default:
+        return 0;
     }
     return 0;
 }

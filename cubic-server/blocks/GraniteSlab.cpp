@@ -1,6 +1,4 @@
 #include "GraniteSlab.hpp"
-#include <stdexcept>
-
 namespace Blocks {
 namespace GraniteSlab {
 BlockId toProtocol(Properties::Type type, Properties::Waterlogged waterlogged)
@@ -12,6 +10,8 @@ BlockId toProtocol(Properties::Type type, Properties::Waterlogged waterlogged)
             return 13502;
         case Properties::Waterlogged::FALSE:
             return 13503;
+        default:
+            return 0;
         }
     case Properties::Type::BOTTOM:
         switch (waterlogged) {
@@ -19,6 +19,8 @@ BlockId toProtocol(Properties::Type type, Properties::Waterlogged waterlogged)
             return 13504;
         case Properties::Waterlogged::FALSE:
             return 13505;
+        default:
+            return 0;
         }
     case Properties::Type::DOUBLE:
         switch (waterlogged) {
@@ -26,7 +28,11 @@ BlockId toProtocol(Properties::Type type, Properties::Waterlogged waterlogged)
             return 13506;
         case Properties::Waterlogged::FALSE:
             return 13507;
+        default:
+            return 0;
         }
+    default:
+        return 0;
     }
     return 0;
 }

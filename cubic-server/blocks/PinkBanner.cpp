@@ -1,6 +1,4 @@
 #include "PinkBanner.hpp"
-#include <stdexcept>
-
 namespace Blocks {
 namespace PinkBanner {
 BlockId toProtocol(Properties::Rotation rotation)
@@ -38,6 +36,8 @@ BlockId toProtocol(Properties::Rotation rotation)
         return 10392;
     case Properties::Rotation::FIFTEEN:
         return 10393;
+    default:
+        return 0;
     }
     return 0;
 }

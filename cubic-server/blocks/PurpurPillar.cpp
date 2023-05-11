@@ -1,6 +1,4 @@
 #include "PurpurPillar.hpp"
-#include <stdexcept>
-
 namespace Blocks {
 namespace PurpurPillar {
 BlockId toProtocol(Properties::Axis axis)
@@ -12,6 +10,8 @@ BlockId toProtocol(Properties::Axis axis)
         return 11801;
     case Properties::Axis::Z:
         return 11802;
+    default:
+        return 0;
     }
     return 0;
 }

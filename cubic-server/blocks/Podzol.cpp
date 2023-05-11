@@ -1,6 +1,4 @@
 #include "Podzol.hpp"
-#include <stdexcept>
-
 namespace Blocks {
 namespace Podzol {
 BlockId toProtocol(Properties::Snowy snowy)
@@ -10,6 +8,8 @@ BlockId toProtocol(Properties::Snowy snowy)
         return 12;
     case Properties::Snowy::FALSE:
         return 13;
+    default:
+        return 0;
     }
     return 0;
 }

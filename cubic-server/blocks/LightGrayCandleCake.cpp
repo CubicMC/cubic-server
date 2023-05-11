@@ -1,6 +1,4 @@
 #include "LightGrayCandleCake.hpp"
-#include <stdexcept>
-
 namespace Blocks {
 namespace LightGrayCandleCake {
 BlockId toProtocol(Properties::Lit lit)
@@ -10,6 +8,8 @@ BlockId toProtocol(Properties::Lit lit)
         return 20387;
     case Properties::Lit::FALSE:
         return 20388;
+    default:
+        return 0;
     }
     return 0;
 }

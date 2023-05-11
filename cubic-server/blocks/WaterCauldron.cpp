@@ -1,6 +1,4 @@
 #include "WaterCauldron.hpp"
-#include <stdexcept>
-
 namespace Blocks {
 namespace WaterCauldron {
 BlockId toProtocol(Properties::Level level)
@@ -12,6 +10,8 @@ BlockId toProtocol(Properties::Level level)
         return 7170;
     case Properties::Level::THREE:
         return 7171;
+    default:
+        return 0;
     }
     return 0;
 }

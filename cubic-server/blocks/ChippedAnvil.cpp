@@ -1,6 +1,4 @@
 #include "ChippedAnvil.hpp"
-#include <stdexcept>
-
 namespace Blocks {
 namespace ChippedAnvil {
 BlockId toProtocol(Properties::Facing facing)
@@ -14,6 +12,8 @@ BlockId toProtocol(Properties::Facing facing)
         return 8717;
     case Properties::Facing::EAST:
         return 8718;
+    default:
+        return 0;
     }
     return 0;
 }

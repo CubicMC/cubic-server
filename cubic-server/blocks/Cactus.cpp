@@ -1,6 +1,4 @@
 #include "Cactus.hpp"
-#include <stdexcept>
-
 namespace Blocks {
 namespace Cactus {
 BlockId toProtocol(Properties::Age age)
@@ -38,6 +36,8 @@ BlockId toProtocol(Properties::Age age)
         return 5630;
     case Properties::Age::FIFTEEN:
         return 5631;
+    default:
+        return 0;
     }
     return 0;
 }

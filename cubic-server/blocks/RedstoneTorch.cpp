@@ -1,6 +1,4 @@
 #include "RedstoneTorch.hpp"
-#include <stdexcept>
-
 namespace Blocks {
 namespace RedstoneTorch {
 BlockId toProtocol(Properties::Lit lit)
@@ -10,6 +8,8 @@ BlockId toProtocol(Properties::Lit lit)
         return 5572;
     case Properties::Lit::FALSE:
         return 5573;
+    default:
+        return 0;
     }
     return 0;
 }

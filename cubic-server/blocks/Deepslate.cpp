@@ -1,6 +1,4 @@
 #include "Deepslate.hpp"
-#include <stdexcept>
-
 namespace Blocks {
 namespace Deepslate {
 BlockId toProtocol(Properties::Axis axis)
@@ -12,6 +10,8 @@ BlockId toProtocol(Properties::Axis axis)
         return 21563;
     case Properties::Axis::Z:
         return 21564;
+    default:
+        return 0;
     }
     return 0;
 }

@@ -1,6 +1,4 @@
 #include "BrownBed.hpp"
-#include <stdexcept>
-
 namespace Blocks {
 namespace BrownBed {
 BlockId toProtocol(Properties::Facing facing, Properties::Occupied occupied, Properties::Part part)
@@ -14,6 +12,8 @@ BlockId toProtocol(Properties::Facing facing, Properties::Occupied occupied, Pro
                 return 1829;
             case Properties::Part::FOOT:
                 return 1830;
+            default:
+                return 0;
             }
         case Properties::Occupied::FALSE:
             switch (part) {
@@ -21,7 +21,11 @@ BlockId toProtocol(Properties::Facing facing, Properties::Occupied occupied, Pro
                 return 1831;
             case Properties::Part::FOOT:
                 return 1832;
+            default:
+                return 0;
             }
+        default:
+            return 0;
         }
     case Properties::Facing::SOUTH:
         switch (occupied) {
@@ -31,6 +35,8 @@ BlockId toProtocol(Properties::Facing facing, Properties::Occupied occupied, Pro
                 return 1833;
             case Properties::Part::FOOT:
                 return 1834;
+            default:
+                return 0;
             }
         case Properties::Occupied::FALSE:
             switch (part) {
@@ -38,7 +44,11 @@ BlockId toProtocol(Properties::Facing facing, Properties::Occupied occupied, Pro
                 return 1835;
             case Properties::Part::FOOT:
                 return 1836;
+            default:
+                return 0;
             }
+        default:
+            return 0;
         }
     case Properties::Facing::WEST:
         switch (occupied) {
@@ -48,6 +58,8 @@ BlockId toProtocol(Properties::Facing facing, Properties::Occupied occupied, Pro
                 return 1837;
             case Properties::Part::FOOT:
                 return 1838;
+            default:
+                return 0;
             }
         case Properties::Occupied::FALSE:
             switch (part) {
@@ -55,7 +67,11 @@ BlockId toProtocol(Properties::Facing facing, Properties::Occupied occupied, Pro
                 return 1839;
             case Properties::Part::FOOT:
                 return 1840;
+            default:
+                return 0;
             }
+        default:
+            return 0;
         }
     case Properties::Facing::EAST:
         switch (occupied) {
@@ -65,6 +81,8 @@ BlockId toProtocol(Properties::Facing facing, Properties::Occupied occupied, Pro
                 return 1841;
             case Properties::Part::FOOT:
                 return 1842;
+            default:
+                return 0;
             }
         case Properties::Occupied::FALSE:
             switch (part) {
@@ -72,8 +90,14 @@ BlockId toProtocol(Properties::Facing facing, Properties::Occupied occupied, Pro
                 return 1843;
             case Properties::Part::FOOT:
                 return 1844;
+            default:
+                return 0;
             }
+        default:
+            return 0;
         }
+    default:
+        return 0;
     }
     return 0;
 }

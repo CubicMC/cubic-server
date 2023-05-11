@@ -1,6 +1,4 @@
 #include "AttachedPumpkinStem.hpp"
-#include <stdexcept>
-
 namespace Blocks {
 namespace AttachedPumpkinStem {
 BlockId toProtocol(Properties::Facing facing)
@@ -14,6 +12,8 @@ BlockId toProtocol(Properties::Facing facing)
         return 6585;
     case Properties::Facing::EAST:
         return 6586;
+    default:
+        return 0;
     }
     return 0;
 }

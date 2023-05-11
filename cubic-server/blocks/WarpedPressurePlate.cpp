@@ -1,6 +1,4 @@
 #include "WarpedPressurePlate.hpp"
-#include <stdexcept>
-
 namespace Blocks {
 namespace WarpedPressurePlate {
 BlockId toProtocol(Properties::Powered powered)
@@ -10,6 +8,8 @@ BlockId toProtocol(Properties::Powered powered)
         return 18054;
     case Properties::Powered::FALSE:
         return 18055;
+    default:
+        return 0;
     }
     return 0;
 }

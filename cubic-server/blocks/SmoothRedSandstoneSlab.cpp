@@ -1,6 +1,4 @@
 #include "SmoothRedSandstoneSlab.hpp"
-#include <stdexcept>
-
 namespace Blocks {
 namespace SmoothRedSandstoneSlab {
 BlockId toProtocol(Properties::Type type, Properties::Waterlogged waterlogged)
@@ -12,6 +10,8 @@ BlockId toProtocol(Properties::Type type, Properties::Waterlogged waterlogged)
             return 13460;
         case Properties::Waterlogged::FALSE:
             return 13461;
+        default:
+            return 0;
         }
     case Properties::Type::BOTTOM:
         switch (waterlogged) {
@@ -19,6 +19,8 @@ BlockId toProtocol(Properties::Type type, Properties::Waterlogged waterlogged)
             return 13462;
         case Properties::Waterlogged::FALSE:
             return 13463;
+        default:
+            return 0;
         }
     case Properties::Type::DOUBLE:
         switch (waterlogged) {
@@ -26,7 +28,11 @@ BlockId toProtocol(Properties::Type type, Properties::Waterlogged waterlogged)
             return 13464;
         case Properties::Waterlogged::FALSE:
             return 13465;
+        default:
+            return 0;
         }
+    default:
+        return 0;
     }
     return 0;
 }

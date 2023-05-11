@@ -1,6 +1,4 @@
 #include "CrimsonWallHangingSign.hpp"
-#include <stdexcept>
-
 namespace Blocks {
 namespace CrimsonWallHangingSign {
 BlockId toProtocol(Properties::Facing facing, Properties::Waterlogged waterlogged)
@@ -12,6 +10,8 @@ BlockId toProtocol(Properties::Facing facing, Properties::Waterlogged waterlogge
             return 5438;
         case Properties::Waterlogged::FALSE:
             return 5439;
+        default:
+            return 0;
         }
     case Properties::Facing::SOUTH:
         switch (waterlogged) {
@@ -19,6 +19,8 @@ BlockId toProtocol(Properties::Facing facing, Properties::Waterlogged waterlogge
             return 5440;
         case Properties::Waterlogged::FALSE:
             return 5441;
+        default:
+            return 0;
         }
     case Properties::Facing::WEST:
         switch (waterlogged) {
@@ -26,6 +28,8 @@ BlockId toProtocol(Properties::Facing facing, Properties::Waterlogged waterlogge
             return 5442;
         case Properties::Waterlogged::FALSE:
             return 5443;
+        default:
+            return 0;
         }
     case Properties::Facing::EAST:
         switch (waterlogged) {
@@ -33,7 +37,11 @@ BlockId toProtocol(Properties::Facing facing, Properties::Waterlogged waterlogge
             return 5444;
         case Properties::Waterlogged::FALSE:
             return 5445;
+        default:
+            return 0;
         }
+    default:
+        return 0;
     }
     return 0;
 }

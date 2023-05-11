@@ -1,6 +1,4 @@
 #include "BambooBlock.hpp"
-#include <stdexcept>
-
 namespace Blocks {
 namespace BambooBlock {
 BlockId toProtocol(Properties::Axis axis)
@@ -12,6 +10,8 @@ BlockId toProtocol(Properties::Axis axis)
         return 146;
     case Properties::Axis::Z:
         return 147;
+    default:
+        return 0;
     }
     return 0;
 }

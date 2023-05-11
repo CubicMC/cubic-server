@@ -1,6 +1,4 @@
 #include "RedstoneLamp.hpp"
-#include <stdexcept>
-
 namespace Blocks {
 namespace RedstoneLamp {
 BlockId toProtocol(Properties::Lit lit)
@@ -10,6 +8,8 @@ BlockId toProtocol(Properties::Lit lit)
         return 7187;
     case Properties::Lit::FALSE:
         return 7188;
+    default:
+        return 0;
     }
     return 0;
 }

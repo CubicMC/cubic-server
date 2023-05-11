@@ -1,6 +1,4 @@
 #include "WeepingVines.hpp"
-#include <stdexcept>
-
 namespace Blocks {
 namespace WeepingVines {
 BlockId toProtocol(Properties::Age age)
@@ -58,6 +56,8 @@ BlockId toProtocol(Properties::Age age)
         return 18007;
     case Properties::Age::TWENTY_FIVE:
         return 18008;
+    default:
+        return 0;
     }
     return 0;
 }

@@ -1,6 +1,4 @@
 #include "RoseBush.hpp"
-#include <stdexcept>
-
 namespace Blocks {
 namespace RoseBush {
 BlockId toProtocol(Properties::Half half)
@@ -10,6 +8,8 @@ BlockId toProtocol(Properties::Half half)
         return 10274;
     case Properties::Half::LOWER:
         return 10275;
+    default:
+        return 0;
     }
     return 0;
 }

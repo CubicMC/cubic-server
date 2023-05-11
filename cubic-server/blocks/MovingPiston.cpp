@@ -1,6 +1,4 @@
 #include "MovingPiston.hpp"
-#include <stdexcept>
-
 namespace Blocks {
 namespace MovingPiston {
 BlockId toProtocol(Properties::Type type, Properties::Facing facing)
@@ -20,6 +18,8 @@ BlockId toProtocol(Properties::Type type, Properties::Facing facing)
             return 2020;
         case Properties::Facing::DOWN:
             return 2022;
+        default:
+            return 0;
         }
     case Properties::Type::STICKY:
         switch (facing) {
@@ -35,7 +35,11 @@ BlockId toProtocol(Properties::Type type, Properties::Facing facing)
             return 2021;
         case Properties::Facing::DOWN:
             return 2023;
+        default:
+            return 0;
         }
+    default:
+        return 0;
     }
     return 0;
 }

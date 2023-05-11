@@ -1,6 +1,4 @@
 #include "BirchButton.hpp"
-#include <stdexcept>
-
 namespace Blocks {
 namespace BirchButton {
 BlockId toProtocol(Properties::Face face, Properties::Facing facing, Properties::Powered powered)
@@ -14,6 +12,8 @@ BlockId toProtocol(Properties::Face face, Properties::Facing facing, Properties:
                 return 8427;
             case Properties::Powered::FALSE:
                 return 8428;
+            default:
+                return 0;
             }
         case Properties::Facing::SOUTH:
             switch (powered) {
@@ -21,6 +21,8 @@ BlockId toProtocol(Properties::Face face, Properties::Facing facing, Properties:
                 return 8429;
             case Properties::Powered::FALSE:
                 return 8430;
+            default:
+                return 0;
             }
         case Properties::Facing::WEST:
             switch (powered) {
@@ -28,6 +30,8 @@ BlockId toProtocol(Properties::Face face, Properties::Facing facing, Properties:
                 return 8431;
             case Properties::Powered::FALSE:
                 return 8432;
+            default:
+                return 0;
             }
         case Properties::Facing::EAST:
             switch (powered) {
@@ -35,7 +39,11 @@ BlockId toProtocol(Properties::Face face, Properties::Facing facing, Properties:
                 return 8433;
             case Properties::Powered::FALSE:
                 return 8434;
+            default:
+                return 0;
             }
+        default:
+            return 0;
         }
     case Properties::Face::WALL:
         switch (facing) {
@@ -45,6 +53,8 @@ BlockId toProtocol(Properties::Face face, Properties::Facing facing, Properties:
                 return 8435;
             case Properties::Powered::FALSE:
                 return 8436;
+            default:
+                return 0;
             }
         case Properties::Facing::SOUTH:
             switch (powered) {
@@ -52,6 +62,8 @@ BlockId toProtocol(Properties::Face face, Properties::Facing facing, Properties:
                 return 8437;
             case Properties::Powered::FALSE:
                 return 8438;
+            default:
+                return 0;
             }
         case Properties::Facing::WEST:
             switch (powered) {
@@ -59,6 +71,8 @@ BlockId toProtocol(Properties::Face face, Properties::Facing facing, Properties:
                 return 8439;
             case Properties::Powered::FALSE:
                 return 8440;
+            default:
+                return 0;
             }
         case Properties::Facing::EAST:
             switch (powered) {
@@ -66,7 +80,11 @@ BlockId toProtocol(Properties::Face face, Properties::Facing facing, Properties:
                 return 8441;
             case Properties::Powered::FALSE:
                 return 8442;
+            default:
+                return 0;
             }
+        default:
+            return 0;
         }
     case Properties::Face::CEILING:
         switch (facing) {
@@ -76,6 +94,8 @@ BlockId toProtocol(Properties::Face face, Properties::Facing facing, Properties:
                 return 8443;
             case Properties::Powered::FALSE:
                 return 8444;
+            default:
+                return 0;
             }
         case Properties::Facing::SOUTH:
             switch (powered) {
@@ -83,6 +103,8 @@ BlockId toProtocol(Properties::Face face, Properties::Facing facing, Properties:
                 return 8445;
             case Properties::Powered::FALSE:
                 return 8446;
+            default:
+                return 0;
             }
         case Properties::Facing::WEST:
             switch (powered) {
@@ -90,6 +112,8 @@ BlockId toProtocol(Properties::Face face, Properties::Facing facing, Properties:
                 return 8447;
             case Properties::Powered::FALSE:
                 return 8448;
+            default:
+                return 0;
             }
         case Properties::Facing::EAST:
             switch (powered) {
@@ -97,8 +121,14 @@ BlockId toProtocol(Properties::Face face, Properties::Facing facing, Properties:
                 return 8449;
             case Properties::Powered::FALSE:
                 return 8450;
+            default:
+                return 0;
             }
+        default:
+            return 0;
         }
+    default:
+        return 0;
     }
     return 0;
 }

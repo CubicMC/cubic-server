@@ -1,6 +1,4 @@
 #include "PurpleCandleCake.hpp"
-#include <stdexcept>
-
 namespace Blocks {
 namespace PurpleCandleCake {
 BlockId toProtocol(Properties::Lit lit)
@@ -10,6 +8,8 @@ BlockId toProtocol(Properties::Lit lit)
         return 20391;
     case Properties::Lit::FALSE:
         return 20392;
+    default:
+        return 0;
     }
     return 0;
 }

@@ -1,6 +1,4 @@
 #include "Lilac.hpp"
-#include <stdexcept>
-
 namespace Blocks {
 namespace Lilac {
 BlockId toProtocol(Properties::Half half)
@@ -10,6 +8,8 @@ BlockId toProtocol(Properties::Half half)
         return 10272;
     case Properties::Half::LOWER:
         return 10273;
+    default:
+        return 0;
     }
     return 0;
 }

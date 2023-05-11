@@ -1,6 +1,4 @@
 #include "NetherWart.hpp"
-#include <stdexcept>
-
 namespace Blocks {
 namespace NetherWart {
 BlockId toProtocol(Properties::Age age)
@@ -14,6 +12,8 @@ BlockId toProtocol(Properties::Age age)
         return 7157;
     case Properties::Age::THREE:
         return 7158;
+    default:
+        return 0;
     }
     return 0;
 }

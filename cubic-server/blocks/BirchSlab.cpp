@@ -1,6 +1,4 @@
 #include "BirchSlab.hpp"
-#include <stdexcept>
-
 namespace Blocks {
 namespace BirchSlab {
 BlockId toProtocol(Properties::Type type, Properties::Waterlogged waterlogged)
@@ -12,6 +10,8 @@ BlockId toProtocol(Properties::Type type, Properties::Waterlogged waterlogged)
             return 10697;
         case Properties::Waterlogged::FALSE:
             return 10698;
+        default:
+            return 0;
         }
     case Properties::Type::BOTTOM:
         switch (waterlogged) {
@@ -19,6 +19,8 @@ BlockId toProtocol(Properties::Type type, Properties::Waterlogged waterlogged)
             return 10699;
         case Properties::Waterlogged::FALSE:
             return 10700;
+        default:
+            return 0;
         }
     case Properties::Type::DOUBLE:
         switch (waterlogged) {
@@ -26,7 +28,11 @@ BlockId toProtocol(Properties::Type type, Properties::Waterlogged waterlogged)
             return 10701;
         case Properties::Waterlogged::FALSE:
             return 10702;
+        default:
+            return 0;
         }
+    default:
+        return 0;
     }
     return 0;
 }

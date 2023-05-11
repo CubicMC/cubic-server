@@ -1,6 +1,4 @@
 #include "TripwireHook.hpp"
-#include <stdexcept>
-
 namespace Blocks {
 namespace TripwireHook {
 BlockId toProtocol(Properties::Attached attached, Properties::Facing facing, Properties::Powered powered)
@@ -14,6 +12,8 @@ BlockId toProtocol(Properties::Attached attached, Properties::Facing facing, Pro
                 return 7291;
             case Properties::Powered::FALSE:
                 return 7292;
+            default:
+                return 0;
             }
         case Properties::Facing::SOUTH:
             switch (powered) {
@@ -21,6 +21,8 @@ BlockId toProtocol(Properties::Attached attached, Properties::Facing facing, Pro
                 return 7293;
             case Properties::Powered::FALSE:
                 return 7294;
+            default:
+                return 0;
             }
         case Properties::Facing::WEST:
             switch (powered) {
@@ -28,6 +30,8 @@ BlockId toProtocol(Properties::Attached attached, Properties::Facing facing, Pro
                 return 7295;
             case Properties::Powered::FALSE:
                 return 7296;
+            default:
+                return 0;
             }
         case Properties::Facing::EAST:
             switch (powered) {
@@ -35,7 +39,11 @@ BlockId toProtocol(Properties::Attached attached, Properties::Facing facing, Pro
                 return 7297;
             case Properties::Powered::FALSE:
                 return 7298;
+            default:
+                return 0;
             }
+        default:
+            return 0;
         }
     case Properties::Attached::FALSE:
         switch (facing) {
@@ -45,6 +53,8 @@ BlockId toProtocol(Properties::Attached attached, Properties::Facing facing, Pro
                 return 7299;
             case Properties::Powered::FALSE:
                 return 7300;
+            default:
+                return 0;
             }
         case Properties::Facing::SOUTH:
             switch (powered) {
@@ -52,6 +62,8 @@ BlockId toProtocol(Properties::Attached attached, Properties::Facing facing, Pro
                 return 7301;
             case Properties::Powered::FALSE:
                 return 7302;
+            default:
+                return 0;
             }
         case Properties::Facing::WEST:
             switch (powered) {
@@ -59,6 +71,8 @@ BlockId toProtocol(Properties::Attached attached, Properties::Facing facing, Pro
                 return 7303;
             case Properties::Powered::FALSE:
                 return 7304;
+            default:
+                return 0;
             }
         case Properties::Facing::EAST:
             switch (powered) {
@@ -66,8 +80,14 @@ BlockId toProtocol(Properties::Attached attached, Properties::Facing facing, Pro
                 return 7305;
             case Properties::Powered::FALSE:
                 return 7306;
+            default:
+                return 0;
             }
+        default:
+            return 0;
         }
+    default:
+        return 0;
     }
     return 0;
 }

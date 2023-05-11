@@ -1,6 +1,4 @@
 #include "HayBlock.hpp"
-#include <stdexcept>
-
 namespace Blocks {
 namespace HayBlock {
 BlockId toProtocol(Properties::Axis axis)
@@ -12,6 +10,8 @@ BlockId toProtocol(Properties::Axis axis)
         return 10249;
     case Properties::Axis::Z:
         return 10250;
+    default:
+        return 0;
     }
     return 0;
 }

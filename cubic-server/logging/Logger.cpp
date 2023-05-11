@@ -80,7 +80,8 @@ Logger::~Logger() { this->_fileStream.close(); }
  */
 void Logger::_log(LogLevel level, const std::string &message)
 {
-    _loggerMutex.lock();
+    std::lock_guard<std::mutex> _(_loggerMutex);
+
     LogMessage log(level, message);
     this->_logBuffer.push(log);
     if (this->_logBuffer.size() > this->_bufferSize)
@@ -91,7 +92,6 @@ void Logger::_log(LogLevel level, const std::string &message)
 
     if (this->_specificationLevelInConsole.find(level) != this->_specificationLevelInConsole.end())
         std::cout << log << std::endl;
-    _loggerMutex.unlock();
 }
 
 /**

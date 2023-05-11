@@ -1,6 +1,4 @@
 #include "SpruceWood.hpp"
-#include <stdexcept>
-
 namespace Blocks {
 namespace SpruceWood {
 BlockId toProtocol(Properties::Axis axis)
@@ -12,6 +10,8 @@ BlockId toProtocol(Properties::Axis axis)
         return 176;
     case Properties::Axis::Z:
         return 177;
+    default:
+        return 0;
     }
     return 0;
 }

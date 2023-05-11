@@ -1,6 +1,4 @@
 #include "DeadBrainCoralWallFan.hpp"
-#include <stdexcept>
-
 namespace Blocks {
 namespace DeadBrainCoralWallFan {
 BlockId toProtocol(Properties::Facing facing, Properties::Waterlogged waterlogged)
@@ -12,6 +10,8 @@ BlockId toProtocol(Properties::Facing facing, Properties::Waterlogged waterlogge
             return 12233;
         case Properties::Waterlogged::FALSE:
             return 12234;
+        default:
+            return 0;
         }
     case Properties::Facing::SOUTH:
         switch (waterlogged) {
@@ -19,6 +19,8 @@ BlockId toProtocol(Properties::Facing facing, Properties::Waterlogged waterlogge
             return 12235;
         case Properties::Waterlogged::FALSE:
             return 12236;
+        default:
+            return 0;
         }
     case Properties::Facing::WEST:
         switch (waterlogged) {
@@ -26,6 +28,8 @@ BlockId toProtocol(Properties::Facing facing, Properties::Waterlogged waterlogge
             return 12237;
         case Properties::Waterlogged::FALSE:
             return 12238;
+        default:
+            return 0;
         }
     case Properties::Facing::EAST:
         switch (waterlogged) {
@@ -33,7 +37,11 @@ BlockId toProtocol(Properties::Facing facing, Properties::Waterlogged waterlogge
             return 12239;
         case Properties::Waterlogged::FALSE:
             return 12240;
+        default:
+            return 0;
         }
+    default:
+        return 0;
     }
     return 0;
 }

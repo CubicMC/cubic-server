@@ -1,6 +1,4 @@
 #include "MangroveWallHangingSign.hpp"
-#include <stdexcept>
-
 namespace Blocks {
 namespace MangroveWallHangingSign {
 BlockId toProtocol(Properties::Facing facing, Properties::Waterlogged waterlogged)
@@ -12,6 +10,8 @@ BlockId toProtocol(Properties::Facing facing, Properties::Waterlogged waterlogge
             return 5430;
         case Properties::Waterlogged::FALSE:
             return 5431;
+        default:
+            return 0;
         }
     case Properties::Facing::SOUTH:
         switch (waterlogged) {
@@ -19,6 +19,8 @@ BlockId toProtocol(Properties::Facing facing, Properties::Waterlogged waterlogge
             return 5432;
         case Properties::Waterlogged::FALSE:
             return 5433;
+        default:
+            return 0;
         }
     case Properties::Facing::WEST:
         switch (waterlogged) {
@@ -26,6 +28,8 @@ BlockId toProtocol(Properties::Facing facing, Properties::Waterlogged waterlogge
             return 5434;
         case Properties::Waterlogged::FALSE:
             return 5435;
+        default:
+            return 0;
         }
     case Properties::Facing::EAST:
         switch (waterlogged) {
@@ -33,7 +37,11 @@ BlockId toProtocol(Properties::Facing facing, Properties::Waterlogged waterlogge
             return 5436;
         case Properties::Waterlogged::FALSE:
             return 5437;
+        default:
+            return 0;
         }
+    default:
+        return 0;
     }
     return 0;
 }

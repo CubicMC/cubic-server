@@ -1,6 +1,4 @@
 #include "AcaciaLog.hpp"
-#include <stdexcept>
-
 namespace Blocks {
 namespace AcaciaLog {
 BlockId toProtocol(Properties::Axis axis)
@@ -12,6 +10,8 @@ BlockId toProtocol(Properties::Axis axis)
         return 132;
     case Properties::Axis::Z:
         return 133;
+    default:
+        return 0;
     }
     return 0;
 }

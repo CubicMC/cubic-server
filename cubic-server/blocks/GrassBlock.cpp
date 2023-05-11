@@ -1,6 +1,4 @@
 #include "GrassBlock.hpp"
-#include <stdexcept>
-
 namespace Blocks {
 namespace GrassBlock {
 BlockId toProtocol(Properties::Snowy snowy)
@@ -10,6 +8,8 @@ BlockId toProtocol(Properties::Snowy snowy)
         return 8;
     case Properties::Snowy::FALSE:
         return 9;
+    default:
+        return 0;
     }
     return 0;
 }

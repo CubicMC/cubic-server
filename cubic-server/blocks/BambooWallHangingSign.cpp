@@ -1,6 +1,4 @@
 #include "BambooWallHangingSign.hpp"
-#include <stdexcept>
-
 namespace Blocks {
 namespace BambooWallHangingSign {
 BlockId toProtocol(Properties::Facing facing, Properties::Waterlogged waterlogged)
@@ -12,6 +10,8 @@ BlockId toProtocol(Properties::Facing facing, Properties::Waterlogged waterlogge
             return 5454;
         case Properties::Waterlogged::FALSE:
             return 5455;
+        default:
+            return 0;
         }
     case Properties::Facing::SOUTH:
         switch (waterlogged) {
@@ -19,6 +19,8 @@ BlockId toProtocol(Properties::Facing facing, Properties::Waterlogged waterlogge
             return 5456;
         case Properties::Waterlogged::FALSE:
             return 5457;
+        default:
+            return 0;
         }
     case Properties::Facing::WEST:
         switch (waterlogged) {
@@ -26,6 +28,8 @@ BlockId toProtocol(Properties::Facing facing, Properties::Waterlogged waterlogge
             return 5458;
         case Properties::Waterlogged::FALSE:
             return 5459;
+        default:
+            return 0;
         }
     case Properties::Facing::EAST:
         switch (waterlogged) {
@@ -33,7 +37,11 @@ BlockId toProtocol(Properties::Facing facing, Properties::Waterlogged waterlogge
             return 5460;
         case Properties::Waterlogged::FALSE:
             return 5461;
+        default:
+            return 0;
         }
+    default:
+        return 0;
     }
     return 0;
 }

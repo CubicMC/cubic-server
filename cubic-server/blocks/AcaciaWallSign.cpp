@@ -1,6 +1,4 @@
 #include "AcaciaWallSign.hpp"
-#include <stdexcept>
-
 namespace Blocks {
 namespace AcaciaWallSign {
 BlockId toProtocol(Properties::Facing facing, Properties::Waterlogged waterlogged)
@@ -12,6 +10,8 @@ BlockId toProtocol(Properties::Facing facing, Properties::Waterlogged waterlogge
             return 4702;
         case Properties::Waterlogged::FALSE:
             return 4703;
+        default:
+            return 0;
         }
     case Properties::Facing::SOUTH:
         switch (waterlogged) {
@@ -19,6 +19,8 @@ BlockId toProtocol(Properties::Facing facing, Properties::Waterlogged waterlogge
             return 4704;
         case Properties::Waterlogged::FALSE:
             return 4705;
+        default:
+            return 0;
         }
     case Properties::Facing::WEST:
         switch (waterlogged) {
@@ -26,6 +28,8 @@ BlockId toProtocol(Properties::Facing facing, Properties::Waterlogged waterlogge
             return 4706;
         case Properties::Waterlogged::FALSE:
             return 4707;
+        default:
+            return 0;
         }
     case Properties::Facing::EAST:
         switch (waterlogged) {
@@ -33,7 +37,11 @@ BlockId toProtocol(Properties::Facing facing, Properties::Waterlogged waterlogge
             return 4708;
         case Properties::Waterlogged::FALSE:
             return 4709;
+        default:
+            return 0;
         }
+    default:
+        return 0;
     }
     return 0;
 }

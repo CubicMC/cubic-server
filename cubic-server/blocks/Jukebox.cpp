@@ -1,6 +1,4 @@
 #include "Jukebox.hpp"
-#include <stdexcept>
-
 namespace Blocks {
 namespace Jukebox {
 BlockId toProtocol(Properties::Has_record has_record)
@@ -10,6 +8,8 @@ BlockId toProtocol(Properties::Has_record has_record)
         return 5649;
     case Properties::Has_record::FALSE:
         return 5650;
+    default:
+        return 0;
     }
     return 0;
 }

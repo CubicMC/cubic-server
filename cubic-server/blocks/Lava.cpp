@@ -1,6 +1,4 @@
 #include "Lava.hpp"
-#include <stdexcept>
-
 namespace Blocks {
 namespace Lava {
 BlockId toProtocol(Properties::Level level)
@@ -38,6 +36,8 @@ BlockId toProtocol(Properties::Level level)
         return 107;
     case Properties::Level::FIFTEEN:
         return 108;
+    default:
+        return 0;
     }
     return 0;
 }

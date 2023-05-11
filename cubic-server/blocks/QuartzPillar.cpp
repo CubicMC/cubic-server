@@ -1,6 +1,4 @@
 #include "QuartzPillar.hpp"
-#include <stdexcept>
-
 namespace Blocks {
 namespace QuartzPillar {
 BlockId toProtocol(Properties::Axis axis)
@@ -12,6 +10,8 @@ BlockId toProtocol(Properties::Axis axis)
         return 8842;
     case Properties::Axis::Z:
         return 8843;
+    default:
+        return 0;
     }
     return 0;
 }

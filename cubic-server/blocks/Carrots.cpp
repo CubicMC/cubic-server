@@ -1,6 +1,4 @@
 #include "Carrots.hpp"
-#include <stdexcept>
-
 namespace Blocks {
 namespace Carrots {
 BlockId toProtocol(Properties::Age age)
@@ -22,6 +20,8 @@ BlockId toProtocol(Properties::Age age)
         return 8369;
     case Properties::Age::SEVEN:
         return 8370;
+    default:
+        return 0;
     }
     return 0;
 }

@@ -1,6 +1,4 @@
 #include "PolishedBlackstonePressurePlate.hpp"
-#include <stdexcept>
-
 namespace Blocks {
 namespace PolishedBlackstonePressurePlate {
 BlockId toProtocol(Properties::Powered powered)
@@ -10,6 +8,8 @@ BlockId toProtocol(Properties::Powered powered)
         return 19744;
     case Properties::Powered::FALSE:
         return 19745;
+    default:
+        return 0;
     }
     return 0;
 }

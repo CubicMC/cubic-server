@@ -1,6 +1,4 @@
 #include "RedstoneWire.hpp"
-#include <stdexcept>
-
 namespace Blocks {
 namespace RedstoneWire {
 BlockId toProtocol(Properties::East east, Properties::North north, Properties::Power power, Properties::South south, Properties::West west)
@@ -20,6 +18,8 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 2927;
                     case Properties::West::NONE:
                         return 2928;
+                    default:
+                        return 0;
                     }
                 case Properties::South::SIDE:
                     switch (west) {
@@ -29,6 +29,8 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 2930;
                     case Properties::West::NONE:
                         return 2931;
+                    default:
+                        return 0;
                     }
                 case Properties::South::NONE:
                     switch (west) {
@@ -38,7 +40,11 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 2933;
                     case Properties::West::NONE:
                         return 2934;
+                    default:
+                        return 0;
                     }
+                default:
+                    return 0;
                 }
             case Properties::Power::ONE:
                 switch (south) {
@@ -50,6 +56,8 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 2936;
                     case Properties::West::NONE:
                         return 2937;
+                    default:
+                        return 0;
                     }
                 case Properties::South::SIDE:
                     switch (west) {
@@ -59,6 +67,8 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 2939;
                     case Properties::West::NONE:
                         return 2940;
+                    default:
+                        return 0;
                     }
                 case Properties::South::NONE:
                     switch (west) {
@@ -68,7 +78,11 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 2942;
                     case Properties::West::NONE:
                         return 2943;
+                    default:
+                        return 0;
                     }
+                default:
+                    return 0;
                 }
             case Properties::Power::TWO:
                 switch (south) {
@@ -80,6 +94,8 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 2945;
                     case Properties::West::NONE:
                         return 2946;
+                    default:
+                        return 0;
                     }
                 case Properties::South::SIDE:
                     switch (west) {
@@ -89,6 +105,8 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 2948;
                     case Properties::West::NONE:
                         return 2949;
+                    default:
+                        return 0;
                     }
                 case Properties::South::NONE:
                     switch (west) {
@@ -98,7 +116,11 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 2951;
                     case Properties::West::NONE:
                         return 2952;
+                    default:
+                        return 0;
                     }
+                default:
+                    return 0;
                 }
             case Properties::Power::THREE:
                 switch (south) {
@@ -110,6 +132,8 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 2954;
                     case Properties::West::NONE:
                         return 2955;
+                    default:
+                        return 0;
                     }
                 case Properties::South::SIDE:
                     switch (west) {
@@ -119,6 +143,8 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 2957;
                     case Properties::West::NONE:
                         return 2958;
+                    default:
+                        return 0;
                     }
                 case Properties::South::NONE:
                     switch (west) {
@@ -128,7 +154,11 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 2960;
                     case Properties::West::NONE:
                         return 2961;
+                    default:
+                        return 0;
                     }
+                default:
+                    return 0;
                 }
             case Properties::Power::FOUR:
                 switch (south) {
@@ -140,6 +170,8 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 2963;
                     case Properties::West::NONE:
                         return 2964;
+                    default:
+                        return 0;
                     }
                 case Properties::South::SIDE:
                     switch (west) {
@@ -149,6 +181,8 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 2966;
                     case Properties::West::NONE:
                         return 2967;
+                    default:
+                        return 0;
                     }
                 case Properties::South::NONE:
                     switch (west) {
@@ -158,7 +192,11 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 2969;
                     case Properties::West::NONE:
                         return 2970;
+                    default:
+                        return 0;
                     }
+                default:
+                    return 0;
                 }
             case Properties::Power::FIVE:
                 switch (south) {
@@ -170,6 +208,8 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 2972;
                     case Properties::West::NONE:
                         return 2973;
+                    default:
+                        return 0;
                     }
                 case Properties::South::SIDE:
                     switch (west) {
@@ -179,6 +219,8 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 2975;
                     case Properties::West::NONE:
                         return 2976;
+                    default:
+                        return 0;
                     }
                 case Properties::South::NONE:
                     switch (west) {
@@ -188,7 +230,11 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 2978;
                     case Properties::West::NONE:
                         return 2979;
+                    default:
+                        return 0;
                     }
+                default:
+                    return 0;
                 }
             case Properties::Power::SIX:
                 switch (south) {
@@ -200,6 +246,8 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 2981;
                     case Properties::West::NONE:
                         return 2982;
+                    default:
+                        return 0;
                     }
                 case Properties::South::SIDE:
                     switch (west) {
@@ -209,6 +257,8 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 2984;
                     case Properties::West::NONE:
                         return 2985;
+                    default:
+                        return 0;
                     }
                 case Properties::South::NONE:
                     switch (west) {
@@ -218,7 +268,11 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 2987;
                     case Properties::West::NONE:
                         return 2988;
+                    default:
+                        return 0;
                     }
+                default:
+                    return 0;
                 }
             case Properties::Power::SEVEN:
                 switch (south) {
@@ -230,6 +284,8 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 2990;
                     case Properties::West::NONE:
                         return 2991;
+                    default:
+                        return 0;
                     }
                 case Properties::South::SIDE:
                     switch (west) {
@@ -239,6 +295,8 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 2993;
                     case Properties::West::NONE:
                         return 2994;
+                    default:
+                        return 0;
                     }
                 case Properties::South::NONE:
                     switch (west) {
@@ -248,7 +306,11 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 2996;
                     case Properties::West::NONE:
                         return 2997;
+                    default:
+                        return 0;
                     }
+                default:
+                    return 0;
                 }
             case Properties::Power::EIGHT:
                 switch (south) {
@@ -260,6 +322,8 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 2999;
                     case Properties::West::NONE:
                         return 3000;
+                    default:
+                        return 0;
                     }
                 case Properties::South::SIDE:
                     switch (west) {
@@ -269,6 +333,8 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 3002;
                     case Properties::West::NONE:
                         return 3003;
+                    default:
+                        return 0;
                     }
                 case Properties::South::NONE:
                     switch (west) {
@@ -278,7 +344,11 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 3005;
                     case Properties::West::NONE:
                         return 3006;
+                    default:
+                        return 0;
                     }
+                default:
+                    return 0;
                 }
             case Properties::Power::NINE:
                 switch (south) {
@@ -290,6 +360,8 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 3008;
                     case Properties::West::NONE:
                         return 3009;
+                    default:
+                        return 0;
                     }
                 case Properties::South::SIDE:
                     switch (west) {
@@ -299,6 +371,8 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 3011;
                     case Properties::West::NONE:
                         return 3012;
+                    default:
+                        return 0;
                     }
                 case Properties::South::NONE:
                     switch (west) {
@@ -308,7 +382,11 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 3014;
                     case Properties::West::NONE:
                         return 3015;
+                    default:
+                        return 0;
                     }
+                default:
+                    return 0;
                 }
             case Properties::Power::TEN:
                 switch (south) {
@@ -320,6 +398,8 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 3017;
                     case Properties::West::NONE:
                         return 3018;
+                    default:
+                        return 0;
                     }
                 case Properties::South::SIDE:
                     switch (west) {
@@ -329,6 +409,8 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 3020;
                     case Properties::West::NONE:
                         return 3021;
+                    default:
+                        return 0;
                     }
                 case Properties::South::NONE:
                     switch (west) {
@@ -338,7 +420,11 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 3023;
                     case Properties::West::NONE:
                         return 3024;
+                    default:
+                        return 0;
                     }
+                default:
+                    return 0;
                 }
             case Properties::Power::ELEVEN:
                 switch (south) {
@@ -350,6 +436,8 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 3026;
                     case Properties::West::NONE:
                         return 3027;
+                    default:
+                        return 0;
                     }
                 case Properties::South::SIDE:
                     switch (west) {
@@ -359,6 +447,8 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 3029;
                     case Properties::West::NONE:
                         return 3030;
+                    default:
+                        return 0;
                     }
                 case Properties::South::NONE:
                     switch (west) {
@@ -368,7 +458,11 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 3032;
                     case Properties::West::NONE:
                         return 3033;
+                    default:
+                        return 0;
                     }
+                default:
+                    return 0;
                 }
             case Properties::Power::TWELVE:
                 switch (south) {
@@ -380,6 +474,8 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 3035;
                     case Properties::West::NONE:
                         return 3036;
+                    default:
+                        return 0;
                     }
                 case Properties::South::SIDE:
                     switch (west) {
@@ -389,6 +485,8 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 3038;
                     case Properties::West::NONE:
                         return 3039;
+                    default:
+                        return 0;
                     }
                 case Properties::South::NONE:
                     switch (west) {
@@ -398,7 +496,11 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 3041;
                     case Properties::West::NONE:
                         return 3042;
+                    default:
+                        return 0;
                     }
+                default:
+                    return 0;
                 }
             case Properties::Power::THIRTEEN:
                 switch (south) {
@@ -410,6 +512,8 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 3044;
                     case Properties::West::NONE:
                         return 3045;
+                    default:
+                        return 0;
                     }
                 case Properties::South::SIDE:
                     switch (west) {
@@ -419,6 +523,8 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 3047;
                     case Properties::West::NONE:
                         return 3048;
+                    default:
+                        return 0;
                     }
                 case Properties::South::NONE:
                     switch (west) {
@@ -428,7 +534,11 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 3050;
                     case Properties::West::NONE:
                         return 3051;
+                    default:
+                        return 0;
                     }
+                default:
+                    return 0;
                 }
             case Properties::Power::FOURTEEN:
                 switch (south) {
@@ -440,6 +550,8 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 3053;
                     case Properties::West::NONE:
                         return 3054;
+                    default:
+                        return 0;
                     }
                 case Properties::South::SIDE:
                     switch (west) {
@@ -449,6 +561,8 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 3056;
                     case Properties::West::NONE:
                         return 3057;
+                    default:
+                        return 0;
                     }
                 case Properties::South::NONE:
                     switch (west) {
@@ -458,7 +572,11 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 3059;
                     case Properties::West::NONE:
                         return 3060;
+                    default:
+                        return 0;
                     }
+                default:
+                    return 0;
                 }
             case Properties::Power::FIFTEEN:
                 switch (south) {
@@ -470,6 +588,8 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 3062;
                     case Properties::West::NONE:
                         return 3063;
+                    default:
+                        return 0;
                     }
                 case Properties::South::SIDE:
                     switch (west) {
@@ -479,6 +599,8 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 3065;
                     case Properties::West::NONE:
                         return 3066;
+                    default:
+                        return 0;
                     }
                 case Properties::South::NONE:
                     switch (west) {
@@ -488,8 +610,14 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 3068;
                     case Properties::West::NONE:
                         return 3069;
+                    default:
+                        return 0;
                     }
+                default:
+                    return 0;
                 }
+            default:
+                return 0;
             }
         case Properties::North::SIDE:
             switch (power) {
@@ -503,6 +631,8 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 3071;
                     case Properties::West::NONE:
                         return 3072;
+                    default:
+                        return 0;
                     }
                 case Properties::South::SIDE:
                     switch (west) {
@@ -512,6 +642,8 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 3074;
                     case Properties::West::NONE:
                         return 3075;
+                    default:
+                        return 0;
                     }
                 case Properties::South::NONE:
                     switch (west) {
@@ -521,7 +653,11 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 3077;
                     case Properties::West::NONE:
                         return 3078;
+                    default:
+                        return 0;
                     }
+                default:
+                    return 0;
                 }
             case Properties::Power::ONE:
                 switch (south) {
@@ -533,6 +669,8 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 3080;
                     case Properties::West::NONE:
                         return 3081;
+                    default:
+                        return 0;
                     }
                 case Properties::South::SIDE:
                     switch (west) {
@@ -542,6 +680,8 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 3083;
                     case Properties::West::NONE:
                         return 3084;
+                    default:
+                        return 0;
                     }
                 case Properties::South::NONE:
                     switch (west) {
@@ -551,7 +691,11 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 3086;
                     case Properties::West::NONE:
                         return 3087;
+                    default:
+                        return 0;
                     }
+                default:
+                    return 0;
                 }
             case Properties::Power::TWO:
                 switch (south) {
@@ -563,6 +707,8 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 3089;
                     case Properties::West::NONE:
                         return 3090;
+                    default:
+                        return 0;
                     }
                 case Properties::South::SIDE:
                     switch (west) {
@@ -572,6 +718,8 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 3092;
                     case Properties::West::NONE:
                         return 3093;
+                    default:
+                        return 0;
                     }
                 case Properties::South::NONE:
                     switch (west) {
@@ -581,7 +729,11 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 3095;
                     case Properties::West::NONE:
                         return 3096;
+                    default:
+                        return 0;
                     }
+                default:
+                    return 0;
                 }
             case Properties::Power::THREE:
                 switch (south) {
@@ -593,6 +745,8 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 3098;
                     case Properties::West::NONE:
                         return 3099;
+                    default:
+                        return 0;
                     }
                 case Properties::South::SIDE:
                     switch (west) {
@@ -602,6 +756,8 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 3101;
                     case Properties::West::NONE:
                         return 3102;
+                    default:
+                        return 0;
                     }
                 case Properties::South::NONE:
                     switch (west) {
@@ -611,7 +767,11 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 3104;
                     case Properties::West::NONE:
                         return 3105;
+                    default:
+                        return 0;
                     }
+                default:
+                    return 0;
                 }
             case Properties::Power::FOUR:
                 switch (south) {
@@ -623,6 +783,8 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 3107;
                     case Properties::West::NONE:
                         return 3108;
+                    default:
+                        return 0;
                     }
                 case Properties::South::SIDE:
                     switch (west) {
@@ -632,6 +794,8 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 3110;
                     case Properties::West::NONE:
                         return 3111;
+                    default:
+                        return 0;
                     }
                 case Properties::South::NONE:
                     switch (west) {
@@ -641,7 +805,11 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 3113;
                     case Properties::West::NONE:
                         return 3114;
+                    default:
+                        return 0;
                     }
+                default:
+                    return 0;
                 }
             case Properties::Power::FIVE:
                 switch (south) {
@@ -653,6 +821,8 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 3116;
                     case Properties::West::NONE:
                         return 3117;
+                    default:
+                        return 0;
                     }
                 case Properties::South::SIDE:
                     switch (west) {
@@ -662,6 +832,8 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 3119;
                     case Properties::West::NONE:
                         return 3120;
+                    default:
+                        return 0;
                     }
                 case Properties::South::NONE:
                     switch (west) {
@@ -671,7 +843,11 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 3122;
                     case Properties::West::NONE:
                         return 3123;
+                    default:
+                        return 0;
                     }
+                default:
+                    return 0;
                 }
             case Properties::Power::SIX:
                 switch (south) {
@@ -683,6 +859,8 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 3125;
                     case Properties::West::NONE:
                         return 3126;
+                    default:
+                        return 0;
                     }
                 case Properties::South::SIDE:
                     switch (west) {
@@ -692,6 +870,8 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 3128;
                     case Properties::West::NONE:
                         return 3129;
+                    default:
+                        return 0;
                     }
                 case Properties::South::NONE:
                     switch (west) {
@@ -701,7 +881,11 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 3131;
                     case Properties::West::NONE:
                         return 3132;
+                    default:
+                        return 0;
                     }
+                default:
+                    return 0;
                 }
             case Properties::Power::SEVEN:
                 switch (south) {
@@ -713,6 +897,8 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 3134;
                     case Properties::West::NONE:
                         return 3135;
+                    default:
+                        return 0;
                     }
                 case Properties::South::SIDE:
                     switch (west) {
@@ -722,6 +908,8 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 3137;
                     case Properties::West::NONE:
                         return 3138;
+                    default:
+                        return 0;
                     }
                 case Properties::South::NONE:
                     switch (west) {
@@ -731,7 +919,11 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 3140;
                     case Properties::West::NONE:
                         return 3141;
+                    default:
+                        return 0;
                     }
+                default:
+                    return 0;
                 }
             case Properties::Power::EIGHT:
                 switch (south) {
@@ -743,6 +935,8 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 3143;
                     case Properties::West::NONE:
                         return 3144;
+                    default:
+                        return 0;
                     }
                 case Properties::South::SIDE:
                     switch (west) {
@@ -752,6 +946,8 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 3146;
                     case Properties::West::NONE:
                         return 3147;
+                    default:
+                        return 0;
                     }
                 case Properties::South::NONE:
                     switch (west) {
@@ -761,7 +957,11 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 3149;
                     case Properties::West::NONE:
                         return 3150;
+                    default:
+                        return 0;
                     }
+                default:
+                    return 0;
                 }
             case Properties::Power::NINE:
                 switch (south) {
@@ -773,6 +973,8 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 3152;
                     case Properties::West::NONE:
                         return 3153;
+                    default:
+                        return 0;
                     }
                 case Properties::South::SIDE:
                     switch (west) {
@@ -782,6 +984,8 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 3155;
                     case Properties::West::NONE:
                         return 3156;
+                    default:
+                        return 0;
                     }
                 case Properties::South::NONE:
                     switch (west) {
@@ -791,7 +995,11 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 3158;
                     case Properties::West::NONE:
                         return 3159;
+                    default:
+                        return 0;
                     }
+                default:
+                    return 0;
                 }
             case Properties::Power::TEN:
                 switch (south) {
@@ -803,6 +1011,8 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 3161;
                     case Properties::West::NONE:
                         return 3162;
+                    default:
+                        return 0;
                     }
                 case Properties::South::SIDE:
                     switch (west) {
@@ -812,6 +1022,8 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 3164;
                     case Properties::West::NONE:
                         return 3165;
+                    default:
+                        return 0;
                     }
                 case Properties::South::NONE:
                     switch (west) {
@@ -821,7 +1033,11 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 3167;
                     case Properties::West::NONE:
                         return 3168;
+                    default:
+                        return 0;
                     }
+                default:
+                    return 0;
                 }
             case Properties::Power::ELEVEN:
                 switch (south) {
@@ -833,6 +1049,8 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 3170;
                     case Properties::West::NONE:
                         return 3171;
+                    default:
+                        return 0;
                     }
                 case Properties::South::SIDE:
                     switch (west) {
@@ -842,6 +1060,8 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 3173;
                     case Properties::West::NONE:
                         return 3174;
+                    default:
+                        return 0;
                     }
                 case Properties::South::NONE:
                     switch (west) {
@@ -851,7 +1071,11 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 3176;
                     case Properties::West::NONE:
                         return 3177;
+                    default:
+                        return 0;
                     }
+                default:
+                    return 0;
                 }
             case Properties::Power::TWELVE:
                 switch (south) {
@@ -863,6 +1087,8 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 3179;
                     case Properties::West::NONE:
                         return 3180;
+                    default:
+                        return 0;
                     }
                 case Properties::South::SIDE:
                     switch (west) {
@@ -872,6 +1098,8 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 3182;
                     case Properties::West::NONE:
                         return 3183;
+                    default:
+                        return 0;
                     }
                 case Properties::South::NONE:
                     switch (west) {
@@ -881,7 +1109,11 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 3185;
                     case Properties::West::NONE:
                         return 3186;
+                    default:
+                        return 0;
                     }
+                default:
+                    return 0;
                 }
             case Properties::Power::THIRTEEN:
                 switch (south) {
@@ -893,6 +1125,8 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 3188;
                     case Properties::West::NONE:
                         return 3189;
+                    default:
+                        return 0;
                     }
                 case Properties::South::SIDE:
                     switch (west) {
@@ -902,6 +1136,8 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 3191;
                     case Properties::West::NONE:
                         return 3192;
+                    default:
+                        return 0;
                     }
                 case Properties::South::NONE:
                     switch (west) {
@@ -911,7 +1147,11 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 3194;
                     case Properties::West::NONE:
                         return 3195;
+                    default:
+                        return 0;
                     }
+                default:
+                    return 0;
                 }
             case Properties::Power::FOURTEEN:
                 switch (south) {
@@ -923,6 +1163,8 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 3197;
                     case Properties::West::NONE:
                         return 3198;
+                    default:
+                        return 0;
                     }
                 case Properties::South::SIDE:
                     switch (west) {
@@ -932,6 +1174,8 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 3200;
                     case Properties::West::NONE:
                         return 3201;
+                    default:
+                        return 0;
                     }
                 case Properties::South::NONE:
                     switch (west) {
@@ -941,7 +1185,11 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 3203;
                     case Properties::West::NONE:
                         return 3204;
+                    default:
+                        return 0;
                     }
+                default:
+                    return 0;
                 }
             case Properties::Power::FIFTEEN:
                 switch (south) {
@@ -953,6 +1201,8 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 3206;
                     case Properties::West::NONE:
                         return 3207;
+                    default:
+                        return 0;
                     }
                 case Properties::South::SIDE:
                     switch (west) {
@@ -962,6 +1212,8 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 3209;
                     case Properties::West::NONE:
                         return 3210;
+                    default:
+                        return 0;
                     }
                 case Properties::South::NONE:
                     switch (west) {
@@ -971,8 +1223,14 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 3212;
                     case Properties::West::NONE:
                         return 3213;
+                    default:
+                        return 0;
                     }
+                default:
+                    return 0;
                 }
+            default:
+                return 0;
             }
         case Properties::North::NONE:
             switch (power) {
@@ -986,6 +1244,8 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 3215;
                     case Properties::West::NONE:
                         return 3216;
+                    default:
+                        return 0;
                     }
                 case Properties::South::SIDE:
                     switch (west) {
@@ -995,6 +1255,8 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 3218;
                     case Properties::West::NONE:
                         return 3219;
+                    default:
+                        return 0;
                     }
                 case Properties::South::NONE:
                     switch (west) {
@@ -1004,7 +1266,11 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 3221;
                     case Properties::West::NONE:
                         return 3222;
+                    default:
+                        return 0;
                     }
+                default:
+                    return 0;
                 }
             case Properties::Power::ONE:
                 switch (south) {
@@ -1016,6 +1282,8 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 3224;
                     case Properties::West::NONE:
                         return 3225;
+                    default:
+                        return 0;
                     }
                 case Properties::South::SIDE:
                     switch (west) {
@@ -1025,6 +1293,8 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 3227;
                     case Properties::West::NONE:
                         return 3228;
+                    default:
+                        return 0;
                     }
                 case Properties::South::NONE:
                     switch (west) {
@@ -1034,7 +1304,11 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 3230;
                     case Properties::West::NONE:
                         return 3231;
+                    default:
+                        return 0;
                     }
+                default:
+                    return 0;
                 }
             case Properties::Power::TWO:
                 switch (south) {
@@ -1046,6 +1320,8 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 3233;
                     case Properties::West::NONE:
                         return 3234;
+                    default:
+                        return 0;
                     }
                 case Properties::South::SIDE:
                     switch (west) {
@@ -1055,6 +1331,8 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 3236;
                     case Properties::West::NONE:
                         return 3237;
+                    default:
+                        return 0;
                     }
                 case Properties::South::NONE:
                     switch (west) {
@@ -1064,7 +1342,11 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 3239;
                     case Properties::West::NONE:
                         return 3240;
+                    default:
+                        return 0;
                     }
+                default:
+                    return 0;
                 }
             case Properties::Power::THREE:
                 switch (south) {
@@ -1076,6 +1358,8 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 3242;
                     case Properties::West::NONE:
                         return 3243;
+                    default:
+                        return 0;
                     }
                 case Properties::South::SIDE:
                     switch (west) {
@@ -1085,6 +1369,8 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 3245;
                     case Properties::West::NONE:
                         return 3246;
+                    default:
+                        return 0;
                     }
                 case Properties::South::NONE:
                     switch (west) {
@@ -1094,7 +1380,11 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 3248;
                     case Properties::West::NONE:
                         return 3249;
+                    default:
+                        return 0;
                     }
+                default:
+                    return 0;
                 }
             case Properties::Power::FOUR:
                 switch (south) {
@@ -1106,6 +1396,8 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 3251;
                     case Properties::West::NONE:
                         return 3252;
+                    default:
+                        return 0;
                     }
                 case Properties::South::SIDE:
                     switch (west) {
@@ -1115,6 +1407,8 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 3254;
                     case Properties::West::NONE:
                         return 3255;
+                    default:
+                        return 0;
                     }
                 case Properties::South::NONE:
                     switch (west) {
@@ -1124,7 +1418,11 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 3257;
                     case Properties::West::NONE:
                         return 3258;
+                    default:
+                        return 0;
                     }
+                default:
+                    return 0;
                 }
             case Properties::Power::FIVE:
                 switch (south) {
@@ -1136,6 +1434,8 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 3260;
                     case Properties::West::NONE:
                         return 3261;
+                    default:
+                        return 0;
                     }
                 case Properties::South::SIDE:
                     switch (west) {
@@ -1145,6 +1445,8 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 3263;
                     case Properties::West::NONE:
                         return 3264;
+                    default:
+                        return 0;
                     }
                 case Properties::South::NONE:
                     switch (west) {
@@ -1154,7 +1456,11 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 3266;
                     case Properties::West::NONE:
                         return 3267;
+                    default:
+                        return 0;
                     }
+                default:
+                    return 0;
                 }
             case Properties::Power::SIX:
                 switch (south) {
@@ -1166,6 +1472,8 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 3269;
                     case Properties::West::NONE:
                         return 3270;
+                    default:
+                        return 0;
                     }
                 case Properties::South::SIDE:
                     switch (west) {
@@ -1175,6 +1483,8 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 3272;
                     case Properties::West::NONE:
                         return 3273;
+                    default:
+                        return 0;
                     }
                 case Properties::South::NONE:
                     switch (west) {
@@ -1184,7 +1494,11 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 3275;
                     case Properties::West::NONE:
                         return 3276;
+                    default:
+                        return 0;
                     }
+                default:
+                    return 0;
                 }
             case Properties::Power::SEVEN:
                 switch (south) {
@@ -1196,6 +1510,8 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 3278;
                     case Properties::West::NONE:
                         return 3279;
+                    default:
+                        return 0;
                     }
                 case Properties::South::SIDE:
                     switch (west) {
@@ -1205,6 +1521,8 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 3281;
                     case Properties::West::NONE:
                         return 3282;
+                    default:
+                        return 0;
                     }
                 case Properties::South::NONE:
                     switch (west) {
@@ -1214,7 +1532,11 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 3284;
                     case Properties::West::NONE:
                         return 3285;
+                    default:
+                        return 0;
                     }
+                default:
+                    return 0;
                 }
             case Properties::Power::EIGHT:
                 switch (south) {
@@ -1226,6 +1548,8 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 3287;
                     case Properties::West::NONE:
                         return 3288;
+                    default:
+                        return 0;
                     }
                 case Properties::South::SIDE:
                     switch (west) {
@@ -1235,6 +1559,8 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 3290;
                     case Properties::West::NONE:
                         return 3291;
+                    default:
+                        return 0;
                     }
                 case Properties::South::NONE:
                     switch (west) {
@@ -1244,7 +1570,11 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 3293;
                     case Properties::West::NONE:
                         return 3294;
+                    default:
+                        return 0;
                     }
+                default:
+                    return 0;
                 }
             case Properties::Power::NINE:
                 switch (south) {
@@ -1256,6 +1586,8 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 3296;
                     case Properties::West::NONE:
                         return 3297;
+                    default:
+                        return 0;
                     }
                 case Properties::South::SIDE:
                     switch (west) {
@@ -1265,6 +1597,8 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 3299;
                     case Properties::West::NONE:
                         return 3300;
+                    default:
+                        return 0;
                     }
                 case Properties::South::NONE:
                     switch (west) {
@@ -1274,7 +1608,11 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 3302;
                     case Properties::West::NONE:
                         return 3303;
+                    default:
+                        return 0;
                     }
+                default:
+                    return 0;
                 }
             case Properties::Power::TEN:
                 switch (south) {
@@ -1286,6 +1624,8 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 3305;
                     case Properties::West::NONE:
                         return 3306;
+                    default:
+                        return 0;
                     }
                 case Properties::South::SIDE:
                     switch (west) {
@@ -1295,6 +1635,8 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 3308;
                     case Properties::West::NONE:
                         return 3309;
+                    default:
+                        return 0;
                     }
                 case Properties::South::NONE:
                     switch (west) {
@@ -1304,7 +1646,11 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 3311;
                     case Properties::West::NONE:
                         return 3312;
+                    default:
+                        return 0;
                     }
+                default:
+                    return 0;
                 }
             case Properties::Power::ELEVEN:
                 switch (south) {
@@ -1316,6 +1662,8 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 3314;
                     case Properties::West::NONE:
                         return 3315;
+                    default:
+                        return 0;
                     }
                 case Properties::South::SIDE:
                     switch (west) {
@@ -1325,6 +1673,8 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 3317;
                     case Properties::West::NONE:
                         return 3318;
+                    default:
+                        return 0;
                     }
                 case Properties::South::NONE:
                     switch (west) {
@@ -1334,7 +1684,11 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 3320;
                     case Properties::West::NONE:
                         return 3321;
+                    default:
+                        return 0;
                     }
+                default:
+                    return 0;
                 }
             case Properties::Power::TWELVE:
                 switch (south) {
@@ -1346,6 +1700,8 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 3323;
                     case Properties::West::NONE:
                         return 3324;
+                    default:
+                        return 0;
                     }
                 case Properties::South::SIDE:
                     switch (west) {
@@ -1355,6 +1711,8 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 3326;
                     case Properties::West::NONE:
                         return 3327;
+                    default:
+                        return 0;
                     }
                 case Properties::South::NONE:
                     switch (west) {
@@ -1364,7 +1722,11 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 3329;
                     case Properties::West::NONE:
                         return 3330;
+                    default:
+                        return 0;
                     }
+                default:
+                    return 0;
                 }
             case Properties::Power::THIRTEEN:
                 switch (south) {
@@ -1376,6 +1738,8 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 3332;
                     case Properties::West::NONE:
                         return 3333;
+                    default:
+                        return 0;
                     }
                 case Properties::South::SIDE:
                     switch (west) {
@@ -1385,6 +1749,8 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 3335;
                     case Properties::West::NONE:
                         return 3336;
+                    default:
+                        return 0;
                     }
                 case Properties::South::NONE:
                     switch (west) {
@@ -1394,7 +1760,11 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 3338;
                     case Properties::West::NONE:
                         return 3339;
+                    default:
+                        return 0;
                     }
+                default:
+                    return 0;
                 }
             case Properties::Power::FOURTEEN:
                 switch (south) {
@@ -1406,6 +1776,8 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 3341;
                     case Properties::West::NONE:
                         return 3342;
+                    default:
+                        return 0;
                     }
                 case Properties::South::SIDE:
                     switch (west) {
@@ -1415,6 +1787,8 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 3344;
                     case Properties::West::NONE:
                         return 3345;
+                    default:
+                        return 0;
                     }
                 case Properties::South::NONE:
                     switch (west) {
@@ -1424,7 +1798,11 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 3347;
                     case Properties::West::NONE:
                         return 3348;
+                    default:
+                        return 0;
                     }
+                default:
+                    return 0;
                 }
             case Properties::Power::FIFTEEN:
                 switch (south) {
@@ -1436,6 +1814,8 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 3350;
                     case Properties::West::NONE:
                         return 3351;
+                    default:
+                        return 0;
                     }
                 case Properties::South::SIDE:
                     switch (west) {
@@ -1445,6 +1825,8 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 3353;
                     case Properties::West::NONE:
                         return 3354;
+                    default:
+                        return 0;
                     }
                 case Properties::South::NONE:
                     switch (west) {
@@ -1454,9 +1836,17 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 3356;
                     case Properties::West::NONE:
                         return 3357;
+                    default:
+                        return 0;
                     }
+                default:
+                    return 0;
                 }
+            default:
+                return 0;
             }
+        default:
+            return 0;
         }
     case Properties::East::SIDE:
         switch (north) {
@@ -1472,6 +1862,8 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 3359;
                     case Properties::West::NONE:
                         return 3360;
+                    default:
+                        return 0;
                     }
                 case Properties::South::SIDE:
                     switch (west) {
@@ -1481,6 +1873,8 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 3362;
                     case Properties::West::NONE:
                         return 3363;
+                    default:
+                        return 0;
                     }
                 case Properties::South::NONE:
                     switch (west) {
@@ -1490,7 +1884,11 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 3365;
                     case Properties::West::NONE:
                         return 3366;
+                    default:
+                        return 0;
                     }
+                default:
+                    return 0;
                 }
             case Properties::Power::ONE:
                 switch (south) {
@@ -1502,6 +1900,8 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 3368;
                     case Properties::West::NONE:
                         return 3369;
+                    default:
+                        return 0;
                     }
                 case Properties::South::SIDE:
                     switch (west) {
@@ -1511,6 +1911,8 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 3371;
                     case Properties::West::NONE:
                         return 3372;
+                    default:
+                        return 0;
                     }
                 case Properties::South::NONE:
                     switch (west) {
@@ -1520,7 +1922,11 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 3374;
                     case Properties::West::NONE:
                         return 3375;
+                    default:
+                        return 0;
                     }
+                default:
+                    return 0;
                 }
             case Properties::Power::TWO:
                 switch (south) {
@@ -1532,6 +1938,8 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 3377;
                     case Properties::West::NONE:
                         return 3378;
+                    default:
+                        return 0;
                     }
                 case Properties::South::SIDE:
                     switch (west) {
@@ -1541,6 +1949,8 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 3380;
                     case Properties::West::NONE:
                         return 3381;
+                    default:
+                        return 0;
                     }
                 case Properties::South::NONE:
                     switch (west) {
@@ -1550,7 +1960,11 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 3383;
                     case Properties::West::NONE:
                         return 3384;
+                    default:
+                        return 0;
                     }
+                default:
+                    return 0;
                 }
             case Properties::Power::THREE:
                 switch (south) {
@@ -1562,6 +1976,8 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 3386;
                     case Properties::West::NONE:
                         return 3387;
+                    default:
+                        return 0;
                     }
                 case Properties::South::SIDE:
                     switch (west) {
@@ -1571,6 +1987,8 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 3389;
                     case Properties::West::NONE:
                         return 3390;
+                    default:
+                        return 0;
                     }
                 case Properties::South::NONE:
                     switch (west) {
@@ -1580,7 +1998,11 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 3392;
                     case Properties::West::NONE:
                         return 3393;
+                    default:
+                        return 0;
                     }
+                default:
+                    return 0;
                 }
             case Properties::Power::FOUR:
                 switch (south) {
@@ -1592,6 +2014,8 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 3395;
                     case Properties::West::NONE:
                         return 3396;
+                    default:
+                        return 0;
                     }
                 case Properties::South::SIDE:
                     switch (west) {
@@ -1601,6 +2025,8 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 3398;
                     case Properties::West::NONE:
                         return 3399;
+                    default:
+                        return 0;
                     }
                 case Properties::South::NONE:
                     switch (west) {
@@ -1610,7 +2036,11 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 3401;
                     case Properties::West::NONE:
                         return 3402;
+                    default:
+                        return 0;
                     }
+                default:
+                    return 0;
                 }
             case Properties::Power::FIVE:
                 switch (south) {
@@ -1622,6 +2052,8 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 3404;
                     case Properties::West::NONE:
                         return 3405;
+                    default:
+                        return 0;
                     }
                 case Properties::South::SIDE:
                     switch (west) {
@@ -1631,6 +2063,8 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 3407;
                     case Properties::West::NONE:
                         return 3408;
+                    default:
+                        return 0;
                     }
                 case Properties::South::NONE:
                     switch (west) {
@@ -1640,7 +2074,11 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 3410;
                     case Properties::West::NONE:
                         return 3411;
+                    default:
+                        return 0;
                     }
+                default:
+                    return 0;
                 }
             case Properties::Power::SIX:
                 switch (south) {
@@ -1652,6 +2090,8 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 3413;
                     case Properties::West::NONE:
                         return 3414;
+                    default:
+                        return 0;
                     }
                 case Properties::South::SIDE:
                     switch (west) {
@@ -1661,6 +2101,8 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 3416;
                     case Properties::West::NONE:
                         return 3417;
+                    default:
+                        return 0;
                     }
                 case Properties::South::NONE:
                     switch (west) {
@@ -1670,7 +2112,11 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 3419;
                     case Properties::West::NONE:
                         return 3420;
+                    default:
+                        return 0;
                     }
+                default:
+                    return 0;
                 }
             case Properties::Power::SEVEN:
                 switch (south) {
@@ -1682,6 +2128,8 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 3422;
                     case Properties::West::NONE:
                         return 3423;
+                    default:
+                        return 0;
                     }
                 case Properties::South::SIDE:
                     switch (west) {
@@ -1691,6 +2139,8 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 3425;
                     case Properties::West::NONE:
                         return 3426;
+                    default:
+                        return 0;
                     }
                 case Properties::South::NONE:
                     switch (west) {
@@ -1700,7 +2150,11 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 3428;
                     case Properties::West::NONE:
                         return 3429;
+                    default:
+                        return 0;
                     }
+                default:
+                    return 0;
                 }
             case Properties::Power::EIGHT:
                 switch (south) {
@@ -1712,6 +2166,8 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 3431;
                     case Properties::West::NONE:
                         return 3432;
+                    default:
+                        return 0;
                     }
                 case Properties::South::SIDE:
                     switch (west) {
@@ -1721,6 +2177,8 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 3434;
                     case Properties::West::NONE:
                         return 3435;
+                    default:
+                        return 0;
                     }
                 case Properties::South::NONE:
                     switch (west) {
@@ -1730,7 +2188,11 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 3437;
                     case Properties::West::NONE:
                         return 3438;
+                    default:
+                        return 0;
                     }
+                default:
+                    return 0;
                 }
             case Properties::Power::NINE:
                 switch (south) {
@@ -1742,6 +2204,8 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 3440;
                     case Properties::West::NONE:
                         return 3441;
+                    default:
+                        return 0;
                     }
                 case Properties::South::SIDE:
                     switch (west) {
@@ -1751,6 +2215,8 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 3443;
                     case Properties::West::NONE:
                         return 3444;
+                    default:
+                        return 0;
                     }
                 case Properties::South::NONE:
                     switch (west) {
@@ -1760,7 +2226,11 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 3446;
                     case Properties::West::NONE:
                         return 3447;
+                    default:
+                        return 0;
                     }
+                default:
+                    return 0;
                 }
             case Properties::Power::TEN:
                 switch (south) {
@@ -1772,6 +2242,8 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 3449;
                     case Properties::West::NONE:
                         return 3450;
+                    default:
+                        return 0;
                     }
                 case Properties::South::SIDE:
                     switch (west) {
@@ -1781,6 +2253,8 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 3452;
                     case Properties::West::NONE:
                         return 3453;
+                    default:
+                        return 0;
                     }
                 case Properties::South::NONE:
                     switch (west) {
@@ -1790,7 +2264,11 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 3455;
                     case Properties::West::NONE:
                         return 3456;
+                    default:
+                        return 0;
                     }
+                default:
+                    return 0;
                 }
             case Properties::Power::ELEVEN:
                 switch (south) {
@@ -1802,6 +2280,8 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 3458;
                     case Properties::West::NONE:
                         return 3459;
+                    default:
+                        return 0;
                     }
                 case Properties::South::SIDE:
                     switch (west) {
@@ -1811,6 +2291,8 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 3461;
                     case Properties::West::NONE:
                         return 3462;
+                    default:
+                        return 0;
                     }
                 case Properties::South::NONE:
                     switch (west) {
@@ -1820,7 +2302,11 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 3464;
                     case Properties::West::NONE:
                         return 3465;
+                    default:
+                        return 0;
                     }
+                default:
+                    return 0;
                 }
             case Properties::Power::TWELVE:
                 switch (south) {
@@ -1832,6 +2318,8 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 3467;
                     case Properties::West::NONE:
                         return 3468;
+                    default:
+                        return 0;
                     }
                 case Properties::South::SIDE:
                     switch (west) {
@@ -1841,6 +2329,8 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 3470;
                     case Properties::West::NONE:
                         return 3471;
+                    default:
+                        return 0;
                     }
                 case Properties::South::NONE:
                     switch (west) {
@@ -1850,7 +2340,11 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 3473;
                     case Properties::West::NONE:
                         return 3474;
+                    default:
+                        return 0;
                     }
+                default:
+                    return 0;
                 }
             case Properties::Power::THIRTEEN:
                 switch (south) {
@@ -1862,6 +2356,8 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 3476;
                     case Properties::West::NONE:
                         return 3477;
+                    default:
+                        return 0;
                     }
                 case Properties::South::SIDE:
                     switch (west) {
@@ -1871,6 +2367,8 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 3479;
                     case Properties::West::NONE:
                         return 3480;
+                    default:
+                        return 0;
                     }
                 case Properties::South::NONE:
                     switch (west) {
@@ -1880,7 +2378,11 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 3482;
                     case Properties::West::NONE:
                         return 3483;
+                    default:
+                        return 0;
                     }
+                default:
+                    return 0;
                 }
             case Properties::Power::FOURTEEN:
                 switch (south) {
@@ -1892,6 +2394,8 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 3485;
                     case Properties::West::NONE:
                         return 3486;
+                    default:
+                        return 0;
                     }
                 case Properties::South::SIDE:
                     switch (west) {
@@ -1901,6 +2405,8 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 3488;
                     case Properties::West::NONE:
                         return 3489;
+                    default:
+                        return 0;
                     }
                 case Properties::South::NONE:
                     switch (west) {
@@ -1910,7 +2416,11 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 3491;
                     case Properties::West::NONE:
                         return 3492;
+                    default:
+                        return 0;
                     }
+                default:
+                    return 0;
                 }
             case Properties::Power::FIFTEEN:
                 switch (south) {
@@ -1922,6 +2432,8 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 3494;
                     case Properties::West::NONE:
                         return 3495;
+                    default:
+                        return 0;
                     }
                 case Properties::South::SIDE:
                     switch (west) {
@@ -1931,6 +2443,8 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 3497;
                     case Properties::West::NONE:
                         return 3498;
+                    default:
+                        return 0;
                     }
                 case Properties::South::NONE:
                     switch (west) {
@@ -1940,8 +2454,14 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 3500;
                     case Properties::West::NONE:
                         return 3501;
+                    default:
+                        return 0;
                     }
+                default:
+                    return 0;
                 }
+            default:
+                return 0;
             }
         case Properties::North::SIDE:
             switch (power) {
@@ -1955,6 +2475,8 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 3503;
                     case Properties::West::NONE:
                         return 3504;
+                    default:
+                        return 0;
                     }
                 case Properties::South::SIDE:
                     switch (west) {
@@ -1964,6 +2486,8 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 3506;
                     case Properties::West::NONE:
                         return 3507;
+                    default:
+                        return 0;
                     }
                 case Properties::South::NONE:
                     switch (west) {
@@ -1973,7 +2497,11 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 3509;
                     case Properties::West::NONE:
                         return 3510;
+                    default:
+                        return 0;
                     }
+                default:
+                    return 0;
                 }
             case Properties::Power::ONE:
                 switch (south) {
@@ -1985,6 +2513,8 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 3512;
                     case Properties::West::NONE:
                         return 3513;
+                    default:
+                        return 0;
                     }
                 case Properties::South::SIDE:
                     switch (west) {
@@ -1994,6 +2524,8 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 3515;
                     case Properties::West::NONE:
                         return 3516;
+                    default:
+                        return 0;
                     }
                 case Properties::South::NONE:
                     switch (west) {
@@ -2003,7 +2535,11 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 3518;
                     case Properties::West::NONE:
                         return 3519;
+                    default:
+                        return 0;
                     }
+                default:
+                    return 0;
                 }
             case Properties::Power::TWO:
                 switch (south) {
@@ -2015,6 +2551,8 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 3521;
                     case Properties::West::NONE:
                         return 3522;
+                    default:
+                        return 0;
                     }
                 case Properties::South::SIDE:
                     switch (west) {
@@ -2024,6 +2562,8 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 3524;
                     case Properties::West::NONE:
                         return 3525;
+                    default:
+                        return 0;
                     }
                 case Properties::South::NONE:
                     switch (west) {
@@ -2033,7 +2573,11 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 3527;
                     case Properties::West::NONE:
                         return 3528;
+                    default:
+                        return 0;
                     }
+                default:
+                    return 0;
                 }
             case Properties::Power::THREE:
                 switch (south) {
@@ -2045,6 +2589,8 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 3530;
                     case Properties::West::NONE:
                         return 3531;
+                    default:
+                        return 0;
                     }
                 case Properties::South::SIDE:
                     switch (west) {
@@ -2054,6 +2600,8 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 3533;
                     case Properties::West::NONE:
                         return 3534;
+                    default:
+                        return 0;
                     }
                 case Properties::South::NONE:
                     switch (west) {
@@ -2063,7 +2611,11 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 3536;
                     case Properties::West::NONE:
                         return 3537;
+                    default:
+                        return 0;
                     }
+                default:
+                    return 0;
                 }
             case Properties::Power::FOUR:
                 switch (south) {
@@ -2075,6 +2627,8 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 3539;
                     case Properties::West::NONE:
                         return 3540;
+                    default:
+                        return 0;
                     }
                 case Properties::South::SIDE:
                     switch (west) {
@@ -2084,6 +2638,8 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 3542;
                     case Properties::West::NONE:
                         return 3543;
+                    default:
+                        return 0;
                     }
                 case Properties::South::NONE:
                     switch (west) {
@@ -2093,7 +2649,11 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 3545;
                     case Properties::West::NONE:
                         return 3546;
+                    default:
+                        return 0;
                     }
+                default:
+                    return 0;
                 }
             case Properties::Power::FIVE:
                 switch (south) {
@@ -2105,6 +2665,8 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 3548;
                     case Properties::West::NONE:
                         return 3549;
+                    default:
+                        return 0;
                     }
                 case Properties::South::SIDE:
                     switch (west) {
@@ -2114,6 +2676,8 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 3551;
                     case Properties::West::NONE:
                         return 3552;
+                    default:
+                        return 0;
                     }
                 case Properties::South::NONE:
                     switch (west) {
@@ -2123,7 +2687,11 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 3554;
                     case Properties::West::NONE:
                         return 3555;
+                    default:
+                        return 0;
                     }
+                default:
+                    return 0;
                 }
             case Properties::Power::SIX:
                 switch (south) {
@@ -2135,6 +2703,8 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 3557;
                     case Properties::West::NONE:
                         return 3558;
+                    default:
+                        return 0;
                     }
                 case Properties::South::SIDE:
                     switch (west) {
@@ -2144,6 +2714,8 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 3560;
                     case Properties::West::NONE:
                         return 3561;
+                    default:
+                        return 0;
                     }
                 case Properties::South::NONE:
                     switch (west) {
@@ -2153,7 +2725,11 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 3563;
                     case Properties::West::NONE:
                         return 3564;
+                    default:
+                        return 0;
                     }
+                default:
+                    return 0;
                 }
             case Properties::Power::SEVEN:
                 switch (south) {
@@ -2165,6 +2741,8 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 3566;
                     case Properties::West::NONE:
                         return 3567;
+                    default:
+                        return 0;
                     }
                 case Properties::South::SIDE:
                     switch (west) {
@@ -2174,6 +2752,8 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 3569;
                     case Properties::West::NONE:
                         return 3570;
+                    default:
+                        return 0;
                     }
                 case Properties::South::NONE:
                     switch (west) {
@@ -2183,7 +2763,11 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 3572;
                     case Properties::West::NONE:
                         return 3573;
+                    default:
+                        return 0;
                     }
+                default:
+                    return 0;
                 }
             case Properties::Power::EIGHT:
                 switch (south) {
@@ -2195,6 +2779,8 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 3575;
                     case Properties::West::NONE:
                         return 3576;
+                    default:
+                        return 0;
                     }
                 case Properties::South::SIDE:
                     switch (west) {
@@ -2204,6 +2790,8 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 3578;
                     case Properties::West::NONE:
                         return 3579;
+                    default:
+                        return 0;
                     }
                 case Properties::South::NONE:
                     switch (west) {
@@ -2213,7 +2801,11 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 3581;
                     case Properties::West::NONE:
                         return 3582;
+                    default:
+                        return 0;
                     }
+                default:
+                    return 0;
                 }
             case Properties::Power::NINE:
                 switch (south) {
@@ -2225,6 +2817,8 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 3584;
                     case Properties::West::NONE:
                         return 3585;
+                    default:
+                        return 0;
                     }
                 case Properties::South::SIDE:
                     switch (west) {
@@ -2234,6 +2828,8 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 3587;
                     case Properties::West::NONE:
                         return 3588;
+                    default:
+                        return 0;
                     }
                 case Properties::South::NONE:
                     switch (west) {
@@ -2243,7 +2839,11 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 3590;
                     case Properties::West::NONE:
                         return 3591;
+                    default:
+                        return 0;
                     }
+                default:
+                    return 0;
                 }
             case Properties::Power::TEN:
                 switch (south) {
@@ -2255,6 +2855,8 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 3593;
                     case Properties::West::NONE:
                         return 3594;
+                    default:
+                        return 0;
                     }
                 case Properties::South::SIDE:
                     switch (west) {
@@ -2264,6 +2866,8 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 3596;
                     case Properties::West::NONE:
                         return 3597;
+                    default:
+                        return 0;
                     }
                 case Properties::South::NONE:
                     switch (west) {
@@ -2273,7 +2877,11 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 3599;
                     case Properties::West::NONE:
                         return 3600;
+                    default:
+                        return 0;
                     }
+                default:
+                    return 0;
                 }
             case Properties::Power::ELEVEN:
                 switch (south) {
@@ -2285,6 +2893,8 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 3602;
                     case Properties::West::NONE:
                         return 3603;
+                    default:
+                        return 0;
                     }
                 case Properties::South::SIDE:
                     switch (west) {
@@ -2294,6 +2904,8 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 3605;
                     case Properties::West::NONE:
                         return 3606;
+                    default:
+                        return 0;
                     }
                 case Properties::South::NONE:
                     switch (west) {
@@ -2303,7 +2915,11 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 3608;
                     case Properties::West::NONE:
                         return 3609;
+                    default:
+                        return 0;
                     }
+                default:
+                    return 0;
                 }
             case Properties::Power::TWELVE:
                 switch (south) {
@@ -2315,6 +2931,8 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 3611;
                     case Properties::West::NONE:
                         return 3612;
+                    default:
+                        return 0;
                     }
                 case Properties::South::SIDE:
                     switch (west) {
@@ -2324,6 +2942,8 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 3614;
                     case Properties::West::NONE:
                         return 3615;
+                    default:
+                        return 0;
                     }
                 case Properties::South::NONE:
                     switch (west) {
@@ -2333,7 +2953,11 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 3617;
                     case Properties::West::NONE:
                         return 3618;
+                    default:
+                        return 0;
                     }
+                default:
+                    return 0;
                 }
             case Properties::Power::THIRTEEN:
                 switch (south) {
@@ -2345,6 +2969,8 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 3620;
                     case Properties::West::NONE:
                         return 3621;
+                    default:
+                        return 0;
                     }
                 case Properties::South::SIDE:
                     switch (west) {
@@ -2354,6 +2980,8 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 3623;
                     case Properties::West::NONE:
                         return 3624;
+                    default:
+                        return 0;
                     }
                 case Properties::South::NONE:
                     switch (west) {
@@ -2363,7 +2991,11 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 3626;
                     case Properties::West::NONE:
                         return 3627;
+                    default:
+                        return 0;
                     }
+                default:
+                    return 0;
                 }
             case Properties::Power::FOURTEEN:
                 switch (south) {
@@ -2375,6 +3007,8 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 3629;
                     case Properties::West::NONE:
                         return 3630;
+                    default:
+                        return 0;
                     }
                 case Properties::South::SIDE:
                     switch (west) {
@@ -2384,6 +3018,8 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 3632;
                     case Properties::West::NONE:
                         return 3633;
+                    default:
+                        return 0;
                     }
                 case Properties::South::NONE:
                     switch (west) {
@@ -2393,7 +3029,11 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 3635;
                     case Properties::West::NONE:
                         return 3636;
+                    default:
+                        return 0;
                     }
+                default:
+                    return 0;
                 }
             case Properties::Power::FIFTEEN:
                 switch (south) {
@@ -2405,6 +3045,8 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 3638;
                     case Properties::West::NONE:
                         return 3639;
+                    default:
+                        return 0;
                     }
                 case Properties::South::SIDE:
                     switch (west) {
@@ -2414,6 +3056,8 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 3641;
                     case Properties::West::NONE:
                         return 3642;
+                    default:
+                        return 0;
                     }
                 case Properties::South::NONE:
                     switch (west) {
@@ -2423,8 +3067,14 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 3644;
                     case Properties::West::NONE:
                         return 3645;
+                    default:
+                        return 0;
                     }
+                default:
+                    return 0;
                 }
+            default:
+                return 0;
             }
         case Properties::North::NONE:
             switch (power) {
@@ -2438,6 +3088,8 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 3647;
                     case Properties::West::NONE:
                         return 3648;
+                    default:
+                        return 0;
                     }
                 case Properties::South::SIDE:
                     switch (west) {
@@ -2447,6 +3099,8 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 3650;
                     case Properties::West::NONE:
                         return 3651;
+                    default:
+                        return 0;
                     }
                 case Properties::South::NONE:
                     switch (west) {
@@ -2456,7 +3110,11 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 3653;
                     case Properties::West::NONE:
                         return 3654;
+                    default:
+                        return 0;
                     }
+                default:
+                    return 0;
                 }
             case Properties::Power::ONE:
                 switch (south) {
@@ -2468,6 +3126,8 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 3656;
                     case Properties::West::NONE:
                         return 3657;
+                    default:
+                        return 0;
                     }
                 case Properties::South::SIDE:
                     switch (west) {
@@ -2477,6 +3137,8 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 3659;
                     case Properties::West::NONE:
                         return 3660;
+                    default:
+                        return 0;
                     }
                 case Properties::South::NONE:
                     switch (west) {
@@ -2486,7 +3148,11 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 3662;
                     case Properties::West::NONE:
                         return 3663;
+                    default:
+                        return 0;
                     }
+                default:
+                    return 0;
                 }
             case Properties::Power::TWO:
                 switch (south) {
@@ -2498,6 +3164,8 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 3665;
                     case Properties::West::NONE:
                         return 3666;
+                    default:
+                        return 0;
                     }
                 case Properties::South::SIDE:
                     switch (west) {
@@ -2507,6 +3175,8 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 3668;
                     case Properties::West::NONE:
                         return 3669;
+                    default:
+                        return 0;
                     }
                 case Properties::South::NONE:
                     switch (west) {
@@ -2516,7 +3186,11 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 3671;
                     case Properties::West::NONE:
                         return 3672;
+                    default:
+                        return 0;
                     }
+                default:
+                    return 0;
                 }
             case Properties::Power::THREE:
                 switch (south) {
@@ -2528,6 +3202,8 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 3674;
                     case Properties::West::NONE:
                         return 3675;
+                    default:
+                        return 0;
                     }
                 case Properties::South::SIDE:
                     switch (west) {
@@ -2537,6 +3213,8 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 3677;
                     case Properties::West::NONE:
                         return 3678;
+                    default:
+                        return 0;
                     }
                 case Properties::South::NONE:
                     switch (west) {
@@ -2546,7 +3224,11 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 3680;
                     case Properties::West::NONE:
                         return 3681;
+                    default:
+                        return 0;
                     }
+                default:
+                    return 0;
                 }
             case Properties::Power::FOUR:
                 switch (south) {
@@ -2558,6 +3240,8 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 3683;
                     case Properties::West::NONE:
                         return 3684;
+                    default:
+                        return 0;
                     }
                 case Properties::South::SIDE:
                     switch (west) {
@@ -2567,6 +3251,8 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 3686;
                     case Properties::West::NONE:
                         return 3687;
+                    default:
+                        return 0;
                     }
                 case Properties::South::NONE:
                     switch (west) {
@@ -2576,7 +3262,11 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 3689;
                     case Properties::West::NONE:
                         return 3690;
+                    default:
+                        return 0;
                     }
+                default:
+                    return 0;
                 }
             case Properties::Power::FIVE:
                 switch (south) {
@@ -2588,6 +3278,8 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 3692;
                     case Properties::West::NONE:
                         return 3693;
+                    default:
+                        return 0;
                     }
                 case Properties::South::SIDE:
                     switch (west) {
@@ -2597,6 +3289,8 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 3695;
                     case Properties::West::NONE:
                         return 3696;
+                    default:
+                        return 0;
                     }
                 case Properties::South::NONE:
                     switch (west) {
@@ -2606,7 +3300,11 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 3698;
                     case Properties::West::NONE:
                         return 3699;
+                    default:
+                        return 0;
                     }
+                default:
+                    return 0;
                 }
             case Properties::Power::SIX:
                 switch (south) {
@@ -2618,6 +3316,8 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 3701;
                     case Properties::West::NONE:
                         return 3702;
+                    default:
+                        return 0;
                     }
                 case Properties::South::SIDE:
                     switch (west) {
@@ -2627,6 +3327,8 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 3704;
                     case Properties::West::NONE:
                         return 3705;
+                    default:
+                        return 0;
                     }
                 case Properties::South::NONE:
                     switch (west) {
@@ -2636,7 +3338,11 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 3707;
                     case Properties::West::NONE:
                         return 3708;
+                    default:
+                        return 0;
                     }
+                default:
+                    return 0;
                 }
             case Properties::Power::SEVEN:
                 switch (south) {
@@ -2648,6 +3354,8 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 3710;
                     case Properties::West::NONE:
                         return 3711;
+                    default:
+                        return 0;
                     }
                 case Properties::South::SIDE:
                     switch (west) {
@@ -2657,6 +3365,8 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 3713;
                     case Properties::West::NONE:
                         return 3714;
+                    default:
+                        return 0;
                     }
                 case Properties::South::NONE:
                     switch (west) {
@@ -2666,7 +3376,11 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 3716;
                     case Properties::West::NONE:
                         return 3717;
+                    default:
+                        return 0;
                     }
+                default:
+                    return 0;
                 }
             case Properties::Power::EIGHT:
                 switch (south) {
@@ -2678,6 +3392,8 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 3719;
                     case Properties::West::NONE:
                         return 3720;
+                    default:
+                        return 0;
                     }
                 case Properties::South::SIDE:
                     switch (west) {
@@ -2687,6 +3403,8 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 3722;
                     case Properties::West::NONE:
                         return 3723;
+                    default:
+                        return 0;
                     }
                 case Properties::South::NONE:
                     switch (west) {
@@ -2696,7 +3414,11 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 3725;
                     case Properties::West::NONE:
                         return 3726;
+                    default:
+                        return 0;
                     }
+                default:
+                    return 0;
                 }
             case Properties::Power::NINE:
                 switch (south) {
@@ -2708,6 +3430,8 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 3728;
                     case Properties::West::NONE:
                         return 3729;
+                    default:
+                        return 0;
                     }
                 case Properties::South::SIDE:
                     switch (west) {
@@ -2717,6 +3441,8 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 3731;
                     case Properties::West::NONE:
                         return 3732;
+                    default:
+                        return 0;
                     }
                 case Properties::South::NONE:
                     switch (west) {
@@ -2726,7 +3452,11 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 3734;
                     case Properties::West::NONE:
                         return 3735;
+                    default:
+                        return 0;
                     }
+                default:
+                    return 0;
                 }
             case Properties::Power::TEN:
                 switch (south) {
@@ -2738,6 +3468,8 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 3737;
                     case Properties::West::NONE:
                         return 3738;
+                    default:
+                        return 0;
                     }
                 case Properties::South::SIDE:
                     switch (west) {
@@ -2747,6 +3479,8 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 3740;
                     case Properties::West::NONE:
                         return 3741;
+                    default:
+                        return 0;
                     }
                 case Properties::South::NONE:
                     switch (west) {
@@ -2756,7 +3490,11 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 3743;
                     case Properties::West::NONE:
                         return 3744;
+                    default:
+                        return 0;
                     }
+                default:
+                    return 0;
                 }
             case Properties::Power::ELEVEN:
                 switch (south) {
@@ -2768,6 +3506,8 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 3746;
                     case Properties::West::NONE:
                         return 3747;
+                    default:
+                        return 0;
                     }
                 case Properties::South::SIDE:
                     switch (west) {
@@ -2777,6 +3517,8 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 3749;
                     case Properties::West::NONE:
                         return 3750;
+                    default:
+                        return 0;
                     }
                 case Properties::South::NONE:
                     switch (west) {
@@ -2786,7 +3528,11 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 3752;
                     case Properties::West::NONE:
                         return 3753;
+                    default:
+                        return 0;
                     }
+                default:
+                    return 0;
                 }
             case Properties::Power::TWELVE:
                 switch (south) {
@@ -2798,6 +3544,8 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 3755;
                     case Properties::West::NONE:
                         return 3756;
+                    default:
+                        return 0;
                     }
                 case Properties::South::SIDE:
                     switch (west) {
@@ -2807,6 +3555,8 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 3758;
                     case Properties::West::NONE:
                         return 3759;
+                    default:
+                        return 0;
                     }
                 case Properties::South::NONE:
                     switch (west) {
@@ -2816,7 +3566,11 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 3761;
                     case Properties::West::NONE:
                         return 3762;
+                    default:
+                        return 0;
                     }
+                default:
+                    return 0;
                 }
             case Properties::Power::THIRTEEN:
                 switch (south) {
@@ -2828,6 +3582,8 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 3764;
                     case Properties::West::NONE:
                         return 3765;
+                    default:
+                        return 0;
                     }
                 case Properties::South::SIDE:
                     switch (west) {
@@ -2837,6 +3593,8 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 3767;
                     case Properties::West::NONE:
                         return 3768;
+                    default:
+                        return 0;
                     }
                 case Properties::South::NONE:
                     switch (west) {
@@ -2846,7 +3604,11 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 3770;
                     case Properties::West::NONE:
                         return 3771;
+                    default:
+                        return 0;
                     }
+                default:
+                    return 0;
                 }
             case Properties::Power::FOURTEEN:
                 switch (south) {
@@ -2858,6 +3620,8 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 3773;
                     case Properties::West::NONE:
                         return 3774;
+                    default:
+                        return 0;
                     }
                 case Properties::South::SIDE:
                     switch (west) {
@@ -2867,6 +3631,8 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 3776;
                     case Properties::West::NONE:
                         return 3777;
+                    default:
+                        return 0;
                     }
                 case Properties::South::NONE:
                     switch (west) {
@@ -2876,7 +3642,11 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 3779;
                     case Properties::West::NONE:
                         return 3780;
+                    default:
+                        return 0;
                     }
+                default:
+                    return 0;
                 }
             case Properties::Power::FIFTEEN:
                 switch (south) {
@@ -2888,6 +3658,8 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 3782;
                     case Properties::West::NONE:
                         return 3783;
+                    default:
+                        return 0;
                     }
                 case Properties::South::SIDE:
                     switch (west) {
@@ -2897,6 +3669,8 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 3785;
                     case Properties::West::NONE:
                         return 3786;
+                    default:
+                        return 0;
                     }
                 case Properties::South::NONE:
                     switch (west) {
@@ -2906,9 +3680,17 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 3788;
                     case Properties::West::NONE:
                         return 3789;
+                    default:
+                        return 0;
                     }
+                default:
+                    return 0;
                 }
+            default:
+                return 0;
             }
+        default:
+            return 0;
         }
     case Properties::East::NONE:
         switch (north) {
@@ -2924,6 +3706,8 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 3791;
                     case Properties::West::NONE:
                         return 3792;
+                    default:
+                        return 0;
                     }
                 case Properties::South::SIDE:
                     switch (west) {
@@ -2933,6 +3717,8 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 3794;
                     case Properties::West::NONE:
                         return 3795;
+                    default:
+                        return 0;
                     }
                 case Properties::South::NONE:
                     switch (west) {
@@ -2942,7 +3728,11 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 3797;
                     case Properties::West::NONE:
                         return 3798;
+                    default:
+                        return 0;
                     }
+                default:
+                    return 0;
                 }
             case Properties::Power::ONE:
                 switch (south) {
@@ -2954,6 +3744,8 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 3800;
                     case Properties::West::NONE:
                         return 3801;
+                    default:
+                        return 0;
                     }
                 case Properties::South::SIDE:
                     switch (west) {
@@ -2963,6 +3755,8 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 3803;
                     case Properties::West::NONE:
                         return 3804;
+                    default:
+                        return 0;
                     }
                 case Properties::South::NONE:
                     switch (west) {
@@ -2972,7 +3766,11 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 3806;
                     case Properties::West::NONE:
                         return 3807;
+                    default:
+                        return 0;
                     }
+                default:
+                    return 0;
                 }
             case Properties::Power::TWO:
                 switch (south) {
@@ -2984,6 +3782,8 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 3809;
                     case Properties::West::NONE:
                         return 3810;
+                    default:
+                        return 0;
                     }
                 case Properties::South::SIDE:
                     switch (west) {
@@ -2993,6 +3793,8 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 3812;
                     case Properties::West::NONE:
                         return 3813;
+                    default:
+                        return 0;
                     }
                 case Properties::South::NONE:
                     switch (west) {
@@ -3002,7 +3804,11 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 3815;
                     case Properties::West::NONE:
                         return 3816;
+                    default:
+                        return 0;
                     }
+                default:
+                    return 0;
                 }
             case Properties::Power::THREE:
                 switch (south) {
@@ -3014,6 +3820,8 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 3818;
                     case Properties::West::NONE:
                         return 3819;
+                    default:
+                        return 0;
                     }
                 case Properties::South::SIDE:
                     switch (west) {
@@ -3023,6 +3831,8 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 3821;
                     case Properties::West::NONE:
                         return 3822;
+                    default:
+                        return 0;
                     }
                 case Properties::South::NONE:
                     switch (west) {
@@ -3032,7 +3842,11 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 3824;
                     case Properties::West::NONE:
                         return 3825;
+                    default:
+                        return 0;
                     }
+                default:
+                    return 0;
                 }
             case Properties::Power::FOUR:
                 switch (south) {
@@ -3044,6 +3858,8 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 3827;
                     case Properties::West::NONE:
                         return 3828;
+                    default:
+                        return 0;
                     }
                 case Properties::South::SIDE:
                     switch (west) {
@@ -3053,6 +3869,8 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 3830;
                     case Properties::West::NONE:
                         return 3831;
+                    default:
+                        return 0;
                     }
                 case Properties::South::NONE:
                     switch (west) {
@@ -3062,7 +3880,11 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 3833;
                     case Properties::West::NONE:
                         return 3834;
+                    default:
+                        return 0;
                     }
+                default:
+                    return 0;
                 }
             case Properties::Power::FIVE:
                 switch (south) {
@@ -3074,6 +3896,8 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 3836;
                     case Properties::West::NONE:
                         return 3837;
+                    default:
+                        return 0;
                     }
                 case Properties::South::SIDE:
                     switch (west) {
@@ -3083,6 +3907,8 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 3839;
                     case Properties::West::NONE:
                         return 3840;
+                    default:
+                        return 0;
                     }
                 case Properties::South::NONE:
                     switch (west) {
@@ -3092,7 +3918,11 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 3842;
                     case Properties::West::NONE:
                         return 3843;
+                    default:
+                        return 0;
                     }
+                default:
+                    return 0;
                 }
             case Properties::Power::SIX:
                 switch (south) {
@@ -3104,6 +3934,8 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 3845;
                     case Properties::West::NONE:
                         return 3846;
+                    default:
+                        return 0;
                     }
                 case Properties::South::SIDE:
                     switch (west) {
@@ -3113,6 +3945,8 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 3848;
                     case Properties::West::NONE:
                         return 3849;
+                    default:
+                        return 0;
                     }
                 case Properties::South::NONE:
                     switch (west) {
@@ -3122,7 +3956,11 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 3851;
                     case Properties::West::NONE:
                         return 3852;
+                    default:
+                        return 0;
                     }
+                default:
+                    return 0;
                 }
             case Properties::Power::SEVEN:
                 switch (south) {
@@ -3134,6 +3972,8 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 3854;
                     case Properties::West::NONE:
                         return 3855;
+                    default:
+                        return 0;
                     }
                 case Properties::South::SIDE:
                     switch (west) {
@@ -3143,6 +3983,8 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 3857;
                     case Properties::West::NONE:
                         return 3858;
+                    default:
+                        return 0;
                     }
                 case Properties::South::NONE:
                     switch (west) {
@@ -3152,7 +3994,11 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 3860;
                     case Properties::West::NONE:
                         return 3861;
+                    default:
+                        return 0;
                     }
+                default:
+                    return 0;
                 }
             case Properties::Power::EIGHT:
                 switch (south) {
@@ -3164,6 +4010,8 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 3863;
                     case Properties::West::NONE:
                         return 3864;
+                    default:
+                        return 0;
                     }
                 case Properties::South::SIDE:
                     switch (west) {
@@ -3173,6 +4021,8 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 3866;
                     case Properties::West::NONE:
                         return 3867;
+                    default:
+                        return 0;
                     }
                 case Properties::South::NONE:
                     switch (west) {
@@ -3182,7 +4032,11 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 3869;
                     case Properties::West::NONE:
                         return 3870;
+                    default:
+                        return 0;
                     }
+                default:
+                    return 0;
                 }
             case Properties::Power::NINE:
                 switch (south) {
@@ -3194,6 +4048,8 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 3872;
                     case Properties::West::NONE:
                         return 3873;
+                    default:
+                        return 0;
                     }
                 case Properties::South::SIDE:
                     switch (west) {
@@ -3203,6 +4059,8 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 3875;
                     case Properties::West::NONE:
                         return 3876;
+                    default:
+                        return 0;
                     }
                 case Properties::South::NONE:
                     switch (west) {
@@ -3212,7 +4070,11 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 3878;
                     case Properties::West::NONE:
                         return 3879;
+                    default:
+                        return 0;
                     }
+                default:
+                    return 0;
                 }
             case Properties::Power::TEN:
                 switch (south) {
@@ -3224,6 +4086,8 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 3881;
                     case Properties::West::NONE:
                         return 3882;
+                    default:
+                        return 0;
                     }
                 case Properties::South::SIDE:
                     switch (west) {
@@ -3233,6 +4097,8 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 3884;
                     case Properties::West::NONE:
                         return 3885;
+                    default:
+                        return 0;
                     }
                 case Properties::South::NONE:
                     switch (west) {
@@ -3242,7 +4108,11 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 3887;
                     case Properties::West::NONE:
                         return 3888;
+                    default:
+                        return 0;
                     }
+                default:
+                    return 0;
                 }
             case Properties::Power::ELEVEN:
                 switch (south) {
@@ -3254,6 +4124,8 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 3890;
                     case Properties::West::NONE:
                         return 3891;
+                    default:
+                        return 0;
                     }
                 case Properties::South::SIDE:
                     switch (west) {
@@ -3263,6 +4135,8 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 3893;
                     case Properties::West::NONE:
                         return 3894;
+                    default:
+                        return 0;
                     }
                 case Properties::South::NONE:
                     switch (west) {
@@ -3272,7 +4146,11 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 3896;
                     case Properties::West::NONE:
                         return 3897;
+                    default:
+                        return 0;
                     }
+                default:
+                    return 0;
                 }
             case Properties::Power::TWELVE:
                 switch (south) {
@@ -3284,6 +4162,8 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 3899;
                     case Properties::West::NONE:
                         return 3900;
+                    default:
+                        return 0;
                     }
                 case Properties::South::SIDE:
                     switch (west) {
@@ -3293,6 +4173,8 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 3902;
                     case Properties::West::NONE:
                         return 3903;
+                    default:
+                        return 0;
                     }
                 case Properties::South::NONE:
                     switch (west) {
@@ -3302,7 +4184,11 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 3905;
                     case Properties::West::NONE:
                         return 3906;
+                    default:
+                        return 0;
                     }
+                default:
+                    return 0;
                 }
             case Properties::Power::THIRTEEN:
                 switch (south) {
@@ -3314,6 +4200,8 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 3908;
                     case Properties::West::NONE:
                         return 3909;
+                    default:
+                        return 0;
                     }
                 case Properties::South::SIDE:
                     switch (west) {
@@ -3323,6 +4211,8 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 3911;
                     case Properties::West::NONE:
                         return 3912;
+                    default:
+                        return 0;
                     }
                 case Properties::South::NONE:
                     switch (west) {
@@ -3332,7 +4222,11 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 3914;
                     case Properties::West::NONE:
                         return 3915;
+                    default:
+                        return 0;
                     }
+                default:
+                    return 0;
                 }
             case Properties::Power::FOURTEEN:
                 switch (south) {
@@ -3344,6 +4238,8 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 3917;
                     case Properties::West::NONE:
                         return 3918;
+                    default:
+                        return 0;
                     }
                 case Properties::South::SIDE:
                     switch (west) {
@@ -3353,6 +4249,8 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 3920;
                     case Properties::West::NONE:
                         return 3921;
+                    default:
+                        return 0;
                     }
                 case Properties::South::NONE:
                     switch (west) {
@@ -3362,7 +4260,11 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 3923;
                     case Properties::West::NONE:
                         return 3924;
+                    default:
+                        return 0;
                     }
+                default:
+                    return 0;
                 }
             case Properties::Power::FIFTEEN:
                 switch (south) {
@@ -3374,6 +4276,8 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 3926;
                     case Properties::West::NONE:
                         return 3927;
+                    default:
+                        return 0;
                     }
                 case Properties::South::SIDE:
                     switch (west) {
@@ -3383,6 +4287,8 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 3929;
                     case Properties::West::NONE:
                         return 3930;
+                    default:
+                        return 0;
                     }
                 case Properties::South::NONE:
                     switch (west) {
@@ -3392,8 +4298,14 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 3932;
                     case Properties::West::NONE:
                         return 3933;
+                    default:
+                        return 0;
                     }
+                default:
+                    return 0;
                 }
+            default:
+                return 0;
             }
         case Properties::North::SIDE:
             switch (power) {
@@ -3407,6 +4319,8 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 3935;
                     case Properties::West::NONE:
                         return 3936;
+                    default:
+                        return 0;
                     }
                 case Properties::South::SIDE:
                     switch (west) {
@@ -3416,6 +4330,8 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 3938;
                     case Properties::West::NONE:
                         return 3939;
+                    default:
+                        return 0;
                     }
                 case Properties::South::NONE:
                     switch (west) {
@@ -3425,7 +4341,11 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 3941;
                     case Properties::West::NONE:
                         return 3942;
+                    default:
+                        return 0;
                     }
+                default:
+                    return 0;
                 }
             case Properties::Power::ONE:
                 switch (south) {
@@ -3437,6 +4357,8 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 3944;
                     case Properties::West::NONE:
                         return 3945;
+                    default:
+                        return 0;
                     }
                 case Properties::South::SIDE:
                     switch (west) {
@@ -3446,6 +4368,8 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 3947;
                     case Properties::West::NONE:
                         return 3948;
+                    default:
+                        return 0;
                     }
                 case Properties::South::NONE:
                     switch (west) {
@@ -3455,7 +4379,11 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 3950;
                     case Properties::West::NONE:
                         return 3951;
+                    default:
+                        return 0;
                     }
+                default:
+                    return 0;
                 }
             case Properties::Power::TWO:
                 switch (south) {
@@ -3467,6 +4395,8 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 3953;
                     case Properties::West::NONE:
                         return 3954;
+                    default:
+                        return 0;
                     }
                 case Properties::South::SIDE:
                     switch (west) {
@@ -3476,6 +4406,8 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 3956;
                     case Properties::West::NONE:
                         return 3957;
+                    default:
+                        return 0;
                     }
                 case Properties::South::NONE:
                     switch (west) {
@@ -3485,7 +4417,11 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 3959;
                     case Properties::West::NONE:
                         return 3960;
+                    default:
+                        return 0;
                     }
+                default:
+                    return 0;
                 }
             case Properties::Power::THREE:
                 switch (south) {
@@ -3497,6 +4433,8 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 3962;
                     case Properties::West::NONE:
                         return 3963;
+                    default:
+                        return 0;
                     }
                 case Properties::South::SIDE:
                     switch (west) {
@@ -3506,6 +4444,8 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 3965;
                     case Properties::West::NONE:
                         return 3966;
+                    default:
+                        return 0;
                     }
                 case Properties::South::NONE:
                     switch (west) {
@@ -3515,7 +4455,11 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 3968;
                     case Properties::West::NONE:
                         return 3969;
+                    default:
+                        return 0;
                     }
+                default:
+                    return 0;
                 }
             case Properties::Power::FOUR:
                 switch (south) {
@@ -3527,6 +4471,8 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 3971;
                     case Properties::West::NONE:
                         return 3972;
+                    default:
+                        return 0;
                     }
                 case Properties::South::SIDE:
                     switch (west) {
@@ -3536,6 +4482,8 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 3974;
                     case Properties::West::NONE:
                         return 3975;
+                    default:
+                        return 0;
                     }
                 case Properties::South::NONE:
                     switch (west) {
@@ -3545,7 +4493,11 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 3977;
                     case Properties::West::NONE:
                         return 3978;
+                    default:
+                        return 0;
                     }
+                default:
+                    return 0;
                 }
             case Properties::Power::FIVE:
                 switch (south) {
@@ -3557,6 +4509,8 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 3980;
                     case Properties::West::NONE:
                         return 3981;
+                    default:
+                        return 0;
                     }
                 case Properties::South::SIDE:
                     switch (west) {
@@ -3566,6 +4520,8 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 3983;
                     case Properties::West::NONE:
                         return 3984;
+                    default:
+                        return 0;
                     }
                 case Properties::South::NONE:
                     switch (west) {
@@ -3575,7 +4531,11 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 3986;
                     case Properties::West::NONE:
                         return 3987;
+                    default:
+                        return 0;
                     }
+                default:
+                    return 0;
                 }
             case Properties::Power::SIX:
                 switch (south) {
@@ -3587,6 +4547,8 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 3989;
                     case Properties::West::NONE:
                         return 3990;
+                    default:
+                        return 0;
                     }
                 case Properties::South::SIDE:
                     switch (west) {
@@ -3596,6 +4558,8 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 3992;
                     case Properties::West::NONE:
                         return 3993;
+                    default:
+                        return 0;
                     }
                 case Properties::South::NONE:
                     switch (west) {
@@ -3605,7 +4569,11 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 3995;
                     case Properties::West::NONE:
                         return 3996;
+                    default:
+                        return 0;
                     }
+                default:
+                    return 0;
                 }
             case Properties::Power::SEVEN:
                 switch (south) {
@@ -3617,6 +4585,8 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 3998;
                     case Properties::West::NONE:
                         return 3999;
+                    default:
+                        return 0;
                     }
                 case Properties::South::SIDE:
                     switch (west) {
@@ -3626,6 +4596,8 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 4001;
                     case Properties::West::NONE:
                         return 4002;
+                    default:
+                        return 0;
                     }
                 case Properties::South::NONE:
                     switch (west) {
@@ -3635,7 +4607,11 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 4004;
                     case Properties::West::NONE:
                         return 4005;
+                    default:
+                        return 0;
                     }
+                default:
+                    return 0;
                 }
             case Properties::Power::EIGHT:
                 switch (south) {
@@ -3647,6 +4623,8 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 4007;
                     case Properties::West::NONE:
                         return 4008;
+                    default:
+                        return 0;
                     }
                 case Properties::South::SIDE:
                     switch (west) {
@@ -3656,6 +4634,8 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 4010;
                     case Properties::West::NONE:
                         return 4011;
+                    default:
+                        return 0;
                     }
                 case Properties::South::NONE:
                     switch (west) {
@@ -3665,7 +4645,11 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 4013;
                     case Properties::West::NONE:
                         return 4014;
+                    default:
+                        return 0;
                     }
+                default:
+                    return 0;
                 }
             case Properties::Power::NINE:
                 switch (south) {
@@ -3677,6 +4661,8 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 4016;
                     case Properties::West::NONE:
                         return 4017;
+                    default:
+                        return 0;
                     }
                 case Properties::South::SIDE:
                     switch (west) {
@@ -3686,6 +4672,8 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 4019;
                     case Properties::West::NONE:
                         return 4020;
+                    default:
+                        return 0;
                     }
                 case Properties::South::NONE:
                     switch (west) {
@@ -3695,7 +4683,11 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 4022;
                     case Properties::West::NONE:
                         return 4023;
+                    default:
+                        return 0;
                     }
+                default:
+                    return 0;
                 }
             case Properties::Power::TEN:
                 switch (south) {
@@ -3707,6 +4699,8 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 4025;
                     case Properties::West::NONE:
                         return 4026;
+                    default:
+                        return 0;
                     }
                 case Properties::South::SIDE:
                     switch (west) {
@@ -3716,6 +4710,8 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 4028;
                     case Properties::West::NONE:
                         return 4029;
+                    default:
+                        return 0;
                     }
                 case Properties::South::NONE:
                     switch (west) {
@@ -3725,7 +4721,11 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 4031;
                     case Properties::West::NONE:
                         return 4032;
+                    default:
+                        return 0;
                     }
+                default:
+                    return 0;
                 }
             case Properties::Power::ELEVEN:
                 switch (south) {
@@ -3737,6 +4737,8 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 4034;
                     case Properties::West::NONE:
                         return 4035;
+                    default:
+                        return 0;
                     }
                 case Properties::South::SIDE:
                     switch (west) {
@@ -3746,6 +4748,8 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 4037;
                     case Properties::West::NONE:
                         return 4038;
+                    default:
+                        return 0;
                     }
                 case Properties::South::NONE:
                     switch (west) {
@@ -3755,7 +4759,11 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 4040;
                     case Properties::West::NONE:
                         return 4041;
+                    default:
+                        return 0;
                     }
+                default:
+                    return 0;
                 }
             case Properties::Power::TWELVE:
                 switch (south) {
@@ -3767,6 +4775,8 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 4043;
                     case Properties::West::NONE:
                         return 4044;
+                    default:
+                        return 0;
                     }
                 case Properties::South::SIDE:
                     switch (west) {
@@ -3776,6 +4786,8 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 4046;
                     case Properties::West::NONE:
                         return 4047;
+                    default:
+                        return 0;
                     }
                 case Properties::South::NONE:
                     switch (west) {
@@ -3785,7 +4797,11 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 4049;
                     case Properties::West::NONE:
                         return 4050;
+                    default:
+                        return 0;
                     }
+                default:
+                    return 0;
                 }
             case Properties::Power::THIRTEEN:
                 switch (south) {
@@ -3797,6 +4813,8 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 4052;
                     case Properties::West::NONE:
                         return 4053;
+                    default:
+                        return 0;
                     }
                 case Properties::South::SIDE:
                     switch (west) {
@@ -3806,6 +4824,8 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 4055;
                     case Properties::West::NONE:
                         return 4056;
+                    default:
+                        return 0;
                     }
                 case Properties::South::NONE:
                     switch (west) {
@@ -3815,7 +4835,11 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 4058;
                     case Properties::West::NONE:
                         return 4059;
+                    default:
+                        return 0;
                     }
+                default:
+                    return 0;
                 }
             case Properties::Power::FOURTEEN:
                 switch (south) {
@@ -3827,6 +4851,8 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 4061;
                     case Properties::West::NONE:
                         return 4062;
+                    default:
+                        return 0;
                     }
                 case Properties::South::SIDE:
                     switch (west) {
@@ -3836,6 +4862,8 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 4064;
                     case Properties::West::NONE:
                         return 4065;
+                    default:
+                        return 0;
                     }
                 case Properties::South::NONE:
                     switch (west) {
@@ -3845,7 +4873,11 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 4067;
                     case Properties::West::NONE:
                         return 4068;
+                    default:
+                        return 0;
                     }
+                default:
+                    return 0;
                 }
             case Properties::Power::FIFTEEN:
                 switch (south) {
@@ -3857,6 +4889,8 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 4070;
                     case Properties::West::NONE:
                         return 4071;
+                    default:
+                        return 0;
                     }
                 case Properties::South::SIDE:
                     switch (west) {
@@ -3866,6 +4900,8 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 4073;
                     case Properties::West::NONE:
                         return 4074;
+                    default:
+                        return 0;
                     }
                 case Properties::South::NONE:
                     switch (west) {
@@ -3875,8 +4911,14 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 4076;
                     case Properties::West::NONE:
                         return 4077;
+                    default:
+                        return 0;
                     }
+                default:
+                    return 0;
                 }
+            default:
+                return 0;
             }
         case Properties::North::NONE:
             switch (power) {
@@ -3890,6 +4932,8 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 4079;
                     case Properties::West::NONE:
                         return 4080;
+                    default:
+                        return 0;
                     }
                 case Properties::South::SIDE:
                     switch (west) {
@@ -3899,6 +4943,8 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 4082;
                     case Properties::West::NONE:
                         return 4083;
+                    default:
+                        return 0;
                     }
                 case Properties::South::NONE:
                     switch (west) {
@@ -3908,7 +4954,11 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 4085;
                     case Properties::West::NONE:
                         return 4086;
+                    default:
+                        return 0;
                     }
+                default:
+                    return 0;
                 }
             case Properties::Power::ONE:
                 switch (south) {
@@ -3920,6 +4970,8 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 4088;
                     case Properties::West::NONE:
                         return 4089;
+                    default:
+                        return 0;
                     }
                 case Properties::South::SIDE:
                     switch (west) {
@@ -3929,6 +4981,8 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 4091;
                     case Properties::West::NONE:
                         return 4092;
+                    default:
+                        return 0;
                     }
                 case Properties::South::NONE:
                     switch (west) {
@@ -3938,7 +4992,11 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 4094;
                     case Properties::West::NONE:
                         return 4095;
+                    default:
+                        return 0;
                     }
+                default:
+                    return 0;
                 }
             case Properties::Power::TWO:
                 switch (south) {
@@ -3950,6 +5008,8 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 4097;
                     case Properties::West::NONE:
                         return 4098;
+                    default:
+                        return 0;
                     }
                 case Properties::South::SIDE:
                     switch (west) {
@@ -3959,6 +5019,8 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 4100;
                     case Properties::West::NONE:
                         return 4101;
+                    default:
+                        return 0;
                     }
                 case Properties::South::NONE:
                     switch (west) {
@@ -3968,7 +5030,11 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 4103;
                     case Properties::West::NONE:
                         return 4104;
+                    default:
+                        return 0;
                     }
+                default:
+                    return 0;
                 }
             case Properties::Power::THREE:
                 switch (south) {
@@ -3980,6 +5046,8 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 4106;
                     case Properties::West::NONE:
                         return 4107;
+                    default:
+                        return 0;
                     }
                 case Properties::South::SIDE:
                     switch (west) {
@@ -3989,6 +5057,8 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 4109;
                     case Properties::West::NONE:
                         return 4110;
+                    default:
+                        return 0;
                     }
                 case Properties::South::NONE:
                     switch (west) {
@@ -3998,7 +5068,11 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 4112;
                     case Properties::West::NONE:
                         return 4113;
+                    default:
+                        return 0;
                     }
+                default:
+                    return 0;
                 }
             case Properties::Power::FOUR:
                 switch (south) {
@@ -4010,6 +5084,8 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 4115;
                     case Properties::West::NONE:
                         return 4116;
+                    default:
+                        return 0;
                     }
                 case Properties::South::SIDE:
                     switch (west) {
@@ -4019,6 +5095,8 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 4118;
                     case Properties::West::NONE:
                         return 4119;
+                    default:
+                        return 0;
                     }
                 case Properties::South::NONE:
                     switch (west) {
@@ -4028,7 +5106,11 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 4121;
                     case Properties::West::NONE:
                         return 4122;
+                    default:
+                        return 0;
                     }
+                default:
+                    return 0;
                 }
             case Properties::Power::FIVE:
                 switch (south) {
@@ -4040,6 +5122,8 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 4124;
                     case Properties::West::NONE:
                         return 4125;
+                    default:
+                        return 0;
                     }
                 case Properties::South::SIDE:
                     switch (west) {
@@ -4049,6 +5133,8 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 4127;
                     case Properties::West::NONE:
                         return 4128;
+                    default:
+                        return 0;
                     }
                 case Properties::South::NONE:
                     switch (west) {
@@ -4058,7 +5144,11 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 4130;
                     case Properties::West::NONE:
                         return 4131;
+                    default:
+                        return 0;
                     }
+                default:
+                    return 0;
                 }
             case Properties::Power::SIX:
                 switch (south) {
@@ -4070,6 +5160,8 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 4133;
                     case Properties::West::NONE:
                         return 4134;
+                    default:
+                        return 0;
                     }
                 case Properties::South::SIDE:
                     switch (west) {
@@ -4079,6 +5171,8 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 4136;
                     case Properties::West::NONE:
                         return 4137;
+                    default:
+                        return 0;
                     }
                 case Properties::South::NONE:
                     switch (west) {
@@ -4088,7 +5182,11 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 4139;
                     case Properties::West::NONE:
                         return 4140;
+                    default:
+                        return 0;
                     }
+                default:
+                    return 0;
                 }
             case Properties::Power::SEVEN:
                 switch (south) {
@@ -4100,6 +5198,8 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 4142;
                     case Properties::West::NONE:
                         return 4143;
+                    default:
+                        return 0;
                     }
                 case Properties::South::SIDE:
                     switch (west) {
@@ -4109,6 +5209,8 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 4145;
                     case Properties::West::NONE:
                         return 4146;
+                    default:
+                        return 0;
                     }
                 case Properties::South::NONE:
                     switch (west) {
@@ -4118,7 +5220,11 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 4148;
                     case Properties::West::NONE:
                         return 4149;
+                    default:
+                        return 0;
                     }
+                default:
+                    return 0;
                 }
             case Properties::Power::EIGHT:
                 switch (south) {
@@ -4130,6 +5236,8 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 4151;
                     case Properties::West::NONE:
                         return 4152;
+                    default:
+                        return 0;
                     }
                 case Properties::South::SIDE:
                     switch (west) {
@@ -4139,6 +5247,8 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 4154;
                     case Properties::West::NONE:
                         return 4155;
+                    default:
+                        return 0;
                     }
                 case Properties::South::NONE:
                     switch (west) {
@@ -4148,7 +5258,11 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 4157;
                     case Properties::West::NONE:
                         return 4158;
+                    default:
+                        return 0;
                     }
+                default:
+                    return 0;
                 }
             case Properties::Power::NINE:
                 switch (south) {
@@ -4160,6 +5274,8 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 4160;
                     case Properties::West::NONE:
                         return 4161;
+                    default:
+                        return 0;
                     }
                 case Properties::South::SIDE:
                     switch (west) {
@@ -4169,6 +5285,8 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 4163;
                     case Properties::West::NONE:
                         return 4164;
+                    default:
+                        return 0;
                     }
                 case Properties::South::NONE:
                     switch (west) {
@@ -4178,7 +5296,11 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 4166;
                     case Properties::West::NONE:
                         return 4167;
+                    default:
+                        return 0;
                     }
+                default:
+                    return 0;
                 }
             case Properties::Power::TEN:
                 switch (south) {
@@ -4190,6 +5312,8 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 4169;
                     case Properties::West::NONE:
                         return 4170;
+                    default:
+                        return 0;
                     }
                 case Properties::South::SIDE:
                     switch (west) {
@@ -4199,6 +5323,8 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 4172;
                     case Properties::West::NONE:
                         return 4173;
+                    default:
+                        return 0;
                     }
                 case Properties::South::NONE:
                     switch (west) {
@@ -4208,7 +5334,11 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 4175;
                     case Properties::West::NONE:
                         return 4176;
+                    default:
+                        return 0;
                     }
+                default:
+                    return 0;
                 }
             case Properties::Power::ELEVEN:
                 switch (south) {
@@ -4220,6 +5350,8 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 4178;
                     case Properties::West::NONE:
                         return 4179;
+                    default:
+                        return 0;
                     }
                 case Properties::South::SIDE:
                     switch (west) {
@@ -4229,6 +5361,8 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 4181;
                     case Properties::West::NONE:
                         return 4182;
+                    default:
+                        return 0;
                     }
                 case Properties::South::NONE:
                     switch (west) {
@@ -4238,7 +5372,11 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 4184;
                     case Properties::West::NONE:
                         return 4185;
+                    default:
+                        return 0;
                     }
+                default:
+                    return 0;
                 }
             case Properties::Power::TWELVE:
                 switch (south) {
@@ -4250,6 +5388,8 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 4187;
                     case Properties::West::NONE:
                         return 4188;
+                    default:
+                        return 0;
                     }
                 case Properties::South::SIDE:
                     switch (west) {
@@ -4259,6 +5399,8 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 4190;
                     case Properties::West::NONE:
                         return 4191;
+                    default:
+                        return 0;
                     }
                 case Properties::South::NONE:
                     switch (west) {
@@ -4268,7 +5410,11 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 4193;
                     case Properties::West::NONE:
                         return 4194;
+                    default:
+                        return 0;
                     }
+                default:
+                    return 0;
                 }
             case Properties::Power::THIRTEEN:
                 switch (south) {
@@ -4280,6 +5426,8 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 4196;
                     case Properties::West::NONE:
                         return 4197;
+                    default:
+                        return 0;
                     }
                 case Properties::South::SIDE:
                     switch (west) {
@@ -4289,6 +5437,8 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 4199;
                     case Properties::West::NONE:
                         return 4200;
+                    default:
+                        return 0;
                     }
                 case Properties::South::NONE:
                     switch (west) {
@@ -4298,7 +5448,11 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 4202;
                     case Properties::West::NONE:
                         return 4203;
+                    default:
+                        return 0;
                     }
+                default:
+                    return 0;
                 }
             case Properties::Power::FOURTEEN:
                 switch (south) {
@@ -4310,6 +5464,8 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 4205;
                     case Properties::West::NONE:
                         return 4206;
+                    default:
+                        return 0;
                     }
                 case Properties::South::SIDE:
                     switch (west) {
@@ -4319,6 +5475,8 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 4208;
                     case Properties::West::NONE:
                         return 4209;
+                    default:
+                        return 0;
                     }
                 case Properties::South::NONE:
                     switch (west) {
@@ -4328,7 +5486,11 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 4211;
                     case Properties::West::NONE:
                         return 4212;
+                    default:
+                        return 0;
                     }
+                default:
+                    return 0;
                 }
             case Properties::Power::FIFTEEN:
                 switch (south) {
@@ -4340,6 +5502,8 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 4214;
                     case Properties::West::NONE:
                         return 4215;
+                    default:
+                        return 0;
                     }
                 case Properties::South::SIDE:
                     switch (west) {
@@ -4349,6 +5513,8 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 4217;
                     case Properties::West::NONE:
                         return 4218;
+                    default:
+                        return 0;
                     }
                 case Properties::South::NONE:
                     switch (west) {
@@ -4358,10 +5524,20 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::P
                         return 4220;
                     case Properties::West::NONE:
                         return 4221;
+                    default:
+                        return 0;
                     }
+                default:
+                    return 0;
                 }
+            default:
+                return 0;
             }
+        default:
+            return 0;
         }
+    default:
+        return 0;
     }
     return 0;
 }

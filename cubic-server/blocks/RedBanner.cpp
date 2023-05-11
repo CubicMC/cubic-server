@@ -1,6 +1,4 @@
 #include "RedBanner.hpp"
-#include <stdexcept>
-
 namespace Blocks {
 namespace RedBanner {
 BlockId toProtocol(Properties::Rotation rotation)
@@ -38,6 +36,8 @@ BlockId toProtocol(Properties::Rotation rotation)
         return 10520;
     case Properties::Rotation::FIFTEEN:
         return 10521;
+    default:
+        return 0;
     }
     return 0;
 }

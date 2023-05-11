@@ -1,6 +1,4 @@
 #include "DarkOakSign.hpp"
-#include <stdexcept>
-
 namespace Blocks {
 namespace DarkOakSign {
 BlockId toProtocol(Properties::Rotation rotation, Properties::Waterlogged waterlogged)
@@ -12,6 +10,8 @@ BlockId toProtocol(Properties::Rotation rotation, Properties::Waterlogged waterl
             return 4410;
         case Properties::Waterlogged::FALSE:
             return 4411;
+        default:
+            return 0;
         }
     case Properties::Rotation::ONE:
         switch (waterlogged) {
@@ -19,6 +19,8 @@ BlockId toProtocol(Properties::Rotation rotation, Properties::Waterlogged waterl
             return 4412;
         case Properties::Waterlogged::FALSE:
             return 4413;
+        default:
+            return 0;
         }
     case Properties::Rotation::TWO:
         switch (waterlogged) {
@@ -26,6 +28,8 @@ BlockId toProtocol(Properties::Rotation rotation, Properties::Waterlogged waterl
             return 4414;
         case Properties::Waterlogged::FALSE:
             return 4415;
+        default:
+            return 0;
         }
     case Properties::Rotation::THREE:
         switch (waterlogged) {
@@ -33,6 +37,8 @@ BlockId toProtocol(Properties::Rotation rotation, Properties::Waterlogged waterl
             return 4416;
         case Properties::Waterlogged::FALSE:
             return 4417;
+        default:
+            return 0;
         }
     case Properties::Rotation::FOUR:
         switch (waterlogged) {
@@ -40,6 +46,8 @@ BlockId toProtocol(Properties::Rotation rotation, Properties::Waterlogged waterl
             return 4418;
         case Properties::Waterlogged::FALSE:
             return 4419;
+        default:
+            return 0;
         }
     case Properties::Rotation::FIVE:
         switch (waterlogged) {
@@ -47,6 +55,8 @@ BlockId toProtocol(Properties::Rotation rotation, Properties::Waterlogged waterl
             return 4420;
         case Properties::Waterlogged::FALSE:
             return 4421;
+        default:
+            return 0;
         }
     case Properties::Rotation::SIX:
         switch (waterlogged) {
@@ -54,6 +64,8 @@ BlockId toProtocol(Properties::Rotation rotation, Properties::Waterlogged waterl
             return 4422;
         case Properties::Waterlogged::FALSE:
             return 4423;
+        default:
+            return 0;
         }
     case Properties::Rotation::SEVEN:
         switch (waterlogged) {
@@ -61,6 +73,8 @@ BlockId toProtocol(Properties::Rotation rotation, Properties::Waterlogged waterl
             return 4424;
         case Properties::Waterlogged::FALSE:
             return 4425;
+        default:
+            return 0;
         }
     case Properties::Rotation::EIGHT:
         switch (waterlogged) {
@@ -68,6 +82,8 @@ BlockId toProtocol(Properties::Rotation rotation, Properties::Waterlogged waterl
             return 4426;
         case Properties::Waterlogged::FALSE:
             return 4427;
+        default:
+            return 0;
         }
     case Properties::Rotation::NINE:
         switch (waterlogged) {
@@ -75,6 +91,8 @@ BlockId toProtocol(Properties::Rotation rotation, Properties::Waterlogged waterl
             return 4428;
         case Properties::Waterlogged::FALSE:
             return 4429;
+        default:
+            return 0;
         }
     case Properties::Rotation::TEN:
         switch (waterlogged) {
@@ -82,6 +100,8 @@ BlockId toProtocol(Properties::Rotation rotation, Properties::Waterlogged waterl
             return 4430;
         case Properties::Waterlogged::FALSE:
             return 4431;
+        default:
+            return 0;
         }
     case Properties::Rotation::ELEVEN:
         switch (waterlogged) {
@@ -89,6 +109,8 @@ BlockId toProtocol(Properties::Rotation rotation, Properties::Waterlogged waterl
             return 4432;
         case Properties::Waterlogged::FALSE:
             return 4433;
+        default:
+            return 0;
         }
     case Properties::Rotation::TWELVE:
         switch (waterlogged) {
@@ -96,6 +118,8 @@ BlockId toProtocol(Properties::Rotation rotation, Properties::Waterlogged waterl
             return 4434;
         case Properties::Waterlogged::FALSE:
             return 4435;
+        default:
+            return 0;
         }
     case Properties::Rotation::THIRTEEN:
         switch (waterlogged) {
@@ -103,6 +127,8 @@ BlockId toProtocol(Properties::Rotation rotation, Properties::Waterlogged waterl
             return 4436;
         case Properties::Waterlogged::FALSE:
             return 4437;
+        default:
+            return 0;
         }
     case Properties::Rotation::FOURTEEN:
         switch (waterlogged) {
@@ -110,6 +136,8 @@ BlockId toProtocol(Properties::Rotation rotation, Properties::Waterlogged waterl
             return 4438;
         case Properties::Waterlogged::FALSE:
             return 4439;
+        default:
+            return 0;
         }
     case Properties::Rotation::FIFTEEN:
         switch (waterlogged) {
@@ -117,7 +145,11 @@ BlockId toProtocol(Properties::Rotation rotation, Properties::Waterlogged waterl
             return 4440;
         case Properties::Waterlogged::FALSE:
             return 4441;
+        default:
+            return 0;
         }
+    default:
+        return 0;
     }
     return 0;
 }

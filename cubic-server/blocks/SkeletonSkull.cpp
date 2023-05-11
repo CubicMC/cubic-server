@@ -1,6 +1,4 @@
 #include "SkeletonSkull.hpp"
-#include <stdexcept>
-
 namespace Blocks {
 namespace SkeletonSkull {
 BlockId toProtocol(Properties::Rotation rotation)
@@ -38,6 +36,8 @@ BlockId toProtocol(Properties::Rotation rotation)
         return 8585;
     case Properties::Rotation::FIFTEEN:
         return 8586;
+    default:
+        return 0;
     }
     return 0;
 }

@@ -1,6 +1,4 @@
 #include "QuartzSlab.hpp"
-#include <stdexcept>
-
 namespace Blocks {
 namespace QuartzSlab {
 BlockId toProtocol(Properties::Type type, Properties::Waterlogged waterlogged)
@@ -12,6 +10,8 @@ BlockId toProtocol(Properties::Type type, Properties::Waterlogged waterlogged)
             return 10799;
         case Properties::Waterlogged::FALSE:
             return 10800;
+        default:
+            return 0;
         }
     case Properties::Type::BOTTOM:
         switch (waterlogged) {
@@ -19,6 +19,8 @@ BlockId toProtocol(Properties::Type type, Properties::Waterlogged waterlogged)
             return 10801;
         case Properties::Waterlogged::FALSE:
             return 10802;
+        default:
+            return 0;
         }
     case Properties::Type::DOUBLE:
         switch (waterlogged) {
@@ -26,7 +28,11 @@ BlockId toProtocol(Properties::Type type, Properties::Waterlogged waterlogged)
             return 10803;
         case Properties::Waterlogged::FALSE:
             return 10804;
+        default:
+            return 0;
         }
+    default:
+        return 0;
     }
     return 0;
 }

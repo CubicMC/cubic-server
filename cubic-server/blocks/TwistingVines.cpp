@@ -1,6 +1,4 @@
 #include "TwistingVines.hpp"
-#include <stdexcept>
-
 namespace Blocks {
 namespace TwistingVines {
 BlockId toProtocol(Properties::Age age)
@@ -58,6 +56,8 @@ BlockId toProtocol(Properties::Age age)
         return 18034;
     case Properties::Age::TWENTY_FIVE:
         return 18035;
+    default:
+        return 0;
     }
     return 0;
 }

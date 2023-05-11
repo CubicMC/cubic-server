@@ -1,6 +1,4 @@
 #include "CandleCake.hpp"
-#include <stdexcept>
-
 namespace Blocks {
 namespace CandleCake {
 BlockId toProtocol(Properties::Lit lit)
@@ -10,6 +8,8 @@ BlockId toProtocol(Properties::Lit lit)
         return 20369;
     case Properties::Lit::FALSE:
         return 20370;
+    default:
+        return 0;
     }
     return 0;
 }

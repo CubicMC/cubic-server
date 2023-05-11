@@ -1,6 +1,4 @@
 #include "LightGrayGlazedTerracotta.hpp"
-#include <stdexcept>
-
 namespace Blocks {
 namespace LightGrayGlazedTerracotta {
 BlockId toProtocol(Properties::Facing facing)
@@ -14,6 +12,8 @@ BlockId toProtocol(Properties::Facing facing)
         return 12073;
     case Properties::Facing::EAST:
         return 12074;
+    default:
+        return 0;
     }
     return 0;
 }
