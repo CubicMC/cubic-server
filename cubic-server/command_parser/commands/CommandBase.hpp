@@ -1,9 +1,9 @@
 #ifndef CUBICSERVER_COMMANDPARSER_COMMANDS_BASE_HPP
 #define CUBICSERVER_COMMANDPARSER_COMMANDS_BASE_HPP
 
+#include <cstdint>
 #include <string>
 #include <vector>
-#include <cstdint>
 
 class Player;
 

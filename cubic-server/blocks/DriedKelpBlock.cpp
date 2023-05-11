@@ -1,10 +1,7 @@
 #include "DriedKelpBlock.hpp"
 namespace Blocks {
 namespace DriedKelpBlock {
-BlockId toProtocol()
-{
-    return 12162;
-}
+BlockId toProtocol() { return 12162; }
 }
 
 }

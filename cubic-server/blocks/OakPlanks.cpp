@@ -1,10 +1,7 @@
 #include "OakPlanks.hpp"
 namespace Blocks {
 namespace OakPlanks {
-BlockId toProtocol()
-{
-    return 15;
-}
+BlockId toProtocol() { return 15; }
 }
 
 }

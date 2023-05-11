@@ -11,7 +11,7 @@ World::World(std::shared_ptr<WorldGroup> worldGroup):
     _time(0),
     _renderDistance(8), // TODO: Should be loaded from config
     _timeUpdateClock(20, std::bind(&World::updateTime, this)), // 1 second for time updates
-    _generationPool(4, "WorldGen", thread_pool::Pool::Behavior::Cancel)
+    _generationPool(4, "WorldGen")
 {
     _timeUpdateClock.start();
     _seed = -721274728; // TODO: Should be loaded from config or generated
@@ -34,8 +34,7 @@ void World::initialize()
 
 void World::stop()
 {
-    this->_generationPool.stop();
-    this->_generationPool.wait();
+    _generationPool.waitUntilJobsDone();
 
     for (auto &[_, dim] : _dimensions)
         dim->stop();
@@ -181,7 +180,7 @@ void World::sendPlayerInfoRemovePlayer(const Player *current)
     LDEBUG("Sent player info to ", current->getUsername());
 }
 
-thread_pool::Pool &World::getGenerationPool() { return _generationPool; }
+thread_pool::PriorityThreadPool &World::getGenerationPool() { return _generationPool; }
 
 Seed World::getSeed() const { return _seed; }
 

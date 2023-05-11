@@ -1,10 +1,7 @@
 #include "BirchPlanks.hpp"
 namespace Blocks {
 namespace BirchPlanks {
-BlockId toProtocol()
-{
-    return 17;
-}
+BlockId toProtocol() { return 17; }
 }
 
 }

@@ -27,16 +27,18 @@ std::unique_ptr<std::vector<uint8_t>> protocol::createLoginSuccess(const LoginSu
         in.username, addString,
         in.numberOfProperties, addVarInt
     );
-    // clang-format on
 
     // in.name, addString,
     // in.value, addString,
     // in.isSigned, addBoolean
     for (auto &property : in.properties) {
         serialize(payload,
-            property.name, addString,
-            property.value, addString,
-            property.isSigned, addBoolean
+            property.name,
+            addString,
+            property.value,
+            addString,
+            property.isSigned,
+            addBoolean
         );
         if (property.isSigned) {
             serialize(payload,

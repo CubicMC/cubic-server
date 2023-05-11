@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "options.hpp"
-#include "thread_pool/Task.hpp"
 #include "world_storage/ChunkColumn.hpp"
 #include "world_storage/Level.hpp"
 
@@ -22,10 +21,7 @@ class Entity;
 
 class Dimension {
 private:
-    struct ChunkRequest {
-        std::shared_ptr<thread_pool::Task> task;
-        std::vector<std::weak_ptr<Player>> players;
-    };
+    using ChunkRequest = std::vector<std::weak_ptr<Player>>;
 
 public:
     Dimension(std::shared_ptr<World> world);
@@ -92,9 +88,8 @@ public:
      *
      * @param x int32_t
      * @param z int32_t
-     * @return size_t a job id,
      */
-    virtual std::shared_ptr<thread_pool::Task> loadOrGenerateChunk(int x, int z, std::shared_ptr<Player> player);
+    virtual void loadOrGenerateChunk(int x, int z, std::shared_ptr<Player> player);
 
 protected:
     virtual void _run();

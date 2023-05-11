@@ -118,7 +118,7 @@ struct SpawnEntity {
         Boat = 8,
         ChestBoat = 9,
         Cat = 10,
-        Camel = 11,           // update_1_20
+        Camel = 11, // update_1_20
         CaveSpider = 12,
         Chicken = 13,
         Cod = 14,
@@ -135,7 +135,7 @@ struct SpawnEntity {
         Endermite = 25,
         Evoker = 26,
         EvokerFangs = 27,
-        ExperienceOrb = 28,   // SpawnExperienceOrb
+        ExperienceOrb = 28, // SpawnExperienceOrb
         EyeOfEnder = 29,
         FallingBlock = 30,
         FireworkRocket = 31,
@@ -161,7 +161,7 @@ struct SpawnEntity {
         LlamaSpit = 51,
         MagmaCube = 52,
         // Interaction = 52,  // 1.19.4
-        Marker = 53,          // Not spawnable
+        Marker = 53, // Not spawnable
         Minecart = 54,
         ChestMinecart = 55,
         // ItemDisplay = 55,  // 1.19.4
@@ -228,7 +228,7 @@ struct SpawnEntity {
         ZombieHorse = 114,
         ZombieVillager = 115,
         ZombifiedPiglin = 116,
-        Player = 117,         // SpawnPlayer
+        Player = 117, // SpawnPlayer
         FishingBobber = 118,
     } type;
     double x;

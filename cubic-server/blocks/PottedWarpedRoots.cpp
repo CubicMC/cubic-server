@@ -1,10 +1,7 @@
 #include "PottedWarpedRoots.hpp"
 namespace Blocks {
 namespace PottedWarpedRoots {
-BlockId toProtocol()
-{
-    return 18830;
-}
+BlockId toProtocol() { return 18830; }
 }
 
 }
