@@ -10,6 +10,7 @@ namespace chat::message::event {
 class OnClick {
 public:
     OnClick() = default;
+    virtual ~OnClick() = default;
 
     virtual nlohmann::json toJson() const = 0;
 

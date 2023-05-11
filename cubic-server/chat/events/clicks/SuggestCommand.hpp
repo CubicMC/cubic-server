@@ -14,6 +14,8 @@ public:
     {
     }
 
+    ~SuggestCommandClick() override = default;
+
     nlohmann::json toJson() const override;
 
     static std::shared_ptr<SuggestCommandClick> fromJson(const nlohmann::json &json);

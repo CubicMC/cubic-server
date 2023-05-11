@@ -9,6 +9,7 @@ struct Op : public CommandBase {
         CommandBase("op", "/op [<player>]", true)
     {
     }
+    ~Op() override = default;
 
     void autocomplete(std::vector<std::string> &args, Player *invoker) const override;
     void execute(std::vector<std::string> &args, Player *invoker) const override;

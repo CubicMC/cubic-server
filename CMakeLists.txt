@@ -93,8 +93,8 @@ if(GTEST)
     enable_testing()
 endif()
 
-set(CMAKE_BUILD_RPATH /usr/local/lib/gcc12)
-set(CMAKE_EXE_LINKER_FLAGS "-static-libgcc -static-libstdc++")
+# set(CMAKE_BUILD_RPATH /usr/local/lib/gcc12)
+# set(CMAKE_EXE_LINKER_FLAGS "-static-libgcc -static-libstdc++")
 
 find_package(Threads REQUIRED)
 find_package(PkgConfig REQUIRED)

@@ -23,6 +23,8 @@ public:
         addMessage(std::forward<Args>(args)...);
     }
 
+    ~TextHover() override = default;
+
 public:
     TextHover &addMessage(const chat::SimpleMessage &message);
 

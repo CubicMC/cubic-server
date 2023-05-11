@@ -24,6 +24,8 @@ struct Time : public CommandBase {
     {
     }
 
+    ~Time() override = default;
+
     void autocomplete(std::vector<std::string> &args, Player *invoker) const override;
     void execute(std::vector<std::string> &args, Player *invoker) const override;
     void help(std::vector<std::string> &args, Player *invoker) const override;
