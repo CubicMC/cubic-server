@@ -1,0 +1,22 @@
+target_sources (${CMAKE_PROJECT_NAME} PRIVATE
+    Alternative.cpp
+    Alternative.hpp
+    Dynamic.cpp
+    Dynamic.hpp
+    Empty.cpp
+    Empty.hpp
+    Entry.cpp
+    Entry.hpp
+    Group.cpp
+    Group.hpp
+    Item.cpp
+    Item.hpp
+    ItemTag.cpp
+    ItemTag.hpp
+    LootTable.cpp
+    LootTable.hpp
+    Sequence.cpp
+    Sequence.hpp
+    allEntries.hpp
+    addDefaultEntryCreators.cpp
+)

@@ -1,0 +1,20 @@
+#include "Reference.hpp"
+
+namespace LootTable {
+    namespace Condition {
+        Reference::Reference(const nlohmann::json &condition)
+        {
+            (void)condition;
+        }
+
+        bool Reference::verify(void)
+        {
+            return (true);
+        }
+
+        std::unique_ptr<Condition> Reference::create(const nlohmann::json &condition)
+        {
+            return (std::make_unique<Reference>(condition));
+        }
+    };
+};

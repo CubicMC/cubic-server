@@ -1,0 +1,16 @@
+#include "SetDamage.hpp"
+
+namespace LootTable {
+    namespace Function {
+        SetDamage::SetDamage(const nlohmann::json &function) : Function(function)
+        {}
+
+        void SetDamage::apply(void)
+        {}
+
+        std::unique_ptr<Function> SetDamage::create(const nlohmann::json &function)
+        {
+            return (std::make_unique<SetDamage>(function));
+        }
+    };
+};

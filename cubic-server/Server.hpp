@@ -17,7 +17,7 @@
 #include "protocol_id_converter/itemConverter.hpp"
 
 #include "Permissions.hpp"
-#include "LootTables.hpp"
+#include "loot_tables/LootTables.hpp"
 
 #include "options.hpp"
 

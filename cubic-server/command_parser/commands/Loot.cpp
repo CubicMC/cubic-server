@@ -1,13 +1,18 @@
 #include "Loot.hpp"
 #include "Server.hpp"
-#include "LootTables.hpp"
+#include "loot_tables/LootTables.hpp"
 
 void command_parser::Loot::autocomplete(std::vector<std::string> &args, Player *invoker) const
 {
+    (void)invoker;
+    (void)args;
 }
 
 void command_parser::Loot::execute(std::vector<std::string> &args, Player *invoker) const
 {
+    (void)invoker;
+    (void)args;
+    /*
     if (args.size() != 2) {
         Server::getInstance()->lootTables.snitchTables();        
         return;
@@ -26,9 +31,12 @@ void command_parser::Loot::execute(std::vector<std::string> &args, Player *invok
     } else {
         std::cout << "failed to loot :(" << std::endl;
     }
+    */
 }
 
 void command_parser::Loot::help(std::vector<std::string> &args, Player *invoker) const
 {
+    (void)invoker;
+    (void)args;
     LINFO("/help seed");
 }

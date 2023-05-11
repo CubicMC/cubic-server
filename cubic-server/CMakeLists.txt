@@ -37,8 +37,6 @@ target_sources (${CMAKE_PROJECT_NAME} PRIVATE
     types.cpp
     blocks.hpp
     exceptions.hpp
-    LootTables.hpp
-    LootTables.cpp
 )
 
 if (GTEST)
@@ -83,3 +81,4 @@ add_subdirectory (thread_pool)
 add_subdirectory (blocks)
 add_subdirectory (items)
 add_subdirectory (chat)
+add_subdirectory (loot_tables)
