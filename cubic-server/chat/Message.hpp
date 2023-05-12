@@ -8,6 +8,8 @@
 #include <string>
 #include <vector>
 
+
+#include "ChatMessageUtils.hpp"
 #include "SimpleMessage.hpp"
 #include "events/Click.hpp"
 #include "events/Hover.hpp"

@@ -14,6 +14,8 @@ public:
     {
     }
 
+    ~OpenUrlClick() override = default;
+
     nlohmann::json toJson() const override;
 
     static std::shared_ptr<OpenUrlClick> fromJson(const nlohmann::json &json);
