@@ -9,6 +9,8 @@ public:
         Dimension(world)
     {
     }
+    ~TheNether() override = default;
+
     void tick() override;
     void initialize() override;
 };

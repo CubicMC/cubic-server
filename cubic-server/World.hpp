@@ -23,6 +23,7 @@ constexpr int NB_SPAWN_CHUNKS = 19;
 class World : public std::enable_shared_from_this<World> {
 public:
     World(std::shared_ptr<WorldGroup> worldGroup);
+    virtual ~World() = default;
 
     virtual void tick();
     virtual void initialize();

@@ -13,6 +13,7 @@ public:
         _text(text)
     {
     }
+    ~CopyToClipboardClick() override = default;
 
     nlohmann::json toJson() const override;
 

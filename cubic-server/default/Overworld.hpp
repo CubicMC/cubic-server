@@ -11,6 +11,8 @@ public:
         Dimension(world)
     {
     }
+    ~Overworld() override = default;
+
     void tick() override;
     void initialize() override;
     void stop() override;

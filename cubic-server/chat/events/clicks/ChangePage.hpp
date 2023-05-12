@@ -14,6 +14,8 @@ public:
     {
     }
 
+    ~ChangePageClick() = default;
+
     nlohmann::json toJson() const override;
 
     static std::shared_ptr<ChangePageClick> fromJson(const nlohmann::json &json);

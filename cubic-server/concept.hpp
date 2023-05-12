@@ -42,8 +42,8 @@ struct helperSameFunction<ret(args...)> {
 };
 
 template<typename From, typename Help>
-concept sameFunction = requires (Help::argsType args, From from) {
-    static_cast<Help::function>(std::declval<From>());
+concept sameFunction = requires (typename Help::argsType args, From from) {
+    static_cast<typename Help::function>(std::declval<From>());
     requires std::same_as<
     decltype(std::apply(typename Help::function(), args)),
     decltype(std::apply(from, args))
