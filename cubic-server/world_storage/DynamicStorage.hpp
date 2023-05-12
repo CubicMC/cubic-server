@@ -1,6 +1,7 @@
 #ifndef WORLD_STORAGE_DYNAMICSTORAGE_HPP
 #define WORLD_STORAGE_DYNAMICSTORAGE_HPP
 
+#include "exceptions.hpp"
 #include "world_storage/Palette.hpp"
 #include <vector>
 #include <cstdint>
@@ -8,6 +9,8 @@
 #include <type_traits>
 
 namespace world_storage {
+
+DEFINE_EXCEPTION(EmptyStorageAccess);
 
 /**
  * @brief  A class that stores values of a given size in an array of a given type
@@ -35,6 +38,7 @@ public:
 
     constexpr void set(uint64_t idx, StoreType value);
     [[nodiscard]] constexpr StoreType get(uint64_t idx) const;
+    [[nodiscard]] constexpr bool mayHaveData() const { return _valueSize != 0; }
 
     [[nodiscard]] constexpr Array &data() { return _store; }
     [[nodiscard]] constexpr const Array &data() const { return _store; }
@@ -58,6 +62,8 @@ constexpr DynamicStorage<StoreType, ArraySize>::DynamicStorage(uint8_t valueSize
         throw std::logic_error("valueSize is too big for StoreType");
 
     _valueSize = valueSize;
+    if (valueSize == 0)
+        return;
     _store.resize(ArraySize / (StoreTypeSize / valueSize) + (ArraySize % (StoreTypeSize / valueSize) ? 1 : 0));
 }
 
@@ -67,8 +73,13 @@ constexpr void DynamicStorage<StoreType, ArraySize>::setValueSize(uint8_t valueS
 {
     if (valueSize == _valueSize)
         return;
-    if (valueSize > StoreTypeSize || valueSize == 0)
+    if (valueSize > StoreTypeSize)
         throw std::runtime_error("valueSize is invalid");
+    if (valueSize == 0) {
+        _store.clear();
+        _valueSize = 0;
+        return;
+    }
 
     DynamicStorage<StoreType, ArraySize> newStore(valueSize);
     for (uint64_t i = 0; i < ArraySize; ++i)
@@ -81,6 +92,8 @@ template<typename StoreType, uint64_t ArraySize>
     requires std::is_fundamental_v<StoreType>
 constexpr void DynamicStorage<StoreType, ArraySize>::set(uint64_t idx, StoreType value)
 {
+    if (_valueSize == 0)
+        return;
     if (idx >= ArraySize)
         throw std::out_of_range("idx is out of range");
     if (value > (uint64_t) ((1 << _valueSize) - 1))
@@ -99,6 +112,10 @@ template<typename StoreType, uint64_t ArraySize>
     requires std::is_fundamental_v<StoreType>
 constexpr StoreType DynamicStorage<StoreType, ArraySize>::get(uint64_t idx) const
 {
+    if (_valueSize == 0)
+        throw EmptyStorageAccess("Storage is null");
+    if (idx >= ArraySize)
+        throw std::out_of_range("idx is out of range");
     uint64_t valuePerEntry = StoreTypeSize / _valueSize;
     uint64_t entryNumber = idx / valuePerEntry;
     int8_t startOffset = (idx % valuePerEntry) * _valueSize;

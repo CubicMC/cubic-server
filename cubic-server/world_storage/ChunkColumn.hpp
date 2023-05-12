@@ -11,20 +11,19 @@
 #include "Section.hpp"
 #include "nbt.hpp"
 #include "protocol/Structures.hpp"
+#include "protocol/common.hpp"
 #include "types.hpp"
+#include "world_storage/DynamicStorage.hpp"
 
 namespace world_storage {
-
-// Blocks
-constexpr int BLOCKS_PER_CHUNK = NB_OF_SECTIONS * SECTION_3D_SIZE;
 
 // Heightmap
 constexpr int HEIGHTMAP_BITS = bitsNeeded(CHUNK_HEIGHT + 1);
 constexpr int HEIGHTMAP_ARRAY_SIZE = (SECTION_2D_SIZE * HEIGHTMAP_BITS / 64) + ((SECTION_2D_SIZE * HEIGHTMAP_BITS % 64) != 0);
 constexpr const char * const HEIGHTMAP_ENTRY[] = {"MOTION_BLOCKING", "WORLD_SURFACE", nullptr};
 
-constexpr uint8_t getSectionIndex(const Position &pos) { return (pos.y - CHUNK_HEIGHT_MIN) / SECTION_HEIGHT; }
-constexpr uint8_t getBiomeSectionIndex(const Position &pos) { return (pos.y - BIOME_HEIGHT_MIN) / BIOME_SECTION_WIDTH; }
+constexpr uint8_t getSectionIndex(const Position &pos) { return (pos.y - CHUNK_HEIGHT_MIN + SECTION_WIDTH) / SECTION_WIDTH; }
+constexpr uint8_t getBiomeSectionIndex(const Position &pos) { return (pos.y - BIOME_HEIGHT_MIN + BIOME_SECTION_WIDTH) / BIOME_SECTION_WIDTH; }
 
 // TODO: Accept negative position for y
 constexpr uint64_t calculateBlockIdx(const Position &pos)
@@ -56,18 +55,19 @@ public:
     ChunkColumn(const Position2D &chunkPos);
     ~ChunkColumn();
 
-    void updateBlock(Position pos, BlockId id);
-    BlockId getBlock(Position pos) const;
+    void updateBlock(const Position &pos, BlockId id);
+    BlockId getBlock(const Position &pos) const;
 
-    void updateSkyLight(Position pos, uint8_t light);
-    uint8_t getSkyLight(Position pos) const;
+    void updateSkyLight(const Position &pos, uint8_t light);
+    uint8_t getSkyLight(const Position &pos) const;
     void recalculateSkyLight();
 
-    void updateBlockLight(Position pos, uint8_t light);
-    uint8_t getBlockLight(Position pos) const;
+    void updateBlockLight(const Position &pos, uint8_t light);
+    uint8_t getBlockLight(const Position &pos) const;
+    void recalculateBlockLight();
 
-    void updateBiome(Position pos, BiomeId biome);
-    BiomeId getBiome(Position pos) const;
+    void updateBiome(const Position &pos, BiomeId biome);
+    BiomeId getBiome(const Position &pos) const;
 
     constexpr Section &getSection(uint8_t index) { return _sections.at(index); }
     constexpr const Section &getSection(uint8_t index) const { return _sections.at(index); }
@@ -102,8 +102,10 @@ private:
 
 private:
     std::array<Section, NB_OF_SECTIONS> _sections;
-    std::array<uint8_t, (NB_OF_SECTIONS + 2) * SECTION_3D_SIZE> _skyLights;
-    std::array<uint8_t, (NB_OF_SECTIONS + 2) * SECTION_3D_SIZE> _blockLights;
+    // std::array<uint8_t, (NB_OF_PLAYABLE_SECTIONS + 2) * SECTION_3D_SIZE> _skyLights;
+    // std::array<uint8_t, (NB_OF_PLAYABLE_SECTIONS + 2) * SECTION_3D_SIZE> _blockLights;
+    // LightStorage _skyLights;
+    // LightStorage _blockLights;
     int64_t _tickData;
     Position2D _chunkPos;
     nbt::Compound _heightMap;

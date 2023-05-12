@@ -26,16 +26,6 @@ constexpr void addBlockEntities(std::vector<uint8_t> &out, const std::vector<Blo
         addBlockEntity(out, i);
 }
 
-constexpr void addLightArray(std::vector<uint8_t> &out, const std::vector<std::array<uint8_t, LIGHT_ARRAY_SIZE>> &data)
-{
-    addVarInt(out, data.size());
-    for (auto &lightArray : data) {
-        addVarInt(out, lightArray.size());
-        for (auto light : lightArray)
-            addByte(out, light);
-    }
-}
-
 constexpr void addPalette(std::vector<uint8_t> &out, const world_storage::Palette &palette)
 {
     auto bytePerBlock = palette.getBits();
@@ -74,8 +64,9 @@ constexpr void addChunkColumn(std::vector<uint8_t> &out, const world_storage::Ch
     // Chunk sections
     std::vector<uint8_t> chunkData;
 
-
-    for (const auto &section : data.getSections()) {
+    const auto &sections = data.getSections();
+    for (uint64_t idx = 1; idx < sections.size() - 1; idx++) {
+        const auto &section = sections[idx];
         // Blocks
         addShort(chunkData, section.getBlockPalette().getTotalCount());
         addPalette(chunkData, section.getBlockPalette());
@@ -101,23 +92,54 @@ constexpr void addChunkColumn(std::vector<uint8_t> &out, const world_storage::Ch
 
     addBoolean(out, true); // Trust edges
 
+    uint64_t skyLightMask = 0;
+    uint64_t blockLightMask = 0;
+    uint64_t emptySkyLightMask = 0;
+    uint64_t emptyBlockLightMask = 0;
+
+    for (uint64_t i = 0; i < sections.size(); i++) {
+        skyLightMask |= (sections[i].hasSkyLight() ? 1 : 0) << i;
+        blockLightMask |= (sections[i].hasBlockLight() ? 1 : 0) << i;
+        emptySkyLightMask |= (sections[i].hasSkyLight() ? 0 : 1) << i;
+        emptyBlockLightMask |= (sections[i].hasBlockLight() ? 0 : 1) << i;
+    }
+
     // Light mask
-    // addArray<int64_t, addLong>(out, data.getSkyLightMask());
-    // addArray<int64_t, addLong>(out, data.getBlockLightMask());
-    addArray<int64_t, addLong>(out, {});
-    addArray<int64_t, addLong>(out, {});
+    addArray<uint64_t, addUnsignedLong>(out, {skyLightMask});
+    addArray<uint64_t, addUnsignedLong>(out, {blockLightMask});
+    // addArray<int64_t, addLong>(out, {});
+    // addArray<int64_t, addLong>(out, {});
 
     // Light empty mask
-    // addArray<int64_t, addLong>(out, data.getEmptySkyLightMask());
-    // addArray<int64_t, addLong>(out, data.getEmptyBlockLightMask());
-    addArray<int64_t, addLong>(out, {});
-    addArray<int64_t, addLong>(out, {});
+    addArray<uint64_t, addUnsignedLong>(out, {emptySkyLightMask});
+    addArray<uint64_t, addUnsignedLong>(out, {emptyBlockLightMask});
+    // addArray<int64_t, addLong>(out, {});
+    // addArray<int64_t, addLong>(out, {});
 
     // Light arrays
-    // addLightArray(out, data.getSkyLight());
-    // addLightArray(out, data.getBlockLight());
-    addLightArray(out, {});
-    addLightArray(out, {});
+    uint8_t countSkyLight = 0;
+    uint8_t countBlockLight = 0;
+    for (const auto &section : sections) {
+        if (section.hasSkyLight())
+            countSkyLight++;
+        if (section.hasBlockLight())
+            countBlockLight++;
+    }
+
+    // Sky light
+    addVarInt(out, countSkyLight);
+    for (const auto &section : sections) {
+        if (!section.hasSkyLight())
+            continue;
+        addArray<uint8_t, addByte>(out, section.getSkyLights());
+    }
+    // Block light
+    addVarInt(out, countBlockLight);
+    for (const auto &section : sections) {
+        if (!section.hasBlockLight())
+            continue;
+        addArray<uint8_t, addByte>(out, section.getBlockLights());
+    }
 }
 constexpr void addAttributesPropertyModifier(std::vector<uint8_t> &out, const protocol::UpdateAttributes::Property::Modifier &data)
 {

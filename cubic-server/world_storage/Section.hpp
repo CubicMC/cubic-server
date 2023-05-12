@@ -16,11 +16,11 @@ constexpr int CHUNK_HEIGHT_MAX = 320;
 constexpr int CHUNK_HEIGHT = CHUNK_HEIGHT_MAX - CHUNK_HEIGHT_MIN;
 
 // Section
-constexpr int SECTION_HEIGHT = 16;
 constexpr int SECTION_WIDTH = 16;
 constexpr int SECTION_2D_SIZE = SECTION_WIDTH * SECTION_WIDTH;
-constexpr int SECTION_3D_SIZE = SECTION_2D_SIZE * SECTION_HEIGHT;
-constexpr int NB_OF_SECTIONS = CHUNK_HEIGHT / SECTION_HEIGHT;
+constexpr int SECTION_3D_SIZE = SECTION_2D_SIZE * SECTION_WIDTH;
+constexpr int NB_OF_PLAYABLE_SECTIONS = CHUNK_HEIGHT / SECTION_WIDTH + (CHUNK_HEIGHT % SECTION_WIDTH ? 1 : 0);
+constexpr int NB_OF_SECTIONS = NB_OF_PLAYABLE_SECTIONS + 2;
 
 // Biome
 constexpr int BIOME_SECTION_WIDTH = 4;
@@ -29,7 +29,13 @@ constexpr int BIOME_HEIGHT_MAX = CHUNK_HEIGHT_MAX / 4;
 constexpr int BIOME_HEIGHT = BIOME_HEIGHT_MAX - BIOME_HEIGHT_MIN;
 constexpr int BIOME_SECTION_2D_SIZE = BIOME_SECTION_WIDTH * BIOME_SECTION_WIDTH;
 constexpr int BIOME_SECTION_3D_SIZE = BIOME_SECTION_2D_SIZE * BIOME_SECTION_WIDTH;
-constexpr int BIOME_PER_CHUNK = BIOME_SECTION_3D_SIZE * NB_OF_SECTIONS;
+constexpr int BIOME_PER_CHUNK = BIOME_SECTION_3D_SIZE * NB_OF_PLAYABLE_SECTIONS;
+
+// Default bit storage value
+constexpr int BLOCKS_BIT_STORAGE_SIZE = 4;
+constexpr int BIOME_BIT_STORAGE_SIZE = 3;
+constexpr int SKYLIGHT_BIT_STORAGE_SIZE = 4;
+constexpr int BLOCKLIGHT_BIT_STORAGE_SIZE = 4;
 
 constexpr uint64_t calculateSectionBlockIdx(const Position &pos) { return pos.x + (pos.z * SECTION_WIDTH) + (pos.y * SECTION_2D_SIZE); }
 constexpr uint64_t calculateSectionBiomeIdx(const Position &pos) { return pos.x + (pos.z * BIOME_SECTION_WIDTH) + (pos.y * BIOME_SECTION_2D_SIZE); }
@@ -38,8 +44,8 @@ class Section {
 public:
     typedef DynamicStorage<uint64_t, SECTION_3D_SIZE> BlockStorage;
     typedef DynamicStorage<uint64_t, BIOME_SECTION_3D_SIZE> BiomeStorage;
-    // typedef DynamicStorage<uint8_t, SECTION_3D_SIZE / 2> BlockLight;
-    // typedef DynamicStorage<uint8_t, SECTION_3D_SIZE / 2> SkyLight;
+    typedef DynamicStorage<uint8_t, SECTION_3D_SIZE> SkyLight;
+    typedef DynamicStorage<uint8_t, SECTION_3D_SIZE> BlockLight;
 
 public:
     Section() noexcept;
@@ -50,11 +56,23 @@ public:
     void updateBiome(const Position &pos, int32_t biome);
     void setBiome(const Position &pos, int32_t biome);
 
+    void updateSkyLight(const Position &pos, uint8_t light);
+    void setSkyLight(const Position &pos, uint8_t light);
+
+    void updateBlockLight(const Position &pos, uint8_t light);
+    void setBlockLight(const Position &pos, uint8_t);
+
     [[nodiscard]] int32_t getBlock(const Position &pos) const;
     [[nodiscard]] int32_t getBiome(const Position &pos) const;
 
     [[nodiscard]] int32_t getBlock(uint64_t idx) const;
     [[nodiscard]] int32_t getBiome(uint64_t idx) const;
+
+    [[nodiscard]] uint8_t getBlockLight(const Position &pos) const;
+    [[nodiscard]] uint8_t getSkyLight(const Position &pos) const;
+
+    [[nodiscard]] uint8_t getBlockLight(uint64_t idx) const;
+    [[nodiscard]] uint8_t getSkyLight(uint64_t idx) const;
 
     [[nodiscard]] inline constexpr bool hasBlocks() const { return _blockPalette.getBits() != 0; }
     [[nodiscard]] inline constexpr bool hasBiomes() const { return _biomePalette.getBits() != 0; }
@@ -71,20 +89,17 @@ public:
     [[nodiscard]] inline const BlockPalette &getBlockPalette() const { return _blockPalette; }
     [[nodiscard]] inline const BiomePalette &getBiomePalette() const { return _biomePalette; }
 
-    // [[nodiscard]] inline bool hasSkyLight() const { return _hasSkyLight; }
-    // [[nodiscard]] inline bool hasBlockLight() const { return _hasBlockLight; }
+    [[nodiscard]] inline bool hasSkyLight() const { return _skyLightCount > 0; }
+    [[nodiscard]] inline bool hasBlockLight() const { return _blockLightCount > 0; }
 
-    // [[nodiscard]] inline BlockLight &getBlockLight() { return _blockLight; }
-    // [[nodiscard]] inline SkyLight &getSkyLight() { return _skyLight; }
+    [[nodiscard]] inline BlockLight &getBlockLights() { return _blockLight; }
+    [[nodiscard]] inline SkyLight &getSkyLights() { return _skyLight; }
 
-    // [[nodiscard]] inline const BlockLight &getBlockLight() const { return _blockLight; }
-    // [[nodiscard]] inline const SkyLight &getSkyLight() const { return _skyLight; }
+    [[nodiscard]] inline const BlockLight &getBlockLights() const { return _blockLight; }
+    [[nodiscard]] inline const SkyLight &getSkyLights() const { return _skyLight; }
 
-    // void setBlockLight(const Position &pos, uint8_t light);
-    // void setSkyLight(const Position &pos, uint8_t light);
-
-    // void recalculateSkyLight();
-    // void recalculateBlockLight();
+    void recalculateSkyLight();
+    void recalculateBlockLight();
 
 private:
     void _reCalculatePalette();
@@ -94,10 +109,11 @@ private:
     BiomeStorage _biomes;
     BlockPalette _blockPalette;
     BiomePalette _biomePalette;
-    // BlockLight _blockLight;
-    // SkyLight _skyLight;
-    // bool _hasSkyLight;
-    // bool _hasBlockLight;
+
+    SkyLight _skyLight;
+    BlockLight _blockLight;
+    uint64_t _skyLightCount;
+    uint64_t _blockLightCount;
 };
 
 } // namespace world_storage

@@ -39,7 +39,8 @@ FetchContent_Declare(
 
 FetchContent_Declare(
     json
-    URL https://github.com/nlohmann/json/releases/download/v3.11.2/json.tar.xz
+    GIT_REPOSITORY https://github.com/nlohmann/json.git
+    GIT_TAG v3.11.2
 )
 
 FetchContent_Declare(
@@ -51,6 +52,7 @@ FetchContent_Declare(
 FetchContent_Declare(
     argparse
     GIT_REPOSITORY https://github.com/p-ranav/argparse.git
+    GIT_TAG v2.9
 )
 
 FetchContent_Declare(

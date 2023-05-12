@@ -15,6 +15,7 @@
 #include "protocol/ParseExceptions.hpp"
 #include "protocol/Structures.hpp"
 #include "types.hpp"
+#include "world_storage/DynamicStorage.hpp"
 
 namespace protocol {
 constexpr void addByte(std::vector<uint8_t> &out, const uint8_t &data) { out.push_back(data); }
@@ -165,6 +166,15 @@ constexpr void addUUID(std::vector<uint8_t> &out, const u128 &data)
     // addLong(out, (data & AUGH) >> 64);
     addLong(out, data.most);
     addLong(out, data.least);
+}
+
+template<typename T, void (*add)(std::vector<uint8_t> &, const T &), uint64_t ArraySize>
+constexpr void addArray(std::vector<uint8_t> &out, const world_storage::DynamicStorage<T, ArraySize> &data)
+{
+    addVarInt(out, data.data().size());
+
+    for (const T &i : data.data())
+        add(out, i);
 }
 
 template<typename T, void (*add)(std::vector<uint8_t> &, const T &)>

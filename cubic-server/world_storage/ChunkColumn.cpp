@@ -29,7 +29,7 @@ ChunkColumn::ChunkColumn(const Position2D &chunkPos):
 
 ChunkColumn::~ChunkColumn() { }
 
-void ChunkColumn::updateBlock(Position pos, BlockId id)
+void ChunkColumn::updateBlock(const Position &pos, BlockId id)
 {
     // TODO: Move the bitStoring to a separate class
     // Heightmap update
@@ -47,39 +47,43 @@ void ChunkColumn::updateBlock(Position pos, BlockId id)
 
     // Block update
     // LINFO("ChunkColumn updateBlock: ", pos, "[", getSectionIndex(pos), "] -> ", id);
-    auto sectionIdx = getSectionIndex(pos);
-    pos.y -= CHUNK_HEIGHT_MIN;
-    _sections.at(sectionIdx).updateBlock(pos % SECTION_WIDTH, id);
+    _sections.at(getSectionIndex(pos)).updateBlock(Position {pos.x, pos.y - CHUNK_HEIGHT_MIN, pos.z} % SECTION_WIDTH, id);
     // _blocks.at(calculateBlockIdx(pos)) = id;
 }
 
-BlockId ChunkColumn::getBlock(Position pos) const { return _sections.at(getSectionIndex(pos)).getBlock(pos % SECTION_WIDTH); }
-// const std::array<BlockId, SECTION_3D_SIZE * NB_OF_SECTIONS> &ChunkColumn::getBlocks() const { return _blocks; }
-void ChunkColumn::updateSkyLight(Position pos, uint8_t light) { _skyLights.at(calculateBlockIdx(pos)) = light; }
-uint8_t ChunkColumn::getSkyLight(Position pos) const { return _skyLights.at(calculateBlockIdx(pos)); }
-
-void ChunkColumn::updateBlockLight(Position pos, uint8_t light)
+BlockId ChunkColumn::getBlock(const Position &pos) const
 {
-    _blockLights.at(calculateBlockIdx(pos)) = light;
-    // _blockLights.at(pos.x + pos.z * 16 + pos.y * 16*16) = light;
+    return _sections.at(getSectionIndex(pos)).getBlock(Position {pos.x, pos.y - CHUNK_HEIGHT_MIN, pos.z} % SECTION_WIDTH);
 }
 
-uint8_t ChunkColumn::getBlockLight(Position pos) const
+uint8_t ChunkColumn::getSkyLight(const Position &pos) const
 {
-    return _blockLights.at(calculateBlockIdx(pos));
-    // return _blockLights.at(pos.x + pos.z * 16 + pos.y * 16*16);
+    return _sections.at(getSectionIndex(pos)).getSkyLight(Position {pos.x, pos.y - CHUNK_HEIGHT_MIN, pos.z} % SECTION_WIDTH);
 }
 
-void ChunkColumn::updateBiome(Position pos, uint8_t biome)
+void ChunkColumn::updateSkyLight(const Position &pos, uint8_t light)
 {
-    auto sectionIdx = getBiomeSectionIndex(pos);
-    pos.y -= BIOME_HEIGHT_MIN;
-    _sections.at(sectionIdx).updateBiome(pos % 4, biome);
+    _sections.at(getSectionIndex(pos)).updateSkyLight(Position {pos.x, pos.y - CHUNK_HEIGHT_MIN, pos.z} % SECTION_WIDTH, light);
 }
 
-uint8_t ChunkColumn::getBiome(Position pos) const { return _sections.at(getBiomeSectionIndex(pos)).getBiome(pos % BIOME_SECTION_WIDTH); }
+void ChunkColumn::updateBlockLight(const Position &pos, uint8_t light)
+{
+    _sections.at(getSectionIndex(pos)).updateBlockLight(Position {pos.x, pos.y - CHUNK_HEIGHT_MIN, pos.z} % SECTION_WIDTH, light);
+}
 
-// const std::array<uint8_t, BIOME_SECTION_3D_SIZE * NB_OF_SECTIONS> &ChunkColumn::getBiomes() const { return _biomes; }
+uint8_t ChunkColumn::getBlockLight(const Position &pos) const
+{
+    return _sections.at(getSectionIndex(pos)).getBlockLight(Position {pos.x, pos.y - CHUNK_HEIGHT_MIN, pos.z} % SECTION_WIDTH);
+}
+
+void ChunkColumn::updateBiome(const Position &pos, uint8_t biome)
+{
+    _sections.at(getBiomeSectionIndex(pos)).updateBiome(Position {pos.x, pos.y - BIOME_HEIGHT_MIN, pos.z} % BIOME_SECTION_WIDTH, biome);
+}
+
+uint8_t ChunkColumn::getBiome(const Position &pos) const { return _sections.at(getBiomeSectionIndex(pos)).getBiome(pos % BIOME_SECTION_WIDTH); }
+
+// const std::array<uint8_t, BIOME_SECTION_3D_SIZE * NB_OF_PLAYABLE_SECTIONS> &ChunkColumn::getBiomes() const { return _biomes; }
 
 int64_t ChunkColumn::getTick() { return _tickData; }
 void ChunkColumn::setTick(int64_t tick) { _tickData = tick; }
@@ -122,7 +126,7 @@ void ChunkColumn::updateHeightMap()
     for (auto &section : _sections) {
         for (int x = 0; x < SECTION_WIDTH; x++) {
             for (int z = 0; z < SECTION_WIDTH; z++) {
-                for (int y = SECTION_HEIGHT - 1; y >= 0; y--) {
+                for (int y = SECTION_WIDTH - 1; y >= 0; y--) {
                     if (section.getBlock({x, y, z}) != 0) {
                         _heightMap.getValueAs<nbt::List>("WORLD_SURFACE")->getValueAs<nbt::Long>(x + z * SECTION_WIDTH)->setValue(y + 1);
                         break;
@@ -136,8 +140,19 @@ void ChunkColumn::updateHeightMap()
 void ChunkColumn::recalculateSkyLight()
 {
     // TODO: REALY calculate the skylight
-    for (auto idx = 0; idx < (NB_OF_SECTIONS + 2) * SECTION_3D_SIZE; idx++)
-        _skyLights.at(idx) = 15;
+    for (auto &section : _sections) {
+        for (auto x = 0; x < SECTION_WIDTH; x++) {
+            for (auto y = 0; y < SECTION_WIDTH; y++) {
+                for (auto z = 0; z < SECTION_WIDTH; z++)
+                    section.setSkyLight({x, y, z},15);
+            }
+        }
+    }
+}
+
+void ChunkColumn::recalculateBlockLight()
+{
+    // TODO: REALY calculate the blocklight
 }
 
 void ChunkColumn::generate(WorldType worldType, Seed seed)
@@ -173,7 +188,7 @@ void ChunkColumn::_generateOverworld(Seed seed)
             for (int x = 0; x < SECTION_WIDTH; x++) {
                 auto block = generator.getBlock(x + this->_chunkPos.x * SECTION_WIDTH, y, z + this->_chunkPos.z * SECTION_WIDTH);
                 // if (block != Blocks::Air::toProtocol())
-                    updateBlock({x, y, z}, block);
+                updateBlock({x, y, z}, block);
             }
         }
     }

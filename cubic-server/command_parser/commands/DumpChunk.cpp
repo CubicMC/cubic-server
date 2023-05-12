@@ -48,7 +48,7 @@ void command_parser::DumpChunk::execute(std::vector<std::string> &args, Player *
     //     }
     // }
     LDEBUG("Dumping palette...");
-    for (uint8_t sectionID = 0; sectionID < world_storage::NB_OF_SECTIONS; sectionID++) {
+    for (uint8_t sectionID = 0; sectionID < world_storage::NB_OF_PLAYABLE_SECTIONS; sectionID++) {
         const auto &section = sections[sectionID];
         LDEBUG("Section " << (int) sectionID);
 
@@ -68,7 +68,7 @@ void command_parser::DumpChunk::execute(std::vector<std::string> &args, Player *
     LDEBUG("--- CHUNK DATA ---");
 
     LDEBUG("Checking palette...");
-    for (uint8_t sectionID = 0; sectionID < world_storage::NB_OF_SECTIONS; sectionID++) {
+    for (uint8_t sectionID = 0; sectionID < world_storage::NB_OF_PLAYABLE_SECTIONS; sectionID++) {
         const auto &section = sections[sectionID];
         LDEBUG("Section " << (int) sectionID);
 
@@ -148,7 +148,7 @@ void command_parser::DumpChunk::execute(std::vector<std::string> &args, Player *
 
     // LDEBUG("Chunk data size: " << protocol::popVarInt(at, eof));
 
-    // for (uint8_t sectionID = 0; sectionID < world_storage::NB_OF_SECTIONS; sectionID++) {
+    // for (uint8_t sectionID = 0; sectionID < world_storage::NB_OF_PLAYABLE_SECTIONS; sectionID++) {
     //     LDEBUG("Section " << std::dec << (int) sectionID);
     //     auto blockCount = protocol::popShort(at, eof);
     //     LDEBUG('\t' << "Block count: " << blockCount);
