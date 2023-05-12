@@ -15,6 +15,7 @@
 #include "WorldGroup.hpp"
 #include "default/DefaultWorldGroup.hpp"
 #include "logging/Logger.hpp"
+#include "scoreboard/ScoreboardSystem.hpp"
 
 static const std::unordered_map<std::string, std::uint32_t> _checksums = {
     {"https://cdn.cubic-mc.com/1.19/blocks-1.19.json", 0x8b138b58},
@@ -92,6 +93,9 @@ void Server::launch(const configuration::ConfigHandler &config)
     auto defaultChat = std::make_shared<Chat>();
     _worldGroups.emplace("default", new DefaultWorldGroup(defaultChat));
     _worldGroups.at("default")->initialize();
+
+    // Initialize scoreboard system
+    this->scoreboardSystem.initialize();
 
     this->_running = true;
 

@@ -17,6 +17,7 @@
 #include "protocol_id_converter/itemConverter.hpp"
 
 #include "Permissions.hpp"
+#include "scoreboard/ScoreboardSystem.hpp"
 #include "options.hpp"
 
 constexpr char MC_VERSION[] = "1.19.3";
@@ -71,6 +72,8 @@ public:
     const std::unordered_map<std::string_view, std::shared_ptr<WorldGroup>> &getWorldGroups() const;
 
     Permissions permissions;
+
+    ScoreboardSystem scoreboardSystem;
 
 private:
     Server();

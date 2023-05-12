@@ -34,6 +34,7 @@ namespace Scoreboard {
         };
 
         enum Color {
+            Unset = -1,
             Black = 0,
             DarkBlue,
             DarkGreen,
@@ -55,7 +56,9 @@ namespace Scoreboard {
         class Team {
         public:
             Team(const std::string &name);
+            Team(const std::string &name, const Color &color);
             Team(const std::string &name, const std::string &displayName);
+            Team(const std::string &name, const Color &color, const std::string &displayName);
             ~Team();
 
             const std::unordered_set<std::string> &getMember(void) const noexcept;
@@ -90,10 +93,10 @@ namespace Scoreboard {
             DeathMessageVisibility::DeathMessageVisibility _deathMessageVisibility;
             CollisionRule::CollisionRule _collisionRule;
             const std::string _name;
+            Color _color;
             std::string _displayName; // json format
             std::string _memberNamePrefix; // json format
             std::string _memberNameSuffix; // json format
-            Color _color;
             std::unordered_set<std::string> _members;
         };
     };

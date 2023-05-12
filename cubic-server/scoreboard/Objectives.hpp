@@ -7,6 +7,7 @@
 #include <cstdint>
 
 class Entity;
+class ScoreboardSystem;
 
 namespace Scoreboard {
     class Score {
@@ -29,8 +30,6 @@ namespace Scoreboard {
     };
 
     namespace Objective {
-        using Criteria = uint16_t;
-
         enum RenderType {
             RenderInteger = 0,
             RenderHearts
@@ -38,14 +37,14 @@ namespace Scoreboard {
 
         class Objective {
         public:
-            Objective(const std::string &name, const Criteria criteria);
-            Objective(const std::string &name, const Criteria criteria, const std::string &displayName);
-            Objective(const std::string &name, const Criteria criteria, const std::string &displayName, const RenderType &renderType);
-            Objective(const Objective &other);
+            Objective(const std::string &name, const std::string &criteria);
+            Objective(const std::string &name, const std::string &criteria, const std::string &displayName);
+            Objective(const std::string &name, const std::string &criteria, const RenderType &renderType);
+            Objective(const std::string &name, const std::string &criteria, const std::string &displayName, const RenderType &renderType);
             ~Objective();
 
             const std::string &getName(void) const noexcept;
-            const Criteria &getCriteria(void) const noexcept;
+            const std::string &getCriteria(void) const noexcept;
             const std::string &getDisplayName(void) const noexcept;
             const RenderType &getRenderType(void) const noexcept;
             const std::unordered_map<std::string, Score> &getScores(void) const noexcept;
@@ -63,7 +62,7 @@ namespace Scoreboard {
 
         private:
             const std::string _name;
-            const Criteria _criteria;
+            const std::string _criteria;
             std::string _displayName; //json format
             RenderType _renderType;
             std::unordered_map<std::string, Score> _values;

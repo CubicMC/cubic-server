@@ -1,10 +1,14 @@
 #include "Objectives.hpp"
 
 namespace Scoreboard {
-    Score::Score(const int32_t &value) : _score(value), _locked(true)
+    Score::Score(const int32_t &value):
+        _score(value), 
+        _locked(true)
     {}
 
-    Score::Score(const int32_t &value, bool locked) : _score(value), _locked(locked)
+    Score::Score(const int32_t &value, bool locked):
+        _score(value),
+        _locked(locked)
     {}
 
     Score::~Score()
@@ -41,16 +45,32 @@ namespace Scoreboard {
     }
 
     namespace Objective {
-        Objective::Objective(const std::string &name, const Criteria criteria) : _name(name), _criteria(criteria), _displayName(name), _renderType(RenderInteger)
+        Objective::Objective(const std::string &name, const std::string &criteria):
+            _name(name),
+            _criteria(criteria),
+            _displayName("{\"text\":\"" + name + "\"}"),
+            _renderType(RenderInteger)
         {}
 
-        Objective::Objective(const std::string &name, const Criteria criteria, const std::string &displayName) : _name(name), _criteria(criteria), _displayName(displayName), _renderType(RenderInteger)
+        Objective::Objective(const std::string &name, const std::string &criteria, const std::string &displayName):
+            _name(name),
+            _criteria(criteria),
+            _displayName(displayName),
+            _renderType(RenderInteger)
         {}
 
-        Objective::Objective(const std::string &name, const Criteria criteria, const std::string &displayName, const RenderType &renderType) : _name(name), _criteria(criteria), _displayName(displayName), _renderType(renderType)
+        Objective::Objective(const std::string &name, const std::string &criteria, const RenderType &renderType):
+            _name(name),
+            _criteria(criteria),
+            _displayName("{\"text\":\"" + name + "\"}"),
+            _renderType(renderType)
         {}
 
-        Objective::Objective(const Objective &other) : _name(other.getName()), _criteria(other.getCriteria()), _displayName(other.getDisplayName()), _renderType(other.getRenderType()), _values(other.getScores())
+        Objective::Objective(const std::string &name, const std::string &criteria, const std::string &displayName, const RenderType &renderType):
+            _name(name),
+            _criteria(criteria),
+            _displayName(displayName),
+            _renderType(renderType)
         {}
 
         Objective::~Objective()
@@ -61,7 +81,7 @@ namespace Scoreboard {
             return (this->_name);
         }
 
-        const Criteria &Objective::getCriteria(void) const noexcept
+        const std::string &Objective::getCriteria(void) const noexcept
         {
             return (this->_criteria);
         }

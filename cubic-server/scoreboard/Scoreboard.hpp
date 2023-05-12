@@ -1,17 +1,14 @@
-#ifndef CUBICSERVER_SCOREBOARD_HPP
-#define CUBICSERVER_SCOREBOARD_HPP
+#ifndef CUBICSERVER_SCOREBOARD_SCOREBOARD_HPP
+#define CUBICSERVER_SCOREBOARD_SCOREBOARD_HPP
 
-#include <string>
 #include <unordered_map>
 #include <memory>
-#include <vector>
 #include <array>
-#include <cstdint>
 
 #include "Objectives.hpp"
 #include "Teams.hpp"
 
-class Entity;
+class ScoreboardSystem;
 
 namespace Scoreboard {
     enum DisplaySlot {
@@ -35,31 +32,39 @@ namespace Scoreboard {
         sidebarTeamYellow,
         sidebarTeamWhite
     };
-};
 
-class Scoreboards {
-public:
-    Scoreboards();
-    ~Scoreboards();
+    class Scoreboard {
+    public:
+        Scoreboard(const ScoreboardSystem &system);
+        ~Scoreboard() = default;
 
-    void initialize(void);
+        bool isObjective(const std::string &name) const noexcept;
+        const Objective::Objective &getObjective(const std::string &name) const;
+        const std::unordered_map<std::string, std::shared_ptr<Objective::Objective>> &getObjectives(void) const noexcept;
 
-    void addObjectiveCriteria(const std::string &criteria);
-
-    const Scoreboard::Objective::Objective *getObjective(const std::string &name);
-    const std::unordered_map<std::string, std::unique_ptr<Scoreboard::Objective::Objective>> &getObjectives(void);
+        bool addObjective(const std::string &name, const std::string &criteria);
+        bool addObjective(const std::string &name, const std::string &criteria, std::string &displayName);
+        bool removeObjective(const std::string &name);
+        void displayObjective(DisplaySlot slot, Objective::Objective *objective) noexcept;
     
-    void addObjective(const std::string &name, Scoreboard::Objective::Criteria criteria);
-    void addObjective(const std::string &name, Scoreboard::Objective::Criteria criteria, std::string &displayName);
-    void removeObjective(const std::string &name);
-    void displayObjective(Scoreboard::DisplaySlot slot, Scoreboard::Objective::Objective *objective) noexcept;
+        void addToObjectivebyCriteria(const std::string &criteria, const std::string &entity, int32_t value);
+        void setToObjectivebyCriteria(const std::string &criteria, const std::string &entity, int32_t value);
 
-private:
-    std::unordered_map<std::string, std::unique_ptr<Scoreboard::Objective::Objective>> _objectives;
-    std::vector<Scoreboard::Score> _scores;
-    std::vector<Scoreboard::Team::Team> _teams;
-    std::array<Scoreboard::Objective::Objective *, 18> _displaySlots;
-    std::vector<std::string> _criteriaList;
+        bool isTeam(const std::string &name) const noexcept;
+        const Team::Team &getTeam(const std::string &name) const;
+        const std::unordered_map<std::string, std::unique_ptr<Team::Team>> &getTeams(void) const noexcept;
+
+        bool addTeam(const std::string &name);
+        bool removeTeam(const std::string &name);
+
+    private:
+        const ScoreboardSystem &_system;
+        std::unordered_map<std::string, std::shared_ptr<Objective::Objective>> _objectives;
+        std::unordered_map<std::string, std::unique_ptr<Team::Team>> _teams;
+        std::array<Objective::Objective *, 18> _displaySlots;
+        std::unordered_map<std::string, std::unordered_map<std::string, std::shared_ptr<Objective::Objective>>> _objectivesByCriteria;
+    };
 };
 
-#endif /* CUBICSERVER_SCOREBOARD_HPP */
+
+#endif //CUBICSERVER_SCOREBOARD_SCOREBOARD_HPP

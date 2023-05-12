@@ -2,10 +2,56 @@
 
 namespace Scoreboard {
     namespace Team {
-        Team::Team(const std::string &name) : _name(name)
+        Team::Team(const std::string &name):
+            _allowFriendlyFire(true),
+            _seeFriendlyInvisibles(false),
+            _nametagVisibility(NametagVisibility::always),
+            _deathMessageVisibility(DeathMessageVisibility::always),
+            _collisionRule(CollisionRule::always),
+            _name(name),
+            _color(Unset),
+            _displayName("{\"text\":\"}" + name + "\"}"),
+            _memberNamePrefix(""),
+            _memberNameSuffix("")
         {}
 
-        Team::Team(const std::string &name, const std::string &displayName) : _name(name), _displayName(displayName)
+        Team::Team(const std::string &name, const Color &color):
+            _allowFriendlyFire(true),
+            _seeFriendlyInvisibles(false),
+            _nametagVisibility(NametagVisibility::always),
+            _deathMessageVisibility(DeathMessageVisibility::always),
+            _collisionRule(CollisionRule::always),
+            _name(name),
+            _color(color),
+            _displayName("{\"text\":\"}" + name + "\"}"),
+            _memberNamePrefix(""),
+            _memberNameSuffix("")
+        {}
+
+        Team::Team(const std::string &name, const std::string &displayName):
+            _allowFriendlyFire(true),
+            _seeFriendlyInvisibles(false),
+            _nametagVisibility(NametagVisibility::always),
+            _deathMessageVisibility(DeathMessageVisibility::always),
+            _collisionRule(CollisionRule::always),
+            _name(name),
+            _color(Unset),
+            _displayName(displayName),
+            _memberNamePrefix(""),
+            _memberNameSuffix("")
+        {}
+
+        Team::Team(const std::string &name, const Color &color, const std::string &displayName):
+            _allowFriendlyFire(true),
+            _seeFriendlyInvisibles(false),
+            _nametagVisibility(NametagVisibility::always),
+            _deathMessageVisibility(DeathMessageVisibility::always),
+            _collisionRule(CollisionRule::always),
+            _name(name),
+            _color(color),
+            _displayName(displayName),
+            _memberNamePrefix(""),
+            _memberNameSuffix("")
         {}
 
         Team::~Team()
