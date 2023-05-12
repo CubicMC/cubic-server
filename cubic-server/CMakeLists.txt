@@ -36,9 +36,15 @@ target_sources (${CMAKE_PROJECT_NAME} PRIVATE
     types.hpp
     types.cpp
     blocks.hpp
+    PluginInterface.hpp
     PluginManager.hpp
     PluginManager.cpp
 )
+
+link_directories(/home/thomas/Repository/cubic-server/cubic-server/plugins)
+target_link_libraries(${CMAKE_PROJECT_NAME} PRIVATE libplugin_interface.so)
+
+file(COPY plugins DESTINATION ${CMAKE_BINARY_DIR})
 
 if (GTEST)
     enable_testing()

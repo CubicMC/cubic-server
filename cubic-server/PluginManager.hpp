@@ -6,6 +6,7 @@
 #include <unordered_map>
 #include <variant>
 #include <memory>
+#include <stdint.h>
 
 class PluginInterface;
 
@@ -20,6 +21,7 @@ class World;
 class Dimension;
 class Chunk;
 
+template<typename T>
 class Vector3;
 
 namespace EventType {
@@ -29,15 +31,15 @@ namespace EventType {
     typedef void (*onPlayerLeave)(PluginInterface *interface, Player *player);
     typedef void (*onPlayerChat)(PluginInterface *interface, Player *player, Chat *chat, std::string message);
     typedef void (*onEntitySpawn)(PluginInterface *interface, Entity *entity);
-    typedef void (*onEntityMove)(PluginInterface *interface, Entity *entity, Vector3 *from, Vector3 *to);
-    typedef void (*onEntityRotate)(PluginInterface *interface, Entity *entity, Vector3 *from, Vector3 *to);
+    typedef void (*onEntityMove)(PluginInterface *interface, Entity *entity, Vector3<double> *from, Vector3<double> *to);
+    typedef void (*onEntityRotate)(PluginInterface *interface, Entity *entity, Vector3<uint8_t> *from, Vector3<uint8_t> *to);
     typedef void (*onEntityInteractEntity)(PluginInterface *interface, Entity *source, Entity *target);
     typedef void (*onEntityInteractBlock)(PluginInterface *interface, Entity *entity, Block *block);
     typedef void (*onEntityDamage)(PluginInterface *interface, Entity *source, float amount);
     typedef void (*onEntityUse)(PluginInterface *interface, Entity *entity, Item *item);
-    typedef void (*onBlockPlace)(PluginInterface *interface, Block *block, Vector3 *position);
-    typedef void (*onBlockDestroy)(PluginInterface *interface, Block *block, Vector3 *position);
-    typedef void (*onBlockInteract)(PluginInterface *interface, Block *block, Vector3 *position, Entity *entity);
+    typedef void (*onBlockPlace)(PluginInterface *interface, Block *block, Vector3<int> *position);
+    typedef void (*onBlockDestroy)(PluginInterface *interface, Block *block, Vector3<int> *position);
+    typedef void (*onBlockInteract)(PluginInterface *interface, Block *block, Vector3<int> *position, Entity *entity);
     typedef void (*onInventoryOpen)(PluginInterface *interface, Player *player, Inventory *inventory);
     typedef void (*onInventoryClose)(PluginInterface *interface, Player *player, Inventory *inventory);
     typedef void (*onInventoryChange)(PluginInterface *interface, Inventory *inventory);
@@ -75,41 +77,41 @@ namespace EventType {
 };
 
 namespace EventKey {
-    const char *initialize = "initialize";
-    const char *destroy = "destroy";
-    const char *onPlayerJoin = "onPlayerJoin";
-    const char *onPlayerLeave = "onPlayerLeave";
-    const char *onPlayerChat = "onPlayerChat";
-    const char *onEntitySpawn = "onEntitySpawn";
-    const char *onEntityMove = "onEntityMove";
-    const char *onEntityRotate = "onEntityRotate";
-    const char *onEntityInteractEntity = "onEntityInteractEntity";
-    const char *onEntityInteractBlock = "onEntityInteractBlock";
-    const char *onEntityDamage = "onEntityDamage";
-    const char *onEntityUse = "onEntityUse";
-    const char *onBlockPlace = "onBlockPlace";
-    const char *onBlockDestroy = "onBlockDestroy";
-    const char *onBlockInteract = "onBlockInteract";
-    const char *onInventoryOpen = "onInventoryOpen";
-    const char *onInventoryClose = "onInventoryClose";
-    const char *onInventoryChange = "onInventoryChange";
-    const char *onWorldLoad = "onWorldLoad";
-    const char *onDimensionLoad = "onDimensionLoad";
-    const char *onChunkLoad = "onChunkLoad";
+    static const char *initialize = "initialize";
+    static const char *destroy = "destroy";
+    static const char *onPlayerJoin = "onPlayerJoin";
+    static const char *onPlayerLeave = "onPlayerLeave";
+    static const char *onPlayerChat = "onPlayerChat";
+    static const char *onEntitySpawn = "onEntitySpawn";
+    static const char *onEntityMove = "onEntityMove";
+    static const char *onEntityRotate = "onEntityRotate";
+    static const char *onEntityInteractEntity = "onEntityInteractEntity";
+    static const char *onEntityInteractBlock = "onEntityInteractBlock";
+    static const char *onEntityDamage = "onEntityDamage";
+    static const char *onEntityUse = "onEntityUse";
+    static const char *onBlockPlace = "onBlockPlace";
+    static const char *onBlockDestroy = "onBlockDestroy";
+    static const char *onBlockInteract = "onBlockInteract";
+    static const char *onInventoryOpen = "onInventoryOpen";
+    static const char *onInventoryClose = "onInventoryClose";
+    static const char *onInventoryChange = "onInventoryChange";
+    static const char *onWorldLoad = "onWorldLoad";
+    static const char *onDimensionLoad = "onDimensionLoad";
+    static const char *onChunkLoad = "onChunkLoad";
 }
 
-#define onEvent(plugin_manager, key, x) for (const auto &event : plugin_manager._events[key]) { \
-    event(x); \
+#define onEvent(plugin_manager, key, x) for (const auto &event : plugin_manager->_events[EventKey::key]) { \
+    ((EventType::key)event.rawptr)(x); \
 }
 
 class PluginManager {
 public:
-    PluginManager(std::string &folder);
-    ~PluginManager() = default;
+    PluginManager(const std::string &folder = "./plugins");
+    ~PluginManager();
 
     void load(void);
     void reload(void);
-
+    void unload(void);
 
     std::unordered_map<std::string, std::vector<EventType::AllTypes>> _events;
 
@@ -118,6 +120,7 @@ private:
 
     std::string _folder;
     std::shared_ptr<PluginInterface> _interface;
+    std::unordered_map<std::string, void *> _plugins;
 };
 
 #endif // CUBICSERVER_PLUGINMANAGER_HPP

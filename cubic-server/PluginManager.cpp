@@ -1,13 +1,21 @@
 #include "PluginManager.hpp"
+#include "PluginInterface.hpp"
+#include "logging/Logger.hpp"
+#include "Server.hpp"
 
 #include <dlfcn.h>
-#include <fstream>
 #include <filesystem>
 #include <array>
 
-PluginManager::PluginManager(std::string &folder) : _folder(folder)
+PluginManager::PluginManager(const std::string &folder) : _folder(folder), _interface(std::make_shared<PluginInterface>())
 {
+    //this->_interface->load(Server::getInstance());
+    this->load();
+}
 
+PluginManager::~PluginManager()
+{
+    this->unload();
 }
 
 void PluginManager::loadPlugin(std::string filepath)
@@ -41,18 +49,27 @@ void PluginManager::loadPlugin(std::string filepath)
     nhandle = dlopen(filepath.c_str(), RTLD_LAZY);
     if (!nhandle) {
         //SRO
+        return;
     }
+
+    LINFO("Adding ", filepath, " to plugin list");
+
+    this->_plugins[filepath] = nhandle;
+
+    LINFO("Loading ", filepath);
+
     for (const auto &key : EventKeyArray) {
         rawptr = dlsym(nhandle, key);
         if (rawptr) {
+            LINFO("Loading event ", key);
             this->_events[key].push_back(rawptr);
         }
     }
-    dlclose(nhandle);
 }
 
 void PluginManager::load(void)
 {
+    LINFO("Loading plugins from ", this->_folder, "...");
     if (!std::filesystem::is_directory(this->_folder))
         return;
 
@@ -61,10 +78,24 @@ void PluginManager::load(void)
             loadPlugin(filepath.path().string());
         }
     }
+    LINFO("Loaded plugins");
+
+    using namespace EventKey;
+    onEvent(this, initialize, this->_interface.get());
+}
+
+void PluginManager::unload(void)
+{
+    LINFO("Unloading plugins...");
+    for (const auto &plugin : this->_plugins)
+        dlclose(plugin.second);
+    this->_plugins.clear();
+    LINFO("Unloaded plugins");
 }
 
 void PluginManager::reload(void)
 {
+    this->unload();
     this->_events.clear();
     this->load();
 }

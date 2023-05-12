@@ -18,6 +18,8 @@
 
 #include "Permissions.hpp"
 
+#include "PluginManager.hpp"
+
 constexpr char MC_VERSION[] = "1.19.3";
 
 constexpr uint16_t MC_PROTOCOL = 761;
@@ -97,6 +99,7 @@ private:
     Configuration::ConfigHandler _config;
     WhitelistHandling::Whitelist _whitelist;
     std::unordered_map<std::string_view, WorldGroup *> _worldGroups;
+    PluginManager _pluginManager;
     // clang-format off
     std::vector<CommandBase *> _commands = {
         new command_parser::Help,
