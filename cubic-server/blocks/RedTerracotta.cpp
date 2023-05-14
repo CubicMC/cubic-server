@@ -1,10 +1,7 @@
 #include "RedTerracotta.hpp"
 namespace Blocks {
 namespace RedTerracotta {
-BlockId toProtocol()
-{
-    return 8974;
-}
+BlockId toProtocol() { return 8974; }
 }
 
 }

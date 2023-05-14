@@ -1,10 +1,7 @@
 #include "PurpleTerracotta.hpp"
 namespace Blocks {
 namespace PurpleTerracotta {
-BlockId toProtocol()
-{
-    return 8970;
-}
+BlockId toProtocol() { return 8970; }
 }
 
 }

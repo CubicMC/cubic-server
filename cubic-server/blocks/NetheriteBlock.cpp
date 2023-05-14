@@ -1,10 +1,7 @@
 #include "NetheriteBlock.hpp"
 namespace Blocks {
 namespace NetheriteBlock {
-BlockId toProtocol()
-{
-    return 18819;
-}
+BlockId toProtocol() { return 18819; }
 }
 
 }

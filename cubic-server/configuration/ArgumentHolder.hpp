@@ -15,7 +15,7 @@ namespace _details {
 template<typename T>
 class _ArgumentHolder : public _ImplRef<T> {
 public:
-    _ArgumentHolder() = default;
+    // _ArgumentHolder() = default;
     _ArgumentHolder(T &impl):
         _ImplRef<T>(impl)
     {
@@ -33,7 +33,7 @@ public:
  */
 class ArgumentHolder : public _details::_ArgumentHolder<argparse::Argument> {
 public:
-    ArgumentHolder() = default;
+    // ArgumentHolder() = default;
     ArgumentHolder(argparse::Argument &impl):
         _details::_ArgumentHolder<argparse::Argument>(impl)
     {

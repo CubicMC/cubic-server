@@ -9,6 +9,7 @@ struct Deop : public CommandBase {
         CommandBase("deop", "/deop [<player>]", true)
     {
     }
+    ~Deop() override = default;
 
     void autocomplete(std::vector<std::string> &args, Player *invoker) const override;
     void execute(std::vector<std::string> &args, Player *invoker) const override;

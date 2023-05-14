@@ -10,6 +10,7 @@ namespace chat::message::event {
 class OnHover {
 public:
     OnHover() = default;
+    virtual ~OnHover() = default;
 
     virtual nlohmann::json toJson() const = 0;
 

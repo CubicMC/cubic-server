@@ -10,11 +10,11 @@
 
 #include "Chat.hpp"
 #include "Client.hpp"
+#include "Dimension.hpp"
 #include "Player.hpp"
 #include "WorldGroup.hpp"
 #include "default/DefaultWorldGroup.hpp"
 #include "logging/Logger.hpp"
-#include "Dimension.hpp"
 
 static const std::unordered_map<std::string, std::uint32_t> _checksums = {
     {"https://cdn.cubic-mc.com/1.19/blocks-1.19.json", 0x8b138b58},

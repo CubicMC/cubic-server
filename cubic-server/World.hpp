@@ -8,7 +8,7 @@
 
 #include "TickClock.hpp"
 #include "options.hpp"
-#include "thread_pool/Pool.hpp"
+#include "thread_pool/PriorityThreadPool.hpp"
 #include "types.hpp"
 #include "world_storage/LevelData.hpp"
 
@@ -23,13 +23,14 @@ constexpr int NB_SPAWN_CHUNKS = 19;
 class World : public std::enable_shared_from_this<World> {
 public:
     World(std::shared_ptr<WorldGroup> worldGroup);
+    virtual ~World() = default;
 
     virtual void tick();
     virtual void initialize();
     virtual void stop();
 
     NODISCARD virtual bool isInitialized() const;
-    NODISCARD virtual const std::shared_ptr<WorldGroup>getWorldGroup() const;
+    NODISCARD virtual const std::shared_ptr<WorldGroup> getWorldGroup() const;
     NODISCARD virtual std::shared_ptr<WorldGroup> getWorldGroup();
     NODISCARD virtual const std::shared_ptr<Chat> getChat() const;
     NODISCARD virtual std::shared_ptr<Chat> getChat();
@@ -44,7 +45,7 @@ public:
     virtual void sendPlayerInfoAddPlayer(Player *);
     virtual void sendPlayerInfoRemovePlayer(const Player *current);
 
-    NODISCARD virtual thread_pool::Pool &getGenerationPool();
+    NODISCARD virtual thread_pool::PriorityThreadPool &getGenerationPool();
 
     NODISCARD virtual Seed getSeed() const;
     NODISCARD virtual uint8_t getRenderDistance() const;
@@ -73,7 +74,7 @@ protected:
     world_storage::LevelData _levelData;
     TickClock _timeUpdateClock;
     Seed _seed;
-    thread_pool::Pool _generationPool;
+    thread_pool::PriorityThreadPool _generationPool;
 };
 
 #endif // CUBICSERVER_WORLD_HPP

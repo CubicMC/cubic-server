@@ -1,10 +1,7 @@
 #include "Glass.hpp"
 namespace Blocks {
 namespace Glass {
-BlockId toProtocol()
-{
-    return 468;
-}
+BlockId toProtocol() { return 468; }
 }
 
 }

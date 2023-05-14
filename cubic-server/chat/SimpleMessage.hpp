@@ -6,38 +6,10 @@
 #include <optional>
 #include <string>
 
+#include "ChatMessageUtils.hpp"
 #include "translationFromKey.hpp"
 
 namespace chat {
-class Message;
-
-namespace message {
-enum Type : int32_t {
-    Chat = 0,
-    Emote,
-    WhisperIn,
-    WhisperOut,
-    Announce,
-    TeamText,
-    TeamSent,
-};
-
-struct Style {
-    std::optional<bool> bold;
-    std::optional<bool> italic;
-    std::optional<bool> underlined;
-    std::optional<bool> strikethrough;
-    std::optional<bool> obfuscated;
-    std::optional<std::string> font;
-    std::optional<std::string> color;
-};
-
-struct Options {
-    std::optional<std::string> insertion;
-    std::optional<std::string> translate;
-    std::vector<Message> with;
-};
-} // namespace message
 
 /**
  * @brief A simple message that can be sent to a player, without any events
@@ -50,9 +22,14 @@ struct Options {
  */
 class SimpleMessage {
 public:
-    SimpleMessage(const std::string &message, const chat::message::Style &style = {}, const chat::message::Options &options = {});
-    SimpleMessage(const char message[], const chat::message::Style &style = {}, const chat::message::Options &options = {});
-    ~SimpleMessage() = default;
+
+    SimpleMessage(const std::string &message, const chat::message::Style &style, const chat::message::Options &options);
+    SimpleMessage(const std::string &message, const chat::message::Style &style);
+    SimpleMessage(const std::string &message);
+    SimpleMessage(const char message[], const chat::message::Style &style, const chat::message::Options &options);
+    SimpleMessage(const char message[], const chat::message::Style &style);
+    SimpleMessage(const char message[]);
+    virtual ~SimpleMessage() = default;
 
     const std::string &getMessage() const;
     const chat::message::Style &getStyle() const;

@@ -1,10 +1,7 @@
 #include "PottedAcaciaSapling.hpp"
 namespace Blocks {
 namespace PottedAcaciaSapling {
-BlockId toProtocol()
-{
-    return 8342;
-}
+BlockId toProtocol() { return 8342; }
 }
 
 }

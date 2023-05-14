@@ -16,6 +16,8 @@ public:
     ItemHover(const world_storage::Item &item):
         _item(item) {};
 
+    ~ItemHover() override = default;
+
     nlohmann::json toJson() const override;
 
     static std::shared_ptr<ItemHover> fromJson(const nlohmann::json &json);

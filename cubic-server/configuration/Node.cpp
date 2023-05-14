@@ -33,7 +33,7 @@ void configuration::Node::load(const std::filesystem::path &path)
 {
     try {
         this->_impl = YAML::LoadFile(path);
-    } catch (const YAML::BadFile&) {
+    } catch (const YAML::BadFile &) {
         throw configuration::BadFile("Unable to open file '" + path.string() + "'");
     }
 
