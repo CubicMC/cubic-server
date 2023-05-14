@@ -15,6 +15,8 @@ namespace Recipe {
 
         static std::unique_ptr<Recipe> create(const nlohmann::json &recipe);
     private:
+
+        // class containing or not any list of item
         class MaybeItems {
         public:
             MaybeItems(void);
@@ -26,15 +28,17 @@ namespace Recipe {
 
         private:
             bool _empty;
-            std::weak_ptr<std::vector<ItemId>> _items;
+            // refering to an entry of the "key" map, will always be valid
+            std::weak_ptr<std::vector<ItemId>> _items; 
         };
 
+        // get the corresponding indexed items
         bool getKey(char key, const nlohmann::json &content);
 
-        std::unordered_map<char, std::shared_ptr<std::vector<ItemId>>> _key;
-        std::vector<std::vector<MaybeItems>> _pattern;
-        ItemId _result;
-        uint64_t _count;
+        std::unordered_map<char, std::shared_ptr<std::vector<ItemId>>> _key; // list of item to be placed on the table
+        std::vector<std::vector<MaybeItems>> _pattern; // pattern of the craft
+        ItemId _result; // item crafted
+        uint64_t _count; // number of items crafted
     };
 };
 

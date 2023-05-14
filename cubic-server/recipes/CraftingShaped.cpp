@@ -19,11 +19,10 @@ namespace Recipe {
         return (this->_items);
     }
 
-    CraftingShaped::CraftingShaped(const nlohmann::json &recipe)
+    CraftingShaped::CraftingShaped(const nlohmann::json &recipe):
+        Recipe(recipe)
     {
-        this->setCategory(recipe);
-        this->setGroup(recipe);
-
+        // returns if any value is missing or does not have the right type
         if (!recipe.contains("pattern") || \
             !recipe.contains("key") || \
             !recipe.contains("result") || \
@@ -33,6 +32,7 @@ namespace Recipe {
             !recipe["result"].contains("item") || \
             !recipe["result"]["item"].is_string())
             return;
+        // get the recipe values
         this->_result = Server::getInstance()->getItemConverter().fromItemToProtocolId(recipe["result"]["item"].get<std::string>());
         if (recipe["result"].contains("count") && recipe["result"]["count"].is_number_unsigned())
             this->_count = recipe["result"]["count"].get<nlohmann::json::number_unsigned_t>();
@@ -62,40 +62,46 @@ namespace Recipe {
 
     void CraftingShaped::dump(void) const
     {
+        std::stringstream stream;
+
         for (const auto &line : this->_pattern) {
             for (const auto &item : line) {
                 if (item.isEmpty())
-                    std::cout << ' ';
+                    stream << ' ';
                 else {
                     bool found_key = false;
 
                     for (const auto &[key, items] : this->_key) {
                         if (item.getItems().lock() == items) {
-                            std::cout << key;
+                            stream << key;
                             found_key = true;
                             break;
                         }
                     }
                     if (!found_key)
-                        std::cout << '!';
+                        stream << '!';
                 }
             }
-            std::cout << std::endl;
+            LINFO(stream.str());
+            stream.str("");
         }
         for (const auto &[key, items] : this->_key) {
-            std::cout << '\''<< key << "\': [";
+            stream << '\''<< key << "\': [";
             bool first_item = true;
 
             for (const auto &item : *items) {
                 if (first_item)
                     first_item = false;
                 else
-                    std::cout << ", ";
-                std::cout << '\"' << Server::getInstance()->getItemConverter().fromProtocolIdToItem(item) << '\"';
+                    stream << ", ";
+                stream << '\"' << Server::getInstance()->getItemConverter().fromProtocolIdToItem(item) << '\"';
             }
-            std::cout << ']' << std::endl;
+            stream << ']';
+            LINFO(stream.str());
+            stream.str("");
         }
-        std::cout << " -> " << Server::getInstance()->getItemConverter().fromProtocolIdToItem(this->_result) << " (x" << this->_count << ')' << std::endl;
+        stream << " -> " << Server::getInstance()->getItemConverter().fromProtocolIdToItem(this->_result) << " (x" << this->_count << ')';
+        LINFO(stream.str());
     }
 
     bool CraftingShaped::getKey(char key, const nlohmann::json &content)

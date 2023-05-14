@@ -15,9 +15,9 @@ namespace Recipe {
 
         static std::unique_ptr<Recipe> create(const nlohmann::json &recipe);
     private:
-        std::vector<ItemId> _ingredients;
-        ItemId _result;
-        uint64_t _count;
+        std::vector<ItemId> _ingredients; // list of items to craft
+        ItemId _result; // crafted item
+        uint64_t _count; // number of crafted items
     };
 };
 

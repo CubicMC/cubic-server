@@ -3,11 +3,10 @@
 #include "Server.hpp"
 
 namespace Recipe {
-    CraftingShapeless::CraftingShapeless(const nlohmann::json &recipe)
+    CraftingShapeless::CraftingShapeless(const nlohmann::json &recipe):
+        Recipe(recipe)
     {
-        this->setCategory(recipe);
-        this->setGroup(recipe);
-        
+        // returns if any value is missing or does not have the right type
         if (!recipe.contains("ingredients") || \
             !recipe.contains("result") || \
             !recipe["ingredients"].is_array() || \
@@ -15,6 +14,7 @@ namespace Recipe {
             !recipe["result"].contains("item") || \
             !recipe["result"]["item"].is_string())
             return;
+        // get the recipe values
         this->_result = Server::getInstance()->getItemConverter().fromItemToProtocolId(recipe["result"]["item"].get<std::string>());
         if (recipe["result"].contains("count") && recipe["result"]["count"].is_number_unsigned())
             this->_count = recipe["result"]["count"].get<nlohmann::json::number_unsigned_t>();
@@ -30,15 +30,18 @@ namespace Recipe {
 
     void CraftingShapeless::dump(void) const
     {
+        std::stringstream stream;
+
         bool first = true;
         for (const auto &item : this->_ingredients) {
             if (first == true)
                 first = false;
             else 
-                std::cout << "+ ";
-            std::cout << "\"" << Server::getInstance()->getItemConverter().fromProtocolIdToItem(item) << "\" ";
+                stream << "+ ";
+            stream << "\"" << Server::getInstance()->getItemConverter().fromProtocolIdToItem(item) << "\" ";
         }
-        std::cout << "= \"" << Server::getInstance()->getItemConverter().fromProtocolIdToItem(this->_result) << "\" (x" << this->_count << ")" << std::endl;
+        stream << "= \"" << Server::getInstance()->getItemConverter().fromProtocolIdToItem(this->_result) << "\" (x" << this->_count << ")";
+        LINFO(stream.str());
     }
 
     std::unique_ptr<Recipe> CraftingShapeless::create(const nlohmann::json &recipe)

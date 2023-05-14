@@ -15,9 +15,9 @@ namespace Recipe {
 
         static std::unique_ptr<Recipe> create(const nlohmann::json &recipe);
     private:
-        ItemId _ingredient;
-        ItemId _result;
-        uint64_t _count;
+        ItemId _ingredient; // item to be cut
+        ItemId _result; // item obtained
+        uint64_t _count; // number of items obtained
     };
 };
 

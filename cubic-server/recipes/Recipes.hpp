@@ -11,6 +11,10 @@
 
 #include "types.hpp"
 
+/*
+  Trying to create a recipe without a valid constructor 
+  throws a UnknownRecipeType exception
+*/
 class UnknownRecipeType : public std::exception {
 public:
     UnknownRecipeType(const std::string &_namespace, const std::string &type);
@@ -22,34 +26,9 @@ private:
 };
 
 namespace Recipe {
-    /*
-    enum IngredientType {
-        IngredientInvalid = -1,
-        IngredientItem = 0,
-        IngredientItemList,
-        IngredientTag,
-        IngredientTypeCount
-    };
-
-    union IngredientUnion {
-        ItemId item;
-        std::vector<ItemId> itemList;
-        std::string tag;
-    };
-
-    struct Ingredient {
-        public:
-            Ingredient();
-            IngredientType type;
-            IngredientUnion ingredient;
-    };
-
-    Ingredient getIngredient(const nlohmann::json &json);
-    */
-
     class Recipe {
     public:
-        Recipe();
+        Recipe(const nlohmann::json &recipe);
         ~Recipe() = default;
 
         bool hasCategory(void) const noexcept;
@@ -59,6 +38,7 @@ namespace Recipe {
         void setGroup(const nlohmann::json &recipe);
         const std::string &getGroup(void) const noexcept;
         bool isValid(void) const noexcept;
+        // after successfully getting a craft, set its validity to true or it will be removed
         void setValidity(bool validity) noexcept;
 
         virtual void dump(void) const;
@@ -71,9 +51,17 @@ namespace Recipe {
         bool _isValid;
     };
 
+    /*
+      Recipe creators are used to add a recipe type.
+      Minecraft default's recipe types include :
+      crafting_shapeless, crafting_shaped, smelting, stonecutting...
+    */
     typedef std::unique_ptr<Recipe> (*Creator)(const nlohmann::json &recipe);
 };
 
+/*
+  Recipes class holds every recipe, creators and recipe folder paths
+*/
 class Recipes {
 public:
     Recipes() = default;
