@@ -7,11 +7,14 @@
 
 #include "LootContext.hpp"
 
+class Player;
+class Entity;
+
 namespace LootTable {
     namespace Context {
         class Entity {
         public:
-            Entity(const Entity &victim, const FloatingPosition &origin, const int32_t &damageSource, const Entity *killer, const Entity *direct_killer, const Entity *killer_player);
+            Entity(const Entity &victim, const FloatingPosition &origin, const int32_t &damageSource, const Entity *killer, const Entity *direct_killer, const Player *killer_player);
             ~Entity() = default;
 
             const std::string &getType() const;
@@ -21,7 +24,7 @@ namespace LootTable {
             const int32_t &_damageSource;
             const Entity *_killer;
             const Entity *_direct_killer;
-            const Entity *_killer_player;
+            const Player *_killer_player;
         };
     };
 };

@@ -9,9 +9,10 @@ namespace LootTable {
             (void)entry;
         }
 
-        bool Dynamic::poll(LootTablePoll &poll)
+        bool Dynamic::poll(LootTablePoll &poll, LootContext *context) const
         {
             (void)poll;
+            (void)context;
             return (true);
         }
 

@@ -7,6 +7,8 @@
 
 #include "LootContext.hpp"
 
+class Entity;
+
 namespace LootTable {
     namespace Context {
         class AdvancementEntity {

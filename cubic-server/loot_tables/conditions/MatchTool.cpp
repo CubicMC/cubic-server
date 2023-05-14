@@ -7,7 +7,7 @@ namespace LootTable {
             (void)condition;
         }
 
-        bool MatchTool::verify(void)
+        bool MatchTool::verify(void) const
         {
             return (true);
         }

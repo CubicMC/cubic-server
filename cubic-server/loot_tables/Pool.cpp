@@ -1,9 +1,15 @@
 #include "Server.hpp"
 
 #include "Pool.hpp"
+#include "context/LootContext.hpp"
+#include "rolls/Roll.hpp"
+#include "entries/Entry.hpp"
+#include "functions/Function.hpp"
+#include "conditions/Condition.hpp"
 
 namespace LootTable {
-    Pool::Pool(const nlohmann::json &pool)
+    Pool::Pool(const nlohmann::json &pool):
+        _totalWeight(0)
     {
         if (!pool.is_object() || \
             !pool.contains("entries") || \
@@ -44,16 +50,38 @@ namespace LootTable {
                 it->swap(newCondition);
             }
         }
+
+        this->_totalWeight = this->getTotalWeight();
     }
 
-    void Pool::poll(LootTablePoll &_poll) const
+    void Pool::poll(LootTablePoll &_poll, LootContext *context) const
     {
-        (void)_poll;
-        /*
-//        uint64_t rollNumber = this->_rolls.poll();
-        for (const auto &entry : this->_entries) {
+        const Roll::RollResult roll = this->_roll->poll(context);
 
+        for (int rolls = 0; rolls < roll._nbr; rolls++) {
+            if (roll._probability == 1.0 || static_cast<double>(rand() % 10000) < roll._probability * 10000.0) {
+                int64_t rolledWeight = 0;
+                int64_t elapsedWeight = 0;
+                
+                if (this->_totalWeight > 1)
+                    rolledWeight = rand() % this->_totalWeight;
+                for (const auto &entry : this->_entries) {
+                    if (this->_totalWeight <= 1 || rolledWeight < elapsedWeight + entry->getWeight()) {
+                        entry->poll(_poll, context);
+                        break;
+                    }
+                    rolledWeight += entry->getWeight();
+                }
+            }
         }
-        */
+    }
+
+    int64_t Pool::getTotalWeight(void) const noexcept
+    {
+        int64_t weight = 0;
+        
+        for (const auto &entry : this->_entries)
+            weight += entry->getWeight();
+        return (weight);
     }
 };

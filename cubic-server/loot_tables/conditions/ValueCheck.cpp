@@ -7,7 +7,7 @@ namespace LootTable {
             (void)condition;
         }
 
-        bool ValueCheck::verify(void)
+        bool ValueCheck::verify(void) const
         {
             return (true);
         }

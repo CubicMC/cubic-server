@@ -9,9 +9,10 @@ namespace LootTable {
             this->_name = entry["name"];
         }
 
-        bool ItemTag::poll(LootTablePoll &poll)
+        bool ItemTag::poll(LootTablePoll &poll, LootContext *context) const
         {
             (void)poll;
+            (void)context;
             return (true);
         }
 

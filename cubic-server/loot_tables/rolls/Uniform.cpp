@@ -10,8 +10,9 @@ namespace LootTable {
             this->_max = roll["max"].get<nlohmann::json::number_integer_t>();
         }
 
-        const RollResult Uniform::poll(void)
+        const RollResult Uniform::poll(LootContext *context) const
         {
+            (void)context;
             if (this->_max <= this->_min)
                 return (RollResult(this->_min, 1.0));
             else

@@ -10,7 +10,7 @@ namespace LootTable {
             return (this->_message.c_str());
         }
 
-        bool Condition::verify(void)
+        bool Condition::verify(void) const
         {
             return (true);
         }

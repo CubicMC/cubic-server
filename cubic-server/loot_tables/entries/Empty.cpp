@@ -1,3 +1,5 @@
+#include "Server.hpp"
+
 #include "Empty.hpp"
 
 namespace LootTable {
@@ -7,9 +9,10 @@ namespace LootTable {
             (void)entry;
         }
 
-        bool Empty::poll(LootTablePoll &poll)
+        bool Empty::poll(LootTablePoll &poll, LootContext *context) const
         {
             (void)poll;
+            (void)context;
             for (const auto &condition : this->_conditions) {
                 if (condition->verify() == false)
                     return (false);

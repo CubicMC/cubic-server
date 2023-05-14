@@ -7,7 +7,7 @@ namespace LootTable {
             (void)condition;
         }
 
-        bool BlockStateProperties::verify(void)
+        bool BlockStateProperties::verify(void) const
         {
             return (true);
         }

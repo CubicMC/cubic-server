@@ -7,7 +7,7 @@ namespace LootTable {
             (void)condition;
         }
 
-        bool TableBonus::verify(void)
+        bool TableBonus::verify(void) const
         {
             return (true);
         }

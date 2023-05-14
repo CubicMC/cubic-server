@@ -2,6 +2,9 @@
 
 #include "LootTable.hpp"
 
+#include "Pool.hpp"
+#include "context/LootContext.hpp"
+
 namespace LootTable {
     const std::unordered_map<ItemId, uint8_t> &LootTablePoll::getRolledItems(void) const
     {
@@ -59,13 +62,18 @@ namespace LootTable {
         }
     }
 
-    LootTablePoll LootTable::poll(void)
+    LootTablePoll LootTable::poll(LootContext *context) const
     {
         LootTablePoll newPoll;
 
         for (const auto &pool : this->_pools) {
-            pool->poll(newPoll);
+            pool->poll(newPoll, context);
         }
         return (newPoll);
+    }
+
+    const std::string &LootTable::getType(void) const noexcept
+    {
+        return (this->_type);
     }
 };

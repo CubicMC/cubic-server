@@ -13,7 +13,7 @@ namespace LootTable {
             Condition() = default;
             ~Condition() = default;
 
-            virtual bool verify(void);
+            virtual bool verify(void) const;
         };
 
         typedef std::unique_ptr<Condition> (*Creator)(const nlohmann::json &condition);

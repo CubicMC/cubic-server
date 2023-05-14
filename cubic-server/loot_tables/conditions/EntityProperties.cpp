@@ -7,7 +7,7 @@ namespace LootTable {
             (void)condition;
         }
 
-        bool EntityProperties::verify(void)
+        bool EntityProperties::verify(void) const
         {
             return (true);
         }

@@ -1,6 +1,8 @@
 #include "Server.hpp"
 
 #include "Entry.hpp"
+#include "loot_tables/functions/Function.hpp"
+#include "loot_tables/conditions/Condition.hpp"
 
 namespace LootTable {
     namespace Entry {
@@ -45,22 +47,22 @@ namespace LootTable {
             }
         }
 
-        const int32_t &Entry::getWeight(void) const noexcept
+        const int64_t &Entry::getWeight(void) const noexcept
         {
             return (this->_weight);
         }
 
-        const int32_t &Entry::getQuality(void) const noexcept
+        const int64_t &Entry::getQuality(void) const noexcept
         {
             return (this->_quality);
         }
 
-        void Entry::setWeight(int32_t weight) noexcept
+        void Entry::setWeight(int64_t weight) noexcept
         {
             this->_weight = weight;
         }
 
-        void Entry::setQuality(int32_t quality) noexcept
+        void Entry::setQuality(int64_t quality) noexcept
         {
             this->_quality = quality;
         }

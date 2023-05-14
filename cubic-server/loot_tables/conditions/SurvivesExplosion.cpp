@@ -7,7 +7,7 @@ namespace LootTable {
             (void)condition;
         }
 
-        bool SurvivesExplosion::verify(void)
+        bool SurvivesExplosion::verify(void) const
         {
             return (true);
         }

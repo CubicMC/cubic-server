@@ -10,8 +10,9 @@ namespace LootTable {
                 this->_item = Server::getInstance()->getItemConverter().fromItemToProtocolId(entry["name"].get<std::string>());
         }
 
-        bool Item::poll(LootTablePoll &poll)
+        bool Item::poll(LootTablePoll &poll, LootContext *context) const
         {
+            (void)context;
             for (const auto &condition : this->_conditions) {
                 if (condition->verify() == false)
                     return (false);

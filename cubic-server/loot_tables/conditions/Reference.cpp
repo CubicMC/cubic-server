@@ -7,7 +7,7 @@ namespace LootTable {
             (void)condition;
         }
 
-        bool Reference::verify(void)
+        bool Reference::verify(void) const
         {
             return (true);
         }

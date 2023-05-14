@@ -7,7 +7,7 @@ namespace LootTable {
             (void)condition;
         }
 
-        bool DamageSourceProperties::verify(void)
+        bool DamageSourceProperties::verify(void) const
         {
             return (true);
         }

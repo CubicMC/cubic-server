@@ -7,7 +7,7 @@ namespace LootTable {
             (void)condition;
         }
 
-        bool RandomChance::verify(void)
+        bool RandomChance::verify(void) const
         {
             return (true);
         }

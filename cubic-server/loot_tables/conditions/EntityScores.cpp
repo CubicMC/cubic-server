@@ -7,7 +7,7 @@ namespace LootTable {
             (void)condition;
         }
 
-        bool EntityScores::verify(void)
+        bool EntityScores::verify(void) const
         {
             return (true);
         }

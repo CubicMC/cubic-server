@@ -7,11 +7,15 @@
 
 #include <nlohmann/json.hpp>
 
-#include "loot_tables/functions/Function.hpp"
-#include "loot_tables/conditions/Condition.hpp"
-
 namespace LootTable {
     class LootTablePoll;
+    class LootContext;
+    namespace Function {
+        class Function;
+    };
+    namespace Condition {
+        class Condition;
+    };
 
     namespace Entry {
         class Entry {
@@ -19,17 +23,17 @@ namespace LootTable {
             Entry(const nlohmann::json &entry);
             ~Entry() = default;
 
-            const int32_t &getWeight(void) const noexcept;
-            const int32_t &getQuality(void) const noexcept;
+            const int64_t &getWeight(void) const noexcept;
+            const int64_t &getQuality(void) const noexcept;
 
-            void setWeight(int32_t weight) noexcept;
-            void setQuality(int32_t quality) noexcept;
+            void setWeight(int64_t weight) noexcept;
+            void setQuality(int64_t quality) noexcept;
             
-            virtual bool poll(LootTablePoll &poll) = 0;
+            virtual bool poll(LootTablePoll &poll, LootContext *context) const = 0;
 
         protected:
-            int32_t _weight;
-            int32_t _quality;
+            int64_t _weight;
+            int64_t _quality;
             std::list<std::unique_ptr<Function::Function>> _functions;
             std::list<std::unique_ptr<Condition::Condition>> _conditions;
         };

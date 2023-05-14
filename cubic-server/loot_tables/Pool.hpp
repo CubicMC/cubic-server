@@ -6,28 +6,37 @@
 
 #include <nlohmann/json.hpp>
 
-#include "rolls/Roll.hpp"
-#include "entries/Entry.hpp"
-#include "functions/Function.hpp"
-#include "conditions/Condition.hpp"
-
 namespace LootTable {
     class LootTablePoll;
+    class LootContext;
+    namespace Roll {
+        class Roll;
+    };
+    namespace Entry {
+        class Entry;
+    };
+    namespace Function {
+        class Function;
+    };
+    namespace Condition {
+        class Condition;
+    };
 
     class Pool {
     public:
         Pool(const nlohmann::json &pool);
         ~Pool() = default;
 
-        void poll(LootTablePoll &_poll) const;
+        void poll(LootTablePoll &_poll, LootContext *context) const;
+
+        int64_t getTotalWeight(void) const noexcept;
 
     private:
         std::unique_ptr<Roll::Roll> _roll;
         std::list<std::unique_ptr<Entry::Entry>> _entries;
         std::list<std::unique_ptr<Function::Function>> _functions;
         std::list<std::unique_ptr<Condition::Condition>> _conditions;
-        uint64_t _totalWeight;
-        std::list<uint64_t> _weights;
+        int64_t _totalWeight;
     };
 };
 

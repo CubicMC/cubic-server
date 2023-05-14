@@ -10,8 +10,9 @@ namespace LootTable {
             this->_p = roll["p"].get<nlohmann::json::number_float_t>();
         }
 
-        const RollResult Binomial::poll(void)
+        const RollResult Binomial::poll(LootContext *context) const
         {
+            (void)context;
             return (RollResult(this->_n, this->_p));
         }
 

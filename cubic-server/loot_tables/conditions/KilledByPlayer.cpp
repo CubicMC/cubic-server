@@ -7,7 +7,7 @@ namespace LootTable {
             (void)condition;
         }
 
-        bool KilledByPlayer::verify(void)
+        bool KilledByPlayer::verify(void) const
         {
             return (true);
         }

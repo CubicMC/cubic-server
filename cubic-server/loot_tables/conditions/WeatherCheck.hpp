@@ -12,7 +12,7 @@ namespace LootTable {
             WeatherCheck(const nlohmann::json &condition);
             ~WeatherCheck() = default;
 
-            bool verify(void) override;
+            bool verify(void) const override;
 
             static std::unique_ptr<Condition> create(const nlohmann::json &condition);
         private:

@@ -30,8 +30,9 @@ namespace LootTable {
                 this->_scale = roll["scale"].get<nlohmann::json::number_float_t>();
         }
 
-        const RollResult Score::poll(void)
+        const RollResult Score::poll(LootContext *context) const
         {
+            (void)context;
             return (RollResult(1, 1.0));
         }
 

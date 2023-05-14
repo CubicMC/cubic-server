@@ -7,7 +7,7 @@ namespace LootTable {
             (void)condition;
         }
 
-        bool Inverted::verify(void)
+        bool Inverted::verify(void) const
         {
             return (true);
         }

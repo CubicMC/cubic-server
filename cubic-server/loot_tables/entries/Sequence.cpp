@@ -15,7 +15,7 @@ namespace LootTable {
             }
         }
 
-        bool Sequence::poll(LootTablePoll &poll)
+        bool Sequence::poll(LootTablePoll &poll, LootContext *context) const
         {
             bool polled = false;
 
@@ -23,7 +23,7 @@ namespace LootTable {
                 for (const auto &condition : this->_conditions) {
                     if (condition->verify() == false)
                         return (polled);
-                    child->poll(poll);
+                    child->poll(poll, context);
                     polled = true;
                 }
             }

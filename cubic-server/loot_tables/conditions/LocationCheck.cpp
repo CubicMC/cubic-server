@@ -7,7 +7,7 @@ namespace LootTable {
             (void)condition;
         }
 
-        bool LocationCheck::verify(void)
+        bool LocationCheck::verify(void) const
         {
             return (true);
         }

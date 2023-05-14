@@ -10,7 +10,7 @@ namespace LootTable {
             Group(const nlohmann::json &entry);
             Group() = default;
 
-            bool poll(LootTablePoll &poll) override;
+            bool poll(LootTablePoll &poll, LootContext *context) const override;
 
             static std::unique_ptr<Entry> creator(const nlohmann::json &entry);
 

@@ -10,6 +10,7 @@
 #include "types.hpp"
 
 #include "Pool.hpp"
+#include "functions/Function.hpp"
 
 namespace LootTable {
     class LootTablePoll {
@@ -27,6 +28,8 @@ namespace LootTable {
         std::unordered_map<ItemId, uint8_t> _items;
     };
 
+    class LootContext;
+    
     class LootTable {
     public:
         LootTable(const nlohmann::json &table);
@@ -34,7 +37,9 @@ namespace LootTable {
         LootTable(const LootTable &other) = default;
         ~LootTable() = default;
 
-        LootTablePoll poll(void);
+        LootTablePoll poll(LootContext *context) const;
+
+        const std::string &getType(void) const noexcept;
 
     private:
         std::list<std::unique_ptr<Pool>> _pools;

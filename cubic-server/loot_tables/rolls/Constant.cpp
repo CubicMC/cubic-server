@@ -10,8 +10,9 @@ namespace LootTable {
                 this->_rolls = roll["value"].get<nlohmann::json::number_unsigned_t>();
         }
 
-        const RollResult Constant::poll(void)
+        const RollResult Constant::poll(LootContext *context) const
         {
+            (void)context;
             return (RollResult(this->_rolls, 1.0));
         }
 

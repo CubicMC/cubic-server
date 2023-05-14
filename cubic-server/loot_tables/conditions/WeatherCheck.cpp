@@ -7,7 +7,7 @@ namespace LootTable {
             (void)condition;
         }
 
-        bool WeatherCheck::verify(void)
+        bool WeatherCheck::verify(void) const
         {
             return (true);
         }

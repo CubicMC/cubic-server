@@ -8,6 +8,7 @@
 #include <nlohmann/json.hpp>
 
 namespace LootTable {
+    class LootContext;
     namespace Roll {
         struct RollResult {
             RollResult(int64_t nbr, double probability);
@@ -19,7 +20,7 @@ namespace LootTable {
 
         class Roll {
         public:
-            virtual const RollResult poll(void) = 0;
+            virtual const RollResult poll(LootContext *context) const = 0;
         };
 
         typedef std::unique_ptr<Roll> (*Creator)(const nlohmann::json &roll);

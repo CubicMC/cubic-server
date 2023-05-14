@@ -5,13 +5,15 @@
 #include "Roll.hpp"
 
 namespace LootTable {
+    class LootContext;
+
     namespace Roll {
         class Constant : public Roll {
         public:
             Constant(const nlohmann::json &roll);
             ~Constant() = default;
 
-            const RollResult poll(void) override;
+            const RollResult poll(LootContext *context) const override;
 
             static std::unique_ptr<Roll> creator(const nlohmann::json &roll);
             static bool isOfType(const nlohmann::json &roll);

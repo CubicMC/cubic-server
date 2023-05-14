@@ -15,13 +15,13 @@ namespace LootTable {
             }
         }
 
-        bool Group::poll(LootTablePoll &poll)
+        bool Group::poll(LootTablePoll &poll, LootContext *context) const
         {
             for (const auto &child : this->_children) {
                 for (const auto &condition : this->_conditions) {
                     if (condition->verify() == false)
                         continue;
-                    child->poll(poll);
+                    child->poll(poll, context);
                 }
             }
             return (true);

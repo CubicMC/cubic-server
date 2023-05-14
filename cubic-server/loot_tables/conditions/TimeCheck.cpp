@@ -7,7 +7,7 @@ namespace LootTable {
             (void)condition;
         }
 
-        bool TimeCheck::verify(void)
+        bool TimeCheck::verify(void) const
         {
             return (true);
         }

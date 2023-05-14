@@ -20,12 +20,12 @@ namespace LootTable {
             }
         }
 
-        bool LootTableEntry::poll(LootTablePoll &poll)
+        bool LootTableEntry::poll(LootTablePoll &poll, LootContext *context) const
         {
             if (!this->_isTable)
                 return (false);
 
-            LootTablePoll childPoll = this->_table->poll();
+            LootTablePoll childPoll = this->_table->poll(context);
             poll.addRolledItem(childPoll);
             return (true);
         }
