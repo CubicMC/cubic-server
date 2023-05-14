@@ -23,7 +23,8 @@ static const std::unordered_map<std::string, std::uint32_t> _checksums = {
 Server::Server():
     _sockfd(-1),
     _config(),
-    _running(false)
+    _running(false),
+    _pluginManager(this)
 {
     _config.parse("./config.yml");
     _whitelist = WhitelistHandling::Whitelist();

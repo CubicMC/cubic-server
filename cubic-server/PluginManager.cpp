@@ -7,9 +7,9 @@
 #include <filesystem>
 #include <array>
 
-PluginManager::PluginManager(const std::string &folder) : _folder(folder), _interface(std::make_shared<PluginInterface>())
+PluginManager::PluginManager(Server *server, const std::string &folder) : _folder(folder), _interface(std::make_shared<PluginInterface>())
 {
-    //this->_interface->load(Server::getInstance());
+    this->_interface->load(server);
     this->load();
 }
 

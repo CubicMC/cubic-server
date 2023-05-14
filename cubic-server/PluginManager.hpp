@@ -9,6 +9,7 @@
 #include <stdint.h>
 
 class PluginInterface;
+class Server;
 
 class Entity;
 class Player;
@@ -106,7 +107,7 @@ namespace EventKey {
 
 class PluginManager {
 public:
-    PluginManager(const std::string &folder = "./plugins");
+    PluginManager(Server *server, const std::string &folder = "./plugins");
     ~PluginManager();
 
     void load(void);
@@ -114,12 +115,11 @@ public:
     void unload(void);
 
     std::unordered_map<std::string, std::vector<EventType::AllTypes>> _events;
-
-private:
-    void loadPlugin(std::string filepath);
-
-    std::string _folder;
     std::shared_ptr<PluginInterface> _interface;
+private:
+
+    void loadPlugin(std::string filepath);
+    std::string _folder;
     std::unordered_map<std::string, void *> _plugins;
 };
 
