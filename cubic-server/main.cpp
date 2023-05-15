@@ -1,6 +1,5 @@
 #include <argparse/argparse.hpp>
 #include <csignal>
-#include <cstdint>
 #include <cstring>
 #include <iostream>
 #include <thread>
