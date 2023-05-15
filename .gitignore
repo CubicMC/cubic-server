@@ -41,3 +41,5 @@ config.yml
 .cache
 debug
 build_test
+.kdev4
+*.kdev4
