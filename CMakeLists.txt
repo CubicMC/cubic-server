@@ -12,6 +12,15 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 include(CheckIPOSupported)
 
+option(COMPILER "Compiler to use" "gcc")
+if (COMPILER MATCHES "clang")
+    set(CMAKE_CXX_COMPILER /usr/bin/clang++)
+    set(CMAKE_C_COMPILER /usr/bin/clang)
+elseif (COMPILER MATCHES "gcc")
+    set(CMAKE_CXX_COMPILER /usr/bin/g++)
+    set(CMAKE_C_COMPILER /usr/bin/gcc)
+endif()
+
 # if debug mode is enabled, add -g3 flag
 if (CMAKE_BUILD_TYPE MATCHES Debug)
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -ggdb3")
@@ -81,6 +90,7 @@ if(GTEST) # if the flag GTEST is true
     FetchContent_Declare(
         rapidcheck
         GIT_REPOSITORY https://github.com/emil-e/rapidcheck.git
+        GIT_TAG a5724ea5b0b00147109b0605c377f1e54c353ba2 # The latest rapidcheck commit at the time of writing.
     )
     option(RC_ENABLE_GTEST "Enable Google Test integration for RapidCheck library" ON)
     set(RC_ENABLE_GTEST TRUE)
