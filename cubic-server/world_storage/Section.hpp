@@ -31,12 +31,6 @@ constexpr int BIOME_SECTION_2D_SIZE = BIOME_SECTION_WIDTH * BIOME_SECTION_WIDTH;
 constexpr int BIOME_SECTION_3D_SIZE = BIOME_SECTION_2D_SIZE * BIOME_SECTION_WIDTH;
 constexpr int BIOME_PER_CHUNK = BIOME_SECTION_3D_SIZE * NB_OF_PLAYABLE_SECTIONS;
 
-// Default bit storage value
-constexpr int BLOCKS_BIT_STORAGE_SIZE = 4;
-constexpr int BIOME_BIT_STORAGE_SIZE = 3;
-constexpr int SKYLIGHT_BIT_STORAGE_SIZE = 4;
-constexpr int BLOCKLIGHT_BIT_STORAGE_SIZE = 4;
-
 constexpr uint64_t calculateSectionBlockIdx(const Position &pos) { return pos.x + (pos.z * SECTION_WIDTH) + (pos.y * SECTION_2D_SIZE); }
 constexpr uint64_t calculateSectionBiomeIdx(const Position &pos) { return pos.x + (pos.z * BIOME_SECTION_WIDTH) + (pos.y * BIOME_SECTION_2D_SIZE); }
 
@@ -44,8 +38,7 @@ class Section {
 public:
     typedef DynamicStorage<uint64_t, SECTION_3D_SIZE> BlockStorage;
     typedef DynamicStorage<uint64_t, BIOME_SECTION_3D_SIZE> BiomeStorage;
-    typedef DynamicStorage<uint8_t, SECTION_3D_SIZE> SkyLight;
-    typedef DynamicStorage<uint8_t, SECTION_3D_SIZE> BlockLight;
+    typedef DynamicStorage<uint8_t, SECTION_3D_SIZE> LightStorage;
 
 public:
     Section() noexcept;
@@ -92,11 +85,11 @@ public:
     [[nodiscard]] inline bool hasSkyLight() const { return _skyLightCount > 0; }
     [[nodiscard]] inline bool hasBlockLight() const { return _blockLightCount > 0; }
 
-    [[nodiscard]] inline BlockLight &getBlockLights() { return _blockLight; }
-    [[nodiscard]] inline SkyLight &getSkyLights() { return _skyLight; }
+    [[nodiscard]] inline LightStorage &getBlockLights() { return _blockLight; }
+    [[nodiscard]] inline LightStorage &getSkyLights() { return _skyLight; }
 
-    [[nodiscard]] inline const BlockLight &getBlockLights() const { return _blockLight; }
-    [[nodiscard]] inline const SkyLight &getSkyLights() const { return _skyLight; }
+    [[nodiscard]] inline const LightStorage &getBlockLights() const { return _blockLight; }
+    [[nodiscard]] inline const LightStorage &getSkyLights() const { return _skyLight; }
 
     void recalculateSkyLight();
     void recalculateBlockLight();
@@ -110,8 +103,8 @@ private:
     BlockPalette _blockPalette;
     BiomePalette _biomePalette;
 
-    SkyLight _skyLight;
-    BlockLight _blockLight;
+    LightStorage _skyLight;
+    LightStorage _blockLight;
     uint64_t _skyLightCount;
     uint64_t _blockLightCount;
 };

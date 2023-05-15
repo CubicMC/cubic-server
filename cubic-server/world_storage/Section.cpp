@@ -5,10 +5,12 @@
 #include <stdexcept>
 
 world_storage::Section::Section() noexcept:
-    _blocks(BLOCKS_BIT_STORAGE_SIZE),
-    _biomes(BIOME_BIT_STORAGE_SIZE),
-    _skyLight(SKYLIGHT_BIT_STORAGE_SIZE),
-    _blockLight(BLOCKLIGHT_BIT_STORAGE_SIZE)
+    _blocks(0),
+    _biomes(0),
+    _skyLight(4),
+    _blockLight(4),
+    _skyLightCount(0),
+    _blockLightCount(0)
 {
     this->_blockPalette.setCount(0, SECTION_3D_SIZE);
     this->_biomePalette.setCount(0, BIOME_SECTION_3D_SIZE);
@@ -28,7 +30,8 @@ void world_storage::Section::setBlock(const Position &pos, int32_t block)
         throw std::out_of_range("Position is out of range");
 
     auto oldBits = this->_blockPalette.getBits();
-    this->_blockPalette.remove(this->_blocks.get(calculateSectionBlockIdx(pos)));
+    if (this->_blocks.canContainData())
+        this->_blockPalette.remove(this->_blocks.get(calculateSectionBlockIdx(pos)));
     this->_blockPalette.add(block);
     if (oldBits != this->_blockPalette.getBits() && this->_blockPalette.getBits() != 0)
         this->_blocks.setValueSize(this->_blockPalette.getBits());
@@ -50,6 +53,8 @@ void world_storage::Section::setBiome(const Position &pos, int32_t biome)
         throw std::out_of_range("Position is out of range");
 
     auto oldBits = this->_biomePalette.getBits();
+    if (this->_biomes.canContainData())
+        this->_biomePalette.remove(this->_biomes.get(calculateSectionBiomeIdx(pos)));
     this->_biomePalette.add(biome);
     if (oldBits != this->_biomePalette.getBits() && this->_biomePalette.getBits() != 0)
         this->_biomes.setValueSize(this->_biomePalette.getBits());
@@ -91,6 +96,8 @@ int32_t world_storage::Section::getBlock(const Position &pos) const
 {
     if (pos >= SECTION_WIDTH)
         throw std::out_of_range("Position is out of range");
+    if (!this->_blocks.canContainData())
+        return 0;
     return this->_blocks.get(calculateSectionBlockIdx(pos));
 }
 
@@ -98,16 +105,22 @@ int32_t world_storage::Section::getBiome(const Position &pos) const
 {
     if (pos >= BIOME_SECTION_WIDTH)
         throw std::out_of_range("Position is out of range");
+    if (!this->_biomes.canContainData())
+        return 0;
     return this->_biomes.get(calculateSectionBiomeIdx(pos));
 }
 
 int32_t world_storage::Section::getBlock(uint64_t idx) const
 {
+    if (!this->_blocks.canContainData())
+        return 0;
     return this->_blocks.get(idx);
 }
 
 int32_t world_storage::Section::getBiome(uint64_t idx) const
 {
+    if (!this->_biomes.canContainData())
+        return 0;
     return this->_biomes.get(idx);
 }
 

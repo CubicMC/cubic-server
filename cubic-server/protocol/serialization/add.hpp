@@ -7,6 +7,7 @@
 
 #include "addPrimaryType.hpp"
 #include "protocol/ClientPackets.hpp"
+#include "world_storage/ChunkColumn.hpp"
 #include "world_storage/DynamicStorage.hpp"
 #include "world_storage/Section.hpp"
 
@@ -55,6 +56,63 @@ constexpr void addPalette(std::vector<uint8_t> &out, const world_storage::Palett
     addArray<int32_t, addVarInt>(out, palette.data());
 }
 
+constexpr void addLight(std::vector<uint8_t> &out, const world_storage::ChunkColumn &data)
+{
+    const auto &sections = data.getSections();
+    addBoolean(out, true); // Trust edges
+
+    uint64_t skyLightMask = 0;
+    uint64_t blockLightMask = 0;
+    uint64_t emptySkyLightMask = 0;
+    uint64_t emptyBlockLightMask = 0;
+
+    uint8_t countSkyLight = 0;
+    uint8_t countBlockLight = 0;
+    for (uint64_t i = 0; i < sections.size(); i++) {
+        if (sections[i].hasSkyLight()) {
+            countSkyLight++;
+            skyLightMask |= 1 << i;
+        } else
+            emptySkyLightMask |= 1 << i;
+
+        if (sections[i].hasBlockLight()) {
+            countBlockLight++;
+            blockLightMask |= 1 << i;
+        } else
+            emptyBlockLightMask |= 1 << i;
+    }
+
+    // Light mask
+    addArray<uint64_t, addUnsignedLong>(out, {skyLightMask});
+    addArray<uint64_t, addUnsignedLong>(out, {blockLightMask});
+    // addArray<int64_t, addLong>(out, {});
+    // addArray<int64_t, addLong>(out, {});
+
+    // Light empty mask
+    addArray<uint64_t, addUnsignedLong>(out, {emptySkyLightMask});
+    addArray<uint64_t, addUnsignedLong>(out, {emptyBlockLightMask});
+    // addArray<int64_t, addLong>(out, {});
+    // addArray<int64_t, addLong>(out, {});
+
+    // Sky light
+    addVarInt(out, countSkyLight);
+    for (const auto &section : sections) {
+        if (!section.hasSkyLight())
+            continue;
+        addArray<uint8_t, addByte>(out, section.getSkyLights());
+    }
+    // addArray<uint8_t, addByte>(out, {});
+
+    // Block light
+    addVarInt(out, countBlockLight);
+    for (const auto &section : sections) {
+        if (!section.hasBlockLight())
+            continue;
+        addArray<uint8_t, addByte>(out, section.getBlockLights());
+    }
+    // addArray<uint8_t, addByte>(out, {});
+}
+
 // https://wiki.vg/Chunk_Format#Serializing
 constexpr void addChunkColumn(std::vector<uint8_t> &out, const world_storage::ChunkColumn &data)
 {
@@ -89,58 +147,9 @@ constexpr void addChunkColumn(std::vector<uint8_t> &out, const world_storage::Ch
     // Block Entities
     // addBlockEntities(out, data.getBlockEntities());
     addBlockEntities(out, {});
-
-    addBoolean(out, true); // Trust edges
-
-    uint64_t skyLightMask = 0;
-    uint64_t blockLightMask = 0;
-    uint64_t emptySkyLightMask = 0;
-    uint64_t emptyBlockLightMask = 0;
-
-    for (uint64_t i = 0; i < sections.size(); i++) {
-        skyLightMask |= (sections[i].hasSkyLight() ? 1 : 0) << i;
-        blockLightMask |= (sections[i].hasBlockLight() ? 1 : 0) << i;
-        emptySkyLightMask |= (sections[i].hasSkyLight() ? 0 : 1) << i;
-        emptyBlockLightMask |= (sections[i].hasBlockLight() ? 0 : 1) << i;
-    }
-
-    // Light mask
-    addArray<uint64_t, addUnsignedLong>(out, {skyLightMask});
-    addArray<uint64_t, addUnsignedLong>(out, {blockLightMask});
-    // addArray<int64_t, addLong>(out, {});
-    // addArray<int64_t, addLong>(out, {});
-
-    // Light empty mask
-    addArray<uint64_t, addUnsignedLong>(out, {emptySkyLightMask});
-    addArray<uint64_t, addUnsignedLong>(out, {emptyBlockLightMask});
-    // addArray<int64_t, addLong>(out, {});
-    // addArray<int64_t, addLong>(out, {});
-
-    // Light arrays
-    uint8_t countSkyLight = 0;
-    uint8_t countBlockLight = 0;
-    for (const auto &section : sections) {
-        if (section.hasSkyLight())
-            countSkyLight++;
-        if (section.hasBlockLight())
-            countBlockLight++;
-    }
-
-    // Sky light
-    addVarInt(out, countSkyLight);
-    for (const auto &section : sections) {
-        if (!section.hasSkyLight())
-            continue;
-        addArray<uint8_t, addByte>(out, section.getSkyLights());
-    }
-    // Block light
-    addVarInt(out, countBlockLight);
-    for (const auto &section : sections) {
-        if (!section.hasBlockLight())
-            continue;
-        addArray<uint8_t, addByte>(out, section.getBlockLights());
-    }
+    addLight(out, data);
 }
+
 constexpr void addAttributesPropertyModifier(std::vector<uint8_t> &out, const protocol::UpdateAttributes::Property::Modifier &data)
 {
     addUUID(out, data.uuid);

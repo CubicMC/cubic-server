@@ -29,16 +29,16 @@ public:
     typedef std::vector<StoreType> Array;
     typedef typename Array::iterator iterator;
     typedef typename Array::const_iterator const_iterator;
-    constexpr static const uint8_t StoreTypeSize = sizeof(StoreType) * 8;
+    constexpr static const uint16_t StoreTypeSize = sizeof(StoreType) * 8;
 
 public:
-    constexpr DynamicStorage(uint8_t valueSize);
+    constexpr explicit DynamicStorage(uint8_t valueSize = 0);
 
     constexpr void setValueSize(uint8_t valueSize);
 
     constexpr void set(uint64_t idx, StoreType value);
     [[nodiscard]] constexpr StoreType get(uint64_t idx) const;
-    [[nodiscard]] constexpr bool mayHaveData() const { return _valueSize != 0; }
+    [[nodiscard]] constexpr bool canContainData() const { return _valueSize != 0; }
 
     [[nodiscard]] constexpr Array &data() { return _store; }
     [[nodiscard]] constexpr const Array &data() const { return _store; }
@@ -82,6 +82,12 @@ constexpr void DynamicStorage<StoreType, ArraySize>::setValueSize(uint8_t valueS
     }
 
     DynamicStorage<StoreType, ArraySize> newStore(valueSize);
+
+    if (_valueSize == 0) {
+        *this = newStore;
+        return;
+    }
+
     for (uint64_t i = 0; i < ArraySize; ++i)
         newStore.set(i, get(i));
 

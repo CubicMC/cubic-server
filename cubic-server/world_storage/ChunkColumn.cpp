@@ -242,7 +242,6 @@ void ChunkColumn::_generateOverworld(Seed seed)
         }
     }
 
-    return;
     // generate biomes
     for (int y = 0; y < BIOME_HEIGHT_MAX; y++) {
         for (int z = 0; z < BIOME_SECTION_WIDTH; z++) {
