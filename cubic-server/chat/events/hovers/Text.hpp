@@ -7,9 +7,6 @@
 namespace chat::message::event {
 /**
  * @brief Show text in the hover event
- *
- * This is a @see `Message` because there can't be events on an event message
- *
  */
 class TextHover : public OnHover {
 public:

@@ -1,5 +1,6 @@
 #include "Level.hpp"
 #include "world_storage/ChunkColumn.hpp"
+#include <mutex>
 
 namespace world_storage {
 
@@ -15,9 +16,8 @@ Level::~Level() { }
 
 ChunkColumn &Level::addChunkColumn(Position2D pos)
 {
-    _chunkColumnsMutex.lock();
+    std::lock_guard<std::mutex> _(this->_chunkColumnsMutex);
     _chunkColumns.emplace(pos, pos);
-    _chunkColumnsMutex.unlock();
     return _chunkColumns.at(pos);
 }
 
