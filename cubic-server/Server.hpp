@@ -26,6 +26,7 @@ constexpr uint16_t MC_PROTOCOL = 761;
 constexpr uint16_t MS_PER_TICK = 50;
 
 #define GLOBAL_PALETTE Server::getInstance()->getGlobalPalette()
+#define ITEM_CONVERTER Server::getInstance()->getItemConverter()
 
 class Client;
 class WorldGroup;
