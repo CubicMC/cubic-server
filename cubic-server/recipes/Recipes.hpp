@@ -4,26 +4,18 @@
 #include <unordered_map>
 #include <vector>
 #include <memory>
-#include <exception>
 #include <stdint.h>
 
 #include <nlohmann/json.hpp>
 
 #include "types.hpp"
+#include "exceptions.hpp"
 
 /*
   Trying to create a recipe without a valid constructor 
   throws a UnknownRecipeType exception
 */
-class UnknownRecipeType : public std::exception {
-public:
-    UnknownRecipeType(const std::string &_namespace, const std::string &type);
-    ~UnknownRecipeType() = default;
-    const char *what() const noexcept;
-
-private:
-    const std::string _message;
-};
+DEFINE_EXCEPTION(UnknownRecipeType);
 
 namespace Recipe {
     class Recipe {

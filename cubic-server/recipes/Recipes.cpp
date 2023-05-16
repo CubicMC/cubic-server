@@ -14,15 +14,6 @@
 #include "Smoking.hpp"
 #include "StoneCutting.hpp"
 
-UnknownRecipeType::UnknownRecipeType(const std::string &_namespace, const std::string &type) :
-    _message("No recipe creator found for recipe type " + _namespace + ":" + type)
-{}
-
-const char *UnknownRecipeType::what() const noexcept
-{
-    return (this->_message.c_str());
-}
-
 namespace Recipe {
     Recipe::Recipe(const nlohmann::json &recipe) : _hasCategory(false), _hasGroup(false), _isValid(false)
     {
@@ -119,7 +110,7 @@ void Recipes::loadFolder(const std::string &_namespace, const std::string &folde
 
                 // if no valid creator is found, throws the UnknownRecipeType exception
                 if (!this->_recipeCreators.contains(recipeTypeNamespace) || !this->_recipeCreators[recipeTypeNamespace].contains(recipeTypeType)) // checks if type creator exists for current recipe
-                    throw (UnknownRecipeType(recipeTypeNamespace, recipeTypeType));
+                    throw (UnknownRecipeType("No recipe creator found for recipe type " + recipeTypeNamespace + ":" + recipeTypeType));
                 // creates a recipe using the right recipe creator
                 this->_recipes[_namespace][filepath.path().string().substr(path_length + 1, filepath.path().string().length() - (path_length + 1) - 5)] = this->_recipeCreators[recipeTypeNamespace][recipeTypeType](recipeContent);
                 // removes the recipe if it is not valid (call setValifity(true) to set as valid)
