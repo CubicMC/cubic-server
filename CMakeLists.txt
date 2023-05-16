@@ -6,7 +6,6 @@ endif()
 
 option(USE_CLANG "Build application with clang" OFF)
 if (USE_CLANG)
-    execute_process(COMMAND whereis clang OUTPUT_VARIABLE CLANG_PATH)
     set(CMAKE_CXX_COMPILER /usr/bin/clang++)
     set(CMAKE_C_COMPILER /usr/bin/clang)
 endif()
