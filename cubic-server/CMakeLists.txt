@@ -35,7 +35,6 @@ target_sources (${CMAKE_PROJECT_NAME} PRIVATE
     Permissions.cpp
     types.hpp
     types.cpp
-    blocks.hpp
     exceptions.hpp
 )
 
@@ -78,7 +77,7 @@ add_subdirectory (command_parser)
 add_subdirectory (whitelist)
 add_subdirectory (generation)
 add_subdirectory (thread_pool)
-add_subdirectory (blocks)
+# add_subdirectory (blocks)
 add_subdirectory (items)
 add_subdirectory (chat)
 add_subdirectory (recipes)

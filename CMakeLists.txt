@@ -66,23 +66,6 @@ FetchContent_MakeAvailable(
     argparse
 )
 
-execute_process(COMMAND wget -q https://cdn.cubic-mc.com/${MINECRAFT_VERSION}/blocks-${MINECRAFT_VERSION}.json -O ${CMAKE_CURRENT_BINARY_DIR}/blocks-${MINECRAFT_VERSION}.json)
-execute_process(COMMAND wget -q https://cdn.cubic-mc.com/${MINECRAFT_VERSION}/blocks-${MINECRAFT_VERSION}.json.sha256 -O ${CMAKE_CURRENT_BINARY_DIR}/blocks-${MINECRAFT_VERSION}.json.sha256)
-execute_process(COMMAND sha256sum --check blocks-${MINECRAFT_VERSION}.json.sha256 WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR} COMMAND_ERROR_IS_FATAL ANY)
-execute_process(COMMAND wget -q https://cdn.cubic-mc.com/${MINECRAFT_VERSION}/registries-${MINECRAFT_VERSION}.json -O ${CMAKE_CURRENT_BINARY_DIR}/registries-${MINECRAFT_VERSION}.json)
-execute_process(COMMAND wget -q https://cdn.cubic-mc.com/${MINECRAFT_VERSION}/registries-${MINECRAFT_VERSION}.json.sha256 -O ${CMAKE_CURRENT_BINARY_DIR}/registries-${MINECRAFT_VERSION}.json.sha256)
-execute_process(COMMAND sha256sum --check registries-${MINECRAFT_VERSION}.json.sha256 WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR} COMMAND_ERROR_IS_FATAL ANY)
-
-find_package (Python3 REQUIRED)
-execute_process (COMMAND "${Python3_EXECUTABLE}" -m venv "${CMAKE_CURRENT_BINARY_DIR}/../generators/.venv")
-set (ENV{VIRTUAL_ENV} "${CMAKE_CURRENT_BINARY_DIR}/../generators/.venv")
-set (Python3_FIND_VIRTUALENV FIRST)
-execute_process(COMMAND .venv/bin/pip install -r requirements.txt WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/../generators)
-execute_process(COMMAND .venv/bin/python protocol_block_ids.py -i ../build/blocks-1.19.3.json -o ../cubic-server/cubic-server --format WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/../generators)
-unset (Python3_EXECUTABLE)
-unset (Python3_FIND_VIRTUALENV)
-unset (ENV{VIRTUAL_ENV})
-
 if(GTEST) # if the flag GTEST is true
     FetchContent_Declare(
         googletest
@@ -123,11 +106,17 @@ target_compile_definitions(${CMAKE_PROJECT_NAME} PRIVATE
 )
 add_subdirectory(cubic-server)
 
+include(blocks.cmake)
+
 target_include_directories(${CMAKE_PROJECT_NAME} PRIVATE
     ${GTKMM_INCLUDE_DIRS}
     ${noise_SOURCE_DIR}
 )
-target_include_directories(${CMAKE_PROJECT_NAME} PUBLIC cubic-server)
+
+message("Blocks source dir: ${Blocks_SOURCE_DIR}")
+
+target_include_directories(${CMAKE_PROJECT_NAME} PUBLIC cubic-server ${Blocks_SOURCE_DIR})
+
 target_link_libraries (${CMAKE_PROJECT_NAME} PRIVATE
     Blocks
     Threads::Threads

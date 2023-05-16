@@ -1,6 +1,7 @@
 import json
 import argparse
 import os
+import re
 from num2words import num2words
 
 # Variables for formatting the output
@@ -272,19 +273,10 @@ def create_block_files(path, block):
     indentation = 0
     is_switch = 0
 
-
-def create_blockStates_files(filename, blocks):
-    with open(filename + "/blocks.hpp", "w") as f:
+def create_blocks_hpp_file(path, blocks):
+    with open(path + "/blocks.hpp", "w") as f:
         for block in blocks:
             writer("#include \"blocks/" + block.name.split(":")[1].title().replace("_", "") + ".hpp\"\n", f)
-
-    with open(filename + "/blocks/CMakeLists.txt", "w") as f:
-        writer("add_library(Blocks\n", f)
-        for block in blocks:
-            writer(block.name.split(":")[1].title().replace("_", "") + ".cpp\n", f)
-            writer(block.name.split(":")[1].title().replace("_", "") + ".hpp\n", f)
-        writer(")\n", f)
-        writer("target_include_directories (Blocks PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})\n", f)
 
 # get different option you can pass to the script
 def parse_args(options):
@@ -293,22 +285,29 @@ def parse_args(options):
     parser.add_argument("-i", "--input", help="input file", default=options["input"])
     parser.add_argument("-o", "--output", help="output file", default=options["output"])
     parser.add_argument("-f", "--format", help="format the code", action=argparse.BooleanOptionalAction)
+    parser.add_argument("--get-generated-files", help="get the generated files", action=argparse.BooleanOptionalAction)
     args = parser.parse_args()
-    if args.input != "blocks.json":
+    if not re.search("blocks-[0-9].[0-9]{1,2}(?:.[0-9]+)?.json", args.input) and not args.get_generated_files:
         print("I hope you know what you are doing, cause for now the script only works with the blocks.json file")
     options["input"] = args.input
     options["output"] = args.output
     formated = args.format
+    options["get_generated_files"] = args.get_generated_files
     return options
 
 def main():
     options = {"input": "blocks.json", "output": "generated/blocks"}
     options = parse_args(options)
     blocks = load_json(options["input"])
-    os.makedirs(os.path.dirname(options["output"]) + "/blocks", exist_ok=True)
-    for block in blocks:
-        create_block_files(os.path.dirname(options["output"]), block)
-    create_blockStates_files(os.path.dirname(options["output"]), blocks)
+    if options["get_generated_files"]:
+        for block in blocks:
+            print("blocks/" + block.name.split(":")[1].title().replace("_", "") + ".hpp", end=';')
+            print("blocks/" + block.name.split(":")[1].title().replace("_", "") + ".cpp", end=';')
+    else:
+        os.makedirs(os.path.dirname(options["output"]) + "/blocks", exist_ok=True)
+        for block in blocks:
+            create_block_files(os.path.dirname(options["output"]), block)
+        create_blocks_hpp_file(os.path.dirname(options["output"]), blocks)
 
 if __name__ == "__main__":
     main()
