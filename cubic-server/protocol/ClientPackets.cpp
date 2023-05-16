@@ -699,7 +699,7 @@ std::unique_ptr<std::vector<uint8_t>> protocol::createDisplayObjective(const Dis
     std::vector<uint8_t> payload;
     // clang-format off
     serialize(payload,
-        in.position, addPosition,
+        in.position, addByte,
         in.name, addString
     );
     // clang-format on
