@@ -72,9 +72,9 @@ public:
 
     const std::unordered_map<std::string_view, std::shared_ptr<WorldGroup>> &getWorldGroups() const;
 
-    Permissions permissions;
+    Recipes &getRecipeSystem(void) noexcept;
 
-    Recipes recipes;
+    Permissions permissions;
 
 private:
     Server();
@@ -100,6 +100,7 @@ private:
     std::vector<std::unique_ptr<CommandBase>> _commands;
     Blocks::GlobalPalette _globalPalette;
     Items::ItemConverter _itemConverter;
+    Recipes _recipes;
 };
 
 #endif // CUBICSERVER_SERVER_HPP
