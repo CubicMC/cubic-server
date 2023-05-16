@@ -56,10 +56,14 @@ enum class ClientPacketID : int32_t {
     SetHeldItem = 0x49,
     CenterChunk = 0x4a,
     SetDefaultSpawnPosition = 0x4c,
+    DisplayObjective = 0x4d,
     // SetEntityMetadata = 0x4e, HAHA LOL
     EntityVelocity = 0x50,
     SetExperience = 0x52,
     Health = 0x53,
+    UpdateObjective = 0x54,
+    UpdateTeam = 0x56,
+    UpdateScore = 0x57,
     UpdateTime = 0x5A,
     EntitySoundEffect = 0x5D,
     SoundEffect = 0x5E,
@@ -637,6 +641,12 @@ struct SetDefaultSpawnPosition {
 };
 std::unique_ptr<std::vector<uint8_t>> createSetDefaultSpawnPosition(const SetDefaultSpawnPosition &);
 
+struct DisplaySlot {
+    uint8_t position;
+    std::string name;
+};
+std::unique_ptr<std::vector<uint8_t>> createDisplayObjective(const DisplaySlot &);
+
 // struct SetEntityMetadata {
 //     struct EntityMetadata {
 //         uint8_t index;
@@ -739,6 +749,65 @@ struct Health {
     float foodSaturation;
 };
 std::unique_ptr<std::vector<uint8_t>> createHealth(const Health &);
+
+struct UpdateObjectives {
+    std::string name;
+    uint8_t mode;
+    std::string value;
+    enum class Type : int32_t {
+        Integers = 0,
+        Hearts = 1
+    } type;
+};
+std::unique_ptr<std::vector<uint8_t>> createUpdateObjectives(const UpdateObjectives &);
+
+struct UpdateTeams {
+    std::string name;
+    uint8_t mode;
+    std::string displayName;
+    uint8_t friendlyFalgs;
+    std::string nameTagVisibility;
+    std::string collisionRule;
+    enum class Color : int32_t {
+        Black = 0,
+        DarkBlue = 1,
+        DarkGreen = 2,
+        DarkAqua = 3,
+        DarkRed = 4,
+        DarkPurple = 5,
+        Gold = 6,
+        Gray = 7,
+        DarkGray = 8,
+        Blue = 9,
+        Green = 10,
+        Aqua = 11,
+        Red = 12,
+        Pink = 13,
+        Yellow = 14,
+        White = 15,
+        Obfuscated = 16,
+        Bold = 17,
+        StrikeThrough = 18,
+        Underlined = 19,
+        Italic = 20,
+        Reset = 21
+    } color;
+    std::string prefix;
+    std::string suffix;
+    struct Entities {
+        int32_t count;
+        std::vector<std::string> entities;
+    } entities;
+};
+std::unique_ptr<std::vector<uint8_t>> createUpdateTeams(const UpdateTeams &);
+
+struct UpdateScore {
+    std::string name;
+    int32_t action;
+    std::string objective;
+    int32_t value;
+};
+std::unique_ptr<std::vector<uint8_t>> createUpdateScore(const UpdateScore &);
 
 struct TeleportEntity {
     int32_t entityID;

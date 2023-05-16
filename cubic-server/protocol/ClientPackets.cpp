@@ -694,6 +694,20 @@ std::unique_ptr<std::vector<uint8_t>> protocol::createSetDefaultSpawnPosition(co
     return packet;
 }
 
+std::unique_ptr<std::vector<uint8_t>> protocol::createDisplayObjective(const DisplaySlot &in)
+{
+    std::vector<uint8_t> payload;
+    // clang-format off
+    serialize(payload,
+        in.position, addPosition,
+        in.name, addString
+    );
+    // clang-format on
+    auto packet = std::make_unique<std::vector<uint8_t>>();
+    finalize(*packet, payload, ClientPacketID::DisplayObjective);
+    return packet;
+}
+
 // std::unique_ptr<std::vector<uint8_t>> protocol::createSetEntityMetadata(const SetEntityMetadata &in)
 // {
 //     std::vector<uint8_t> payload;
@@ -832,6 +846,77 @@ std::unique_ptr<std::vector<uint8_t>> protocol::createHealth(const Health &in)
     auto packet = std::make_unique<std::vector<uint8_t>>();
     finalize(*packet, payload, ClientPacketID::Health);
 
+    return packet;
+}
+
+std::unique_ptr<std::vector<uint8_t>> protocol::createUpdateObjectives(const UpdateObjectives &in)
+{
+    std::vector<uint8_t> payload;
+    // clang-format off
+    serialize(payload,
+        in.name, addString,
+        in.mode, addByte
+    );
+    if (in.mode == 0 || in.mode == 2) {
+        serialize(payload,
+            in.value, addChat,
+            in.type, addVarInt
+        );
+    }
+    // clang-format on
+    auto packet = std::make_unique<std::vector<uint8_t>>();
+    finalize(*packet, payload, ClientPacketID::UpdateObjective);
+    return packet;
+}
+
+std::unique_ptr<std::vector<uint8_t>> protocol::createUpdateTeams(const UpdateTeams &in)
+{
+    std::vector<uint8_t> payload;
+    // clang-format off
+    serialize(payload,
+        in.name, addString,
+        in.mode, addByte
+    );
+    if (in.mode == 0 || in.mode == 2) {
+        serialize(payload,
+            in.displayName, addString,
+            in.friendlyFalgs, addByte,
+            in.nameTagVisibility, addString,
+            in.collisionRule, addString,
+            in.color, addVarInt,
+            in.prefix, addChat,
+            in.suffix, addChat
+        );
+    }
+    if (in.mode == 0 || in.mode == 3 || in.mode == 4) {
+        serialize(payload,
+            in.entities.count, addVarInt,
+            in.entities.entities, addArray<std::string, addString>
+        );
+    }
+    // clang-format on
+    auto packet = std::make_unique<std::vector<uint8_t>>();
+    finalize(*packet, payload, ClientPacketID::UpdateTeam);
+    return packet;
+}
+
+std::unique_ptr<std::vector<uint8_t>> protocol::createUpdateScore(const UpdateScore &in)
+{
+    std::vector<uint8_t> payload;
+    // clang-format off
+    serialize(payload,
+        in.name, addString,
+        in.action, addVarInt,
+        in.objective, addString
+    );
+    if (in.action == 0) {
+        serialize(payload,
+            in.value, addVarInt
+        );
+    }
+    // clang-format on
+    auto packet = std::make_unique<std::vector<uint8_t>>();
+    finalize(*packet, payload, ClientPacketID::UpdateScore);
     return packet;
 }
 

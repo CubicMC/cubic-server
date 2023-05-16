@@ -9,6 +9,7 @@
 #include "Teams.hpp"
 
 class ScoreboardSystem;
+class WorldGroup;
 
 namespace Scoreboard {
     enum DisplaySlot {
@@ -35,9 +36,10 @@ namespace Scoreboard {
 
     class Scoreboard {
     public:
-        Scoreboard(const ScoreboardSystem &system);
+        Scoreboard(const ScoreboardSystem &system, const WorldGroup &worldGroup);
         ~Scoreboard() = default;
 
+        const WorldGroup &getWorldGroup(void) const noexcept;
         bool isObjective(const std::string &name) const noexcept;
         const Objective::Objective &getObjective(const std::string &name) const;
         const std::unordered_map<std::string, std::shared_ptr<Objective::Objective>> &getObjectives(void) const noexcept;
@@ -57,8 +59,16 @@ namespace Scoreboard {
         bool addTeam(const std::string &name);
         bool removeTeam(const std::string &name);
 
+        void sendAddObjective(const Objective::Objective &objective) const;
+        void sendRemoveObjective(const Objective::Objective &objective) const;
+        void sendDisplayObjective(DisplaySlot slot, const Objective::Objective *objective) const;
+        
+        void sendAddTeam(const Team::Team &team) const;
+        void sendRemoveTeam(const Team::Team &team) const;
+
     private:
         const ScoreboardSystem &_system;
+        const WorldGroup &_worldGroup;
         std::unordered_map<std::string, std::shared_ptr<Objective::Objective>> _objectives;
         std::unordered_map<std::string, std::unique_ptr<Team::Team>> _teams;
         std::array<Objective::Objective *, 18> _displaySlots;

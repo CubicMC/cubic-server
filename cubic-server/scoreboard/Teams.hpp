@@ -4,7 +4,11 @@
 #include <string>
 #include <unordered_set>
 
+#include "protocol/ClientPackets.hpp"
+
 namespace Scoreboard {
+    class Scoreboard;
+
     namespace Team {
         namespace NametagVisibility {
             enum NametagVisibility {
@@ -13,6 +17,7 @@ namespace Scoreboard {
                 hideForOwnTeam,
                 always
             };
+            const std::string getProtocolFlag(const NametagVisibility &flag);
         };
 
         namespace DeathMessageVisibility {
@@ -31,34 +36,17 @@ namespace Scoreboard {
                 never,
                 pushOtherTeams
             };
+            const std::string getProtocolFlag(const CollisionRule &flag);
         };
 
-        enum Color {
-            Unset = -1,
-            Black = 0,
-            DarkBlue,
-            DarkGreen,
-            DarkAqua,
-            DarkRed,
-            DarkPurple,
-            Gold,
-            Gray,
-            DarkGray,
-            Blue,
-            Green,
-            Aqua,
-            Red,
-            LightPurple,
-            Yellow,
-            White
-        };
+        using Color = protocol::UpdateTeams::Color;
 
         class Team {
         public:
-            Team(const std::string &name);
-            Team(const std::string &name, const Color &color);
-            Team(const std::string &name, const std::string &displayName);
-            Team(const std::string &name, const Color &color, const std::string &displayName);
+            Team(const Scoreboard &scoreboard, const std::string &name);
+            Team(const Scoreboard &scoreboard, const std::string &name, const Color &color);
+            Team(const Scoreboard &scoreboard, const std::string &name, const std::string &displayName);
+            Team(const Scoreboard &scoreboard, const std::string &name, const Color &color, const std::string &displayName);
             ~Team();
 
             const std::unordered_set<std::string> &getMember(void) const noexcept;
@@ -68,6 +56,7 @@ namespace Scoreboard {
             NametagVisibility::NametagVisibility getNametagVisibility(void) const noexcept;
             DeathMessageVisibility::DeathMessageVisibility getDeathMessageVisibility(void) const noexcept;
             const CollisionRule::CollisionRule &getCollisionRule(void) const noexcept;
+            const std::string &getName(void) const noexcept;
             const std::string &getDisplayName(void) const noexcept;
             const std::string &getPrefix(void) const noexcept;
             const std::string &getSuffix(void) const noexcept;
@@ -75,7 +64,6 @@ namespace Scoreboard {
 
             void addMember(const std::string &name);
             void removeMember(const std::string &name);
-            void emptyMembers(void);
             void allowFriendlyFire(bool rule) noexcept;
             void seeFriendlyInvisibles(bool rule) noexcept;
             void setNametagVisibility(NametagVisibility::NametagVisibility rule) noexcept;
@@ -86,7 +74,12 @@ namespace Scoreboard {
             void setSuffix(const std::string &suffix) noexcept;
             void setColor(Color color) noexcept;
 
+            void sendUpdateTeam(void) const;
+            void sendJoinTeam(const std::string &name) const;
+            void sendLeaveTeam(const std::string &name) const;
+
         private:
+            const Scoreboard &_scoreboard;
             bool _allowFriendlyFire;
             bool _seeFriendlyInvisibles;
             NametagVisibility::NametagVisibility _nametagVisibility;

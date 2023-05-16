@@ -10,6 +10,8 @@ class Entity;
 class ScoreboardSystem;
 
 namespace Scoreboard {
+    class Scoreboard;
+
     class Score {
     public:
         Score(const int32_t &value = 0);
@@ -21,6 +23,7 @@ namespace Scoreboard {
         void add(int32_t value) noexcept;
         void substract(int32_t value) noexcept;
 
+        bool isLocked(void) const;
         void enable(void) noexcept;
         void disable(void) noexcept;
 
@@ -30,17 +33,17 @@ namespace Scoreboard {
     };
 
     namespace Objective {
-        enum RenderType {
+        enum class RenderType : int32_t {
             RenderInteger = 0,
             RenderHearts
         };
 
         class Objective {
         public:
-            Objective(const std::string &name, const std::string &criteria);
-            Objective(const std::string &name, const std::string &criteria, const std::string &displayName);
-            Objective(const std::string &name, const std::string &criteria, const RenderType &renderType);
-            Objective(const std::string &name, const std::string &criteria, const std::string &displayName, const RenderType &renderType);
+            Objective(const Scoreboard &scoreboard, const std::string &name, const std::string &criteria);
+            Objective(const Scoreboard &scoreboard, const std::string &name, const std::string &criteria, const std::string &displayName);
+            Objective(const Scoreboard &scoreboard, const std::string &name, const std::string &criteria, const RenderType &renderType);
+            Objective(const Scoreboard &scoreboard, const std::string &name, const std::string &criteria, const std::string &displayName, const RenderType &renderType);
             ~Objective();
 
             const std::string &getName(void) const noexcept;
@@ -56,11 +59,15 @@ namespace Scoreboard {
             void addScore(const std::string &name, int32_t value);
             void substractScore(const std::string &name, int32_t value);
             void deleteScore(const std::string &name);
-            void setScores(const std::unordered_map<std::string, Score> &values);
-
+            
             const int32_t &operator[](const std::string &name);
 
+            void sendUpdateObjective(void) const;
+            void sendUpdateScore(const std::string &name, const Score &score) const;
+            void sendRemoveScore(const std::string &name) const;
+
         private:
+            const Scoreboard &_scoreboard;
             const std::string _name;
             const std::string _criteria;
             std::string _displayName; //json format

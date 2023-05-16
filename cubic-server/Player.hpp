@@ -101,6 +101,10 @@ public:
     void sendUpdateAttributes(const protocol::UpdateAttributes &packet);
     void sendUpdateAdvancements(const protocol::UpdateAdvancements &packet);
     void sendSetExperience(const protocol::SetExperience &packet);
+    void sendUpdateObjective(const protocol::UpdateObjectives &packet);
+    void sendDisplayObjective(const protocol::DisplaySlot &packet);
+    void sendUpdateScore(const protocol::UpdateScore &packet);
+    void sendUpdateTeams(const protocol::UpdateTeams &packet);    
 
 private:
     void _onConfirmTeleportation(const std::shared_ptr<protocol::ConfirmTeleportation> &pck);

@@ -599,6 +599,34 @@ void Player::sendSetExperience(const protocol::SetExperience &packet)
     LDEBUG("Sent set experience packet");
 }
 
+void Player::sendUpdateObjective(const protocol::UpdateObjectives &packet)
+{
+    auto pck = protocol::createUpdateObjectives(packet);
+    _cli->_sendData(*pck);
+    LDEBUG("Sent update objectives packet");
+}
+
+void Player::sendDisplayObjective(const protocol::DisplaySlot &packet)
+{
+    auto pck = protocol::createDisplayObjective(packet);
+    _cli->_sendData(*pck);
+    LDEBUG("Sent display objective packet");
+}
+
+void Player::sendUpdateScore(const protocol::UpdateScore &packet)
+{
+    auto pck = protocol::createUpdateScore(packet);
+    _cli->_sendData(*pck);
+    LDEBUG("Sent update score packet");
+}
+
+void Player::sendUpdateTeams(const protocol::UpdateTeams &packet)
+{
+    auto pck = protocol::createUpdateTeams(packet);
+    _cli->_sendData(*pck);
+    LDEBUG("Sent update teams packet");
+}
+
 #pragma endregion
 #pragma region ServerBound
 
