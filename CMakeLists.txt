@@ -104,16 +104,15 @@ target_compile_definitions(${CMAKE_PROJECT_NAME} PRIVATE
     PROGRAM_NAME="${CMAKE_PROJECT_NAME}"
     PROGRAM_VERSION="${CMAKE_PROJECT_VERSION}"
 )
-add_subdirectory(cubic-server)
 
 include(blocks.cmake)
+
+add_subdirectory(cubic-server)
 
 target_include_directories(${CMAKE_PROJECT_NAME} PRIVATE
     ${GTKMM_INCLUDE_DIRS}
     ${noise_SOURCE_DIR}
 )
-
-message("Blocks source dir: ${Blocks_SOURCE_DIR}")
 
 target_include_directories(${CMAKE_PROJECT_NAME} PUBLIC cubic-server ${Blocks_SOURCE_DIR})
 
