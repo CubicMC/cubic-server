@@ -3,11 +3,12 @@
 
 #include <list>
 #include <memory>
-#include <exception>
 
 #include <nlohmann/json.hpp>
 
 #include "loot_tables/conditions/Condition.hpp"
+
+#include "exceptions.hpp"
 
 namespace LootTable {
     namespace Function {
@@ -16,24 +17,19 @@ namespace LootTable {
             Function(const nlohmann::json &function);
             ~Function() = default;
 
+            bool isValid(void) const noexcept;
+            virtual void setValidity(bool validity) noexcept;
+
             virtual void apply(void) = 0;
 
-        protected:
+        private:
             std::list<std::unique_ptr<Condition::Condition>> _conditions;
+            bool _validity;
         };
 
         typedef std::unique_ptr<Function> (*Creator)(const nlohmann::json &function);
 
-        class NoFunctionContructor : public std::exception {
-        public:
-            NoFunctionContructor(const nlohmann::json &roll);
-            ~NoFunctionContructor() = default;
-
-            const char *what() const noexcept;
-
-        private:
-            const std::string _message;
-        };
+        DEFINE_EXCEPTION(NoFunctionContructor);
     };
 };
 

@@ -7,6 +7,8 @@
 
 #include <nlohmann/json.hpp>
 
+#include "exceptions.hpp"
+
 namespace LootTable {
     class LootContext;
     namespace Roll {
@@ -20,21 +22,20 @@ namespace LootTable {
 
         class Roll {
         public:
+            Roll(void);
+            ~Roll() = default;
+            bool isValid(void) const noexcept;
+            void setValidity(bool validity) noexcept;
+
             virtual const RollResult poll(LootContext *context) const = 0;
+        private:
+            bool _validity;
         };
 
         typedef std::unique_ptr<Roll> (*Creator)(const nlohmann::json &roll);
         typedef bool (*IsOfType)(const nlohmann::json &roll);
 
-        class NoRollContructor : public std::exception {
-        public:
-            NoRollContructor(const nlohmann::json &roll);
-            ~NoRollContructor() = default;
-
-            const char *what() const noexcept;
-        private:
-            const std::string _message;
-        };
+        DEFINE_EXCEPTION(NoRollConstructor);
     };
 };
 

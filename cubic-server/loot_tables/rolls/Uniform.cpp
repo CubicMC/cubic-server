@@ -8,6 +8,8 @@ namespace LootTable {
         {
             this->_min = roll["min"].get<nlohmann::json::number_integer_t>();
             this->_max = roll["max"].get<nlohmann::json::number_integer_t>();
+
+            this->setValidity(true);
         }
 
         const RollResult Uniform::poll(LootContext *context) const
@@ -30,8 +32,8 @@ namespace LootTable {
                 roll.is_object() && \
                 roll.contains("min") && \
                 roll.contains("max") && \
-                roll["min"].is_number_unsigned() && \
-                roll["max"].is_number_unsigned()
+                roll["min"].is_number() && \
+                roll["max"].is_number()
             );
         }
     };

@@ -28,6 +28,8 @@ namespace LootTable {
             this->_objective = roll["score"].get<std::string>();
             if (roll.contains("scale") && roll["scale"].is_number_float())
                 this->_scale = roll["scale"].get<nlohmann::json::number_float_t>();
+
+            this->setValidity(true);
         }
 
         const RollResult Score::poll(LootContext *context) const

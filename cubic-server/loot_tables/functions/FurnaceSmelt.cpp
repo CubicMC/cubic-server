@@ -2,8 +2,11 @@
 
 namespace LootTable {
     namespace Function {
-        FurnaceSmelt::FurnaceSmelt(const nlohmann::json &function) : Function(function)
-        {}
+        FurnaceSmelt::FurnaceSmelt(const nlohmann::json &function):
+            Function(function)
+        {
+            this->setValidity(true);
+        }
 
         void FurnaceSmelt::apply(void)
         {}

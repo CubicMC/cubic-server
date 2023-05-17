@@ -8,6 +8,8 @@ namespace LootTable {
         {
             if (entry.contains("name") && entry["name"].is_string())
                 this->_item = Server::getInstance()->getItemConverter().fromItemToProtocolId(entry["name"].get<std::string>());
+
+            this->setValidity(true);
         }
 
         bool Item::poll(LootTablePoll &poll, LootContext *context) const

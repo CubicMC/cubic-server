@@ -27,6 +27,9 @@ namespace LootTable {
         Pool(const nlohmann::json &pool);
         ~Pool() = default;
 
+        bool isValid(void) const noexcept;
+        void setValidity(void) noexcept;
+
         void poll(LootTablePoll &_poll, LootContext *context) const;
 
         int64_t getTotalWeight(void) const noexcept;
@@ -37,6 +40,7 @@ namespace LootTable {
         std::list<std::unique_ptr<Function::Function>> _functions;
         std::list<std::unique_ptr<Condition::Condition>> _conditions;
         int64_t _totalWeight;
+        bool _validity;
     };
 };
 

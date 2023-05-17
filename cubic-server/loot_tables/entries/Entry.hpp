@@ -23,6 +23,9 @@ namespace LootTable {
             Entry(const nlohmann::json &entry);
             ~Entry() = default;
 
+            bool isValid(void) const noexcept;
+            void setValidity(bool validity) noexcept;
+
             const int64_t &getWeight(void) const noexcept;
             const int64_t &getQuality(void) const noexcept;
 
@@ -36,6 +39,7 @@ namespace LootTable {
             int64_t _quality;
             std::list<std::unique_ptr<Function::Function>> _functions;
             std::list<std::unique_ptr<Condition::Condition>> _conditions;
+            bool _validity;
         };
 
         typedef std::unique_ptr<Entry> (*Creator)(const nlohmann::json &entry);

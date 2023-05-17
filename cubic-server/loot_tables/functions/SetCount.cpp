@@ -2,8 +2,11 @@
 
 namespace LootTable {
     namespace Function {
-        SetCount::SetCount(const nlohmann::json &function) : Function(function)
-        {}
+        SetCount::SetCount(const nlohmann::json &function):
+            Function(function)
+        {
+            this->setValidity(true);
+        }
 
         void SetCount::apply(void)
         {}

@@ -2,8 +2,11 @@
 
 namespace LootTable {
     namespace Function {
-        CopyBlockStates::CopyBlockStates(const nlohmann::json &function) : Function(function)
-        {}
+        CopyBlockStates::CopyBlockStates(const nlohmann::json &function):
+            Function(function)
+        {
+            this->setValidity(true);
+        }
 
         void CopyBlockStates::apply(void)
         {}

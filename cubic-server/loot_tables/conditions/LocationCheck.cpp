@@ -5,6 +5,8 @@ namespace LootTable {
         LocationCheck::LocationCheck(const nlohmann::json &condition)
         {
             (void)condition;
+
+            this->setValidity(true);
         }
 
         bool LocationCheck::verify(void) const

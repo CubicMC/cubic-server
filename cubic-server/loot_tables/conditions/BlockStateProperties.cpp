@@ -5,6 +5,8 @@ namespace LootTable {
         BlockStateProperties::BlockStateProperties(const nlohmann::json &condition)
         {
             (void)condition;
+
+            this->setValidity(true);
         }
 
         bool BlockStateProperties::verify(void) const

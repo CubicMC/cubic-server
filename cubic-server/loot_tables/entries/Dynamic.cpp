@@ -7,6 +7,8 @@ namespace LootTable {
         Dynamic::Dynamic(const nlohmann::json &entry) : Entry(entry)
         {
             (void)entry;
+
+            this->setValidity(true);
         }
 
         bool Dynamic::poll(LootTablePoll &poll, LootContext *context) const

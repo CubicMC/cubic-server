@@ -5,6 +5,8 @@ namespace LootTable {
         MatchTool::MatchTool(const nlohmann::json &condition)
         {
             (void)condition;
+
+            this->setValidity(true);
         }
 
         bool MatchTool::verify(void) const

@@ -7,6 +7,8 @@ namespace LootTable {
         Empty::Empty(const nlohmann::json &entry) : Entry(entry)
         {
             (void)entry;
+
+            this->setValidity(true);
         }
 
         bool Empty::poll(LootTablePoll &poll, LootContext *context) const

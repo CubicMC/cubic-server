@@ -2,8 +2,11 @@
 
 namespace LootTable {
     namespace Function {
-        SetLore::SetLore(const nlohmann::json &function) : Function(function)
-        {}
+        SetLore::SetLore(const nlohmann::json &function):
+            Function(function)
+        {
+            this->setValidity(true);
+        }
 
         void SetLore::apply(void)
         {}

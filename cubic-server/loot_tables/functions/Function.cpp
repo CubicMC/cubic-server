@@ -4,7 +4,8 @@
 
 namespace LootTable {
     namespace Function {
-        Function::Function(const nlohmann::json &function)
+        Function::Function(const nlohmann::json &function):
+            _validity(false)
         {
             // get conditions
             if (function.contains("conditions") && \
@@ -17,13 +18,25 @@ namespace LootTable {
                 }
             }
         };
-        
-        NoFunctionContructor::NoFunctionContructor(const nlohmann::json &function) : _message("No constructor fitting the function: " + function.dump())
-        {}
 
-        const char *NoFunctionContructor::what() const noexcept
+        bool Function::isValid(void) const noexcept
         {
-            return (this->_message.c_str());
+            return (this->_validity);
+        }
+
+        void Function::setValidity(bool validity) noexcept
+        {
+            if (validity == false) {
+                this->_validity = false;
+                return;
+            }
+            for (const auto &condition : this->_conditions) {
+                if (!condition->isValid()) {
+                    this->_validity = false;
+                    return;
+                }
+            }
+            this->_validity = true;
         }
     };
 };

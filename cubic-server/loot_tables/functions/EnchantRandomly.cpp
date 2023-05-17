@@ -2,8 +2,11 @@
 
 namespace LootTable {
     namespace Function {
-        EnchantRandomly::EnchantRandomly(const nlohmann::json &function) : Function(function)
-        {}
+        EnchantRandomly::EnchantRandomly(const nlohmann::json &function):
+            Function(function)
+        {
+            this->setValidity(true);
+        }
 
         void EnchantRandomly::apply(void)
         {}

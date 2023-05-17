@@ -13,6 +13,8 @@ namespace LootTable {
                 const auto &it = this->_children.insert(this->_children.end(), nullptr);
                 it->swap(newChild);
             }
+
+            this->setValidity(true);
         }
 
         bool Alternative::poll(LootTablePoll &poll, LootContext *context) const

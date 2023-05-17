@@ -31,7 +31,8 @@ namespace LootTable {
         this->addRolledItem(poll.getRolledItems());
     }
 
-    LootTable::LootTable::LootTable(const nlohmann::json &table)
+    LootTable::LootTable(const nlohmann::json &table):
+        _validity(false)
     {
         if (!table.is_object() || \
             !table.contains("pools") || \
@@ -60,6 +61,33 @@ namespace LootTable {
                 it->swap(newFunction);
             }
         }
+
+        // set validity, invalid tables will be dropped
+        this->setValidity();
+    }
+
+    bool LootTable::isValid(void) const noexcept
+    {
+        return (this->_validity);
+    }
+
+    void LootTable::setValidity(void) noexcept
+    {
+        for (const auto &function : this->_functions) {
+            if (!function->isValid()) {
+                this->_validity = false;
+                std::cout << "function problem :(" << std::endl;
+                return;
+            }
+        }
+        for (const auto &pool : this->_pools) {
+            if (!pool->isValid()) {
+                this->_validity = false;
+                std::cout << "pool problem :(" << std::endl;
+                return;
+            }
+        }
+        this->_validity = true;
     }
 
     LootTablePoll LootTable::poll(LootContext *context) const

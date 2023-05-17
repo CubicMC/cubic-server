@@ -2,8 +2,11 @@
 
 namespace LootTable {
     namespace Function {
-        FillPlayerHead::FillPlayerHead(const nlohmann::json &function) : Function(function)
-        {}
+        FillPlayerHead::FillPlayerHead(const nlohmann::json &function):
+            Function(function)
+        {
+            this->setValidity(true);
+        }
 
         void FillPlayerHead::apply(void)
         {}

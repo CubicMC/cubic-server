@@ -5,6 +5,8 @@ namespace LootTable {
         Reference::Reference(const nlohmann::json &condition)
         {
             (void)condition;
+
+            this->setValidity(true);
         }
 
         bool Reference::verify(void) const

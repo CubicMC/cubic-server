@@ -2,8 +2,11 @@
 
 namespace LootTable {
     namespace Function {
-        SetBannerPattern::SetBannerPattern(const nlohmann::json &function) : Function(function)
-        {}
+        SetBannerPattern::SetBannerPattern(const nlohmann::json &function):
+            Function(function)
+        {
+            this->setValidity(true);
+        }
 
         void SetBannerPattern::apply(void)
         {}

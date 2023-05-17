@@ -9,7 +9,8 @@
 
 namespace LootTable {
     Pool::Pool(const nlohmann::json &pool):
-        _totalWeight(0)
+        _totalWeight(0),
+        _validity(false)
     {
         if (!pool.is_object() || \
             !pool.contains("entries") || \
@@ -52,6 +53,41 @@ namespace LootTable {
         }
 
         this->_totalWeight = this->getTotalWeight();
+
+        // set validity, tables containing an invalid poll will be dropped
+        this->setValidity();
+    }
+
+    bool Pool::isValid(void) const noexcept
+    {
+        return (this->_validity);
+    }
+
+    void Pool::setValidity(void) noexcept
+    {
+        for (const auto &condition : this->_conditions) {
+            if (!condition->isValid()) {
+                this->_validity = false;
+                return;
+            }
+        }
+        for (const auto &function : this->_functions) {
+            if (!function->isValid()) {
+                this->_validity = false;
+                return;
+            }
+        }
+        for (const auto &entry : this->_entries) {
+            if (!entry->isValid()) {
+                this->_validity = false;
+                return;
+            }
+        }
+        if (!this->_roll->isValid()) {
+            this->_validity = false;
+            return;
+        }
+        this->_validity = true;
     }
 
     void Pool::poll(LootTablePoll &_poll, LootContext *context) const

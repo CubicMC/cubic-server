@@ -2,8 +2,11 @@
 
 namespace LootTable {
     namespace Function {
-        ExplorationMapProperties::ExplorationMapProperties(const nlohmann::json &function) : Function(function)
-        {}
+        ExplorationMapProperties::ExplorationMapProperties(const nlohmann::json &function):
+            Function(function)
+        {
+            this->setValidity(true);
+        }
 
         void ExplorationMapProperties::apply(void)
         {}

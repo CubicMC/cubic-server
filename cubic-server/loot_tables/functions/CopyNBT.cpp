@@ -2,8 +2,11 @@
 
 namespace LootTable {
     namespace Function {
-        CopyNBT::CopyNBT(const nlohmann::json &function) : Function(function)
-        {}
+        CopyNBT::CopyNBT(const nlohmann::json &function):
+            Function(function)
+        {
+            this->setValidity(true);
+        }
 
         void CopyNBT::apply(void)
         {}

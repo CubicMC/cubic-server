@@ -2,8 +2,11 @@
 
 namespace LootTable {
     namespace Function {
-        LootingEnchant::LootingEnchant(const nlohmann::json &function) : Function(function)
-        {}
+        LootingEnchant::LootingEnchant(const nlohmann::json &function):
+            Function(function)
+        {
+            this->setValidity(true);
+        }
 
         void LootingEnchant::apply(void)
         {}

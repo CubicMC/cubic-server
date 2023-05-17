@@ -2,8 +2,11 @@
 
 namespace LootTable {
     namespace Function {
-        ApplyBonus::ApplyBonus(const nlohmann::json &function) : Function(function)
-        {}
+        ApplyBonus::ApplyBonus(const nlohmann::json &function):
+            Function(function)
+        {
+            this->setValidity(true);
+        }
 
         void ApplyBonus::apply(void)
         {}

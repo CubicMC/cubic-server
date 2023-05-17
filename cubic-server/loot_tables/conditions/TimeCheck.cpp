@@ -5,6 +5,8 @@ namespace LootTable {
         TimeCheck::TimeCheck(const nlohmann::json &condition)
         {
             (void)condition;
+
+            this->setValidity(true);
         }
 
         bool TimeCheck::verify(void) const

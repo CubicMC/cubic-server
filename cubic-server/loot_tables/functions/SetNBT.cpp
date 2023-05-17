@@ -2,8 +2,11 @@
 
 namespace LootTable {
     namespace Function {
-        SetNBT::SetNBT(const nlohmann::json &function) : Function(function)
-        {}
+        SetNBT::SetNBT(const nlohmann::json &function):
+            Function(function)
+        {
+            this->setValidity(true);
+        }
 
         void SetNBT::apply(void)
         {}

@@ -5,6 +5,8 @@ namespace LootTable {
         TableBonus::TableBonus(const nlohmann::json &condition)
         {
             (void)condition;
+
+            this->setValidity(true);
         }
 
         bool TableBonus::verify(void) const

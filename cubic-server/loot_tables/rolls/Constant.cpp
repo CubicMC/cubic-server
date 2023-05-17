@@ -4,10 +4,12 @@ namespace LootTable {
     namespace Roll {
         Constant::Constant(const nlohmann::json &roll)
         {
-            if (roll.is_number_unsigned())
+            if (roll.is_number())
                 this->_rolls = roll.get<nlohmann::json::number_unsigned_t>();
             else
                 this->_rolls = roll["value"].get<nlohmann::json::number_unsigned_t>();
+        
+            this->setValidity(true);
         }
 
         const RollResult Constant::poll(LootContext *context) const
@@ -24,13 +26,13 @@ namespace LootTable {
         bool Constant::isOfType(const nlohmann::json &roll)
         {
             return ( // roll is just a number, or
-                roll.is_number_unsigned() || \
+                roll.is_number() || \
                 ( // roll is an object containing "type":"minecraft:constant" and "value":a-number
                     roll.is_object() && \
                     roll.contains("type") && \
                     roll.contains("value") && \
                     roll["type"].is_string() && \
-                    roll["value"].is_number_unsigned() && \
+                    roll["value"].is_number() && \
                     roll["type"].get<std::string>() == "minecraft:constant"
                 )
             );

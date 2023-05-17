@@ -2,8 +2,11 @@
 
 namespace LootTable {
     namespace Function {
-        SetDamage::SetDamage(const nlohmann::json &function) : Function(function)
-        {}
+        SetDamage::SetDamage(const nlohmann::json &function):
+            Function(function)
+        {
+            this->setValidity(true);
+        }
 
         void SetDamage::apply(void)
         {}

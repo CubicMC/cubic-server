@@ -18,6 +18,8 @@ namespace LootTable {
                 this->_isTable = true;
                 this->_table = &Server::getInstance()->lootTables.get(tableNamespace, tableName);
             }
+
+            this->setValidity(true);
         }
 
         bool LootTableEntry::poll(LootTablePoll &poll, LootContext *context) const

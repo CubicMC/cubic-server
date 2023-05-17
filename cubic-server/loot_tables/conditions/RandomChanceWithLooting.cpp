@@ -5,6 +5,8 @@ namespace LootTable {
         RandomChanceWithLooting::RandomChanceWithLooting(const nlohmann::json &condition)
         {
             (void)condition;
+
+            this->setValidity(true);
         }
 
         bool RandomChanceWithLooting::verify(void) const

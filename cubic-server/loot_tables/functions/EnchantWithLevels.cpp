@@ -2,8 +2,11 @@
 
 namespace LootTable {
     namespace Function {
-        EnchantWithLevels::EnchantWithLevels(const nlohmann::json &function) : Function(function)
-        {}
+        EnchantWithLevels::EnchantWithLevels(const nlohmann::json &function):
+            Function(function)
+        {
+            this->setValidity(true);
+        }
 
         void EnchantWithLevels::apply(void)
         {}

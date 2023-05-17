@@ -3,6 +3,8 @@
 #include <filesystem>
 #include <fstream>
 
+#include "logging/Logger.hpp"
+
 void LootTables::initialize(const std::string &defaultFolder)
 {
     addDefaultRollCreators();
@@ -32,14 +34,14 @@ void LootTables::addConditionCreator(const std::string &_namespace, const std::s
 {
     this->_conditionCreator[_namespace][_name] = creator;
 }
-   
+
 std::unique_ptr<LootTable::Roll::Roll> LootTables::createRoll(const nlohmann::json &roll)
 {
     for (const auto &[creator, check] : this->_rollCreator) {
         if (check(roll))
             return (creator(roll));
     }
-    throw (LootTable::Roll::NoRollContructor(roll));
+    throw (LootTable::Roll::NoRollConstructor("No constructor fitting the roll: " + roll.dump()));
     return (nullptr);
 }
 
@@ -71,7 +73,7 @@ std::unique_ptr<LootTable::Function::Function> LootTables::createFunction(const 
             return (nullptr);
         return (this->_functionCreator[type.substr(0, separator)][type.substr(separator + 1)](function));
     }
-    throw (LootTable::Function::NoFunctionContructor(function));
+    throw (LootTable::Function::NoFunctionContructor("No constructor fitting the function: " + function.dump()));
     return (nullptr);
 }
 
@@ -87,7 +89,7 @@ std::unique_ptr<LootTable::Condition::Condition> LootTables::createCondition(con
             return (nullptr);
         return (this->_conditionCreator[type.substr(0, separator)][type.substr(separator + 1)](condition));
     }
-    throw (LootTable::Condition::NoConditionContructor(condition));
+    throw (LootTable::Condition::NoConditionContructor("No constructor fitting the entry: " + condition.dump()));
     return (nullptr);
 }
 
@@ -99,14 +101,18 @@ void LootTables::importTableFolder(const std::string &_namespace, const std::str
         return;
     // recursively loops through every file in the given folder
     for (const auto &filepath : std::filesystem::recursive_directory_iterator(path)) {
-        if (filepath.path().string().ends_with(".json")) {
+        if (filepath.is_regular_file() && filepath.path().string().ends_with(".json")) {
             std::ifstream filestream(filepath.path().string());
             std::stringstream filecontent;
 
             filecontent << filestream.rdbuf();
 
             std::unique_ptr<LootTable::LootTable> newTable = std::make_unique<LootTable::LootTable>(nlohmann::json::parse(filecontent.str()));
-            this->_lootTables[_namespace][filepath.path().string().substr(path_length + 1, filepath.path().string().length() - (path_length + 1) - 5)].swap(newTable);
+            if (newTable->isValid())
+                this->_lootTables[_namespace][filepath.path().string().substr(path_length + 1, filepath.path().string().length() - (path_length + 1) - 5)].swap(newTable);
+            else
+                LINFO("invalid table " + filepath.path().string());
+            LDEBUG("loaded ", _namespace, ":", filepath.path().string().substr(path_length + 1, filepath.path().string().length() - (path_length + 1) - 5));
         }
     }
 }

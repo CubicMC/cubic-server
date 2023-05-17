@@ -5,6 +5,8 @@ namespace LootTable {
         EntityScores::EntityScores(const nlohmann::json &condition)
         {
             (void)condition;
+
+            this->setValidity(true);
         }
 
         bool EntityScores::verify(void) const

@@ -7,6 +7,8 @@ namespace LootTable {
         ItemTag::ItemTag(const nlohmann::json &entry) : Entry(entry)
         {
             this->_name = entry["name"];
+
+            this->setValidity(true);
         }
 
         bool ItemTag::poll(LootTablePoll &poll, LootContext *context) const

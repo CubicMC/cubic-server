@@ -2,8 +2,11 @@
 
 namespace LootTable {
     namespace Function {
-        SetStewEffect::SetStewEffect(const nlohmann::json &function) : Function(function)
-        {}
+        SetStewEffect::SetStewEffect(const nlohmann::json &function):
+        Function(function)
+        {
+            this->setValidity(true);
+        }
 
         void SetStewEffect::apply(void)
         {}

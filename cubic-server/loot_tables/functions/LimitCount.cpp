@@ -2,8 +2,11 @@
 
 namespace LootTable {
     namespace Function {
-        LimitCount::LimitCount(const nlohmann::json &function) : Function(function)
-        {}
+        LimitCount::LimitCount(const nlohmann::json &function):
+            Function(function)
+        {
+            this->setValidity(true);
+        }
 
         void LimitCount::apply(void)
         {}

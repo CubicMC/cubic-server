@@ -2,31 +2,30 @@
 #define CUBIC_SERVER_LOOT_TABLES_CONDITIONS_CONDITION_HPP
 
 #include <memory>
-#include <exception>
 
 #include <nlohmann/json.hpp>
+
+#include "exceptions.hpp"
 
 namespace LootTable {
     namespace Condition {
         class Condition {
         public:
-            Condition() = default;
+            Condition(void);
             ~Condition() = default;
 
+            bool isValid(void) const noexcept;
+            virtual void setValidity(bool validity) noexcept;
+
             virtual bool verify(void) const;
+
+        private:
+            bool _validity;
         };
 
         typedef std::unique_ptr<Condition> (*Creator)(const nlohmann::json &condition);
 
-        class NoConditionContructor : public std::exception {
-        public:
-            NoConditionContructor(const nlohmann::json &roll);
-            ~NoConditionContructor() = default;
-
-            const char *what() const noexcept;
-        private:
-            const std::string _message;
-        };
+        DEFINE_EXCEPTION(NoConditionContructor);
     };
 };
 

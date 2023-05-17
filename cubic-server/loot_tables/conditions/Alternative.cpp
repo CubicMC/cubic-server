@@ -5,6 +5,8 @@ namespace LootTable {
         Alternative::Alternative(const nlohmann::json &condition)
         {
             (void)condition;
+
+            this->setValidity(true);
         }
 
         bool Alternative::verify(void) const

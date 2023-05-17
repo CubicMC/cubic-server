@@ -14,7 +14,10 @@ namespace LootTable {
             return (this->_message.c_str());
         }
 
-        Entry::Entry(const nlohmann::json &entry) : _weight(1), _quality(1)
+        Entry::Entry(const nlohmann::json &entry):
+            _weight(1),
+            _quality(1),
+            _validity(false)
         {
             // get weight
             if (entry.contains("weight") && entry["weight"].is_number_integer())
@@ -45,6 +48,32 @@ namespace LootTable {
                     it->swap(newCondition);
                 }
             }
+        }
+
+        bool Entry::isValid(void) const noexcept
+        {
+            return (this->_validity);
+        }
+
+        void Entry::setValidity(bool validity) noexcept
+        {
+            if (validity == false) {
+                this->_validity = false;
+                return;
+            }
+            for (const auto &condition : this->_conditions) {
+                if (!condition->isValid()) {
+                    this->_validity = false;
+                    return;
+                }
+            }
+            for (const auto &function : this->_functions) {
+                if (!function->isValid()) {
+                    this->_validity = false;
+                    return;
+                }
+            }
+            this->_validity = true;
         }
 
         const int64_t &Entry::getWeight(void) const noexcept

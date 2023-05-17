@@ -5,6 +5,8 @@ namespace LootTable {
         Inverted::Inverted(const nlohmann::json &condition)
         {
             (void)condition;
+
+            this->setValidity(true);
         }
 
         bool Inverted::verify(void) const

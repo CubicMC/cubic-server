@@ -5,6 +5,8 @@ namespace LootTable {
         EntityProperties::EntityProperties(const nlohmann::json &condition)
         {
             (void)condition;
+
+            this->setValidity(true);
         }
 
         bool EntityProperties::verify(void) const

@@ -5,6 +5,8 @@ namespace LootTable {
         WeatherCheck::WeatherCheck(const nlohmann::json &condition)
         {
             (void)condition;
+
+            this->setValidity(true);
         }
 
         bool WeatherCheck::verify(void) const

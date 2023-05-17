@@ -2,8 +2,11 @@
 
 namespace LootTable {
     namespace Function {
-        CopyName::CopyName(const nlohmann::json &function) : Function(function)
-        {}
+        CopyName::CopyName(const nlohmann::json &function):
+            Function(function)
+        {
+            this->setValidity(true);
+        }
 
         void CopyName::apply(void)
         {}

@@ -8,6 +8,8 @@ namespace LootTable {
         {
             this->_n = roll["n"].get<nlohmann::json::number_integer_t>();
             this->_p = roll["p"].get<nlohmann::json::number_float_t>();
+
+            this->setValidity(true);
         }
 
         const RollResult Binomial::poll(LootContext *context) const
@@ -27,8 +29,8 @@ namespace LootTable {
                 roll.is_object() && \
                 roll.contains("n") && \
                 roll.contains("p") && \
-                roll["p"].is_number_unsigned() && \
-                roll["n"].is_number_unsigned()
+                roll["p"].is_number() && \
+                roll["n"].is_number()
             );
         }
     };

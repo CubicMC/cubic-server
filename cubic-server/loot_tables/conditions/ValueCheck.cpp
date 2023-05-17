@@ -5,6 +5,8 @@ namespace LootTable {
         ValueCheck::ValueCheck(const nlohmann::json &condition)
         {
             (void)condition;
+
+            this->setValidity(true);
         }
 
         bool ValueCheck::verify(void) const

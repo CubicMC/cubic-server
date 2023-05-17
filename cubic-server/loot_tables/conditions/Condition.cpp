@@ -2,12 +2,19 @@
 
 namespace LootTable {
     namespace Condition {
-        NoConditionContructor::NoConditionContructor(const nlohmann::json &condition) : _message("No constructor fitting the entry: " + condition.dump())
+
+        Condition::Condition(void):
+            _validity(false)
         {}
 
-        const char *NoConditionContructor::what() const noexcept
+        bool Condition::isValid(void) const noexcept
         {
-            return (this->_message.c_str());
+            return (this->_validity);
+        }
+
+        void Condition::setValidity(bool validity) noexcept
+        {
+            this->_validity = validity;
         }
 
         bool Condition::verify(void) const

@@ -1,19 +1,24 @@
-#include <iostream>
-
 #include "Roll.hpp"
 
 namespace LootTable {
     namespace Roll {
-        RollResult::RollResult(int64_t nbr, double probability) : _nbr(nbr), _probability(probability)
+        RollResult::RollResult(int64_t nbr, double probability):
+            _nbr(nbr),
+            _probability(probability)
         {}
 
-        NoRollContructor::NoRollContructor(const nlohmann::json &roll) : 
-            _message("No constructor fitting the roll: " + roll.dump())
+        Roll::Roll(void):
+            _validity(false)
         {}
 
-        const char *NoRollContructor::what() const noexcept
+        bool Roll::isValid(void) const noexcept
         {
-            return (this->_message.c_str());
+            return (this->_validity);
+        }
+
+        void Roll::setValidity(bool validity) noexcept
+        {
+            this->_validity = validity;
         }
     };
 };

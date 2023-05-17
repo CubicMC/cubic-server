@@ -2,8 +2,11 @@
 
 namespace LootTable {
     namespace Function {
-        SetName::SetName(const nlohmann::json &function) : Function(function)
-        {}
+        SetName::SetName(const nlohmann::json &function):
+            Function(function)
+        {
+            this->setValidity(true);
+        }
 
         void SetName::apply(void)
         {}

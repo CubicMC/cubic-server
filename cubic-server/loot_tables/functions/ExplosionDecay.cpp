@@ -2,8 +2,11 @@
 
 namespace LootTable {
     namespace Function {
-        ExplosionDecay::ExplosionDecay(const nlohmann::json &function) : Function(function)
-        {}
+        ExplosionDecay::ExplosionDecay(const nlohmann::json &function):
+            Function(function)
+        {
+            this->setValidity(true);
+        }
 
         void ExplosionDecay::apply(void)
         {}

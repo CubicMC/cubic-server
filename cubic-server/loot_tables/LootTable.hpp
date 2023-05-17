@@ -33,9 +33,10 @@ namespace LootTable {
     class LootTable {
     public:
         LootTable(const nlohmann::json &table);
-        LootTable(LootTable &&other) = default;
-        LootTable(const LootTable &other) = default;
         ~LootTable() = default;
+
+        bool isValid(void) const noexcept;
+        void setValidity(void) noexcept;
 
         LootTablePoll poll(LootContext *context) const;
 
@@ -45,6 +46,7 @@ namespace LootTable {
         std::list<std::unique_ptr<Pool>> _pools;
         std::string _type;
         std::list<std::unique_ptr<Function::Function>> _functions;
+        bool _validity;
     };
 };
 

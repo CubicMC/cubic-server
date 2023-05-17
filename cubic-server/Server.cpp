@@ -47,6 +47,7 @@ Server::Server():
     _commands.emplace_back(std::make_unique<command_parser::Deop>());
     _commands.emplace_back(std::make_unique<command_parser::Reload>());
     _commands.emplace_back(std::make_unique<command_parser::Time>());
+    _commands.emplace_back(std::make_unique<command_parser::Loot>());
 }
 
 Server::~Server() { }
@@ -87,6 +88,9 @@ void Server::launch(const configuration::ConfigHandler &config)
     // Initialize the item converter
     _itemConverter.initialize(std::string("registries-") + MC_VERSION + ".json");
     LINFO("ItemConverter initialized");
+
+    // Initialize loot tables
+    lootTables.initialize();
 
     // Initialize default world group
     auto defaultChat = std::make_shared<Chat>();
