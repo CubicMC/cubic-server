@@ -13,6 +13,11 @@
 #include "functions/Function.hpp"
 
 namespace LootTable {
+    /*
+      Loot table poll is the result of a poll on a loot table
+      It holds every item generated
+      TODO: handling item tags and NBT
+    */
     class LootTablePoll {
     public:
         LootTablePoll() = default;
@@ -30,16 +35,23 @@ namespace LootTable {
 
     class LootContext;
     
+    /*
+      Loot table class, invalid tables will be dropped
+    */
     class LootTable {
     public:
         LootTable(const nlohmann::json &table);
         ~LootTable() = default;
 
+        // for a table to be validated, it needs to have all its components valid (pools, and function)
         bool isValid(void) const noexcept;
         void setValidity(void) noexcept;
 
+        // generate items from the loot table given a context
         LootTablePoll poll(LootContext *context) const;
 
+        // type does not matter for now
+        // used to determine the context that should be provided
         const std::string &getType(void) const noexcept;
 
     private:

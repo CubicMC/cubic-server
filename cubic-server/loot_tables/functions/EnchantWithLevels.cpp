@@ -8,8 +8,10 @@ namespace LootTable {
             this->setValidity(true);
         }
 
-        void EnchantWithLevels::apply(void)
-        {}
+        void EnchantWithLevels::apply(const LootContext &context)
+        {
+            (void)context;
+        }
 
         std::unique_ptr<Function> EnchantWithLevels::create(const nlohmann::json &function)
         {

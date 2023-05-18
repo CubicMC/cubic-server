@@ -8,8 +8,10 @@ namespace LootTable {
             this->setValidity(true);
         }
 
-        void FillPlayerHead::apply(void)
-        {}
+        void FillPlayerHead::apply(const LootContext &context)
+        {
+            (void)context;
+        }
 
         std::unique_ptr<Function> FillPlayerHead::create(const nlohmann::json &function)
         {

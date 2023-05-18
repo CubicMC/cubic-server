@@ -9,8 +9,9 @@ namespace LootTable {
             this->setValidity(true);
         }
 
-        bool MatchTool::verify(void) const
+        bool MatchTool::verify(const LootContext *context) const
         {
+            (void)context;
             return (true);
         }
 

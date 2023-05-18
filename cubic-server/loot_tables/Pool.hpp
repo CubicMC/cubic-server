@@ -22,16 +22,23 @@ namespace LootTable {
         class Condition;
     };
 
+    /*
+      Loot table pool is a pool of entries that may be generated
+      all conditions must be validated for the poll to be done
+      all functions will be applied to the generated items
+    */
     class Pool {
     public:
         Pool(const nlohmann::json &pool);
         ~Pool() = default;
 
+        // a pool is valid if all its components are valid (roll, entries, functions, conditions)
         bool isValid(void) const noexcept;
         void setValidity(void) noexcept;
 
         void poll(LootTablePoll &_poll, LootContext *context) const;
 
+        // get sum of weights of all entries
         int64_t getTotalWeight(void) const noexcept;
 
     private:

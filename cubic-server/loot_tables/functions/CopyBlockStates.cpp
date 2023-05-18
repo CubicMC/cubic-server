@@ -8,8 +8,10 @@ namespace LootTable {
             this->setValidity(true);
         }
 
-        void CopyBlockStates::apply(void)
-        {}
+        void CopyBlockStates::apply(const LootContext &context)
+        {
+            (void)context;
+        }
 
         std::unique_ptr<Function> CopyBlockStates::create(const nlohmann::json &function)
         {

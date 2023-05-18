@@ -8,8 +8,10 @@ namespace LootTable {
             this->setValidity(true);
         }
 
-        void SetLootTable::apply(void)
-        {}
+        void SetLootTable::apply(const LootContext &context)
+        {
+            (void)context;
+        }
 
         std::unique_ptr<Function> SetLootTable::create(const nlohmann::json &function)
         {

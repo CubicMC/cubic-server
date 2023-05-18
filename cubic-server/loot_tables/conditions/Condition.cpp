@@ -17,8 +17,9 @@ namespace LootTable {
             this->_validity = validity;
         }
 
-        bool Condition::verify(void) const
+        bool Condition::verify(const LootContext *context) const
         {
+            (void)context;
             return (true);
         }
     };

@@ -8,8 +8,10 @@ namespace LootTable {
             this->setValidity(true);
         }
 
-        void EnchantRandomly::apply(void)
-        {}
+        void EnchantRandomly::apply(const LootContext &context)
+        {
+            (void)context;
+        }
 
         std::unique_ptr<Function> EnchantRandomly::create(const nlohmann::json &function)
         {

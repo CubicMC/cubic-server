@@ -9,8 +9,9 @@ namespace LootTable {
             this->setValidity(true);
         }
 
-        bool RandomChance::verify(void) const
+        bool RandomChance::verify(const LootContext *context) const
         {
+            (void)context;
             return (true);
         }
 

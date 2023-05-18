@@ -57,7 +57,7 @@ std::unique_ptr<LootTable::Entry::Entry> LootTables::createEntry(const nlohmann:
             return (nullptr);
         return (this->_entryCreator[type.substr(0, separator)][type.substr(separator + 1)](entry));
     }
-    throw (LootTable::Entry::NoEntryContructor(entry));
+    throw (LootTable::Entry::NoEntryContructor("No constructor fitting the entry: " + entry.dump()));
     return (nullptr);
 }
 

@@ -9,8 +9,9 @@ namespace LootTable {
             this->setValidity(true);
         }
 
-        bool BlockStateProperties::verify(void) const
+        bool BlockStateProperties::verify(const LootContext *context) const
         {
+            (void)context;
             return (true);
         }
 

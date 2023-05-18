@@ -2,6 +2,7 @@
 
 #include "allRolls.hpp"
 
+// adds all minecraft's default roll types
 void addDefaultRollCreators(void)
 {
     Server::getInstance()->lootTables.addRollCreator(LootTable::Roll::Constant::creator, LootTable::Roll::Constant::isOfType);

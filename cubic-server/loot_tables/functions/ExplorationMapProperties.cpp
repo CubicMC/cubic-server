@@ -8,8 +8,10 @@ namespace LootTable {
             this->setValidity(true);
         }
 
-        void ExplorationMapProperties::apply(void)
-        {}
+        void ExplorationMapProperties::apply(const LootContext &context)
+        {
+            (void)context;
+        }
 
         std::unique_ptr<Function> ExplorationMapProperties::create(const nlohmann::json &function)
         {

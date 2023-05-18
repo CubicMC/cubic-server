@@ -9,8 +9,9 @@ namespace LootTable {
             this->setValidity(true);
         }
 
-        bool DamageSourceProperties::verify(void) const
+        bool DamageSourceProperties::verify(const LootContext *context) const
         {
+            (void)context;
             return (true);
         }
 

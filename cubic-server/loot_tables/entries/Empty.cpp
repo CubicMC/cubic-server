@@ -16,7 +16,7 @@ namespace LootTable {
             (void)poll;
             (void)context;
             for (const auto &condition : this->_conditions) {
-                if (condition->verify() == false)
+                if (condition->verify(context) == false)
                     return (false);
             }
             return (true);

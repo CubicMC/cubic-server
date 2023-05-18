@@ -8,8 +8,10 @@ namespace LootTable {
             this->setValidity(true);
         }
 
-        void SetStewEffect::apply(void)
-        {}
+        void SetStewEffect::apply(const LootContext &context)
+        {
+            (void)context;
+        }
 
         std::unique_ptr<Function> SetStewEffect::create(const nlohmann::json &function)
         {

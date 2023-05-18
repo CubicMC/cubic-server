@@ -10,7 +10,7 @@ namespace LootTable {
             LimitCount(const nlohmann::json &function);
             ~LimitCount() = default;
 
-            void apply(void) override;
+            void apply(const LootContext &context) override;
 
             static std::unique_ptr<Function> create(const nlohmann::json &function);
         };

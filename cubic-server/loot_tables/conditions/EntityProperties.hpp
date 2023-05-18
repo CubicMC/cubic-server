@@ -12,7 +12,7 @@ namespace LootTable {
             EntityProperties(const nlohmann::json &condition);
             ~EntityProperties() = default;
 
-            bool verify(void) const override;
+            bool verify(const LootContext *context) const override;
 
             static std::unique_ptr<Condition> create(const nlohmann::json &condition);
         private:

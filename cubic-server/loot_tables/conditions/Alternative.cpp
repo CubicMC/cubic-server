@@ -9,8 +9,9 @@ namespace LootTable {
             this->setValidity(true);
         }
 
-        bool Alternative::verify(void) const
+        bool Alternative::verify(const LootContext *context) const
         {
+            (void)context;
             return (true);
         }
 

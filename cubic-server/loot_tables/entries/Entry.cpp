@@ -6,14 +6,6 @@
 
 namespace LootTable {
     namespace Entry {
-        NoEntryContructor::NoEntryContructor(const nlohmann::json &entry) : _message("No constructor fitting the entry: " + entry.dump())
-        {}
-
-        const char *NoEntryContructor::what() const noexcept
-        {
-            return (this->_message.c_str());
-        }
-
         Entry::Entry(const nlohmann::json &entry):
             _weight(1),
             _quality(1),

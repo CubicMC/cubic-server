@@ -9,8 +9,9 @@ namespace LootTable {
             this->setValidity(true);
         }
 
-        bool EntityProperties::verify(void) const
+        bool EntityProperties::verify(const LootContext *context) const
         {
+            (void)context;
             return (true);
         }
 

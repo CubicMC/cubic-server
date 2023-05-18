@@ -12,7 +12,7 @@ namespace LootTable {
             DamageSourceProperties(const nlohmann::json &condition);
             ~DamageSourceProperties() = default;
 
-            bool verify(void) const override;
+            bool verify(const LootContext *context) const override;
 
             static std::unique_ptr<Condition> create(const nlohmann::json &condition);
         private:

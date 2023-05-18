@@ -9,8 +9,9 @@ namespace LootTable {
             this->setValidity(true);
         }
 
-        bool WeatherCheck::verify(void) const
+        bool WeatherCheck::verify(const LootContext *context) const
         {
+            (void)context;
             return (true);
         }
 

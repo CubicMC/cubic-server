@@ -8,8 +8,10 @@ namespace LootTable {
             this->setValidity(true);
         }
 
-        void ExplosionDecay::apply(void)
-        {}
+        void ExplosionDecay::apply(const LootContext &context)
+        {
+            (void)context;
+        }
 
         std::unique_ptr<Function> ExplosionDecay::create(const nlohmann::json &function)
         {

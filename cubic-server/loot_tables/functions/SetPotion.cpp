@@ -8,8 +8,10 @@ namespace LootTable {
             this->setValidity(true);
         }
 
-        void SetPotion::apply(void)
-        {}
+        void SetPotion::apply(const LootContext &context)
+        {
+            (void)context;
+        }
 
         std::unique_ptr<Function> SetPotion::create(const nlohmann::json &function)
         {

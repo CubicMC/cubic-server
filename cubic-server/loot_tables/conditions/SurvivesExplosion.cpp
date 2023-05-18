@@ -9,8 +9,9 @@ namespace LootTable {
             this->setValidity(true);
         }
 
-        bool SurvivesExplosion::verify(void) const
+        bool SurvivesExplosion::verify(const LootContext *context) const
         {
+            (void)context;
             return (true);
         }
 

@@ -3,9 +3,10 @@
 
 #include <list>
 #include <memory>
-#include <exception>
 
 #include <nlohmann/json.hpp>
+
+#include "exceptions.hpp"
 
 namespace LootTable {
     class LootTablePoll;
@@ -18,12 +19,19 @@ namespace LootTable {
     };
 
     namespace Entry {
+        /*
+          Entry class to be overloaded,
+          invalid by default
+          automatically fills the weight and quality of the entry, both are 1 by default
+        */
         class Entry {
         public:
             Entry(const nlohmann::json &entry);
             ~Entry() = default;
 
+            // entry must be valid, call setValidity(true) to validate
             bool isValid(void) const noexcept;
+            // setValitidy(true) will not set the validity to true if any component (function, condition) is invalid
             void setValidity(bool validity) noexcept;
 
             const int64_t &getWeight(void) const noexcept;
@@ -42,17 +50,10 @@ namespace LootTable {
             bool _validity;
         };
 
+        // type definition for creator, may return nullptr or a invalid entry
         typedef std::unique_ptr<Entry> (*Creator)(const nlohmann::json &entry);
     
-        class NoEntryContructor : public std::exception {
-        public:
-            NoEntryContructor(const nlohmann::json &roll);
-            ~NoEntryContructor() = default;
-
-            const char *what() const noexcept;
-        private:
-            const std::string _message;
-        };
+        DEFINE_EXCEPTION(NoEntryContructor);
     };
 };
 

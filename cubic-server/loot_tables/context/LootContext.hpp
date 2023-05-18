@@ -17,6 +17,9 @@
 #include "Selector.hpp"
 
 namespace LootTable {
+    /*
+      Loot context class to be overloaded
+    */
     class LootContext {
     public:
         virtual const std::string &getType() const = 0;

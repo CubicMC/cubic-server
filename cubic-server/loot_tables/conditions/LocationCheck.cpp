@@ -9,8 +9,9 @@ namespace LootTable {
             this->setValidity(true);
         }
 
-        bool LocationCheck::verify(void) const
+        bool LocationCheck::verify(const LootContext *context) const
         {
+            (void)context;
             return (true);
         }
 

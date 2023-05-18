@@ -8,8 +8,10 @@ namespace LootTable {
             this->setValidity(true);
         }
 
-        void SetBannerPattern::apply(void)
-        {}
+        void SetBannerPattern::apply(const LootContext &context)
+        {
+            (void)context;
+        }
 
         std::unique_ptr<Function> SetBannerPattern::create(const nlohmann::json &function)
         {
