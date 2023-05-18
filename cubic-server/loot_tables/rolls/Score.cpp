@@ -6,6 +6,7 @@ namespace LootTable {
     namespace Roll {
         Score::Score(const nlohmann::json &roll) : _target(This), _isTargetFixed(false), _scale(1.0)
         {
+            // get target, objective and scale
             std::string target;
 
             if (roll["target"].is_string() || roll["target"]["type"].get<std::string>() == "minecraft:context") {
@@ -34,6 +35,7 @@ namespace LootTable {
 
         const RollResult Score::poll(LootContext *context) const
         {
+            // score roll is not yet handled: returns 1 roll and 1.0 probability
             (void)context;
             return (RollResult(1, 1.0));
         }

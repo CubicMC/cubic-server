@@ -2,6 +2,7 @@
 
 #include "allFunctions.hpp"
 
+// adds all minecraft's default functions types
 void addDefaultFunctionCreators(void)
 {
     Server::getInstance()->lootTables.addFunctionCreator("minecraft", "apply_bonus", LootTable::Function::ApplyBonus::create);

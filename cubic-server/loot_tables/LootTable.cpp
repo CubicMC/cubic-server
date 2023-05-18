@@ -88,6 +88,7 @@ namespace LootTable {
         this->_validity = true;
     }
 
+    // calls every Pool poll function with context
     LootTablePoll LootTable::poll(LootContext *context) const
     {
         LootTablePoll newPoll;

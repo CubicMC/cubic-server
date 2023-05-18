@@ -6,6 +6,7 @@ namespace LootTable {
     namespace Roll {
         Uniform::Uniform(const nlohmann::json &roll)
         {
+            // get min and max value
             this->_min = roll["min"].get<nlohmann::json::number_integer_t>();
             this->_max = roll["max"].get<nlohmann::json::number_integer_t>();
 
@@ -14,6 +15,7 @@ namespace LootTable {
 
         const RollResult Uniform::poll(LootContext *context) const
         {
+            // roll a number between min and max, if max < min, returns min; probability always 1.0
             (void)context;
             if (this->_max <= this->_min)
                 return (RollResult(this->_min, 1.0));

@@ -7,11 +7,13 @@
 
 void LootTables::initialize(const std::string &defaultFolder)
 {
+    // initialize default minecraft's creators
     addDefaultRollCreators();
     addDefaultEntryCreators();
     addDefaultFunctionCreators();
     addDefaultConditionCreators();
 
+    // import default's minecraft tables
     this->importTableFolder("minecraft", defaultFolder);
 }
 
@@ -35,6 +37,7 @@ void LootTables::addConditionCreator(const std::string &_namespace, const std::s
     this->_conditionCreator[_namespace][_name] = creator;
 }
 
+// checks every roll for the right constructor, no constructor throws NoRollConstructor
 std::unique_ptr<LootTable::Roll::Roll> LootTables::createRoll(const nlohmann::json &roll)
 {
     for (const auto &[creator, check] : this->_rollCreator) {
@@ -45,6 +48,7 @@ std::unique_ptr<LootTable::Roll::Roll> LootTables::createRoll(const nlohmann::js
     return (nullptr);
 }
 
+// checks every entry for the right constructor, no constructor throws NoEntryConstructor
 std::unique_ptr<LootTable::Entry::Entry> LootTables::createEntry(const nlohmann::json &entry)
 {
     if (entry.is_object() && \
@@ -61,6 +65,7 @@ std::unique_ptr<LootTable::Entry::Entry> LootTables::createEntry(const nlohmann:
     return (nullptr);
 }
 
+// checks every function for the right constructor, no constructor throws NoFunctionConstructor
 std::unique_ptr<LootTable::Function::Function> LootTables::createFunction(const nlohmann::json &function)
 {
     if (function.is_object() && \
@@ -77,6 +82,7 @@ std::unique_ptr<LootTable::Function::Function> LootTables::createFunction(const 
     return (nullptr);
 }
 
+// checks every condition for the right constructor, no constructor throws NoConditionConstructor
 std::unique_ptr<LootTable::Condition::Condition> LootTables::createCondition(const nlohmann::json &condition)
 {
     if (condition.is_object() && \
@@ -107,14 +113,18 @@ void LootTables::importTableFolder(const std::string &_namespace, const std::str
 
             filecontent << filestream.rdbuf();
 
+            // create new table from json
             std::unique_ptr<LootTable::LootTable> newTable = std::make_unique<LootTable::LootTable>(nlohmann::json::parse(filecontent.str()));
-            if (newTable->isValid())
+
+            // keep table if valid, drop if not
+            if (newTable->isValid()) {
                 this->_lootTables[_namespace][filepath.path().string().substr(path_length + 1, filepath.path().string().length() - (path_length + 1) - 5)].swap(newTable);
-            else
-                LINFO("invalid table " + filepath.path().string());
-            LDEBUG("loaded ", _namespace, ":", filepath.path().string().substr(path_length + 1, filepath.path().string().length() - (path_length + 1) - 5));
+                LDEBUG("loaded ", _namespace, ":", filepath.path().string().substr(path_length + 1, filepath.path().string().length() - (path_length + 1) - 5));
+            } else
+                LDEBUG("invalid table " + filepath.path().string());
         }
     }
+    LINFO("Loaded ", std::to_string(this->_lootTables[_namespace].size()), " loot tables from path ", path, " into namespace \"", _namespace, "\"");
 }
 
 bool LootTables::exists(const std::string &_namespace, const std::string &table)

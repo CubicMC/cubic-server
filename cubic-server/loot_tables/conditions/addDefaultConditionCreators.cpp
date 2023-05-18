@@ -2,6 +2,7 @@
 
 #include "allConditions.hpp"
 
+// adds all minecraft's default condition types
 void addDefaultConditionCreators(void)
 {
     Server::getInstance()->lootTables.addConditionCreator("minecraft", "alternative", LootTable::Condition::Alternative::create);

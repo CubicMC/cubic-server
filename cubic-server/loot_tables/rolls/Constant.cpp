@@ -4,6 +4,7 @@ namespace LootTable {
     namespace Roll {
         Constant::Constant(const nlohmann::json &roll)
         {
+            // get the constant number of rolls to be done
             if (roll.is_number())
                 this->_rolls = roll.get<nlohmann::json::number_unsigned_t>();
             else

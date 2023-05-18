@@ -6,6 +6,7 @@ namespace LootTable {
     namespace Roll {
         Binomial::Binomial(const nlohmann::json &roll)
         {
+            // net n number of rolls and p the probability
             this->_n = roll["n"].get<nlohmann::json::number_integer_t>();
             this->_p = roll["p"].get<nlohmann::json::number_float_t>();
 

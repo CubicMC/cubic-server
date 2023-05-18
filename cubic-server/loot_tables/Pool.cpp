@@ -92,16 +92,20 @@ namespace LootTable {
 
     void Pool::poll(LootTablePoll &_poll, LootContext *context) const
     {
+        // get number of entries to generate and their probability
         const Roll::RollResult roll = this->_roll->poll(context);
 
         for (int rolls = 0; rolls < roll._nbr; rolls++) {
-            if (roll._probability == 1.0 || static_cast<double>(rand() % 10000) < roll._probability * 10000.0) {
+            // proceeds if probability is superior or equal to 1 or if probability rolled is inferior to probability generated
+            if (roll._probability >= 1.0 || static_cast<double>(rand() % 10000) < roll._probability * 10000.0) {
                 int64_t rolledWeight = 0;
                 int64_t elapsedWeight = 0;
-                
+               
                 if (this->_totalWeight > 1)
                     rolledWeight = rand() % this->_totalWeight;
+                // get the right entry for the rolled weight
                 for (const auto &entry : this->_entries) {
+                    // when entry is found, calls its poll function
                     if (this->_totalWeight <= 1 || rolledWeight < elapsedWeight + entry->getWeight()) {
                         entry->poll(_poll, context);
                         break;

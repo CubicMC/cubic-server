@@ -2,6 +2,7 @@
 
 #include "allEntries.hpp"
 
+// adds all minecraft's default entry types
 void addDefaultEntryCreators(void)
 {
     Server::getInstance()->lootTables.addEntryCreator("minecraft", "alternatives", LootTable::Entry::Alternative::creator);
