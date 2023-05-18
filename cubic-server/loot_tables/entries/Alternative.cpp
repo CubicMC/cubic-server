@@ -23,9 +23,9 @@ namespace LootTable {
                 for (const auto &condition : this->_conditions) {
                     if (condition->verify() == false)
                         continue;
-                    child->poll(poll, context);
-                    return (true);
                 }
+                child->poll(poll, context);
+                return (true);
             }
             return (false);
         }

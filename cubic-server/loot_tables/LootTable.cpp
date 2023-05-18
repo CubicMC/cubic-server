@@ -76,14 +76,12 @@ namespace LootTable {
         for (const auto &function : this->_functions) {
             if (!function->isValid()) {
                 this->_validity = false;
-                std::cout << "function problem :(" << std::endl;
                 return;
             }
         }
         for (const auto &pool : this->_pools) {
             if (!pool->isValid()) {
                 this->_validity = false;
-                std::cout << "pool problem :(" << std::endl;
                 return;
             }
         }
