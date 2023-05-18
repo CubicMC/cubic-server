@@ -48,6 +48,16 @@ Server::Server():
     _commands.emplace_back(std::make_unique<command_parser::Deop>());
     _commands.emplace_back(std::make_unique<command_parser::Reload>());
     _commands.emplace_back(std::make_unique<command_parser::Time>());
+    _commands.emplace_back(std::make_unique<command_parser::Objectives>());
+    _commands.emplace_back(std::make_unique<command_parser::AddObjective>());
+    _commands.emplace_back(std::make_unique<command_parser::SetObjective>());
+    _commands.emplace_back(std::make_unique<command_parser::DisplayObjective>());
+    _commands.emplace_back(std::make_unique<command_parser::RemoveObjective>());
+    _commands.emplace_back(std::make_unique<command_parser::Teams>());
+    _commands.emplace_back(std::make_unique<command_parser::AddTeam>());
+    _commands.emplace_back(std::make_unique<command_parser::JoinTeam>());
+    _commands.emplace_back(std::make_unique<command_parser::LeaveTeam>());
+    _commands.emplace_back(std::make_unique<command_parser::RemoveTeam>());
 }
 
 Server::~Server() { }
@@ -95,7 +105,7 @@ void Server::launch(const configuration::ConfigHandler &config)
     _worldGroups.at("default")->initialize();
 
     // Initialize scoreboard system
-    this->scoreboardSystem.initialize();
+    this->_scoreboardSystem.initialize();
 
     this->_running = true;
 
@@ -270,3 +280,8 @@ void Server::_enforceWhitelistOnReload()
 std::unordered_map<std::string_view, std::shared_ptr<WorldGroup>> &Server::getWorldGroups() { return _worldGroups; }
 
 const std::unordered_map<std::string_view, std::shared_ptr<WorldGroup>> &Server::getWorldGroups() const { return _worldGroups; }
+
+ScoreboardSystem &Server::getScoreboardSystem(void)
+{
+    return (this->_scoreboardSystem);
+}

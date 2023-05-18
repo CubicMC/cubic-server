@@ -3,6 +3,7 @@
 #include "World.hpp"
 #include "Dimension.hpp"
 #include "Player.hpp"
+#include "logging/Logger.hpp"
 
 #include "Scoreboard.hpp"
 #include "Objectives.hpp"
@@ -58,7 +59,9 @@ namespace Scoreboard {
             _criteria(criteria),
             _displayName("{\"text\":\"" + name + "\"}"),
             _renderType(RenderType::RenderInteger)
-        {}
+        {
+            LINFO("Added objective \"", name, "\"");
+        }
 
         Objective::Objective(const Scoreboard &scoreboard, const std::string &name, const std::string &criteria, const std::string &displayName):
             _scoreboard(scoreboard),
@@ -66,7 +69,9 @@ namespace Scoreboard {
             _criteria(criteria),
             _displayName(displayName),
             _renderType(RenderType::RenderInteger)
-        {}
+        {
+            LINFO("Added objective \"", name, "\"");
+        }
 
         Objective::Objective(const Scoreboard &scoreboard, const std::string &name, const std::string &criteria, const RenderType &renderType):
             _scoreboard(scoreboard),
@@ -74,7 +79,9 @@ namespace Scoreboard {
             _criteria(criteria),
             _displayName("{\"text\":\"" + name + "\"}"),
             _renderType(renderType)
-        {}
+        {
+            LINFO("Added objective \"", name, "\"");
+        }
 
         Objective::Objective(const Scoreboard &scoreboard, const std::string &name, const std::string &criteria, const std::string &displayName, const RenderType &renderType):
             _scoreboard(scoreboard),
@@ -82,10 +89,14 @@ namespace Scoreboard {
             _criteria(criteria),
             _displayName(displayName),
             _renderType(renderType)
-        {}
+        {
+            LINFO("Added objective \"", name, "\"");
+        }
 
         Objective::~Objective()
-        {}
+        {
+            LINFO("Removed objective \"", this->_name, "\"");
+        }
 
         const std::string &Objective::getName(void) const noexcept
         {
@@ -135,6 +146,7 @@ namespace Scoreboard {
                 return;
             this->_values[name].set(value);
             this->sendUpdateScore(name, this->_values[name]);
+            LINFO(this->_name, ": set ", name, "'s score to ", value);
         }
 
         void Objective::addScore(const std::string &name, int32_t value)

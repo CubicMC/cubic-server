@@ -3,6 +3,7 @@
 #include "Dimension.hpp"
 #include "Player.hpp"
 #include "protocol/ClientPackets.hpp"
+#include "logging/Logger.hpp"
 
 #include "Teams.hpp"
 
@@ -68,7 +69,9 @@ namespace Scoreboard {
             _displayName("{\"text\":\"}" + name + "\"}"),
             _memberNamePrefix(""),
             _memberNameSuffix("")
-        {}
+        {
+            LINFO("Added team \"", name, "\"");
+        }
 
         Team::Team(const Scoreboard &scoreboard, const std::string &name, const Color &color):
             _scoreboard(scoreboard),
@@ -82,7 +85,9 @@ namespace Scoreboard {
             _displayName("{\"text\":\"}" + name + "\"}"),
             _memberNamePrefix(""),
             _memberNameSuffix("")
-        {}
+        {
+            LINFO("Added team \"", name, "\"");
+        }
 
         Team::Team(const Scoreboard &scoreboard, const std::string &name, const std::string &displayName):
             _scoreboard(scoreboard),
@@ -96,7 +101,9 @@ namespace Scoreboard {
             _displayName(displayName),
             _memberNamePrefix(""),
             _memberNameSuffix("")
-        {}
+        {
+            LINFO("Added team \"", name, "\"");
+        }
 
         Team::Team(const Scoreboard &scoreboard, const std::string &name, const Color &color, const std::string &displayName):
             _scoreboard(scoreboard),
@@ -110,12 +117,16 @@ namespace Scoreboard {
             _displayName(displayName),
             _memberNamePrefix(""),
             _memberNameSuffix("")
-        {}
+        {
+            LINFO("Added team \"", name, "\"");
+        }
 
         Team::~Team()
-        {}
+        {
+            LINFO("Removed team \"", this->_name, "\"");
+        }
 
-        const std::unordered_set<std::string> &Team::getMember(void) const noexcept
+        const std::unordered_set<std::string> &Team::getMembers(void) const noexcept
         {
             return (this->_members);
         }
@@ -179,12 +190,14 @@ namespace Scoreboard {
         {
             this->_members.insert(name);
             this->sendJoinTeam(name);
+            LINFO(name, " joined team ", this->_name);
         }
 
         void Team::removeMember(const std::string &name)
         {
             this->_members.erase(name);
             this->sendLeaveTeam(name);
+            LINFO(name, " left team ", this->_name);
         }
 
         void Team::allowFriendlyFire(bool rule) noexcept

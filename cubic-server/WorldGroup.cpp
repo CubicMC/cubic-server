@@ -12,7 +12,7 @@ WorldGroup::WorldGroup(std::shared_ptr<Chat> chat):
     _chat(std::move(chat)),
     _soundSystem(new SoundSystem(*this)),
     _running(false),
-    _scoreboard(Server::getInstance()->scoreboardSystem, *this)
+    _scoreboard(Server::getInstance()->getScoreboardSystem(), *this)
 {
 }
 

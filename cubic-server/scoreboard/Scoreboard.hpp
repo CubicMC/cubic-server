@@ -41,8 +41,8 @@ namespace Scoreboard {
 
         const WorldGroup &getWorldGroup(void) const noexcept;
         bool isObjective(const std::string &name) const noexcept;
-        const Objective::Objective &getObjective(const std::string &name) const;
-        const std::unordered_map<std::string, std::shared_ptr<Objective::Objective>> &getObjectives(void) const noexcept;
+        Objective::Objective &getObjective(const std::string &name);
+        std::unordered_map<std::string, std::shared_ptr<Objective::Objective>> &getObjectives(void) noexcept;
 
         bool addObjective(const std::string &name, const std::string &criteria);
         bool addObjective(const std::string &name, const std::string &criteria, std::string &displayName);
@@ -53,8 +53,8 @@ namespace Scoreboard {
         void setToObjectivebyCriteria(const std::string &criteria, const std::string &entity, int32_t value);
 
         bool isTeam(const std::string &name) const noexcept;
-        const Team::Team &getTeam(const std::string &name) const;
-        const std::unordered_map<std::string, std::unique_ptr<Team::Team>> &getTeams(void) const noexcept;
+        Team::Team &getTeam(const std::string &name);
+        std::unordered_map<std::string, std::unique_ptr<Team::Team>> &getTeams(void) noexcept;
 
         bool addTeam(const std::string &name);
         bool removeTeam(const std::string &name);

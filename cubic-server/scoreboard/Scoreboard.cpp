@@ -3,6 +3,8 @@
 #include "Dimension.hpp"
 #include "Player.hpp"
 #include "protocol/ClientPackets.hpp"
+#include "logging/Logger.hpp"
+#include <string>
 
 #include "ScoreboardSystem.hpp"
 #include "Scoreboard.hpp"
@@ -25,12 +27,12 @@ namespace Scoreboard {
         return (this->_objectives.contains(name));
     }
 
-    const Objective::Objective &Scoreboard::getObjective(const std::string &name) const
+    Objective::Objective &Scoreboard::getObjective(const std::string &name)
     {
         return (*this->_objectives.at(name));
     }
 
-    const std::unordered_map<std::string, std::shared_ptr<Objective::Objective>> &Scoreboard::getObjectives(void) const noexcept
+    std::unordered_map<std::string, std::shared_ptr<Objective::Objective>> &Scoreboard::getObjectives(void) noexcept
     {
         return (this->_objectives);
     }
@@ -73,6 +75,10 @@ namespace Scoreboard {
     {
         this->_displaySlots[slot] = objective;
         this->sendDisplayObjective(slot, objective);
+        if (objective)
+            LINFO("displayed objective \"", objective->getName(), "\" in slot ", std::to_string(static_cast<int>(slot)));
+        else
+            LINFO("removed displayed objectived from slot ", std::to_string(static_cast<int>(slot)));
     }
 
     void Scoreboard::addToObjectivebyCriteria(const std::string &criteria, const std::string &entity, int32_t value)
@@ -92,12 +98,12 @@ namespace Scoreboard {
         return (this->_teams.contains(name));
     }
 
-    const Team::Team &Scoreboard::getTeam(const std::string &name) const
+    Team::Team &Scoreboard::getTeam(const std::string &name)
     {
         return (*this->_teams.at(name));
     }
 
-    const std::unordered_map<std::string, std::unique_ptr<Team::Team>> &Scoreboard::getTeams(void) const noexcept
+    std::unordered_map<std::string, std::unique_ptr<Team::Team>> &Scoreboard::getTeams(void) noexcept
     {
         return (this->_teams);
     }

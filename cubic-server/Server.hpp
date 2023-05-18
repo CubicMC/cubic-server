@@ -71,9 +71,9 @@ public:
 
     const std::unordered_map<std::string_view, std::shared_ptr<WorldGroup>> &getWorldGroups() const;
 
-    Permissions permissions;
+    ScoreboardSystem &getScoreboardSystem(void);
 
-    ScoreboardSystem scoreboardSystem;
+    Permissions permissions;
 
 private:
     Server();
@@ -99,6 +99,7 @@ private:
     std::vector<std::unique_ptr<CommandBase>> _commands;
     Blocks::GlobalPalette _globalPalette;
     Items::ItemConverter _itemConverter;
+    ScoreboardSystem _scoreboardSystem;
 };
 
 #endif // CUBICSERVER_SERVER_HPP

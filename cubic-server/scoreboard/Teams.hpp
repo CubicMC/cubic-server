@@ -49,7 +49,7 @@ namespace Scoreboard {
             Team(const Scoreboard &scoreboard, const std::string &name, const Color &color, const std::string &displayName);
             ~Team();
 
-            const std::unordered_set<std::string> &getMember(void) const noexcept;
+            const std::unordered_set<std::string> &getMembers(void) const noexcept;
             bool isMember(const std::string &name) const;
             bool isAllowingFriendlyFire(void) const noexcept;
             bool isSeeingFriendlyInvisibles(void) const noexcept;
