@@ -20,6 +20,8 @@
 #include "scoreboard/ScoreboardSystem.hpp"
 #include "options.hpp"
 
+#include "recipes/Recipes.hpp"
+
 constexpr char MC_VERSION[] = "1.19.3";
 constexpr uint16_t MC_PROTOCOL = 761;
 constexpr uint16_t MS_PER_TICK = 50;
@@ -71,6 +73,8 @@ public:
 
     const std::unordered_map<std::string_view, std::shared_ptr<WorldGroup>> &getWorldGroups() const;
 
+    Recipes &getRecipeSystem(void) noexcept;
+
     ScoreboardSystem &getScoreboardSystem(void);
 
     Permissions permissions;
@@ -99,6 +103,7 @@ private:
     std::vector<std::unique_ptr<CommandBase>> _commands;
     Blocks::GlobalPalette _globalPalette;
     Items::ItemConverter _itemConverter;
+    Recipes _recipes;
     ScoreboardSystem _scoreboardSystem;
 };
 
