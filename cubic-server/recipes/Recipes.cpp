@@ -14,8 +14,25 @@
 #include "Smoking.hpp"
 #include "StoneCutting.hpp"
 
+#include "SpecialArmorDye.hpp"
+#include "SpecialBannerDuplicate.hpp"
+#include "SpecialBookCloning.hpp"
+#include "SpecialFireworkRocket.hpp"
+#include "SpecialFireworkStar.hpp"
+#include "SpecialFireworkStarFade.hpp"
+#include "SpecialMapCloning.hpp"
+#include "SpecialMapExtending.hpp"
+#include "SpecialRepairItem.hpp"
+#include "SpecialShieldDecoration.hpp"
+#include "SpecialShulkerboxColoring.hpp"
+#include "SpecialSuspiciousStew.hpp"
+#include "SpecialTippedArrow.hpp"
+
 namespace Recipe {
-    Recipe::Recipe(const nlohmann::json &recipe) : _hasCategory(false), _hasGroup(false), _isValid(false)
+    Recipe::Recipe(const nlohmann::json &recipe):
+        _hasCategory(false),
+        _hasGroup(false),
+        _isValid(false)
     {
         this->setCategory(recipe);
         this->setGroup(recipe);
@@ -140,6 +157,20 @@ void Recipes::initialize(void)
     addRecipeCreator("minecraft", "smithing", Recipe::Smithing::create);
     addRecipeCreator("minecraft", "smoking", Recipe::Smoking::create);
     addRecipeCreator("minecraft", "stonecutting", Recipe::StoneCutting::create);
+
+    addRecipeCreator("minecraft", "crafting_special_armordye", Recipe::SpecialArmorDye::create);
+    addRecipeCreator("minecraft", "crafting_special_bannerduplicate", Recipe::SpecialBannerDuplicate::create);
+    addRecipeCreator("minecraft", "crafting_special_bookcloning", Recipe::SpecialBookCloning::create);
+    addRecipeCreator("minecraft", "crafting_special_firework_rocket", Recipe::SpecialFireworkRocket::create);
+    addRecipeCreator("minecraft", "crafting_special_firework_star", Recipe::SpecialFireworkStar::create);
+    addRecipeCreator("minecraft", "crafting_special_firework_star_fade", Recipe::SpecialFireworkStarFade::create);
+    addRecipeCreator("minecraft", "crafting_special_mapcloning", Recipe::SpecialMapCloning::create);
+    addRecipeCreator("minecraft", "crafting_special_mapextending", Recipe::SpecialMapExtending::create);
+    addRecipeCreator("minecraft", "crafting_special_repairitem", Recipe::SpecialRepairItem::create);
+    addRecipeCreator("minecraft", "crafting_special_shielddecoration", Recipe::SpecialSuspiciousStew::create);
+    addRecipeCreator("minecraft", "crafting_special_shulkerboxcoloring", Recipe::SpecialSuspiciousStew::create);
+    addRecipeCreator("minecraft", "crafting_special_suspiciousstew", Recipe::SpecialSuspiciousStew::create);
+    addRecipeCreator("minecraft", "crafting_special_tippedarrow", Recipe::SpecialTippedArrow::create);
 
     loadFolder("minecraft", "assets/recipes");
 }
