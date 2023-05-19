@@ -47,7 +47,13 @@ struct Position {
     constexpr Position operator-(const Position &other) const;
     constexpr Position operator-(valueType i) const;
 
-    constexpr bool operator==(const Position &other) const;
+    constexpr auto operator<=>(const Position &other) const = default;
+
+    constexpr bool operator>(valueType i) const;
+    constexpr bool operator<(valueType i) const;
+
+    constexpr bool operator>=(valueType i) const;
+    constexpr bool operator<=(valueType i) const;
 };
 
 std::ostream &operator<<(std::ostream &os, const Position &pos);
@@ -80,7 +86,13 @@ struct Position2D {
     constexpr Position2D operator-(const Position2D &other) const;
     constexpr Position2D operator-(const valueType &i) const;
 
-    constexpr bool operator==(const Position2D &other) const;
+    constexpr auto operator<=>(const Position2D &other) const = default;
+
+    constexpr bool operator>(valueType i) const;
+    constexpr bool operator<(valueType i) const;
+
+    constexpr bool operator>=(valueType i) const;
+    constexpr bool operator<=(valueType i) const;
 };
 
 std::ostream &operator<<(std::ostream &os, const Position2D &pos);
@@ -108,7 +120,11 @@ constexpr Position Position::operator+(const Position &other) const { return Pos
 constexpr Position Position::operator-(const Position &other) const { return Position {x - other.x, y - other.y, z - other.z}; }
 constexpr Position Position::operator-(valueType i) const { return Position {x - i, y - i, z - i}; }
 
-constexpr bool Position::operator==(const Position &other) const { return x == other.x && y == other.y && z == other.z; }
+constexpr bool Position::operator>(valueType i) const { return x > i && y > i && z > i; }
+constexpr bool Position::operator<(valueType i) const { return x < i && y < i && z < i; }
+
+constexpr bool Position::operator>=(valueType i) const { return x >= i && y >= i && z >= i; }
+constexpr bool Position::operator<=(valueType i) const { return x <= i && y <= i && z <= i; }
 
 // Position2D
 
@@ -132,7 +148,11 @@ constexpr Position2D Position2D::operator-(const Position2D &other) const { retu
 
 constexpr Position2D Position2D::operator-(const valueType &i) const { return Position2D {x - i, z - i}; }
 
-constexpr bool Position2D::operator==(const Position2D &other) const { return x == other.x && z == other.z; }
+constexpr bool Position2D::operator>(valueType i) const { return x > i && z > i; }
+constexpr bool Position2D::operator<(valueType i) const { return x < i && z < i; }
+
+constexpr bool Position2D::operator>=(valueType i) const { return x >= i && z >= i; }
+constexpr bool Position2D::operator<=(valueType i) const { return x <= i && z <= i; }
 
 template<>
 struct std::hash<Position2D> {
