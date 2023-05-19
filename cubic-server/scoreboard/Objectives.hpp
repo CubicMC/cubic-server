@@ -23,7 +23,7 @@ namespace Scoreboard {
         void add(int32_t value) noexcept;
         void substract(int32_t value) noexcept;
 
-        bool isLocked(void) const;
+        bool isLocked(void) const noexcept;
         void enable(void) noexcept;
         void disable(void) noexcept;
 
@@ -50,8 +50,8 @@ namespace Scoreboard {
             const std::string &getCriteria(void) const noexcept;
             const std::string &getDisplayName(void) const noexcept;
             const RenderType &getRenderType(void) const noexcept;
-            const std::unordered_map<std::string, Score> &getScores(void) const noexcept;
-            const int32_t &getScore(const std::string &name) const;
+            std::unordered_map<std::string, Score> &getScores(void) noexcept;
+            Score &getScore(const std::string &name);
 
             void setDisplayName(const std::string &displayName) noexcept;
             void setRenderType(RenderType type) noexcept;
@@ -60,7 +60,7 @@ namespace Scoreboard {
             void substractScore(const std::string &name, int32_t value);
             void deleteScore(const std::string &name);
             
-            const int32_t &operator[](const std::string &name);
+            Score &operator[](const std::string &name);
 
             void sendUpdateObjective(void) const;
             void sendUpdateScore(const std::string &name, const Score &score) const;

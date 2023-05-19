@@ -66,7 +66,7 @@ namespace Scoreboard {
             _collisionRule(CollisionRule::always),
             _name(name),
             _color(Color::White),
-            _displayName("{\"text\":\"}" + name + "\"}"),
+            _displayName("{\"text\":\"" + name + "\"}"),
             _memberNamePrefix(""),
             _memberNameSuffix("")
         {
@@ -82,7 +82,7 @@ namespace Scoreboard {
             _collisionRule(CollisionRule::always),
             _name(name),
             _color(color),
-            _displayName("{\"text\":\"}" + name + "\"}"),
+            _displayName("{\"text\":\"" + name + "\"}"),
             _memberNamePrefix(""),
             _memberNameSuffix("")
         {
@@ -272,7 +272,6 @@ namespace Scoreboard {
                 this->_color,
                 this->_memberNamePrefix,
                 this->_memberNameSuffix,
-                0,
                 {}
             };
             for (const auto &[_, world] : this->_scoreboard.getWorldGroup().getWorlds()) {
@@ -286,6 +285,7 @@ namespace Scoreboard {
 
         void Team::sendJoinTeam(const std::string &name) const
         {
+            // join team packet only sens the name of the team and the entity joining it
             const protocol::UpdateTeams update{
                 this->_name,
                 3,
@@ -296,7 +296,6 @@ namespace Scoreboard {
                 this->_color,
                 "",
                 "",
-                1,
                 {name}
             };
             for (const auto &[_, world] : this->_scoreboard.getWorldGroup().getWorlds()) {
@@ -310,6 +309,7 @@ namespace Scoreboard {
 
         void Team::sendLeaveTeam(const std::string &name) const
         {
+            // leave team packet only sens the name of the team and the entity leaving it
             const protocol::UpdateTeams update{
                 this->_name,
                 4,
@@ -320,7 +320,6 @@ namespace Scoreboard {
                 this->_color,
                 "",
                 "",
-                1,
                 {name}
             };
             for (const auto &[_, world] : this->_scoreboard.getWorldGroup().getWorlds()) {

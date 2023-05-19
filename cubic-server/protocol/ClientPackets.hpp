@@ -794,10 +794,7 @@ struct UpdateTeams {
     } color;
     std::string prefix;
     std::string suffix;
-    struct Entities {
-        int32_t count;
-        std::vector<std::string> entities;
-    } entities;
+    std::vector<std::string> entities;
 };
 std::unique_ptr<std::vector<uint8_t>> createUpdateTeams(const UpdateTeams &);
 

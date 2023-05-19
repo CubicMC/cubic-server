@@ -49,6 +49,7 @@ namespace Scoreboard {
             Team(const Scoreboard &scoreboard, const std::string &name, const Color &color, const std::string &displayName);
             ~Team();
 
+            // getters
             const std::unordered_set<std::string> &getMembers(void) const noexcept;
             bool isMember(const std::string &name) const;
             bool isAllowingFriendlyFire(void) const noexcept;
@@ -62,6 +63,7 @@ namespace Scoreboard {
             const std::string &getSuffix(void) const noexcept;
             const Color &getColor(void) const noexcept;
 
+            // setters
             void addMember(const std::string &name);
             void removeMember(const std::string &name);
             void allowFriendlyFire(bool rule) noexcept;
@@ -74,6 +76,7 @@ namespace Scoreboard {
             void setSuffix(const std::string &suffix) noexcept;
             void setColor(Color color) noexcept;
 
+            // protocol functions
             void sendUpdateTeam(void) const;
             void sendJoinTeam(const std::string &name) const;
             void sendLeaveTeam(const std::string &name) const;

@@ -19,7 +19,7 @@ struct Objectives : public CommandBase {
 
 struct AddObjective : public CommandBase {
     AddObjective():
-        CommandBase("addobjective", "/addobjective", true)
+        CommandBase("addobjective", "/addobjective [objective name]", true)
     {
     }
 
@@ -30,13 +30,26 @@ struct AddObjective : public CommandBase {
     void help(std::vector<std::string> &args, Player *invoker) const override;
 };
 
-struct SetObjective : public CommandBase {
-    SetObjective():
-        CommandBase("setobjective", "/setobjective", true)
+struct SetScore : public CommandBase {
+    SetScore():
+        CommandBase("setscore", "/setscore [objective name] [player name] [score]", true)
     {
     }
 
-    ~SetObjective() override = default;
+    ~SetScore() override = default;
+
+    void autocomplete(std::vector<std::string> &args, Player *invoker) const override;
+    void execute(std::vector<std::string> &args, Player *invoker) const override;
+    void help(std::vector<std::string> &args, Player *invoker) const override;
+};
+
+struct RemoveScore : public CommandBase {
+    RemoveScore():
+        CommandBase("removescore", "/removescore [objective name] [player name]", true)
+    {
+    }
+
+    ~RemoveScore() override = default;
 
     void autocomplete(std::vector<std::string> &args, Player *invoker) const override;
     void execute(std::vector<std::string> &args, Player *invoker) const override;
@@ -45,7 +58,7 @@ struct SetObjective : public CommandBase {
 
 struct DisplayObjective : public CommandBase {
     DisplayObjective():
-        CommandBase("displayobjective", "/displayobjective", true)
+        CommandBase("displayobjective", "/displayobjective [slot] [objective name]", true)
     {
     }
 
@@ -58,7 +71,7 @@ struct DisplayObjective : public CommandBase {
 
 struct RemoveObjective : public CommandBase {
     RemoveObjective():
-        CommandBase("removeobjective", "/removeobjective", true)
+        CommandBase("removeobjective", "/removeobjective [objective name]", true)
     {
     }
 
@@ -84,7 +97,7 @@ struct Teams : public CommandBase {
 
 struct AddTeam : public CommandBase {
     AddTeam():
-        CommandBase("addteam", "/addteam", true)
+        CommandBase("addteam", "/addteam [team name]", true)
     {
     }
 
@@ -97,7 +110,7 @@ struct AddTeam : public CommandBase {
 
 struct JoinTeam : public CommandBase {
     JoinTeam():
-        CommandBase("jointeam", "/jointeam", true)
+        CommandBase("jointeam", "/jointeam [team name] [player name]", true)
     {
     }
 
@@ -110,7 +123,7 @@ struct JoinTeam : public CommandBase {
 
 struct LeaveTeam : public CommandBase {
     LeaveTeam():
-        CommandBase("leaveteam", "/leaveteam", true)
+        CommandBase("leaveteam", "/leaveteam [team name] [player name]", true)
     {
     }
 
@@ -123,7 +136,7 @@ struct LeaveTeam : public CommandBase {
 
 struct RemoveTeam : public CommandBase {
     RemoveTeam():
-        CommandBase("removeteam", "/removeteam", true)
+        CommandBase("removeteam", "/removeteam [team name]", true)
     {
     }
 

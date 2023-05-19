@@ -10,6 +10,7 @@
 
 class ScoreboardSystem;
 class WorldGroup;
+class Player;
 
 namespace Scoreboard {
     enum DisplaySlot {
@@ -57,6 +58,9 @@ namespace Scoreboard {
         std::unordered_map<std::string, std::unique_ptr<Team::Team>> &getTeams(void) noexcept;
 
         bool addTeam(const std::string &name);
+        bool addTeam(const std::string &name, const Team::Color &color);
+        bool addTeam(const std::string &name, const std::string &displayName);
+        bool addTeam(const std::string &name, const Team::Color &color, const std::string &displayName);
         bool removeTeam(const std::string &name);
 
         void sendAddObjective(const Objective::Objective &objective) const;
@@ -65,6 +69,8 @@ namespace Scoreboard {
         
         void sendAddTeam(const Team::Team &team) const;
         void sendRemoveTeam(const Team::Team &team) const;
+
+        void sendScoreboardStatus(Player &player) const;
 
     private:
         const ScoreboardSystem &_system;

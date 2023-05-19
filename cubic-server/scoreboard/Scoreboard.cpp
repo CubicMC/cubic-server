@@ -117,6 +117,33 @@ namespace Scoreboard {
         return (true);
     }
 
+    bool Scoreboard::addTeam(const std::string &name, const Team::Color &color)
+    {
+        if (this->_teams.contains(name))
+            return (false);
+        this->_teams[name] = std::make_unique<Team::Team>(*this, name, color);
+        this->sendAddTeam(*this->_teams[name]);
+        return (true);
+    }
+
+    bool Scoreboard::addTeam(const std::string &name, const std::string &displayName)
+    {
+        if (this->_teams.contains(name))
+            return (false);
+        this->_teams[name] = std::make_unique<Team::Team>(*this, name, displayName);
+        this->sendAddTeam(*this->_teams[name]);
+        return (true);
+    }
+
+    bool Scoreboard::addTeam(const std::string &name, const Team::Color &color, const std::string &displayName)
+    {
+        if (this->_teams.contains(name))
+            return (false);
+        this->_teams[name] = std::make_unique<Team::Team>(*this, name, color, displayName);
+        this->sendAddTeam(*this->_teams[name]);
+        return (true);
+    }
+
     bool Scoreboard::removeTeam(const std::string &name)
     {
         if (!this->_teams.contains(name))
@@ -201,7 +228,6 @@ namespace Scoreboard {
             team.getColor(),
             team.getPrefix(),
             team.getSuffix(),
-            0,
             {}
         };
         for (const auto &[_, world] : this->_worldGroup.getWorlds()) {
@@ -225,7 +251,6 @@ namespace Scoreboard {
             team.getColor(),
             "",
             "",
-            0,
             {}
         };
         for (const auto &[_, world] : this->_worldGroup.getWorlds()) {
@@ -236,5 +261,68 @@ namespace Scoreboard {
             }
         }
     }
+    void Scoreboard::sendScoreboardStatus(Player &player) const
+    {
+        LINFO("scoreboard status? ", player.getUsername());
+        // send all objectives
+        for (const auto &[_, objective] : this->_objectives) {
+            const protocol::UpdateObjectives update{
+                objective->getName(),
+                0,
+                objective->getDisplayName(),
+                static_cast<protocol::UpdateObjectives::Type>(objective->getRenderType())
+            };
+            player.sendUpdateObjective(update);
+
+            // send all scores for this objective
+            for (const auto &[name, score] : objective->getScores()) {
+                const protocol::UpdateScore update{
+                    name,
+                    0,
+                    objective->getName(),
+                    score.get()
+                };
+                player.sendUpdateScore(update);
+            }
+        }
+
+        // send displayed objectives and their slot
+        for (size_t slot = 0; slot < this->_displaySlots.size(); slot++) {
+            if (this->_displaySlots[slot]) {
+                this->sendDisplayObjective(static_cast<DisplaySlot>(slot), this->_displaySlots[slot]);
+            }
+        }
+
+        // send all teams and their members
+        for (const auto &[_, team] : this->_teams) {
+            std::vector<std::string> members;
+
+            members.reserve(team->getMembers().size());
+            for (const std::string &member : team->getMembers())
+                members.push_back(member);
+
+            uint8_t friendlyFlags = 0x00000000;
+
+            if (team->isAllowingFriendlyFire())
+                friendlyFlags += 0x00000001;
+            if (team->isSeeingFriendlyInvisibles())
+                friendlyFlags += 0x00000010;
+
+            const protocol::UpdateTeams update{
+                team->getName(),
+                0,
+                team->getDisplayName(),
+                friendlyFlags,
+                Team::NametagVisibility::getProtocolFlag(team->getNametagVisibility()),
+                Team::CollisionRule::getProtocolFlag(team->getCollisionRule()),
+                team->getColor(),
+                team->getPrefix(),
+                team->getSuffix(),
+                members
+            };
+            player.sendUpdateTeams(update);
+        }
+    }
+
 };
 

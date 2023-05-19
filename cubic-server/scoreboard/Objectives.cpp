@@ -42,6 +42,11 @@ namespace Scoreboard {
         this->_score -= value;
     }
 
+    bool Score::isLocked(void) const noexcept
+    {
+        return (this->_locked);
+    }
+
     void Score::enable(void) noexcept
     {
         this->_locked = false;
@@ -118,14 +123,14 @@ namespace Scoreboard {
             return (this->_renderType);
         }
 
-        const std::unordered_map<std::string, Score> &Objective::getScores(void) const noexcept
+        std::unordered_map<std::string, Score> &Objective::getScores(void) noexcept
         {
             return (this->_values);
         }
 
-        const int32_t &Objective::getScore(const std::string &name) const
+        Score &Objective::getScore(const std::string &name)
         {
-            return (this->_values.at(name).get());
+            return (this->_values.at(name));
         }
 
         void Objective::setDisplayName(const std::string &displayName) noexcept
@@ -171,7 +176,7 @@ namespace Scoreboard {
             this->_values.erase(name);
         }
 
-        const int32_t &Objective::operator[](const std::string &name)
+        Score &Objective::operator[](const std::string &name)
         {
             return (this->getScore(name));
         }

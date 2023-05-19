@@ -50,7 +50,8 @@ Server::Server():
     _commands.emplace_back(std::make_unique<command_parser::Time>());
     _commands.emplace_back(std::make_unique<command_parser::Objectives>());
     _commands.emplace_back(std::make_unique<command_parser::AddObjective>());
-    _commands.emplace_back(std::make_unique<command_parser::SetObjective>());
+    _commands.emplace_back(std::make_unique<command_parser::SetScore>());
+    _commands.emplace_back(std::make_unique<command_parser::RemoveScore>());
     _commands.emplace_back(std::make_unique<command_parser::DisplayObjective>());
     _commands.emplace_back(std::make_unique<command_parser::RemoveObjective>());
     _commands.emplace_back(std::make_unique<command_parser::Teams>());

@@ -7,6 +7,7 @@
 #include "PlayerAttributes.hpp"
 #include "Server.hpp"
 #include "World.hpp"
+#include "WorldGroup.hpp"
 #include "blocks.hpp"
 #include "command_parser/CommandParser.hpp"
 #include "items/foodItems.hpp"
@@ -1076,6 +1077,10 @@ void Player::_continueLoginSequence()
     // this->_player->sendChunkAndLightUpdate(0, 0);
     getDimension()->spawnPlayer(*this);
     this->teleport({8.5, 100, 8.5}); // TODO: change that to player_attributes::DEFAULT_SPAWN_POINT
+
+    // send scoreboard status (objectives and teams)
+    _dim->getWorld()->getWorldGroup()->getScoreboard().sendScoreboardStatus(*this);
+    LINFO("wait");
 
     // Send login message
     chat::Message connectionMsg = chat::Message::fromTranslationKey<chat::message::TranslationKey::MultiplayerPlayerJoined>(*this);

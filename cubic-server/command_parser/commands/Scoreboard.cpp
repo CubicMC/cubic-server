@@ -59,17 +59,17 @@ void command_parser::AddObjective::help(UNUSED std::vector<std::string> &args, P
 }
 
 /*
-    setobjective
+    setscore
 */
-void command_parser::SetObjective::autocomplete(UNUSED std::vector<std::string> &args, Player *invoker) const
+void command_parser::SetScore::autocomplete(UNUSED std::vector<std::string> &args, Player *invoker) const
 {
     if (invoker)
         return;
     else
-        LINFO("autocomplete setobjective");
+        LINFO("autocomplete setscore");
 }
 
-void command_parser::SetObjective::execute(std::vector<std::string> &args, UNUSED Player *invoker) const
+void command_parser::SetScore::execute(std::vector<std::string> &args, UNUSED Player *invoker) const
 {
     if (args.size() < 3)
         return;
@@ -79,10 +79,37 @@ void command_parser::SetObjective::execute(std::vector<std::string> &args, UNUSE
     }
 }
 
-void command_parser::SetObjective::help(UNUSED std::vector<std::string> &args, Player *invoker) const
+void command_parser::SetScore::help(UNUSED std::vector<std::string> &args, Player *invoker) const
 {
     (void)invoker;
-    LINFO("help setobjective");
+    LINFO("help setscore");
+}
+
+/*
+    removescore
+*/
+void command_parser::RemoveScore::autocomplete(UNUSED std::vector<std::string> &args, Player *invoker) const
+{
+    if (invoker)
+        return;
+    else
+        LINFO("autocomplete removescore");
+}
+
+void command_parser::RemoveScore::execute(std::vector<std::string> &args, UNUSED Player *invoker) const
+{
+    if (args.size() < 2)
+        return;
+    for (auto &[_, worldgroup] : Server::getInstance()->getWorldGroups()) {
+        if (worldgroup->getScoreboard().isObjective(args[0]))
+            worldgroup->getScoreboard().getObjective(args[0]).deleteScore(args[1]);
+    }
+}
+
+void command_parser::RemoveScore::help(UNUSED std::vector<std::string> &args, Player *invoker) const
+{
+    (void)invoker;
+    LINFO("help removescore");
 }
 
 /*
@@ -96,12 +123,15 @@ void command_parser::DisplayObjective::help(UNUSED std::vector<std::string> &arg
 
 void command_parser::DisplayObjective::execute(std::vector<std::string> &args, UNUSED Player *invoker) const
 {
-    if (args.size() < 2)
+    if (args.size() < 1)
         return;
     for (auto &[_, worldgroup] : Server::getInstance()->getWorldGroups()) {
-        if (worldgroup->getScoreboard().isObjective(args[1]))
-            worldgroup->getScoreboard().displayObjective(static_cast<Scoreboard::DisplaySlot>(std::stoi(args[0])), &worldgroup->getScoreboard().getObjective(args[1]));
-        else
+        if (args.size() > 1) {
+            if (worldgroup->getScoreboard().isObjective(args[1]))
+                worldgroup->getScoreboard().displayObjective(static_cast<Scoreboard::DisplaySlot>(std::stoi(args[0])), &worldgroup->getScoreboard().getObjective(args[1]));
+            else
+                LINFO("no objetive \"", args[1], "\"");
+        } else
             worldgroup->getScoreboard().displayObjective(static_cast<Scoreboard::DisplaySlot>(std::stoi(args[0])), nullptr);
     }
 }
@@ -181,8 +211,10 @@ void command_parser::AddTeam::autocomplete(UNUSED std::vector<std::string> &args
 
 void command_parser::AddTeam::execute(std::vector<std::string> &args, UNUSED Player *invoker) const
 {
+    if (args.size() < 1)
+        return;
     for (auto &[_, worldgroup] : Server::getInstance()->getWorldGroups()) {
-        worldgroup->getScoreboard().addTeam(args[0]);
+        worldgroup->getScoreboard().addTeam(args[0], static_cast<Scoreboard::Team::Color>(rand() % 21));
     }
 }
 
