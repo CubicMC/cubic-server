@@ -11,7 +11,7 @@ namespace Recipe {
 
     void SpecialRepairItem::dump(void) const
     {
-        LINFO("recipe special suspicious stew");
+        LINFO("recipe special repair item");
     }
 
     std::unique_ptr<Recipe> SpecialRepairItem::create(const nlohmann::json &recipe)

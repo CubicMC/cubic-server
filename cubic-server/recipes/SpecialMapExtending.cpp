@@ -11,7 +11,7 @@ namespace Recipe {
 
     void SpecialMapExtending::dump(void) const
     {
-        LINFO("recipe special suspicious stew");
+        LINFO("recipe special map extending");
     }
 
     std::unique_ptr<Recipe> SpecialMapExtending::create(const nlohmann::json &recipe)

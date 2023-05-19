@@ -11,7 +11,7 @@ namespace Recipe {
 
     void SpecialShulkerboxColoring::dump(void) const
     {
-        LINFO("recipe special suspicious stew");
+        LINFO("recipe special shulkerbox coloring");
     }
 
     std::unique_ptr<Recipe> SpecialShulkerboxColoring::create(const nlohmann::json &recipe)

@@ -11,7 +11,7 @@ namespace Recipe {
 
     void SpecialTippedArrow::dump(void) const
     {
-        LINFO("recipe special suspicious stew");
+        LINFO("recipe special tipped arrow");
     }
 
     std::unique_ptr<Recipe> SpecialTippedArrow::create(const nlohmann::json &recipe)

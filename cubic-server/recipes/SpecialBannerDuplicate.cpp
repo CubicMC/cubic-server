@@ -11,7 +11,7 @@ namespace Recipe {
 
     void SpecialBannerDuplicate::dump(void) const
     {
-        LINFO("recipe special suspicious stew");
+        LINFO("recipe special banner duplicate");
     }
 
     std::unique_ptr<Recipe> SpecialBannerDuplicate::create(const nlohmann::json &recipe)

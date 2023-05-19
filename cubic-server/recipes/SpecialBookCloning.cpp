@@ -11,7 +11,7 @@ namespace Recipe {
 
     void SpecialBookCloning::dump(void) const
     {
-        LINFO("recipe special suspicious stew");
+        LINFO("recipe special book cloning");
     }
 
     std::unique_ptr<Recipe> SpecialBookCloning::create(const nlohmann::json &recipe)

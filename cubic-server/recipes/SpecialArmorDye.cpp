@@ -11,7 +11,7 @@ namespace Recipe {
 
     void SpecialArmorDye::dump(void) const
     {
-        LINFO("recipe special suspicious stew");
+        LINFO("recipe special armor dye");
     }
 
     std::unique_ptr<Recipe> SpecialArmorDye::create(const nlohmann::json &recipe)

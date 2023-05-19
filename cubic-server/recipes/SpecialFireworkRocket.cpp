@@ -11,7 +11,7 @@ namespace Recipe {
 
     void SpecialFireworkRocket::dump(void) const
     {
-        LINFO("recipe special suspicious stew");
+        LINFO("recipe special firework rocket");
     }
 
     std::unique_ptr<Recipe> SpecialFireworkRocket::create(const nlohmann::json &recipe)

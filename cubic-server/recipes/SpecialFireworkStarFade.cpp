@@ -11,7 +11,7 @@ namespace Recipe {
 
     void SpecialFireworkStarFade::dump(void) const
     {
-        LINFO("recipe special suspicious stew");
+        LINFO("recipe special firework star fade");
     }
 
     std::unique_ptr<Recipe> SpecialFireworkStarFade::create(const nlohmann::json &recipe)

@@ -11,7 +11,7 @@ namespace Recipe {
 
     void SpecialShieldDecoration::dump(void) const
     {
-        LINFO("recipe special suspicious stew");
+        LINFO("recipe special shield decoration");
     }
 
     std::unique_ptr<Recipe> SpecialShieldDecoration::create(const nlohmann::json &recipe)
