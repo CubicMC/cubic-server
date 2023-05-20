@@ -345,16 +345,8 @@ std::unique_ptr<std::vector<uint8_t>> createKeepAlive(long id);
 struct ChunkDataAndLightUpdate {
     int32_t chunkX;
     int32_t chunkZ;
-    std::shared_ptr<nbt::Compound> heightmaps;
+    // std::shared_ptr<nbt::Compound> heightmaps;
     const world_storage::ChunkColumn &data;
-    std::vector<BlockEntity> blockEntities;
-    bool trustEdges;
-    std::vector<long> skyLightMask;
-    std::vector<long> blockLightMask;
-    std::vector<long> emptySkyLightMask;
-    std::vector<long> emptyBlockLightMask;
-    std::vector<std::array<uint8_t, LIGHT_ARRAY_SIZE>> skyLight;
-    std::vector<std::array<uint8_t, LIGHT_ARRAY_SIZE>> blockLight;
 };
 std::unique_ptr<std::vector<uint8_t>> createChunkDataAndLightUpdate(const ChunkDataAndLightUpdate &);
 

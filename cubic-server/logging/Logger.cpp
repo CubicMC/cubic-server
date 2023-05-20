@@ -54,7 +54,9 @@ Logger::Logger()
         filename = TimeFormatter::getTime("YYYY-MM-DD-" + std::to_string(i) + ".log");
 
     this->_fileAndFolderHandler.createFile(filename);
-    this->_fileStream.open(this->_fileAndFolderHandler.getFilePath(), std::ios::app);
+    this->_fileStream = std::ofstream(this->_fileAndFolderHandler.getFilePath(), std::ios::app);
+    std::cout << "Log file: " << this->_fileAndFolderHandler.getFolderPath() << "/latest.log" << std::endl;
+    this->_lattestStream = std::ofstream(this->_fileAndFolderHandler.getFolderPath() + "/latest.log", std::ios::trunc);
 
     this->_specificationLevelInFile = {
         {LogLevel::DEBUG, "[DEBUG] "}, {LogLevel::INFO, "[INFO] "}, {LogLevel::WARNING, "[WARNING] "}, {LogLevel::ERROR, "[ERROR] "}, {LogLevel::FATAL, "[FATAL] "}};
@@ -69,7 +71,11 @@ Logger::Logger()
  *
  * @note The file stream will be closed
  */
-Logger::~Logger() { this->_fileStream.close(); }
+Logger::~Logger()
+{
+    this->_fileStream.close();
+    this->_lattestStream.close();
+}
 
 /**
  * @brief Write a message in the log file
@@ -87,8 +93,10 @@ void Logger::_log(LogLevel level, const std::string &message)
     if (this->_logBuffer.size() > this->_bufferSize)
         this->_logBuffer.pop();
 
-    if (this->_specificationLevelInFile.find(level) != this->_specificationLevelInFile.end())
+    if (this->_specificationLevelInFile.find(level) != this->_specificationLevelInFile.end()) {
         this->_fileStream << log << std::endl;
+        this->_lattestStream << log << std::endl;
+    }
 
     if (this->_specificationLevelInConsole.find(level) != this->_specificationLevelInConsole.end())
         std::cout << log << std::endl;

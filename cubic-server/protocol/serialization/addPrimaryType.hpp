@@ -15,6 +15,7 @@
 #include "protocol/ParseExceptions.hpp"
 #include "protocol/Structures.hpp"
 #include "types.hpp"
+#include "world_storage/DynamicStorage.hpp"
 
 namespace protocol {
 constexpr void addByte(std::vector<uint8_t> &out, const uint8_t &data) { out.push_back(data); }
@@ -152,7 +153,7 @@ constexpr void addSlot(std::vector<uint8_t> &out, const Slot &data)
     }
 }
 
-template<IsNbt T>
+template<isBaseOf<nbt::Base> T>
 constexpr void addNBT(std::vector<uint8_t> &out, const T &data)
 {
     data.serialize(out);
@@ -167,8 +168,26 @@ constexpr void addUUID(std::vector<uint8_t> &out, const u128 &data)
     addLong(out, data.least);
 }
 
+template<typename T, void (*add)(std::vector<uint8_t> &, const T &), uint64_t ArraySize>
+constexpr void addArray(std::vector<uint8_t> &out, const world_storage::DynamicStorage<T, ArraySize> &data)
+{
+    addVarInt(out, data.data().size());
+
+    for (const T &i : data.data())
+        add(out, i);
+}
+
 template<typename T, void (*add)(std::vector<uint8_t> &, const T &)>
 constexpr void addArray(std::vector<uint8_t> &out, const std::vector<T> &data)
+{
+    addVarInt(out, data.size());
+
+    for (const T &i : data)
+        add(out, i);
+}
+
+template<typename T, void (*add)(std::vector<uint8_t> &, const T &), uint64_t Size>
+constexpr void addArray(std::vector<uint8_t> &out, const std::array<T, Size> &data)
 {
     addVarInt(out, data.size());
 

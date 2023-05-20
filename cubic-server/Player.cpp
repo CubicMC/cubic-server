@@ -12,8 +12,14 @@
 #include "command_parser/CommandParser.hpp"
 #include "items/foodItems.hpp"
 #include "logging/Logger.hpp"
+#include <memory>
 
-Player::Player(Client *cli, std::shared_ptr<Dimension> dim, u128 uuid, const std::string &username):
+#define GET_CLIENT()                 \
+    auto client = this->_cli.lock(); \
+    if (client == nullptr)           \
+    return
+
+Player::Player(std::weak_ptr<Client> cli, std::shared_ptr<Dimension> dim, u128 uuid, const std::string &username):
     LivingEntity(dim),
     _cli(cli),
     _username(username),
@@ -54,7 +60,6 @@ Player::Player(Client *cli, std::shared_ptr<Dimension> dim, u128 uuid, const std
 Player::~Player()
 {
     chat::Message disconnectMsg = chat::Message::fromTranslationKey<chat::message::TranslationKey::MultiplayerPlayerLeft>(*this);
-    this->_cli = nullptr;
 
     this->_dim->getWorld()->sendPlayerInfoRemovePlayer(this);
 
@@ -115,7 +120,7 @@ void Player::_tickPosition()
         teleport({_pos.x, -58, _pos.z});
 }
 
-Client *Player::getClient() const { return _cli; }
+std::weak_ptr<Client> Player::getClient() const { return _cli; }
 
 const std::string &Player::getUsername() const { return _username; }
 
@@ -137,9 +142,10 @@ bool Player::isOperator() const { return this->_isOperator; }
 
 void Player::disconnect(const chat::Message &reason)
 {
+    GET_CLIENT();
     auto pck = protocol::createPlayDisconnect({reason.serialize()});
-    this->_cli->_sendData(*pck);
-    this->_cli->_isRunning = false;
+    client->_sendData(*pck);
+    client->_isRunning = false;
     LDEBUG("Sent a disconnect play packet");
 }
 
@@ -183,6 +189,7 @@ void Player::setPosition(double x, double y, double z, bool onGround) { this->se
 
 void Player::playSoundEffect(SoundsList sound, FloatingPosition position, SoundCategory category)
 {
+    GET_CLIENT();
     auto pck = protocol::createSoundEffect({
         (int32_t) sound, (int32_t) category,
         // https://wiki.vg/Data_types#Fixed-point_numbers
@@ -191,24 +198,26 @@ void Player::playSoundEffect(SoundsList sound, FloatingPosition position, SoundC
         1.0, // TODO: get the right pitch
         0 // TODO: get the right seed
     });
-    this->_cli->_sendData(*pck);
+    client->_sendData(*pck);
     LDEBUG("Sent a sound effect packet");
 }
 
 void Player::playSoundEffect(SoundsList sound, const Entity &entity, SoundCategory category)
 {
+    GET_CLIENT();
     auto pck = protocol::createEntitySoundEffect({
         (int32_t) sound, (int32_t) category, entity.getId(),
         1.0, // TODO: get the right volume
         1.0, // TODO: get the right pitch
         1 // TODO: get the right seed
     });
-    this->_cli->_sendData(*pck);
+    client->_sendData(*pck);
     LDEBUG("Sent a entity sound effect packet");
 }
 
 void Player::playCustomSound(std::string sound, FloatingPosition position, SoundCategory category)
 {
+    GET_CLIENT();
     auto pck = protocol::createCustomSoundEffect({
         sound, (int32_t) category,
         // https://wiki.vg/Data_types#Fixed-point_numbers
@@ -217,171 +226,190 @@ void Player::playCustomSound(std::string sound, FloatingPosition position, Sound
         1.0, // TODO: get the right pitch
         0 // TODO: get the right seed
     });
-    this->_cli->_sendData(*pck);
+    client->_sendData(*pck);
     LDEBUG("Sent a custom sound effect packet");
 }
 
 void Player::stopSound(uint8_t flags, SoundCategory category, std::string sound)
 {
+    GET_CLIENT();
     auto pck = protocol::createStopSound({flags, (int32_t) category, sound});
-    this->_cli->_sendData(*pck);
+    client->_sendData(*pck);
     LDEBUG("Sent a stop sound packet");
 }
 
 void Player::sendBlockUpdate(const protocol::BlockUpdate &packet)
 {
+    GET_CLIENT();
     auto pck = protocol::createBlockUpdate(packet);
-    this->_cli->_sendData(*pck);
+    client->_sendData(*pck);
 
     LDEBUG("Sent a block update at ", packet.location, " = ", packet.blockId, " to ", this->getUsername());
 }
 
 void Player::sendFeatureFlags(const protocol::FeatureFlags &packet)
 {
+    GET_CLIENT();
     auto pck = protocol::createFeatureFlags(packet);
-    _cli->_sendData(*pck);
+    client->_sendData(*pck);
 }
 
 void Player::sendServerData(const protocol::ServerData &packet)
 {
+    GET_CLIENT();
     auto pck = protocol::createServerData(packet);
-    _cli->_sendData(*pck);
+    client->_sendData(*pck);
 }
 
 void Player::sendLoginPlay(const protocol::LoginPlay &packet)
 {
+    GET_CLIENT();
     auto pck = protocol::createLoginPlay(packet);
-    _cli->_sendData(*pck);
+    client->_sendData(*pck);
     LDEBUG("Sent a login play");
 }
 
 void Player::sendPlayerInfoUpdate(const protocol::PlayerInfoUpdate &data)
 {
+    GET_CLIENT();
     auto pck = protocol::createPlayerInfoUpdate(data);
-    this->_cli->_sendData(*pck);
+    client->_sendData(*pck);
 
     LDEBUG("Sent a Player Info packet");
 }
 
 void Player::sendPlayerInfoRemove(const protocol::PlayerInfoRemove &data)
 {
+    GET_CLIENT();
     auto pck = protocol::createPlayerInfoRemove(data);
-    this->_cli->_sendData(*pck);
+    client->_sendData(*pck);
 
     LDEBUG("Sent a Player Info packet");
 }
 
 void Player::sendSpawnEntity(const protocol::SpawnEntity &data)
 {
+    GET_CLIENT();
     auto pck = protocol::createSpawnEntity(data);
-    this->_cli->_sendData(*pck);
+    client->_sendData(*pck);
 
     LDEBUG("Sent a Spawn Entity packet");
 }
 
 void Player::sendSpawnPlayer(const protocol::SpawnPlayer &data)
 {
+    GET_CLIENT();
     auto pck = protocol::createSpawnPlayer(data);
-    this->_cli->_sendData(*pck);
+    client->_sendData(*pck);
 
     LDEBUG("Sent a Spawn Player packet on coords: ", data.x, " ", data.y, " ", data.z);
 }
 
 void Player::sendEntityVelocity(const protocol::EntityVelocity &data)
 {
+    GET_CLIENT();
     auto pck = protocol::createEntityVelocity(data);
-    this->_cli->_sendData(*pck);
+    client->_sendData(*pck);
 
     LDEBUG("Sent an Entity Velocity packet with velocity: x -> ", data.velocityX, " | ", "y -> ", data.velocityY, " | ", "z -> ", data.velocityZ);
 }
 
 void Player::sendHealth(void)
 {
+    GET_CLIENT();
     auto pck = protocol::createHealth({_health, _foodLevel, _foodSaturationLevel});
-    this->_cli->_sendData(*pck);
+    client->_sendData(*pck);
 
     LDEBUG("Sent a Health packet");
 }
 
 void Player::sendUpdateTime(const protocol::UpdateTime &data)
 {
+    GET_CLIENT();
     auto pck = protocol::createUpdateTime(data);
-    this->_cli->_sendData(*pck);
+    client->_sendData(*pck);
 
     LDEBUG("Sent an Update Time packet");
 }
 
 void Player::sendChatMessageResponse(UNUSED const protocol::PlayerChatMessage &packet)
 {
+    GET_CLIENT();
     auto pck = protocol::createPlayerChatMessage(packet);
-    this->_cli->_sendData(*pck);
+    client->_sendData(*pck);
 
     LDEBUG("Sent a chat message response");
 }
 
 void Player::sendSystemChatMessage(const protocol::SystemChatMessage &packet)
 {
-    // TODO(huntears): Find another way to do this
-    if (!_cli)
-        return;
+    GET_CLIENT();
     auto pck = protocol::createSystemChatMessage(packet);
-    this->_cli->_sendData(*pck);
+    client->_sendData(*pck);
 
     LDEBUG("Sent a system chat message to ", this->getUsername());
 }
 
 void Player::sendWorldEvent(const protocol::WorldEvent &packet)
 {
+    GET_CLIENT();
     auto pck = protocol::createWorldEvent(packet);
-    this->_cli->_sendData(*pck);
+    client->_sendData(*pck);
 
     LDEBUG("Sent a world event");
 }
 
 void Player::sendKeepAlive(long id)
 {
+    GET_CLIENT();
     auto pck = protocol::createKeepAlive(id);
-    this->_cli->_sendData(*pck);
+    client->_sendData(*pck);
     LDEBUG("Sent a keep alive packet");
 }
 
 void Player::sendUpdateEntityPosition(const protocol::UpdateEntityPosition &data)
 {
+    GET_CLIENT();
     auto pck = protocol::createUpdateEntityPosition(data);
-    this->_cli->_sendData(*pck);
+    client->_sendData(*pck);
     LDEBUG("Sent an entity position packet");
 }
 
 void Player::sendUpdateEntityPositionAndRotation(const protocol::UpdateEntityPositionRotation &data)
 {
+    GET_CLIENT();
     auto pck = protocol::createUpdateEntityPositionRotation(data);
-    this->_cli->_sendData(*pck);
+    client->_sendData(*pck);
     LDEBUG("Sent an entity position and rotation packet");
 }
 
 void Player::sendUpdateEntityRotation(const protocol::UpdateEntityRotation &data)
 {
+    GET_CLIENT();
     auto pck = protocol::createUpdateEntityRotation(data);
-    this->_cli->_sendData(*pck);
+    client->_sendData(*pck);
     LDEBUG("Sent an entity rotation packet");
 }
 
 void Player::sendHeadRotation(const protocol::HeadRotation &data)
 {
+    GET_CLIENT();
     auto pck = protocol::createHeadRotation(data);
-    this->_cli->_sendData(*pck);
+    client->_sendData(*pck);
     LDEBUG("Sent an entity head rotation packet");
 }
 
 void Player::sendSetCenterChunk(const Position2D &pos)
 {
+    GET_CLIENT();
     auto pck = protocol::createCenterChunk(pos);
-    this->_cli->_sendData(*pck);
+    client->_sendData(*pck);
     LDEBUG("Sent a center chunk packet");
 }
 
 void Player::sendSynchronizePosition(const Vector3<double> &pos)
 {
+    GET_CLIENT();
     auto pck = protocol::createSynchronizePlayerPosition({
         pos.x,
         pos.y,
@@ -393,7 +421,7 @@ void Player::sendSynchronizePosition(const Vector3<double> &pos)
         true,
 
     });
-    this->_cli->_sendData(*pck);
+    client->_sendData(*pck);
 }
 
 void Player::sendChunkAndLightUpdate(const Position2D &pos) { this->sendChunkAndLightUpdate(pos.x, pos.z); }
@@ -403,21 +431,6 @@ void Player::sendChunkAndLightUpdate(int32_t x, int32_t z)
     if (!this->_dim->hasChunkLoaded(x, z)) {
         this->_dim->loadOrGenerateChunk(x, z, dynamic_pointer_cast<Player>(shared_from_this()));
         this->_chunks[{x, z}] = ChunkState::Loading;
-        //     [this](const world_storage::ChunkColumn &chunk) {
-        //         // pls don't kill me
-        //         // this is a hack to check if the client is still connected
-        //         // And the best part ? I don't even know if it works
-        //         if (
-        //             std::find_if(
-        //                 Server::getInstance()->getClients().begin(),
-        //                 Server::getInstance()->getClients().end(),
-        //                 [this](const std::shared_ptr<Client> &cli) { return (&(*cli) == this->_cli); }
-        //             ) == Server::getInstance()->getClients().end()
-        //         ) return;
-        //         if (this->_chunks.contains(chunk.getChunkPos()) && this->_chunks[chunk.getChunkPos()].state == ChunkState::Loading)
-        //             this->sendChunkAndLightUpdate(chunk);
-        //     }
-        // )};
         return;
     }
 
@@ -426,37 +439,30 @@ void Player::sendChunkAndLightUpdate(int32_t x, int32_t z)
 
 void Player::sendChunkAndLightUpdate(const world_storage::ChunkColumn &chunk)
 {
-    auto heightMap = chunk.getHeightMap();
+    GET_CLIENT();
+    // auto heightMap = chunk.getHeightMap();
     auto chunkPos = chunk.getChunkPos();
 
-    std::vector<std::shared_ptr<nbt::Base>> motionBlocking;
-    std::vector<std::shared_ptr<nbt::Base>> worldSurface;
-    motionBlocking.reserve(heightMap.motionBlocking.size());
-    worldSurface.reserve(heightMap.worldSurface.size());
+    // std::vector<std::shared_ptr<nbt::Base>> motionBlocking;
+    // std::vector<std::shared_ptr<nbt::Base>> worldSurface;
+    // motionBlocking.reserve(heightMap.motionBlocking.size());
+    // worldSurface.reserve(heightMap.worldSurface.size());
 
-    for (auto i = 0; i < world_storage::HEIGHTMAP_ARRAY_SIZE; i++) {
-        motionBlocking.push_back(heightMap.motionBlocking.at(i));
-        worldSurface.push_back(heightMap.worldSurface.at(i));
-    }
+    // for (auto i = 0; i < world_storage::HEIGHTMAP_ARRAY_SIZE; i++) {
+    //     motionBlocking.push_back(heightMap.motionBlocking.at(i));
+    //     worldSurface.push_back(heightMap.worldSurface.at(i));
+    // }
 
-    auto motionBlockingList = NBT_MAKE(nbt::List, "MOTION_BLOCKING", motionBlocking);
-    auto worldSurfaceList = NBT_MAKE(nbt::List, "WORLD_SURFACE", worldSurface);
+    // auto motionBlockingList = NBT_MAKE(nbt::List, "MOTION_BLOCKING", motionBlocking);
+    // auto worldSurfaceList = NBT_MAKE(nbt::List, "WORLD_SURFACE", worldSurface);
 
     auto packet = protocol::createChunkDataAndLightUpdate({
         chunkPos.x,
         chunkPos.z,
-        std::shared_ptr<nbt::Compound>(new nbt::Compound("", {motionBlockingList, worldSurfaceList})),
-        chunk,
-        {}, // TODO: BlockEntities
-        false, // Trust Edges: If edges should be trusted for light updates.
-        {}, // TODO: Sky light mask
-        {}, // TODO: Block light mask
-        {}, // TODO: empty sky light mask
-        {}, // TODO: empty block light mask
-        {}, // TODO: sky light
-        {} // TODO: block light
+        // std::shared_ptr<nbt::Compound>(new nbt::Compound("", {motionBlockingList, worldSurfaceList})),
+        chunk
     });
-    this->_cli->_sendData(*packet);
+    client->_sendData(*packet);
 
     this->_chunks[chunkPos] = ChunkState::Loaded;
 
@@ -465,15 +471,17 @@ void Player::sendChunkAndLightUpdate(const world_storage::ChunkColumn &chunk)
 
 void Player::sendUnloadChunk(int32_t x, int32_t z)
 {
+    GET_CLIENT();
     auto pck = protocol::createUnloadChunk({x, z});
-    this->_cli->_sendData(*pck);
+    client->_sendData(*pck);
     LDEBUG("Sent an unload chunk packet (", x, ", ", z, ")");
 }
 
 void Player::sendRemoveEntities(const std::vector<int32_t> &entities)
 {
+    GET_CLIENT();
     auto pck = protocol::createRemoveEntities({entities});
-    this->_cli->_sendData(*pck);
+    client->_sendData(*pck);
     LDEBUG("Sent a Remove Entities packet");
 }
 
@@ -484,119 +492,135 @@ void Player::sendSwingArm(bool mainHand, int32_t swingerId)
 
 void Player::sendEntityAnimation(protocol::EntityAnimation::ID animId, int32_t entityID)
 {
+    GET_CLIENT();
     auto pck = protocol::createEntityAnimation(animId, entityID);
-    _cli->_sendData(*pck);
+    client->_sendData(*pck);
 }
 
 void Player::sendTeleportEntity(int32_t id, const Vector3<double> &pos)
 {
+    GET_CLIENT();
     auto pck = protocol::createTeleportEntity({id, pos.x, pos.y, pos.z, _rot.x, _rot.z, false});
-    _cli->_sendData(*pck);
+    client->_sendData(*pck);
     LDEBUG("Sent a Teleport Entity");
 }
 
 void Player::sendPlayerAbilities(const protocol::PlayerAbilitiesClient &packet)
 {
+    GET_CLIENT();
     auto pck = protocol::createPlayerAbilities(packet);
-    _cli->_sendData(*pck);
+    client->_sendData(*pck);
     LDEBUG("Sent a Player Abilities packet");
 }
 
 void Player::sendSetContainerContent(const protocol::SetContainerContent &packet)
 {
+    GET_CLIENT();
     auto pck = protocol::createSetContainerContent(packet);
-    _cli->_sendData(*pck);
+    client->_sendData(*pck);
     LDEBUG("Sent set container content packet");
 }
 
 void Player::sendUpdateRecipes(const protocol::UpdateRecipes &packet)
 {
+    GET_CLIENT();
     auto pck = protocol::createUpdateRecipes(packet);
-    _cli->_sendData(*pck);
+    client->_sendData(*pck);
     LDEBUG("Sent update recipes packet");
 }
 
 void Player::sendUpdateTags(const protocol::UpdateTags &packet)
 {
+    GET_CLIENT();
     auto pck = protocol::createUpdateTags(packet);
-    _cli->_sendData(*pck);
+    client->_sendData(*pck);
     LDEBUG("Sent update tags packet");
 }
 
 void Player::sendCommands(const protocol::Commands &packet)
 {
+    GET_CLIENT();
     auto pck = protocol::createCommands(packet);
-    _cli->_sendData(*pck);
+    client->_sendData(*pck);
     LDEBUG("Sent commands packet");
 }
 
 void Player::sendChangeDifficulty(const protocol::ChangeDifficultyClient &packet)
 {
+    GET_CLIENT();
     auto pck = protocol::createChangeDifficultyClient(packet);
-    _cli->_sendData(*pck);
+    client->_sendData(*pck);
     LDEBUG("Sent change difficulty packet");
 }
 
 void Player::sendSetHeldItem(const protocol::SetHeldItemClient &packet)
 {
+    GET_CLIENT();
     auto pck = protocol::createSetHeldItemClient(packet);
-    _cli->_sendData(*pck);
+    client->_sendData(*pck);
     LDEBUG("Sent set held item packet");
 }
 
 void Player::sendEntityEvent(const protocol::EntityEvent &packet)
 {
+    GET_CLIENT();
     auto pck = protocol::createEntityEvent(packet);
-    _cli->_sendData(*pck);
+    client->_sendData(*pck);
     LDEBUG("Sent entity event packet");
 }
 
 void Player::sendUpdateRecipiesBook(const protocol::UpdateRecipesBook &packet)
 {
+    GET_CLIENT();
     auto pck = protocol::createUpdateRecipesBook(packet);
-    _cli->_sendData(*pck);
+    client->_sendData(*pck);
     LDEBUG("Sent update recipies book packet");
 }
 
 void Player::sendInitializeWorldBorder(const protocol::InitializeWorldBorder &packet)
 {
+    GET_CLIENT();
     auto pck = protocol::createInitializeWorldBorder(packet);
-    _cli->_sendData(*pck);
+    client->_sendData(*pck);
     LDEBUG("Sent initialize world border packet");
 }
 
 void Player::sendSetDefaultSpawnPosition(const protocol::SetDefaultSpawnPosition &packet)
 {
+    GET_CLIENT();
     auto pck = protocol::createSetDefaultSpawnPosition(packet);
-    _cli->_sendData(*pck);
+    client->_sendData(*pck);
     LDEBUG("Sent set default spawn position packet");
 }
 
 // void Player::sendSetEntityMetadata(const protocol::SetEntityMetadata &packet)
 // {
 //     auto pck = protocol::createSetEntityMetadata(packet);
-//     _cli->_sendData(*pck);
+//     client->_sendData(*pck);
 //     LDEBUG("Sent set entity metadata packet");
 // }
 
 void Player::sendUpdateAttributes(const protocol::UpdateAttributes &packet)
 {
+    GET_CLIENT();
     auto pck = protocol::createUpdateAttributes(packet);
-    _cli->_sendData(*pck);
+    client->_sendData(*pck);
     LDEBUG("Sent update attributes packet");
 }
 
 void Player::sendUpdateAdvancements(const protocol::UpdateAdvancements &packet)
 {
+    GET_CLIENT();
     auto pck = protocol::createUpdateAdvancements(packet);
-    _cli->_sendData(*pck);
+    client->_sendData(*pck);
     LDEBUG("Sent update advancements packet");
 }
 
 void Player::sendSetExperience(const protocol::SetExperience &packet)
 {
+    GET_CLIENT();
     auto pck = protocol::createSetExperience(packet);
-    _cli->_sendData(*pck);
+    client->_sendData(*pck);
     LDEBUG("Sent set experience packet");
 }
 
@@ -677,13 +701,14 @@ void Player::_onCloseContainerRequest(UNUSED const std::shared_ptr<protocol::Clo
 
 void Player::_onPluginMessage(const std::shared_ptr<protocol::PluginMessage> &pck)
 {
+    GET_CLIENT();
     LDEBUG("Got a Plugin Message");
     if (pck->channel == "minecraft:brand") {
         LDEBUG("Got a branding request");
         auto pck = protocol::createPluginMessageResponse({
             "minecraft:brand", std::vector<uint8_t>({0x05, 0x43, 0x75, 0x62, 0x69, 0x63}) // 43 75 62 69 63 | "Cubic" in hex
         });
-        _cli->_sendData(*pck);
+        client->_sendData(*pck);
         return;
     }
 }
