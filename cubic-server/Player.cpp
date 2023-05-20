@@ -626,29 +626,33 @@ void Player::sendSetExperience(const protocol::SetExperience &packet)
 
 void Player::sendUpdateObjective(const protocol::UpdateObjectives &packet)
 {
+    GET_CLIENT();
     auto pck = protocol::createUpdateObjectives(packet);
-    _cli->_sendData(*pck);
+    client->_sendData(*pck);
     LDEBUG("Sent update objectives packet");
 }
 
 void Player::sendDisplayObjective(const protocol::DisplaySlot &packet)
 {
+    GET_CLIENT();
     auto pck = protocol::createDisplayObjective(packet);
-    _cli->_sendData(*pck);
+    client->_sendData(*pck);
     LDEBUG("Sent display objective packet");
 }
 
 void Player::sendUpdateScore(const protocol::UpdateScore &packet)
 {
+    GET_CLIENT();
     auto pck = protocol::createUpdateScore(packet);
-    _cli->_sendData(*pck);
+    client->_sendData(*pck);
     LDEBUG("Sent update score packet");
 }
 
 void Player::sendUpdateTeams(const protocol::UpdateTeams &packet)
 {
+    GET_CLIENT();
     auto pck = protocol::createUpdateTeams(packet);
-    _cli->_sendData(*pck);
+    client->_sendData(*pck);
     LDEBUG("Sent update teams packet");
 }
 
