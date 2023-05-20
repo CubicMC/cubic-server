@@ -4,6 +4,7 @@
 #include "Player.hpp"
 #include "protocol/ClientPackets.hpp"
 #include "logging/Logger.hpp"
+#include "chat/Message.hpp"
 
 #include "Teams.hpp"
 
@@ -66,11 +67,11 @@ namespace Scoreboard {
             _collisionRule(CollisionRule::always),
             _name(name),
             _color(Color::White),
-            _displayName("{\"text\":\"" + name + "\"}"),
-            _memberNamePrefix(""),
-            _memberNameSuffix("")
+            _displayName(name),
+            _memberNamePrefix(" "),
+            _memberNameSuffix(" ")
         {
-            LINFO("Added team \"", name, "\"");
+            LDEBUG("Added team \"", name, "\"");
         }
 
         Team::Team(const Scoreboard &scoreboard, const std::string &name, const Color &color):
@@ -82,11 +83,11 @@ namespace Scoreboard {
             _collisionRule(CollisionRule::always),
             _name(name),
             _color(color),
-            _displayName("{\"text\":\"" + name + "\"}"),
-            _memberNamePrefix(""),
-            _memberNameSuffix("")
+            _displayName(name),
+            _memberNamePrefix(" "),
+            _memberNameSuffix(" ")
         {
-            LINFO("Added team \"", name, "\"");
+            LDEBUG("Added team \"", name, "\"");
         }
 
         Team::Team(const Scoreboard &scoreboard, const std::string &name, const std::string &displayName):
@@ -102,7 +103,7 @@ namespace Scoreboard {
             _memberNamePrefix(""),
             _memberNameSuffix("")
         {
-            LINFO("Added team \"", name, "\"");
+            LDEBUG("Added team \"", name, "\"");
         }
 
         Team::Team(const Scoreboard &scoreboard, const std::string &name, const Color &color, const std::string &displayName):
@@ -118,12 +119,12 @@ namespace Scoreboard {
             _memberNamePrefix(""),
             _memberNameSuffix("")
         {
-            LINFO("Added team \"", name, "\"");
+            LDEBUG("Added team \"", name, "\"");
         }
 
         Team::~Team()
         {
-            LINFO("Removed team \"", this->_name, "\"");
+            LDEBUG("Removed team \"", this->_name, "\"");
         }
 
         const std::unordered_set<std::string> &Team::getMembers(void) const noexcept
@@ -166,17 +167,17 @@ namespace Scoreboard {
             return (this->_name);
         }
 
-        const std::string &Team::getDisplayName(void) const noexcept
+        const chat::Message &Team::getDisplayName(void) const noexcept
         {
             return (this->_displayName);
         }
 
-        const std::string &Team::getPrefix(void) const noexcept
+        const chat::Message &Team::getPrefix(void) const noexcept
         {
             return (this->_memberNamePrefix);
         }
 
-        const std::string &Team::getSuffix(void) const noexcept
+        const chat::Message &Team::getSuffix(void) const noexcept
         {
             return (this->_memberNameSuffix);
         }
@@ -190,14 +191,12 @@ namespace Scoreboard {
         {
             this->_members.insert(name);
             this->sendJoinTeam(name);
-            LINFO(name, " joined team ", this->_name);
         }
 
         void Team::removeMember(const std::string &name)
         {
             this->_members.erase(name);
             this->sendLeaveTeam(name);
-            LINFO(name, " left team ", this->_name);
         }
 
         void Team::allowFriendlyFire(bool rule) noexcept
@@ -229,19 +228,19 @@ namespace Scoreboard {
             this->sendUpdateTeam();
         }
 
-        void Team::setDisplayName(const std::string &displayName) noexcept
+        void Team::setDisplayName(const chat::Message &displayName) noexcept
         {
             this->_displayName = displayName;
             this->sendUpdateTeam();
         }
 
-        void Team::setPrefix(const std::string &prefix) noexcept
+        void Team::setPrefix(const chat::Message &prefix) noexcept
         {
             this->_memberNamePrefix = prefix;
             this->sendUpdateTeam();
         }
 
-        void Team::setSuffix(const std::string &suffix) noexcept
+        void Team::setSuffix(const chat::Message &suffix) noexcept
         {
             this->_memberNameSuffix = suffix;
             this->sendUpdateTeam();
@@ -298,6 +297,7 @@ namespace Scoreboard {
                 "",
                 {name}
             };
+            LINFO(name, " joined team ", this->_name);
             for (const auto &[_, world] : this->_scoreboard.getWorldGroup().getWorlds()) {
                 for (const auto &[_, dimension] : world->getDimensions()) {
                     for (const auto &player : dimension->getPlayers()) {
@@ -322,6 +322,7 @@ namespace Scoreboard {
                 "",
                 {name}
             };
+            LINFO(name, " left team ", this->_name);
             for (const auto &[_, world] : this->_scoreboard.getWorldGroup().getWorlds()) {
                 for (const auto &[_, dimension] : world->getDimensions()) {
                     for (const auto &player : dimension->getPlayers()) {

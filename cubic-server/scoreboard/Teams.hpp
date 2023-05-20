@@ -4,6 +4,7 @@
 #include <string>
 #include <unordered_set>
 
+#include "chat/Message.hpp"
 #include "protocol/ClientPackets.hpp"
 
 namespace Scoreboard {
@@ -58,9 +59,9 @@ namespace Scoreboard {
             DeathMessageVisibility::DeathMessageVisibility getDeathMessageVisibility(void) const noexcept;
             const CollisionRule::CollisionRule &getCollisionRule(void) const noexcept;
             const std::string &getName(void) const noexcept;
-            const std::string &getDisplayName(void) const noexcept;
-            const std::string &getPrefix(void) const noexcept;
-            const std::string &getSuffix(void) const noexcept;
+            const chat::Message &getDisplayName(void) const noexcept;
+            const chat::Message &getPrefix(void) const noexcept;
+            const chat::Message &getSuffix(void) const noexcept;
             const Color &getColor(void) const noexcept;
 
             // setters
@@ -71,9 +72,9 @@ namespace Scoreboard {
             void setNametagVisibility(NametagVisibility::NametagVisibility rule) noexcept;
             void setDeathMessageVisibility(DeathMessageVisibility::DeathMessageVisibility rule) noexcept;
             void setCollisionRule(CollisionRule::CollisionRule rule) noexcept;
-            void setDisplayName(const std::string &displayName) noexcept;
-            void setPrefix(const std::string &prefix) noexcept;
-            void setSuffix(const std::string &suffix) noexcept;
+            void setDisplayName(const chat::Message &displayName) noexcept;
+            void setPrefix(const chat::Message &prefix) noexcept;
+            void setSuffix(const chat::Message &suffix) noexcept;
             void setColor(Color color) noexcept;
 
             // protocol functions
@@ -90,9 +91,9 @@ namespace Scoreboard {
             CollisionRule::CollisionRule _collisionRule;
             const std::string _name;
             Color _color;
-            std::string _displayName; // json format
-            std::string _memberNamePrefix; // json format
-            std::string _memberNameSuffix; // json format
+            chat::Message _displayName; // json format
+            chat::Message _memberNamePrefix; // json format
+            chat::Message _memberNameSuffix; // json format
             std::unordered_set<std::string> _members;
         };
     };

@@ -879,18 +879,19 @@ std::unique_ptr<std::vector<uint8_t>> protocol::createUpdateTeams(const UpdateTe
     );
     if (in.mode == 0 || in.mode == 2) {
         serialize(payload,
-            in.displayName, addChat,
+            in.displayName.serialize(), addChat,
             in.friendlyFalgs, addByte,
             in.nameTagVisibility, addString,
             in.collisionRule, addString,
             in.color, addVarInt,
-            in.prefix, addChat,
-            in.suffix, addChat
+            in.prefix.serialize(), addChat,
+            in.suffix.serialize(), addChat
         );
     }
     if (in.mode == 0 || in.mode == 3 || in.mode == 4) {
         serialize(payload,
-            in.entities, addArray<std::string, addString>
+            0, addVarInt
+//            in.entities, addArray<std::string, addString>
         );
     }
     // clang-format on

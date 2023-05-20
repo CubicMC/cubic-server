@@ -11,6 +11,7 @@
 #include "common.hpp"
 #include "types.hpp"
 #include "world_storage/ChunkColumn.hpp"
+#include "chat/Message.hpp"
 
 namespace protocol {
 
@@ -764,7 +765,7 @@ std::unique_ptr<std::vector<uint8_t>> createUpdateObjectives(const UpdateObjecti
 struct UpdateTeams {
     std::string name;
     uint8_t mode;
-    std::string displayName;
+    chat::Message displayName;
     uint8_t friendlyFalgs;
     std::string nameTagVisibility;
     std::string collisionRule;
@@ -792,8 +793,8 @@ struct UpdateTeams {
         Italic = 20,
         Reset = 21
     } color;
-    std::string prefix;
-    std::string suffix;
+    chat::Message prefix;
+    chat::Message suffix;
     std::vector<std::string> entities;
 };
 std::unique_ptr<std::vector<uint8_t>> createUpdateTeams(const UpdateTeams &);
