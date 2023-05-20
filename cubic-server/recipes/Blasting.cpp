@@ -31,8 +31,8 @@ Blasting::Blasting(const nlohmann::json &recipe):
 void Blasting::dump(void) const
 {
     LINFO(
-        "\"", ITEM_CONVERTER.fromProtocolIdToItem(this->_ingredient), "\" -> \"", ITEM_CONVERTER.fromProtocolIdToItem(this->_result), "\" (cooking for ", this->_cookingTime,
-        " ticks and get ", this->_experience, " xp)"
+        "\"{}\" -> \"{}\" (cooking for {} ticks and get {} xp)", Server::getInstance()->getItemConverter().fromProtocolIdToItem(this->_ingredient),
+        Server::getInstance()->getItemConverter().fromProtocolIdToItem(this->_result), this->_cookingTime, this->_experience
     );
 }
 

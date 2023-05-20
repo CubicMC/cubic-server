@@ -32,7 +32,7 @@ void command_parser::Log::execute(std::vector<std::string> &args, UNUSED Player 
             else if (arg == "fatal")
                 logging::Logger::getInstance()->setDisplaySpecificationLevelInConsole(logging::LogLevel::FATAL);
             else
-                LDEBUG("Unknown log type : " + arg);
+                LDEBUG("Unknown log type : {}", arg);
         }
     } else if (args[0] == "off") {
         args.erase(args.begin());
@@ -48,7 +48,7 @@ void command_parser::Log::execute(std::vector<std::string> &args, UNUSED Player 
             else if (arg == "fatal")
                 logging::Logger::getInstance()->unsetDisplaySpecificationLevelInConsole(logging::LogLevel::FATAL);
             else
-                LDEBUG("Unknown log type : " + arg);
+                LDEBUG("Unknown log type : {}", arg);
         }
     } else
         LDEBUG("Usage : /log <on|off> (type)");

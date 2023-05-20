@@ -107,6 +107,7 @@ void signalHandler(int sig)
 
 int main(int argc, char *argv[])
 {
+    logging::initLogger();
     auto program = initArgs(argc, argv);
 
     auto srv = Server::getInstance();
@@ -117,8 +118,8 @@ int main(int argc, char *argv[])
 
     CommandLine cmd;
 
-    auto logger = logging::Logger::getInstance();
-    logger->unsetDisplaySpecificationLevelInConsole(logging::LogLevel::DEBUG);
+    // auto logger = logging::Logger::getInstance();
+    // logger->unsetDisplaySpecificationLevelInConsole(logging::LogLevel::DEBUG);
 
     std::signal(SIGTERM, signalHandler);
     std::signal(SIGINT, signalHandler);

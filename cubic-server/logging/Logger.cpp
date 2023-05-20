@@ -3,9 +3,45 @@
 #include <algorithm>
 #include <iostream>
 
+#include <memory>
+#include <spdlog/spdlog.h>
+
 #include "TimeFormatter.hpp"
+#include "spdlog/common.h"
+#include "spdlog/details/registry.h"
+#include "spdlog/logger.h"
+#include "spdlog/sinks/basic_file_sink.h"
+#include "spdlog/sinks/daily_file_sink.h"
+#include "spdlog/sinks/stdout_color_sinks.h"
 
 namespace logging {
+
+void initLogger()
+{
+    std::vector<std::shared_ptr<spdlog::sinks::sink>> sinks;
+    sinks.emplace_back(std::make_shared<spdlog::sinks::stdout_color_sink_mt>());
+    sinks.emplace_back(std::make_shared<spdlog::sinks::basic_file_sink_mt>("logs/cubic-server.log"));
+    sinks.emplace_back(std::make_shared<spdlog::sinks::basic_file_sink_mt>("logs/latest.log", true));
+
+    auto console = std::make_shared<spdlog::logger>("console", sinks.begin(), sinks.end());
+
+    spdlog::set_error_handler([](const std::string &msg) {
+        spdlog::error("*** LOGGER ERROR ***: {}", msg);
+    });
+
+    spdlog::details::registry::instance().initialize_logger(console);
+    spdlog::set_default_logger(console);
+
+#ifdef NDEBUG
+    spdlog::set_level(spdlog::level::info);
+#else
+    spdlog::set_level(spdlog::level::trace);
+#endif
+}
+
+
+
+// ===================================================================================================
 
 LogMessage::LogMessage(LogLevel level, std::string message):
     _level(level),
@@ -54,9 +90,7 @@ Logger::Logger()
         filename = TimeFormatter::getTime("YYYY-MM-DD-" + std::to_string(i) + ".log");
 
     this->_fileAndFolderHandler.createFile(filename);
-    this->_fileStream = std::ofstream(this->_fileAndFolderHandler.getFilePath(), std::ios::app);
-    std::cout << "Log file: " << this->_fileAndFolderHandler.getFolderPath() << "/latest.log" << std::endl;
-    this->_lattestStream = std::ofstream(this->_fileAndFolderHandler.getFolderPath() + "/latest.log", std::ios::trunc);
+    this->_fileStream.open(this->_fileAndFolderHandler.getFilePath(), std::ios::app);
 
     this->_specificationLevelInFile = {
         {LogLevel::DEBUG, "[DEBUG] "}, {LogLevel::INFO, "[INFO] "}, {LogLevel::WARNING, "[WARNING] "}, {LogLevel::ERROR, "[ERROR] "}, {LogLevel::FATAL, "[FATAL] "}};
@@ -71,11 +105,7 @@ Logger::Logger()
  *
  * @note The file stream will be closed
  */
-Logger::~Logger()
-{
-    this->_fileStream.close();
-    this->_lattestStream.close();
-}
+Logger::~Logger() { this->_fileStream.close(); }
 
 /**
  * @brief Write a message in the log file
@@ -93,10 +123,8 @@ void Logger::_log(LogLevel level, const std::string &message)
     if (this->_logBuffer.size() > this->_bufferSize)
         this->_logBuffer.pop();
 
-    if (this->_specificationLevelInFile.find(level) != this->_specificationLevelInFile.end()) {
+    if (this->_specificationLevelInFile.find(level) != this->_specificationLevelInFile.end())
         this->_fileStream << log << std::endl;
-        this->_lattestStream << log << std::endl;
-    }
 
     if (this->_specificationLevelInConsole.find(level) != this->_specificationLevelInConsole.end())
         std::cout << log << std::endl;

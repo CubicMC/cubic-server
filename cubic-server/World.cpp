@@ -164,7 +164,7 @@ void World::sendPlayerInfoAddPlayer(Player *current)
         .actionSets = playersInfo
     });
     // clang-format on
-    LDEBUG("Sent player info to " + current->getUsername());
+    LDEBUG("Sent player info to {}" + current->getUsername());
 }
 
 void World::sendPlayerInfoRemovePlayer(const Player *current)
@@ -177,7 +177,7 @@ void World::sendPlayerInfoRemovePlayer(const Player *current)
             }
         }
     }
-    LDEBUG("Sent player info to ", current->getUsername());
+    LDEBUG("Sent player info to {}", current->getUsername());
 }
 
 thread_pool::PriorityThreadPool &World::getGenerationPool() { return _generationPool; }

@@ -33,7 +33,7 @@ void Whitelist::_parseWhitelist(const std::string &path)
     try {
         _whitelistData = nlohmann::json::parse(whitelistFile);
     } catch (const std::exception &e) {
-        LERROR("whitelist parsing failed : " << e.what());
+        LERROR("whitelist parsing failed : {}", e.what());
         throw std::runtime_error("whitelist parsing failed");
     }
     whitelistFile.close();

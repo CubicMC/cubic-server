@@ -40,6 +40,7 @@ void command_parser::DumpChunk::execute(std::vector<std::string> &args, Player *
     auto chunk = dim->getChunk(std::stoi(args[0]), std::stoi(args[1]));
     auto sections = chunk.getSections();
 
+<<<<<<< HEAD
     // for (const auto &section : sections) {
     //     for (int idx = 0; idx < world_storage::SECTION_3D_SIZE; idx++) {
     //         auto block = section.getBlock(idx);
@@ -63,6 +64,31 @@ void command_parser::DumpChunk::execute(std::vector<std::string> &args, Player *
         for (uint16_t i = 0; i < section.getBlockPalette().size(); i++) {
             auto block = section.getBlockPalette().getGlobalId(i);
             LDEBUG("\tPalette[" << i << "]: (" << block << ") -> " << GLOBAL_PALETTE.fromProtocolIdToBlock(block).name << " " << section.getBlockPalette().getCount(block));
+=======
+    for (const auto &block : blocks) {
+        auto name = GLOBAL_PALETTE.fromProtocolIdToBlock(block).name;
+        if (GLOBAL_PALETTE.fromBlockToProtocolId({name, {}}) != block || (block == 0 && name != "minecraft:air"))
+            LDEBUG("ERROR: {} has id {} but should have id {}", name, block, GLOBAL_PALETTE.fromBlockToProtocolId({name, {}}));
+    }
+    LDEBUG("--- CHUNK DATA ---");
+    {
+        auto sectionStart = blocks.begin();
+        for (uint8_t sectionID = 0; sectionID < world_storage::NB_OF_SECTIONS; sectionID++) {
+            auto section = sectionStart + (sectionID * world_storage::SECTION_3D_SIZE);
+            LDEBUG("Section {}", sectionID);
+
+            world_storage::BlockPalette blockPalette;
+            uint16_t blockInsideSection = 0;
+
+            for (uint16_t i = 0; i < world_storage::SECTION_3D_SIZE; i++) {
+                auto &block = section[i];
+                blockPalette.add(block);
+                if (block != 0)
+                    blockInsideSection++;
+            }
+
+            LDEBUG("\tBlock count: {}", blockInsideSection);
+>>>>>>> 0f83b68d (Redo all logs)
         }
     }
 
@@ -147,42 +173,54 @@ void command_parser::DumpChunk::execute(std::vector<std::string> &args, Player *
     auto at = data.data();
     auto eof = data.data() + data.size() - 1;
 
+<<<<<<< HEAD
     auto heightmap = nbt::parse(at, eof);
 
     LDEBUG("Chunk data size: " << protocol::popVarInt(at, eof));
 
     for (uint8_t sectionID = 0; sectionID < world_storage::NB_OF_PLAYABLE_SECTIONS; sectionID++) {
         LDEBUG("Section " << std::dec << (int) sectionID);
+=======
+    LDEBUG("Chunk data size: {}", protocol::popVarInt(at, eof));
+
+    for (uint8_t sectionID = 0; sectionID < world_storage::NB_OF_SECTIONS; sectionID++) {
+        LDEBUG("Section {}", sectionID);
+>>>>>>> 0f83b68d (Redo all logs)
         auto blockCount = protocol::popShort(at, eof);
-        LDEBUG('\t' << "Block count: " << blockCount);
+        LDEBUG("\tBlock count: {}", blockCount);
 
         // Block palette parsing
         world_storage::BlockPalette blockPalette;
         auto bytePerBlock = protocol::popByte(at, eof);
-        LDEBUG('\t' << "Palette bit per block: " << (int) bytePerBlock);
+        LDEBUG("\t\tPalette bit per block: {}", bytePerBlock);
         if (bytePerBlock == 0)
-            LDEBUG('\t' << "Single value palette: " << protocol::popVarInt(at, eof));
+            LDEBUG("\tSingle value palette: {}", protocol::popVarInt(at, eof));
         else if (bytePerBlock <= 8) {
-            LDEBUG('\t' << "Indirect value palette");
+            LDEBUG("\tIndirect value palette");
             auto paletteSize = protocol::popVarInt(at, eof);
-            LDEBUG('\t' << "Palette size: " << paletteSize);
+            LDEBUG("\tPalette size: {}", paletteSize);
             for (int32_t i = 0; i < paletteSize; i++) {
                 auto value = protocol::popVarInt(at, eof);
+<<<<<<< HEAD
                 blockPalette.add(value);
                 LDEBUG('\t' << '\t' << "Palette entry[" << i << "]: " << value << " -> " << GLOBAL_PALETTE.fromProtocolIdToBlock(value).name);
+=======
+                LDEBUG("\t\tPalette entry {}: {} -> {}", i, value, GLOBAL_PALETTE.fromProtocolIdToBlock(value).name);
+>>>>>>> 0f83b68d (Redo all logs)
             }
         } else
-            LDEBUG('\t' << "Direct value palette");
+            LDEBUG("\tDirect value palette");
 
         // Block data parsing
         auto blockDataSize = protocol::popVarInt(at, eof);
-        LDEBUG('\t' << "Block data size: " << blockDataSize);
+        LDEBUG("\tBlock data size: {}", blockDataSize);
         if ((blockDataSize > 0 && bytePerBlock == 0) || (blockDataSize == 0 && bytePerBlock > 0))
-            LDEBUG('\t' << "ERROR: Block data size and palette bit per block are not compatible");
+            LDEBUG("\tERROR: Block data size and palette bit per block are not compatible");
         if (bytePerBlock > 0 && blockDataSize * (64 / bytePerBlock) < blockCount)
-            LDEBUG('\t' << "ERROR: Block data size is too small");
+            LDEBUG("\tERROR: Block data size is too small");
         for (int32_t i = 0; i < blockDataSize; i++) {
             uint64_t value = protocol::popLong(at, eof);
+<<<<<<< HEAD
             // for (uint64_t blockIdx = 0; blockIdx < world_storage::SECTION_3D_SIZE; blockIdx++) {
             //     auto block = (value >> ((blockIdx % (64 / bytePerBlock)) * bytePerBlock)) & ((1 << bytePerBlock) - 1);
             //     auto blockGlobalId = blockPalette.getGlobalId(block);
@@ -193,30 +231,33 @@ void command_parser::DumpChunk::execute(std::vector<std::string> &args, Player *
             //     LDEBUG('\t' << '\t' << "Block data entry " << i << " block " << blockIdx << ": " << block << " -> " << GLOBAL_PALETTE.fromProtocolIdToBlock(blockGlobalId).name);
             // }
             LDEBUG('\t' << '\t' << "Block data entry " << i << ": " << std::hex << value);
+=======
+            LDEBUG("\t\tBlock data entry {}: {:x}", i, value);
+>>>>>>> 0f83b68d (Redo all logs)
         }
 
         // Biome palette parsing
         auto bytePerBiome = protocol::popByte(at, eof);
-        LDEBUG('\t' << "Palette bit per biome: " << (int) bytePerBiome);
+        LDEBUG("\tPalette bit per biome: {}", bytePerBiome);
         if (bytePerBiome == 0)
-            LDEBUG('\t' << "Single value palette: " << protocol::popVarInt(at, eof));
+            LDEBUG("\tSingle value palette: {}", protocol::popVarInt(at, eof));
         else if (bytePerBiome <= 8) {
-            LDEBUG('\t' << "Indirect value palette");
+            LDEBUG("\tIndirect value palette");
             auto paletteSize = protocol::popVarInt(at, eof);
-            LDEBUG('\t' << "Palette size: " << paletteSize);
+            LDEBUG("\tPalette size: {}", paletteSize);
             for (int32_t i = 0; i < paletteSize; i++) {
                 auto value = protocol::popVarInt(at, eof);
-                LDEBUG('\t' << '\t' << "Palette entry " << i << ": " << value << " -> " << GLOBAL_PALETTE.fromProtocolIdToBlock(value).name);
+                LDEBUG("\t\tPalette entry {}: {} -> {}", i, value, GLOBAL_PALETTE.fromProtocolIdToBlock(value).name);
             }
         } else
-            LDEBUG('\t' << "Direct value palette");
+            LDEBUG("\tDirect value palette");
 
         // Biome data parsing
         auto biomeDataSize = protocol::popVarInt(at, eof);
-        LDEBUG('\t' << "Biome data size: " << biomeDataSize);
+        LDEBUG("\tBiome data size: {}", biomeDataSize);
         for (int32_t i = 0; i < biomeDataSize; i++) {
             auto value = protocol::popLong(at, eof);
-            LDEBUG('\t' << '\t' << "Biome data entry " << std::dec << i << ": " << std::hex << value);
+            LDEBUG("\t\tBiome data entry {}: {:x}", i, value);
         }
     }
 
@@ -261,7 +302,7 @@ void command_parser::DumpChunk::execute(std::vector<std::string> &args, Player *
     }
 
     if (at != eof + 1)
-        LDEBUG("ERROR: Not all data was read: " << (eof - at));
+        LDEBUG("ERROR: Not all data was read: {}", (eof - at));
     else
         LDEBUG("All data was read");
 

@@ -84,6 +84,9 @@ void Recipes::loadFolder(const std::string &_namespace, const std::string &folde
     size_t path_length = folder.size(); // stores the path size, used to getting the recipe names
 
     // goes recursively through every file in the given folder
+    if (!std::filesystem::exists(folder))
+        std::filesystem::create_directories(folder);
+
     for (const auto &filepath : std::filesystem::recursive_directory_iterator(folder)) {
         // checks if the file has the json extension
         if (filepath.path().string().ends_with(".json")) {
@@ -108,10 +111,10 @@ void Recipes::loadFolder(const std::string &_namespace, const std::string &folde
             }
         }
     }
-    LINFO("Loaded ", this->_recipes[_namespace].size(), " recipes from path ", folder, " into namespace \"", _namespace, "\"");
+    LINFO("Loaded {} recipes from path {} into namespace \"{}\"", this->_recipes[_namespace].size(), folder, _namespace);
     /* // prints the recipes loaded into the given namespace (includes previously loaded recipes from other sources)
     for (const auto &[name, recipe] : this->_recipes[_namespace]) {
-        LINFO("\"", _namespace, ":", name, "\":");
+        LINFO("\"{}:{}\":", _namespace, name);
         recipe->dump();
         LINFO("");
     }

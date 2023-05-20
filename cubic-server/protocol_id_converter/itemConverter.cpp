@@ -10,7 +10,7 @@
 void Items::ItemConverter::initialize(const std::string &path)
 {
     if (!std::filesystem::exists(path)) {
-        LERROR("File " << path << " not found !");
+        LERROR("File {} not found !", path);
         return;
     }
     nlohmann::json file = nlohmann::json::parse(std::ifstream(path));
@@ -28,7 +28,7 @@ ItemId Items::ItemConverter::fromItemToProtocolId(const std::string &name) const
         return i.name == name;
     });
     if (item == this->_items.end()) {
-        LERROR("Item not found in palette (name: " << name << ")");
+        LERROR("Item not found in palette (name: {})", name);
         return 0;
     }
     return item->protocolId;
@@ -40,7 +40,7 @@ std::string Items::ItemConverter::fromProtocolIdToItem(ItemId id) const
         return i.protocolId == id;
     });
     if (item == this->_items.end()) {
-        LERROR("Item not found in palette (id: " << id << ")");
+        LERROR("Item not found in palette (id: {})", id);
         return "minecraft:air";
     }
     return item->name;

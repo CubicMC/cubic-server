@@ -35,6 +35,6 @@ void command_parser::parseCommand(std::string &command, Player *invoker)
         invoker->getDimension()->getWorld()->getChat()->sendSystemMessage(commandName.erase(commandName.find_last_not_of(' ') + 1) + "<--[HERE]", *invoker);
     } else {
         LINFO("Unknown or incomplete command, see below for error");
-        LINFO(commandName.erase(commandName.find_last_not_of(' ') + 1) + "<--[HERE]");
+        LINFO("{}<--[HERE]", commandName.erase(commandName.find_last_not_of(' ') + 1));
     }
 }

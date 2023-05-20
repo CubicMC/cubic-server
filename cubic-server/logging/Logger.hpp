@@ -6,41 +6,80 @@
 #include <queue>
 #include <sstream>
 #include <string>
+#include <type_traits>
 #include <unordered_map>
 
 #include "FileAndFolderHandler.hpp"
 
-#define _GET_NTH_ARG(_0, _1, _2, _3, _4, _5, _6, _7, _8, _9, N, ...) N
+#include <spdlog/spdlog.h>
 
-#define _LOG0() __FILE__ << ":" << __LINE__ << " Log called without arguments !"
-#define _LOG1(msg) msg
-#define _LOG2(msg, ...) msg << _LOG1(__VA_ARGS__)
-#define _LOG3(msg, ...) msg << _LOG2(__VA_ARGS__)
-#define _LOG4(msg, ...) msg << _LOG3(__VA_ARGS__)
-#define _LOG5(msg, ...) msg << _LOG4(__VA_ARGS__)
-#define _LOG6(msg, ...) msg << _LOG5(__VA_ARGS__)
-#define _LOG7(msg, ...) msg << _LOG6(__VA_ARGS__)
-#define _LOG8(msg, ...) msg << _LOG7(__VA_ARGS__)
-#define _LOG9(msg, ...) msg << _LOG8(__VA_ARGS__)
+#ifndef TESTING
+    #include "formating.hpp"
+#endif
 
-#define _LOGN(...)                                                                                                                                                   \
-    _GET_NTH_ARG(                                                                                                                                                    \
-        , ##__VA_ARGS__, _LOG9(__VA_ARGS__), _LOG8(__VA_ARGS__), _LOG7(__VA_ARGS__), _LOG6(__VA_ARGS__), _LOG5(__VA_ARGS__), _LOG4(__VA_ARGS__), _LOG3(__VA_ARGS__), \
-        _LOG2(__VA_ARGS__), _LOG1(__VA_ARGS__), _LOG0(__VA_ARGS__),                                                                                                  \
-    )
+namespace logging {
 
-#define _LOG(type, ...)                                     \
-    do {                                                    \
-        std::stringstream __ss;                             \
-        __ss << _LOGN(__VA_ARGS__);                         \
-        ::logging::Logger::getInstance()->type(__ss.str()); \
-    } while (0)
+void initLogger();
 
-#define LDEBUG(...) _LOG(debug, __VA_ARGS__)
-#define LINFO(...) _LOG(info, __VA_ARGS__)
-#define LWARN(...) _LOG(warn, __VA_ARGS__)
-#define LERROR(...) _LOG(error, __VA_ARGS__)
-#define LFATAL(...) _LOG(fatal, __VA_ARGS__)
+} // namespace logging
+
+// =================================================================
+
+// #define _GET_NTH_ARG(_0, _1, _2, _3, _4, _5, _6, _7, _8, _9, N, ...) N
+/*
+// #define _LOG0() __FILE__ << ":" << __LINE__ << " Log called without arguments !"
+// #define _LOG1(msg) msg
+// #define _LOG2(msg, ...) msg << _LOG1(__VA_ARGS__)
+// #define _LOG3(msg, ...) msg << _LOG2(__VA_ARGS__)
+// #define _LOG4(msg, ...) msg << _LOG3(__VA_ARGS__)
+// #define _LOG5(msg, ...) msg << _LOG4(__VA_ARGS__)
+// #define _LOG6(msg, ...) msg << _LOG5(__VA_ARGS__)
+// #define _LOG7(msg, ...) msg << _LOG6(__VA_ARGS__)
+// #define _LOG8(msg, ...) msg << _LOG7(__VA_ARGS__)
+// #define _LOG9(msg, ...) msg << _LOG8(__VA_ARGS__)
+
+// #define _LOGN(...)                                                                                                                                                   \
+//     _GET_NTH_ARG(                                                                                                                                                    \
+//         , ##__VA_ARGS__, _LOG9(__VA_ARGS__), _LOG8(__VA_ARGS__), _LOG7(__VA_ARGS__), _LOG6(__VA_ARGS__), _LOG5(__VA_ARGS__), _LOG4(__VA_ARGS__), _LOG3(__VA_ARGS__), \
+//         _LOG2(__VA_ARGS__), _LOG1(__VA_ARGS__), _LOG0(__VA_ARGS__),                                                                                                  \
+//     )
+
+// #define _LOG(type, ...)                                     \
+//     do {                                                    \
+//         std::stringstream __ss;                             \
+//         __ss << _LOGN(__VA_ARGS__);                         \
+//         ::logging::Logger::getInstance()->type(__ss.str()); \
+//     } while (0)
+*/
+
+// #define LDEBUG(...) _LOG(debug, __VA_ARGS__)
+// #define LINFO(...) _LOG(info, __VA_ARGS__)
+// #define LWARN(...) _LOG(warn, __VA_ARGS__)
+// #define LERROR(...) _LOG(error, __VA_ARGS__)
+// #define LFATAL(...) _LOG(fatal, __VA_ARGS__)
+
+#define LTRACE(...) spdlog::default_logger()->log(spdlog::level::trace, __VA_ARGS__)
+#define LDEBUG(...) spdlog::default_logger()->log(spdlog::level::debug, __VA_ARGS__)
+#define LINFO(...) spdlog::default_logger()->log(spdlog::level::info, __VA_ARGS__)
+#define LWARN(...) spdlog::default_logger()->log(spdlog::level::warn, __VA_ARGS__)
+#define LERROR(...) spdlog::default_logger()->log(spdlog::level::err, __VA_ARGS__)
+#define LFATAL(...) spdlog::default_logger()->log(spdlog::level::critical, __VA_ARGS__)
+
+#ifdef DEBUG_NETWORK
+#define N_LTRACE(...) spdlog::default_logger()->log(spdlog::level::trace, __VA_ARGS__)
+#define N_LDEBUG(...) spdlog::default_logger()->log(spdlog::level::debug, __VA_ARGS__)
+#define N_LINFO(...) spdlog::default_logger()->log(spdlog::level::info, __VA_ARGS__)
+#define N_LWARN(...) spdlog::default_logger()->log(spdlog::level::warn, __VA_ARGS__)
+#define N_LERROR(...) spdlog::default_logger()->log(spdlog::level::err, __VA_ARGS__)
+#define N_LFATAL(...) spdlog::default_logger()->log(spdlog::level::critical, __VA_ARGS__)
+#else
+#define N_LTRACE(...)
+#define N_LDEBUG(...)
+#define N_LINFO(...)
+#define N_LWARN(...)
+#define N_LERROR(...)
+#define N_LFATAL(...)
+#endif
 
 namespace logging {
 enum class LogLevel {

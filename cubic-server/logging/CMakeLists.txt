@@ -5,6 +5,7 @@ target_sources (${CMAKE_PROJECT_NAME} PRIVATE
     FileAndFolderHandler.hpp
     Logger.cpp
     Logger.hpp
+    formating.hpp
 )
 
 if(GTEST)
@@ -33,6 +34,8 @@ if(GTEST)
     target_link_libraries(
         Logger_test
         GTest::gtest_main
+        spdlog::spdlog
+        $<$<BOOL:${MINGW}>:ws2_32>
     )
 
     target_link_libraries(
@@ -43,6 +46,12 @@ if(GTEST)
     target_link_libraries(
         FileAndFolderHandler_test
         GTest::gtest_main
+    )
+
+    target_compile_options(
+        Logger_test
+        PRIVATE
+        -DTESTING
     )
 
     include(GoogleTest)
