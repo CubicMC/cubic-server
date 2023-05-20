@@ -65,7 +65,7 @@ namespace Scoreboard {
             _displayName("{\"text\":\"" + name + "\"}"),
             _renderType(RenderType::RenderInteger)
         {
-            LINFO("Added objective \"", name, "\"");
+            LDEBUG("Added objective \"", name, "\"");
         }
 
         Objective::Objective(const Scoreboard &scoreboard, const std::string &name, const std::string &criteria, const std::string &displayName):
@@ -75,7 +75,7 @@ namespace Scoreboard {
             _displayName(displayName),
             _renderType(RenderType::RenderInteger)
         {
-            LINFO("Added objective \"", name, "\"");
+            LDEBUG("Added objective \"", name, "\"");
         }
 
         Objective::Objective(const Scoreboard &scoreboard, const std::string &name, const std::string &criteria, const RenderType &renderType):
@@ -85,7 +85,7 @@ namespace Scoreboard {
             _displayName("{\"text\":\"" + name + "\"}"),
             _renderType(renderType)
         {
-            LINFO("Added objective \"", name, "\"");
+            LDEBUG("Added objective \"", name, "\"");
         }
 
         Objective::Objective(const Scoreboard &scoreboard, const std::string &name, const std::string &criteria, const std::string &displayName, const RenderType &renderType):
@@ -95,12 +95,12 @@ namespace Scoreboard {
             _displayName(displayName),
             _renderType(renderType)
         {
-            LINFO("Added objective \"", name, "\"");
+            LDEBUG("Added objective \"", name, "\"");
         }
 
         Objective::~Objective()
         {
-            LINFO("Removed objective \"", this->_name, "\"");
+            LDEBUG("Removed objective \"", this->_name, "\"");
         }
 
         const std::string &Objective::getName(void) const noexcept
@@ -151,7 +151,7 @@ namespace Scoreboard {
                 return;
             this->_values[name].set(value);
             this->sendUpdateScore(name, this->_values[name]);
-            LINFO(this->_name, ": set ", name, "'s score to ", value);
+            LDEBUG(this->_name, ": set ", name, "'s score to ", value);
         }
 
         void Objective::addScore(const std::string &name, int32_t value)

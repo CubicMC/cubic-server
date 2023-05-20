@@ -68,8 +68,8 @@ namespace Scoreboard {
             _name(name),
             _color(Color::White),
             _displayName(name),
-            _memberNamePrefix(" "),
-            _memberNameSuffix(" ")
+            _memberNamePrefix(""),
+            _memberNameSuffix("")
         {
             LDEBUG("Added team \"", name, "\"");
         }
@@ -84,8 +84,8 @@ namespace Scoreboard {
             _name(name),
             _color(color),
             _displayName(name),
-            _memberNamePrefix(" "),
-            _memberNameSuffix(" ")
+            _memberNamePrefix(""),
+            _memberNameSuffix("")
         {
             LDEBUG("Added team \"", name, "\"");
         }
@@ -297,7 +297,7 @@ namespace Scoreboard {
                 "",
                 {name}
             };
-            LINFO(name, " joined team ", this->_name);
+            LDEBUG(name, " joined team ", this->_name);
             for (const auto &[_, world] : this->_scoreboard.getWorldGroup().getWorlds()) {
                 for (const auto &[_, dimension] : world->getDimensions()) {
                     for (const auto &player : dimension->getPlayers()) {
@@ -322,7 +322,7 @@ namespace Scoreboard {
                 "",
                 {name}
             };
-            LINFO(name, " left team ", this->_name);
+            LDEBUG(name, " left team ", this->_name);
             for (const auto &[_, world] : this->_scoreboard.getWorldGroup().getWorlds()) {
                 for (const auto &[_, dimension] : world->getDimensions()) {
                     for (const auto &player : dimension->getPlayers()) {

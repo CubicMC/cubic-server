@@ -18,11 +18,11 @@ void command_parser::Objectives::autocomplete(UNUSED std::vector<std::string> &a
 void command_parser::Objectives::execute(UNUSED std::vector<std::string> &args, UNUSED Player *invoker) const
 {
     for (auto &[name, worldgroup] : Server::getInstance()->getWorldGroups()) {
-        std::cout << "in worldgroup " << name << ":" << std::endl;
+        LINFO("in worldgroup ", name, ":");
         for (const auto &[objective, obj] : worldgroup->getScoreboard().getObjectives()) {
-            std::cout << "\t" << objective << std::endl;
+            LINFO("\t", objective);
             for (const auto &[name, score] : obj->getScores()) {
-                std::cout << "\t\t" << name << " " << score.get() << std::endl;
+                LINFO("\t\t", name, " ", score.get());
             }
         }
     }
@@ -182,11 +182,11 @@ void command_parser::Teams::autocomplete(UNUSED std::vector<std::string> &args, 
 void command_parser::Teams::execute(UNUSED std::vector<std::string> &args, UNUSED Player *invoker) const
 {
     for (auto &[name, worldgroup] : Server::getInstance()->getWorldGroups()) {
-        std::cout << "in worldgroup " << name << ":" << std::endl;
+        LINFO("in worldgroup ", name, ":");
         for (const auto &[team, obj] : worldgroup->getScoreboard().getTeams()) {
-            std::cout << "\t" << team << ":" << std::endl;
+            LINFO("\t", team, ":");
             for (const auto &player : obj->getMembers()) {
-                std::cout << "\t\t" << player << std::endl;
+                LINFO("\t\t", player);
             }
         }
     }

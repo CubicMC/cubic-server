@@ -38,8 +38,7 @@ nlohmann::json chat::SimpleMessage::toJson() const
 {
     nlohmann::json response;
 
-    if (_message.size() > 0)
-        response["text"] = _message;
+    response["text"] = _message;
 
     if (_style.bold.has_value())
         response["bold"] = _style.bold.value();

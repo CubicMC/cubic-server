@@ -1080,7 +1080,6 @@ void Player::_continueLoginSequence()
 
     // send scoreboard status (objectives and teams)
     _dim->getWorld()->getWorldGroup()->getScoreboard().sendScoreboardStatus(*this);
-    LINFO("wait");
 
     // Send login message
     chat::Message connectionMsg = chat::Message::fromTranslationKey<chat::message::TranslationKey::MultiplayerPlayerJoined>(*this);

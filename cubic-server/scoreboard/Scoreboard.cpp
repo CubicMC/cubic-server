@@ -76,9 +76,9 @@ namespace Scoreboard {
         this->_displaySlots[slot] = objective;
         this->sendDisplayObjective(slot, objective);
         if (objective)
-            LINFO("displayed objective \"", objective->getName(), "\" in slot ", std::to_string(static_cast<int>(slot)));
+            LDEBUG("displayed objective \"", objective->getName(), "\" in slot ", std::to_string(static_cast<int>(slot)));
         else
-            LINFO("removed displayed objectived from slot ", std::to_string(static_cast<int>(slot)));
+            LDEBUG("removed displayed objectived from slot ", std::to_string(static_cast<int>(slot)));
     }
 
     void Scoreboard::addToObjectivebyCriteria(const std::string &criteria, const std::string &entity, int32_t value)
@@ -263,7 +263,7 @@ namespace Scoreboard {
     }
     void Scoreboard::sendScoreboardStatus(Player &player) const
     {
-        LINFO("scoreboard status? ", player.getUsername());
+        LDEBUG("scoreboard status? ", player.getUsername());
         // send all objectives
         for (const auto &[_, objective] : this->_objectives) {
             const protocol::UpdateObjectives update{

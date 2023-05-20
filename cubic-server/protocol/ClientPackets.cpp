@@ -890,8 +890,7 @@ std::unique_ptr<std::vector<uint8_t>> protocol::createUpdateTeams(const UpdateTe
     }
     if (in.mode == 0 || in.mode == 3 || in.mode == 4) {
         serialize(payload,
-            0, addVarInt
-//            in.entities, addArray<std::string, addString>
+            in.entities, addArray<std::string, addString>
         );
     }
     // clang-format on
