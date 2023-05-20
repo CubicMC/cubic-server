@@ -108,6 +108,19 @@ struct AddTeam : public CommandBase {
     void help(std::vector<std::string> &args, Player *invoker) const override;
 };
 
+struct ModifyTeam : public CommandBase {
+    ModifyTeam():
+        CommandBase("modifyteam", "/modifyteam [team name] [color(1..18)]", true)
+    {
+    }
+
+    ~ModifyTeam() override = default;
+
+    void autocomplete(std::vector<std::string> &args, Player *invoker) const override;
+    void execute(std::vector<std::string> &args, Player *invoker) const override;
+    void help(std::vector<std::string> &args, Player *invoker) const override;
+};
+
 struct JoinTeam : public CommandBase {
     JoinTeam():
         CommandBase("jointeam", "/jointeam [team name] [player name]", true)

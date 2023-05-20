@@ -225,6 +225,33 @@ void command_parser::AddTeam::help(UNUSED std::vector<std::string> &args, Player
 }
 
 /*
+    addteam
+*/
+void command_parser::ModifyTeam::autocomplete(UNUSED std::vector<std::string> &args, Player *invoker) const
+{
+    if (invoker)
+        return;
+    else
+        LINFO("autocomplete modifyteam");
+}
+
+void command_parser::ModifyTeam::execute(std::vector<std::string> &args, UNUSED Player *invoker) const
+{
+    if (args.size() < 2)
+        return;
+    for (auto &[_, worldgroup] : Server::getInstance()->getWorldGroups()) {
+        if (worldgroup->getScoreboard().isTeam(args[0]))
+            worldgroup->getScoreboard().getTeam(args[0]).setColor(static_cast<Scoreboard::Team::Color>(std::stoi(args[1])));
+    }
+}
+
+void command_parser::ModifyTeam::help(UNUSED std::vector<std::string> &args, Player *invoker) const
+{
+    (void)invoker;
+    LINFO("help modifyteam");
+}
+
+/*
     jointeam
 */
 void command_parser::JoinTeam::autocomplete(UNUSED std::vector<std::string> &args, Player *invoker) const

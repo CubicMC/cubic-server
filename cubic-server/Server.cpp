@@ -56,6 +56,7 @@ Server::Server():
     _commands.emplace_back(std::make_unique<command_parser::RemoveObjective>());
     _commands.emplace_back(std::make_unique<command_parser::Teams>());
     _commands.emplace_back(std::make_unique<command_parser::AddTeam>());
+    _commands.emplace_back(std::make_unique<command_parser::ModifyTeam>());
     _commands.emplace_back(std::make_unique<command_parser::JoinTeam>());
     _commands.emplace_back(std::make_unique<command_parser::LeaveTeam>());
     _commands.emplace_back(std::make_unique<command_parser::RemoveTeam>());
