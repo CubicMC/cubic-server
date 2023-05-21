@@ -183,6 +183,7 @@ void Dimension::removePlayerFromLoadingChunk(const Position2D &pos, std::shared_
 }
 
 world_storage::ChunkColumn &Dimension::getChunk(int x, int z) { return this->_level.getChunkColumn(x, z); }
+const world_storage::ChunkColumn &Dimension::getChunk(int x, int z) const { return this->_level.getChunkColumn(x, z); }
 
 void Dimension::spawnPlayer(Player &current)
 {

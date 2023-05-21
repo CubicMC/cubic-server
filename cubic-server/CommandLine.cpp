@@ -24,15 +24,21 @@ void CommandLine::run()
 
     while (this->_running) {
         pollSet[0].events = POLLIN;
-        if (poll(pollSet, 1, 50) == -1)
-            break;
+        if (poll(pollSet, 1, 50) == -1) {
+            Server::getInstance()->stop();
+            this->_running = false;
+            return;
+        }
+
         if ((pollSet[0].revents & POLLIN) == 0)
             continue;
 
-        if (!std::getline(std::cin, command))
-            break;
+        if (!std::getline(std::cin, command)) {
+            Server::getInstance()->stop();
+            this->_running = false;
+            return;
+        }
 
         command_parser::parseCommand(command, nullptr);
     }
-    Server::getInstance()->stop();
 }

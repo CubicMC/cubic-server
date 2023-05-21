@@ -13,8 +13,8 @@ static protocol::PlayerChatMessage buildPacket(const Player &from, size_t messag
     auto userName = chat::Message(from.getUsername());
 
     // TODO: change this to check the team color
-    if (userName.messageComponent().message() == "STMiki")
-        userName.messageComponent().style().color = "gold";
+    if (userName.message() == "STMiki")
+        userName.style().color = "gold";
 
     return protocol::PlayerChatMessage {
         from.getUuid(),

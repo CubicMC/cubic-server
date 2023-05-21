@@ -17,7 +17,7 @@ namespace _details {
  * @tparam A The argument
  * @tparam H The argument encapsulation class, derived from _ArgumentHolder
  */
-template<typename T, typename A, is_base_of<_details::_ArgumentHolder<A>> H>
+template<typename T, typename A, isBaseOf<_details::_ArgumentHolder<A>> H>
 class _ArgumentsParser : public _ImplShared<T> {
 public:
     typedef H Argument;
@@ -61,7 +61,7 @@ std::ostream &operator<<(std::ostream &os, const ArgumentsParser &parser);
 
 } // namespace configuration
 
-template<typename T, typename A, is_base_of<configuration::_details::_ArgumentHolder<A>> H>
+template<typename T, typename A, isBaseOf<configuration::_details::_ArgumentHolder<A>> H>
 void configuration::_details::_ArgumentsParser<T, A, H>::parse(int argc, const char *const *argv)
 {
     this->parse({argv, argv + argc});

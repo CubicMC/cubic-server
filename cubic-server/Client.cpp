@@ -50,7 +50,6 @@ Client::~Client()
         return;
     this->_player->_dim->removeEntity(_player->_id);
     this->_player->_dim->removePlayer(_player->_id);
-    this->_player->_cli = nullptr;
 }
 
 void Client::networkLoop()
@@ -78,7 +77,11 @@ void Client::networkLoop()
             }
         }
         if (pollSet[0].revents & POLLOUT) {
-            _flushSendData();
+            try {
+                _flushSendData();
+            } catch (const std::runtime_error &) {
+                _isRunning = false;
+            }
         }
     }
     _isRunning = false;
@@ -102,11 +105,16 @@ void Client::_flushSendData()
     std::copy(_sendBuffer.begin(), _sendBuffer.begin() + toSend, sendBuffer);
 
     ssize_t writeReturn = write(_sockfd, sendBuffer, toSend);
-    if (writeReturn == -1)
-        LERROR("Write error", strerror(errno));
+    if (writeReturn == -1) {
+        LERROR("Write error: ", strerror(errno));
+    }
 
     if (writeReturn <= 0) {
-        return;
+        _writeMutex.unlock();
+        LDEBUG("error: ", writeReturn, " -> ", strerror(errno));
+        if (errno == EAGAIN)
+            return;
+        throw std::runtime_error("Pipe error");
     }
 
     _sendBuffer.erase(_sendBuffer.begin(), _sendBuffer.begin() + writeReturn);
@@ -118,13 +126,17 @@ void Client::_tryFlushAllSendData()
     pollSet[0].fd = _sockfd;
     pollSet[0].events = POLLOUT;
 
-    while (!_sendBuffer.empty()) {
-        if (poll(pollSet, 1, 0) == -1)
-            return;
-        if (pollSet[0].revents & POLLOUT)
-            _flushSendData();
-        else
-            return;
+    try {
+        while (!_sendBuffer.empty()) {
+            if (poll(pollSet, 1, 0) == -1)
+                return;
+            if (pollSet[0].revents & POLLOUT)
+                _flushSendData();
+            else
+                return;
+        }
+    } catch (const std::runtime_error &) {
+        return;
     }
 }
 
@@ -133,7 +145,7 @@ void Client::switchToPlayState(u128 playerUuid, const std::string &username)
     this->setStatus(protocol::ClientStatus::Play);
     LDEBUG("Switched to play state");
     // TODO: get the player dimension from the world by his uuid
-    this->_player = std::make_shared<Player>(this, Server::getInstance()->getWorldGroup("default")->getWorld("default")->getDimension("overworld"), playerUuid, username);
+    this->_player = std::make_shared<Player>(weak_from_this(), Server::getInstance()->getWorldGroup("default")->getWorld("default")->getDimension("overworld"), playerUuid, username);
     LDEBUG("Created player");
 }
 
