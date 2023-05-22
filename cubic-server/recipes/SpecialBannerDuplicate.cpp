@@ -3,19 +3,13 @@
 #include "Server.hpp"
 
 namespace Recipe {
-    SpecialBannerDuplicate::SpecialBannerDuplicate(const nlohmann::json &recipe):
-        Recipe(recipe)
-    {
-        this->setValidity(false);
-    }
+SpecialBannerDuplicate::SpecialBannerDuplicate(const nlohmann::json &recipe):
+    Recipe(recipe)
+{
+    this->setValidity(false);
+}
 
-    void SpecialBannerDuplicate::dump(void) const
-    {
-        LINFO("recipe special banner duplicate");
-    }
+void SpecialBannerDuplicate::dump(void) const { LINFO("recipe special banner duplicate"); }
 
-    std::unique_ptr<Recipe> SpecialBannerDuplicate::create(const nlohmann::json &recipe)
-    {
-        return (std::make_unique<SpecialBannerDuplicate>(SpecialBannerDuplicate(recipe)));
-    }
+std::unique_ptr<Recipe> SpecialBannerDuplicate::create(const nlohmann::json &recipe) { return (std::make_unique<SpecialBannerDuplicate>(SpecialBannerDuplicate(recipe))); }
 };

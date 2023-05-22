@@ -6,15 +6,15 @@
 #include "Server.hpp"
 
 namespace Recipe {
-    class SpecialMapExtending : public Recipe {
-    public:
-        SpecialMapExtending(const nlohmann::json &recipe);
-        ~SpecialMapExtending() = default;
+class SpecialMapExtending : public Recipe {
+public:
+    SpecialMapExtending(const nlohmann::json &recipe);
+    ~SpecialMapExtending() = default;
 
-        void dump(void) const override;
+    void dump(void) const override;
 
-        static std::unique_ptr<Recipe> create(const nlohmann::json &recipe);
-    };
+    static std::unique_ptr<Recipe> create(const nlohmann::json &recipe);
+};
 };
 
 #endif // CUBICSERVER_RECIPES_SPECIAL_MAP_EXTENDING_HPP

@@ -6,15 +6,15 @@
 #include "Server.hpp"
 
 namespace Recipe {
-    class SpecialSuspiciousStew : public Recipe {
-    public:
-        SpecialSuspiciousStew(const nlohmann::json &recipe);
-        ~SpecialSuspiciousStew() = default;
+class SpecialSuspiciousStew : public Recipe {
+public:
+    SpecialSuspiciousStew(const nlohmann::json &recipe);
+    ~SpecialSuspiciousStew() = default;
 
-        void dump(void) const override;
+    void dump(void) const override;
 
-        static std::unique_ptr<Recipe> create(const nlohmann::json &recipe);
-    };
+    static std::unique_ptr<Recipe> create(const nlohmann::json &recipe);
+};
 };
 
 #endif // CUBICSERVER_RECIPES_SPECIAL_SUSPICIOUS_STEW_HPP

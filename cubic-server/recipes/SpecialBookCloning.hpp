@@ -6,15 +6,15 @@
 #include "Server.hpp"
 
 namespace Recipe {
-    class SpecialBookCloning : public Recipe {
-    public:
-        SpecialBookCloning(const nlohmann::json &recipe);
-        ~SpecialBookCloning() = default;
+class SpecialBookCloning : public Recipe {
+public:
+    SpecialBookCloning(const nlohmann::json &recipe);
+    ~SpecialBookCloning() = default;
 
-        void dump(void) const override;
+    void dump(void) const override;
 
-        static std::unique_ptr<Recipe> create(const nlohmann::json &recipe);
-    };
+    static std::unique_ptr<Recipe> create(const nlohmann::json &recipe);
+};
 };
 
 #endif // CUBICSERVER_RECIPES_SPECIAL_BOOK_CLONING_HPP

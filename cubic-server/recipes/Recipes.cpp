@@ -1,5 +1,5 @@
-#include <iostream>
 #include <fstream>
+#include <iostream>
 
 #include "logging/Logger.hpp"
 
@@ -29,77 +29,53 @@
 #include "SpecialTippedArrow.hpp"
 
 namespace Recipe {
-    Recipe::Recipe(const nlohmann::json &recipe):
-        _hasCategory(false),
-        _hasGroup(false),
-        _isValid(false)
-    {
-        this->setCategory(recipe);
-        this->setGroup(recipe);
-    }
+Recipe::Recipe(const nlohmann::json &recipe):
+    _hasCategory(false),
+    _hasGroup(false),
+    _isValid(false)
+{
+    this->setCategory(recipe);
+    this->setGroup(recipe);
+}
 
-    bool Recipe::hasCategory(void) const noexcept
-    {
-        return (this->_hasCategory);
-    }
+bool Recipe::hasCategory(void) const noexcept { return (this->_hasCategory); }
 
-    void Recipe::setCategory(const nlohmann::json &recipe)
-    {
-        if (recipe.contains("category") && recipe["category"].is_string()) {
-            this->_hasCategory = true;
-            this->_category = recipe["category"].get<std::string>();
-        } else {
-            this->_hasCategory = false;
-        }
+void Recipe::setCategory(const nlohmann::json &recipe)
+{
+    if (recipe.contains("category") && recipe["category"].is_string()) {
+        this->_hasCategory = true;
+        this->_category = recipe["category"].get<std::string>();
+    } else {
+        this->_hasCategory = false;
     }
+}
 
-    const std::string &Recipe::getCategory(void) const noexcept
-    {
-        return (this->_category);
-    }
+const std::string &Recipe::getCategory(void) const noexcept { return (this->_category); }
 
-    bool Recipe::hasGroup(void) const noexcept
-    {
-        return (this->_hasGroup);
-    }
+bool Recipe::hasGroup(void) const noexcept { return (this->_hasGroup); }
 
-    void Recipe::setGroup(const nlohmann::json &recipe)
-    {
-        if (recipe.contains("group") && recipe["group"].is_string()) {
-            this->_hasGroup = true;
-            this->_group = recipe["group"].get<std::string>();
-        } else {
-            this->_hasGroup = false;
-        }
+void Recipe::setGroup(const nlohmann::json &recipe)
+{
+    if (recipe.contains("group") && recipe["group"].is_string()) {
+        this->_hasGroup = true;
+        this->_group = recipe["group"].get<std::string>();
+    } else {
+        this->_hasGroup = false;
     }
+}
 
-    const std::string &Recipe::getGroup(void) const noexcept
-    {
-        return (this->_group);
-    }
+const std::string &Recipe::getGroup(void) const noexcept { return (this->_group); }
 
-    // debug purpose: writes the recipe content to the standard output
-    void Recipe::dump(void) const
-    {
-        LINFO("No data for this recipe.");
-    }
+// debug purpose: writes the recipe content to the standard output
+void Recipe::dump(void) const { LINFO("No data for this recipe."); }
 
-    bool Recipe::isValid(void) const noexcept
-    {
-        return (this->_isValid);
-    }
+bool Recipe::isValid(void) const noexcept { return (this->_isValid); }
 
-    // set the recipe validity, invalid recipes will be removed
-    void Recipe::setValidity(bool validity) noexcept
-    {
-        this->_isValid = validity;
-    }
+// set the recipe validity, invalid recipes will be removed
+void Recipe::setValidity(bool validity) noexcept { this->_isValid = validity; }
 };
 
-void Recipes::addRecipeCreator(const std::string &_namespace, const std::string &type, Recipe::Creator creator)
-{
-    this->_recipeCreators[_namespace][type] = creator;
-}
+void Recipes::addRecipeCreator(const std::string &_namespace, const std::string &type, Recipe::Creator creator) { this->_recipeCreators[_namespace][type] = creator; }
 
 void Recipes::loadFolder(const std::string &_namespace, const std::string &folder)
 {
@@ -116,20 +92,22 @@ void Recipes::loadFolder(const std::string &_namespace, const std::string &folde
             std::stringstream filecontent;
 
             filecontent << filestream.rdbuf();
-            
+
             nlohmann::json recipeContent = nlohmann::json::parse(filecontent.str());
 
             // if the json contains "type", proceeds to creating the recipe
             if (recipeContent.contains("type") && recipeContent["type"].is_string()) {
-                std::string recipeType = recipeContent["type"].get<std::string>();            // "minecraft:smelting" ->
+                std::string recipeType = recipeContent["type"].get<std::string>(); // "minecraft:smelting" ->
                 std::string recipeTypeNamespace = recipeType.substr(0, recipeType.find(':')); // "minecraft"
-                std::string recipeTypeType = recipeType.substr(recipeType.find(':') + 1);     // "smelting"
+                std::string recipeTypeType = recipeType.substr(recipeType.find(':') + 1); // "smelting"
 
                 // if no valid creator is found, throws the UnknownRecipeType exception
-                if (!this->_recipeCreators.contains(recipeTypeNamespace) || !this->_recipeCreators[recipeTypeNamespace].contains(recipeTypeType)) // checks if type creator exists for current recipe
-                    throw (UnknownRecipeType("No recipe creator found for recipe type " + recipeTypeNamespace + ":" + recipeTypeType));
+                if (!this->_recipeCreators.contains(recipeTypeNamespace) ||
+                    !this->_recipeCreators[recipeTypeNamespace].contains(recipeTypeType)) // checks if type creator exists for current recipe
+                    throw(UnknownRecipeType("No recipe creator found for recipe type " + recipeTypeNamespace + ":" + recipeTypeType));
                 // creates a recipe using the right recipe creator
-                this->_recipes[_namespace][filepath.path().string().substr(path_length + 1, filepath.path().string().length() - (path_length + 1) - 5)] = this->_recipeCreators[recipeTypeNamespace][recipeTypeType](recipeContent);
+                this->_recipes[_namespace][filepath.path().string().substr(path_length + 1, filepath.path().string().length() - (path_length + 1) - 5)] =
+                    this->_recipeCreators[recipeTypeNamespace][recipeTypeType](recipeContent);
                 // removes the recipe if it is not valid (call setValifity(true) to set as valid)
                 if (!this->_recipes[_namespace][filepath.path().string().substr(path_length + 1, filepath.path().string().length() - (path_length + 1) - 5)]->isValid())
                     this->_recipes[_namespace].erase(filepath.path().string().substr(path_length + 1, filepath.path().string().length() - (path_length + 1) - 5));

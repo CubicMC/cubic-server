@@ -6,15 +6,15 @@
 #include "Server.hpp"
 
 namespace Recipe {
-    class SpecialFireworkStarFade : public Recipe {
-    public:
-        SpecialFireworkStarFade(const nlohmann::json &recipe);
-        ~SpecialFireworkStarFade() = default;
+class SpecialFireworkStarFade : public Recipe {
+public:
+    SpecialFireworkStarFade(const nlohmann::json &recipe);
+    ~SpecialFireworkStarFade() = default;
 
-        void dump(void) const override;
+    void dump(void) const override;
 
-        static std::unique_ptr<Recipe> create(const nlohmann::json &recipe);
-    };
+    static std::unique_ptr<Recipe> create(const nlohmann::json &recipe);
+};
 };
 
 #endif // CUBICSERVER_RECIPES_SPECIAL_FIREWORK_STAR_FADE_HPP
