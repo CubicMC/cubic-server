@@ -11,6 +11,7 @@ bool generation::Generator::isCached2D(positionType x, positionType z) { return 
 
 generation::Generator::GenerationNoise generation::Generator::getNoise(positionType x, positionType y, positionType z, double frequency, uint8_t octaves)
 {
+    std::lock_guard<std::mutex> _(_noiseCacheMutex);
     if (isCached(x, y, z))
         return {_noiseCache[x][z].first, _noiseCache[x][z].second[y]};
 

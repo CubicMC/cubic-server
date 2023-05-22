@@ -2,6 +2,7 @@
 #define CUBICSERVER_GENERATION_GENERATOR_HPP
 
 #include <cstdint>
+#include <mutex>
 #include <unordered_map>
 
 #include <PerlinNoise.hpp>
@@ -59,6 +60,7 @@ protected:
                 GenerationNoise2D, std::unordered_map<positionType, GenerationNoise3D> // y
                 >>>
         _noiseCache;
+    std::mutex _noiseCacheMutex;
 };
 }
 
