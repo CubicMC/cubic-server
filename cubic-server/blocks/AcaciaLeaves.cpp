@@ -1,6 +1,4 @@
 #include "AcaciaLeaves.hpp"
-#include <stdexcept>
-
 namespace Blocks {
 namespace AcaciaLeaves {
 BlockId toProtocol(Properties::Distance distance, Properties::Persistent persistent, Properties::Waterlogged waterlogged)
@@ -14,6 +12,8 @@ BlockId toProtocol(Properties::Distance distance, Properties::Persistent persist
                 return 326;
             case Properties::Waterlogged::FALSE:
                 return 327;
+            default:
+                return 0;
             }
         case Properties::Persistent::FALSE:
             switch (waterlogged) {
@@ -21,7 +21,11 @@ BlockId toProtocol(Properties::Distance distance, Properties::Persistent persist
                 return 328;
             case Properties::Waterlogged::FALSE:
                 return 329;
+            default:
+                return 0;
             }
+        default:
+            return 0;
         }
     case Properties::Distance::TWO:
         switch (persistent) {
@@ -31,6 +35,8 @@ BlockId toProtocol(Properties::Distance distance, Properties::Persistent persist
                 return 330;
             case Properties::Waterlogged::FALSE:
                 return 331;
+            default:
+                return 0;
             }
         case Properties::Persistent::FALSE:
             switch (waterlogged) {
@@ -38,7 +44,11 @@ BlockId toProtocol(Properties::Distance distance, Properties::Persistent persist
                 return 332;
             case Properties::Waterlogged::FALSE:
                 return 333;
+            default:
+                return 0;
             }
+        default:
+            return 0;
         }
     case Properties::Distance::THREE:
         switch (persistent) {
@@ -48,6 +58,8 @@ BlockId toProtocol(Properties::Distance distance, Properties::Persistent persist
                 return 334;
             case Properties::Waterlogged::FALSE:
                 return 335;
+            default:
+                return 0;
             }
         case Properties::Persistent::FALSE:
             switch (waterlogged) {
@@ -55,7 +67,11 @@ BlockId toProtocol(Properties::Distance distance, Properties::Persistent persist
                 return 336;
             case Properties::Waterlogged::FALSE:
                 return 337;
+            default:
+                return 0;
             }
+        default:
+            return 0;
         }
     case Properties::Distance::FOUR:
         switch (persistent) {
@@ -65,6 +81,8 @@ BlockId toProtocol(Properties::Distance distance, Properties::Persistent persist
                 return 338;
             case Properties::Waterlogged::FALSE:
                 return 339;
+            default:
+                return 0;
             }
         case Properties::Persistent::FALSE:
             switch (waterlogged) {
@@ -72,7 +90,11 @@ BlockId toProtocol(Properties::Distance distance, Properties::Persistent persist
                 return 340;
             case Properties::Waterlogged::FALSE:
                 return 341;
+            default:
+                return 0;
             }
+        default:
+            return 0;
         }
     case Properties::Distance::FIVE:
         switch (persistent) {
@@ -82,6 +104,8 @@ BlockId toProtocol(Properties::Distance distance, Properties::Persistent persist
                 return 342;
             case Properties::Waterlogged::FALSE:
                 return 343;
+            default:
+                return 0;
             }
         case Properties::Persistent::FALSE:
             switch (waterlogged) {
@@ -89,7 +113,11 @@ BlockId toProtocol(Properties::Distance distance, Properties::Persistent persist
                 return 344;
             case Properties::Waterlogged::FALSE:
                 return 345;
+            default:
+                return 0;
             }
+        default:
+            return 0;
         }
     case Properties::Distance::SIX:
         switch (persistent) {
@@ -99,6 +127,8 @@ BlockId toProtocol(Properties::Distance distance, Properties::Persistent persist
                 return 346;
             case Properties::Waterlogged::FALSE:
                 return 347;
+            default:
+                return 0;
             }
         case Properties::Persistent::FALSE:
             switch (waterlogged) {
@@ -106,7 +136,11 @@ BlockId toProtocol(Properties::Distance distance, Properties::Persistent persist
                 return 348;
             case Properties::Waterlogged::FALSE:
                 return 349;
+            default:
+                return 0;
             }
+        default:
+            return 0;
         }
     case Properties::Distance::SEVEN:
         switch (persistent) {
@@ -116,6 +150,8 @@ BlockId toProtocol(Properties::Distance distance, Properties::Persistent persist
                 return 350;
             case Properties::Waterlogged::FALSE:
                 return 351;
+            default:
+                return 0;
             }
         case Properties::Persistent::FALSE:
             switch (waterlogged) {
@@ -123,8 +159,14 @@ BlockId toProtocol(Properties::Distance distance, Properties::Persistent persist
                 return 352;
             case Properties::Waterlogged::FALSE:
                 return 353;
+            default:
+                return 0;
             }
+        default:
+            return 0;
         }
+    default:
+        return 0;
     }
     return 0;
 }

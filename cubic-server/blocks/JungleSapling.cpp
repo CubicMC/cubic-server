@@ -1,6 +1,4 @@
 #include "JungleSapling.hpp"
-#include <stdexcept>
-
 namespace Blocks {
 namespace JungleSapling {
 BlockId toProtocol(Properties::Stage stage)
@@ -10,6 +8,8 @@ BlockId toProtocol(Properties::Stage stage)
         return 30;
     case Properties::Stage::ONE:
         return 31;
+    default:
+        return 0;
     }
     return 0;
 }

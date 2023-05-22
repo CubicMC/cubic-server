@@ -1,6 +1,4 @@
 #include "BeeNest.hpp"
-#include <stdexcept>
-
 namespace Blocks {
 namespace BeeNest {
 BlockId toProtocol(Properties::Facing facing, Properties::Honey_level honey_level)
@@ -20,6 +18,8 @@ BlockId toProtocol(Properties::Facing facing, Properties::Honey_level honey_leve
             return 18773;
         case Properties::Honey_level::FIVE:
             return 18774;
+        default:
+            return 0;
         }
     case Properties::Facing::SOUTH:
         switch (honey_level) {
@@ -35,6 +35,8 @@ BlockId toProtocol(Properties::Facing facing, Properties::Honey_level honey_leve
             return 18779;
         case Properties::Honey_level::FIVE:
             return 18780;
+        default:
+            return 0;
         }
     case Properties::Facing::WEST:
         switch (honey_level) {
@@ -50,6 +52,8 @@ BlockId toProtocol(Properties::Facing facing, Properties::Honey_level honey_leve
             return 18785;
         case Properties::Honey_level::FIVE:
             return 18786;
+        default:
+            return 0;
         }
     case Properties::Facing::EAST:
         switch (honey_level) {
@@ -65,7 +69,11 @@ BlockId toProtocol(Properties::Facing facing, Properties::Honey_level honey_leve
             return 18791;
         case Properties::Honey_level::FIVE:
             return 18792;
+        default:
+            return 0;
         }
+    default:
+        return 0;
     }
     return 0;
 }

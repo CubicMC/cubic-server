@@ -3,13 +3,12 @@
 #include <string>
 #include <unistd.h>
 
-
 #include "Client.hpp"
 #include "nbt.hpp"
 
+#include "Dimension.hpp"
 #include "Player.hpp"
 #include "Server.hpp"
-#include "Dimension.hpp"
 #include "World.hpp"
 #include "WorldGroup.hpp"
 #include "chat/ChatRegistry.hpp"
@@ -51,7 +50,6 @@ Client::~Client()
         return;
     this->_player->_dim->removeEntity(_player->_id);
     this->_player->_dim->removePlayer(_player->_id);
-    this->_player->_cli = nullptr;
 }
 
 void Client::networkLoop()
@@ -79,7 +77,11 @@ void Client::networkLoop()
             }
         }
         if (pollSet[0].revents & POLLOUT) {
-            _flushSendData();
+            try {
+                _flushSendData();
+            } catch (const std::runtime_error &) {
+                _isRunning = false;
+            }
         }
     }
     _isRunning = false;
@@ -90,30 +92,32 @@ bool Client::isDisconnected() const { return !_isRunning; }
 void Client::_sendData(const std::vector<uint8_t> &data)
 {
     // This is extremely inefficient but it will do for now
-    _writeMutex.lock();
-    for (const auto i : data)
-        _sendBuffer.push_back(i);
-    _writeMutex.unlock();
+    std::lock_guard<std::mutex> _(_writeMutex);
+    for (const auto &i : data)
+        _sendBuffer.emplace_back(i);
 }
 
 void Client::_flushSendData()
 {
-    _writeMutex.lock();
+    std::lock_guard<std::mutex> _(_writeMutex);
     char sendBuffer[2048];
     size_t toSend = std::min(_sendBuffer.size(), (size_t) 2048);
     std::copy(_sendBuffer.begin(), _sendBuffer.begin() + toSend, sendBuffer);
 
     ssize_t writeReturn = write(_sockfd, sendBuffer, toSend);
-    if (writeReturn == -1)
-        LERROR("Write error", strerror(errno));
+    if (writeReturn == -1) {
+        LERROR("Write error: ", strerror(errno));
+    }
 
     if (writeReturn <= 0) {
         _writeMutex.unlock();
-        return;
+        LDEBUG("error: ", writeReturn, " -> ", strerror(errno));
+        if (errno == EAGAIN)
+            return;
+        throw std::runtime_error("Pipe error");
     }
 
     _sendBuffer.erase(_sendBuffer.begin(), _sendBuffer.begin() + writeReturn);
-    _writeMutex.unlock();
 }
 
 void Client::_tryFlushAllSendData()
@@ -122,13 +126,17 @@ void Client::_tryFlushAllSendData()
     pollSet[0].fd = _sockfd;
     pollSet[0].events = POLLOUT;
 
-    while (!_sendBuffer.empty()) {
-        if (poll(pollSet, 1, 0) == -1)
-            return;
-        if (pollSet[0].revents & POLLOUT)
-            _flushSendData();
-        else
-            return;
+    try {
+        while (!_sendBuffer.empty()) {
+            if (poll(pollSet, 1, 0) == -1)
+                return;
+            if (pollSet[0].revents & POLLOUT)
+                _flushSendData();
+            else
+                return;
+        }
+    } catch (const std::runtime_error &) {
+        return;
     }
 }
 
@@ -137,7 +145,7 @@ void Client::switchToPlayState(u128 playerUuid, const std::string &username)
     this->setStatus(protocol::ClientStatus::Play);
     LDEBUG("Switched to play state");
     // TODO: get the player dimension from the world by his uuid
-    this->_player = std::make_shared<Player>(this, Server::getInstance()->getWorldGroup("default")->getWorld("default")->getDimension("overworld"), playerUuid, username);
+    this->_player = std::make_shared<Player>(weak_from_this(), Server::getInstance()->getWorldGroup("default")->getWorld("default")->getDimension("overworld"), playerUuid, username);
     LDEBUG("Created player");
 }
 
@@ -286,7 +294,7 @@ void Client::_handlePacket()
         try {
             packet = parser(toParse);
         } catch (std::runtime_error &error) {
-            LERROR("Error during packet ", (int32_t)packetId, " parsing : ");
+            LERROR("Error during packet ", (int32_t) packetId, " parsing : ");
             LERROR(error.what());
             return;
         }

@@ -1,6 +1,4 @@
 #include "Stonecutter.hpp"
-#include <stdexcept>
-
 namespace Blocks {
 namespace Stonecutter {
 BlockId toProtocol(Properties::Facing facing)
@@ -14,6 +12,8 @@ BlockId toProtocol(Properties::Facing facing)
         return 17841;
     case Properties::Facing::EAST:
         return 17842;
+    default:
+        return 0;
     }
     return 0;
 }

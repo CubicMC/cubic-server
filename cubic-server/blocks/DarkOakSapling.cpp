@@ -1,6 +1,4 @@
 #include "DarkOakSapling.hpp"
-#include <stdexcept>
-
 namespace Blocks {
 namespace DarkOakSapling {
 BlockId toProtocol(Properties::Stage stage)
@@ -10,6 +8,8 @@ BlockId toProtocol(Properties::Stage stage)
         return 34;
     case Properties::Stage::ONE:
         return 35;
+    default:
+        return 0;
     }
     return 0;
 }

@@ -1,6 +1,4 @@
 #include "RedstoneWallTorch.hpp"
-#include <stdexcept>
-
 namespace Blocks {
 namespace RedstoneWallTorch {
 BlockId toProtocol(Properties::Facing facing, Properties::Lit lit)
@@ -12,6 +10,8 @@ BlockId toProtocol(Properties::Facing facing, Properties::Lit lit)
             return 5574;
         case Properties::Lit::FALSE:
             return 5575;
+        default:
+            return 0;
         }
     case Properties::Facing::SOUTH:
         switch (lit) {
@@ -19,6 +19,8 @@ BlockId toProtocol(Properties::Facing facing, Properties::Lit lit)
             return 5576;
         case Properties::Lit::FALSE:
             return 5577;
+        default:
+            return 0;
         }
     case Properties::Facing::WEST:
         switch (lit) {
@@ -26,6 +28,8 @@ BlockId toProtocol(Properties::Facing facing, Properties::Lit lit)
             return 5578;
         case Properties::Lit::FALSE:
             return 5579;
+        default:
+            return 0;
         }
     case Properties::Facing::EAST:
         switch (lit) {
@@ -33,7 +37,11 @@ BlockId toProtocol(Properties::Facing facing, Properties::Lit lit)
             return 5580;
         case Properties::Lit::FALSE:
             return 5581;
+        default:
+            return 0;
         }
+    default:
+        return 0;
     }
     return 0;
 }

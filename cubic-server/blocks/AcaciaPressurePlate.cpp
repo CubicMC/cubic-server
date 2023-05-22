@@ -1,6 +1,4 @@
 #include "AcaciaPressurePlate.hpp"
-#include <stdexcept>
-
 namespace Blocks {
 namespace AcaciaPressurePlate {
 BlockId toProtocol(Properties::Powered powered)
@@ -10,6 +8,8 @@ BlockId toProtocol(Properties::Powered powered)
         return 5560;
     case Properties::Powered::FALSE:
         return 5561;
+    default:
+        return 0;
     }
     return 0;
 }

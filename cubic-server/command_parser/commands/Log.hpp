@@ -9,6 +9,7 @@ struct Log : public CommandBase {
         CommandBase("log", "/log <on|off> (type)", false)
     {
     }
+    ~Log() override = default;
 
     void autocomplete(std::vector<std::string> &args, Player *invoker) const override;
     void execute(std::vector<std::string> &args, Player *invoker) const override;

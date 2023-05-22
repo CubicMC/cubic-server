@@ -1,6 +1,4 @@
 #include "IronDoor.hpp"
-#include <stdexcept>
-
 namespace Blocks {
 namespace IronDoor {
 BlockId toProtocol(Properties::Facing facing, Properties::Half half, Properties::Hinge hinge, Properties::Open open, Properties::Powered powered)
@@ -18,6 +16,8 @@ BlockId toProtocol(Properties::Facing facing, Properties::Half half, Properties:
                         return 5488;
                     case Properties::Powered::FALSE:
                         return 5489;
+                    default:
+                        return 0;
                     }
                 case Properties::Open::FALSE:
                     switch (powered) {
@@ -25,7 +25,11 @@ BlockId toProtocol(Properties::Facing facing, Properties::Half half, Properties:
                         return 5490;
                     case Properties::Powered::FALSE:
                         return 5491;
+                    default:
+                        return 0;
                     }
+                default:
+                    return 0;
                 }
             case Properties::Hinge::RIGHT:
                 switch (open) {
@@ -35,6 +39,8 @@ BlockId toProtocol(Properties::Facing facing, Properties::Half half, Properties:
                         return 5492;
                     case Properties::Powered::FALSE:
                         return 5493;
+                    default:
+                        return 0;
                     }
                 case Properties::Open::FALSE:
                     switch (powered) {
@@ -42,8 +48,14 @@ BlockId toProtocol(Properties::Facing facing, Properties::Half half, Properties:
                         return 5494;
                     case Properties::Powered::FALSE:
                         return 5495;
+                    default:
+                        return 0;
                     }
+                default:
+                    return 0;
                 }
+            default:
+                return 0;
             }
         case Properties::Half::LOWER:
             switch (hinge) {
@@ -55,6 +67,8 @@ BlockId toProtocol(Properties::Facing facing, Properties::Half half, Properties:
                         return 5496;
                     case Properties::Powered::FALSE:
                         return 5497;
+                    default:
+                        return 0;
                     }
                 case Properties::Open::FALSE:
                     switch (powered) {
@@ -62,7 +76,11 @@ BlockId toProtocol(Properties::Facing facing, Properties::Half half, Properties:
                         return 5498;
                     case Properties::Powered::FALSE:
                         return 5499;
+                    default:
+                        return 0;
                     }
+                default:
+                    return 0;
                 }
             case Properties::Hinge::RIGHT:
                 switch (open) {
@@ -72,6 +90,8 @@ BlockId toProtocol(Properties::Facing facing, Properties::Half half, Properties:
                         return 5500;
                     case Properties::Powered::FALSE:
                         return 5501;
+                    default:
+                        return 0;
                     }
                 case Properties::Open::FALSE:
                     switch (powered) {
@@ -79,9 +99,17 @@ BlockId toProtocol(Properties::Facing facing, Properties::Half half, Properties:
                         return 5502;
                     case Properties::Powered::FALSE:
                         return 5503;
+                    default:
+                        return 0;
                     }
+                default:
+                    return 0;
                 }
+            default:
+                return 0;
             }
+        default:
+            return 0;
         }
     case Properties::Facing::SOUTH:
         switch (half) {
@@ -95,6 +123,8 @@ BlockId toProtocol(Properties::Facing facing, Properties::Half half, Properties:
                         return 5504;
                     case Properties::Powered::FALSE:
                         return 5505;
+                    default:
+                        return 0;
                     }
                 case Properties::Open::FALSE:
                     switch (powered) {
@@ -102,7 +132,11 @@ BlockId toProtocol(Properties::Facing facing, Properties::Half half, Properties:
                         return 5506;
                     case Properties::Powered::FALSE:
                         return 5507;
+                    default:
+                        return 0;
                     }
+                default:
+                    return 0;
                 }
             case Properties::Hinge::RIGHT:
                 switch (open) {
@@ -112,6 +146,8 @@ BlockId toProtocol(Properties::Facing facing, Properties::Half half, Properties:
                         return 5508;
                     case Properties::Powered::FALSE:
                         return 5509;
+                    default:
+                        return 0;
                     }
                 case Properties::Open::FALSE:
                     switch (powered) {
@@ -119,8 +155,14 @@ BlockId toProtocol(Properties::Facing facing, Properties::Half half, Properties:
                         return 5510;
                     case Properties::Powered::FALSE:
                         return 5511;
+                    default:
+                        return 0;
                     }
+                default:
+                    return 0;
                 }
+            default:
+                return 0;
             }
         case Properties::Half::LOWER:
             switch (hinge) {
@@ -132,6 +174,8 @@ BlockId toProtocol(Properties::Facing facing, Properties::Half half, Properties:
                         return 5512;
                     case Properties::Powered::FALSE:
                         return 5513;
+                    default:
+                        return 0;
                     }
                 case Properties::Open::FALSE:
                     switch (powered) {
@@ -139,7 +183,11 @@ BlockId toProtocol(Properties::Facing facing, Properties::Half half, Properties:
                         return 5514;
                     case Properties::Powered::FALSE:
                         return 5515;
+                    default:
+                        return 0;
                     }
+                default:
+                    return 0;
                 }
             case Properties::Hinge::RIGHT:
                 switch (open) {
@@ -149,6 +197,8 @@ BlockId toProtocol(Properties::Facing facing, Properties::Half half, Properties:
                         return 5516;
                     case Properties::Powered::FALSE:
                         return 5517;
+                    default:
+                        return 0;
                     }
                 case Properties::Open::FALSE:
                     switch (powered) {
@@ -156,9 +206,17 @@ BlockId toProtocol(Properties::Facing facing, Properties::Half half, Properties:
                         return 5518;
                     case Properties::Powered::FALSE:
                         return 5519;
+                    default:
+                        return 0;
                     }
+                default:
+                    return 0;
                 }
+            default:
+                return 0;
             }
+        default:
+            return 0;
         }
     case Properties::Facing::WEST:
         switch (half) {
@@ -172,6 +230,8 @@ BlockId toProtocol(Properties::Facing facing, Properties::Half half, Properties:
                         return 5520;
                     case Properties::Powered::FALSE:
                         return 5521;
+                    default:
+                        return 0;
                     }
                 case Properties::Open::FALSE:
                     switch (powered) {
@@ -179,7 +239,11 @@ BlockId toProtocol(Properties::Facing facing, Properties::Half half, Properties:
                         return 5522;
                     case Properties::Powered::FALSE:
                         return 5523;
+                    default:
+                        return 0;
                     }
+                default:
+                    return 0;
                 }
             case Properties::Hinge::RIGHT:
                 switch (open) {
@@ -189,6 +253,8 @@ BlockId toProtocol(Properties::Facing facing, Properties::Half half, Properties:
                         return 5524;
                     case Properties::Powered::FALSE:
                         return 5525;
+                    default:
+                        return 0;
                     }
                 case Properties::Open::FALSE:
                     switch (powered) {
@@ -196,8 +262,14 @@ BlockId toProtocol(Properties::Facing facing, Properties::Half half, Properties:
                         return 5526;
                     case Properties::Powered::FALSE:
                         return 5527;
+                    default:
+                        return 0;
                     }
+                default:
+                    return 0;
                 }
+            default:
+                return 0;
             }
         case Properties::Half::LOWER:
             switch (hinge) {
@@ -209,6 +281,8 @@ BlockId toProtocol(Properties::Facing facing, Properties::Half half, Properties:
                         return 5528;
                     case Properties::Powered::FALSE:
                         return 5529;
+                    default:
+                        return 0;
                     }
                 case Properties::Open::FALSE:
                     switch (powered) {
@@ -216,7 +290,11 @@ BlockId toProtocol(Properties::Facing facing, Properties::Half half, Properties:
                         return 5530;
                     case Properties::Powered::FALSE:
                         return 5531;
+                    default:
+                        return 0;
                     }
+                default:
+                    return 0;
                 }
             case Properties::Hinge::RIGHT:
                 switch (open) {
@@ -226,6 +304,8 @@ BlockId toProtocol(Properties::Facing facing, Properties::Half half, Properties:
                         return 5532;
                     case Properties::Powered::FALSE:
                         return 5533;
+                    default:
+                        return 0;
                     }
                 case Properties::Open::FALSE:
                     switch (powered) {
@@ -233,9 +313,17 @@ BlockId toProtocol(Properties::Facing facing, Properties::Half half, Properties:
                         return 5534;
                     case Properties::Powered::FALSE:
                         return 5535;
+                    default:
+                        return 0;
                     }
+                default:
+                    return 0;
                 }
+            default:
+                return 0;
             }
+        default:
+            return 0;
         }
     case Properties::Facing::EAST:
         switch (half) {
@@ -249,6 +337,8 @@ BlockId toProtocol(Properties::Facing facing, Properties::Half half, Properties:
                         return 5536;
                     case Properties::Powered::FALSE:
                         return 5537;
+                    default:
+                        return 0;
                     }
                 case Properties::Open::FALSE:
                     switch (powered) {
@@ -256,7 +346,11 @@ BlockId toProtocol(Properties::Facing facing, Properties::Half half, Properties:
                         return 5538;
                     case Properties::Powered::FALSE:
                         return 5539;
+                    default:
+                        return 0;
                     }
+                default:
+                    return 0;
                 }
             case Properties::Hinge::RIGHT:
                 switch (open) {
@@ -266,6 +360,8 @@ BlockId toProtocol(Properties::Facing facing, Properties::Half half, Properties:
                         return 5540;
                     case Properties::Powered::FALSE:
                         return 5541;
+                    default:
+                        return 0;
                     }
                 case Properties::Open::FALSE:
                     switch (powered) {
@@ -273,8 +369,14 @@ BlockId toProtocol(Properties::Facing facing, Properties::Half half, Properties:
                         return 5542;
                     case Properties::Powered::FALSE:
                         return 5543;
+                    default:
+                        return 0;
                     }
+                default:
+                    return 0;
                 }
+            default:
+                return 0;
             }
         case Properties::Half::LOWER:
             switch (hinge) {
@@ -286,6 +388,8 @@ BlockId toProtocol(Properties::Facing facing, Properties::Half half, Properties:
                         return 5544;
                     case Properties::Powered::FALSE:
                         return 5545;
+                    default:
+                        return 0;
                     }
                 case Properties::Open::FALSE:
                     switch (powered) {
@@ -293,7 +397,11 @@ BlockId toProtocol(Properties::Facing facing, Properties::Half half, Properties:
                         return 5546;
                     case Properties::Powered::FALSE:
                         return 5547;
+                    default:
+                        return 0;
                     }
+                default:
+                    return 0;
                 }
             case Properties::Hinge::RIGHT:
                 switch (open) {
@@ -303,6 +411,8 @@ BlockId toProtocol(Properties::Facing facing, Properties::Half half, Properties:
                         return 5548;
                     case Properties::Powered::FALSE:
                         return 5549;
+                    default:
+                        return 0;
                     }
                 case Properties::Open::FALSE:
                     switch (powered) {
@@ -310,10 +420,20 @@ BlockId toProtocol(Properties::Facing facing, Properties::Half half, Properties:
                         return 5550;
                     case Properties::Powered::FALSE:
                         return 5551;
+                    default:
+                        return 0;
                     }
+                default:
+                    return 0;
                 }
+            default:
+                return 0;
             }
+        default:
+            return 0;
         }
+    default:
+        return 0;
     }
     return 0;
 }

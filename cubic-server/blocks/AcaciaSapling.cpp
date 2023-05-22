@@ -1,6 +1,4 @@
 #include "AcaciaSapling.hpp"
-#include <stdexcept>
-
 namespace Blocks {
 namespace AcaciaSapling {
 BlockId toProtocol(Properties::Stage stage)
@@ -10,6 +8,8 @@ BlockId toProtocol(Properties::Stage stage)
         return 32;
     case Properties::Stage::ONE:
         return 33;
+    default:
+        return 0;
     }
     return 0;
 }

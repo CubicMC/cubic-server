@@ -1,6 +1,4 @@
 #include "OakPressurePlate.hpp"
-#include <stdexcept>
-
 namespace Blocks {
 namespace OakPressurePlate {
 BlockId toProtocol(Properties::Powered powered)
@@ -10,6 +8,8 @@ BlockId toProtocol(Properties::Powered powered)
         return 5552;
     case Properties::Powered::FALSE:
         return 5553;
+    default:
+        return 0;
     }
     return 0;
 }

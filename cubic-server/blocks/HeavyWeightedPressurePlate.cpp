@@ -1,6 +1,4 @@
 #include "HeavyWeightedPressurePlate.hpp"
-#include <stdexcept>
-
 namespace Blocks {
 namespace HeavyWeightedPressurePlate {
 BlockId toProtocol(Properties::Power power)
@@ -38,6 +36,8 @@ BlockId toProtocol(Properties::Power power)
         return 8777;
     case Properties::Power::FIFTEEN:
         return 8778;
+    default:
+        return 0;
     }
     return 0;
 }

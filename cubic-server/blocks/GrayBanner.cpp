@@ -1,6 +1,4 @@
 #include "GrayBanner.hpp"
-#include <stdexcept>
-
 namespace Blocks {
 namespace GrayBanner {
 BlockId toProtocol(Properties::Rotation rotation)
@@ -38,6 +36,8 @@ BlockId toProtocol(Properties::Rotation rotation)
         return 10408;
     case Properties::Rotation::FIFTEEN:
         return 10409;
+    default:
+        return 0;
     }
     return 0;
 }

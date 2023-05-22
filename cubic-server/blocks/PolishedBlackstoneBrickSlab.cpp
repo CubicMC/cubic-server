@@ -1,6 +1,4 @@
 #include "PolishedBlackstoneBrickSlab.hpp"
-#include <stdexcept>
-
 namespace Blocks {
 namespace PolishedBlackstoneBrickSlab {
 BlockId toProtocol(Properties::Type type, Properties::Waterlogged waterlogged)
@@ -12,6 +10,8 @@ BlockId toProtocol(Properties::Type type, Properties::Waterlogged waterlogged)
             return 19247;
         case Properties::Waterlogged::FALSE:
             return 19248;
+        default:
+            return 0;
         }
     case Properties::Type::BOTTOM:
         switch (waterlogged) {
@@ -19,6 +19,8 @@ BlockId toProtocol(Properties::Type type, Properties::Waterlogged waterlogged)
             return 19249;
         case Properties::Waterlogged::FALSE:
             return 19250;
+        default:
+            return 0;
         }
     case Properties::Type::DOUBLE:
         switch (waterlogged) {
@@ -26,7 +28,11 @@ BlockId toProtocol(Properties::Type type, Properties::Waterlogged waterlogged)
             return 19251;
         case Properties::Waterlogged::FALSE:
             return 19252;
+        default:
+            return 0;
         }
+    default:
+        return 0;
     }
     return 0;
 }

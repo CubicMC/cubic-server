@@ -1,6 +1,4 @@
 #include "VerdantFroglight.hpp"
-#include <stdexcept>
-
 namespace Blocks {
 namespace VerdantFroglight {
 BlockId toProtocol(Properties::Axis axis)
@@ -12,6 +10,8 @@ BlockId toProtocol(Properties::Axis axis)
         return 23225;
     case Properties::Axis::Z:
         return 23226;
+    default:
+        return 0;
     }
     return 0;
 }

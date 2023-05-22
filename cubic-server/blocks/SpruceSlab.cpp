@@ -1,6 +1,4 @@
 #include "SpruceSlab.hpp"
-#include <stdexcept>
-
 namespace Blocks {
 namespace SpruceSlab {
 BlockId toProtocol(Properties::Type type, Properties::Waterlogged waterlogged)
@@ -12,6 +10,8 @@ BlockId toProtocol(Properties::Type type, Properties::Waterlogged waterlogged)
             return 10691;
         case Properties::Waterlogged::FALSE:
             return 10692;
+        default:
+            return 0;
         }
     case Properties::Type::BOTTOM:
         switch (waterlogged) {
@@ -19,6 +19,8 @@ BlockId toProtocol(Properties::Type type, Properties::Waterlogged waterlogged)
             return 10693;
         case Properties::Waterlogged::FALSE:
             return 10694;
+        default:
+            return 0;
         }
     case Properties::Type::DOUBLE:
         switch (waterlogged) {
@@ -26,7 +28,11 @@ BlockId toProtocol(Properties::Type type, Properties::Waterlogged waterlogged)
             return 10695;
         case Properties::Waterlogged::FALSE:
             return 10696;
+        default:
+            return 0;
         }
+    default:
+        return 0;
     }
     return 0;
 }

@@ -1,6 +1,4 @@
 #include "Furnace.hpp"
-#include <stdexcept>
-
 namespace Blocks {
 namespace Furnace {
 BlockId toProtocol(Properties::Facing facing, Properties::Lit lit)
@@ -12,6 +10,8 @@ BlockId toProtocol(Properties::Facing facing, Properties::Lit lit)
             return 4242;
         case Properties::Lit::FALSE:
             return 4243;
+        default:
+            return 0;
         }
     case Properties::Facing::SOUTH:
         switch (lit) {
@@ -19,6 +19,8 @@ BlockId toProtocol(Properties::Facing facing, Properties::Lit lit)
             return 4244;
         case Properties::Lit::FALSE:
             return 4245;
+        default:
+            return 0;
         }
     case Properties::Facing::WEST:
         switch (lit) {
@@ -26,6 +28,8 @@ BlockId toProtocol(Properties::Facing facing, Properties::Lit lit)
             return 4246;
         case Properties::Lit::FALSE:
             return 4247;
+        default:
+            return 0;
         }
     case Properties::Facing::EAST:
         switch (lit) {
@@ -33,7 +37,11 @@ BlockId toProtocol(Properties::Facing facing, Properties::Lit lit)
             return 4248;
         case Properties::Lit::FALSE:
             return 4249;
+        default:
+            return 0;
         }
+    default:
+        return 0;
     }
     return 0;
 }

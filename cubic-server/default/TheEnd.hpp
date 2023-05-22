@@ -9,6 +9,8 @@ public:
         Dimension(world, world_storage::DimensionType::END)
     {
     }
+    ~TheEnd() override = default;
+
     void tick() override;
     void initialize() override;
 };

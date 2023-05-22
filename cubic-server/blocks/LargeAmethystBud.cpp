@@ -1,6 +1,4 @@
 #include "LargeAmethystBud.hpp"
-#include <stdexcept>
-
 namespace Blocks {
 namespace LargeAmethystBud {
 BlockId toProtocol(Properties::Facing facing, Properties::Waterlogged waterlogged)
@@ -12,6 +10,8 @@ BlockId toProtocol(Properties::Facing facing, Properties::Waterlogged waterlogge
             return 20417;
         case Properties::Waterlogged::FALSE:
             return 20418;
+        default:
+            return 0;
         }
     case Properties::Facing::EAST:
         switch (waterlogged) {
@@ -19,6 +19,8 @@ BlockId toProtocol(Properties::Facing facing, Properties::Waterlogged waterlogge
             return 20419;
         case Properties::Waterlogged::FALSE:
             return 20420;
+        default:
+            return 0;
         }
     case Properties::Facing::SOUTH:
         switch (waterlogged) {
@@ -26,6 +28,8 @@ BlockId toProtocol(Properties::Facing facing, Properties::Waterlogged waterlogge
             return 20421;
         case Properties::Waterlogged::FALSE:
             return 20422;
+        default:
+            return 0;
         }
     case Properties::Facing::WEST:
         switch (waterlogged) {
@@ -33,6 +37,8 @@ BlockId toProtocol(Properties::Facing facing, Properties::Waterlogged waterlogge
             return 20423;
         case Properties::Waterlogged::FALSE:
             return 20424;
+        default:
+            return 0;
         }
     case Properties::Facing::UP:
         switch (waterlogged) {
@@ -40,6 +46,8 @@ BlockId toProtocol(Properties::Facing facing, Properties::Waterlogged waterlogge
             return 20425;
         case Properties::Waterlogged::FALSE:
             return 20426;
+        default:
+            return 0;
         }
     case Properties::Facing::DOWN:
         switch (waterlogged) {
@@ -47,7 +55,11 @@ BlockId toProtocol(Properties::Facing facing, Properties::Waterlogged waterlogge
             return 20427;
         case Properties::Waterlogged::FALSE:
             return 20428;
+        default:
+            return 0;
         }
+    default:
+        return 0;
     }
     return 0;
 }

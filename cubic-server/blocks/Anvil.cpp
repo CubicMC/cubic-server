@@ -1,6 +1,4 @@
 #include "Anvil.hpp"
-#include <stdexcept>
-
 namespace Blocks {
 namespace Anvil {
 BlockId toProtocol(Properties::Facing facing)
@@ -14,6 +12,8 @@ BlockId toProtocol(Properties::Facing facing)
         return 8713;
     case Properties::Facing::EAST:
         return 8714;
+    default:
+        return 0;
     }
     return 0;
 }

@@ -1,6 +1,4 @@
 #include "Candle.hpp"
-#include <stdexcept>
-
 namespace Blocks {
 namespace Candle {
 BlockId toProtocol(Properties::Candles candles, Properties::Lit lit, Properties::Waterlogged waterlogged)
@@ -14,6 +12,8 @@ BlockId toProtocol(Properties::Candles candles, Properties::Lit lit, Properties:
                 return 20097;
             case Properties::Waterlogged::FALSE:
                 return 20098;
+            default:
+                return 0;
             }
         case Properties::Lit::FALSE:
             switch (waterlogged) {
@@ -21,7 +21,11 @@ BlockId toProtocol(Properties::Candles candles, Properties::Lit lit, Properties:
                 return 20099;
             case Properties::Waterlogged::FALSE:
                 return 20100;
+            default:
+                return 0;
             }
+        default:
+            return 0;
         }
     case Properties::Candles::TWO:
         switch (lit) {
@@ -31,6 +35,8 @@ BlockId toProtocol(Properties::Candles candles, Properties::Lit lit, Properties:
                 return 20101;
             case Properties::Waterlogged::FALSE:
                 return 20102;
+            default:
+                return 0;
             }
         case Properties::Lit::FALSE:
             switch (waterlogged) {
@@ -38,7 +44,11 @@ BlockId toProtocol(Properties::Candles candles, Properties::Lit lit, Properties:
                 return 20103;
             case Properties::Waterlogged::FALSE:
                 return 20104;
+            default:
+                return 0;
             }
+        default:
+            return 0;
         }
     case Properties::Candles::THREE:
         switch (lit) {
@@ -48,6 +58,8 @@ BlockId toProtocol(Properties::Candles candles, Properties::Lit lit, Properties:
                 return 20105;
             case Properties::Waterlogged::FALSE:
                 return 20106;
+            default:
+                return 0;
             }
         case Properties::Lit::FALSE:
             switch (waterlogged) {
@@ -55,7 +67,11 @@ BlockId toProtocol(Properties::Candles candles, Properties::Lit lit, Properties:
                 return 20107;
             case Properties::Waterlogged::FALSE:
                 return 20108;
+            default:
+                return 0;
             }
+        default:
+            return 0;
         }
     case Properties::Candles::FOUR:
         switch (lit) {
@@ -65,6 +81,8 @@ BlockId toProtocol(Properties::Candles candles, Properties::Lit lit, Properties:
                 return 20109;
             case Properties::Waterlogged::FALSE:
                 return 20110;
+            default:
+                return 0;
             }
         case Properties::Lit::FALSE:
             switch (waterlogged) {
@@ -72,8 +90,14 @@ BlockId toProtocol(Properties::Candles candles, Properties::Lit lit, Properties:
                 return 20111;
             case Properties::Waterlogged::FALSE:
                 return 20112;
+            default:
+                return 0;
             }
+        default:
+            return 0;
         }
+    default:
+        return 0;
     }
     return 0;
 }

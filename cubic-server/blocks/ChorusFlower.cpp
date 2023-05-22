@@ -1,6 +1,4 @@
 #include "ChorusFlower.hpp"
-#include <stdexcept>
-
 namespace Blocks {
 namespace ChorusFlower {
 BlockId toProtocol(Properties::Age age)
@@ -18,6 +16,8 @@ BlockId toProtocol(Properties::Age age)
         return 11797;
     case Properties::Age::FIVE:
         return 11798;
+    default:
+        return 0;
     }
     return 0;
 }

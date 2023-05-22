@@ -1,6 +1,4 @@
 #include "LimeWallBanner.hpp"
-#include <stdexcept>
-
 namespace Blocks {
 namespace LimeWallBanner {
 BlockId toProtocol(Properties::Facing facing)
@@ -14,6 +12,8 @@ BlockId toProtocol(Properties::Facing facing)
         return 10560;
     case Properties::Facing::EAST:
         return 10561;
+    default:
+        return 0;
     }
     return 0;
 }

@@ -1,6 +1,4 @@
 #include "MangroveWood.hpp"
-#include <stdexcept>
-
 namespace Blocks {
 namespace MangroveWood {
 BlockId toProtocol(Properties::Axis axis)
@@ -12,6 +10,8 @@ BlockId toProtocol(Properties::Axis axis)
         return 191;
     case Properties::Axis::Z:
         return 192;
+    default:
+        return 0;
     }
     return 0;
 }

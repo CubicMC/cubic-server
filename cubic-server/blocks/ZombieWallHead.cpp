@@ -1,6 +1,4 @@
 #include "ZombieWallHead.hpp"
-#include <stdexcept>
-
 namespace Blocks {
 namespace ZombieWallHead {
 BlockId toProtocol(Properties::Facing facing)
@@ -14,6 +12,8 @@ BlockId toProtocol(Properties::Facing facing)
         return 8629;
     case Properties::Facing::EAST:
         return 8630;
+    default:
+        return 0;
     }
     return 0;
 }

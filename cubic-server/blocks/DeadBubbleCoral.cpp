@@ -1,6 +1,4 @@
 #include "DeadBubbleCoral.hpp"
-#include <stdexcept>
-
 namespace Blocks {
 namespace DeadBubbleCoral {
 BlockId toProtocol(Properties::Waterlogged waterlogged)
@@ -10,6 +8,8 @@ BlockId toProtocol(Properties::Waterlogged waterlogged)
         return 12189;
     case Properties::Waterlogged::FALSE:
         return 12190;
+    default:
+        return 0;
     }
     return 0;
 }

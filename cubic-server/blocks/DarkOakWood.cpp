@@ -1,6 +1,4 @@
 #include "DarkOakWood.hpp"
-#include <stdexcept>
-
 namespace Blocks {
 namespace DarkOakWood {
 BlockId toProtocol(Properties::Axis axis)
@@ -12,6 +10,8 @@ BlockId toProtocol(Properties::Axis axis)
         return 188;
     case Properties::Axis::Z:
         return 189;
+    default:
+        return 0;
     }
     return 0;
 }

@@ -1,6 +1,4 @@
 #include "StrippedSpruceLog.hpp"
-#include <stdexcept>
-
 namespace Blocks {
 namespace StrippedSpruceLog {
 BlockId toProtocol(Properties::Axis axis)
@@ -12,6 +10,8 @@ BlockId toProtocol(Properties::Axis axis)
         return 149;
     case Properties::Axis::Z:
         return 150;
+    default:
+        return 0;
     }
     return 0;
 }

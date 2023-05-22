@@ -10,40 +10,24 @@
 
 #include "Palette.hpp"
 #include "generation/generator.hpp"
+#include "Section.hpp"
+#include "nbt.hpp"
 #include "protocol/Structures.hpp"
+#include "protocol/common.hpp"
 #include "types.hpp"
+#include "world_storage/DynamicStorage.hpp"
 
 class Dimension;
 
 namespace world_storage {
 
-// Chunk
-constexpr int CHUNK_HEIGHT_MIN = -64;
-constexpr int CHUNK_HEIGHT_MAX = 320;
-constexpr int CHUNK_HEIGHT = CHUNK_HEIGHT_MAX - CHUNK_HEIGHT_MIN;
-
-// Section
-constexpr int SECTION_HEIGHT = 16;
-constexpr int SECTION_WIDTH = 16;
-constexpr int SECTION_2D_SIZE = SECTION_WIDTH * SECTION_WIDTH;
-constexpr int SECTION_3D_SIZE = SECTION_2D_SIZE * SECTION_HEIGHT;
-constexpr int NB_OF_SECTIONS = CHUNK_HEIGHT / SECTION_HEIGHT;
-
-// Blocks
-constexpr int BLOCKS_PER_CHUNK = NB_OF_SECTIONS * SECTION_3D_SIZE;
-
-// Biome
-constexpr int BIOME_SECTION_WIDTH = 4;
-constexpr int BIOME_HEIGHT_MIN = CHUNK_HEIGHT_MIN / 4;
-constexpr int BIOME_HEIGHT_MAX = CHUNK_HEIGHT_MAX / 4;
-constexpr int BIOME_HEIGHT = BIOME_HEIGHT_MAX - BIOME_HEIGHT_MIN;
-constexpr int BIOME_SECTION_2D_SIZE = BIOME_SECTION_WIDTH * BIOME_SECTION_WIDTH;
-constexpr int BIOME_SECTION_3D_SIZE = BIOME_SECTION_2D_SIZE * BIOME_SECTION_WIDTH;
-constexpr int BIOME_PER_CHUNK = BIOME_SECTION_3D_SIZE * NB_OF_SECTIONS;
-
 // Heightmap
 constexpr int HEIGHTMAP_BITS = bitsNeeded(CHUNK_HEIGHT + 1);
-constexpr int HEIGHTMAP_ARRAY_SIZE = SECTION_2D_SIZE * HEIGHTMAP_BITS / 64;
+constexpr int HEIGHTMAP_ARRAY_SIZE = (SECTION_2D_SIZE * HEIGHTMAP_BITS / 64) + ((SECTION_2D_SIZE * HEIGHTMAP_BITS % 64) != 0);
+constexpr const char * const HEIGHTMAP_ENTRY[] = {"MOTION_BLOCKING", "WORLD_SURFACE", nullptr};
+
+constexpr uint8_t getSectionIndex(const Position &pos) { return (pos.y - CHUNK_HEIGHT_MIN + SECTION_WIDTH) / SECTION_WIDTH; }
+constexpr uint8_t getBiomeSectionIndex(const Position &pos) { return (pos.y - BIOME_HEIGHT_MIN + BIOME_SECTION_WIDTH) / BIOME_SECTION_WIDTH; }
 
 // TODO: Accept negative position for y
 constexpr uint64_t calculateBlockIdx(const Position &pos)
@@ -62,12 +46,6 @@ constexpr uint64_t calculateBiomeIdx(const Position &pos)
         throw std::runtime_error("Invalid biome position: (" + std::to_string(pos.x) + ", " + std::to_string(y) + ", " + std::to_string(pos.z) + ")");
     return pos.x + (pos.z * BIOME_SECTION_WIDTH) + (y * BIOME_SECTION_2D_SIZE);
 }
-
-struct HeightMap {
-    // https://wiki.vg/index.php?title=Protocol&oldid=17753#Chunk_Data_and_Update_Light
-    std::array<std::shared_ptr<nbt::Long>, HEIGHTMAP_ARRAY_SIZE> motionBlocking;
-    std::array<std::shared_ptr<nbt::Long>, HEIGHTMAP_ARRAY_SIZE> worldSurface;
-};
 
 enum class WorldType {
     DEFAULT = 0,
@@ -106,21 +84,25 @@ public:
     ChunkColumn(const ChunkColumn &);
     ~ChunkColumn();
 
-    void updateBlock(Position pos, BlockId id);
-    BlockId getBlock(Position pos) const;
-    const std::array<BlockId, SECTION_3D_SIZE * NB_OF_SECTIONS> &getBlocks() const;
+    void updateBlock(const Position &pos, BlockId id);
+    BlockId getBlock(const Position &pos) const;
 
-    void updateSkyLight(Position pos, uint8_t light);
-    uint8_t getSkyLight(Position pos) const;
-    const std::array<uint8_t, SECTION_3D_SIZE * NB_OF_SECTIONS> &getSkyLights() const;
+    void updateSkyLight(const Position &pos, uint8_t light);
+    uint8_t getSkyLight(const Position &pos) const;
+    void recalculateSkyLight();
 
-    void updateBlockLight(Position pos, uint8_t light);
-    uint8_t getBlockLight(Position pos) const;
-    const std::array<uint8_t, SECTION_3D_SIZE * NB_OF_SECTIONS> &getBlockLights() const;
+    void updateBlockLight(const Position &pos, uint8_t light);
+    uint8_t getBlockLight(const Position &pos) const;
+    void recalculateBlockLight();
 
-    void updateBiome(Position pos, BiomeId biome);
-    BiomeId getBiome(Position pos) const;
-    const std::array<BiomeId, BIOME_SECTION_3D_SIZE * NB_OF_SECTIONS> &getBiomes() const;
+    void updateBiome(const Position &pos, BiomeId biome);
+    BiomeId getBiome(const Position &pos) const;
+
+    constexpr Section &getSection(uint8_t index) { return _sections.at(index); }
+    constexpr const Section &getSection(uint8_t index) const { return _sections.at(index); }
+
+    constexpr std::array<Section, NB_OF_SECTIONS> &getSections() { return _sections; }
+    constexpr const std::array<Section, NB_OF_SECTIONS> &getSections() const { return _sections; }
 
     int64_t getTick();
     void setTick(int64_t tick);
@@ -137,8 +119,8 @@ public:
     // Entity *getEntity(u128 uuid);
     // const std::deque<Entity *> &getEntities();
 
-    void updateHeightMap(void);
-    const HeightMap &getHeightMap() const;
+    void updateHeightMap();
+    NODISCARD constexpr inline const nbt::Compound &getHeightMap() const { return _heightMap;}
 
     void generate(GenerationState goalState = GenerationState::READY);
 
@@ -161,13 +143,15 @@ private:
     void _generateTopLayerModification(generation::Generator &generator);
 
 private:
-    std::array<BlockId, BLOCKS_PER_CHUNK> _blocks;
-    std::array<uint8_t, BLOCKS_PER_CHUNK> _skyLights;
-    std::array<uint8_t, BLOCKS_PER_CHUNK> _blockLights;
-    std::array<uint8_t, BIOME_PER_CHUNK> _biomes;
+    private:
+    std::array<Section, NB_OF_SECTIONS> _sections;
+    // std::array<uint8_t, (NB_OF_PLAYABLE_SECTIONS + 2) * SECTION_3D_SIZE> _skyLights;
+    // std::array<uint8_t, (NB_OF_PLAYABLE_SECTIONS + 2) * SECTION_3D_SIZE> _blockLights;
+    // LightStorage _skyLights;
+    // LightStorage _blockLights;
     int64_t _tickData;
     Position2D _chunkPos;
-    HeightMap _heightMap;
+    nbt::Compound _heightMap;
     GenerationState _currentState;
     std::mutex _generationLock;
     std::shared_ptr<Dimension> _dimension;

@@ -1,6 +1,4 @@
 #include "Kelp.hpp"
-#include <stdexcept>
-
 namespace Blocks {
 namespace Kelp {
 BlockId toProtocol(Properties::Age age)
@@ -58,6 +56,8 @@ BlockId toProtocol(Properties::Age age)
         return 12159;
     case Properties::Age::TWENTY_FIVE:
         return 12160;
+    default:
+        return 0;
     }
     return 0;
 }

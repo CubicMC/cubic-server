@@ -11,6 +11,8 @@ public:
         Dimension(world, world_storage::DimensionType::OVERWORLD)
     {
     }
+    ~Overworld() override = default;
+
     void tick() override;
     void initialize() override;
     void stop() override;

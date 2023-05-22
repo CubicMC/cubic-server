@@ -1,6 +1,4 @@
 #include "DragonWallHead.hpp"
-#include <stdexcept>
-
 namespace Blocks {
 namespace DragonWallHead {
 BlockId toProtocol(Properties::Facing facing)
@@ -14,6 +12,8 @@ BlockId toProtocol(Properties::Facing facing)
         return 8689;
     case Properties::Facing::EAST:
         return 8690;
+    default:
+        return 0;
     }
     return 0;
 }

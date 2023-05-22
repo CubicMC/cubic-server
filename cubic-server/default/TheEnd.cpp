@@ -2,7 +2,7 @@
 
 void TheEnd::tick()
 {
-    _processingMutex.lock();
+    std::lock_guard<std::mutex> _(_processingMutex);
 
     // auto startProcessing = std::chrono::system_clock::now();
 
@@ -11,7 +11,6 @@ void TheEnd::tick()
     //    LDEBUG("Tick - TheEnd");
 
     // auto endProcessing = std::chrono::system_clock::now();
-    _processingMutex.unlock();
 }
 
 void TheEnd::initialize()

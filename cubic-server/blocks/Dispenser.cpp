@@ -1,6 +1,4 @@
 #include "Dispenser.hpp"
-#include <stdexcept>
-
 namespace Blocks {
 namespace Dispenser {
 BlockId toProtocol(Properties::Facing facing, Properties::Triggered triggered)
@@ -12,6 +10,8 @@ BlockId toProtocol(Properties::Facing facing, Properties::Triggered triggered)
             return 472;
         case Properties::Triggered::FALSE:
             return 473;
+        default:
+            return 0;
         }
     case Properties::Facing::EAST:
         switch (triggered) {
@@ -19,6 +19,8 @@ BlockId toProtocol(Properties::Facing facing, Properties::Triggered triggered)
             return 474;
         case Properties::Triggered::FALSE:
             return 475;
+        default:
+            return 0;
         }
     case Properties::Facing::SOUTH:
         switch (triggered) {
@@ -26,6 +28,8 @@ BlockId toProtocol(Properties::Facing facing, Properties::Triggered triggered)
             return 476;
         case Properties::Triggered::FALSE:
             return 477;
+        default:
+            return 0;
         }
     case Properties::Facing::WEST:
         switch (triggered) {
@@ -33,6 +37,8 @@ BlockId toProtocol(Properties::Facing facing, Properties::Triggered triggered)
             return 478;
         case Properties::Triggered::FALSE:
             return 479;
+        default:
+            return 0;
         }
     case Properties::Facing::UP:
         switch (triggered) {
@@ -40,6 +46,8 @@ BlockId toProtocol(Properties::Facing facing, Properties::Triggered triggered)
             return 480;
         case Properties::Triggered::FALSE:
             return 481;
+        default:
+            return 0;
         }
     case Properties::Facing::DOWN:
         switch (triggered) {
@@ -47,7 +55,11 @@ BlockId toProtocol(Properties::Facing facing, Properties::Triggered triggered)
             return 482;
         case Properties::Triggered::FALSE:
             return 483;
+        default:
+            return 0;
         }
+    default:
+        return 0;
     }
     return 0;
 }

@@ -1,6 +1,4 @@
 #include "Composter.hpp"
-#include <stdexcept>
-
 namespace Blocks {
 namespace Composter {
 BlockId toProtocol(Properties::Level level)
@@ -24,6 +22,8 @@ BlockId toProtocol(Properties::Level level)
         return 18751;
     case Properties::Level::EIGHT:
         return 18752;
+    default:
+        return 0;
     }
     return 0;
 }

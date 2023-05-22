@@ -4,18 +4,20 @@ if(CMAKE_VERSION VERSION_GREATER_EQUAL 3.24.0)
     cmake_policy(SET CMP0135 OLD)
 endif()
 
-project(CubicServer VERSION 0.1.0)
+option(USE_CLANG "Build application with clang" OFF)
+if (USE_CLANG)
+    set(CMAKE_CXX_COMPILER /usr/bin/clang++)
+    set(CMAKE_C_COMPILER /usr/bin/clang)
+endif()
+
+set(CMAKE_USER_MAKE_RULES_OVERRIDE_CXX ${CMAKE_CURRENT_SOURCE_DIR}/cxx_flag_overrides.cmake)
+
+project(CubicServer VERSION 0.1.0 LANGUAGES CXX)
 
 set(CMAKE_CXX_STANDARD 20)
-
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 include(CheckIPOSupported)
-
-# if debug mode is enabled, add -g3 flag
-if (CMAKE_BUILD_TYPE MATCHES Debug)
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g3")
-endif()
 
 if (CMAKE_BUILD_TYPE MATCHES Release)
     check_ipo_supported()
@@ -39,7 +41,8 @@ FetchContent_Declare(
 
 FetchContent_Declare(
     json
-    URL https://github.com/nlohmann/json/releases/download/v3.11.2/json.tar.xz
+    GIT_REPOSITORY https://github.com/nlohmann/json.git
+    GIT_TAG v3.11.2
 )
 
 FetchContent_Declare(
@@ -51,6 +54,7 @@ FetchContent_Declare(
 FetchContent_Declare(
     argparse
     GIT_REPOSITORY https://github.com/p-ranav/argparse.git
+    GIT_TAG v2.9
 )
 
 FetchContent_Declare(
@@ -79,9 +83,9 @@ if(GTEST) # if the flag GTEST is true
     FetchContent_Declare(
         rapidcheck
         GIT_REPOSITORY https://github.com/emil-e/rapidcheck.git
+        GIT_TAG a5724ea5b0b00147109b0605c377f1e54c353ba2 # The latest rapidcheck commit at the time of writing.
     )
     option(RC_ENABLE_GTEST "Enable Google Test integration for RapidCheck library" ON)
-    set(RC_ENABLE_GTEST TRUE)
 
     FetchContent_MakeAvailable(
         rapidcheck
@@ -93,15 +97,14 @@ if(GTEST)
     enable_testing()
 endif()
 
-set(CMAKE_BUILD_RPATH /usr/local/lib/gcc12)
-set(CMAKE_EXE_LINKER_FLAGS "-static-libgcc -static-libstdc++")
+# set(CMAKE_BUILD_RPATH /usr/local/lib/gcc12)
+# set(CMAKE_EXE_LINKER_FLAGS "-static-libgcc -static-libstdc++")
 
 find_package(Threads REQUIRED)
 find_package(PkgConfig REQUIRED)
 pkg_check_modules(GTKMM REQUIRED gtkmm-3.0)
 
 add_executable(${CMAKE_PROJECT_NAME})
-target_compile_options(${CMAKE_PROJECT_NAME} PRIVATE -Wall -Wextra -Wno-unknown-pragmas -Wno-restrict -Wno-missing-field-initializers)
 target_compile_definitions(${CMAKE_PROJECT_NAME} PRIVATE
     PROGRAM_NAME="${CMAKE_PROJECT_NAME}"
     PROGRAM_VERSION="${CMAKE_PROJECT_VERSION}"

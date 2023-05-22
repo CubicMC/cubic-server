@@ -1,6 +1,4 @@
 #include "EndRod.hpp"
-#include <stdexcept>
-
 namespace Blocks {
 namespace EndRod {
 BlockId toProtocol(Properties::Facing facing)
@@ -18,6 +16,8 @@ BlockId toProtocol(Properties::Facing facing)
         return 11727;
     case Properties::Facing::DOWN:
         return 11728;
+    default:
+        return 0;
     }
     return 0;
 }

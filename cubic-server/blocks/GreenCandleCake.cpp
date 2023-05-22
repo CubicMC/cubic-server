@@ -1,6 +1,4 @@
 #include "GreenCandleCake.hpp"
-#include <stdexcept>
-
 namespace Blocks {
 namespace GreenCandleCake {
 BlockId toProtocol(Properties::Lit lit)
@@ -10,6 +8,8 @@ BlockId toProtocol(Properties::Lit lit)
         return 20397;
     case Properties::Lit::FALSE:
         return 20398;
+    default:
+        return 0;
     }
     return 0;
 }

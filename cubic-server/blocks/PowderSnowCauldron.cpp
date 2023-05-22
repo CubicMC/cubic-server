@@ -1,6 +1,4 @@
 #include "PowderSnowCauldron.hpp"
-#include <stdexcept>
-
 namespace Blocks {
 namespace PowderSnowCauldron {
 BlockId toProtocol(Properties::Level level)
@@ -12,6 +10,8 @@ BlockId toProtocol(Properties::Level level)
         return 7174;
     case Properties::Level::THREE:
         return 7175;
+    default:
+        return 0;
     }
     return 0;
 }

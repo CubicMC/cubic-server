@@ -1,6 +1,4 @@
 #include "MangroveRoots.hpp"
-#include <stdexcept>
-
 namespace Blocks {
 namespace MangroveRoots {
 BlockId toProtocol(Properties::Waterlogged waterlogged)
@@ -10,6 +8,8 @@ BlockId toProtocol(Properties::Waterlogged waterlogged)
         return 140;
     case Properties::Waterlogged::FALSE:
         return 141;
+    default:
+        return 0;
     }
     return 0;
 }

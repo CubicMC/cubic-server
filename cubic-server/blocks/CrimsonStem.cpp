@@ -1,6 +1,4 @@
 #include "CrimsonStem.hpp"
-#include <stdexcept>
-
 namespace Blocks {
 namespace CrimsonStem {
 BlockId toProtocol(Properties::Axis axis)
@@ -12,6 +10,8 @@ BlockId toProtocol(Properties::Axis axis)
         return 17969;
     case Properties::Axis::Z:
         return 17970;
+    default:
+        return 0;
     }
     return 0;
 }

@@ -1,6 +1,4 @@
 #include "DarkOakWallSign.hpp"
-#include <stdexcept>
-
 namespace Blocks {
 namespace DarkOakWallSign {
 BlockId toProtocol(Properties::Facing facing, Properties::Waterlogged waterlogged)
@@ -12,6 +10,8 @@ BlockId toProtocol(Properties::Facing facing, Properties::Waterlogged waterlogge
             return 4718;
         case Properties::Waterlogged::FALSE:
             return 4719;
+        default:
+            return 0;
         }
     case Properties::Facing::SOUTH:
         switch (waterlogged) {
@@ -19,6 +19,8 @@ BlockId toProtocol(Properties::Facing facing, Properties::Waterlogged waterlogge
             return 4720;
         case Properties::Waterlogged::FALSE:
             return 4721;
+        default:
+            return 0;
         }
     case Properties::Facing::WEST:
         switch (waterlogged) {
@@ -26,6 +28,8 @@ BlockId toProtocol(Properties::Facing facing, Properties::Waterlogged waterlogge
             return 4722;
         case Properties::Waterlogged::FALSE:
             return 4723;
+        default:
+            return 0;
         }
     case Properties::Facing::EAST:
         switch (waterlogged) {
@@ -33,7 +37,11 @@ BlockId toProtocol(Properties::Facing facing, Properties::Waterlogged waterlogge
             return 4724;
         case Properties::Waterlogged::FALSE:
             return 4725;
+        default:
+            return 0;
         }
+    default:
+        return 0;
     }
     return 0;
 }

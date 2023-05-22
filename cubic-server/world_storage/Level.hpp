@@ -19,7 +19,7 @@ public:
     Level() = default;
     ~Level();
 
-    ChunkColumn &addChunkColumn(Position2D pos, const ChunkColumn &chunkColumn);
+    // ChunkColumn &addChunkColumn(Position2D pos, const ChunkColumn &chunkColumn);
     ChunkColumn &addChunkColumn(Position2D pos, std::shared_ptr<Dimension> dimension);
 
     bool hasChunkColumn(const Position2D &pos) const;

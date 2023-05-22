@@ -1,6 +1,4 @@
 #include "BirchSapling.hpp"
-#include <stdexcept>
-
 namespace Blocks {
 namespace BirchSapling {
 BlockId toProtocol(Properties::Stage stage)
@@ -10,6 +8,8 @@ BlockId toProtocol(Properties::Stage stage)
         return 28;
     case Properties::Stage::ONE:
         return 29;
+    default:
+        return 0;
     }
     return 0;
 }

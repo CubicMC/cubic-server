@@ -1,6 +1,4 @@
 #include "PrismarineSlab.hpp"
-#include <stdexcept>
-
 namespace Blocks {
 namespace PrismarineSlab {
 BlockId toProtocol(Properties::Type type, Properties::Waterlogged waterlogged)
@@ -12,6 +10,8 @@ BlockId toProtocol(Properties::Type type, Properties::Waterlogged waterlogged)
             return 10229;
         case Properties::Waterlogged::FALSE:
             return 10230;
+        default:
+            return 0;
         }
     case Properties::Type::BOTTOM:
         switch (waterlogged) {
@@ -19,6 +19,8 @@ BlockId toProtocol(Properties::Type type, Properties::Waterlogged waterlogged)
             return 10231;
         case Properties::Waterlogged::FALSE:
             return 10232;
+        default:
+            return 0;
         }
     case Properties::Type::DOUBLE:
         switch (waterlogged) {
@@ -26,7 +28,11 @@ BlockId toProtocol(Properties::Type type, Properties::Waterlogged waterlogged)
             return 10233;
         case Properties::Waterlogged::FALSE:
             return 10234;
+        default:
+            return 0;
         }
+    default:
+        return 0;
     }
     return 0;
 }

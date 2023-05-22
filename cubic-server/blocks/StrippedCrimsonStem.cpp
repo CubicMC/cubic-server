@@ -1,6 +1,4 @@
 #include "StrippedCrimsonStem.hpp"
-#include <stdexcept>
-
 namespace Blocks {
 namespace StrippedCrimsonStem {
 BlockId toProtocol(Properties::Axis axis)
@@ -12,6 +10,8 @@ BlockId toProtocol(Properties::Axis axis)
         return 17972;
     case Properties::Axis::Z:
         return 17973;
+    default:
+        return 0;
     }
     return 0;
 }

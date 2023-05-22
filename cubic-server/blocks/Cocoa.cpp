@@ -1,6 +1,4 @@
 #include "Cocoa.hpp"
-#include <stdexcept>
-
 namespace Blocks {
 namespace Cocoa {
 BlockId toProtocol(Properties::Age age, Properties::Facing facing)
@@ -16,6 +14,8 @@ BlockId toProtocol(Properties::Age age, Properties::Facing facing)
             return 7191;
         case Properties::Facing::EAST:
             return 7192;
+        default:
+            return 0;
         }
     case Properties::Age::ONE:
         switch (facing) {
@@ -27,6 +27,8 @@ BlockId toProtocol(Properties::Age age, Properties::Facing facing)
             return 7195;
         case Properties::Facing::EAST:
             return 7196;
+        default:
+            return 0;
         }
     case Properties::Age::TWO:
         switch (facing) {
@@ -38,7 +40,11 @@ BlockId toProtocol(Properties::Age age, Properties::Facing facing)
             return 7199;
         case Properties::Facing::EAST:
             return 7200;
+        default:
+            return 0;
         }
+    default:
+        return 0;
     }
     return 0;
 }

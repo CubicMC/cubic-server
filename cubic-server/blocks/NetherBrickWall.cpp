@@ -1,6 +1,4 @@
 #include "NetherBrickWall.hpp"
-#include <stdexcept>
-
 namespace Blocks {
 namespace NetherBrickWall {
 BlockId toProtocol(Properties::East east, Properties::North north, Properties::South south, Properties::Up up, Properties::Waterlogged waterlogged, Properties::West west)
@@ -22,6 +20,8 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::S
                             return 15801;
                         case Properties::West::TALL:
                             return 15802;
+                        default:
+                            return 0;
                         }
                     case Properties::Waterlogged::FALSE:
                         switch (west) {
@@ -31,7 +31,11 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::S
                             return 15804;
                         case Properties::West::TALL:
                             return 15805;
+                        default:
+                            return 0;
                         }
+                    default:
+                        return 0;
                     }
                 case Properties::Up::FALSE:
                     switch (waterlogged) {
@@ -43,6 +47,8 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::S
                             return 15807;
                         case Properties::West::TALL:
                             return 15808;
+                        default:
+                            return 0;
                         }
                     case Properties::Waterlogged::FALSE:
                         switch (west) {
@@ -52,8 +58,14 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::S
                             return 15810;
                         case Properties::West::TALL:
                             return 15811;
+                        default:
+                            return 0;
                         }
+                    default:
+                        return 0;
                     }
+                default:
+                    return 0;
                 }
             case Properties::South::LOW:
                 switch (up) {
@@ -67,6 +79,8 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::S
                             return 15813;
                         case Properties::West::TALL:
                             return 15814;
+                        default:
+                            return 0;
                         }
                     case Properties::Waterlogged::FALSE:
                         switch (west) {
@@ -76,7 +90,11 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::S
                             return 15816;
                         case Properties::West::TALL:
                             return 15817;
+                        default:
+                            return 0;
                         }
+                    default:
+                        return 0;
                     }
                 case Properties::Up::FALSE:
                     switch (waterlogged) {
@@ -88,6 +106,8 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::S
                             return 15819;
                         case Properties::West::TALL:
                             return 15820;
+                        default:
+                            return 0;
                         }
                     case Properties::Waterlogged::FALSE:
                         switch (west) {
@@ -97,8 +117,14 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::S
                             return 15822;
                         case Properties::West::TALL:
                             return 15823;
+                        default:
+                            return 0;
                         }
+                    default:
+                        return 0;
                     }
+                default:
+                    return 0;
                 }
             case Properties::South::TALL:
                 switch (up) {
@@ -112,6 +138,8 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::S
                             return 15825;
                         case Properties::West::TALL:
                             return 15826;
+                        default:
+                            return 0;
                         }
                     case Properties::Waterlogged::FALSE:
                         switch (west) {
@@ -121,7 +149,11 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::S
                             return 15828;
                         case Properties::West::TALL:
                             return 15829;
+                        default:
+                            return 0;
                         }
+                    default:
+                        return 0;
                     }
                 case Properties::Up::FALSE:
                     switch (waterlogged) {
@@ -133,6 +165,8 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::S
                             return 15831;
                         case Properties::West::TALL:
                             return 15832;
+                        default:
+                            return 0;
                         }
                     case Properties::Waterlogged::FALSE:
                         switch (west) {
@@ -142,9 +176,17 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::S
                             return 15834;
                         case Properties::West::TALL:
                             return 15835;
+                        default:
+                            return 0;
                         }
+                    default:
+                        return 0;
                     }
+                default:
+                    return 0;
                 }
+            default:
+                return 0;
             }
         case Properties::North::LOW:
             switch (south) {
@@ -160,6 +202,8 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::S
                             return 15837;
                         case Properties::West::TALL:
                             return 15838;
+                        default:
+                            return 0;
                         }
                     case Properties::Waterlogged::FALSE:
                         switch (west) {
@@ -169,7 +213,11 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::S
                             return 15840;
                         case Properties::West::TALL:
                             return 15841;
+                        default:
+                            return 0;
                         }
+                    default:
+                        return 0;
                     }
                 case Properties::Up::FALSE:
                     switch (waterlogged) {
@@ -181,6 +229,8 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::S
                             return 15843;
                         case Properties::West::TALL:
                             return 15844;
+                        default:
+                            return 0;
                         }
                     case Properties::Waterlogged::FALSE:
                         switch (west) {
@@ -190,8 +240,14 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::S
                             return 15846;
                         case Properties::West::TALL:
                             return 15847;
+                        default:
+                            return 0;
                         }
+                    default:
+                        return 0;
                     }
+                default:
+                    return 0;
                 }
             case Properties::South::LOW:
                 switch (up) {
@@ -205,6 +261,8 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::S
                             return 15849;
                         case Properties::West::TALL:
                             return 15850;
+                        default:
+                            return 0;
                         }
                     case Properties::Waterlogged::FALSE:
                         switch (west) {
@@ -214,7 +272,11 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::S
                             return 15852;
                         case Properties::West::TALL:
                             return 15853;
+                        default:
+                            return 0;
                         }
+                    default:
+                        return 0;
                     }
                 case Properties::Up::FALSE:
                     switch (waterlogged) {
@@ -226,6 +288,8 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::S
                             return 15855;
                         case Properties::West::TALL:
                             return 15856;
+                        default:
+                            return 0;
                         }
                     case Properties::Waterlogged::FALSE:
                         switch (west) {
@@ -235,8 +299,14 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::S
                             return 15858;
                         case Properties::West::TALL:
                             return 15859;
+                        default:
+                            return 0;
                         }
+                    default:
+                        return 0;
                     }
+                default:
+                    return 0;
                 }
             case Properties::South::TALL:
                 switch (up) {
@@ -250,6 +320,8 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::S
                             return 15861;
                         case Properties::West::TALL:
                             return 15862;
+                        default:
+                            return 0;
                         }
                     case Properties::Waterlogged::FALSE:
                         switch (west) {
@@ -259,7 +331,11 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::S
                             return 15864;
                         case Properties::West::TALL:
                             return 15865;
+                        default:
+                            return 0;
                         }
+                    default:
+                        return 0;
                     }
                 case Properties::Up::FALSE:
                     switch (waterlogged) {
@@ -271,6 +347,8 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::S
                             return 15867;
                         case Properties::West::TALL:
                             return 15868;
+                        default:
+                            return 0;
                         }
                     case Properties::Waterlogged::FALSE:
                         switch (west) {
@@ -280,9 +358,17 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::S
                             return 15870;
                         case Properties::West::TALL:
                             return 15871;
+                        default:
+                            return 0;
                         }
+                    default:
+                        return 0;
                     }
+                default:
+                    return 0;
                 }
+            default:
+                return 0;
             }
         case Properties::North::TALL:
             switch (south) {
@@ -298,6 +384,8 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::S
                             return 15873;
                         case Properties::West::TALL:
                             return 15874;
+                        default:
+                            return 0;
                         }
                     case Properties::Waterlogged::FALSE:
                         switch (west) {
@@ -307,7 +395,11 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::S
                             return 15876;
                         case Properties::West::TALL:
                             return 15877;
+                        default:
+                            return 0;
                         }
+                    default:
+                        return 0;
                     }
                 case Properties::Up::FALSE:
                     switch (waterlogged) {
@@ -319,6 +411,8 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::S
                             return 15879;
                         case Properties::West::TALL:
                             return 15880;
+                        default:
+                            return 0;
                         }
                     case Properties::Waterlogged::FALSE:
                         switch (west) {
@@ -328,8 +422,14 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::S
                             return 15882;
                         case Properties::West::TALL:
                             return 15883;
+                        default:
+                            return 0;
                         }
+                    default:
+                        return 0;
                     }
+                default:
+                    return 0;
                 }
             case Properties::South::LOW:
                 switch (up) {
@@ -343,6 +443,8 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::S
                             return 15885;
                         case Properties::West::TALL:
                             return 15886;
+                        default:
+                            return 0;
                         }
                     case Properties::Waterlogged::FALSE:
                         switch (west) {
@@ -352,7 +454,11 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::S
                             return 15888;
                         case Properties::West::TALL:
                             return 15889;
+                        default:
+                            return 0;
                         }
+                    default:
+                        return 0;
                     }
                 case Properties::Up::FALSE:
                     switch (waterlogged) {
@@ -364,6 +470,8 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::S
                             return 15891;
                         case Properties::West::TALL:
                             return 15892;
+                        default:
+                            return 0;
                         }
                     case Properties::Waterlogged::FALSE:
                         switch (west) {
@@ -373,8 +481,14 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::S
                             return 15894;
                         case Properties::West::TALL:
                             return 15895;
+                        default:
+                            return 0;
                         }
+                    default:
+                        return 0;
                     }
+                default:
+                    return 0;
                 }
             case Properties::South::TALL:
                 switch (up) {
@@ -388,6 +502,8 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::S
                             return 15897;
                         case Properties::West::TALL:
                             return 15898;
+                        default:
+                            return 0;
                         }
                     case Properties::Waterlogged::FALSE:
                         switch (west) {
@@ -397,7 +513,11 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::S
                             return 15900;
                         case Properties::West::TALL:
                             return 15901;
+                        default:
+                            return 0;
                         }
+                    default:
+                        return 0;
                     }
                 case Properties::Up::FALSE:
                     switch (waterlogged) {
@@ -409,6 +529,8 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::S
                             return 15903;
                         case Properties::West::TALL:
                             return 15904;
+                        default:
+                            return 0;
                         }
                     case Properties::Waterlogged::FALSE:
                         switch (west) {
@@ -418,10 +540,20 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::S
                             return 15906;
                         case Properties::West::TALL:
                             return 15907;
+                        default:
+                            return 0;
                         }
+                    default:
+                        return 0;
                     }
+                default:
+                    return 0;
                 }
+            default:
+                return 0;
             }
+        default:
+            return 0;
         }
     case Properties::East::LOW:
         switch (north) {
@@ -439,6 +571,8 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::S
                             return 15909;
                         case Properties::West::TALL:
                             return 15910;
+                        default:
+                            return 0;
                         }
                     case Properties::Waterlogged::FALSE:
                         switch (west) {
@@ -448,7 +582,11 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::S
                             return 15912;
                         case Properties::West::TALL:
                             return 15913;
+                        default:
+                            return 0;
                         }
+                    default:
+                        return 0;
                     }
                 case Properties::Up::FALSE:
                     switch (waterlogged) {
@@ -460,6 +598,8 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::S
                             return 15915;
                         case Properties::West::TALL:
                             return 15916;
+                        default:
+                            return 0;
                         }
                     case Properties::Waterlogged::FALSE:
                         switch (west) {
@@ -469,8 +609,14 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::S
                             return 15918;
                         case Properties::West::TALL:
                             return 15919;
+                        default:
+                            return 0;
                         }
+                    default:
+                        return 0;
                     }
+                default:
+                    return 0;
                 }
             case Properties::South::LOW:
                 switch (up) {
@@ -484,6 +630,8 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::S
                             return 15921;
                         case Properties::West::TALL:
                             return 15922;
+                        default:
+                            return 0;
                         }
                     case Properties::Waterlogged::FALSE:
                         switch (west) {
@@ -493,7 +641,11 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::S
                             return 15924;
                         case Properties::West::TALL:
                             return 15925;
+                        default:
+                            return 0;
                         }
+                    default:
+                        return 0;
                     }
                 case Properties::Up::FALSE:
                     switch (waterlogged) {
@@ -505,6 +657,8 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::S
                             return 15927;
                         case Properties::West::TALL:
                             return 15928;
+                        default:
+                            return 0;
                         }
                     case Properties::Waterlogged::FALSE:
                         switch (west) {
@@ -514,8 +668,14 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::S
                             return 15930;
                         case Properties::West::TALL:
                             return 15931;
+                        default:
+                            return 0;
                         }
+                    default:
+                        return 0;
                     }
+                default:
+                    return 0;
                 }
             case Properties::South::TALL:
                 switch (up) {
@@ -529,6 +689,8 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::S
                             return 15933;
                         case Properties::West::TALL:
                             return 15934;
+                        default:
+                            return 0;
                         }
                     case Properties::Waterlogged::FALSE:
                         switch (west) {
@@ -538,7 +700,11 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::S
                             return 15936;
                         case Properties::West::TALL:
                             return 15937;
+                        default:
+                            return 0;
                         }
+                    default:
+                        return 0;
                     }
                 case Properties::Up::FALSE:
                     switch (waterlogged) {
@@ -550,6 +716,8 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::S
                             return 15939;
                         case Properties::West::TALL:
                             return 15940;
+                        default:
+                            return 0;
                         }
                     case Properties::Waterlogged::FALSE:
                         switch (west) {
@@ -559,9 +727,17 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::S
                             return 15942;
                         case Properties::West::TALL:
                             return 15943;
+                        default:
+                            return 0;
                         }
+                    default:
+                        return 0;
                     }
+                default:
+                    return 0;
                 }
+            default:
+                return 0;
             }
         case Properties::North::LOW:
             switch (south) {
@@ -577,6 +753,8 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::S
                             return 15945;
                         case Properties::West::TALL:
                             return 15946;
+                        default:
+                            return 0;
                         }
                     case Properties::Waterlogged::FALSE:
                         switch (west) {
@@ -586,7 +764,11 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::S
                             return 15948;
                         case Properties::West::TALL:
                             return 15949;
+                        default:
+                            return 0;
                         }
+                    default:
+                        return 0;
                     }
                 case Properties::Up::FALSE:
                     switch (waterlogged) {
@@ -598,6 +780,8 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::S
                             return 15951;
                         case Properties::West::TALL:
                             return 15952;
+                        default:
+                            return 0;
                         }
                     case Properties::Waterlogged::FALSE:
                         switch (west) {
@@ -607,8 +791,14 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::S
                             return 15954;
                         case Properties::West::TALL:
                             return 15955;
+                        default:
+                            return 0;
                         }
+                    default:
+                        return 0;
                     }
+                default:
+                    return 0;
                 }
             case Properties::South::LOW:
                 switch (up) {
@@ -622,6 +812,8 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::S
                             return 15957;
                         case Properties::West::TALL:
                             return 15958;
+                        default:
+                            return 0;
                         }
                     case Properties::Waterlogged::FALSE:
                         switch (west) {
@@ -631,7 +823,11 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::S
                             return 15960;
                         case Properties::West::TALL:
                             return 15961;
+                        default:
+                            return 0;
                         }
+                    default:
+                        return 0;
                     }
                 case Properties::Up::FALSE:
                     switch (waterlogged) {
@@ -643,6 +839,8 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::S
                             return 15963;
                         case Properties::West::TALL:
                             return 15964;
+                        default:
+                            return 0;
                         }
                     case Properties::Waterlogged::FALSE:
                         switch (west) {
@@ -652,8 +850,14 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::S
                             return 15966;
                         case Properties::West::TALL:
                             return 15967;
+                        default:
+                            return 0;
                         }
+                    default:
+                        return 0;
                     }
+                default:
+                    return 0;
                 }
             case Properties::South::TALL:
                 switch (up) {
@@ -667,6 +871,8 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::S
                             return 15969;
                         case Properties::West::TALL:
                             return 15970;
+                        default:
+                            return 0;
                         }
                     case Properties::Waterlogged::FALSE:
                         switch (west) {
@@ -676,7 +882,11 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::S
                             return 15972;
                         case Properties::West::TALL:
                             return 15973;
+                        default:
+                            return 0;
                         }
+                    default:
+                        return 0;
                     }
                 case Properties::Up::FALSE:
                     switch (waterlogged) {
@@ -688,6 +898,8 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::S
                             return 15975;
                         case Properties::West::TALL:
                             return 15976;
+                        default:
+                            return 0;
                         }
                     case Properties::Waterlogged::FALSE:
                         switch (west) {
@@ -697,9 +909,17 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::S
                             return 15978;
                         case Properties::West::TALL:
                             return 15979;
+                        default:
+                            return 0;
                         }
+                    default:
+                        return 0;
                     }
+                default:
+                    return 0;
                 }
+            default:
+                return 0;
             }
         case Properties::North::TALL:
             switch (south) {
@@ -715,6 +935,8 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::S
                             return 15981;
                         case Properties::West::TALL:
                             return 15982;
+                        default:
+                            return 0;
                         }
                     case Properties::Waterlogged::FALSE:
                         switch (west) {
@@ -724,7 +946,11 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::S
                             return 15984;
                         case Properties::West::TALL:
                             return 15985;
+                        default:
+                            return 0;
                         }
+                    default:
+                        return 0;
                     }
                 case Properties::Up::FALSE:
                     switch (waterlogged) {
@@ -736,6 +962,8 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::S
                             return 15987;
                         case Properties::West::TALL:
                             return 15988;
+                        default:
+                            return 0;
                         }
                     case Properties::Waterlogged::FALSE:
                         switch (west) {
@@ -745,8 +973,14 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::S
                             return 15990;
                         case Properties::West::TALL:
                             return 15991;
+                        default:
+                            return 0;
                         }
+                    default:
+                        return 0;
                     }
+                default:
+                    return 0;
                 }
             case Properties::South::LOW:
                 switch (up) {
@@ -760,6 +994,8 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::S
                             return 15993;
                         case Properties::West::TALL:
                             return 15994;
+                        default:
+                            return 0;
                         }
                     case Properties::Waterlogged::FALSE:
                         switch (west) {
@@ -769,7 +1005,11 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::S
                             return 15996;
                         case Properties::West::TALL:
                             return 15997;
+                        default:
+                            return 0;
                         }
+                    default:
+                        return 0;
                     }
                 case Properties::Up::FALSE:
                     switch (waterlogged) {
@@ -781,6 +1021,8 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::S
                             return 15999;
                         case Properties::West::TALL:
                             return 16000;
+                        default:
+                            return 0;
                         }
                     case Properties::Waterlogged::FALSE:
                         switch (west) {
@@ -790,8 +1032,14 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::S
                             return 16002;
                         case Properties::West::TALL:
                             return 16003;
+                        default:
+                            return 0;
                         }
+                    default:
+                        return 0;
                     }
+                default:
+                    return 0;
                 }
             case Properties::South::TALL:
                 switch (up) {
@@ -805,6 +1053,8 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::S
                             return 16005;
                         case Properties::West::TALL:
                             return 16006;
+                        default:
+                            return 0;
                         }
                     case Properties::Waterlogged::FALSE:
                         switch (west) {
@@ -814,7 +1064,11 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::S
                             return 16008;
                         case Properties::West::TALL:
                             return 16009;
+                        default:
+                            return 0;
                         }
+                    default:
+                        return 0;
                     }
                 case Properties::Up::FALSE:
                     switch (waterlogged) {
@@ -826,6 +1080,8 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::S
                             return 16011;
                         case Properties::West::TALL:
                             return 16012;
+                        default:
+                            return 0;
                         }
                     case Properties::Waterlogged::FALSE:
                         switch (west) {
@@ -835,10 +1091,20 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::S
                             return 16014;
                         case Properties::West::TALL:
                             return 16015;
+                        default:
+                            return 0;
                         }
+                    default:
+                        return 0;
                     }
+                default:
+                    return 0;
                 }
+            default:
+                return 0;
             }
+        default:
+            return 0;
         }
     case Properties::East::TALL:
         switch (north) {
@@ -856,6 +1122,8 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::S
                             return 16017;
                         case Properties::West::TALL:
                             return 16018;
+                        default:
+                            return 0;
                         }
                     case Properties::Waterlogged::FALSE:
                         switch (west) {
@@ -865,7 +1133,11 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::S
                             return 16020;
                         case Properties::West::TALL:
                             return 16021;
+                        default:
+                            return 0;
                         }
+                    default:
+                        return 0;
                     }
                 case Properties::Up::FALSE:
                     switch (waterlogged) {
@@ -877,6 +1149,8 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::S
                             return 16023;
                         case Properties::West::TALL:
                             return 16024;
+                        default:
+                            return 0;
                         }
                     case Properties::Waterlogged::FALSE:
                         switch (west) {
@@ -886,8 +1160,14 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::S
                             return 16026;
                         case Properties::West::TALL:
                             return 16027;
+                        default:
+                            return 0;
                         }
+                    default:
+                        return 0;
                     }
+                default:
+                    return 0;
                 }
             case Properties::South::LOW:
                 switch (up) {
@@ -901,6 +1181,8 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::S
                             return 16029;
                         case Properties::West::TALL:
                             return 16030;
+                        default:
+                            return 0;
                         }
                     case Properties::Waterlogged::FALSE:
                         switch (west) {
@@ -910,7 +1192,11 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::S
                             return 16032;
                         case Properties::West::TALL:
                             return 16033;
+                        default:
+                            return 0;
                         }
+                    default:
+                        return 0;
                     }
                 case Properties::Up::FALSE:
                     switch (waterlogged) {
@@ -922,6 +1208,8 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::S
                             return 16035;
                         case Properties::West::TALL:
                             return 16036;
+                        default:
+                            return 0;
                         }
                     case Properties::Waterlogged::FALSE:
                         switch (west) {
@@ -931,8 +1219,14 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::S
                             return 16038;
                         case Properties::West::TALL:
                             return 16039;
+                        default:
+                            return 0;
                         }
+                    default:
+                        return 0;
                     }
+                default:
+                    return 0;
                 }
             case Properties::South::TALL:
                 switch (up) {
@@ -946,6 +1240,8 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::S
                             return 16041;
                         case Properties::West::TALL:
                             return 16042;
+                        default:
+                            return 0;
                         }
                     case Properties::Waterlogged::FALSE:
                         switch (west) {
@@ -955,7 +1251,11 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::S
                             return 16044;
                         case Properties::West::TALL:
                             return 16045;
+                        default:
+                            return 0;
                         }
+                    default:
+                        return 0;
                     }
                 case Properties::Up::FALSE:
                     switch (waterlogged) {
@@ -967,6 +1267,8 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::S
                             return 16047;
                         case Properties::West::TALL:
                             return 16048;
+                        default:
+                            return 0;
                         }
                     case Properties::Waterlogged::FALSE:
                         switch (west) {
@@ -976,9 +1278,17 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::S
                             return 16050;
                         case Properties::West::TALL:
                             return 16051;
+                        default:
+                            return 0;
                         }
+                    default:
+                        return 0;
                     }
+                default:
+                    return 0;
                 }
+            default:
+                return 0;
             }
         case Properties::North::LOW:
             switch (south) {
@@ -994,6 +1304,8 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::S
                             return 16053;
                         case Properties::West::TALL:
                             return 16054;
+                        default:
+                            return 0;
                         }
                     case Properties::Waterlogged::FALSE:
                         switch (west) {
@@ -1003,7 +1315,11 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::S
                             return 16056;
                         case Properties::West::TALL:
                             return 16057;
+                        default:
+                            return 0;
                         }
+                    default:
+                        return 0;
                     }
                 case Properties::Up::FALSE:
                     switch (waterlogged) {
@@ -1015,6 +1331,8 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::S
                             return 16059;
                         case Properties::West::TALL:
                             return 16060;
+                        default:
+                            return 0;
                         }
                     case Properties::Waterlogged::FALSE:
                         switch (west) {
@@ -1024,8 +1342,14 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::S
                             return 16062;
                         case Properties::West::TALL:
                             return 16063;
+                        default:
+                            return 0;
                         }
+                    default:
+                        return 0;
                     }
+                default:
+                    return 0;
                 }
             case Properties::South::LOW:
                 switch (up) {
@@ -1039,6 +1363,8 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::S
                             return 16065;
                         case Properties::West::TALL:
                             return 16066;
+                        default:
+                            return 0;
                         }
                     case Properties::Waterlogged::FALSE:
                         switch (west) {
@@ -1048,7 +1374,11 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::S
                             return 16068;
                         case Properties::West::TALL:
                             return 16069;
+                        default:
+                            return 0;
                         }
+                    default:
+                        return 0;
                     }
                 case Properties::Up::FALSE:
                     switch (waterlogged) {
@@ -1060,6 +1390,8 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::S
                             return 16071;
                         case Properties::West::TALL:
                             return 16072;
+                        default:
+                            return 0;
                         }
                     case Properties::Waterlogged::FALSE:
                         switch (west) {
@@ -1069,8 +1401,14 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::S
                             return 16074;
                         case Properties::West::TALL:
                             return 16075;
+                        default:
+                            return 0;
                         }
+                    default:
+                        return 0;
                     }
+                default:
+                    return 0;
                 }
             case Properties::South::TALL:
                 switch (up) {
@@ -1084,6 +1422,8 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::S
                             return 16077;
                         case Properties::West::TALL:
                             return 16078;
+                        default:
+                            return 0;
                         }
                     case Properties::Waterlogged::FALSE:
                         switch (west) {
@@ -1093,7 +1433,11 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::S
                             return 16080;
                         case Properties::West::TALL:
                             return 16081;
+                        default:
+                            return 0;
                         }
+                    default:
+                        return 0;
                     }
                 case Properties::Up::FALSE:
                     switch (waterlogged) {
@@ -1105,6 +1449,8 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::S
                             return 16083;
                         case Properties::West::TALL:
                             return 16084;
+                        default:
+                            return 0;
                         }
                     case Properties::Waterlogged::FALSE:
                         switch (west) {
@@ -1114,9 +1460,17 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::S
                             return 16086;
                         case Properties::West::TALL:
                             return 16087;
+                        default:
+                            return 0;
                         }
+                    default:
+                        return 0;
                     }
+                default:
+                    return 0;
                 }
+            default:
+                return 0;
             }
         case Properties::North::TALL:
             switch (south) {
@@ -1132,6 +1486,8 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::S
                             return 16089;
                         case Properties::West::TALL:
                             return 16090;
+                        default:
+                            return 0;
                         }
                     case Properties::Waterlogged::FALSE:
                         switch (west) {
@@ -1141,7 +1497,11 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::S
                             return 16092;
                         case Properties::West::TALL:
                             return 16093;
+                        default:
+                            return 0;
                         }
+                    default:
+                        return 0;
                     }
                 case Properties::Up::FALSE:
                     switch (waterlogged) {
@@ -1153,6 +1513,8 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::S
                             return 16095;
                         case Properties::West::TALL:
                             return 16096;
+                        default:
+                            return 0;
                         }
                     case Properties::Waterlogged::FALSE:
                         switch (west) {
@@ -1162,8 +1524,14 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::S
                             return 16098;
                         case Properties::West::TALL:
                             return 16099;
+                        default:
+                            return 0;
                         }
+                    default:
+                        return 0;
                     }
+                default:
+                    return 0;
                 }
             case Properties::South::LOW:
                 switch (up) {
@@ -1177,6 +1545,8 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::S
                             return 16101;
                         case Properties::West::TALL:
                             return 16102;
+                        default:
+                            return 0;
                         }
                     case Properties::Waterlogged::FALSE:
                         switch (west) {
@@ -1186,7 +1556,11 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::S
                             return 16104;
                         case Properties::West::TALL:
                             return 16105;
+                        default:
+                            return 0;
                         }
+                    default:
+                        return 0;
                     }
                 case Properties::Up::FALSE:
                     switch (waterlogged) {
@@ -1198,6 +1572,8 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::S
                             return 16107;
                         case Properties::West::TALL:
                             return 16108;
+                        default:
+                            return 0;
                         }
                     case Properties::Waterlogged::FALSE:
                         switch (west) {
@@ -1207,8 +1583,14 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::S
                             return 16110;
                         case Properties::West::TALL:
                             return 16111;
+                        default:
+                            return 0;
                         }
+                    default:
+                        return 0;
                     }
+                default:
+                    return 0;
                 }
             case Properties::South::TALL:
                 switch (up) {
@@ -1222,6 +1604,8 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::S
                             return 16113;
                         case Properties::West::TALL:
                             return 16114;
+                        default:
+                            return 0;
                         }
                     case Properties::Waterlogged::FALSE:
                         switch (west) {
@@ -1231,7 +1615,11 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::S
                             return 16116;
                         case Properties::West::TALL:
                             return 16117;
+                        default:
+                            return 0;
                         }
+                    default:
+                        return 0;
                     }
                 case Properties::Up::FALSE:
                     switch (waterlogged) {
@@ -1243,6 +1631,8 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::S
                             return 16119;
                         case Properties::West::TALL:
                             return 16120;
+                        default:
+                            return 0;
                         }
                     case Properties::Waterlogged::FALSE:
                         switch (west) {
@@ -1252,11 +1642,23 @@ BlockId toProtocol(Properties::East east, Properties::North north, Properties::S
                             return 16122;
                         case Properties::West::TALL:
                             return 16123;
+                        default:
+                            return 0;
                         }
+                    default:
+                        return 0;
                     }
+                default:
+                    return 0;
                 }
+            default:
+                return 0;
             }
+        default:
+            return 0;
         }
+    default:
+        return 0;
     }
     return 0;
 }

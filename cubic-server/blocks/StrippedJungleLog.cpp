@@ -1,6 +1,4 @@
 #include "StrippedJungleLog.hpp"
-#include <stdexcept>
-
 namespace Blocks {
 namespace StrippedJungleLog {
 BlockId toProtocol(Properties::Axis axis)
@@ -12,6 +10,8 @@ BlockId toProtocol(Properties::Axis axis)
         return 155;
     case Properties::Axis::Z:
         return 156;
+    default:
+        return 0;
     }
     return 0;
 }

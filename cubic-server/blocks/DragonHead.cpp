@@ -1,6 +1,4 @@
 #include "DragonHead.hpp"
-#include <stdexcept>
-
 namespace Blocks {
 namespace DragonHead {
 BlockId toProtocol(Properties::Rotation rotation)
@@ -38,6 +36,8 @@ BlockId toProtocol(Properties::Rotation rotation)
         return 8685;
     case Properties::Rotation::FIFTEEN:
         return 8686;
+    default:
+        return 0;
     }
     return 0;
 }

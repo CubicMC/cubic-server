@@ -1,6 +1,4 @@
 #include "MudBrickSlab.hpp"
-#include <stdexcept>
-
 namespace Blocks {
 namespace MudBrickSlab {
 BlockId toProtocol(Properties::Type type, Properties::Waterlogged waterlogged)
@@ -12,6 +10,8 @@ BlockId toProtocol(Properties::Type type, Properties::Waterlogged waterlogged)
             return 10787;
         case Properties::Waterlogged::FALSE:
             return 10788;
+        default:
+            return 0;
         }
     case Properties::Type::BOTTOM:
         switch (waterlogged) {
@@ -19,6 +19,8 @@ BlockId toProtocol(Properties::Type type, Properties::Waterlogged waterlogged)
             return 10789;
         case Properties::Waterlogged::FALSE:
             return 10790;
+        default:
+            return 0;
         }
     case Properties::Type::DOUBLE:
         switch (waterlogged) {
@@ -26,7 +28,11 @@ BlockId toProtocol(Properties::Type type, Properties::Waterlogged waterlogged)
             return 10791;
         case Properties::Waterlogged::FALSE:
             return 10792;
+        default:
+            return 0;
         }
+    default:
+        return 0;
     }
     return 0;
 }

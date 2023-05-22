@@ -1,6 +1,4 @@
 #include "SugarCane.hpp"
-#include <stdexcept>
-
 namespace Blocks {
 namespace SugarCane {
 BlockId toProtocol(Properties::Age age)
@@ -38,6 +36,8 @@ BlockId toProtocol(Properties::Age age)
         return 5647;
     case Properties::Age::FIFTEEN:
         return 5648;
+    default:
+        return 0;
     }
     return 0;
 }

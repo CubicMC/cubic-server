@@ -1,6 +1,4 @@
 #include "BubbleCoralFan.hpp"
-#include <stdexcept>
-
 namespace Blocks {
 namespace BubbleCoralFan {
 BlockId toProtocol(Properties::Waterlogged waterlogged)
@@ -10,6 +8,8 @@ BlockId toProtocol(Properties::Waterlogged waterlogged)
         return 12219;
     case Properties::Waterlogged::FALSE:
         return 12220;
+    default:
+        return 0;
     }
     return 0;
 }

@@ -1,6 +1,4 @@
 #include "Jigsaw.hpp"
-#include <stdexcept>
-
 namespace Blocks {
 namespace Jigsaw {
 BlockId toProtocol(Properties::Orientation orientation)
@@ -30,6 +28,8 @@ BlockId toProtocol(Properties::Orientation orientation)
         return 18742;
     case Properties::Orientation::SOUTH_UP:
         return 18743;
+    default:
+        return 0;
     }
     return 0;
 }

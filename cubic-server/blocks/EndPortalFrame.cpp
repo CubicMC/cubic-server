@@ -1,6 +1,4 @@
 #include "EndPortalFrame.hpp"
-#include <stdexcept>
-
 namespace Blocks {
 namespace EndPortalFrame {
 BlockId toProtocol(Properties::Eye eye, Properties::Facing facing)
@@ -16,6 +14,8 @@ BlockId toProtocol(Properties::Eye eye, Properties::Facing facing)
             return 7179;
         case Properties::Facing::EAST:
             return 7180;
+        default:
+            return 0;
         }
     case Properties::Eye::FALSE:
         switch (facing) {
@@ -27,7 +27,11 @@ BlockId toProtocol(Properties::Eye eye, Properties::Facing facing)
             return 7183;
         case Properties::Facing::EAST:
             return 7184;
+        default:
+            return 0;
         }
+    default:
+        return 0;
     }
     return 0;
 }

@@ -1,33 +1,32 @@
 #ifndef CHAT_EVENTS_HOVER_TEXT_HPP
 #define CHAT_EVENTS_HOVER_TEXT_HPP
 
-#include "chat/SimpleMessage.hpp"
+#include "chat/Message.hpp"
 #include "chat/events/Hover.hpp"
 
 namespace chat::message::event {
 /**
  * @brief Show text in the hover event
- *
- * This is a @see `SimpleMessage` because there can't be events on an event message
- *
  */
 class TextHover : public OnHover {
 public:
-    TextHover(const chat::SimpleMessage &message = "");
-    TextHover(const std::vector<chat::SimpleMessage> &messages);
-    TextHover(const std::initializer_list<chat::SimpleMessage> &messages);
+    TextHover(const chat::Message &message = "");
+    TextHover(const std::vector<chat::Message> &messages);
+    TextHover(const std::initializer_list<chat::Message> &messages);
     template<typename... Args>
-    TextHover(const chat::SimpleMessage &message, const Args &...args)
+    TextHover(const chat::Message &message, const Args &...args)
     {
         messages.push_back(message);
         addMessage(std::forward<Args>(args)...);
     }
 
+    ~TextHover() override = default;
+
 public:
-    TextHover &addMessage(const chat::SimpleMessage &message);
+    TextHover &addMessage(const chat::Message &message);
 
     template<typename... Args>
-    TextHover &addMessage(const chat::SimpleMessage &message, const Args &...args)
+    TextHover &addMessage(const chat::Message &message, const Args &...args)
     {
         messages.push_back(message);
         return addMessage(std::forward<Args>(args)...);
@@ -38,7 +37,7 @@ public:
     static std::shared_ptr<TextHover> fromJson(const nlohmann::json &json);
 
 private:
-    std::vector<chat::SimpleMessage> messages;
+    std::vector<chat::Message> messages;
 };
 } // namespace chat::message
 

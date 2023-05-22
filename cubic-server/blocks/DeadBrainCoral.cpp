@@ -1,6 +1,4 @@
 #include "DeadBrainCoral.hpp"
-#include <stdexcept>
-
 namespace Blocks {
 namespace DeadBrainCoral {
 BlockId toProtocol(Properties::Waterlogged waterlogged)
@@ -10,6 +8,8 @@ BlockId toProtocol(Properties::Waterlogged waterlogged)
         return 12187;
     case Properties::Waterlogged::FALSE:
         return 12188;
+    default:
+        return 0;
     }
     return 0;
 }

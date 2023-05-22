@@ -27,16 +27,18 @@ std::unique_ptr<std::vector<uint8_t>> protocol::createLoginSuccess(const LoginSu
         in.username, addString,
         in.numberOfProperties, addVarInt
     );
-    // clang-format on
 
     // in.name, addString,
     // in.value, addString,
     // in.isSigned, addBoolean
     for (auto &property : in.properties) {
         serialize(payload,
-            property.name, addString,
-            property.value, addString,
-            property.isSigned, addBoolean
+            property.name,
+            addString,
+            property.value,
+            addString,
+            property.isSigned,
+            addBoolean
         );
         if (property.isSigned) {
             serialize(payload,
@@ -313,16 +315,18 @@ std::unique_ptr<std::vector<uint8_t>> protocol::createChunkDataAndLightUpdate(co
     serialize(payload,
         in.chunkX, addInt,
         in.chunkZ, addInt,
-        *in.heightmaps, addNBT<nbt::Compound>,
-        in.data, addChunkColumn,
-        in.blockEntities, addBlockEntities,
-        in.trustEdges, addBoolean,
-        in.skyLightMask, addArray<int64_t, addLong>,
-        in.blockLightMask, addArray<int64_t, addLong>,
-        in.emptySkyLightMask, addArray<int64_t, addLong>,
-        in.emptyBlockLightMask, addArray<int64_t, addLong>,
-        in.skyLight, addLightArray,
-        in.blockLight, addLightArray
+        // Obligated to do that here because addChunkColumn is constexpr
+        // in.data.getHeightMap(), addNBT<nbt::Compound>,
+
+        in.data, addChunkColumn
+        // in.blockEntities, addBlockEntities,
+        // in.trustEdges, addBoolean,
+        // in.skyLightMask, addArray<int64_t, addLong>,
+        // in.blockLightMask, addArray<int64_t, addLong>,
+        // in.emptySkyLightMask, addArray<int64_t, addLong>,
+        // in.emptyBlockLightMask, addArray<int64_t, addLong>,
+        // in.skyLight, addLightArray,
+        // in.blockLight, addLightArray
     );
     // clang-format on
     auto packet = std::make_unique<std::vector<uint8_t>>();
