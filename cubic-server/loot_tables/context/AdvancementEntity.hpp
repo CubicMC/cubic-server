@@ -10,18 +10,18 @@
 class Entity;
 
 namespace LootTable {
-    namespace Context {
-        class AdvancementEntity {
-        public:
-            AdvancementEntity(const Entity &gifter, const FloatingPosition &origin);
-            ~AdvancementEntity() = default;
+namespace Context {
+class AdvancementEntity {
+public:
+    AdvancementEntity(const Entity &gifter, const FloatingPosition &origin);
+    ~AdvancementEntity() = default;
 
-            const std::string &getType() const;
+    const std::string &getType() const;
 
-            const Entity &_gifter;
-            const FloatingPosition &_origin;
-        };
-    };
+    const Entity &_gifter;
+    const FloatingPosition &_origin;
+};
+};
 };
 
-#endif //CUBIC_SERVER_LOOT_TABLES_CONTEXT_ADVANCEMENTENTITY_HPP
+#endif // CUBIC_SERVER_LOOT_TABLES_CONTEXT_ADVANCEMENTENTITY_HPP

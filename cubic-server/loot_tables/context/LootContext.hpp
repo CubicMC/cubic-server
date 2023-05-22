@@ -17,13 +17,13 @@
 #include "Selector.hpp"
 
 namespace LootTable {
-    /*
-      Loot context class to be overloaded
-    */
-    class LootContext {
-    public:
-        virtual const std::string &getType() const = 0;
-    };
+/*
+  Loot context class to be overloaded
+*/
+class LootContext {
+public:
+    virtual const std::string &getType() const = 0;
+};
 };
 
-#endif //CUBIC_SERVER_LOOT_TABLES_LOOT_CONTEXT_HPP
+#endif // CUBIC_SERVER_LOOT_TABLES_LOOT_CONTEXT_HPP

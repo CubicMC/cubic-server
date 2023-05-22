@@ -8,17 +8,17 @@
 class Entity;
 
 namespace LootTable {
-    namespace Context {
-        class Barter {
-        public:
-            Barter(const Entity &barterer);
-            ~Barter() = default;
+namespace Context {
+class Barter {
+public:
+    Barter(const Entity &barterer);
+    ~Barter() = default;
 
-            const std::string &getType() const;
+    const std::string &getType() const;
 
-            const Entity &_barterer;
-        };
-    };
+    const Entity &_barterer;
+};
+};
 };
 
-#endif //CUBIC_SERVER_LOOT_TABLES_CONTEXT_BARTER_HPP
+#endif // CUBIC_SERVER_LOOT_TABLES_CONTEXT_BARTER_HPP

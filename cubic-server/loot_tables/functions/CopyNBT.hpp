@@ -4,17 +4,17 @@
 #include "Function.hpp"
 
 namespace LootTable {
-    namespace Function {
-        class CopyNBT : public Function {
-        public:
-            CopyNBT(const nlohmann::json &function);
-            ~CopyNBT() = default;
+namespace Function {
+class CopyNBT : public Function {
+public:
+    CopyNBT(const nlohmann::json &function);
+    ~CopyNBT() = default;
 
-            void apply(const LootContext &context) override;
+    void apply(const LootContext &context) override;
 
-            static std::unique_ptr<Function> create(const nlohmann::json &function);
-        };
-    };
+    static std::unique_ptr<Function> create(const nlohmann::json &function);
+};
+};
 };
 
-#endif //CUBIC_SERVER_LOOT_TABLES_FUNCTIONS_COPYNBT_HPP
+#endif // CUBIC_SERVER_LOOT_TABLES_FUNCTIONS_COPYNBT_HPP

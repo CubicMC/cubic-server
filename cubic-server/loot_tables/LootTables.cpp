@@ -17,15 +17,9 @@ void LootTables::initialize(const std::string &defaultFolder)
     this->importTableFolder("minecraft", defaultFolder);
 }
 
-void LootTables::addRollCreator(LootTable::Roll::Creator creator, LootTable::Roll::IsOfType check)
-{
-    this->_rollCreator.push_back({creator, check});
-}
+void LootTables::addRollCreator(LootTable::Roll::Creator creator, LootTable::Roll::IsOfType check) { this->_rollCreator.push_back({creator, check}); }
 
-void LootTables::addEntryCreator(const std::string &_namespace, const std::string &_name, LootTable::Entry::Creator creator)
-{
-    this->_entryCreator[_namespace][_name] = creator;
-}
+void LootTables::addEntryCreator(const std::string &_namespace, const std::string &_name, LootTable::Entry::Creator creator) { this->_entryCreator[_namespace][_name] = creator; }
 
 void LootTables::addFunctionCreator(const std::string &_namespace, const std::string &_name, LootTable::Function::Creator creator)
 {
@@ -44,16 +38,14 @@ std::unique_ptr<LootTable::Roll::Roll> LootTables::createRoll(const nlohmann::js
         if (check(roll))
             return (creator(roll));
     }
-    throw (LootTable::Roll::NoRollConstructor("No constructor fitting the roll: " + roll.dump()));
+    throw(LootTable::Roll::NoRollConstructor("No constructor fitting the roll: " + roll.dump()));
     return (nullptr);
 }
 
 // checks every entry for the right constructor, no constructor throws NoEntryConstructor
 std::unique_ptr<LootTable::Entry::Entry> LootTables::createEntry(const nlohmann::json &entry)
 {
-    if (entry.is_object() && \
-        entry.contains("type") && \
-        entry["type"].is_string()) {
+    if (entry.is_object() && entry.contains("type") && entry["type"].is_string()) {
         const std::string &type = entry["type"].get<std::string>();
         size_t separator = type.find(':');
 
@@ -61,16 +53,14 @@ std::unique_ptr<LootTable::Entry::Entry> LootTables::createEntry(const nlohmann:
             return (nullptr);
         return (this->_entryCreator[type.substr(0, separator)][type.substr(separator + 1)](entry));
     }
-    throw (LootTable::Entry::NoEntryContructor("No constructor fitting the entry: " + entry.dump()));
+    throw(LootTable::Entry::NoEntryContructor("No constructor fitting the entry: " + entry.dump()));
     return (nullptr);
 }
 
 // checks every function for the right constructor, no constructor throws NoFunctionConstructor
 std::unique_ptr<LootTable::Function::Function> LootTables::createFunction(const nlohmann::json &function)
 {
-    if (function.is_object() && \
-        function.contains("function") && \
-        function["function"].is_string()) {
+    if (function.is_object() && function.contains("function") && function["function"].is_string()) {
         const std::string &type = function["function"].get<std::string>();
         size_t separator = type.find(':');
 
@@ -78,16 +68,14 @@ std::unique_ptr<LootTable::Function::Function> LootTables::createFunction(const 
             return (nullptr);
         return (this->_functionCreator[type.substr(0, separator)][type.substr(separator + 1)](function));
     }
-    throw (LootTable::Function::NoFunctionContructor("No constructor fitting the function: " + function.dump()));
+    throw(LootTable::Function::NoFunctionContructor("No constructor fitting the function: " + function.dump()));
     return (nullptr);
 }
 
 // checks every condition for the right constructor, no constructor throws NoConditionConstructor
 std::unique_ptr<LootTable::Condition::Condition> LootTables::createCondition(const nlohmann::json &condition)
 {
-    if (condition.is_object() && \
-        condition.contains("condition") && \
-        condition["condition"].is_string()) {
+    if (condition.is_object() && condition.contains("condition") && condition["condition"].is_string()) {
         const std::string &type = condition["condition"].get<std::string>();
         size_t separator = type.find(':');
 
@@ -95,7 +83,7 @@ std::unique_ptr<LootTable::Condition::Condition> LootTables::createCondition(con
             return (nullptr);
         return (this->_conditionCreator[type.substr(0, separator)][type.substr(separator + 1)](condition));
     }
-    throw (LootTable::Condition::NoConditionContructor("No constructor fitting the entry: " + condition.dump()));
+    throw(LootTable::Condition::NoConditionContructor("No constructor fitting the entry: " + condition.dump()));
     return (nullptr);
 }
 
@@ -132,22 +120,10 @@ bool LootTables::exists(const std::string &_namespace, const std::string &table)
     return (this->_lootTables.contains(_namespace) && this->_lootTables[_namespace].contains(table));
 }
 
-LootTable::LootTable &LootTables::get(const std::string &_namespace, const std::string &table)
-{
-    return (*this->_lootTables[_namespace][table]);
-}
+LootTable::LootTable &LootTables::get(const std::string &_namespace, const std::string &table) { return (*this->_lootTables[_namespace][table]); }
 
-LootTable::LootTable &LootTables::getTable(const std::string &_namespace, const std::string &table)
-{
-    return (*this->_lootTables[_namespace][table]);
-}
+LootTable::LootTable &LootTables::getTable(const std::string &_namespace, const std::string &table) { return (*this->_lootTables[_namespace][table]); }
 
-std::unordered_map<std::string, std::unique_ptr<LootTable::LootTable>> &LootTables::getNamespace(const std::string &_namespace)
-{
-    return (this->_lootTables[_namespace]);
-}
+std::unordered_map<std::string, std::unique_ptr<LootTable::LootTable>> &LootTables::getNamespace(const std::string &_namespace) { return (this->_lootTables[_namespace]); }
 
-std::unordered_map<std::string, std::unique_ptr<LootTable::LootTable>> &LootTables::operator[](const std::string &_namespace)
-{
-    return (this->_lootTables[_namespace]);
-}
+std::unordered_map<std::string, std::unique_ptr<LootTable::LootTable>> &LootTables::operator[](const std::string &_namespace) { return (this->_lootTables[_namespace]); }

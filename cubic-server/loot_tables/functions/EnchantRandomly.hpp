@@ -4,17 +4,17 @@
 #include "Function.hpp"
 
 namespace LootTable {
-    namespace Function {
-        class EnchantRandomly : public Function {
-        public:
-            EnchantRandomly(const nlohmann::json &function);
-            ~EnchantRandomly() = default;
+namespace Function {
+class EnchantRandomly : public Function {
+public:
+    EnchantRandomly(const nlohmann::json &function);
+    ~EnchantRandomly() = default;
 
-            void apply(const LootContext &context) override;
+    void apply(const LootContext &context) override;
 
-            static std::unique_ptr<Function> create(const nlohmann::json &function);
-        };
-    };
+    static std::unique_ptr<Function> create(const nlohmann::json &function);
+};
+};
 };
 
-#endif //CUBIC_SERVER_LOOT_TABLES_FUNCTIONS_ENCHANTRANDOMLY_HPP
+#endif // CUBIC_SERVER_LOOT_TABLES_FUNCTIONS_ENCHANTRANDOMLY_HPP

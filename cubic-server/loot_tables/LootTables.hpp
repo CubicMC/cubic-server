@@ -1,22 +1,22 @@
 #ifndef CUBIC_SERVER_LOOT_TABLES_HPP
 #define CUBIC_SERVER_LOOT_TABLES_HPP
 
+#include <cstdint>
+#include <memory>
 #include <string>
 #include <unordered_map>
-#include <memory>
-#include <vector>
 #include <utility>
-#include <cstdint>
+#include <vector>
 
 #include <nlohmann/json.hpp>
 
 #include "types.hpp"
 
 #include "LootTable.hpp"
-#include "rolls/Roll.hpp"
+#include "conditions/Condition.hpp"
 #include "entries/Entry.hpp"
 #include "functions/Function.hpp"
-#include "conditions/Condition.hpp"
+#include "rolls/Roll.hpp"
 
 void addDefaultRollCreators(void);
 void addDefaultEntryCreators(void);
@@ -41,7 +41,7 @@ public:
     void addEntryCreator(const std::string &_namespace, const std::string &_name, LootTable::Entry::Creator creator);
     void addFunctionCreator(const std::string &_namespace, const std::string &_name, LootTable::Function::Creator creator);
     void addConditionCreator(const std::string &_namespace, const std::string &_name, LootTable::Condition::Creator creator);
-    
+
     // calls the right creator
     std::unique_ptr<LootTable::Roll::Roll> createRoll(const nlohmann::json &roll);
     std::unique_ptr<LootTable::Entry::Entry> createEntry(const nlohmann::json &entry);
@@ -71,4 +71,4 @@ private:
     std::unordered_map<std::string, std::unordered_map<std::string, LootTable::Condition::Creator>> _conditionCreator;
 };
 
-#endif //CUBIC_SERVER_LOOT_TABLES_HPP
+#endif // CUBIC_SERVER_LOOT_TABLES_HPP

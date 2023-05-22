@@ -4,17 +4,17 @@
 #include "Function.hpp"
 
 namespace LootTable {
-    namespace Function {
-        class ExplorationMapProperties : public Function {
-        public:
-            ExplorationMapProperties(const nlohmann::json &function);
-            ~ExplorationMapProperties() = default;
+namespace Function {
+class ExplorationMapProperties : public Function {
+public:
+    ExplorationMapProperties(const nlohmann::json &function);
+    ~ExplorationMapProperties() = default;
 
-            void apply(const LootContext &context) override;
+    void apply(const LootContext &context) override;
 
-            static std::unique_ptr<Function> create(const nlohmann::json &function);
-        };
-    };
+    static std::unique_ptr<Function> create(const nlohmann::json &function);
+};
+};
 };
 
-#endif //CUBIC_SERVER_LOOT_TABLES_FUNCTIONS_EXPLORATIONMAPPROPERTIES_HPP
+#endif // CUBIC_SERVER_LOOT_TABLES_FUNCTIONS_EXPLORATIONMAPPROPERTIES_HPP
