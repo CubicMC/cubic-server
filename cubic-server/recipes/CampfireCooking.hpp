@@ -12,6 +12,7 @@ namespace Recipe {
         ~CampfireCooking() = default;
 
         void dump(void) const override;
+        void insertToPayload(std::vector<uint8_t> &payload) const override;
 
         static std::unique_ptr<Recipe> create(const nlohmann::json &recipe);
     private:

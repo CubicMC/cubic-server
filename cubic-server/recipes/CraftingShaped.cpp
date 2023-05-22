@@ -104,6 +104,11 @@ namespace Recipe {
         LINFO(stream.str());
     }
 
+    void CraftingShaped::insertToPayload(std::vector<uint8_t> &payload) const
+    {
+
+    }
+
     bool CraftingShaped::getKey(char key, const nlohmann::json &content)
     {
         if (content.is_object()) {

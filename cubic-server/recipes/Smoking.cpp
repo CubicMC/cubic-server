@@ -31,6 +31,11 @@ namespace Recipe {
         LINFO("\"", Server::getInstance()->getItemConverter().fromProtocolIdToItem(this->_ingredient) << "\" -> \"" << Server::getInstance()->getItemConverter().fromProtocolIdToItem(this->_result) << "\" (cooking for " << this->_cookingTime, " ticks and get ", this->_experience, " xp)");
     }
 
+    void Smoking::insertToPayload(std::vector<uint8_t> &payload) const
+    {
+
+    }
+
     std::unique_ptr<Recipe> Smoking::create(const nlohmann::json &recipe)
     {
         return (std::make_unique<Smoking>(Smoking(recipe)));

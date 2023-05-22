@@ -34,6 +34,7 @@ namespace Recipe {
         void setValidity(bool validity) noexcept;
 
         virtual void dump(void) const;
+        virtual void insertToPayload(std::vector<uint8_t> &payload) const = 0;
 
     private:
         bool _hasCategory;

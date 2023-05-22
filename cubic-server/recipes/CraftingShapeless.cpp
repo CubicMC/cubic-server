@@ -44,6 +44,11 @@ namespace Recipe {
         LINFO(stream.str());
     }
 
+    void CraftingShapeless::insertToPayload(std::vector<uint8_t> &payload) const
+    {
+
+    }
+
     std::unique_ptr<Recipe> CraftingShapeless::create(const nlohmann::json &recipe)
     {
         return (std::make_unique<CraftingShapeless>(CraftingShapeless(recipe)));

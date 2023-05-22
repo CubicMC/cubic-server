@@ -2,6 +2,9 @@
 
 #include "Server.hpp"
 
+#include "protocol/PacketUtils.hpp"
+#include "protocol/serialization/add.hpp"
+
 namespace Recipe {
     Blasting::Blasting(const nlohmann::json &recipe):
         Recipe(recipe)
@@ -29,6 +32,14 @@ namespace Recipe {
     void Blasting::dump(void) const
     {
         LINFO("\"", Server::getInstance()->getItemConverter().fromProtocolIdToItem(this->_ingredient), "\" -> \"", Server::getInstance()->getItemConverter().fromProtocolIdToItem(this->_result), "\" (cooking for ", this->_cookingTime, " ticks and get ", this->_experience, " xp)");
+    }
+
+    void Blasting::insertToPayload(std::vector<uint8_t> &payload) const
+    {
+        protocol::serialize(payload,
+            this->getGroup(), protocol::addString
+
+        );
     }
 
     std::unique_ptr<Recipe> Blasting::create(const nlohmann::json &recipe)

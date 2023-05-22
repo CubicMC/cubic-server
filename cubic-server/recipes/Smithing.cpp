@@ -32,6 +32,11 @@ namespace Recipe {
         LINFO("\"", Server::getInstance()->getItemConverter().fromProtocolIdToItem(this->_base), "\" + \"", Server::getInstance()->getItemConverter().fromProtocolIdToItem(this->_addition), "\" = \"", Server::getInstance()->getItemConverter().fromProtocolIdToItem(this->_result), "\"");
     }
 
+    void Smithing::insertToPayload(std::vector<uint8_t> &payload) const
+    {
+
+    }
+
     std::unique_ptr<Recipe> Smithing::create(const nlohmann::json &recipe)
     {
         return (std::make_unique<Smithing>(Smithing(recipe)));

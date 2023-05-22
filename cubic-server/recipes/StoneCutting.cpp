@@ -28,6 +28,11 @@ namespace Recipe {
         LINFO("\"", Server::getInstance()->getItemConverter().fromProtocolIdToItem(this->_ingredient), "\" -> \"", Server::getInstance()->getItemConverter().fromProtocolIdToItem(this->_result), "\" (x", this->_count, ")");
     }
 
+    void StoneCutting::insertToPayload(std::vector<uint8_t> &payload) const
+    {
+
+    }
+
     std::unique_ptr<Recipe> StoneCutting::create(const nlohmann::json &recipe)
     {
         return (std::make_unique<StoneCutting>(StoneCutting(recipe)));
