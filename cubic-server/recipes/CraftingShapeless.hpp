@@ -8,13 +8,13 @@
 namespace Recipe {
     class CraftingShapeless : public Recipe {
     public:
-        CraftingShapeless(const nlohmann::json &recipe);
+        CraftingShapeless(const std::string &identifier, const nlohmann::json &recipe);
         ~CraftingShapeless() = default;
 
         void dump(void) const override;
         void insertToPayload(std::vector<uint8_t> &payload) const override;
 
-        static std::unique_ptr<Recipe> create(const nlohmann::json &recipe);
+        static std::unique_ptr<Recipe> create(const std::string &identifier, const nlohmann::json &recipe);
     private:
         std::vector<ItemId> _ingredients; // list of items to craft
         ItemId _result; // crafted item

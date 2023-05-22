@@ -2,6 +2,9 @@
 
 #include "Server.hpp"
 
+#include "protocol/PacketUtils.hpp"
+#include "protocol/serialization/add.hpp"
+
 namespace Recipe {
     CraftingShaped::MaybeItems::MaybeItems(void) : _empty(true)
     {}
@@ -14,13 +17,13 @@ namespace Recipe {
         return (this->_empty);
     }
 
-    const std::weak_ptr<std::vector<ItemId>> &CraftingShaped::MaybeItems::getItems(void) const noexcept
+    const std::shared_ptr<std::vector<ItemId>> &CraftingShaped::MaybeItems::getItems(void) const noexcept
     {
         return (this->_items);
     }
 
-    CraftingShaped::CraftingShaped(const nlohmann::json &recipe):
-        Recipe(recipe)
+    CraftingShaped::CraftingShaped(const std::string &identifier, const nlohmann::json &recipe):
+        Recipe(identifier, recipe)
     {
         // returns if any value is missing or does not have the right type
         if (!recipe.contains("pattern") || \
@@ -38,12 +41,16 @@ namespace Recipe {
             this->_count = recipe["result"]["count"].get<nlohmann::json::number_unsigned_t>();
         else
             this->_count = 1;
+
+        this->_y = recipe["pattern"].size();
         for (size_t pattern_line_pos = 0; pattern_line_pos < recipe["pattern"].size(); pattern_line_pos++) {
             if (!recipe["pattern"][pattern_line_pos].is_string())
                 return;
             this->_pattern.push_back(std::vector<MaybeItems>());
 
             std::string pattern_line = recipe["pattern"][pattern_line_pos].get<std::string>();
+
+            this->_x = std::max(pattern_line.size(), this->_x);
 
             for (const auto &pattern_item : pattern_line) {
                 if (pattern_item == ' ')
@@ -57,6 +64,7 @@ namespace Recipe {
                 }
             }
         }
+
         this->setValidity(true);
     }
 
@@ -72,7 +80,7 @@ namespace Recipe {
                     bool found_key = false;
 
                     for (const auto &[key, items] : this->_key) {
-                        if (item.getItems().lock() == items) {
+                        if (item.getItems() == items) {
                             stream << key;
                             found_key = true;
                             break;
@@ -106,7 +114,62 @@ namespace Recipe {
 
     void CraftingShaped::insertToPayload(std::vector<uint8_t> &payload) const
     {
+        protocol::Slot slot{true, 0, 1};
+        int category = 0;
 
+        if (this->getCategory() == "building")
+            category = 0;
+        else if (this->getCategory() == "redstone")
+            category = 1;
+        else if (this->getCategory() == "equipment")
+            category = 2;
+        else // "misc" and other
+            category = 3;
+
+        protocol::serialize(payload,
+            "minecraft:crafting_shapeless", protocol::addString,
+            this->getIdentifier(), protocol::addString,
+            this->_x, protocol::addVarInt,
+            this->_y, protocol::addVarInt,
+            this->getGroup(), protocol::addString,
+            category, protocol::addVarInt,
+            this->_x * this->_y, protocol::addVarInt
+        );
+
+        for (size_t y = 0; y < this->_y; y++) { // horizontally
+            for (size_t x = 0; x < this->_x; x++) { // vertically
+                if (y >= this->_pattern.size() || x >= this->_pattern[y].size()) { // out of range
+                    // out of range of pattern data: add an empty list of slot (size 0 with nothing after)
+                    protocol::serialize(payload,
+                        0, protocol::addVarInt
+                    );
+                } else { // in range
+                    if (this->_pattern[y][x].isEmpty()) { // empty
+                        // no ingredient at this position: add an empty list of slot (size 0 with nothing after)
+                        protocol::serialize(payload,
+                            0, protocol::addVarInt
+                        );
+                    } else { // in range and items
+                        // list of ingredient found at this position:
+                        protocol::serialize(payload,
+                            this->_pattern[y][x].getItems()->size(), protocol::addVarInt // add slot array size
+                        );
+                        for (const ItemId &item : *this->_pattern[y][x].getItems().get()) {
+                            slot.itemID = item;
+                            protocol::serialize(payload,
+                                slot, protocol::addSlot // add slot
+                            );
+                        }
+                    }
+                }
+            }
+        }
+
+        slot.itemID = this->_result;
+        slot.itemCount = this->_count;
+        protocol::serialize(payload,
+            slot, protocol::addSlot
+        );
     }
 
     bool CraftingShaped::getKey(char key, const nlohmann::json &content)
@@ -131,8 +194,8 @@ namespace Recipe {
         return (false);
     }
 
-    std::unique_ptr<Recipe> CraftingShaped::create(const nlohmann::json &recipe)
+    std::unique_ptr<Recipe> CraftingShaped::create(const std::string &identifier, const nlohmann::json &recipe)
     {
-        return (std::make_unique<CraftingShaped>(CraftingShaped(recipe)));
+        return (std::make_unique<CraftingShaped>(CraftingShaped(identifier, recipe)));
     }
 };

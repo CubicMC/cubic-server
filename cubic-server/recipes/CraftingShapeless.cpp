@@ -2,9 +2,12 @@
 
 #include "Server.hpp"
 
+#include "protocol/PacketUtils.hpp"
+#include "protocol/serialization/add.hpp"
+
 namespace Recipe {
-    CraftingShapeless::CraftingShapeless(const nlohmann::json &recipe):
-        Recipe(recipe)
+    CraftingShapeless::CraftingShapeless(const std::string &identifier, const nlohmann::json &recipe):
+        Recipe(identifier, recipe)
     {
         // returns if any value is missing or does not have the right type
         if (!recipe.contains("ingredients") || \
@@ -46,11 +49,42 @@ namespace Recipe {
 
     void CraftingShapeless::insertToPayload(std::vector<uint8_t> &payload) const
     {
+        protocol::Slot slot{true, 0, 1};
+        int category = 0;
 
+        if (this->getCategory() == "building")
+            category = 0;
+        else if (this->getCategory() == "redstone")
+            category = 1;
+        else if (this->getCategory() == "equipment")
+            category = 2;
+        else // "misc" and other
+            category = 3;
+
+        protocol::serialize(payload,
+            "minecraft:crafting_shapeless", protocol::addString,
+            this->getIdentifier(), protocol::addString,
+            this->getGroup(), protocol::addString,
+            category, protocol::addVarInt,
+            this->_ingredients.size(), protocol::addVarInt
+        );
+
+        for (const ItemId &ingredient : this->_ingredients) {
+            slot.itemID = ingredient;
+            protocol::serialize(payload,
+                slot, protocol::addSlot
+            );
+        }
+
+        slot.itemID = this->_result;
+        slot.itemCount = this->_count;
+        protocol::serialize(payload,
+            slot, protocol::addSlot
+        );
     }
 
-    std::unique_ptr<Recipe> CraftingShapeless::create(const nlohmann::json &recipe)
+    std::unique_ptr<Recipe> CraftingShapeless::create(const std::string &identifier, const nlohmann::json &recipe)
     {
-        return (std::make_unique<CraftingShapeless>(CraftingShapeless(recipe)));
+        return (std::make_unique<CraftingShapeless>(CraftingShapeless(identifier, recipe)));
     }
 };

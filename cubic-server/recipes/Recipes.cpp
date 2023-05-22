@@ -15,10 +15,19 @@
 #include "StoneCutting.hpp"
 
 namespace Recipe {
-    Recipe::Recipe(const nlohmann::json &recipe) : _hasCategory(false), _hasGroup(false), _isValid(false)
+    Recipe::Recipe(const std::string &identifier, const nlohmann::json &recipe):
+        _identifier(identifier),
+        _hasCategory(false),
+        _hasGroup(false),
+        _isValid(false)
     {
         this->setCategory(recipe);
         this->setGroup(recipe);
+    }
+
+    const std::string &Recipe::getIdentifier(void) const noexcept
+    {
+        return (this->_identifier);
     }
 
     bool Recipe::hasCategory(void) const noexcept
@@ -107,12 +116,13 @@ void Recipes::loadFolder(const std::string &_namespace, const std::string &folde
                 std::string recipeType = recipeContent["type"].get<std::string>();            // "minecraft:smelting" ->
                 std::string recipeTypeNamespace = recipeType.substr(0, recipeType.find(':')); // "minecraft"
                 std::string recipeTypeType = recipeType.substr(recipeType.find(':') + 1);     // "smelting"
+                std::string identifier = _namespace + filepath.path().string().substr(path_length + 1, filepath.path().string().length() - (path_length + 1) - 5);
 
                 // if no valid creator is found, throws the UnknownRecipeType exception
                 if (!this->_recipeCreators.contains(recipeTypeNamespace) || !this->_recipeCreators[recipeTypeNamespace].contains(recipeTypeType)) // checks if type creator exists for current recipe
                     throw (UnknownRecipeType("No recipe creator found for recipe type " + recipeTypeNamespace + ":" + recipeTypeType));
                 // creates a recipe using the right recipe creator
-                this->_recipes[_namespace][filepath.path().string().substr(path_length + 1, filepath.path().string().length() - (path_length + 1) - 5)] = this->_recipeCreators[recipeTypeNamespace][recipeTypeType](recipeContent);
+                this->_recipes[_namespace][filepath.path().string().substr(path_length + 1, filepath.path().string().length() - (path_length + 1) - 5)] = this->_recipeCreators[recipeTypeNamespace][recipeTypeType](identifier, recipeContent);
                 // removes the recipe if it is not valid (call setValifity(true) to set as valid)
                 if (!this->_recipes[_namespace][filepath.path().string().substr(path_length + 1, filepath.path().string().length() - (path_length + 1) - 5)]->isValid())
                     this->_recipes[_namespace].erase(filepath.path().string().substr(path_length + 1, filepath.path().string().length() - (path_length + 1) - 5));
@@ -120,13 +130,14 @@ void Recipes::loadFolder(const std::string &_namespace, const std::string &folde
         }
     }
     LINFO("Loaded ", this->_recipes[_namespace].size(), " recipes from path ", folder, " into namespace \"", _namespace, "\"");
-    /* // prints the recipes loaded into the given namespace (includes previously loaded recipes from other sources)
+    
+    // prints the recipes loaded into the given namespace (includes previously loaded recipes from other sources)
     for (const auto &[name, recipe] : this->_recipes[_namespace]) {
         LINFO("\"", _namespace, ":", name, "\":");
         recipe->dump();
         LINFO("");
     }
-    */
+    
 }
 
 void Recipes::initialize(void)
