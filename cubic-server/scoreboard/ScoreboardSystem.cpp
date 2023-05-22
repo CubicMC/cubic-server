@@ -16,12 +16,6 @@ void ScoreboardSystem::initialize(void)
     this->addObjectiveCriteria("armor");
 }
 
-void ScoreboardSystem::addObjectiveCriteria(const std::string &criteria)
-{
-    this->_criteriaSet.insert(criteria);
-}
+void ScoreboardSystem::addObjectiveCriteria(const std::string &criteria) { this->_criteriaSet.insert(criteria); }
 
-bool ScoreboardSystem::hasObjectiveCriteria(const std::string &criteria) const
-{
-    return (this->_criteriaSet.contains(criteria));
-}
+bool ScoreboardSystem::hasObjectiveCriteria(const std::string &criteria) const { return (this->_criteriaSet.contains(criteria)); }
