@@ -17,9 +17,9 @@ LootTableEntry::LootTableEntry(const nlohmann::json &entry):
         return;
     tableNamespace = table.substr(0, table.find(':'));
     tableName = table.substr(tableNamespace.size() + 1);
-    if (Server::getInstance()->lootTables.exists("", "")) {
+    if (Server::getInstance()->getLootTableSystem().exists("", "")) {
         this->_isTable = true;
-        this->_table = &Server::getInstance()->lootTables.get(tableNamespace, tableName);
+        this->_table = &Server::getInstance()->getLootTableSystem().get(tableNamespace, tableName);
     }
 
     this->setValidity(true);

@@ -90,7 +90,7 @@ void Server::launch(const configuration::ConfigHandler &config)
     LINFO("ItemConverter initialized");
 
     // Initialize loot tables
-    lootTables.initialize();
+    _lootTables.initialize();
 
     // Initialize default world group
     auto defaultChat = std::make_shared<Chat>();
@@ -278,3 +278,4 @@ std::unordered_map<std::string_view, std::shared_ptr<WorldGroup>> &Server::getWo
 
 const std::unordered_map<std::string_view, std::shared_ptr<WorldGroup>> &Server::getWorldGroups() const { return _worldGroups; }
 Recipes &Server::getRecipeSystem(void) noexcept { return (this->_recipes); }
+LootTables &Server::getLootTableSystem(void) noexcept { return (this->_lootTables); }

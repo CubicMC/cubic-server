@@ -22,7 +22,7 @@ Entry::Entry(const nlohmann::json &entry):
     // get functions
     if (entry.contains("functions") && entry["functions"].is_array()) {
         for (const auto &function : entry["functions"]) {
-            std::unique_ptr<Function::Function> newFunction = Server::getInstance()->lootTables.createFunction(function);
+            std::unique_ptr<Function::Function> newFunction = Server::getInstance()->getLootTableSystem().createFunction(function);
 
             const auto &it = this->_functions.insert(this->_functions.end(), nullptr);
             it->swap(newFunction);
@@ -32,7 +32,7 @@ Entry::Entry(const nlohmann::json &entry):
     // get conditions
     if (entry.contains("conditions") && entry["conditions"].is_array()) {
         for (const auto &condition : entry["conditions"]) {
-            std::unique_ptr<Condition::Condition> newCondition = Server::getInstance()->lootTables.createCondition(condition);
+            std::unique_ptr<Condition::Condition> newCondition = Server::getInstance()->getLootTableSystem().createCondition(condition);
 
             const auto &it = this->_conditions.insert(this->_conditions.end(), nullptr);
             it->swap(newCondition);

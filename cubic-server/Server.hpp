@@ -76,9 +76,9 @@ public:
 
     Recipes &getRecipeSystem(void) noexcept;
 
-    Permissions permissions;
+    LootTables &getLootTableSystem(void) noexcept;
 
-    LootTables lootTables;
+    Permissions permissions;
 
 private:
     Server();
@@ -105,6 +105,7 @@ private:
     Blocks::GlobalPalette _globalPalette;
     Items::ItemConverter _itemConverter;
     Recipes _recipes;
+    LootTables _lootTables;
 };
 
 #endif // CUBICSERVER_SERVER_HPP

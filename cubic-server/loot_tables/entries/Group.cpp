@@ -9,7 +9,7 @@ Group::Group(const nlohmann::json &entry):
 {
     // get entries
     for (const auto &child : entry["children"]) {
-        std::unique_ptr<Entry> newChild = Server::getInstance()->lootTables.createEntry(child);
+        std::unique_ptr<Entry> newChild = Server::getInstance()->getLootTableSystem().createEntry(child);
 
         const auto &it = this->_children.insert(this->_children.end(), nullptr);
         it->swap(newChild);

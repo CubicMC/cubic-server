@@ -16,11 +16,11 @@ Pool::Pool(const nlohmann::json &pool):
         return; // invalid pool
 
     // get rool and bonus roll
-    this->_roll = Server::getInstance()->lootTables.createRoll(pool["rolls"]);
+    this->_roll = Server::getInstance()->getLootTableSystem().createRoll(pool["rolls"]);
 
     // get entries
     for (const auto &entry : pool["entries"]) {
-        std::unique_ptr<Entry::Entry> newEntry = Server::getInstance()->lootTables.createEntry(entry);
+        std::unique_ptr<Entry::Entry> newEntry = Server::getInstance()->getLootTableSystem().createEntry(entry);
 
         const auto &it = this->_entries.insert(this->_entries.end(), nullptr);
         it->swap(newEntry);
@@ -29,7 +29,7 @@ Pool::Pool(const nlohmann::json &pool):
     // get functions
     if (pool.contains("functions") && pool["functions"].is_array()) {
         for (const auto &function : pool["functions"]) {
-            std::unique_ptr<Function::Function> newFunction = Server::getInstance()->lootTables.createFunction(function);
+            std::unique_ptr<Function::Function> newFunction = Server::getInstance()->getLootTableSystem().createFunction(function);
 
             const auto &it = this->_functions.insert(this->_functions.end(), nullptr);
             it->swap(newFunction);
@@ -39,7 +39,7 @@ Pool::Pool(const nlohmann::json &pool):
     // get conditions
     if (pool.contains("conditions") && pool["conditions"].is_array()) {
         for (const auto &condition : pool["conditions"]) {
-            std::unique_ptr<Condition::Condition> newCondition = Server::getInstance()->lootTables.createCondition(condition);
+            std::unique_ptr<Condition::Condition> newCondition = Server::getInstance()->getLootTableSystem().createCondition(condition);
 
             const auto &it = this->_conditions.insert(this->_conditions.end(), nullptr);
             it->swap(newCondition);
@@ -86,9 +86,9 @@ void Pool::poll(LootTablePoll &_poll, LootContext *context) const
     // get number of entries to generate and their probability
     const Roll::RollResult roll = this->_roll->poll(context);
 
-    for (int rolls = 0; rolls < roll._nbr; rolls++) {
+    for (int rolls = 0; rolls < roll.nbr; rolls++) {
         // proceeds if probability is superior or equal to 1 or if probability rolled is inferior to probability generated
-        if (roll._probability >= 1.0 || static_cast<double>(rand() % 10000) < roll._probability * 10000.0) {
+        if (roll.probability >= 1.0 || static_cast<double>(rand() % 10000) < roll.probability * 10000.0) {
             int64_t rolledWeight = 0;
             int64_t elapsedWeight = 0;
 

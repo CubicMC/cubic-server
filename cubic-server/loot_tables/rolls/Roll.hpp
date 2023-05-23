@@ -20,8 +20,8 @@ struct RollResult {
     RollResult(int64_t nbr, double probability);
     ~RollResult() = default;
 
-    int64_t _nbr;
-    double _probability;
+    int64_t nbr;
+    double probability;
 };
 
 /*

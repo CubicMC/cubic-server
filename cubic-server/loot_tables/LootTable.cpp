@@ -46,7 +46,7 @@ LootTable::LootTable(const nlohmann::json &table):
     // get functions
     if (table.contains("functions") && table["functions"].is_array()) {
         for (const auto &function : table["functions"]) {
-            std::unique_ptr<Function::Function> newFunction = Server::getInstance()->lootTables.createFunction(function);
+            std::unique_ptr<Function::Function> newFunction = Server::getInstance()->getLootTableSystem().createFunction(function);
 
             const auto &it = this->_functions.insert(this->_functions.end(), nullptr);
             it->swap(newFunction);
