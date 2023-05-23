@@ -32,7 +32,7 @@ const std::string getProtocolFlag(const NametagVisibility &flag)
     }
     return ("always");
 }
-};
+}
 
 namespace CollisionRule {
 const std::string getProtocolFlag(const CollisionRule &flag)
@@ -55,7 +55,7 @@ const std::string getProtocolFlag(const CollisionRule &flag)
     }
     return ("always");
 }
-};
+}
 
 Team::Team(const Scoreboard &scoreboard, const std::string &name):
     _scoreboard(scoreboard),
@@ -268,5 +268,5 @@ void Team::sendLeaveTeam(const std::string &name) const
         }
     }
 }
-};
-};
+}
+}

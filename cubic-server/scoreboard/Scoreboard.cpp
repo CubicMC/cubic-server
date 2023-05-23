@@ -266,5 +266,4 @@ void Scoreboard::sendScoreboardStatus(Player &player) const
         player.sendUpdateTeams(update);
     }
 }
-
-};
+}

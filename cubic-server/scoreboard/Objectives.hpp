@@ -6,6 +6,8 @@
 #include <unordered_map>
 #include <vector>
 
+#include "chat/Message.hpp"
+
 class Entity;
 class ScoreboardSystem;
 
@@ -41,14 +43,14 @@ enum class RenderType : int32_t {
 class Objective {
 public:
     Objective(const Scoreboard &scoreboard, const std::string &name, const std::string &criteria);
-    Objective(const Scoreboard &scoreboard, const std::string &name, const std::string &criteria, const std::string &displayName);
+    Objective(const Scoreboard &scoreboard, const std::string &name, const std::string &criteria, const chat::Message &displayName);
     Objective(const Scoreboard &scoreboard, const std::string &name, const std::string &criteria, const RenderType &renderType);
-    Objective(const Scoreboard &scoreboard, const std::string &name, const std::string &criteria, const std::string &displayName, const RenderType &renderType);
+    Objective(const Scoreboard &scoreboard, const std::string &name, const std::string &criteria, const chat::Message &displayName, const RenderType &renderType);
     ~Objective();
 
     const std::string &getName(void) const noexcept;
     const std::string &getCriteria(void) const noexcept;
-    const std::string &getDisplayName(void) const noexcept;
+    const chat::Message &getDisplayName(void) const noexcept;
     const RenderType &getRenderType(void) const noexcept;
     std::unordered_map<std::string, Score> &getScores(void) noexcept;
     Score &getScore(const std::string &name);
@@ -70,11 +72,11 @@ private:
     const Scoreboard &_scoreboard;
     const std::string _name;
     const std::string _criteria;
-    std::string _displayName; // json format
+    chat::Message _displayName; // json format
     RenderType _renderType;
     std::unordered_map<std::string, Score> _values;
 };
-};
-};
+}
+}
 
 #endif /* CUBICSERVER_SCOREBOARD_OBJECTIVES_HPP */

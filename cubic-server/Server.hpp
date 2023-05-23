@@ -17,8 +17,8 @@
 #include "protocol_id_converter/itemConverter.hpp"
 
 #include "Permissions.hpp"
-#include "scoreboard/ScoreboardSystem.hpp"
 #include "options.hpp"
+#include "scoreboard/ScoreboardSystem.hpp"
 
 #include "recipes/Recipes.hpp"
 

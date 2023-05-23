@@ -746,7 +746,7 @@ std::unique_ptr<std::vector<uint8_t>> createHealth(const Health &);
 struct UpdateObjectives {
     std::string name;
     uint8_t mode;
-    std::string value;
+    chat::Message value;
     enum class Type : int32_t {
         Integers = 0,
         Hearts = 1

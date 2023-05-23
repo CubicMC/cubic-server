@@ -42,13 +42,13 @@ Objective::Objective(const Scoreboard &scoreboard, const std::string &name, cons
     _scoreboard(scoreboard),
     _name(name),
     _criteria(criteria),
-    _displayName("{\"text\":\"" + name + "\"}"),
+    _displayName(name),
     _renderType(RenderType::RenderInteger)
 {
     LDEBUG("Added objective \"", name, "\"");
 }
 
-Objective::Objective(const Scoreboard &scoreboard, const std::string &name, const std::string &criteria, const std::string &displayName):
+Objective::Objective(const Scoreboard &scoreboard, const std::string &name, const std::string &criteria, const chat::Message &displayName):
     _scoreboard(scoreboard),
     _name(name),
     _criteria(criteria),
@@ -62,13 +62,13 @@ Objective::Objective(const Scoreboard &scoreboard, const std::string &name, cons
     _scoreboard(scoreboard),
     _name(name),
     _criteria(criteria),
-    _displayName("{\"text\":\"" + name + "\"}"),
+    _displayName(name),
     _renderType(renderType)
 {
     LDEBUG("Added objective \"", name, "\"");
 }
 
-Objective::Objective(const Scoreboard &scoreboard, const std::string &name, const std::string &criteria, const std::string &displayName, const RenderType &renderType):
+Objective::Objective(const Scoreboard &scoreboard, const std::string &name, const std::string &criteria, const chat::Message &displayName, const RenderType &renderType):
     _scoreboard(scoreboard),
     _name(name),
     _criteria(criteria),
@@ -84,7 +84,7 @@ const std::string &Objective::getName(void) const noexcept { return (this->_name
 
 const std::string &Objective::getCriteria(void) const noexcept { return (this->_criteria); }
 
-const std::string &Objective::getDisplayName(void) const noexcept { return (this->_displayName); }
+const chat::Message &Objective::getDisplayName(void) const noexcept { return (this->_displayName); }
 
 const RenderType &Objective::getRenderType(void) const noexcept { return (this->_renderType); }
 
@@ -173,5 +173,5 @@ void Objective::sendRemoveScore(const std::string &name) const
         }
     }
 }
-};
-};
+}
+}

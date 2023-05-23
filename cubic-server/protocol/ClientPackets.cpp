@@ -861,7 +861,7 @@ std::unique_ptr<std::vector<uint8_t>> protocol::createUpdateObjectives(const Upd
     );
     if (in.mode == 0 || in.mode == 2) {
         serialize(payload,
-            in.value, addChat,
+            in.value.serialize(), addChat,
             in.type, addVarInt
         );
     }

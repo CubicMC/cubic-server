@@ -80,6 +80,6 @@ private:
     std::array<Objective::Objective *, 18> _displaySlots;
     std::unordered_map<std::string, std::unordered_map<std::string, std::shared_ptr<Objective::Objective>>> _objectivesByCriteria;
 };
-};
+}
 
 #endif // CUBICSERVER_SCOREBOARD_SCOREBOARD_HPP
