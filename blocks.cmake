@@ -1,6 +1,6 @@
 function(download_and_check_file URL OUTPUT_FILE WORK_DIR)
-    execute_process(COMMAND wget -q ${URL} -O ${OUTPUT_FILE} WORKING_DIRECTORY ${WORK_DIR})
-    execute_process(COMMAND wget -q ${URL}.sha256 -O ${OUTPUT_FILE}.sha256 WORKING_DIRECTORY ${WORK_DIR})
+    execute_process(COMMAND wget --verbose --show-progress ${URL} -O ${OUTPUT_FILE} WORKING_DIRECTORY ${WORK_DIR})
+    execute_process(COMMAND wget --verbose --show-progress ${URL}.sha256 -O ${OUTPUT_FILE}.sha256 WORKING_DIRECTORY ${WORK_DIR})
     execute_process(COMMAND sha256sum --check ${OUTPUT_FILE}.sha256 COMMAND_ERROR_IS_FATAL ANY WORKING_DIRECTORY ${WORK_DIR})
 endfunction()
 
