@@ -11,6 +11,7 @@
 #include "command_parser/CommandParser.hpp"
 #include "items/foodItems.hpp"
 #include "logging/Logger.hpp"
+#include "PluginManager.hpp"
 
 Player::Player(Client *cli, std::shared_ptr<Dimension> dim, u128 uuid, const std::string &username):
     _cli(cli),
@@ -133,6 +134,7 @@ void Player::disconnect(const chat::Message &reason)
     this->_cli->_sendData(*pck);
     this->_cli->_isRunning = false;
     LDEBUG("Sent a disconnect play packet");
+    onEvent(Server::getInstance()->getPluginManager(), onPlayerLeave, this);
 }
 
 #pragma region ClientBound
@@ -1030,6 +1032,8 @@ void Player::_continueLoginSequence()
     chat::Message connectionMsg = chat::Message::fromTranslationKey<chat::message::TranslationKey::MultiplayerPlayerJoined>(this);
 
     this->getWorld()->getChat()->sendSystemMessage(connectionMsg, this);
+
+    onEvent(Server::getInstance()->getPluginManager(), onPlayerJoin, this);
 }
 
 void Player::_unloadChunk(int32_t x, int32_t z)

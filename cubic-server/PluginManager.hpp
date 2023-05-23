@@ -101,22 +101,24 @@ namespace EventKey {
     static const char *onChunkLoad = "onChunkLoad";
 }
 
-#define onEvent(plugin_manager, key, x) for (const auto &event : plugin_manager->_events[EventKey::key]) { \
-    ((EventType::key)event.rawptr)(x); \
+#define onEvent(plugin_manager, key, ...) for (const auto &event : plugin_manager._events[EventKey::key]) { \
+    ((EventType::key)event.rawptr)(plugin_manager.getInterface().get() __VA_OPT__(,) __VA_ARGS__); \
 }
 
 class PluginManager {
 public:
-    PluginManager(Server *server, const std::string &folder = "./plugins");
+    explicit PluginManager(Server *server, const std::string &folder = "./plugins");
     ~PluginManager();
 
-    void load(void);
-    void reload(void);
-    void unload(void);
+    void load();
+    void reload();
+    void unload();
+
+    std::shared_ptr<PluginInterface> getInterface() const;
 
     std::unordered_map<std::string, std::vector<EventType::AllTypes>> _events;
-    std::shared_ptr<PluginInterface> _interface;
 private:
+    std::shared_ptr<PluginInterface> _interface;
 
     void loadPlugin(std::string filepath);
     std::string _folder;

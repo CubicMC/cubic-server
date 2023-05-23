@@ -67,6 +67,8 @@ public:
 
     const Items::ItemConverter &getItemConverter() const { return _itemConverter; }
 
+    PluginManager &getPluginManager() { return _pluginManager; }
+
     void forEachWorldGroup(std::function<void(WorldGroup &)> callback);
     void forEachWorldGroupIf(std::function<void(WorldGroup &)> callback, std::function<bool(const WorldGroup &)> predicate);
 

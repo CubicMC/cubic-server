@@ -81,7 +81,7 @@ void PluginManager::load(void)
     LINFO("Loaded plugins");
 
     using namespace EventKey;
-    onEvent(this, initialize, this->_interface.get());
+    onEvent((*this), initialize);
 }
 
 void PluginManager::unload(void)
@@ -98,4 +98,8 @@ void PluginManager::reload(void)
     this->unload();
     this->_events.clear();
     this->load();
+}
+
+std::shared_ptr<PluginInterface> PluginManager::getInterface() const {
+    return this->_interface;
 }

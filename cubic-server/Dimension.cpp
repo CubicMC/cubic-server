@@ -3,6 +3,8 @@
 #include "Player.hpp"
 #include "World.hpp"
 #include "logging/Logger.hpp"
+#include "PluginManager.hpp"
+#include "Server.hpp"
 
 Dimension::Dimension(World *world):
     _world(world),
@@ -223,4 +225,11 @@ void Dimension::blockUpdate(Position position, int32_t id)
     this->forEachPlayer([&position, &id](Player *player) {
         player->sendBlockUpdate({position, id});
     });
+
+    Vector3<int> pos = Vector3<int>(position.x, position.y, position.z);
+    if (id) {
+        onEvent(Server::getInstance()->getPluginManager(), onBlockPlace, nullptr, &pos);
+    } else {
+        onEvent(Server::getInstance()->getPluginManager(), onBlockDestroy, nullptr, &pos);
+    }
 }
