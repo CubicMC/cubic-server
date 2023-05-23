@@ -116,7 +116,8 @@ private:
     std::string getFilePath() const;
 
     // Stream to the current log file
-    std::fstream _fileStream;
+    std::ofstream _fileStream;
+    std::ofstream _lattestStream;
 
     // Handler for files and folders
     FileAndFolderHandler _fileAndFolderHandler;

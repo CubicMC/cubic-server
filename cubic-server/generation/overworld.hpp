@@ -8,6 +8,8 @@ namespace generation {
 class Overworld : public Generator {
 public:
     Overworld(Seed seed);
+    ~Overworld() = default;
+
     BlockId getBlock(positionType x, positionType y, positionType z) override;
     BlockId getBlock(const Position &pos) override;
 

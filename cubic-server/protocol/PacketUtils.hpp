@@ -27,9 +27,9 @@ constexpr uint8_t *parse(uint8_t *&begin, uint8_t *end, H &out, F (*parser)(uint
 constexpr void serialize(UNUSED std::vector<uint8_t> &out) { }
 
 template<typename H, typename F, typename... Args>
-constexpr void serialize(std::vector<uint8_t> &out, const H &data, void (*serializer)(std::vector<uint8_t> &, const F &), Args... args)
+constexpr void serialize(std::vector<uint8_t> &out, const H &data, void (*serializer)(std::vector<uint8_t> &, const F &), const Args&... args)
 {
-    serializer(out, (F) data);
+    serializer(out, (const F&) data);
     return serialize(out, args...);
 }
 

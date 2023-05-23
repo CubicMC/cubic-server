@@ -15,6 +15,32 @@ target_sources (${CMAKE_PROJECT_NAME} PRIVATE
     Smithing.hpp
     Smoking.cpp
     Smoking.hpp
+    SpecialArmorDye.cpp
+    SpecialArmorDye.hpp
+    SpecialBannerDuplicate.cpp
+    SpecialBannerDuplicate.hpp
+    SpecialBookCloning.cpp
+    SpecialBookCloning.hpp
+    SpecialFireworkRocket.cpp
+    SpecialFireworkRocket.hpp
+    SpecialFireworkStar.cpp
+    SpecialFireworkStar.hpp
+    SpecialFireworkStarFade.cpp
+    SpecialFireworkStarFade.hpp
+    SpecialMapCloning.cpp
+    SpecialMapCloning.hpp
+    SpecialMapExtending.cpp
+    SpecialMapExtending.hpp
+    SpecialRepairItem.cpp
+    SpecialRepairItem.hpp
+    SpecialShieldDecoration.cpp
+    SpecialShieldDecoration.hpp
+    SpecialShulkerboxColoring.cpp
+    SpecialShulkerboxColoring.hpp
+    SpecialSuspiciousStew.cpp
+    SpecialSuspiciousStew.hpp
+    SpecialTippedArrow.cpp
+    SpecialTippedArrow.hpp
     StoneCutting.cpp
     StoneCutting.hpp
 )

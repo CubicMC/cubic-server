@@ -12,16 +12,16 @@ chat::Message chat::message::_detail::fromTranslationKey<chat::message::Translat
 
     // TODO: Change this to check for the team color
     if (player.getUsername() == "STMiki")
-        userName.messageComponent().style().color = "gold";
+        userName.style().color = "gold";
 
     userName.makeClickEvent<chat::message::event::SuggestCommandClick>("/tell " + player.getUsername() + " ");
     userName.makeHoverEvent<chat::message::event::EntityHover>(
         //  "{\"type\": \"minecraft:player\", \"id\": \"" + player->getUuidString() + "\", \"name\": \"" + player->getUsername() + "\"}"
     );
 
-    message.messageComponent().style().color = "yellow";
-    message.messageComponent().options().translate = "multiplayer.player.joined";
-    message.messageComponent().options().with = std::vector<chat::Message>({userName});
+    message.style().color = "yellow";
+    message.options().translate = "multiplayer.player.joined";
+    message.options().with = std::vector<chat::Message>({userName});
 
     return message;
 }
@@ -34,16 +34,16 @@ chat::Message chat::message::_detail::fromTranslationKey<chat::message::Translat
 
     // TODO: Change this to check for the team color
     if (player.getUsername() == "STMiki")
-        userName.messageComponent().style().color = "gold";
+        userName.style().color = "gold";
 
     userName.makeClickEvent<chat::message::event::SuggestCommandClick>("/tell " + player.getUsername() + " ");
     userName.makeHoverEvent<chat::message::event::EntityHover>(
         //  "{\"type\": \"minecraft:player\", \"id\": \"" + player->getUuidString() + "\", \"name\": \"" + player->getUsername() + "\"}"
     );
 
-    message.messageComponent().style().color = "yellow";
-    message.messageComponent().options().translate = "multiplayer.player.left";
-    message.messageComponent().options().with = std::vector<chat::Message>({userName});
+    message.style().color = "yellow";
+    message.options().translate = "multiplayer.player.left";
+    message.options().with = std::vector<chat::Message>({userName});
 
     return message;
 }
@@ -59,8 +59,8 @@ chat::Message chat::message::_detail::fromTranslationKey<chat::message::Translat
         //  "{\"type\": \"minecraft:player\", \"id\": \"" + player->getUuidString() + "\", \"name\": \"" + player->getUsername() + "\"}"
     );
 
-    response.messageComponent().options().translate = "commands.message.display.incoming";
-    response.messageComponent().options().with = std::vector<chat::Message>({sender, message});
+    response.options().translate = "commands.message.display.incoming";
+    response.options().with = std::vector<chat::Message>({sender, message});
 
     return response;
 }
@@ -76,8 +76,8 @@ chat::Message chat::message::_detail::fromTranslationKey<chat::message::Translat
         //  "{\"type\": \"minecraft:player\", \"id\": \"" + player->getUuidString() + "\", \"name\": \"" + player->getUsername() + "\"}"
     );
 
-    response.messageComponent().options().translate = "commands.message.display.outgoing";
-    response.messageComponent().options().with = std::vector<chat::Message>({sender, message});
+    response.options().translate = "commands.message.display.outgoing";
+    response.options().with = std::vector<chat::Message>({sender, message});
 
     return response;
 }
@@ -93,8 +93,8 @@ chat::Message chat::message::_detail::fromTranslationKey<chat::message::Translat
         //  "{\"type\": \"minecraft:player\", \"id\": \"" + player->getUuidString() + "\", \"name\": \"" + player->getUsername() + "\"}"
     );
 
-    response.messageComponent().options().translate = "chat.type.announcement";
-    response.messageComponent().options().with = std::vector<chat::Message>({sender, message});
+    response.options().translate = "chat.type.announcement";
+    response.options().with = std::vector<chat::Message>({sender, message});
 
     return response;
 }
@@ -111,8 +111,8 @@ chat::Message chat::message::_detail::fromTranslationKey<chat::message::Translat
         //  "{\"type\": \"minecraft:player\", \"id\": \"" + player->getUuidString() + "\", \"name\": \"" + player->getUsername() + "\"}"
     );
 
-    response.messageComponent().options().translate = "chat.type.team.text";
-    response.messageComponent().options().with = std::vector<chat::Message>({team, sender, message});
+    response.options().translate = "chat.type.team.text";
+    response.options().with = std::vector<chat::Message>({team, sender, message});
 
     return response;
 }
@@ -129,8 +129,8 @@ chat::Message chat::message::_detail::fromTranslationKey<chat::message::Translat
         //  "{\"type\": \"minecraft:player\", \"id\": \"" + player->getUuidString() + "\", \"name\": \"" + player->getUsername() + "\"}"
     );
 
-    response.messageComponent().options().translate = "chat.type.team.sent";
-    response.messageComponent().options().with = std::vector<chat::Message>({team, sender, message});
+    response.options().translate = "chat.type.team.sent";
+    response.options().with = std::vector<chat::Message>({team, sender, message});
 
     return response;
 }
