@@ -66,6 +66,7 @@ ChunkColumn::ChunkColumn(const ChunkColumn &other):
     // _skyLights(other._skyLights),
     // _blockLights(other._blockLights),
     // _biomes(other._biomes),
+    _sections(other._sections),
     _tickData(other._tickData),
     _chunkPos(other._chunkPos),
     _heightMap(other._heightMap),
@@ -412,10 +413,10 @@ void ChunkColumn::_generateFluidSprings(UNUSED generation::Generator &generator)
 void ChunkColumn::_generateVegetalDecoration(generation::Generator &generator)
 {
     // GET_NEIGHBOURS()
-    generation::trees::OakTree oakTree(shared_from_this(), generator);
-    oakTree.getPosForTreeGeneration();
-    while (!oakTree.filterTreeGrowSpace().empty())
-        oakTree.generateTree();
+    // generation::trees::OakTree oakTree(shared_from_this(), generator);
+    // oakTree.getPosForTreeGeneration();
+    // while (!oakTree.filterTreeGrowSpace().empty())
+    //     oakTree.generateTree();
 
     // RELEASE_NEIGHBOURS()
     _currentState = GenerationState::VEGETAL_DECORATION;
