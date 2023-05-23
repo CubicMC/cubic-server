@@ -49,6 +49,7 @@ namespace Recipe {
 
     void CraftingShapeless::insertToPayload(std::vector<uint8_t> &payload) const
     {
+        LINFO("send minecraft:crafting_shapeless: ", this->getIdentifier());
         protocol::Slot slot{true, 0, 1};
         int category = 0;
 
@@ -62,8 +63,8 @@ namespace Recipe {
             category = 3;
 
         protocol::serialize(payload,
-            "minecraft:crafting_shapeless", protocol::addString,
-            this->getIdentifier(), protocol::addString,
+            "minecraft:crafting_shapeless", protocol::addIdentifier,
+            this->getIdentifier(), protocol::addIdentifier,
             this->getGroup(), protocol::addString,
             category, protocol::addVarInt,
             this->_ingredients.size(), protocol::addVarInt

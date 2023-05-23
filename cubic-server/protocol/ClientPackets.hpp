@@ -11,6 +11,7 @@
 #include "common.hpp"
 #include "types.hpp"
 #include "world_storage/ChunkColumn.hpp"
+#include "recipes/Recipes.hpp"
 
 namespace protocol {
 
@@ -821,7 +822,7 @@ struct FeatureFlags {
 std::unique_ptr<std::vector<uint8_t>> createFeatureFlags(const FeatureFlags &in);
 
 struct UpdateRecipes {
-    std::vector<int> recipes;
+    std::vector<Recipe::Recipe *> recipes;
 };
 std::unique_ptr<std::vector<uint8_t>> createUpdateRecipes(const UpdateRecipes &);
 

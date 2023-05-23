@@ -43,6 +43,7 @@ namespace Recipe {
             this->_count = 1;
 
         this->_y = recipe["pattern"].size();
+        this->_x = 1;
         for (size_t pattern_line_pos = 0; pattern_line_pos < recipe["pattern"].size(); pattern_line_pos++) {
             if (!recipe["pattern"][pattern_line_pos].is_string())
                 return;
@@ -114,6 +115,7 @@ namespace Recipe {
 
     void CraftingShaped::insertToPayload(std::vector<uint8_t> &payload) const
     {
+        LINFO("send minecraft:crafting_shaped: ", this->getIdentifier());
         protocol::Slot slot{true, 0, 1};
         int category = 0;
 
@@ -127,8 +129,8 @@ namespace Recipe {
             category = 3;
 
         protocol::serialize(payload,
-            "minecraft:crafting_shapeless", protocol::addString,
-            this->getIdentifier(), protocol::addString,
+            "minecraft:crafting_shapeless", protocol::addIdentifier,
+            this->getIdentifier(), protocol::addIdentifier,
             this->_x, protocol::addVarInt,
             this->_y, protocol::addVarInt,
             this->getGroup(), protocol::addString,

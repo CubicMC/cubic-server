@@ -75,8 +75,8 @@ namespace Recipe {
             category = 2;
 
         protocol::serialize(payload,
-            "minecraft:campfire_cooking", protocol::addString,
-            this->getIdentifier(), protocol::addString,
+            "minecraft:campfire_cooking", protocol::addIdentifier,
+            this->getIdentifier(), protocol::addIdentifier,
             this->getGroup(), protocol::addString,
             category, protocol::addVarInt,
             this->_ingredients.size(), protocol::addVarInt

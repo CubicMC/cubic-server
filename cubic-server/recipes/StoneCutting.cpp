@@ -61,11 +61,12 @@ namespace Recipe {
 
     void StoneCutting::insertToPayload(std::vector<uint8_t> &payload) const
     {
+        LINFO("send minecraft:stonecutting: ", this->getIdentifier());
         protocol::Slot slot{true, 0, 1};
 
         protocol::serialize(payload,
-            "minecraft:stonecutting", protocol::addString,
-            this->getIdentifier(), protocol::addString,
+            "minecraft:stonecutting", protocol::addIdentifier,
+            this->getIdentifier(), protocol::addIdentifier,
             this->getGroup(), protocol::addString,
             this->_ingredients.size(), protocol::addVarInt
         );

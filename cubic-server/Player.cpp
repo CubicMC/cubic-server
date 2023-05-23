@@ -1078,6 +1078,9 @@ void Player::_continueLoginSequence()
     chat::Message connectionMsg = chat::Message::fromTranslationKey<chat::message::TranslationKey::MultiplayerPlayerJoined>(*this);
 
     this->getWorld()->getChat()->sendSystemMessage(connectionMsg, *this);
+
+//    this->sendUpdateRecipes(protocol::UpdateRecipes{});
+    Server::getInstance()->getRecipeSystem().sendAllRecipes(*this);
 }
 
 void Player::_unloadChunk(int32_t x, int32_t z)

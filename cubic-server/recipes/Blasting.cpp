@@ -64,6 +64,7 @@ namespace Recipe {
 
     void Blasting::insertToPayload(std::vector<uint8_t> &payload) const
     {
+        LINFO("send minecraft:blasting: ", this->getIdentifier());
         protocol::Slot slot{true, 0, 1};
         int category = 0;
 
@@ -75,8 +76,8 @@ namespace Recipe {
             category = 2;
 
         protocol::serialize(payload,
-            "minecraft:blasting", protocol::addString,
-            this->getIdentifier(), protocol::addString,
+            "minecraft:blasting", protocol::addIdentifier,
+            this->getIdentifier(), protocol::addIdentifier,
             this->getGroup(), protocol::addString,
             category, protocol::addVarInt,
             this->_ingredients.size(), protocol::addVarInt

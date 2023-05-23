@@ -91,11 +91,12 @@ namespace Recipe {
 
     void Smithing::insertToPayload(std::vector<uint8_t> &payload) const
     {
+        LINFO("send minecraft:smithing: ", this->getIdentifier());
         protocol::Slot slot{true, 0, 1};
 
         protocol::serialize(payload,
-            "minecraft:smithing", protocol::addString,
-            this->getIdentifier(), protocol::addString,
+            "minecraft:smithing", protocol::addIdentifier,
+            this->getIdentifier(), protocol::addIdentifier,
             this->_bases.size(), protocol::addVarInt
         );
 

@@ -904,8 +904,11 @@ std::unique_ptr<std::vector<uint8_t>> protocol::createUpdateRecipes(const Update
     std::vector<uint8_t> payload;
     // clang-format off
     serialize(payload,
-        in.recipes, addArray<int, addVarInt>
+        in.recipes.size(), addVarInt 
     );
+    for (const Recipe::Recipe *recipe : in.recipes) {
+        recipe->insertToPayload(payload);
+    }
     // clang-format on
     auto packet = std::make_unique<std::vector<uint8_t>>();
     finalize(*packet, payload, ClientPacketID::UpdateRecipes);

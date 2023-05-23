@@ -11,6 +11,8 @@
 #include "types.hpp"
 #include "exceptions.hpp"
 
+class Player;
+
 /*
   Trying to create a recipe without a valid constructor 
   throws a UnknownRecipeType exception
@@ -71,6 +73,8 @@ public:
     void initialize(void);
     void reload(void);
     void clear(void);
+
+    void sendAllRecipes(Player &player) noexcept;
 
 private:
     std::unordered_map<std::string, std::unordered_map<std::string, std::unique_ptr<Recipe::Recipe>>> _recipes;
