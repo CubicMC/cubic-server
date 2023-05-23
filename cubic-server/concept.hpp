@@ -2,8 +2,8 @@
 #define CONCEPT_HPP
 
 #include <concepts>
-#include <ostream>
 #include <functional>
+#include <ostream>
 
 // clang-format off
 

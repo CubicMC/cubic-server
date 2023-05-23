@@ -3,8 +3,14 @@
 #include "Message.hpp"
 
 // these constructors exists purely to allow compilation on clang. Defaulting options in header leads to compilation error
-chat::SimpleMessage::SimpleMessage(const std::string &message) : SimpleMessage(message, {}) {}
-chat::SimpleMessage::SimpleMessage(const std::string &message, const chat::message::Style &style) : SimpleMessage(message, style, {}) {}
+chat::SimpleMessage::SimpleMessage(const std::string &message):
+    SimpleMessage(message, {})
+{
+}
+chat::SimpleMessage::SimpleMessage(const std::string &message, const chat::message::Style &style):
+    SimpleMessage(message, style, {})
+{
+}
 
 chat::SimpleMessage::SimpleMessage(const std::string &message, const chat::message::Style &style, const chat::message::Options &options):
     _message(message),
@@ -14,8 +20,14 @@ chat::SimpleMessage::SimpleMessage(const std::string &message, const chat::messa
 }
 
 // these constructors exists purely to allow compilation on clang. Defaulting options in header leads to compilation error
-chat::SimpleMessage::SimpleMessage(const char message[]) : SimpleMessage(message, {}) {}
-chat::SimpleMessage::SimpleMessage(const char message[], const chat::message::Style &style) : SimpleMessage(message, style, {}) {}
+chat::SimpleMessage::SimpleMessage(const char message[]):
+    SimpleMessage(message, {})
+{
+}
+chat::SimpleMessage::SimpleMessage(const char message[], const chat::message::Style &style):
+    SimpleMessage(message, style, {})
+{
+}
 
 chat::SimpleMessage::SimpleMessage(const char message[], const chat::message::Style &style, const chat::message::Options &options):
     _message(message),

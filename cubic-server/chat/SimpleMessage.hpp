@@ -22,7 +22,6 @@ namespace chat {
  */
 class SimpleMessage {
 public:
-
     SimpleMessage(const std::string &message, const chat::message::Style &style, const chat::message::Options &options);
     SimpleMessage(const std::string &message, const chat::message::Style &style);
     SimpleMessage(const std::string &message);

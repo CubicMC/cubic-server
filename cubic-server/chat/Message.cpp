@@ -124,7 +124,6 @@ chat::Message chat::Message::fromJson(const nlohmann::json &json)
     } catch (const nlohmann::json::exception &e) {
         throw std::runtime_error(e.what());
     }
-
 }
 
 // Getters

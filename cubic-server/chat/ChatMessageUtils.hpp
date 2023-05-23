@@ -5,7 +5,7 @@
 #include <vector>
 
 namespace chat {
-    class Message;
+class Message;
 namespace message {
 enum Type : int32_t {
     Chat = 0,
