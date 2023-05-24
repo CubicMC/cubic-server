@@ -26,6 +26,7 @@ constexpr uint16_t MC_PROTOCOL = 761;
 constexpr uint16_t MS_PER_TICK = 50;
 
 #define GLOBAL_PALETTE Server::getInstance()->getGlobalPalette()
+#define ITEM_CONVERTER Server::getInstance()->getItemConverter()
 
 class Client;
 class WorldGroup;
@@ -80,7 +81,6 @@ private:
     Server();
     void _acceptLoop();
     void _stop();
-    void _downloadFile(const std::string &url, const std::string &path);
     void _reloadWhitelist();
     void _reloadConfig();
     void _enforceWhitelistOnReload();

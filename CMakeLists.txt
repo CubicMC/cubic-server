@@ -14,6 +14,8 @@ set(CMAKE_USER_MAKE_RULES_OVERRIDE_CXX ${CMAKE_CURRENT_SOURCE_DIR}/cxx_flag_over
 
 project(CubicServer VERSION 0.1.0 LANGUAGES CXX)
 
+set(MINECRAFT_VERSION "1.19.3")
+
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
@@ -57,18 +59,11 @@ FetchContent_Declare(
     GIT_TAG v2.9
 )
 
-FetchContent_Declare(
-    CRCpp
-    GIT_REPOSITORY https://github.com/d-bahr/CRCpp.git
-    GIT_TAG release-1.2.0.0
-)
-
 FetchContent_MakeAvailable(
     yaml-cpp
     json
     noise
     argparse
-    CRCpp
 )
 
 if(GTEST) # if the flag GTEST is true
@@ -109,13 +104,18 @@ target_compile_definitions(${CMAKE_PROJECT_NAME} PRIVATE
     PROGRAM_NAME="${CMAKE_PROJECT_NAME}"
     PROGRAM_VERSION="${CMAKE_PROJECT_VERSION}"
 )
+
+include(blocks.cmake)
+
 add_subdirectory(cubic-server)
 
 target_include_directories(${CMAKE_PROJECT_NAME} PRIVATE
     ${GTKMM_INCLUDE_DIRS}
     ${noise_SOURCE_DIR}
 )
-target_include_directories(${CMAKE_PROJECT_NAME} PUBLIC cubic-server)
+
+target_include_directories(${CMAKE_PROJECT_NAME} PUBLIC cubic-server ${Blocks_SOURCE_DIR})
+
 target_link_libraries (${CMAKE_PROJECT_NAME} PRIVATE
     Blocks
     Threads::Threads
@@ -123,6 +123,4 @@ target_link_libraries (${CMAKE_PROJECT_NAME} PRIVATE
     ${GTKMM_LIBRARIES}
     argparse
     yaml-cpp
-    curl
-    CRCpp
 )
