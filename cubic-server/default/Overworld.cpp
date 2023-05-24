@@ -27,10 +27,12 @@ void Overworld::initialize()
     while (x < NB_SPAWN_CHUNKS / 2 || z < NB_SPAWN_CHUNKS / 2) {
         ++i; // temporary percentage calculation. ugly but works :DDD gets deleted after usage to ensure clean logs.
         this->getWorld()->getGenerationPool().addJob([=, this] {
+            #ifndef NDEBUG
             std::stringstream ss;
             constexpr std::array<std::string_view, 4> animation {"/", "-", "\\", "|"}; // cute little animation :D
             ss << animation[i % 4] << " Generating " << i * 100 / (NB_SPAWN_CHUNKS * NB_SPAWN_CHUNKS) << "% " << animation[i % 4] << '\r';
             std::cerr << ss.str();
+            #endif
             generateChunk(x, z);
         });
         if (x == NB_SPAWN_CHUNKS / 2) {

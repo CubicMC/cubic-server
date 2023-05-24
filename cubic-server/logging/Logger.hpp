@@ -1,62 +1,111 @@
 #ifndef CUBICSERVER_LOGGING_LOGGER_HPP
 #define CUBICSERVER_LOGGING_LOGGER_HPP
 
-#include <fstream>
 #include <mutex>
-#include <queue>
-#include <sstream>
-#include <string>
-#include <type_traits>
 #include <unordered_map>
-
-#include "FileAndFolderHandler.hpp"
-
-#include <spdlog/spdlog.h>
+#include <queue>
 
 #ifndef TESTING
+    #include <spdlog/spdlog.h>
+    #include <spdlog/common.h>
+    #include <spdlog/sinks/stdout_color_sinks.h>
+    #include <spdlog/sinks/base_sink.h>
     #include "formating.hpp"
 #endif
 
 namespace logging {
+#ifndef TESTING
+
+using LogLevel = spdlog::level::level_enum;
+
+class Logger {
+public:
+    Logger();
+
+private:
+    static Logger *instance();
+
+    void initLogger();
+    NODISCARD const std::queue<std::pair<LogLevel, std::string>> &getMessages();
+    void toggle(LogLevel level);
+    void enable(LogLevel level);
+    void disable(LogLevel level);
+    void registerLogger(const std::string &name);
+    void unregisterLogger(const std::string &name);
+
+private:
+    std::mutex _mutex;
+    std::unordered_map<std::thread::id, std::shared_ptr<spdlog::logger>> _loggers;
+};
+
+template<typename Mutex>
+class StoreLogMessage : public spdlog::sinks::base_sink<Mutex> {
+public:
+    using level_enum = LogLevel;
+
+public:
+    NODISCARD constexpr inline const std::queue<std::pair<level_enum, std::string>> &messages() const noexcept { return _messages; }
+
+protected:
+    void sink_it_(const spdlog::details::log_msg &msg) override
+    {
+        spdlog::memory_buf_t formatted;
+        spdlog::sinks::base_sink<Mutex>::formatter_->format(msg, formatted);
+        _messages.emplace(msg.level, fmt::to_string(formatted));
+    }
+
+    void flush_() override {}
+
+private:
+    std::queue<std::pair<level_enum, std::string>> _messages;
+};
+
+class EnablingLogLevelSink : public spdlog::sinks::stdout_color_sink_mt {
+public:
+    using level_enum = LogLevel;
+
+public:
+    EnablingLogLevelSink(spdlog::color_mode mode = spdlog::color_mode::automatic):
+        spdlog::sinks::stdout_color_sink_mt(mode)
+    {
+        for (int level = level_enum::trace; level < level_enum::off; level += 1)
+            _enabled.emplace(static_cast<level_enum>(level), true);
+    }
+
+    void log(const spdlog::details::log_msg &msg) override
+    {
+        if (_enabled[msg.level])
+            spdlog::sinks::stdout_color_sink_mt::log(msg);
+    }
+
+    void toggle(level_enum level) { _enabled[level] = !_enabled[level]; }
+    void enable(level_enum level) { _enabled[level] = true; }
+    void disable(level_enum level) { _enabled[level] = false; }
+
+private:
+    std::unordered_map<level_enum, bool> _enabled;
+};
+
+using StoreLogMessage_mt = StoreLogMessage<std::mutex>;
+using StoreLogMessage_st = StoreLogMessage<spdlog::details::null_mutex>;
+
+inline std::string levelToString(spdlog::level::level_enum l) noexcept
+{
+    auto &&str = spdlog::level::to_string_view(l);
+    return std::string(str.begin(), str.end());
+}
 
 void initLogger();
+NODISCARD const std::queue<std::pair<LogLevel, std::string>> &getMessages();
+void toggle(LogLevel level);
+void enable(LogLevel level);
+void disable(LogLevel level);
+void registerLogger(const std::string &name);
+void unregisterLogger(const std::string &name);
+
+#endif
 
 } // namespace logging
-
-// =================================================================
-
-// #define _GET_NTH_ARG(_0, _1, _2, _3, _4, _5, _6, _7, _8, _9, N, ...) N
-/*
-// #define _LOG0() __FILE__ << ":" << __LINE__ << " Log called without arguments !"
-// #define _LOG1(msg) msg
-// #define _LOG2(msg, ...) msg << _LOG1(__VA_ARGS__)
-// #define _LOG3(msg, ...) msg << _LOG2(__VA_ARGS__)
-// #define _LOG4(msg, ...) msg << _LOG3(__VA_ARGS__)
-// #define _LOG5(msg, ...) msg << _LOG4(__VA_ARGS__)
-// #define _LOG6(msg, ...) msg << _LOG5(__VA_ARGS__)
-// #define _LOG7(msg, ...) msg << _LOG6(__VA_ARGS__)
-// #define _LOG8(msg, ...) msg << _LOG7(__VA_ARGS__)
-// #define _LOG9(msg, ...) msg << _LOG8(__VA_ARGS__)
-
-// #define _LOGN(...)                                                                                                                                                   \
-//     _GET_NTH_ARG(                                                                                                                                                    \
-//         , ##__VA_ARGS__, _LOG9(__VA_ARGS__), _LOG8(__VA_ARGS__), _LOG7(__VA_ARGS__), _LOG6(__VA_ARGS__), _LOG5(__VA_ARGS__), _LOG4(__VA_ARGS__), _LOG3(__VA_ARGS__), \
-//         _LOG2(__VA_ARGS__), _LOG1(__VA_ARGS__), _LOG0(__VA_ARGS__),                                                                                                  \
-//     )
-
-// #define _LOG(type, ...)                                     \
-//     do {                                                    \
-//         std::stringstream __ss;                             \
-//         __ss << _LOGN(__VA_ARGS__);                         \
-//         ::logging::Logger::getInstance()->type(__ss.str()); \
-//     } while (0)
-*/
-
-// #define LDEBUG(...) _LOG(debug, __VA_ARGS__)
-// #define LINFO(...) _LOG(info, __VA_ARGS__)
-// #define LWARN(...) _LOG(warn, __VA_ARGS__)
-// #define LERROR(...) _LOG(error, __VA_ARGS__)
-// #define LFATAL(...) _LOG(fatal, __VA_ARGS__)
 
 #define LTRACE(...) spdlog::default_logger()->log(spdlog::level::trace, __VA_ARGS__)
 #define LDEBUG(...) spdlog::default_logger()->log(spdlog::level::debug, __VA_ARGS__)
@@ -66,12 +115,12 @@ void initLogger();
 #define LFATAL(...) spdlog::default_logger()->log(spdlog::level::critical, __VA_ARGS__)
 
 #ifdef DEBUG_NETWORK
-#define N_LTRACE(...) spdlog::default_logger()->log(spdlog::level::trace, __VA_ARGS__)
-#define N_LDEBUG(...) spdlog::default_logger()->log(spdlog::level::debug, __VA_ARGS__)
-#define N_LINFO(...) spdlog::default_logger()->log(spdlog::level::info, __VA_ARGS__)
-#define N_LWARN(...) spdlog::default_logger()->log(spdlog::level::warn, __VA_ARGS__)
-#define N_LERROR(...) spdlog::default_logger()->log(spdlog::level::err, __VA_ARGS__)
-#define N_LFATAL(...) spdlog::default_logger()->log(spdlog::level::critical, __VA_ARGS__)
+#define N_LTRACE(...) spdlog::get("network")->log(spdlog::level::trace, __VA_ARGS__)
+#define N_LDEBUG(...) spdlog::get("network")->log(spdlog::level::debug, __VA_ARGS__)
+#define N_LINFO(...) spdlog::get("network")->log(spdlog::level::info, __VA_ARGS__)
+#define N_LWARN(...) spdlog::get("network")->log(spdlog::level::warn, __VA_ARGS__)
+#define N_LERROR(...) spdlog::get("network")->log(spdlog::level::err, __VA_ARGS__)
+#define N_LFATAL(...) spdlog::get("network")->log(spdlog::level::critical, __VA_ARGS__)
 #else
 #define N_LTRACE(...)
 #define N_LDEBUG(...)
@@ -80,101 +129,5 @@ void initLogger();
 #define N_LERROR(...)
 #define N_LFATAL(...)
 #endif
-
-namespace logging {
-enum class LogLevel {
-    NONE,
-    DEBUG,
-    INFO,
-    WARNING,
-    ERROR,
-    FATAL
-};
-
-class LogMessage {
-public:
-    LogMessage(LogLevel level, std::string message);
-
-    const LogLevel &getLevel() const;
-    const std::string &getMessage() const;
-    const std::time_t &getTime() const;
-    int getMillis() const;
-
-private:
-    const LogLevel _level;
-    const std::string _message;
-    std::time_t _time;
-    int _millis;
-};
-std::ostream &operator<<(std::ostream &os, const LogMessage &log);
-
-/**
- * @brief function to transform a LogLevel to a string
- *
- * @param level LogLevel to transform
- *
- * @return std::string the string corresponding to the LogLevel
- */
-const char *levelToString(const LogLevel &level);
-
-/**
- * @brief Handles logging in a file.
- */
-class Logger {
-public:
-    static Logger *getInstance();
-
-    ~Logger();
-    ;
-
-    void debug(const std::string &msg);
-    void info(const std::string &msg);
-    void warn(const std::string &msg);
-    void error(const std::string &msg);
-    void fatal(const std::string &msg);
-
-    void setDisplaySpecificationLevelInFile(LogLevel level);
-    void unsetDisplaySpecificationLevelInFile(LogLevel level);
-    const std::unordered_map<LogLevel, std::string> &getDisplaySpecificationLevelInFile() const;
-    void setDisplaySpecificationLevelInConsole(LogLevel level);
-    void unsetDisplaySpecificationLevelInConsole(LogLevel level);
-    const std::unordered_map<LogLevel, std::string> &getDisplaySpecificationLevelInConsole() const;
-
-    const std::queue<LogMessage> &getLogs() const;
-    int getLogBufferSize() const;
-    void setLogBufferSize(int size);
-
-private:
-    // Private constructor to prevent multiple instances
-    Logger();
-    Logger(const Logger &) = delete;
-    Logger &operator=(const Logger &) = delete;
-    Logger(Logger &&) = delete;
-    Logger &operator=(Logger &&) = delete;
-
-    std::string getFilePath() const;
-
-    // Stream to the current log file
-    std::ofstream _fileStream;
-    std::ofstream _lattestStream;
-
-    // Handler for files and folders
-    FileAndFolderHandler _fileAndFolderHandler;
-
-    // Map of LogLevel and his associated string to display in the log file
-    std::unordered_map<LogLevel, std::string> _specificationLevelInFile;
-
-    // Map of LogLevel and his associated string to display in the console
-    std::unordered_map<LogLevel, std::string> _specificationLevelInConsole;
-
-    void _log(LogLevel level, const std::string &message);
-
-    // Buffer to store logs before the file is opened
-    std::queue<LogMessage> _logBuffer;
-    uint64_t _bufferSize;
-
-    std::mutex _loggerMutex;
-};
-}
 
 #endif // CUBICSERVER_LOGGING_LOGGER_HPP

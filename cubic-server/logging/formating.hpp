@@ -5,10 +5,7 @@
 #include <type_traits>
 #include "configuration/Value.hpp"
 #include "types.hpp"
-
-template<typename T>
-concept isEnum = std::is_enum_v<T>;
-
+#include "concept.hpp"
 
 template<isEnum T>
 struct fmt::formatter<T> : fmt::formatter<std::string>

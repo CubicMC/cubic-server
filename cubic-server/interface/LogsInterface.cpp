@@ -1,4 +1,5 @@
 #include "LogsInterface.hpp"
+#include "logging/Logger.hpp"
 
 #include <fstream>
 #include <iostream>
@@ -16,7 +17,7 @@ LogsInterface::LogsInterface():
     _fatal("Fatal"),
     _debug("Debug"),
     _reset("↺"),
-    _selectedLogLevel(logging::LogLevel::NONE)
+    _selectedLogLevel(logging::LogLevel::off)
 {
     pack_start(_VBoxMain, Gtk::PACK_EXPAND_WIDGET);
 
@@ -43,11 +44,11 @@ LogsInterface::LogsInterface():
 
     _VBoxLogs.pack_end(_logsContainer);
 
-    _debug.signal_clicked().connect(sigc::bind(sigc::mem_fun(*this, &LogsInterface::_onFilterSelected), logging::LogLevel::DEBUG));
-    _info.signal_clicked().connect(sigc::bind(sigc::mem_fun(*this, &LogsInterface::_onFilterSelected), logging::LogLevel::INFO));
-    _warn.signal_clicked().connect(sigc::bind(sigc::mem_fun(*this, &LogsInterface::_onFilterSelected), logging::LogLevel::WARNING));
-    _error.signal_clicked().connect(sigc::bind(sigc::mem_fun(*this, &LogsInterface::_onFilterSelected), logging::LogLevel::ERROR));
-    _fatal.signal_clicked().connect(sigc::bind(sigc::mem_fun(*this, &LogsInterface::_onFilterSelected), logging::LogLevel::FATAL));
+    _debug.signal_clicked().connect(sigc::bind(sigc::mem_fun(*this, &LogsInterface::_onFilterSelected), logging::LogLevel::debug));
+    _info.signal_clicked().connect(sigc::bind(sigc::mem_fun(*this, &LogsInterface::_onFilterSelected), logging::LogLevel::info));
+    _warn.signal_clicked().connect(sigc::bind(sigc::mem_fun(*this, &LogsInterface::_onFilterSelected), logging::LogLevel::warn));
+    _error.signal_clicked().connect(sigc::bind(sigc::mem_fun(*this, &LogsInterface::_onFilterSelected), logging::LogLevel::err));
+    _fatal.signal_clicked().connect(sigc::bind(sigc::mem_fun(*this, &LogsInterface::_onFilterSelected), logging::LogLevel::critical));
     _reset.signal_clicked().connect(sigc::mem_fun(*this, &LogsInterface::_onResetFilters));
 
     _logsContainer.add(_logsView);
@@ -107,22 +108,22 @@ bool LogsInterface::_onLogToDisplay()
     logging::LogLevel logLevel;
     std::string temp = "";
     std::stringstream ss;
-    std::queue<logging::LogMessage> q_copy = logging::Logger::getInstance()->getLogs();
+    auto q_copy = logging::getMessages();
 
-    if (_selectedLogLevel == logging::LogLevel::NONE) {
+    if (_selectedLogLevel == logging::LogLevel::off) {
         while (!q_copy.empty()) {
-            logging::LogMessage front = q_copy.front();
-            logLevel = front.getLevel();
-            ss << front << std::endl;
+            auto front = q_copy.front();
+            logLevel = front.first;
+            ss << front.second << std::endl;
             temp = ss.str();
             q_copy.pop();
         }
     } else {
         while (!q_copy.empty()) {
-            logging::LogMessage front = q_copy.front();
-            logLevel = front.getLevel();
+            auto front = q_copy.front();
+            logLevel = front.first;
             if (logLevel == _selectedLogLevel) {
-                ss << front << std::endl;
+                ss << front.second << std::endl;
                 temp = ss.str();
             }
             q_copy.pop();
@@ -154,7 +155,7 @@ void LogsInterface::_onFilterSelected(logging::LogLevel logLevel)
 
 void LogsInterface::_onResetFilters()
 {
-    _selectedLogLevel = logging::LogLevel::NONE;
+    _selectedLogLevel = logging::LogLevel::off;
     _selectedFilter.set_text("No filter selected.");
     _reset.set_sensitive(false);
 }

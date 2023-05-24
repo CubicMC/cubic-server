@@ -67,9 +67,10 @@ void Client::networkLoop()
         poll(pollSet, 1, 50); // TODO: Check how this can be changed
         if (pollSet[0].revents & POLLIN) {
             int readSize = read(_sockfd, inBuffer, 2048);
-            if (readSize == -1)
+            if (readSize == -1) {
                 N_LERROR("Read error {}", strerror(errno));
-            else if (readSize == 0)
+                _isRunning = false;
+            } else if (readSize == 0)
                 break;
             else {
                 // TODO: This is extremely inefficient but it will do for now
@@ -107,14 +108,12 @@ void Client::_flushSendData()
     std::copy(_sendBuffer.begin(), _sendBuffer.begin() + toSend, sendBuffer);
 
     ssize_t writeReturn = write(_sockfd, sendBuffer, toSend);
-    if (writeReturn == -1)
-        N_LERROR("Write error {}", strerror(errno));
 
     if (writeReturn <= 0) {
         _writeMutex.unlock();
-        LDEBUG("error: ", writeReturn, " -> ", strerror(errno));
         if (errno == EAGAIN)
             return;
+        N_LERROR("Write error: {}", strerror(errno));
         throw std::runtime_error("Pipe error");
     }
 

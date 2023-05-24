@@ -20,6 +20,12 @@ if (GTEST)
         rapidcheck_gtest
     )
 
+    target_compile_options(
+        serialization_test
+        PRIVATE
+        -DTESTING
+    )
+
     target_include_directories(
         serialization_test
         PRIVATE

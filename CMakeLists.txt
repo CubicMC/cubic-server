@@ -110,6 +110,13 @@ endif()
 # set(CMAKE_BUILD_RPATH /usr/local/lib/gcc12)
 # set(CMAKE_EXE_LINKER_FLAGS "-static-libgcc -static-libstdc++")
 
+option(DEBUG_NETWORK "Print network messages" OFF)
+if(DEBUG_NETWORK)
+    add_compile_definitions(DEBUG_NETWORK)
+endif()
+
+message(STATUS "Debuging network: ${DEBUG_NETWORK}")
+
 find_package(Threads REQUIRED)
 find_package(PkgConfig REQUIRED)
 pkg_check_modules(GTKMM gtkmm-3.0)

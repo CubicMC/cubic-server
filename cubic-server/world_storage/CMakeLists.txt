@@ -22,6 +22,12 @@ if (GTEST)
         tests/DynamicStorage_test.cpp
     )
 
+    target_compile_definitions(
+        levelData_test
+        PRIVATE
+        -DTESTING
+    )
+
     target_include_directories(
         levelData_test
         PRIVATE

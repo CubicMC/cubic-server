@@ -14,39 +14,43 @@ void command_parser::Log::autocomplete(UNUSED std::vector<std::string> &args, Pl
 void command_parser::Log::execute(std::vector<std::string> &args, UNUSED Player *invoker) const
 {
     if (args.size() < 2) {
-        LDEBUG("Usage : /log <on|off> (type)");
+        LDEBUG("Usage : /log [on|off] (type)");
         return;
     }
 
     if (args[0] == "on") {
         args.erase(args.begin());
         for (auto arg : args) {
-            if (arg == "debug")
-                logging::Logger::getInstance()->setDisplaySpecificationLevelInConsole(logging::LogLevel::DEBUG);
+            if (arg == "trace")
+                logging::enable(logging::EnablingLogLevelSink::level_enum::trace);
+            else if (arg == "debug")
+                logging::enable(logging::EnablingLogLevelSink::level_enum::debug);
             else if (arg == "info")
-                logging::Logger::getInstance()->setDisplaySpecificationLevelInConsole(logging::LogLevel::INFO);
+                logging::enable(logging::EnablingLogLevelSink::level_enum::info);
             else if (arg == "warning")
-                logging::Logger::getInstance()->setDisplaySpecificationLevelInConsole(logging::LogLevel::WARNING);
+                logging::enable(logging::EnablingLogLevelSink::level_enum::warn);
             else if (arg == "error")
-                logging::Logger::getInstance()->setDisplaySpecificationLevelInConsole(logging::LogLevel::ERROR);
+                logging::enable(logging::EnablingLogLevelSink::level_enum::err);
             else if (arg == "fatal")
-                logging::Logger::getInstance()->setDisplaySpecificationLevelInConsole(logging::LogLevel::FATAL);
+                logging::enable(logging::EnablingLogLevelSink::level_enum::critical);
             else
                 LDEBUG("Unknown log type : {}", arg);
         }
     } else if (args[0] == "off") {
         args.erase(args.begin());
         for (auto arg : args) {
-            if (arg == "debug")
-                logging::Logger::getInstance()->unsetDisplaySpecificationLevelInConsole(logging::LogLevel::DEBUG);
+            if (arg == "trace")
+                logging::disable(logging::EnablingLogLevelSink::level_enum::trace);
+            else if (arg == "debug")
+                logging::disable(logging::EnablingLogLevelSink::level_enum::debug);
             else if (arg == "info")
-                logging::Logger::getInstance()->unsetDisplaySpecificationLevelInConsole(logging::LogLevel::INFO);
+                logging::disable(logging::EnablingLogLevelSink::level_enum::info);
             else if (arg == "warning")
-                logging::Logger::getInstance()->unsetDisplaySpecificationLevelInConsole(logging::LogLevel::WARNING);
+                logging::disable(logging::EnablingLogLevelSink::level_enum::warn);
             else if (arg == "error")
-                logging::Logger::getInstance()->unsetDisplaySpecificationLevelInConsole(logging::LogLevel::ERROR);
+                logging::disable(logging::EnablingLogLevelSink::level_enum::err);
             else if (arg == "fatal")
-                logging::Logger::getInstance()->unsetDisplaySpecificationLevelInConsole(logging::LogLevel::FATAL);
+                logging::disable(logging::EnablingLogLevelSink::level_enum::critical);
             else
                 LDEBUG("Unknown log type : {}", arg);
         }

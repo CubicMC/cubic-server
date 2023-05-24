@@ -130,10 +130,18 @@ int main(int argc, char *argv[])
         interfaceContainer.launch(argc, argv);
     #endif
 
-    // This should be inside the server
-    cmd.launch();
+    try {
+        // This should be inside the server
+        cmd.launch();
 
-    srv->launch(program);
+        srv->launch(program);
+
+        cmd.stop();
+        interfaceContainer.stop();
+    } catch (const std::exception &e) {
+        LFATAL(e.what());
+        return 1;
+    }
 
     cmd.stop();
 
