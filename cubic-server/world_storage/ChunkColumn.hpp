@@ -24,7 +24,7 @@ namespace world_storage {
 // Heightmap
 constexpr int HEIGHTMAP_BITS = bitsNeeded(CHUNK_HEIGHT + 1);
 constexpr int HEIGHTMAP_ARRAY_SIZE = (SECTION_2D_SIZE * HEIGHTMAP_BITS / 64) + ((SECTION_2D_SIZE * HEIGHTMAP_BITS % 64) != 0);
-constexpr const char * const HEIGHTMAP_ENTRY[] = {"MOTION_BLOCKING", "WORLD_SURFACE", nullptr};
+constexpr const char *const HEIGHTMAP_ENTRY[] = {"MOTION_BLOCKING", "WORLD_SURFACE", nullptr};
 
 constexpr uint8_t getSectionIndex(const Position &pos) { return (pos.y - CHUNK_HEIGHT_MIN + SECTION_WIDTH) / SECTION_WIDTH; }
 constexpr uint8_t getBiomeSectionIndex(const Position &pos) { return (pos.y - BIOME_HEIGHT_MIN + BIOME_SECTION_WIDTH) / BIOME_SECTION_WIDTH; }
@@ -120,7 +120,7 @@ public:
     // const std::deque<Entity *> &getEntities();
 
     void updateHeightMap();
-    NODISCARD constexpr inline const nbt::Compound &getHeightMap() const { return _heightMap;}
+    NODISCARD constexpr inline const nbt::Compound &getHeightMap() const { return _heightMap; }
 
     void generate(GenerationState goalState = GenerationState::READY);
 

@@ -2,6 +2,8 @@
 #include <stdexcept>
 #include <string>
 #include <unistd.h>
+#include <sys/socket.h>
+#include <sys/types.h>
 
 #include "Client.hpp"
 #include "nbt.hpp"

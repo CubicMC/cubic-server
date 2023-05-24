@@ -6,9 +6,12 @@
 
 #include "CommandLine.hpp"
 #include "Server.hpp"
-#include "interface/InterfaceContainer.hpp"
 #include "logging/Logger.hpp"
 #include "options.hpp"
+
+#if GUI_UNAVAILABLE == 0
+#include "interface/InterfaceContainer.hpp"
+#endif
 
 auto initArgs(int argc, const char *const argv[])
 {
@@ -108,7 +111,10 @@ int main(int argc, char *argv[])
 
     auto srv = Server::getInstance();
 
+    #if GUI_UNAVAILABLE == 0
     InterfaceContainer interfaceContainer;
+    #endif
+
     CommandLine cmd;
 
     auto logger = logging::Logger::getInstance();
@@ -118,8 +124,10 @@ int main(int argc, char *argv[])
     std::signal(SIGINT, signalHandler);
     std::signal(SIGPIPE, SIG_IGN);
 
+    #if GUI_UNAVAILABLE == 0
     if (program["nogui"] == false)
         interfaceContainer.launch(argc, argv);
+    #endif
 
     // This should be inside the server
     cmd.launch();
@@ -127,6 +135,9 @@ int main(int argc, char *argv[])
     srv->launch(program);
 
     cmd.stop();
+
+    #if GUI_UNAVAILABLE == 0
     interfaceContainer.stop();
+    #endif
     return 0;
 }

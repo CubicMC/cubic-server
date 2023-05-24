@@ -3,10 +3,10 @@
 
 #include "exceptions.hpp"
 #include "world_storage/Palette.hpp"
-#include <vector>
 #include <cstdint>
 #include <stdexcept>
 #include <type_traits>
+#include <vector>
 
 namespace world_storage {
 
