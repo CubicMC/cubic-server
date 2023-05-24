@@ -33,6 +33,7 @@ constexpr uint16_t MS_PER_TICK = 50;
 
 #define GLOBAL_PALETTE Server::getInstance()->getGlobalPalette()
 #define ITEM_CONVERTER Server::getInstance()->getItemConverter()
+#define CONFIG Server::getInstance()->getConfig()
 
 class Client;
 class WorldGroup;

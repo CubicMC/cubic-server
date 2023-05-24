@@ -461,7 +461,6 @@ void Persistence::loadRegion(Dimension &dim, int x, int z)
                                 chunk.updateBlock({lx, ly + 16 * sectionY->getValue(), lz}, paletteMapping.getGlobalId(data));
                             else
                                 chunk.updateBlock({lx, ly + 16 * sectionY->getValue(), lz}, data);
-                            // exit(1);
                         }
                     }
                 }

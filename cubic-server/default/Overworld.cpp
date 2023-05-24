@@ -1,5 +1,6 @@
 #include "Overworld.hpp"
 
+#include "Server.hpp"
 #include "World.hpp"
 #include "default/DefaultWorld.hpp"
 #include "logging/Logger.hpp"
@@ -73,6 +74,8 @@ void Overworld::generateChunk(int x, int z)
     LDEBUG("Generate - Overworld (", x, ", ", z, ")");
     Position2D pos {x, z};
     // TODO(huntears): tmp to deactivate generation
-    _level.addChunkColumn(pos).generate(world_storage::WorldType::NORMAL, this->getWorld()->getSeed());
-    // _level.addChunkColumn(pos);
+    if (CONFIG["enable-generation"].as<bool>())
+        _level.addChunkColumn(pos).generate(world_storage::WorldType::NORMAL, this->getWorld()->getSeed());
+    else
+        _level.addChunkColumn(pos);
 }
