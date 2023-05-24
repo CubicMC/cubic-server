@@ -9,6 +9,7 @@
 #include "world_storage/Level.hpp"
 #include "world_storage/LevelData.hpp"
 #include "world_storage/PlayerData.hpp"
+#include "world_storage/Section.hpp"
 #include <algorithm>
 #include <cstdint>
 #include <filesystem>
@@ -334,18 +335,21 @@ void Persistence::loadRegion(Dimension &dim, int x, int z)
         uint8_t getCompressionScheme() const { return compressionScheme; }
     };
 
-    std::ifstream testFile(file, std::ios::binary);
-    if (!testFile.is_open()) {
+    if (!std::filesystem::exists(file))
         return;
-    }
+
+    std::ifstream testFile(file, std::ios::binary | std::ios::in);
+
     const std::vector<uint8_t> fileContents((std::istreambuf_iterator<char>(testFile)), std::istreambuf_iterator<char>());
 
     const RegionHeader *header = (const RegionHeader *) fileContents.data();
+    if (header == nullptr)
+        return;
 
     // std::cout << "offset : 0x" << std::hex << header->locationTable[0].getOffset() << std::endl;
     // std::cout << "size : 0x" << std::hex << (int) header->locationTable[0].getSize() << std::endl;
 
-    char *buf = (char *) malloc(1000000);
+    char *buf = (char *) malloc(100000000);
     const auto globalPalette = Server::getInstance()->getGlobalPalette();
     for (uint16_t cx = 0; cx < maxXPerRegion; cx++) {
         for (uint16_t cz = 0; cz < maxZPerRegion; cz++) {
@@ -364,7 +368,7 @@ void Persistence::loadRegion(Dimension &dim, int x, int z)
             // std::cout << "chunk length : 0x" << std::hex << cHeader->getLength() << std::endl;
             // std::cout << "chunk compression : 0x" << std::hex << (int) cHeader->getCompressionScheme() << std::endl;
 
-            int ret = inflatebruh(((char *) cHeader) + sizeof(*cHeader), cHeader->getLength() - 1, buf, 1000000);
+            int ret = inflatebruh(((char *) cHeader) + sizeof(*cHeader), cHeader->getLength() - 1, buf, 100000000);
 
             if (ret == Z_BUF_ERROR) {
                 std::cout << "bruh1" << std::endl;
@@ -402,7 +406,9 @@ void Persistence::loadRegion(Dimension &dim, int x, int z)
                 const auto blockStates = getConstElement<nbt::Compound, nbt::TagType::Compound>(section, "block_states");
                 const auto palette = getConstElement<nbt::List, nbt::TagType::List>(blockStates, "palette");
 
-                BlockPalette paletteMapping;
+                auto sectionY = getConstElement<nbt::Byte, nbt::TagType::Byte>(section, "Y")->getValue() + 5;
+
+                BlockPalette &paletteMapping = chunk.getSection(sectionY).getBlockPalette();
                 for (const auto &ii : palette->getValues()) {
                     if (ii->getType() != nbt::TagType::Compound)
                         throw std::runtime_error("");
@@ -428,42 +434,87 @@ void Persistence::loadRegion(Dimension &dim, int x, int z)
 
                 auto dataArray = getConstElement<nbt::LongArray, nbt::TagType::LongArray>(blockStates, "data")->getValues();
 
-                auto bitsPerBlock = paletteMapping.getBits();
+                // auto bitsPerBlock = paletteMapping.getBits();
 
-                uint32_t individualValueMask = (uint32_t) ((1 << bitsPerBlock) - 1);
-                const uint32_t valuesPerLong = (paletteMapping.getBits() == 0 ? 4 : 64 / paletteMapping.getBits());
+                chunk.getSection(sectionY).getBlocks().setValueSize(paletteMapping.getBits());
+                chunk.getSection(sectionY).getBlocks().data().clear();
+                // if (dataArray.size() != world_storage::SECTION_3D_SIZE)
 
-                for (int ly = 0; ly < SECTION_WIDTH; ly++) {
-                    for (int lz = 0; lz < SECTION_WIDTH; lz++) {
-                        for (int lx = 0; lx < SECTION_WIDTH; lx++) {
-                            int blockNumber = (((ly * SECTION_WIDTH) + lz) * SECTION_WIDTH) + lx;
-                            int startLong = blockNumber / valuesPerLong;
-                            int startOffset = (blockNumber % valuesPerLong) * (paletteMapping.getBits() == 0 ? 15 : paletteMapping.getBits());
-                            // int startLong = (blockNumber * bitsPerBlock) / 64;
-                            // int startOffset = (blockNumber * bitsPerBlock) % 64;
-                            // int endLong = ((blockNumber + 1) * bitsPerBlock - 1) / 64;
+                // clang-format off
+                chunk.getSection(sectionY).getBlocks().data().insert(
+                    chunk.getSection(sectionY).getBlocks().begin(),
+                    dataArray.begin(),
+                    dataArray.end()
+                );
+                // clang-format on
 
-                            uint16_t data;
-                            data = (uint16_t) (dataArray[startLong] >> startOffset);
-                            // if (startLong == endLong)
-                            //     data = (uint16_t) (dataArray[startLong] >> startOffset);
-                            // else {
-                            //     int endOffset = 64 - startOffset;
-                            //     data = (uint16_t) (dataArray[startLong] >> startOffset | dataArray[endLong] << endOffset);
-                            // }
-                            data &= individualValueMask;
+                if (section->hasValue("BlockLight")) {
+                    auto &blockLights = getConstElement<nbt::ByteArray, nbt::TagType::ByteArray>(section, "BlockLight")->getValues();
 
-                            auto sectionY = getConstElement<nbt::Byte, nbt::TagType::Byte>(section, "Y");
+                    chunk.getSection(sectionY).getBlockLights().setValueSize(4);
+                    chunk.getSection(sectionY).getBlockLights().data().clear();
+                    // clang-format off
+                    chunk.getSection(sectionY).getBlockLights().data().insert(
+                        chunk.getSection(sectionY).getBlockLights().begin(),
+                        blockLights.begin(),
+                        blockLights.end()
+                    );
+                    // clang-format on
+                    chunk.getSection(sectionY).recalculateBlockLightCount();
+                } else
+                    chunk.getSection(sectionY).recalculateBlockLight();
 
-                            // LINFO((int) paletteMapping.getBits());
-                            // LINFO(data);
-                            if (paletteMapping.getBits() >= 1)
-                                chunk.updateBlock({lx, ly + 16 * sectionY->getValue(), lz}, paletteMapping.getGlobalId(data));
-                            else
-                                chunk.updateBlock({lx, ly + 16 * sectionY->getValue(), lz}, data);
-                        }
-                    }
-                }
+                if (section->hasValue("SkyLight")) {
+                    auto &skyLights = getConstElement<nbt::ByteArray, nbt::TagType::ByteArray>(section, "SkyLight")->getValues();
+                    // LINFO("Got here lmao: " << skyLights.size());
+
+                    chunk.getSection(sectionY).getSkyLights().setValueSize(4);
+                    chunk.getSection(sectionY).getSkyLights().data().clear();
+                    // clang-format off
+                    chunk.getSection(sectionY).getSkyLights().data().insert(
+                        chunk.getSection(sectionY).getSkyLights().begin(),
+                        skyLights.begin(),
+                        skyLights.end()
+                    );
+                    // clang-format on
+                    chunk.getSection(sectionY).recalculateSkyLightCount();
+                } else
+                    chunk.getSection(sectionY).recalculateSkyLight();
+
+                // uint32_t individualValueMask = (uint32_t) ((1 << bitsPerBlock) - 1);
+                // const uint32_t valuesPerLong = (paletteMapping.getBits() == 0 ? 4 : 64 / paletteMapping.getBits());
+
+                //     for (int ly = 0; ly < SECTION_WIDTH; ly++) {
+                //         for (int lz = 0; lz < SECTION_WIDTH; lz++) {
+                //             for (int lx = 0; lx < SECTION_WIDTH; lx++) {
+                //                 int blockNumber = (((ly * SECTION_WIDTH) + lz) * SECTION_WIDTH) + lx;
+                //                 int startLong = blockNumber / valuesPerLong;
+                //                 int startOffset = (blockNumber % valuesPerLong) * (paletteMapping.getBits() == 0 ? 15 : paletteMapping.getBits());
+                //                 // int startLong = (blockNumber * bitsPerBlock) / 64;
+                //                 // int startOffset = (blockNumber * bitsPerBlock) % 64;
+                //                 // int endLong = ((blockNumber + 1) * bitsPerBlock - 1) / 64;
+
+                //                 uint16_t data;
+                //                 data = (uint16_t) (dataArray[startLong] >> startOffset);
+                //                 // if (startLong == endLong)
+                //                 //     data = (uint16_t) (dataArray[startLong] >> startOffset);
+                //                 // else {
+                //                 //     int endOffset = 64 - startOffset;
+                //                 //     data = (uint16_t) (dataArray[startLong] >> startOffset | dataArray[endLong] << endOffset);
+                //                 // }
+                //                 data &= individualValueMask;
+
+                //                 auto sectionY = getConstElement<nbt::Byte, nbt::TagType::Byte>(section, "Y");
+
+                //                 // LINFO((int) paletteMapping.getBits());
+                //                 // LINFO(data);
+                //                 if (paletteMapping.getBits() != 15)
+                //                     chunk.updateBlock({lx, ly + 16 * sectionY->getValue(), lz}, paletteMapping.getGlobalId(data));
+                //                 else
+                //                     chunk.updateBlock({lx, ly + 16 * sectionY->getValue(), lz}, data);
+                //             }
+                //         }
+                //     }
             }
 
             // Heightmaps
@@ -471,8 +522,8 @@ void Persistence::loadRegion(Dimension &dim, int x, int z)
 
             chunk._heightMap.addValue(heightmaps->getValue("MOTION_BLOCKING"));
             chunk._heightMap.addValue(heightmaps->getValue("WORLD_SURFACE"));
-            chunk.recalculateBlockLight();
-            chunk.recalculateSkyLight();
+            // chunk.recalculateBlockLight();
+            // chunk.recalculateSkyLight();
 
             chunk._ready = true;
         }
@@ -498,5 +549,4 @@ bool Persistence::isChunkLoaded(Dimension &dim, int x, int z)
         cz += 32;
     return dim.hasChunkLoaded(x, z);
 }
-
 }

@@ -122,9 +122,14 @@ include(blocks.cmake)
 add_subdirectory(cubic-server)
 
 target_include_directories(${CMAKE_PROJECT_NAME} PRIVATE
-    ${GTKMM_INCLUDE_DIRS}
     ${noise_SOURCE_DIR}
 )
+
+if (NOT NO_GUI)
+    target_include_directories(${CMAKE_PROJECT_NAME} PRIVATE
+        ${GTKMM_INCLUDE_DIRS}
+    )
+endif()
 
 target_include_directories(${CMAKE_PROJECT_NAME} PUBLIC cubic-server ${Blocks_SOURCE_DIR})
 

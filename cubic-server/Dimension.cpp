@@ -4,6 +4,7 @@
 #include "Server.hpp"
 #include "World.hpp"
 #include "logging/Logger.hpp"
+#include <mutex>
 
 Dimension::Dimension(std::shared_ptr<World> world):
     _dimensionLock(std::counting_semaphore<1000>(0)),
@@ -15,6 +16,7 @@ Dimension::Dimension(std::shared_ptr<World> world):
 
 void Dimension::tick()
 {
+    std::lock_guard _(_entitiesMutex);
     for (auto ent : _entities) {
         ent->tick();
     }
@@ -49,6 +51,7 @@ const std::vector<std::shared_ptr<Entity>> &Dimension::getEntities() const { ret
 
 std::shared_ptr<Entity> Dimension::getEntityByID(int32_t id)
 {
+    std::lock_guard _(_entitiesMutex);
     for (auto &entity : _entities)
         if (entity->getId() == id)
             return entity;
@@ -57,6 +60,7 @@ std::shared_ptr<Entity> Dimension::getEntityByID(int32_t id)
 
 const std::shared_ptr<Entity> Dimension::getEntityByID(int32_t id) const
 {
+    std::lock_guard _(_entitiesMutex);
     for (auto &entity : _entities)
         if (entity->getId() == id)
             return entity;
@@ -65,22 +69,29 @@ const std::shared_ptr<Entity> Dimension::getEntityByID(int32_t id) const
 
 void Dimension::removeEntity(int32_t entity_id)
 {
-    _entities.erase(
-        std::remove_if(
-            _entities.begin(), _entities.end(),
-            [entity_id](const std::shared_ptr<Entity> ent) {
-                return entity_id == ent->getId();
-            }
-        ),
-        _entities.end()
-    );
-    for (auto &player : _players)
+    {
+        std::lock_guard _(_entitiesMutex);
+
+        _entities.erase(
+            std::remove_if(
+                _entities.begin(), _entities.end(),
+                [entity_id](const std::shared_ptr<Entity> ent) {
+                    return entity_id == ent->getId();
+                }
+            ),
+            _entities.end()
+        );
+    }
+
+    std::lock_guard _(_playersMutex);
+    for (auto player : _players)
         player->sendRemoveEntities({entity_id});
 }
 
 void Dimension::removePlayer(int32_t entity_id)
 {
     LDEBUG("Removing player with id: ", entity_id);
+    std::lock_guard _(_playersMutex);
     _players.erase(
         std::remove_if(
             _players.begin(), _players.end(),
@@ -90,13 +101,21 @@ void Dimension::removePlayer(int32_t entity_id)
         ),
         _players.end()
     );
-    for (auto &player : _players)
+    for (auto player : _players)
         player->sendRemoveEntities({entity_id});
 }
 
-void Dimension::addEntity(std::shared_ptr<Entity> entity) { _entities.push_back(entity); }
+void Dimension::addEntity(std::shared_ptr<Entity> entity)
+{
+    std::lock_guard _(_entitiesMutex);
+    _entities.push_back(entity);
+}
 
-void Dimension::addPlayer(std::shared_ptr<Player> entity) { _players.push_back(entity); }
+void Dimension::addPlayer(std::shared_ptr<Player> entity)
+{
+    std::lock_guard _(_playersMutex);
+    _players.push_back(entity);
+}
 
 const world_storage::Level &Dimension::getLevel() const { return _level; }
 

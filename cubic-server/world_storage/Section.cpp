@@ -12,8 +12,8 @@ world_storage::Section::Section() noexcept:
     _skyLightCount(0),
     _blockLightCount(0)
 {
-    this->_blockPalette.setCount(0, SECTION_3D_SIZE);
-    this->_biomePalette.setCount(0, BIOME_SECTION_3D_SIZE);
+    // this->_blockPalette.setCount(0, SECTION_3D_SIZE);
+    // this->_biomePalette.setCount(0, BIOME_SECTION_3D_SIZE);
 }
 
 void world_storage::Section::updateBlock(const Position &pos, int32_t block)
@@ -78,6 +78,14 @@ void world_storage::Section::setSkyLight(const Position &pos, uint8_t light)
     _skyLight.set(calculateSectionBlockIdx(pos), light);
 }
 
+void world_storage::Section::recalculateSkyLightCount()
+{
+    _skyLightCount = 0;
+    for (auto i : _skyLight.data()) {
+        _skyLightCount += ((i & 0b11110000) >= 1) + ((i & 0b00001111) >= 1);
+    }
+}
+
 void world_storage::Section::updateBlockLight(const Position &pos, uint8_t light)
 {
     // TODO: do something, like calculate the light LOL
@@ -91,6 +99,29 @@ void world_storage::Section::setBlockLight(const Position &pos, uint8_t light)
     if (getBlockLight(pos) == 0 && light != 0)
         _blockLightCount++;
     _blockLight.set(calculateSectionBlockIdx(pos), light);
+}
+
+void world_storage::Section::recalculateBlockLightCount()
+{
+    _blockLightCount = 0;
+    for (auto i : _blockLight.data()) {
+        _blockLightCount += ((i & 0b11110000) >= 1) + ((i & 0b00001111) >= 1);
+    }
+}
+
+void world_storage::Section::recalculateSkyLight()
+{
+    for (auto x = 0; x < SECTION_WIDTH; x++) {
+        for (auto y = 0; y < SECTION_WIDTH; y++) {
+            for (auto z = 0; z < SECTION_WIDTH; z++)
+                setSkyLight({x, y, z}, 15);
+        }
+    }
+}
+
+void world_storage::Section::recalculateBlockLight()
+{
+    // TODO
 }
 
 int32_t world_storage::Section::getBlock(const Position &pos) const

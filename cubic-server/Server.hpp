@@ -92,6 +92,9 @@ private:
     void _reloadConfig();
     void _enforceWhitelistOnReload();
 
+public:
+    std::mutex clientsMutex;
+
 private:
     std::atomic<bool> _running;
 

@@ -137,20 +137,16 @@ void ChunkColumn::updateHeightMap()
 
 void ChunkColumn::recalculateSkyLight()
 {
-    // TODO: REALY calculate the skylight
     for (auto &section : _sections) {
-        for (auto x = 0; x < SECTION_WIDTH; x++) {
-            for (auto y = 0; y < SECTION_WIDTH; y++) {
-                for (auto z = 0; z < SECTION_WIDTH; z++)
-                    section.setSkyLight({x, y, z}, 15);
-            }
-        }
+        section.recalculateSkyLight();
     }
 }
 
 void ChunkColumn::recalculateBlockLight()
 {
-    // TODO: REALY calculate the blocklight
+    for (auto &section : _sections) {
+        section.recalculateBlockLight();
+    }
 }
 
 void ChunkColumn::generate(WorldType worldType, Seed seed)

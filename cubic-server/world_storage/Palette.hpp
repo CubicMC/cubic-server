@@ -34,11 +34,11 @@ public:
     }
 
     void add(int32_t globalId);
-    void setCount(int32_t globalId, uint32_t count);
-    uint32_t getCount(int32_t globalId) const;
+    // void setCount(int32_t globalId, uint32_t count);
+    // uint32_t getCount(int32_t globalId) const;
     void removeAll(int32_t globalId);
     void remove(int32_t globalId);
-    uint64_t getTotalCount(bool countZero = false) const;
+    // uint64_t getTotalCount(bool countZero = false) const;
 
     virtual uint8_t getBits() const = 0;
 
@@ -50,7 +50,7 @@ public:
 
 protected:
     std::vector<int32_t> _nameToId;
-    std::unordered_map<int32_t, uint32_t> _idCount;
+    // std::vector<std::pair<int32_t, uint32_t>> _idCount;
 };
 
 class BlockPalette : public Palette {

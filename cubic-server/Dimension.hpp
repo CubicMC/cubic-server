@@ -97,6 +97,10 @@ public:
 protected:
     virtual void _run();
 
+public:
+    mutable std::mutex _playersMutex;
+    mutable std::mutex _entitiesMutex;
+
 protected:
     std::counting_semaphore<SEMAPHORE_MAX> _dimensionLock;
     std::vector<std::shared_ptr<Entity>> _entities;

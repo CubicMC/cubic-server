@@ -321,7 +321,7 @@ void Client::_onStatusRequest(UNUSED const std::shared_ptr<protocol::StatusReque
 
     auto srv = Server::getInstance();
     auto conf = srv->getConfig();
-    auto cli = srv->getClients();
+    auto &cli = srv->getClients();
     auto worldGroup = srv->getWorldGroup("default");
 
     // TODO: Fix this
@@ -341,9 +341,12 @@ void Client::_onStatusRequest(UNUSED const std::shared_ptr<protocol::StatusReque
     json["version"]["name"] = MC_VERSION;
     json["version"]["protocol"] = MC_PROTOCOL;
     json["players"]["max"] = conf["max-players"].as<int32_t>();
-    json["players"]["online"] = std::count_if(cli.begin(), cli.end(), [](std::shared_ptr<Client> &each) {
-        return each->getStatus() == protocol::ClientStatus::Play;
-    });
+    {
+        std::lock_guard _(srv->clientsMutex);
+        json["players"]["online"] = std::count_if(cli.begin(), cli.end(), [](std::shared_ptr<Client> each) {
+            return each->getStatus() == protocol::ClientStatus::Play;
+        });
+    }
 
     sendStatusResponse(json.dump());
 }

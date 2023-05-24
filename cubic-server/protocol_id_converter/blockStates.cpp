@@ -68,7 +68,7 @@ BlockId Blocks::GlobalPalette::fromBlockToProtocolId(const std::string &blockNam
     return this->fromBlockToProtocolId(block);
 }
 
-BlockId Blocks::GlobalPalette::fromBlockToProtocolId(const Blocks::Block &block) const
+BlockId Blocks::GlobalPalette::fromBlockToProtocolId(Blocks::Block &block) const
 {
     auto internalBlock = std::find_if(this->_blocks.begin(), this->_blocks.end(), [&block](const Blocks::InternalBlock &b) {
         return b.name == block.name;
@@ -78,8 +78,19 @@ BlockId Blocks::GlobalPalette::fromBlockToProtocolId(const Blocks::Block &block)
         return 0;
     }
     if (block.properties.size() != internalBlock->properties.size()) {
-        LERROR("Block properties size mismatch with block " << block.name);
-        return 0;
+        // LERROR("Block properties size mismatch with block " << block.name);
+        for (auto &[h, hh] : internalBlock->defaultProperties) {
+            bool found = false;
+            for (auto &[c, cc] : block.properties) {
+                if (c == h) {
+                    found = true;
+                    break;
+                }
+            }
+            if (!found)
+                block.properties.push_back({h, hh});
+        }
+        // return 0;
     }
     if (block.properties.size() == 0 && internalBlock->properties.size() == 0)
         return internalBlock->baseProtocolId;

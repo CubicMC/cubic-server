@@ -31,7 +31,6 @@
 *.out
 *.app
 
-build
 .vscode
 cmake-build-debug
 cmake-build-release
@@ -40,7 +39,7 @@ logs
 config.yml
 .cache
 debug
-build_test
+build*
 .kdev4
 *.kdev4
 world*

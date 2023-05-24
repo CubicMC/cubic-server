@@ -49,7 +49,7 @@ public:
      * @param block The block to convert
      * @return The protocol id of the block
      */
-    BlockId fromBlockToProtocolId(const Block &block) const;
+    BlockId fromBlockToProtocolId(Block &block) const;
     BlockId fromBlockToProtocolId(const std::string &block) const;
     /**
      * @brief Convert a protocol id to a block

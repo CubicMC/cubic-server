@@ -63,17 +63,25 @@ void command_parser::DumpChunk::execute(std::vector<std::string> &args, Player *
 
         LDEBUG("Bits: " << (int) section.getBlockPalette().getBits());
         LDEBUG("Size: " << section.getBlockPalette().size());
-        LDEBUG("Total Count: " << section.getBlockPalette().getTotalCount());
-        if (section.getBlockPalette().getTotalCount(true) != world_storage::SECTION_3D_SIZE)
-            LDEBUG("ERROR: Block palette does not have the right size: " << section.getBlockPalette().getTotalCount(true) << " != " << world_storage::SECTION_3D_SIZE);
-        if (section.getBlockPalette().getTotalCount() + section.getBlockPalette().getCount(0) != world_storage::SECTION_3D_SIZE)
-            LDEBUG(
-                "ERROR: Block palette does not have the right size: " << section.getBlockPalette().getTotalCount() << " + " << section.getBlockPalette().getCount(0)
-                                                                      << " != " << world_storage::SECTION_3D_SIZE
-            );
+        uint16_t blockInsideSection = 0;
+        uint16_t blockInsideSectionWitAir = 0;
+        for (uint16_t i = 0; i < world_storage::SECTION_3D_SIZE; i++) {
+            auto block = section.getBlock(i);
+            if (block != 0)
+                blockInsideSection++;
+            blockInsideSectionWitAir++;
+        }
+        LDEBUG("Total Count: " << blockInsideSection);
+        if (blockInsideSectionWitAir != world_storage::SECTION_3D_SIZE)
+            LDEBUG("ERROR: Block palette does not have the right size: " << blockInsideSectionWitAir << " != " << world_storage::SECTION_3D_SIZE);
+        // if (section.getBlockPalette().getTotalCount() + section.getBlockPalette().getCount(0) != world_storage::SECTION_3D_SIZE)
+        //     LDEBUG(
+        //         "ERROR: Block palette does not have the right size: " << section.getBlockPalette().getTotalCount() << " + " << section.getBlockPalette().getCount(0)
+        //                                                               << " != " << world_storage::SECTION_3D_SIZE
+        //     );
         for (uint16_t i = 0; i < section.getBlockPalette().size(); i++) {
             auto block = section.getBlockPalette().getGlobalId(i);
-            LDEBUG("\tPalette[" << i << "]: (" << block << ") -> " << GLOBAL_PALETTE.fromProtocolIdToBlock(block).name << " " << section.getBlockPalette().getCount(block));
+            LDEBUG("\tPalette[" << i << "]: (" << block << ") -> " << GLOBAL_PALETTE.fromProtocolIdToBlock(block).name << " " /*<< section.getBlockPalette().getCount(block)*/);
         }
     }
 
@@ -187,7 +195,7 @@ void command_parser::DumpChunk::execute(std::vector<std::string> &args, Player *
             LDEBUG('\t' << "Direct value palette");
 
         // Block data parsing
-        auto entryPerLong = bytePerBlock == 0 ? 0 : 64 / bytePerBlock;
+        // auto entryPerLong = bytePerBlock == 0 ? 0 : 64 / bytePerBlock;
         auto blockDataSize = protocol::popVarInt(at, eof);
         LDEBUG('\t' << "Block data size: " << blockDataSize);
         if ((blockDataSize > 0 && bytePerBlock == 0) || (blockDataSize == 0 && bytePerBlock > 0))

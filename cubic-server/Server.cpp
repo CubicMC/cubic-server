@@ -118,7 +118,10 @@ void Server::_acceptLoop()
             // Add accepted client to the vector of clients
             // auto cli = std::make_shared<Client>(clientFd, clientAddr);
             // _clients.push_back(cli);
-            _clients.push_back(std::make_shared<Client>(clientFd, clientAddr));
+            {
+                std::lock_guard _(this->clientsMutex);
+                _clients.push_back(std::make_shared<Client>(clientFd, clientAddr));
+            }
 
             // Emplace_back is not working, I don't know why
             // _clients.emplace_back(clientFd, clientAddr);
@@ -130,6 +133,7 @@ void Server::_acceptLoop()
             // cli->setRunningThread(cliThread);
         }
 
+        std::lock_guard _(this->clientsMutex);
         _clients.erase(
             std::remove_if(
                 _clients.begin(), _clients.end(),
@@ -145,6 +149,7 @@ void Server::_acceptLoop()
 void Server::_stop()
 {
     // Disconect all clients
+    clientsMutex.lock();
     for (auto &client : _clients)
         client->stop("Server Closed");
 
