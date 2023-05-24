@@ -64,7 +64,6 @@ execute_process(
 )
 
 execute_process(
-    COMMAND mv ${CMAKE_BINARY_DIR}/recipes ${CMAKE_BINARY_DIR}/assets/recipes
+    COMMAND mv -n ${CMAKE_BINARY_DIR}/recipes ${CMAKE_BINARY_DIR}/assets/recipes
     WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
-    COMMAND_ERROR_IS_FATAL ANY
 )

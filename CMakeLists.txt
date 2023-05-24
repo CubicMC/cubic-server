@@ -101,12 +101,20 @@ endif()
 
 find_package(Threads REQUIRED)
 find_package(PkgConfig REQUIRED)
-pkg_check_modules(GTKMM REQUIRED gtkmm-3.0)
+pkg_check_modules(GTKMM gtkmm-3.0)
+
+option(NO_GUI "Build without GUI" OFF)
+if(NOT GTKMM_FOUND)
+    message(WARNING "Gtkmm not found! Building without GUI.")
+    set(NO_GUI ON)
+endif()
 
 add_executable(${CMAKE_PROJECT_NAME})
 target_compile_definitions(${CMAKE_PROJECT_NAME} PRIVATE
     PROGRAM_NAME="${CMAKE_PROJECT_NAME}"
     PROGRAM_VERSION="${CMAKE_PROJECT_VERSION}"
+    MINECRAFT_VERSION="${MINECRAFT_VERSION}"
+    GUI_UNAVAILABLE=$<BOOL:${NO_GUI}>
 )
 
 include(blocks.cmake)
@@ -124,7 +132,12 @@ target_link_libraries (${CMAKE_PROJECT_NAME} PRIVATE
     Blocks
     Threads::Threads
     nlohmann_json::nlohmann_json
-    ${GTKMM_LIBRARIES}
     argparse
     yaml-cpp
 )
+
+if (NOT NO_GUI)
+    target_link_libraries(${CMAKE_PROJECT_NAME} PRIVATE
+        ${GTKMM_LIBRARIES}
+    )
+endif()
