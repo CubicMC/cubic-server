@@ -6,7 +6,7 @@ ARG REINSTALL_CMAKE_VERSION_FROM_SOURCE="none"
 COPY ./reinstall-cmake.sh /tmp/
 
 RUN if [ "${REINSTALL_CMAKE_VERSION_FROM_SOURCE}" != "none" ]; then \
-        chmod +x /tmp/reinstall-cmake.sh && /tmp/reinstall-cmake.sh ${REINSTALL_CMAKE_VERSION_FROM_SOURCE}; \
+    chmod +x /tmp/reinstall-cmake.sh && /tmp/reinstall-cmake.sh ${REINSTALL_CMAKE_VERSION_FROM_SOURCE}; \
     fi \
     && rm -f /tmp/reinstall-cmake.sh
 
@@ -24,4 +24,14 @@ RUN wget -O - https://apt.llvm.org/llvm-snapshot.gpg.key | sudo apt-key add -
 
 RUN sudo apt-get update
 
-RUN sudo apt-get install -y gcc-12 g++-12 cmake pkg-config gtkmm-3.0 clang-15 clangd
+RUN sudo apt-get install -y gcc-12 g++-12 cmake pkg-config gtkmm-3.0 clang-15 clangd clang-format-15 python3.10-venv
+
+RUN sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-12 12
+
+RUN sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-12 12
+
+RUN sudo update-alternatives --install /usr/bin/clang clang /usr/bin/clang-15 15
+
+RUN sudo update-alternatives --install /usr/bin/clang++ clang++ /usr/bin/clang++-15 15
+
+RUN echo 'alias format-all="find cubic-server/ -iname *.hpp -o -iname *.cpp | xargs clang-format-15 --style=file -i"' >> /home/vscode/.bashrc

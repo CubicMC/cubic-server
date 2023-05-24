@@ -1,6 +1,7 @@
 #ifndef D3EBB5BA_3F3F_4BBD_A2B5_05FD6729E432
 #define D3EBB5BA_3F3F_4BBD_A2B5_05FD6729E432
 
+#include <memory>
 #include <mutex>
 #include <string>
 #include <unordered_map>
@@ -20,11 +21,9 @@ namespace world_storage {
  */
 class Persistence {
 private:
-    /**
-     * @brief Name of the world folder
-     *
-     */
-    const std::string level_name;
+    const std::string _folder;
+
+    std::weak_ptr<World> _world;
 
     /**
      * @brief Global lock for any persistence actions
@@ -41,13 +40,9 @@ private:
     void uncompressFile(const std::string &filepath, std::vector<uint8_t> &data);
 
 public:
-    std::unordered_map<Position2D, std::unordered_map<Position2D, ChunkColumn *>> regionStore; // TODO(huntears): Get proper getter/setter
-    /**
-     * @brief Construct a new Persistence object
-     *
-     * @param level_folder_name The folder name of the wanted level
-     */
-    Persistence(const std::string &level_folder_name);
+    std::vector<Position2D> regionStore; // TODO(huntears): Get proper getter/setter
+
+    Persistence(std::weak_ptr<World> world, const std::string &folder);
 
     /**
      * @brief Loads the level.dat from disk
@@ -112,9 +107,9 @@ public:
      */
     PlayerData loadPlayerData(const Player *player);
 
-    void loadRegion(int x, int z);
+    void loadRegion(Dimension &dim, int x, int z);
 
-    bool isChunkLoaded(int x, int z);
+    bool isChunkLoaded(Dimension &dim, int x, int z);
 };
 
 }

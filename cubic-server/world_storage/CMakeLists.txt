@@ -8,4 +8,7 @@ target_sources (${CMAKE_PROJECT_NAME} PRIVATE
     Palette.hpp
     Persistence.cpp
     Persistence.hpp
+    Palette.cpp
+    Section.cpp
+    Section.hpp
 )

@@ -2,6 +2,7 @@
 #define CUBICSERVER_LIVINGENTITY_HPP
 
 #include "Entity.hpp"
+#include "options.hpp"
 
 constexpr float KNOCKBACK_DEFAULT_FORCE = 2500.0f;
 
@@ -21,8 +22,8 @@ public:
 
     virtual void setHealth(float health);
 
-    [[nodiscard]] virtual float &getHealth();
-    [[nodiscard]] virtual const float &getHealth() const;
+    NODISCARD virtual float &getHealth();
+    NODISCARD virtual const float &getHealth() const;
 
 protected:
     float _health;

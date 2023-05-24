@@ -1,6 +1,7 @@
 import json
 import argparse
 import os
+import re
 from num2words import num2words
 
 # Variables for formatting the output
@@ -36,7 +37,11 @@ def writer(data, file):
                         indentation -= 4
                 if line[-1] == ":" and line.startswith("case") and is_switch > 0:
                     indentation += 4
+                if line[-1] == ":" and line.startswith("default") and is_switch > 0:
+                    indentation += 4
                 if line[-1] == ";" and line.startswith("return") and is_switch > 0:
+                    indentation -= 4
+                if line[-1] == "{" and line.startswith("namespace"):
                     indentation -= 4
                 if line[-1] == "{" and is_switch == 0:
                     indentation += 4
@@ -111,6 +116,8 @@ class Block:
                 else:
                     state = change_item_in_list(state, (remaining_props[0], each))
                     data += "return " + self.get_protocol_id_from_state(state) + ";\n"
+        data += "default:\n"
+        data += "return 0;\n"
         data += "}\n"
         return data
 
@@ -138,7 +145,7 @@ class Block:
             for prop in self.properties:
                 data += "Properties::" + prop.capitalize() + " " + prop + ", "
             data = data[:-2]
-        data += ") {\n"
+        data += ")\n{\n"
         if self.properties != []:
             all_props = []
             for prop in self.properties:
@@ -244,144 +251,32 @@ def load_json(filename):
 
 def create_block_files(path, block):
     with open(path + "/blocks/" + block.name.split(":")[1].title().replace("_", "") + ".hpp", "w") as f:
-        writer("#include <string>\n", f)
         writer("#include <cstdint>\n", f)
-        writer("#include <vector>\n", f)
-        writer("#include <unordered_map>\n", f)
-        writer("#include <functional>\n\n", f)
 
         writer("namespace Blocks {\n", f)
         writer("typedef int32_t BlockId;\n\n", f)
 
         writer(block.namespaceForHeaderFile(), f)
         writer("}\n", f)
+    global indentation
+    global is_switch
+    indentation = 0
+    is_switch = 0
 
     with open(path + "/blocks/" + block.name.split(":")[1].title().replace("_", "") + ".cpp", "w") as f:
         writer("#include \"" + block.name.split(":")[1].title().replace("_", "") + ".hpp\"\n", f)
-        writer("#include <stdexcept>\n\n", f)
 
         writer("namespace Blocks {\n", f)
         writer(block.namespaceForSourceFile(), f)
         writer("}\n", f)
 
+    indentation = 0
+    is_switch = 0
 
-def create_blockStates_files(filename, blocks):
-    with open(filename + ".cpp", "w") as f:
-        writer("#include \"" + os.path.basename(filename) + ".hpp\"\n", f)
-        writer("#include <stdexcept>\n\n", f)
-
-        writer("namespace Blocks {\n", f)
-        writer("static const std::unordered_map<std::string, std::function<BlockId(std::vector<std::pair<std::string, std::string>>)>> toProtocol = {\n", f)
-        for block in blocks:
-            writer(block.nameToProtocolId(), f)
-        writer("};\n\n", f)
-
-        writer("BlockId fromNameToProtocolId(Block block) {\n", f)
-        writer("return toProtocol.at(block.name)(block.properties);\n", f)
-        writer("}\n\n", f)
-
-        blocks.sort(key=lambda block: block.protocolId)
-        writer("static const Block toBlock [" + str(blocks[-1].lastProtocolId + 1) + "] {\n", f)
-        i = 0
-        for block in blocks:
-            while i < block.protocolId:
-                writer("{\"minecraft:air\", {}},\n", f)
-                i += 1
-            writer(block.toName(), f)
-            i = block.lastProtocolId + 1
-        writer("};\n\n", f)
-
-        writer("Block fromProtocolIdToName(BlockId id) {\n", f)
-        writer("return toBlock[id];\n", f)
-        writer("}\n", f)
-        writer("}\n", f)
-
-    with open(filename + ".hpp", "w") as f:
+def create_blocks_hpp_file(path, blocks):
+    with open(path + "/blocks.hpp", "w") as f:
         for block in blocks:
             writer("#include \"blocks/" + block.name.split(":")[1].title().replace("_", "") + ".hpp\"\n", f)
-        writer("\n", f)
-        writer("namespace Blocks {\n", f)
-        writer("struct Block {", f)
-        writer("std::string name;\n", f)
-        writer("std::vector<std::pair<std::string, std::string>> properties;\n", f)
-        writer("};\n\n", f)
-
-        # writer("extern const std::unordered_map<std::string, std::function<BlockId(std::vector<std::pair<std::string, std::string>>)>> toProtocol;\n", f)
-        writer("BlockId fromNameToProtocolId(Block block);\n", f)
-        writer("Block toName(BlockId id);\n", f)
-        writer("constexpr int NUMBER_OF_PROTOCOL_IDS = " + str(number_of_protocol_ids) + ";\n", f)
-        writer("}\n", f)
-
-    with open(os.path.dirname(filename) + "/CMakeLists.txt", "w") as f:
-        writer("target_sources (${CMAKE_PROJECT_NAME} PRIVATE\n", f)
-        writer(os.path.basename(filename) + ".cpp\n", f)
-        writer(os.path.basename(filename) + ".hpp\n", f)
-        writer(")\n", f)
-        writer("add_subdirectory (blocks)\n", f)
-
-    with open(os.path.dirname(filename) + "/blocks/CMakeLists.txt", "w") as f:
-        writer("add_library(Blocks\n", f)
-        for block in blocks:
-            writer(block.name.split(":")[1].title().replace("_", "") + ".cpp\n", f)
-            writer(block.name.split(":")[1].title().replace("_", "") + ".hpp\n", f)
-        writer(")\n", f)
-        writer("target_include_directories (ConfigHandler PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})\n", f)
-
-# write the header file
-def write_header_file(filename, blocks):
-    with open(filename + ".hpp", "w") as f:
-        writer("#include <string>\n", f)
-        writer("#include <cstdint>\n", f)
-        writer("#include <vector>\n", f)
-        writer("#include <stdexcept>\n", f)
-        writer("#include <unordered_map>\n", f)
-        writer("#include <functional>\n\n", f)
-
-        writer("namespace Blocks {\n", f)
-        writer("typedef int32_t BlockId;\n\n", f)
-
-        writer("struct Block {", f)
-        writer("std::string name;\n", f)
-        writer("std::vector<std::pair<std::string, std::string>> properties;\n", f)
-        writer("};\n\n", f)
-
-        for block in blocks :
-            writer(block.namespaceForHeaderFile(), f)
-
-        writer("extern const std::unordered_map<std::string, std::function<BlockId(std::vector<std::pair<std::string, std::string>>)>> nameToProtocolId;", f)
-
-        writer("BlockId fromNameToProtocolId(Block block);\n", f)
-        writer("Block toName(BlockId id);\n", f)
-
-        writer("constexpr int NUMBER_OF_PROTOCOL_IDS = " + str(number_of_protocol_ids) + ";\n", f)
-        writer("}\n", f)
-
-# write the source file
-def write_source_file(filename, blocks):
-    with open(filename + ".cpp", 'w') as f:
-        writer("#include \"" + filename.split("/")[-1] + ".hpp\"\n\n", f)
-
-        writer("namespace Blocks {\n", f)
-        for block in blocks :
-            writer(block.namespaceForSourceFile(), f)
-
-        writer("const std::unordered_map<std::string, std::function<BlockId(std::vector<std::pair<std::string, std::string>>)>> nameToProtocolId {\n", f)
-        for block in blocks :
-            writer(block.nameToProtocolId(), f)
-        writer("};\n\n", f)
-
-        writer("BlockId fromNameToProtocolId(Block block) {\n", f)
-        writer("return nameToProtocolId.at(block.name)(block.properties); // this may throw an exception\n", f)
-        writer("}\n\n", f)
-
-        writer("Block toName(BlockId id) {\n", f)
-        writer("switch (id) {\n", f)
-        for block in blocks :
-            writer(block.toName(), f)
-        writer("}\n", f)
-        writer("return {\"minecraft:air\", {}};\n", f)
-        writer("}\n", f)
-        writer("}\n", f)
 
 # get different option you can pass to the script
 def parse_args(options):
@@ -390,24 +285,29 @@ def parse_args(options):
     parser.add_argument("-i", "--input", help="input file", default=options["input"])
     parser.add_argument("-o", "--output", help="output file", default=options["output"])
     parser.add_argument("-f", "--format", help="format the code", action=argparse.BooleanOptionalAction)
+    parser.add_argument("--get-generated-files", help="get the generated files", action=argparse.BooleanOptionalAction)
     args = parser.parse_args()
-    if args.input != "blocks.json":
+    if not re.search("blocks-[0-9].[0-9]{1,2}(?:.[0-9]+)?.json", args.input) and not args.get_generated_files:
         print("I hope you know what you are doing, cause for now the script only works with the blocks.json file")
     options["input"] = args.input
     options["output"] = args.output
     formated = args.format
+    options["get_generated_files"] = args.get_generated_files
     return options
 
 def main():
     options = {"input": "blocks.json", "output": "generated/blocks"}
     options = parse_args(options)
     blocks = load_json(options["input"])
-    os.makedirs(os.path.dirname(options["output"]) + "/blocks", exist_ok=True)
-    for block in blocks:
-        create_block_files(os.path.dirname(options["output"]), block)
-    create_blockStates_files(options["output"], blocks)
-    # write_header_file(options["output"], blocks)
-    # write_source_file(options["output"], blocks)
+    if options["get_generated_files"]:
+        for block in blocks:
+            print("blocks/" + block.name.split(":")[1].title().replace("_", "") + ".hpp", end=';')
+            print("blocks/" + block.name.split(":")[1].title().replace("_", "") + ".cpp", end=';')
+    else:
+        os.makedirs(os.path.dirname(options["output"]) + "/blocks", exist_ok=True)
+        for block in blocks:
+            create_block_files(os.path.dirname(options["output"]), block)
+        create_blocks_hpp_file(os.path.dirname(options["output"]), blocks)
 
 if __name__ == "__main__":
     main()

@@ -13,6 +13,8 @@
 #include "protocol/ServerPackets.hpp"
 #include "types.hpp"
 #include "world_storage/ChunkColumn.hpp"
+#include <compare>
+#include <memory>
 
 class Client;
 // class Entity;
@@ -28,12 +30,12 @@ public:
     };
 
 public:
-    Player(Client *cli, std::shared_ptr<Dimension> dim, u128 uuid, const std::string &username);
+    Player(std::weak_ptr<Client> cli, std::shared_ptr<Dimension> dim, u128 uuid, const std::string &username);
     ~Player() override;
 
     void tick() override;
 
-    Client *getClient() const;
+    std::weak_ptr<Client> getClient() const;
     const std::string &getUsername() const;
     const u128 &getUuid() const;
     uint16_t getHeldItem() const;
@@ -59,6 +61,7 @@ public:
     void sendLoginPlay(const protocol::LoginPlay &packet);
     void sendPlayerInfoUpdate(const protocol::PlayerInfoUpdate &data);
     void sendPlayerInfoRemove(const protocol::PlayerInfoRemove &data);
+    void sendSpawnEntity(const protocol::SpawnEntity &data);
     void sendSpawnPlayer(const protocol::SpawnPlayer &data);
     void sendEntityVelocity(const protocol::EntityVelocity &data);
     void sendHealth(void);
@@ -167,7 +170,7 @@ private:
     void _foodTick();
     void _eat(ItemId itemId);
 
-    Client *_cli;
+    std::weak_ptr<Client> _cli;
     std::string _username;
     std::string _uuidString;
     u128 _uuid;

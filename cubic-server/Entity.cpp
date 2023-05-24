@@ -2,9 +2,10 @@
 
 #include "Dimension.hpp"
 #include "Player.hpp"
-#include "World.hpp"
-#include "types.hpp"
 #include "Server.hpp"
+#include "World.hpp"
+#include "options.hpp"
+#include "types.hpp"
 
 Entity::Entity(std::shared_ptr<Dimension> dim):
     _dim(dim)

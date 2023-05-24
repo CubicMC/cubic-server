@@ -20,18 +20,25 @@ void CommandLine::run()
 {
     std::string command = "";
     pollfd pollSet[1];
-    pollSet[0].fd = STDIN_FILENO;
+    pollSet[0].fd = 0;
 
     while (this->_running) {
         pollSet[0].events = POLLIN;
-        poll(pollSet, 1, 50);
+        if (poll(pollSet, 1, 50) == -1) {
+            Server::getInstance()->stop();
+            this->_running = false;
+            return;
+        }
+
         if ((pollSet[0].revents & POLLIN) == 0)
             continue;
 
-        if (!std::getline(std::cin, command))
-            break;
+        if (!std::getline(std::cin, command)) {
+            Server::getInstance()->stop();
+            this->_running = false;
+            return;
+        }
 
         command_parser::parseCommand(command, nullptr);
     }
-    Server::getInstance()->stop();
 }

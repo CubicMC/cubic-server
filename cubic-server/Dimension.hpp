@@ -8,7 +8,7 @@
 #include <thread>
 #include <vector>
 
-#include "thread_pool/Task.hpp"
+#include "options.hpp"
 #include "world_storage/ChunkColumn.hpp"
 #include "world_storage/Level.hpp"
 
@@ -21,27 +21,25 @@ class Entity;
 
 class Dimension {
 private:
-    struct ChunkRequest {
-        std::shared_ptr<thread_pool::Task> task;
-        std::vector<std::weak_ptr<Player>> players;
-    };
+    using ChunkRequest = std::vector<std::weak_ptr<Player>>;
 
 public:
     Dimension(std::shared_ptr<World> world);
+    virtual ~Dimension() = default;
     virtual void initialize();
     virtual void tick();
     virtual void stop();
 
-    [[nodiscard]] virtual bool isInitialized() const;
-    [[nodiscard]] virtual std::shared_ptr<World> getWorld();
-    [[nodiscard]] virtual const std::shared_ptr<World> getWorld() const;
-    [[nodiscard]] virtual std::counting_semaphore<SEMAPHORE_MAX> &getDimensionLock();
-    [[nodiscard]] virtual std::vector<std::shared_ptr<Player>> &getPlayers();
-    [[nodiscard]] virtual std::vector<std::shared_ptr<Entity>> &getEntities();
-    [[nodiscard]] virtual const std::vector<std::shared_ptr<Player>> &getPlayers() const;
-    [[nodiscard]] virtual const std::vector<std::shared_ptr<Entity>> &getEntities() const;
-    [[nodiscard]] virtual std::shared_ptr<Entity> getEntityByID(int32_t id);
-    [[nodiscard]] virtual const std::shared_ptr<Entity> getEntityByID(int32_t id) const;
+    NODISCARD virtual bool isInitialized() const;
+    NODISCARD virtual std::shared_ptr<World> getWorld();
+    NODISCARD virtual const std::shared_ptr<World> getWorld() const;
+    NODISCARD virtual std::counting_semaphore<SEMAPHORE_MAX> &getDimensionLock();
+    NODISCARD virtual std::vector<std::shared_ptr<Player>> &getPlayers();
+    NODISCARD virtual std::vector<std::shared_ptr<Entity>> &getEntities();
+    NODISCARD virtual const std::vector<std::shared_ptr<Player>> &getPlayers() const;
+    NODISCARD virtual const std::vector<std::shared_ptr<Entity>> &getEntities() const;
+    NODISCARD virtual std::shared_ptr<Entity> getEntityByID(int32_t id);
+    NODISCARD virtual const std::shared_ptr<Entity> getEntityByID(int32_t id) const;
 
     virtual void removeEntity(int32_t entity_id);
     virtual void removePlayer(int32_t entity_id);
@@ -82,7 +80,9 @@ public:
      * @param z int32_t
      * @return world_storage::ChunkColumn&
      */
-    virtual world_storage::ChunkColumn *getChunk(int x, int z);
+    virtual world_storage::ChunkColumn &getChunk(int x, int z);
+
+    virtual const world_storage::ChunkColumn &getChunk(int x, int z) const;
 
     /**
      * @brief Loads a chunk from the world save or generates it if it doesn't exist
@@ -91,9 +91,8 @@ public:
      *
      * @param x int32_t
      * @param z int32_t
-     * @return size_t a job id,
      */
-    virtual std::shared_ptr<thread_pool::Task> loadOrGenerateChunk(int x, int z, std::shared_ptr<Player> player);
+    virtual void loadOrGenerateChunk(int x, int z, std::shared_ptr<Player> player);
 
 protected:
     virtual void _run();

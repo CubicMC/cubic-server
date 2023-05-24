@@ -1,41 +1,33 @@
-#include <curl/curl.h>
 #include <netdb.h>
 #include <poll.h>
 #include <sys/socket.h>
-
-#include <CRC.h>
+#include <unistd.h>
 
 #include "Server.hpp"
 #include "World.hpp"
 
 #include "Chat.hpp"
 #include "Client.hpp"
+#include "Dimension.hpp"
 #include "Player.hpp"
 #include "WorldGroup.hpp"
 #include "command_parser/commands/Gamemode.hpp"
 #include "default/DefaultWorldGroup.hpp"
 #include "logging/Logger.hpp"
-#include "Dimension.hpp"
-
-static const std::unordered_map<std::string, std::uint32_t> _checksums = {
-    {"https://cdn.cubic-mc.com/1.19/blocks-1.19.json", 0x8b138b58},
-    {"https://cdn.cubic-mc.com/1.19/registries-1.19.json", 0x30407a82},
-    {"https://cdn.cubic-mc.com/1.19.3/blocks-1.19.3.json", 0xb8a10fa2},
-    {"https://cdn.cubic-mc.com/1.19.3/registries-1.19.3.json", 0xdfabe75c}};
 
 Server::Server():
     _running(false),
     _sockfd(-1),
     _config()
 {
-    _config.parse("./config.yml");
-    _whitelist = WhitelistHandling::Whitelist();
-    _host = _config.getIP();
-    _port = _config.getPort();
-    _maxPlayer = _config.getMaxPlayers();
-    _motd = _config.getMotd();
-    _whitelistEnabled = _config.getWhitelist();
-    _enforceWhitelist = _config.getEnforceWhitelist();
+    // _config.load("./config.yml");
+    // _config.parse("./config.yml");
+    // _config.parse(2, (const char * const *){"./CubicServer", "--nogui"});
+    // _host = _config.getIP();
+    // _port = _config.getPort();
+    // _maxPlayer = _config.getMaxPlayers();
+    // _motd = _config.getMotd();
+    // _enforceWhitelist = _config.getEnforceWhitelist();
 
     _commands.reserve(11);
     _commands.emplace_back(std::make_unique<command_parser::Help>());
@@ -49,26 +41,26 @@ Server::Server():
     _commands.emplace_back(std::make_unique<command_parser::Reload>());
     _commands.emplace_back(std::make_unique<command_parser::Time>());
     _commands.emplace_back(std::make_unique<command_parser::Gamemode>());
-
-    LINFO("Server created with host: ", _host, " and port: ", _port);
 }
 
 Server::~Server() { }
 
-void Server::launch()
+void Server::launch(const configuration::ConfigHandler &config)
 {
+    this->_config = config;
+    LINFO("Starting server on ", _config["ip"], ":", _config["port"]);
     int yes = 1;
     int no = 0;
 
     // Get the socket for the server
-    _sockfd = socket(AF_INET6, SOCK_STREAM, getprotobyname("TCP")->p_proto);
+    _sockfd = socket(AF_INET6, SOCK_STREAM, getprotobyname("tcp")->p_proto);
 
     // Create the addr for the server
-    if (!inet_pton(AF_INET, _host.c_str(), &(_addr.sin6_addr))) {
+    if (!inet_pton(AF_INET, _config["ip"].value().c_str(), &(_addr.sin6_addr)))
         throw std::runtime_error("Invalid host ip address");
-    }
+
     _addr.sin6_family = AF_INET6;
-    _addr.sin6_port = htons(_port);
+    _addr.sin6_port = htons(_config["port"].as<uint16_t>());
 
     // Bind server socket
     setsockopt(_sockfd, SOL_SOCKET, SO_REUSEADDR, &yes, sizeof(yes));
@@ -78,9 +70,6 @@ void Server::launch()
 
     // Listen
     listen(_sockfd, SOMAXCONN);
-
-    _downloadFile(std::string("https://cdn.cubic-mc.com/") + MC_VERSION + "/blocks-" + MC_VERSION + ".json", std::string("blocks-") + MC_VERSION + ".json");
-    _downloadFile(std::string("https://cdn.cubic-mc.com/") + MC_VERSION + "/registries-" + MC_VERSION + ".json", std::string("registries-") + MC_VERSION + ".json");
 
     // Initialize the global palette
     _globalPalette.initialize(std::string("blocks-") + MC_VERSION + ".json");
@@ -95,6 +84,9 @@ void Server::launch()
     _worldGroups.emplace("default", new DefaultWorldGroup(defaultChat));
     _worldGroups.at("default")->initialize();
 
+    // Initialize default recipes
+    this->_recipes.initialize();
+
     this->_running = true;
 
     _acceptLoop();
@@ -102,7 +94,11 @@ void Server::launch()
     this->_stop();
 }
 
-void Server::stop() { this->_running = false; }
+void Server::stop()
+{
+    LINFO("Server has received a stop command");
+    this->_running = false;
+}
 
 void Server::_acceptLoop()
 {
@@ -164,60 +160,17 @@ void Server::_stop()
     LINFO("Server stopped");
 }
 
-void Server::_downloadFile(const std::string &url, const std::string &path)
-{
-    if (std::filesystem::exists(path)) {
-        LDEBUG("File " << path << " already exists. Skipping download");
-    } else {
-        LDEBUG("Downloading file " << path);
-        CURL *curl;
-        FILE *fp;
-        curl = curl_easy_init();
-        if (curl) {
-            fp = fopen(path.c_str(), "wb");
-            curl_easy_setopt(curl, CURLOPT_URL, url.c_str());
-            // curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, NULL);
-            curl_easy_setopt(curl, CURLOPT_WRITEDATA, fp);
-            curl_easy_perform(curl);
-            curl_easy_cleanup(curl);
-            fclose(fp);
-        }
-    }
-    std::ifstream file(path);
-    std::string str((std::istreambuf_iterator<char>(file)), std::istreambuf_iterator<char>());
-    std::uint32_t crc = CRC::Calculate(str.c_str(), str.length(), CRC::CRC_32());
-    LDEBUG("CRC32 of " << path << " is 0x" << std::hex << crc);
-    try {
-        _checksums.at(url);
-    } catch (std::out_of_range &e) {
-        LFATAL("No checksum for file " << path << ". Maybe this version is not supported.");
-        this->stop();
-        return;
-    }
-    if (crc == _checksums.at(url))
-        LDEBUG("File " << path << " is valid");
-    else {
-        LFATAL("File " << path << " is corrupted. Please delete it and restart the server");
-        this->stop();
-        return;
-    }
-}
-
 /*
 **  Reloads the config if no error within the new file
 */
 void Server::_reloadConfig()
 {
     try {
-        _config.parse("./config.yml");
-    } catch (const std::exception &e) {
+        _config.load("./config.yml");
+    } catch (const configuration::ConfigurationError &e) {
         LERROR(e.what());
         return;
     }
-    _maxPlayer = _config.getMaxPlayers();
-    _motd = _config.getMotd();
-    _whitelistEnabled = _config.getWhitelist();
-    _enforceWhitelist = _config.getEnforceWhitelist();
 }
 
 /*
@@ -226,7 +179,7 @@ void Server::_reloadConfig()
 void Server::_reloadWhitelist()
 {
     try {
-        if (_whitelistEnabled) {
+        if (isWhitelistEnabled()) {
             WhitelistHandling::Whitelist whitelistReloaded = WhitelistHandling::Whitelist();
             _whitelist = whitelistReloaded;
         }
@@ -254,7 +207,7 @@ void Server::reload()
 */
 void Server::_enforceWhitelistOnReload()
 {
-    if (!_whitelistEnabled || !_enforceWhitelist)
+    if (!isWhitelistEnabled() || !isWhitelistEnforce())
         return;
     for (auto [_, worldGroup] : _worldGroups) {
         for (auto [_, world] : worldGroup->getWorlds()) {
@@ -272,3 +225,4 @@ void Server::_enforceWhitelistOnReload()
 std::unordered_map<std::string_view, std::shared_ptr<WorldGroup>> &Server::getWorldGroups() { return _worldGroups; }
 
 const std::unordered_map<std::string_view, std::shared_ptr<WorldGroup>> &Server::getWorldGroups() const { return _worldGroups; }
+Recipes &Server::getRecipeSystem(void) noexcept { return (this->_recipes); }

@@ -1,14 +1,18 @@
 #include "Overworld.hpp"
 
 #include "World.hpp"
+#include "default/DefaultWorld.hpp"
+#include "logging/Logger.hpp"
 #include "world_storage/Level.hpp"
 #include <future>
+#include <memory>
 #include <queue>
-#include "logging/Logger.hpp"
+
+#include <iostream>
 
 void Overworld::tick()
 {
-    _processingMutex.lock();
+    std::lock_guard<std::mutex> _(_processingMutex);
 
     // auto startProcessing = std::chrono::system_clock::now();
 
@@ -17,7 +21,6 @@ void Overworld::tick()
     // LDEBUG("Tick - Overworld");
 
     // auto endProcessing = std::chrono::system_clock::now();
-    _processingMutex.unlock();
 }
 
 void Overworld::initialize()
@@ -25,19 +28,29 @@ void Overworld::initialize()
     Dimension::initialize();
     LINFO("Initialize - Overworld");
     int x = -NB_SPAWN_CHUNKS / 2, z = -NB_SPAWN_CHUNKS / 2;
+    int i = 0;
     while (x < NB_SPAWN_CHUNKS / 2 || z < NB_SPAWN_CHUNKS / 2) {
-        this->getWorld()->getGenerationPool().add(&Overworld::generateChunk, this, x, z);
+        ++i; // temporary percentage calculation. ugly but works :DDD gets deleted after usage to ensure clean logs.
+        this->getWorld()->getGenerationPool().addJob([=, this] {
+            std::stringstream ss;
+            constexpr std::array<std::string_view, 4> animation {"/", "-", "\\", "|"}; // cute little animation :D
+            ss << animation[i % 4] << " Generating " << i * 100 / (NB_SPAWN_CHUNKS * NB_SPAWN_CHUNKS) << "% " << animation[i % 4] << '\r';
+            std::cerr << ss.str();
+            generateChunk(x, z);
+        });
         if (x == NB_SPAWN_CHUNKS / 2) {
             x = -NB_SPAWN_CHUNKS / 2;
             z++;
         } else
             x++;
     }
-    this->getWorld()->getGenerationPool().add(&Overworld::generateChunk, this, x, z);
+    this->getWorld()->getGenerationPool().addJob([=, this] {
+        generateChunk(x, z);
+    });
 
     // TODO: Move this to a better place
     this->_worldGenFuture = std::async(std::launch::async, [this] {
-        this->getWorld()->getGenerationPool().wait();
+        this->getWorld()->getGenerationPool().waitUntilJobsDone();
         LINFO("Overworld initialized");
         this->_isInitialized = true;
     });
@@ -51,21 +64,15 @@ void Overworld::stop()
 
 void Overworld::generateChunk(int x, int z)
 {
-    if (persistence.isChunkLoaded(x, z)) {
-        LINFO("Loading chunk ", x, " ", z);
-        auto cx = x % 32;
-        auto cz = z % 32;
-        if (cx < 0)
-            cx += 32;
-        if (cz < 0)
-            cz += 32;
-        _level.addChunkColumn({x, z}, persistence.regionStore.at({transformChunkPosToRegionPos(x), transformChunkPosToRegionPos(z)}).at({cx, cz}));
-        LINFO("Chunk loaded ", x, " ", z);
+    auto world = std::dynamic_pointer_cast<DefaultWorld>(_world);
+    if (world->persistence->isChunkLoaded(*this, x, z)) {
+        LDEBUG("Chunk loaded ", x, " ", z);
         return;
     }
 
     LDEBUG("Generate - Overworld (", x, ", ", z, ")");
     Position2D pos {x, z};
-    _level.addChunkColumn(pos)->generate(world_storage::WorldType::NORMAL, this->getWorld()->getSeed());
-    LDEBUG("Chunk generated (", x, ", ", z, ")");
+    // TODO(huntears): tmp to deactivate generation
+    _level.addChunkColumn(pos).generate(world_storage::WorldType::NORMAL, this->getWorld()->getSeed());
+    // _level.addChunkColumn(pos);
 }

@@ -16,6 +16,8 @@ public:
     // EntityHover(const std::shared_ptr<Entity> &entity):
     //     _entity(entity) {};
 
+    ~EntityHover() override = default;
+
     nlohmann::json toJson() const override;
 
     static std::shared_ptr<EntityHover> fromJson(const nlohmann::json &json);

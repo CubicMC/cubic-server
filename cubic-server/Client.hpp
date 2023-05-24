@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "chat/Message.hpp"
+#include "options.hpp"
 #include "protocol/ClientPackets.hpp"
 #include "protocol/ServerPackets.hpp"
 #include "protocol/common.hpp"
@@ -52,7 +53,7 @@ constexpr const char DEFAULT_FAVICON[] =
 
 class Player;
 
-class Client {
+class Client : public std::enable_shared_from_this<Client> {
     friend class Player;
 
 public:
@@ -61,14 +62,11 @@ public:
 
     void networkLoop();
 
-    [[nodiscard]] bool isDisconnected() const;
-
-    [[nodiscard]] protocol::ClientStatus getStatus() const { return _status; }
+    NODISCARD bool isDisconnected() const;
+    NODISCARD protocol::ClientStatus getStatus() const { return _status; }
 
     void setStatus(protocol::ClientStatus status) { _status = status; }
-
     void switchToPlayState(u128 playerUuid, const std::string &username);
-
     void handleParsedClientPacket(const std::shared_ptr<protocol::BaseServerPacket> &packet, protocol::ServerPacketsID packetID);
 
     // All the send packets go here
@@ -98,6 +96,7 @@ private:
     void _onEncryptionResponse(const std::shared_ptr<protocol::EncryptionResponse> &pck);
     void _loginSequence(const protocol::LoginSuccess &packet);
 
+private:
     const int _sockfd;
     const struct sockaddr_in6 _addr;
     std::atomic<bool> _isRunning;

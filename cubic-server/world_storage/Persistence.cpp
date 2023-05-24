@@ -1,4 +1,5 @@
 #include "Persistence.hpp"
+#include "Dimension.hpp"
 #include "Server.hpp"
 #include "World.hpp"
 #include "logging/Logger.hpp"
@@ -8,6 +9,7 @@
 #include "world_storage/Level.hpp"
 #include "world_storage/LevelData.hpp"
 #include "world_storage/PlayerData.hpp"
+#include <algorithm>
 #include <cstdint>
 #include <filesystem>
 #include <memory>
@@ -20,23 +22,24 @@
 #include <zlib.h>
 
 // TODO(huntears): Add better error messages
-#define GET_VALUE(type, dst, src, root)                       \
-    do {                                                      \
-        auto __tmp = root->getValue(src);                     \
-        if (!__tmp || __tmp->getType() != nbt::TagType::type) \
-            throw std::runtime_error("");                     \
-        dest->dst = (std::dynamic_pointer_cast<nbt::type>(__tmp))->getValue();       \
+#define GET_VALUE(type, dst, src, root)                                        \
+    do {                                                                       \
+        auto __tmp = root->getValue(src);                                      \
+        if (!__tmp || __tmp->getType() != nbt::TagType::type)                  \
+            throw std::runtime_error("");                                      \
+        dest->dst = (std::dynamic_pointer_cast<nbt::type>(__tmp))->getValue(); \
     } while (0)
 
-#define GET_VALUE_TO(type, dst, src, root, dstroot)           \
-    do {                                                      \
-        auto __tmp = root->getValue(src);                     \
-        if (!__tmp || __tmp->getType() != nbt::TagType::type) \
-            throw std::runtime_error("");                     \
-        dstroot.dst = (std::dynamic_pointer_cast<nbt::type>(__tmp))->getValue();     \
+#define GET_VALUE_TO(type, dst, src, root, dstroot)                              \
+    do {                                                                         \
+        auto __tmp = root->getValue(src);                                        \
+        if (!__tmp || __tmp->getType() != nbt::TagType::type)                    \
+            throw std::runtime_error("");                                        \
+        dstroot.dst = (std::dynamic_pointer_cast<nbt::type>(__tmp))->getValue(); \
     } while (0)
 
-template <typename T, nbt::TagType Tag> static inline const std::shared_ptr<T> getConstElement(const std::shared_ptr<nbt::Compound> root, const std::string &name)
+template<typename T, nbt::TagType Tag>
+static inline const std::shared_ptr<T> getConstElement(const std::shared_ptr<nbt::Compound> root, const std::string &name)
 {
     auto __tmp = root->getValue(name);
     if (!__tmp || __tmp->getType() != Tag)
@@ -48,8 +51,9 @@ using namespace world_storage;
 
 namespace world_storage {
 
-Persistence::Persistence(const std::string &level_folder_name):
-    level_name(level_folder_name)
+Persistence::Persistence(std::weak_ptr<World> world, const std::string &folder):
+    _folder(folder),
+    _world(world)
 {
 }
 
@@ -80,7 +84,7 @@ void Persistence::loadLevelData(LevelData *dest)
 {
     std::unique_lock<std::mutex> lock(accessMutex);
 
-    const std::filesystem::path file = std::filesystem::path(level_name) / "level.dat";
+    const std::filesystem::path file = std::filesystem::path(_folder) / "level.dat";
     std::vector<uint8_t> unzippedData;
     this->uncompressFile(file, unzippedData);
 
@@ -160,7 +164,7 @@ void Persistence::loadPlayerData(u128 uuid, PlayerData *dest)
     std::unique_lock<std::mutex> lock(accessMutex);
 
     // TODO
-    const std::filesystem::path file = std::filesystem::path(level_name) / "playerdata" / (uuid.toString() + ".dat");
+    const std::filesystem::path file = std::filesystem::path(_folder) / "playerdata" / (uuid.toString() + ".dat");
     std::vector<uint8_t> unzippedData;
     this->uncompressFile(file, unzippedData);
 
@@ -284,19 +288,19 @@ int inflatebruh(const void *src, int srcLen, void *dst, int dstLen)
     return ret;
 }
 
-void Persistence::loadRegion(int x, int z)
+void Persistence::loadRegion(Dimension &dim, int x, int z)
 {
     std::unique_lock<std::mutex> lock(accessMutex);
 
-    if (regionStore.find({x, z}) != regionStore.end())
+    if (std::find(regionStore.begin(), regionStore.end(), Position2D(x, z)) != regionStore.end())
         return; // TODO(huntears): Change this later when we can unload regions
 
-    LINFO("Loading region ", x, " ", z);
+    LDEBUG("Loading region ", x, " ", z);
 
-    regionStore[{x, z}] = {};
+    regionStore.emplace_back(x, z);
 
     const std::string regionSlice = "r." + std::to_string(x) + "." + std::to_string(z) + ".mca";
-    const std::filesystem::path file = std::filesystem::path(level_name) / "region" / regionSlice;
+    const std::filesystem::path file = std::filesystem::path(_folder) / "region" / regionSlice;
 
     struct RegionLocation {
         uint32_t data;
@@ -384,7 +388,10 @@ void Persistence::loadRegion(int x, int z)
             // Fill a chunk
             const auto chunkX = cx + x * 32;
             const auto chunkZ = cz + z * 32;
-            auto chunk = new ChunkColumn({chunkX, chunkZ});
+
+            auto &chunk = dim.getLevel().addChunkColumn(Position2D(chunkX, chunkZ));
+            // regionStore.at({x, z}).emplace(Position2D(cx, cz), ChunkColumn({chunkX, chunkZ}));
+            // auto chunk = regionStore.at({x, z}).at({cx, cz});
 
             // Section
             const auto sections = getConstElement<nbt::List, nbt::TagType::List>(data, "sections");
@@ -421,17 +428,17 @@ void Persistence::loadRegion(int x, int z)
 
                 auto dataArray = getConstElement<nbt::LongArray, nbt::TagType::LongArray>(blockStates, "data")->getValues();
 
-                auto bitsPerBlock = paletteMapping.getBytePerEntry();
+                auto bitsPerBlock = paletteMapping.getBits();
 
                 uint32_t individualValueMask = (uint32_t) ((1 << bitsPerBlock) - 1);
-                const uint32_t valuesPerLong = (paletteMapping.getBytePerEntry() == 0 ? 4 : 64 / paletteMapping.getBytePerEntry());
+                const uint32_t valuesPerLong = (paletteMapping.getBits() == 0 ? 4 : 64 / paletteMapping.getBits());
 
-                for (int ly = 0; ly < SECTION_HEIGHT; ly++) {
+                for (int ly = 0; ly < SECTION_WIDTH; ly++) {
                     for (int lz = 0; lz < SECTION_WIDTH; lz++) {
                         for (int lx = 0; lx < SECTION_WIDTH; lx++) {
-                            int blockNumber = (((ly * SECTION_HEIGHT) + lz) * SECTION_WIDTH) + lx;
+                            int blockNumber = (((ly * SECTION_WIDTH) + lz) * SECTION_WIDTH) + lx;
                             int startLong = blockNumber / valuesPerLong;
-                            int startOffset = (blockNumber % valuesPerLong) * (paletteMapping.getBytePerEntry() == 0 ? 15 : paletteMapping.getBytePerEntry());
+                            int startOffset = (blockNumber % valuesPerLong) * (paletteMapping.getBits() == 0 ? 15 : paletteMapping.getBits());
                             // int startLong = (blockNumber * bitsPerBlock) / 64;
                             // int startOffset = (blockNumber * bitsPerBlock) % 64;
                             // int endLong = ((blockNumber + 1) * bitsPerBlock - 1) / 64;
@@ -448,10 +455,13 @@ void Persistence::loadRegion(int x, int z)
 
                             auto sectionY = getConstElement<nbt::Byte, nbt::TagType::Byte>(section, "Y");
 
-                            if (paletteMapping.size() >= 1)
-                                chunk->_blocks.at(calculateBlockIdx({lx, ly + 16 * sectionY->getValue(), lz})) = paletteMapping.getGlobalId(data);
+                            // LINFO((int) paletteMapping.getBits());
+                            // LINFO(data);
+                            if (paletteMapping.getBits() >= 1)
+                                chunk.updateBlock({lx, ly + 16 * sectionY->getValue(), lz}, paletteMapping.getGlobalId(data));
                             else
-                                chunk->_blocks.at(calculateBlockIdx({lx, ly + 16 * sectionY->getValue(), lz})) = data;
+                                chunk.updateBlock({lx, ly + 16 * sectionY->getValue(), lz}, data);
+                            // exit(1);
                         }
                     }
                 }
@@ -460,32 +470,25 @@ void Persistence::loadRegion(int x, int z)
             // Heightmaps
             const auto heightmaps = getConstElement<nbt::Compound, nbt::TagType::Compound>(data, "Heightmaps");
 
-            const auto motionBlocking = getConstElement<nbt::LongArray, nbt::TagType::LongArray>(heightmaps, "MOTION_BLOCKING")->getValues();
-            for (size_t i = 0; i < motionBlocking.size(); i++) {
-                *chunk->_heightMap.motionBlocking.at(i).get() = motionBlocking.at(i);
-            }
+            chunk._heightMap.addValue(heightmaps->getValue("MOTION_BLOCKING"));
+            chunk._heightMap.addValue(heightmaps->getValue("WORLD_SURFACE"));
+            chunk.recalculateBlockLight();
+            chunk.recalculateSkyLight();
 
-            const auto worldSurface = getConstElement<nbt::LongArray, nbt::TagType::LongArray>(heightmaps, "WORLD_SURFACE")->getValues();
-            for (size_t i = 0; i < worldSurface.size(); i++) {
-                *chunk->_heightMap.worldSurface.at(i).get() = worldSurface.at(i);
-            }
-
-            regionStore.at({x, z})[{cx, cz}] = chunk;
-
-            chunk->_ready = true;
+            chunk._ready = true;
         }
     }
     free(buf);
-    LINFO("Loaded region ", x, " ", z);
+    LDEBUG("Loaded region ", x, " ", z);
 }
 
-bool Persistence::isChunkLoaded(int x, int z)
+bool Persistence::isChunkLoaded(Dimension &dim, int x, int z)
 {
     const int rx = transformChunkPosToRegionPos(x);
     const int rz = transformChunkPosToRegionPos(z);
 
-    this->loadRegion(rx, rz);
-    if (!regionStore.contains({rx, rz}))
+    this->loadRegion(dim, rx, rz);
+    if (std::find(regionStore.begin(), regionStore.end(), Position2D(rx, rz)) == regionStore.end())
         return false;
 
     auto cx = x % 32;
@@ -494,7 +497,7 @@ bool Persistence::isChunkLoaded(int x, int z)
         cx += 32;
     if (cz < 0)
         cz += 32;
-    return regionStore.at({rx, rz}).contains({cx, cz});
+    return dim.hasChunkLoaded(x, z);
 }
 
 }
