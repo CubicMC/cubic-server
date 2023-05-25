@@ -10,7 +10,6 @@
 PluginManager::PluginManager(Server *server, const std::string &folder) : _folder(folder), _interface(std::make_shared<PluginInterface>())
 {
     this->_interface->load(server);
-    this->load();
 }
 
 PluginManager::~PluginManager()
@@ -48,6 +47,7 @@ void PluginManager::loadPlugin(std::string filepath)
 
     nhandle = dlopen(filepath.c_str(), RTLD_LAZY);
     if (!nhandle) {
+        LERROR("SRO");
         //SRO
         return;
     }

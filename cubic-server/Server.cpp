@@ -64,6 +64,8 @@ void Server::launch()
     // Listen
     listen(_sockfd, SOMAXCONN);
 
+    this->_pluginManager.load();
+
     _downloadFile(std::string("https://cdn.cubic-mc.com/") + MC_VERSION + "/blocks-" + MC_VERSION + ".json", std::string("blocks-") + MC_VERSION + ".json");
     _downloadFile(std::string("https://cdn.cubic-mc.com/") + MC_VERSION + "/registries-" + MC_VERSION + ".json", std::string("registries-") + MC_VERSION + ".json");
 
@@ -88,6 +90,34 @@ void Server::launch()
 }
 
 void Server::stop() { this->_running = false; }
+
+const Configuration::ConfigHandler &Server::getConfig() const { return _config; }
+
+const WhitelistHandling::Whitelist &Server::getWhitelist() const { return _whitelist; }
+
+const bool Server::isWhitelistEnabled() const { return _whitelistEnabled; }
+
+const bool Server::getEnforceWhitelist() const { return _enforceWhitelist; }
+
+Server *Server::getInstance()
+{
+    static Server srv;
+    return &srv;
+}
+
+const std::vector<std::shared_ptr<Client>> &Server::getClients() const { return _clients; }
+
+const WorldGroup *Server::getWorldGroup(const std::string_view &name) const { return this->_worldGroups.at(name); }
+
+const std::vector<CommandBase *> &Server::getCommands() const { return _commands; }
+
+bool Server::isRunning() const { return (this->_running); }
+
+const Blocks::GlobalPalette &Server::getGlobalPalette() const { return _globalPalette; }
+
+const Items::ItemConverter &Server::getItemConverter() const { return _itemConverter; }
+
+PluginManager &Server::getPluginManager() { return _pluginManager; }
 
 void Server::forEachWorldGroup(std::function<void(WorldGroup &)> callback)
 {
