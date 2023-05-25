@@ -11,8 +11,9 @@ if (USE_CLANG)
 endif()
 
 set(CMAKE_USER_MAKE_RULES_OVERRIDE_CXX ${CMAKE_CURRENT_SOURCE_DIR}/cxx_flag_overrides.cmake)
+set(CMAKE_USER_MAKE_RULES_OVERRIDE_C ${CMAKE_CURRENT_SOURCE_DIR}/c_flag_overrides.cmake)
 
-project(CubicServer VERSION 0.1.0 LANGUAGES CXX)
+project(CubicServer VERSION 0.1.0 LANGUAGES CXX C)
 
 set(MINECRAFT_VERSION "1.19.3")
 
@@ -58,6 +59,12 @@ FetchContent_Declare(
 )
 
 FetchContent_Declare(
+    nbt
+    GIT_REPOSITORY https://github.com/CubicMC/libnbt.git
+    GIT_TAG v1.0
+)
+
+FetchContent_Declare(
     argparse
     GIT_REPOSITORY https://github.com/p-ranav/argparse.git
     GIT_TAG v2.9
@@ -68,6 +75,7 @@ FetchContent_MakeAvailable(
     json
     noise
     argparse
+    nbt
 )
 
 if(GTEST) # if the flag GTEST is true
@@ -123,6 +131,7 @@ add_subdirectory(cubic-server)
 
 target_include_directories(${CMAKE_PROJECT_NAME} PRIVATE
     ${noise_SOURCE_DIR}
+    ${nbt_SOURCE_DIR}
 )
 
 if (NOT NO_GUI)

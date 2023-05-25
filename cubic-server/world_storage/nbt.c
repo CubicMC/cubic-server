@@ -1,3 +1,3 @@
 #define NBT_IMPLEMENTATION
 
-#include "nbt.h"
+#include <nbt.h>
