@@ -10,7 +10,7 @@
 #include "blocks.hpp"
 #include "command_parser/CommandParser.hpp"
 #include "items/foodItems.hpp"
-#include "logging/Logger.hpp"
+#include "logging/logging.hpp"
 #include <memory>
 
 #define GET_CLIENT()                 \

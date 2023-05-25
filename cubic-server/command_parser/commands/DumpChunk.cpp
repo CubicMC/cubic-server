@@ -5,7 +5,7 @@
 #include "Server.hpp"
 #include "World.hpp"
 #include "WorldGroup.hpp"
-#include "logging/Logger.hpp"
+#include "logging/logging.hpp"
 #include "nbt.hpp"
 #include "protocol/serialization/add.hpp"
 #include "protocol/serialization/popPrimaryType.hpp"

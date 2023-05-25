@@ -1,7 +1,11 @@
 target_sources (${CMAKE_PROJECT_NAME} PRIVATE
-    Logger.cpp
-    Logger.hpp
     formating.hpp
+    logging.hpp
+    logging.cpp
+    Registry.cpp
+    Registry.hpp
+    Sinks.cpp
+    Sinks.hpp
 )
 
 # if(GTEST)

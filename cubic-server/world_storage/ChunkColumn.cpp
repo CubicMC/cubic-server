@@ -3,7 +3,7 @@
 #include "Server.hpp"
 #include "blocks.hpp"
 #include "generation/overworld.hpp"
-#include "logging/Logger.hpp"
+#include "logging/logging.hpp"
 #include "nbt.hpp"
 #include "world_storage/Section.hpp"
 #include <memory>

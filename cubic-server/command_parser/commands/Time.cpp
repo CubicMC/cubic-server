@@ -6,7 +6,7 @@
 #include "Server.hpp"
 #include "World.hpp"
 #include "WorldGroup.hpp"
-#include "logging/Logger.hpp"
+#include "logging/logging.hpp"
 
 using namespace command_parser;
 

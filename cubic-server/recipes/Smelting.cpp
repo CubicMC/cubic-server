@@ -1,6 +1,7 @@
 #include "Smelting.hpp"
 
 #include "Server.hpp"
+#include "logging/logging.hpp"
 
 namespace Recipe {
 Smelting::Smelting(const nlohmann::json &recipe):

@@ -1,6 +1,7 @@
 #include "CraftingShaped.hpp"
 
 #include "Server.hpp"
+#include "logging/logging.hpp"
 
 namespace Recipe {
 CraftingShaped::MaybeItems::MaybeItems(void):
@@ -128,4 +129,4 @@ bool CraftingShaped::getKey(char key, const nlohmann::json &content)
 }
 
 std::unique_ptr<Recipe> CraftingShaped::create(const nlohmann::json &recipe) { return (std::make_unique<CraftingShaped>(CraftingShaped(recipe))); }
-};
+}

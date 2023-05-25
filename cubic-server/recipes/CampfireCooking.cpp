@@ -1,6 +1,7 @@
 #include "CampfireCooking.hpp"
 
 #include "Server.hpp"
+#include "logging/logging.hpp"
 
 namespace Recipe {
 CampfireCooking::CampfireCooking(const nlohmann::json &recipe):

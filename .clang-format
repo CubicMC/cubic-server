@@ -21,4 +21,5 @@ AlignEscapedNewlines: Left
 BreakBeforeBinaryOperators: None
 AlwaysBreakTemplateDeclarations: Yes
 SpaceAfterTemplateKeyword: False
+# InsertNewlineAtEOF: True
 ...

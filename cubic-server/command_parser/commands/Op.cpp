@@ -5,7 +5,7 @@
 #include "Player.hpp"
 #include "Server.hpp"
 #include "World.hpp"
-#include "logging/Logger.hpp"
+#include "logging/logging.hpp"
 
 using namespace command_parser;
 

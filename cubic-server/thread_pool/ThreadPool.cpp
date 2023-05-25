@@ -1,5 +1,5 @@
 #include "ThreadPool.hpp"
-#include "logging/Logger.hpp"
+#include "logging/logging.hpp"
 
 using namespace thread_pool;
 
@@ -7,7 +7,7 @@ ThreadPool::ThreadPool(uint16_t threadCount, std::string_view name)
 {
     std::lock_guard<std::mutex> guard(_toolBox.workerProtection);
     std::lock_guard<std::mutex> _(_toolBox.sizeProtection);
-    logging::registerLogger(name.data());
+    logging::registerLogger(name);
     for (; _toolBox.lastId < threadCount; ++_toolBox.lastId) {
         auto it = _toolBox.workers.emplace(_toolBox.workers.end(), _toolBox.lastId, _toolBox, name);
         it->setSelf(it);

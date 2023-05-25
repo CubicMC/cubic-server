@@ -1,6 +1,7 @@
 #include "Smithing.hpp"
 
 #include "Server.hpp"
+#include "logging/logging.hpp"
 
 namespace Recipe {
 Smithing::Smithing(const nlohmann::json &recipe):

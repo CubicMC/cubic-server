@@ -14,7 +14,7 @@
 #include "World.hpp"
 #include "WorldGroup.hpp"
 #include "chat/ChatRegistry.hpp"
-#include "logging/Logger.hpp"
+#include "logging/logging.hpp"
 #include "protocol/ClientPackets.hpp"
 #include "protocol/ServerPackets.hpp"
 #include "protocol/serialization/popPrimaryType.hpp"

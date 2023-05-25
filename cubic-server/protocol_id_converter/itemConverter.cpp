@@ -5,7 +5,7 @@
 
 #include <nlohmann/json.hpp>
 
-#include "logging/Logger.hpp"
+#include "logging/logging.hpp"
 
 void Items::ItemConverter::initialize(const std::string &path)
 {

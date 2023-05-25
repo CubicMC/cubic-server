@@ -1,5 +1,6 @@
 #include <netdb.h>
 #include <poll.h>
+#include <spdlog/spdlog.h>
 #include <sys/socket.h>
 #include <unistd.h>
 
@@ -12,7 +13,7 @@
 #include "Player.hpp"
 #include "WorldGroup.hpp"
 #include "default/DefaultWorldGroup.hpp"
-#include "logging/Logger.hpp"
+#include "logging/logging.hpp"
 
 Server::Server():
     _running(false),

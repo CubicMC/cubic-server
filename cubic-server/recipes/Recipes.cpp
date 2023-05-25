@@ -1,7 +1,7 @@
 #include <fstream>
 #include <iostream>
 
-#include "logging/Logger.hpp"
+#include "logging/logging.hpp"
 
 #include "Recipes.hpp"
 

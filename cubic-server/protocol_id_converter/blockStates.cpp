@@ -5,7 +5,7 @@
 
 #include <nlohmann/json.hpp>
 
-#include "logging/Logger.hpp"
+#include "logging/logging.hpp"
 
 void Blocks::GlobalPalette::initialize(const std::string &path)
 {

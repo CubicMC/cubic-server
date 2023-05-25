@@ -3,7 +3,7 @@
 #include "Dimension.hpp"
 #include "Player.hpp"
 #include "WorldGroup.hpp"
-#include "logging/Logger.hpp"
+#include "logging/logging.hpp"
 
 World::World(std::shared_ptr<WorldGroup> worldGroup):
     _worldGroup(worldGroup),

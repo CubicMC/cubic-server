@@ -1,6 +1,7 @@
 #include "StoneCutting.hpp"
 
 #include "Server.hpp"
+#include "logging/logging.hpp"
 
 namespace Recipe {
 StoneCutting::StoneCutting(const nlohmann::json &recipe):

@@ -1,5 +1,5 @@
 #include "LogsInterface.hpp"
-#include "logging/Logger.hpp"
+#include "logging/logging.hpp"
 
 #include <fstream>
 #include <iostream>
@@ -17,7 +17,7 @@ LogsInterface::LogsInterface():
     _fatal("Fatal"),
     _debug("Debug"),
     _reset("↺"),
-    _selectedLogLevel(logging::LogLevel::off)
+    _selectedLogLevel(logging::Registry::LogLevel::off)
 {
     pack_start(_VBoxMain, Gtk::PACK_EXPAND_WIDGET);
 
@@ -44,11 +44,11 @@ LogsInterface::LogsInterface():
 
     _VBoxLogs.pack_end(_logsContainer);
 
-    _debug.signal_clicked().connect(sigc::bind(sigc::mem_fun(*this, &LogsInterface::_onFilterSelected), logging::LogLevel::debug));
-    _info.signal_clicked().connect(sigc::bind(sigc::mem_fun(*this, &LogsInterface::_onFilterSelected), logging::LogLevel::info));
-    _warn.signal_clicked().connect(sigc::bind(sigc::mem_fun(*this, &LogsInterface::_onFilterSelected), logging::LogLevel::warn));
-    _error.signal_clicked().connect(sigc::bind(sigc::mem_fun(*this, &LogsInterface::_onFilterSelected), logging::LogLevel::err));
-    _fatal.signal_clicked().connect(sigc::bind(sigc::mem_fun(*this, &LogsInterface::_onFilterSelected), logging::LogLevel::critical));
+    _debug.signal_clicked().connect(sigc::bind(sigc::mem_fun(*this, &LogsInterface::_onFilterSelected), logging::Registry::LogLevel::debug));
+    _info.signal_clicked().connect(sigc::bind(sigc::mem_fun(*this, &LogsInterface::_onFilterSelected), logging::Registry::LogLevel::info));
+    _warn.signal_clicked().connect(sigc::bind(sigc::mem_fun(*this, &LogsInterface::_onFilterSelected), logging::Registry::LogLevel::warn));
+    _error.signal_clicked().connect(sigc::bind(sigc::mem_fun(*this, &LogsInterface::_onFilterSelected), logging::Registry::LogLevel::err));
+    _fatal.signal_clicked().connect(sigc::bind(sigc::mem_fun(*this, &LogsInterface::_onFilterSelected), logging::Registry::LogLevel::critical));
     _reset.signal_clicked().connect(sigc::mem_fun(*this, &LogsInterface::_onResetFilters));
 
     _logsContainer.add(_logsView);
@@ -105,12 +105,12 @@ bool LogsInterface::on_key_press_event(GdkEventKey *event)
 
 bool LogsInterface::_onLogToDisplay()
 {
-    logging::LogLevel logLevel;
+    logging::Registry::LogLevel logLevel;
     std::string temp = "";
     std::stringstream ss;
-    auto q_copy = logging::getMessages();
+    auto q_copy = logging::Registry::instance().getMessages();
 
-    if (_selectedLogLevel == logging::LogLevel::off) {
+    if (_selectedLogLevel == logging::Registry::LogLevel::off) {
         while (!q_copy.empty()) {
             auto front = q_copy.front();
             logLevel = front.first;
@@ -145,17 +145,17 @@ void LogsInterface::_scrollToEnd()
     _logsView.scroll_to(_endMark);
 }
 
-void LogsInterface::_onFilterSelected(logging::LogLevel logLevel)
+void LogsInterface::_onFilterSelected(logging::Registry::LogLevel logLevel)
 {
-    std::string logLevelFilter = logging::levelToString(logLevel);
-    _selectedFilter.set_text(std::string(logLevelFilter + std::string("has been selected. Only ") + logLevelFilter + std::string("messages are shown.")).c_str());
+    auto logLevelFilter = std::string(logging::levelToString(logLevel));
+    _selectedFilter.set_text(logLevelFilter + "has been selected. Only " + logLevelFilter + "messages are shown.");
     _reset.set_sensitive(true);
     _selectedLogLevel = logLevel;
 }
 
 void LogsInterface::_onResetFilters()
 {
-    _selectedLogLevel = logging::LogLevel::off;
+    _selectedLogLevel = logging::Registry::LogLevel::off;
     _selectedFilter.set_text("No filter selected.");
     _reset.set_sensitive(false);
 }

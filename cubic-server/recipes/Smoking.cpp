@@ -1,6 +1,7 @@
 #include "Smoking.hpp"
 
 #include "Server.hpp"
+#include "logging/logging.hpp"
 
 namespace Recipe {
 Smoking::Smoking(const nlohmann::json &recipe):

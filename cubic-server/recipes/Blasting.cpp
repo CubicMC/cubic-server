@@ -1,6 +1,7 @@
 #include "Blasting.hpp"
 
 #include "Server.hpp"
+#include "logging/logging.hpp"
 
 namespace Recipe {
 Blasting::Blasting(const nlohmann::json &recipe):
