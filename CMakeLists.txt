@@ -14,14 +14,20 @@ set(CMAKE_USER_MAKE_RULES_OVERRIDE_CXX ${CMAKE_CURRENT_SOURCE_DIR}/cxx_flag_over
 
 project(CubicServer VERSION 0.1.0 LANGUAGES CXX)
 
+set(MINECRAFT_VERSION "1.19.3")
+
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 include(CheckIPOSupported)
 
 if (CMAKE_BUILD_TYPE MATCHES Release)
-    check_ipo_supported()
-    set_property(GLOBAL PROPERTY INTERPROCEDURAL_OPTIMIZATION TRUE)
+    check_ipo_supported(RESULT ipo_supported OUTPUT ipo_error)
+    if (ipo_supported)
+        set_property(GLOBAL PROPERTY INTERPROCEDURAL_OPTIMIZATION TRUE)
+    else()
+        message(STATUS "IPO / LTO not supported!")
+    endif()
 endif()
 
 include(FetchContent)
@@ -57,18 +63,11 @@ FetchContent_Declare(
     GIT_TAG v2.9
 )
 
-FetchContent_Declare(
-    CRCpp
-    GIT_REPOSITORY https://github.com/d-bahr/CRCpp.git
-    GIT_TAG release-1.2.0.0
-)
-
 FetchContent_MakeAvailable(
     yaml-cpp
     json
     noise
     argparse
-    CRCpp
 )
 
 if(GTEST) # if the flag GTEST is true
@@ -102,27 +101,43 @@ endif()
 
 find_package(Threads REQUIRED)
 find_package(PkgConfig REQUIRED)
-pkg_check_modules(GTKMM REQUIRED gtkmm-3.0)
+pkg_check_modules(GTKMM gtkmm-3.0)
+
+option(NO_GUI "Build without GUI" OFF)
+if(NOT GTKMM_FOUND)
+    message(WARNING "Gtkmm not found! Building without GUI.")
+    set(NO_GUI ON)
+endif()
 
 add_executable(${CMAKE_PROJECT_NAME})
 target_compile_definitions(${CMAKE_PROJECT_NAME} PRIVATE
     PROGRAM_NAME="${CMAKE_PROJECT_NAME}"
     PROGRAM_VERSION="${CMAKE_PROJECT_VERSION}"
+    MINECRAFT_VERSION="${MINECRAFT_VERSION}"
+    GUI_UNAVAILABLE=$<BOOL:${NO_GUI}>
 )
+
+include(blocks.cmake)
+
 add_subdirectory(cubic-server)
 
 target_include_directories(${CMAKE_PROJECT_NAME} PRIVATE
     ${GTKMM_INCLUDE_DIRS}
     ${noise_SOURCE_DIR}
 )
-target_include_directories(${CMAKE_PROJECT_NAME} PUBLIC cubic-server)
+
+target_include_directories(${CMAKE_PROJECT_NAME} PUBLIC cubic-server ${Blocks_SOURCE_DIR})
+
 target_link_libraries (${CMAKE_PROJECT_NAME} PRIVATE
     Blocks
     Threads::Threads
     nlohmann_json::nlohmann_json
-    ${GTKMM_LIBRARIES}
     argparse
     yaml-cpp
-    curl
-    CRCpp
 )
+
+if (NOT NO_GUI)
+    target_link_libraries(${CMAKE_PROJECT_NAME} PRIVATE
+        ${GTKMM_LIBRARIES}
+    )
+endif()

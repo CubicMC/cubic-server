@@ -87,13 +87,7 @@ void Recipes::loadFolder(const std::string &_namespace, const std::string &folde
     for (const auto &filepath : std::filesystem::recursive_directory_iterator(folder)) {
         // checks if the file has the json extension
         if (filepath.path().string().ends_with(".json")) {
-            // get the file's content
-            std::ifstream filestream(filepath.path().string());
-            std::stringstream filecontent;
-
-            filecontent << filestream.rdbuf();
-
-            nlohmann::json recipeContent = nlohmann::json::parse(filecontent.str());
+            nlohmann::json recipeContent = nlohmann::json::parse(std::ifstream(filepath.path()));
 
             // if the json contains "type", proceeds to creating the recipe
             if (recipeContent.contains("type") && recipeContent["type"].is_string()) {

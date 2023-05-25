@@ -51,10 +51,7 @@ void ChunkColumn::updateBlock(const Position &pos, BlockId id)
     // _blocks.at(calculateBlockIdx(pos)) = id;
 }
 
-BlockId ChunkColumn::getBlock(const Position &pos) const
-{
-    return _sections.at(getSectionIndex(pos)).getBlock(Position {pos.x, pos.y - CHUNK_HEIGHT_MIN, pos.z} % SECTION_WIDTH);
-}
+BlockId ChunkColumn::getBlock(const Position &pos) const { return _sections.at(getSectionIndex(pos)).getBlock(Position {pos.x, pos.y - CHUNK_HEIGHT_MIN, pos.z} % SECTION_WIDTH); }
 
 uint8_t ChunkColumn::getSkyLight(const Position &pos) const
 {
@@ -144,7 +141,7 @@ void ChunkColumn::recalculateSkyLight()
         for (auto x = 0; x < SECTION_WIDTH; x++) {
             for (auto y = 0; y < SECTION_WIDTH; y++) {
                 for (auto z = 0; z < SECTION_WIDTH; z++)
-                    section.setSkyLight({x, y, z},15);
+                    section.setSkyLight({x, y, z}, 15);
             }
         }
     }

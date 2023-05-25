@@ -131,10 +131,7 @@ uint8_t world_storage::Section::getSkyLight(const Position &pos) const
     return this->_skyLight.get(calculateSectionBlockIdx(pos));
 }
 
-uint8_t world_storage::Section::getSkyLight(uint64_t idx) const
-{
-    return this->_skyLight.get(idx);
-}
+uint8_t world_storage::Section::getSkyLight(uint64_t idx) const { return this->_skyLight.get(idx); }
 
 uint8_t world_storage::Section::getBlockLight(const Position &pos) const
 {
@@ -143,7 +140,4 @@ uint8_t world_storage::Section::getBlockLight(const Position &pos) const
     return this->_blockLight.get(calculateSectionBlockIdx(pos));
 }
 
-uint8_t world_storage::Section::getBlockLight(uint64_t idx) const
-{
-    return this->_blockLight.get(idx);
-}
+uint8_t world_storage::Section::getBlockLight(uint64_t idx) const { return this->_blockLight.get(idx); }

@@ -1,8 +1,8 @@
-#include "world_storage/DynamicStorage.hpp"
 #include "types.hpp"
+#include "world_storage/DynamicStorage.hpp"
+#include "world_storage/Section.hpp"
 #include <cstdint>
 #include <gtest/gtest.h>
-#include "world_storage/Section.hpp"
 
 namespace BlockStorage {
 
