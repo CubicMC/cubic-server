@@ -42,4 +42,5 @@ debug
 build*
 .kdev4
 *.kdev4
-world*
+world
+world2
