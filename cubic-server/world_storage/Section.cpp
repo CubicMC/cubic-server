@@ -71,11 +71,13 @@ void world_storage::Section::updateSkyLight(const Position &pos, uint8_t light)
 
 void world_storage::Section::setSkyLight(const Position &pos, uint8_t light)
 {
-    if (getSkyLight(pos) != 0 && light == 0)
+    uint64_t idx = calculateSectionBlockIdx(pos);
+    uint8_t l = _skyLight.get(idx);
+    if (l != 0 && light == 0)
         _skyLightCount--;
-    if (getSkyLight(pos) == 0 && light != 0)
+    if (l == 0 && light != 0)
         _skyLightCount++;
-    _skyLight.set(calculateSectionBlockIdx(pos), light);
+    _skyLight.set(idx, light);
 }
 
 void world_storage::Section::recalculateSkyLightCount()
