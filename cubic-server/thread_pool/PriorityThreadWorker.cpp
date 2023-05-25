@@ -1,5 +1,7 @@
 #include "PriorityThreadWorker.hpp"
 
+#include "logging/Logger.hpp"
+
 #ifdef __linux__
 #include <sys/prctl.h>
 #endif
@@ -70,7 +72,8 @@ void PriorityThreadWorker::doJob()
         const auto job = jobList.front();
         try {
             job();
-        } catch (const std::exception &) { /* TODO: add either a logger or an exception propagation here */
+        } catch (const std::exception &e) {
+            LFATAL(e.what());
         }
         jobList.pop();
     } while (!jobList.empty());
