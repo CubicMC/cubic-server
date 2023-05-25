@@ -11,4 +11,6 @@ target_sources (${CMAKE_PROJECT_NAME} PRIVATE
     Palette.cpp
     Section.cpp
     Section.hpp
+    nbt.cpp
+    nbt.h
 )

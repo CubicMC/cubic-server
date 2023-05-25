@@ -3,6 +3,7 @@
 #include "Server.hpp"
 #include "World.hpp"
 #include "logging/Logger.hpp"
+#include "nbt.h"
 #include "nbt.hpp"
 #include "types.hpp"
 #include "world_storage/ChunkColumn.hpp"
@@ -12,6 +13,7 @@
 #include "world_storage/Section.hpp"
 #include <algorithm>
 #include <cstdint>
+#include <cstdio>
 #include <filesystem>
 #include <memory>
 #include <mutex>
@@ -289,6 +291,15 @@ int inflatebruh(const void *src, int srcLen, void *dst, int dstLen)
     return ret;
 }
 
+#include <sys/stat.h>
+
+static int64_t getFileSize(const std::string &filename)
+{
+    struct stat stat_buf;
+    int rc = stat(filename.c_str(), &stat_buf);
+    return rc == 0 ? stat_buf.st_size : -1;
+}
+
 void Persistence::loadRegion(Dimension &dim, int x, int z)
 {
     std::unique_lock<std::mutex> lock(accessMutex);
@@ -338,16 +349,23 @@ void Persistence::loadRegion(Dimension &dim, int x, int z)
     if (!std::filesystem::exists(file))
         return;
 
-    std::ifstream testFile(file, std::ios::binary | std::ios::in);
-
-    const std::vector<uint8_t> fileContents((std::istreambuf_iterator<char>(testFile)), std::istreambuf_iterator<char>());
-
-    const RegionHeader *header = (const RegionHeader *) fileContents.data();
-    if (header == nullptr)
+    auto fileSize = getFileSize(file);
+    if (fileSize == -1)
         return;
 
-    // std::cout << "offset : 0x" << std::hex << header->locationTable[0].getOffset() << std::endl;
-    // std::cout << "size : 0x" << std::hex << (int) header->locationTable[0].getSize() << std::endl;
+    char *fileContents = (char *) malloc(fileSize);
+
+    FILE *openedFile = fopen(file.c_str(), "r");
+
+    auto ret = fread(fileContents, 1, fileSize, openedFile);
+
+    if (ret != (size_t) fileSize) {
+        LERROR("Bruh");
+        free(fileContents);
+        return;
+    }
+
+    const RegionHeader *header = (const RegionHeader *) fileContents;
 
     char *buf = (char *) malloc(100000000);
     const auto globalPalette = Server::getInstance()->getGlobalPalette();
@@ -360,13 +378,7 @@ void Persistence::loadRegion(Dimension &dim, int x, int z)
 
             const uint64_t chunkOffset = header->locationTable[currentOffset].getOffset() * 0x1000;
 
-            const ChunkHeader *cHeader = (const ChunkHeader *) (fileContents.data() + chunkOffset);
-
-            // std::cout << "chunk x : " << std::dec << cx << std::endl;
-            // std::cout << "chunk z : " << std::dec << cz << std::endl;
-            // std::cout << "chunk offset : 0x" << std::hex << chunkOffset << std::endl;
-            // std::cout << "chunk length : 0x" << std::hex << cHeader->getLength() << std::endl;
-            // std::cout << "chunk compression : 0x" << std::hex << (int) cHeader->getCompressionScheme() << std::endl;
+            const ChunkHeader *cHeader = (const ChunkHeader *) (fileContents + chunkOffset);
 
             int ret = inflatebruh(((char *) cHeader) + sizeof(*cHeader), cHeader->getLength() - 1, buf, 100000000);
 
@@ -529,6 +541,7 @@ void Persistence::loadRegion(Dimension &dim, int x, int z)
         }
     }
     free(buf);
+    free(fileContents);
     LDEBUG("Loaded region ", x, " ", z);
 }
 
