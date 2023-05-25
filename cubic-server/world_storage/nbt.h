@@ -166,6 +166,7 @@ void nbt_tag_list_append(nbt_tag_t *list, nbt_tag_t *value);
 nbt_tag_t *nbt_tag_list_get(nbt_tag_t *tag, size_t index);
 void nbt_tag_compound_append(nbt_tag_t *compound, nbt_tag_t *value);
 nbt_tag_t *nbt_tag_compound_get(nbt_tag_t *tag, const char *key);
+nbt_tag_t *nbt_tag_compound_getidx(nbt_tag_t *tag, size_t index);
 
 void nbt_free_tag(nbt_tag_t *tag);
 
@@ -957,6 +958,8 @@ nbt_tag_t *nbt_tag_compound_get(nbt_tag_t *tag, const char *key)
 
     return NULL;
 }
+
+nbt_tag_t *nbt_tag_compound_getidx(nbt_tag_t *tag, size_t index) { return tag->tag_compound.value[index]; }
 
 void nbt_free_tag(nbt_tag_t *tag)
 {

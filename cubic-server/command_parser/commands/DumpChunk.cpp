@@ -137,11 +137,19 @@ void command_parser::DumpChunk::execute(std::vector<std::string> &args, Player *
         // if (biomePalette.size() != section.getBiomePalette().size())
         //     LWARN("Biome palette size is not consistant " << biomePalette.size() << " != " << section.getBiomePalette().size());
 
-        for (uint16_t i = 0; i < world_storage::SECTION_3D_SIZE; i++) {
-            auto block = section.getBlock(i);
-            if (std::find(section.getBlockPalette().begin(), section.getBlockPalette().end(), block) == section.getBlockPalette().end())
-                LWARN("Block " << block << " is not in the palette");
-        }
+        // for (uint16_t i = 0; i < world_storage::SECTION_3D_SIZE; i++) {
+        //     auto block = section.getBlock(i);
+        //     if (std::find(section.getBlockPalette().begin(), section.getBlockPalette().end(), block) == section.getBlockPalette().end()) {
+        //         LWARN("Block " << block << " is not in the palette");
+        // for (uint16_t y = 0; y < section.getBlockPalette().size(); y++) {
+        //     auto block = section.getBlockPalette().getGlobalId(y);
+        //     LDEBUG(
+        //         "\tPalette[" << y << "]: (" << block << ") -> " << GLOBAL_PALETTE.fromProtocolIdToBlock(block).name << " " /*<<
+        //         section.getBlockPalette().getCount(block)*/
+        //     );
+        // }
+        //     }
+        // }
 
         // for (uint16_t i = 0; i < blockPalette.size(); i++) {
         //     auto block = blockPalette.getGlobalId(i);
