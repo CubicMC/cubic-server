@@ -33,7 +33,7 @@
         auto *__tmp = nbt_tag_compound_get(root, src); \
         assert(__tmp);                                 \
         assert(__tmp->type == t);                      \
-        dest->dst = __tmp->type_accessor.value;        \
+        dest.dst = __tmp->type_accessor.value;         \
     } while (0)
 
 #define GET_VALUE_BYTE(dst, src, root) GET_VALUE(NBT_TYPE_BYTE, tag_byte, dst, src, root)
@@ -42,12 +42,12 @@
 #define GET_VALUE_LONG(dst, src, root) GET_VALUE(NBT_TYPE_LONG, tag_long, dst, src, root)
 #define GET_VALUE_FLOAT(dst, src, root) GET_VALUE(NBT_TYPE_FLOAT, tag_float, dst, src, root)
 #define GET_VALUE_DOUBLE(dst, src, root) GET_VALUE(NBT_TYPE_DOUBLE, tag_double, dst, src, root)
-#define GET_VALUE_STRING(dst, src, root)                                          \
-    do {                                                                          \
-        auto *__tmp = nbt_tag_compound_get(root, src);                            \
-        assert(__tmp);                                                            \
-        assert(__tmp->type == NBT_TYPE_STRING);                                   \
-        dest->dst = std::string(__tmp->tag_string.value, __tmp->tag_string.size); \
+#define GET_VALUE_STRING(dst, src, root)                                         \
+    do {                                                                         \
+        auto *__tmp = nbt_tag_compound_get(root, src);                           \
+        assert(__tmp);                                                           \
+        assert(__tmp->type == NBT_TYPE_STRING);                                  \
+        dest.dst = std::string(__tmp->tag_string.value, __tmp->tag_string.size); \
     } while (0)
 
 #define GET_VALUE_TO(t, type_accessor, dst, src, root, dstroot) \
@@ -137,7 +137,7 @@ static char *loadFile(const std::string &file, size_t *size)
     return fileContents;
 }
 
-void Persistence::loadLevelData(LevelData *dest)
+void Persistence::loadLevelData(LevelData &dest)
 {
     std::unique_lock<std::mutex> lock(_accessMutex);
 
@@ -196,10 +196,10 @@ void Persistence::loadLevelData(LevelData *dest)
         assert(__tmpCompound);
         assert(__tmpCompound->type == NBT_TYPE_COMPOUND);
 
-        GET_VALUE_TO_INT(id, "Id", __tmpCompound, dest->mcVersion);
-        GET_VALUE_TO_STRING(name, "Name", __tmpCompound, dest->mcVersion);
-        GET_VALUE_TO_STRING(series, "Series", __tmpCompound, dest->mcVersion);
-        GET_VALUE_TO_BYTE(snapshot, "Snapshot", __tmpCompound, dest->mcVersion);
+        GET_VALUE_TO_INT(id, "Id", __tmpCompound, dest.mcVersion);
+        GET_VALUE_TO_STRING(name, "Name", __tmpCompound, dest.mcVersion);
+        GET_VALUE_TO_STRING(series, "Series", __tmpCompound, dest.mcVersion);
+        GET_VALUE_TO_BYTE(snapshot, "Snapshot", __tmpCompound, dest.mcVersion);
     }
 
     GET_VALUE_INT(wanderingTraderSpawnChance, "WanderingTraderSpawnChance", data);
@@ -211,9 +211,9 @@ void Persistence::loadLevelData(LevelData *dest)
         assert(__tmpCompound);
         assert(__tmpCompound->type == NBT_TYPE_COMPOUND);
 
-        GET_VALUE_TO_BYTE(bonus_chest, "bonus_chest", __tmpCompound, dest->worldGenSettings);
-        GET_VALUE_TO_BYTE(generateFeatures, "generate_features", __tmpCompound, dest->worldGenSettings);
-        GET_VALUE_TO_LONG(seed, "seed", __tmpCompound, dest->worldGenSettings);
+        GET_VALUE_TO_BYTE(bonus_chest, "bonus_chest", __tmpCompound, dest.worldGenSettings);
+        GET_VALUE_TO_BYTE(generateFeatures, "generate_features", __tmpCompound, dest.worldGenSettings);
+        GET_VALUE_TO_LONG(seed, "seed", __tmpCompound, dest.worldGenSettings);
     }
 
     GET_VALUE_BYTE(allowCommands, "allowCommands", data);
@@ -231,12 +231,11 @@ LevelData Persistence::loadLevelData()
 {
     LevelData data;
 
-    this->loadLevelData(&data);
-    // I sure do hope this gets inlined T_T
+    this->loadLevelData(data);
     return data;
 }
 
-void Persistence::loadPlayerData(u128 uuid, PlayerData *dest)
+void Persistence::loadPlayerData(u128 uuid, PlayerData &dest)
 {
     std::unique_lock<std::mutex> lock(_accessMutex);
 
@@ -281,9 +280,9 @@ void Persistence::loadPlayerData(u128 uuid, PlayerData *dest)
         assert(__tmpList->type == NBT_TYPE_LIST);
         assert(__tmpList->tag_list.size == 3);
         assert(__tmpList->tag_list.type == NBT_TYPE_DOUBLE);
-        dest->motion.x = __tmpList->tag_list.value[0]->tag_double.value;
-        dest->motion.y = __tmpList->tag_list.value[1]->tag_double.value;
-        dest->motion.z = __tmpList->tag_list.value[2]->tag_double.value;
+        dest.motion.x = __tmpList->tag_list.value[0]->tag_double.value;
+        dest.motion.y = __tmpList->tag_list.value[1]->tag_double.value;
+        dest.motion.z = __tmpList->tag_list.value[2]->tag_double.value;
     }
     GET_VALUE_BYTE(onGround, "OnGround", root);
     GET_VALUE_INT(portalCooldown, "PortalCooldown", root);
@@ -293,9 +292,9 @@ void Persistence::loadPlayerData(u128 uuid, PlayerData *dest)
         assert(__tmpList->type == NBT_TYPE_LIST);
         assert(__tmpList->tag_list.size == 3);
         assert(__tmpList->tag_list.type == NBT_TYPE_DOUBLE);
-        dest->pos.x = __tmpList->tag_list.value[0]->tag_double.value;
-        dest->pos.y = __tmpList->tag_list.value[1]->tag_double.value;
-        dest->pos.z = __tmpList->tag_list.value[2]->tag_double.value;
+        dest.pos.x = __tmpList->tag_list.value[0]->tag_double.value;
+        dest.pos.y = __tmpList->tag_list.value[1]->tag_double.value;
+        dest.pos.z = __tmpList->tag_list.value[2]->tag_double.value;
     }
     {
         auto *__tmpList = nbt_tag_compound_get(root, "Rotation");
@@ -303,8 +302,8 @@ void Persistence::loadPlayerData(u128 uuid, PlayerData *dest)
         assert(__tmpList->type == NBT_TYPE_LIST);
         assert(__tmpList->tag_list.size == 2);
         assert(__tmpList->tag_list.type == NBT_TYPE_FLOAT);
-        dest->rotation.yaw = __tmpList->tag_list.value[0]->tag_float.value;
-        dest->rotation.pitch = __tmpList->tag_list.value[1]->tag_float.value;
+        dest.rotation.yaw = __tmpList->tag_list.value[0]->tag_float.value;
+        dest.rotation.pitch = __tmpList->tag_list.value[1]->tag_float.value;
     }
     GET_VALUE_INT(score, "Score", root);
     GET_VALUE_INT(selectedItemSlot, "SelectedItemSlot", root);
@@ -314,9 +313,9 @@ void Persistence::loadPlayerData(u128 uuid, PlayerData *dest)
         assert(__tmpArray);
         assert(__tmpArray->type == NBT_TYPE_INT_ARRAY);
         assert(__tmpArray->tag_int_array.size == 4);
-        dest->uuid.most = *(uint64_t *) &__tmpArray->tag_int_array.value[0];
-        dest->uuid.least = *(uint64_t *) &__tmpArray->tag_int_array.value[2];
-        dest->uuid.swapEndianness();
+        dest.uuid.most = *(uint64_t *) &__tmpArray->tag_int_array.value[0];
+        dest.uuid.least = *(uint64_t *) &__tmpArray->tag_int_array.value[2];
+        dest.uuid.swapEndianness();
     }
     GET_VALUE_INT(xpLevel, "XpLevel", root);
     GET_VALUE_FLOAT(xpP, "XpP", root);
@@ -334,11 +333,11 @@ PlayerData Persistence::loadPlayerData(u128 uuid)
 {
     PlayerData data;
 
-    this->loadPlayerData(uuid, &data);
+    this->loadPlayerData(uuid, data);
     return data;
 }
 
-void Persistence::loadPlayerData(const Player &player, PlayerData *dest) { loadPlayerData(player.getUuid(), dest); }
+void Persistence::loadPlayerData(const Player &player, PlayerData &dest) { loadPlayerData(player.getUuid(), dest); }
 
 PlayerData Persistence::loadPlayerData(const Player &player) { return loadPlayerData(player.getUuid()); }
 

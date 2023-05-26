@@ -67,6 +67,10 @@ private:
      */
     std::mutex _accessMutex;
 
+    /**
+     * @brief Storage of the currently loaded regions in memory
+     *
+     */
     std::vector<Position2D> _regionStore;
 
 public:
@@ -82,7 +86,7 @@ public:
      *
      * @param dest The LevelData object to fill
      */
-    void loadLevelData(LevelData *dest);
+    void loadLevelData(LevelData &dest);
 
     /**
      * @brief Loads the level.dat from disk
@@ -101,7 +105,7 @@ public:
      * @param uuid Player to load data from
      * @param dest The PlayerData object to fill
      */
-    void loadPlayerData(u128 uuid, PlayerData *dest);
+    void loadPlayerData(u128 uuid, PlayerData &dest);
 
     /**
      * @brief Loads player data from disk
@@ -121,7 +125,7 @@ public:
      * @param player Player to load data from
      * @param dest The PlayerData object to fill
      */
-    void loadPlayerData(const Player &player, PlayerData *dest);
+    void loadPlayerData(const Player &player, PlayerData &dest);
 
     /**
      * @brief Loads player data from disk
