@@ -208,6 +208,7 @@ const world_storage::ChunkColumn &Dimension::getChunk(int x, int z) const { retu
 void Dimension::spawnPlayer(Player &current)
 {
     auto current_id = current.getId();
+    std::lock_guard _(_playersMutex);
     for (auto player : _players) {
         LDEBUG("player is : ", player->getUsername());
         LDEBUG("current is : ", current.getUsername());
@@ -240,6 +241,7 @@ void Dimension::updateBlock(Position position, int32_t id)
         z += 16;
 
     chunk.updateBlock({x, position.y, z}, id);
+    std::lock_guard _(_playersMutex);
     for (auto player : _players) {
         player->sendBlockUpdate({position, id});
     }
