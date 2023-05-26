@@ -1,19 +1,55 @@
 #ifndef D3EBB5BA_3F3F_4BBD_A2B5_05FD6729E432
 #define D3EBB5BA_3F3F_4BBD_A2B5_05FD6729E432
 
+#include <arpa/inet.h>
 #include <memory>
 #include <mutex>
 #include <string>
 #include <unordered_map>
 #include <vector>
 
+#include <nbt.h>
+
 #include "LevelData.hpp"
 #include "Player.hpp"
 #include "types.hpp"
 #include "world_storage/ChunkColumn.hpp"
+#include "world_storage/Palette.hpp"
 #include "world_storage/PlayerData.hpp"
 
 namespace world_storage {
+
+struct RegionLocation {
+    uint32_t data;
+
+    inline uint32_t getOffset() const { return ((data & 0x00FF0000) >> 16) | (data & 0x0000FF00) | ((data & 0x000000FF) << 16); }
+
+    inline uint8_t getSize() const { return data >> 24; }
+
+    inline bool isEmpty() const { return data == 0; }
+};
+
+struct RegionTimestamp {
+    uint32_t data;
+};
+
+constexpr uint32_t maxXPerRegion = 32;
+constexpr uint32_t maxZPerRegion = 32;
+constexpr uint32_t numChunksPerRegion = maxXPerRegion * maxZPerRegion;
+
+struct __attribute__((__packed__)) RegionHeader {
+    RegionLocation locationTable[numChunksPerRegion];
+    RegionLocation timestampTable[numChunksPerRegion];
+};
+
+struct __attribute__((__packed__)) ChunkHeader {
+    uint32_t length;
+    uint8_t compressionScheme;
+
+    inline uint32_t getLength() const { return ntohl(length); }
+
+    inline uint8_t getCompressionScheme() const { return compressionScheme; }
+};
 
 /**
  * @brief Helper class to provide level persistence (Loading/Saving)
@@ -100,6 +136,15 @@ public:
     void loadRegion(Dimension &dim, int x, int z);
 
     bool isChunkLoaded(Dimension &dim, int x, int z);
+
+private:
+    // Region stuff
+    void _regionLoadHeightmaps(ChunkColumn &chunk, nbt_tag_t *data);
+    void _regionLoadPalette(BlockPalette &paletteMapping, nbt_tag_t *blockStates);
+    void _regionLoadSection(ChunkColumn &chunk, nbt_tag_t *section);
+    void _regionLoadChunk(Dimension &dim, uint16_t cx, uint16_t cz, int x, int z, nbt_tag_t *data);
+    void _regionLoadLights(uint8_t sectionY, nbt_tag_t *section, ChunkColumn &chunk);
+    void _regionLoadBlocks(uint8_t sectionY, nbt_tag_t *section, ChunkColumn &chunk);
 };
 
 }
