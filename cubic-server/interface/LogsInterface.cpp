@@ -113,17 +113,17 @@ bool LogsInterface::_onLogToDisplay()
     if (_selectedLogLevel == logging::Registry::LogLevel::off) {
         while (!q_copy.empty()) {
             auto front = q_copy.front();
-            logLevel = front.first;
-            ss << front.second << std::endl;
+            logLevel = front.level;
+            ss << front.message << std::endl;
             temp = ss.str();
             q_copy.pop();
         }
     } else {
         while (!q_copy.empty()) {
             auto front = q_copy.front();
-            logLevel = front.first;
+            logLevel = front.level;
             if (logLevel == _selectedLogLevel) {
-                ss << front.second << std::endl;
+                ss << front.message << std::endl;
                 temp = ss.str();
             }
             q_copy.pop();

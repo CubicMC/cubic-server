@@ -53,7 +53,7 @@ Registry &Registry::instance()
     return instance;
 }
 
-const std::queue<std::pair<Registry::LogLevel, std::string>> &Registry::getMessages()
+const std::queue<Registry::Message> &Registry::getMessages()
 {
     if (auto sink = dynamic_pointer_cast<StoreLogMessage>(defaultLogger()->sinks().at(0)))
         return sink->messages();

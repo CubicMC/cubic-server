@@ -33,20 +33,77 @@ constexpr spdlog::string_view_t LEVEL_NAMES[] = SPDLOG_LEVEL_NAMES;
 
 inline Registry &instance() noexcept { return Registry::instance(); }
 
+/**
+ * @brief Convert string to a LogLevel @see Registry::LogLevel
+ *
+ * @param str
+ * @return Registry::LogLevel
+ */
 inline Registry::LogLevel stringToLevel(const std::string_view &str) noexcept { return static_cast<Registry::LogLevel>(spdlog::level::from_str(str.data())); }
+
+/**
+ * @brief Register a logger
+ *
+ * @param logger
+ * @return std::shared_ptr<Registry::Logger>
+ */
 inline std::shared_ptr<Registry::Logger> registerLogger(std::shared_ptr<Registry::Logger> logger) { return instance().registerLogger(logger); }
+
+/**
+ * @brief Get the default logger
+ *
+ * @return std::shared_ptr<Registry::Logger>
+ */
 inline std::shared_ptr<Registry::Logger> defaultLogger() { return instance().defaultLogger(); }
+
+/**
+ * @brief Get the thread default logger, if no logger is set, return the default logger
+ *
+ * @return std::shared_ptr<Registry::Logger>
+ */
 inline std::shared_ptr<Registry::Logger> threadDefaultLogger() { return instance().threadDefaultLogger(); }
+
+/**
+ * @brief Get the logger with the given name
+ *
+ * @param name
+ * @return std::shared_ptr<Registry::Logger>
+ */
 inline std::shared_ptr<Registry::Logger> get(const std::string &name) { return instance().get(name); }
+
+/**
+ * @brief Remove the logger with the given name
+ *
+ * @param name
+ */
 inline void unregisterLogger(const std::string &name) { instance().unregisterLogger(name); }
+
+/**
+ * @brief Set all loggers to the given level
+ *
+ * @param level
+ */
 inline void setLevel(Registry::LogLevel level) { instance().setLevel(level); }
 
+/**
+ * @brief Register a logger with the given name
+ *
+ * @tparam L
+ * @param name
+ * @return std::shared_ptr<Registry::Logger>
+ */
 template<isBaseOf<Registry::Logger> L = Registry::Logger>
 inline std::shared_ptr<Registry::Logger> registerLogger(const std::string_view &name)
 {
     return instance().registerLogger<L>(std::string(name));
 }
 
+/**
+ * @brief Get a string representation of the given LogLevel @see Registry::LogLevel
+ *
+ * @param l
+ * @return std::string_view
+ */
 inline std::string_view levelToString(spdlog::level::level_enum l) noexcept
 {
     auto &str = spdlog::level::to_string_view(l);

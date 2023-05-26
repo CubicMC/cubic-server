@@ -17,14 +17,14 @@ public:
     using level_enum = Registry::LogLevel;
 
 public:
-    NODISCARD constexpr inline const std::queue<std::pair<level_enum, std::string>> &messages() const noexcept { return _messages; }
+    NODISCARD constexpr inline const std::queue<Registry::Message> &messages() const noexcept { return _messages; }
 
 protected:
     void sink_it_(const spdlog::details::log_msg &msg) override;
     void flush_() override;
 
 private:
-    std::queue<std::pair<level_enum, std::string>> _messages;
+    std::queue<Registry::Message> _messages;
 };
 
 } // namespace logging
