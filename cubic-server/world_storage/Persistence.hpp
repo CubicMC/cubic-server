@@ -2,6 +2,7 @@
 #define D3EBB5BA_3F3F_4BBD_A2B5_05FD6729E432
 
 #include <arpa/inet.h>
+#include <cstdint>
 #include <memory>
 #include <mutex>
 #include <string>
@@ -36,6 +37,7 @@ struct RegionTimestamp {
 constexpr uint32_t maxXPerRegion = 32;
 constexpr uint32_t maxZPerRegion = 32;
 constexpr uint32_t numChunksPerRegion = maxXPerRegion * maxZPerRegion;
+constexpr uint64_t regionChunkAlignment = 0x1000;
 
 struct __attribute__((__packed__)) RegionHeader {
     RegionLocation locationTable[numChunksPerRegion];

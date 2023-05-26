@@ -370,7 +370,7 @@ void Persistence::loadRegion(Dimension &dim, int x, int z)
             if (header->locationTable[currentOffset].isEmpty())
                 continue;
 
-            const uint64_t chunkOffset = header->locationTable[currentOffset].getOffset() * 0x1000;
+            const uint64_t chunkOffset = header->locationTable[currentOffset].getOffset() * regionChunkAlignment;
 
             const ChunkHeader *cHeader = (const ChunkHeader *) (fileContents + chunkOffset);
 
