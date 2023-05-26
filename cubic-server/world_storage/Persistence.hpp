@@ -119,7 +119,7 @@ public:
      * @param player Player to load data from
      * @param dest The PlayerData object to fill
      */
-    void loadPlayerData(const Player *player, PlayerData *dest);
+    void loadPlayerData(const Player &player, PlayerData *dest);
 
     /**
      * @brief Loads player data from disk
@@ -131,7 +131,7 @@ public:
      * @param player Player to load data from
      * @return PlayerData The loaded player data
      */
-    PlayerData loadPlayerData(const Player *player);
+    PlayerData loadPlayerData(const Player &player);
 
     void loadRegion(Dimension &dim, int x, int z);
 

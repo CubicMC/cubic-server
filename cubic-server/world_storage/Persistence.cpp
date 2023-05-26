@@ -90,29 +90,6 @@ Persistence::Persistence(const std::string &folder):
 {
 }
 
-// void Persistence::uncompressFile(const std::string &filepath, std::vector<uint8_t> &data)
-// {
-//     // Thanks StackOverflow
-//     // https://stackoverflow.com/a/17062022
-//     constexpr uint64_t readBufferSize = 8192;
-
-//     gzFile inFileZ = gzopen(filepath.c_str(), "rb");
-//     if (inFileZ == NULL)
-//         throw std::runtime_error("Error: Failed to gzopen " + filepath);
-
-//     uint8_t unzipBuffer[readBufferSize];
-//     unsigned int unzippedBytes;
-//     while (true) {
-//         unzippedBytes = gzread(inFileZ, unzipBuffer, readBufferSize);
-//         if (unzippedBytes > 0) {
-//             data.insert(data.end(), unzipBuffer, unzipBuffer + unzippedBytes);
-//         } else {
-//             break;
-//         }
-//     }
-//     gzclose(inFileZ);
-// }
-
 struct _userData {
     char *start;
     char *end;
@@ -361,9 +338,9 @@ PlayerData Persistence::loadPlayerData(u128 uuid)
     return data;
 }
 
-void Persistence::loadPlayerData(const Player *player, PlayerData *dest) { loadPlayerData(player->getUuid(), dest); }
+void Persistence::loadPlayerData(const Player &player, PlayerData *dest) { loadPlayerData(player.getUuid(), dest); }
 
-PlayerData Persistence::loadPlayerData(const Player *player) { return loadPlayerData(player->getUuid()); }
+PlayerData Persistence::loadPlayerData(const Player &player) { return loadPlayerData(player.getUuid()); }
 
 void Persistence::loadRegion(Dimension &dim, int x, int z)
 {
