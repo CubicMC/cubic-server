@@ -8,19 +8,23 @@
 #include "generation/overworld.hpp"
 #include "logging/Logger.hpp"
 #include "nbt.hpp"
+#include "types.hpp"
 #include "world_storage/Section.hpp"
 #include <memory>
-#include "types.hpp"
 
 #define APPEND_CHUNK_TO(neighbours, chunkMap, pos2D)                                        \
+    _dimension->getLevel().chunkColumnsMutex.lock();                                        \
     if (chunkMap.contains(_chunkPos + pos2D)) {                                             \
         chunkMap.at(_chunkPos + pos2D)._generationLock.lock();                              \
         neighbours.push_back(&chunkMap.at(_chunkPos + pos2D));                              \
     } else {                                                                                \
+        _dimension->getLevel().chunkColumnsMutex.unlock();                                  \
         _dimension->generateChunk(_chunkPos + pos2D, GenerationState::LOCAL_MODIFICATIONS); \
+        _dimension->getLevel().chunkColumnsMutex.lock();                                    \
         chunkMap.at(_chunkPos + pos2D)._generationLock.lock();                              \
         neighbours.push_back(&chunkMap.at(_chunkPos + pos2D));                              \
-    }
+    }                                                                                       \
+    _dimension->getLevel().chunkColumnsMutex.unlock();
 
 #define GET_NEIGHBOURS()                                          \
     std::vector<ChunkColumn *> neighbours;                        \
@@ -206,7 +210,6 @@ void ChunkColumn::recalculateBlockLight()
 
 void ChunkColumn::generate(GenerationState goalState)
 {
-    _generationLock.lock();
     switch (_dimension->getWorld()->getWorldType()) {
     case WorldType::DEFAULT:
         switch (_dimension->getDimensionType()) {
@@ -238,12 +241,11 @@ void ChunkColumn::generate(GenerationState goalState)
         break;
     }
     this->recalculateSkyLight();
-    _generationLock.unlock();
 }
 
 void ChunkColumn::_generateOverworld(GenerationState goalState)
 {
-    static auto generator = generation::Overworld(_dimension->getWorld()->getSeed());
+    auto generator = generation::Overworld(_dimension->getWorld()->getSeed());
 
     while (_currentState < goalState) {
         switch (this->_currentState) {
@@ -290,12 +292,13 @@ void ChunkColumn::_generateOverworld(GenerationState goalState)
     }
 }
 
-void ChunkColumn::_generateNether(UNUSED GenerationState goalState) { }
+void ChunkColumn::_generateNether(UNUSED GenerationState goalState) { std::lock_guard<std::mutex> _(this->_generationLock); }
 
-void ChunkColumn::_generateEnd(UNUSED GenerationState goalState) { }
+void ChunkColumn::_generateEnd(UNUSED GenerationState goalState) { std::lock_guard<std::mutex> _(this->_generationLock); }
 
 void ChunkColumn::_generateFlat(UNUSED GenerationState goalState)
 {
+    std::lock_guard<std::mutex> _(this->_generationLock);
     // TODO: optimize this
     // This take forever because of the Block constructor
     for (int y = 0; y < 11; y++) {
@@ -315,6 +318,7 @@ void ChunkColumn::_generateFlat(UNUSED GenerationState goalState)
 
 void ChunkColumn::_generateRawGeneration(generation::Generator &generator)
 {
+    std::lock_guard<std::mutex> _(this->_generationLock);
     // generate blocks
     for (int y = CHUNK_HEIGHT_MIN; y < CHUNK_HEIGHT_MAX; y++) {
         for (int z = 0; z < SECTION_WIDTH; z++) {
@@ -349,6 +353,7 @@ void ChunkColumn::_generateRawGeneration(generation::Generator &generator)
 
 void ChunkColumn::_generateLakes(UNUSED generation::Generator &generator)
 {
+    std::lock_guard<std::mutex> _(this->_generationLock);
     int waterLevel = 86;
 
     // TODO: improve this to fill caves
@@ -367,6 +372,7 @@ void ChunkColumn::_generateLakes(UNUSED generation::Generator &generator)
 
 void ChunkColumn::_generateLocalModifications(UNUSED generation::Generator &generator)
 {
+    std::lock_guard<std::mutex> _(this->_generationLock);
     // generate grass
     for (int z = 0; z < SECTION_WIDTH; z++) {
         for (int x = 0; x < SECTION_WIDTH; x++) {
@@ -395,20 +401,45 @@ void ChunkColumn::_generateLocalModifications(UNUSED generation::Generator &gene
     _currentState = GenerationState::LOCAL_MODIFICATIONS;
 }
 
-void ChunkColumn::_generateUndergroundStructures(UNUSED generation::Generator &generator) { _currentState = GenerationState::UNDERGROUND_STRUCTURES; }
+void ChunkColumn::_generateUndergroundStructures(UNUSED generation::Generator &generator)
+{
+    std::lock_guard<std::mutex> _(this->_generationLock);
+    _currentState = GenerationState::UNDERGROUND_STRUCTURES;
+}
 
-void ChunkColumn::_generateSurfaceStructures(UNUSED generation::Generator &generator) { _currentState = GenerationState::SURFACE_STRUCTURES; }
+void ChunkColumn::_generateSurfaceStructures(UNUSED generation::Generator &generator)
+{
+    std::lock_guard<std::mutex> _(this->_generationLock);
+    _currentState = GenerationState::SURFACE_STRUCTURES;
+}
 
-void ChunkColumn::_generateStrongholds(UNUSED generation::Generator &generator) { _currentState = GenerationState::STRONGHOLDS; }
+void ChunkColumn::_generateStrongholds(UNUSED generation::Generator &generator)
+{
+    std::lock_guard<std::mutex> _(this->_generationLock);
+    _currentState = GenerationState::STRONGHOLDS;
+}
 
-void ChunkColumn::_generateUndergroundOres(UNUSED generation::Generator &generator) { _currentState = GenerationState::UNDERGROUND_ORES; }
+void ChunkColumn::_generateUndergroundOres(UNUSED generation::Generator &generator)
+{
+    std::lock_guard<std::mutex> _(this->_generationLock);
+    _currentState = GenerationState::UNDERGROUND_ORES;
+}
 
-void ChunkColumn::_generateUndergroundDecoration(UNUSED generation::Generator &generator) { _currentState = GenerationState::UNDERGROUND_DECORATION; }
+void ChunkColumn::_generateUndergroundDecoration(UNUSED generation::Generator &generator)
+{
+    std::lock_guard<std::mutex> _(this->_generationLock);
+    _currentState = GenerationState::UNDERGROUND_DECORATION;
+}
 
-void ChunkColumn::_generateFluidSprings(UNUSED generation::Generator &generator) { _currentState = GenerationState::FLUID_SPRINGS; }
+void ChunkColumn::_generateFluidSprings(UNUSED generation::Generator &generator)
+{
+    std::lock_guard<std::mutex> _(this->_generationLock);
+    _currentState = GenerationState::FLUID_SPRINGS;
+}
 
 void ChunkColumn::_generateVegetalDecoration(generation::Generator &generator)
 {
+    std::lock_guard<std::mutex> _(this->_generationLock);
     // GET_NEIGHBOURS()
     // generation::trees::OakTree oakTree(shared_from_this(), generator);
     // oakTree.getPosForTreeGeneration();
@@ -421,6 +452,7 @@ void ChunkColumn::_generateVegetalDecoration(generation::Generator &generator)
 
 void ChunkColumn::_generateTopLayerModification(UNUSED generation::Generator &generator)
 {
+    std::lock_guard<std::mutex> _(this->_generationLock);
     // GET_NEIGHBOURS()
     // RELEASE_NEIGHBOURS()
     _currentState = GenerationState::TOP_LAYER_MODIFICATION;
