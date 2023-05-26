@@ -117,6 +117,8 @@ if(NOT GTKMM_FOUND)
     set(NO_GUI ON)
 endif()
 
+option(STATIC_LINK "Link the binary statically" OFF)
+
 add_executable(${CMAKE_PROJECT_NAME})
 target_compile_definitions(${CMAKE_PROJECT_NAME} PRIVATE
     PROGRAM_NAME="${CMAKE_PROJECT_NAME}"
@@ -124,6 +126,10 @@ target_compile_definitions(${CMAKE_PROJECT_NAME} PRIVATE
     MINECRAFT_VERSION="${MINECRAFT_VERSION}"
     GUI_UNAVAILABLE=$<BOOL:${NO_GUI}>
 )
+
+if (STATIC_LINK)
+    target_link_libraries (${CMAKE_PROJECT_NAME} PRIVATE -static)
+endif()
 
 include(blocks.cmake)
 
