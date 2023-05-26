@@ -59,6 +59,10 @@ struct __attribute__((__packed__)) ChunkHeader {
  */
 class Persistence {
 private:
+    /**
+     * @brief Points to the folder containing the world
+     *
+     */
     std::string _folder;
 
     /**
@@ -74,6 +78,11 @@ private:
     std::vector<Position2D> _regionStore;
 
 public:
+    /**
+     * @brief Construct a new Persistence object
+     *
+     * @param folder Points to the folder containing the world
+     */
     Persistence(const std::string &folder);
 
     /**
@@ -139,12 +148,30 @@ public:
      */
     PlayerData loadPlayerData(const Player &player);
 
+    /**
+     * @brief Loads a region from disk
+     *
+     * @param dim The dimension to load the region in
+     * @param x The X coordinate of the region
+     * @param z The Z coordinate of the region
+     */
     void loadRegion(Dimension &dim, int x, int z);
 
+    /**
+     * @brief Checks if a chunk is loaded in the dimension
+     *
+     * This function will trigger a region load if the region hasn't
+     * been loaded before
+     *
+     * @param dim The dimension to check
+     * @param x The X coordinate of the region
+     * @param z The Z coordinate of the region
+     * @return true The chunk is loaded in memory
+     * @return false The chunk is not loaded in memory
+     */
     bool isChunkLoaded(Dimension &dim, int x, int z);
 
 private:
-    // Region stuff
     void _regionLoadHeightmaps(ChunkColumn &chunk, nbt_tag_t *data);
     void _regionLoadPalette(BlockPalette &paletteMapping, nbt_tag_t *blockStates);
     void _regionLoadSection(ChunkColumn &chunk, nbt_tag_t *section);
