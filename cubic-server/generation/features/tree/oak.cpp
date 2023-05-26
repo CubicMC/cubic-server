@@ -89,7 +89,7 @@ const std::vector<generation::Generator::TreeBlock> OakTree::getTree(const Posit
                 for (int z = -1; z <= 1; z++) {
                     if (x == 0 && z == 0 && y == treeSize)
                         continue;
-                    if (x * x == z * z)
+                    if (x * x == z * z && x != 0 && z != 0)
                         continue;
                     tree.emplace_back(generation::Generator::TreeBlock {
                         {x, y, z},
