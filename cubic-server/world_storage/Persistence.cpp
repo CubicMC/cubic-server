@@ -162,7 +162,7 @@ static char *loadFile(const std::string &file, size_t *size)
 
 void Persistence::loadLevelData(LevelData *dest)
 {
-    std::unique_lock<std::mutex> lock(accessMutex);
+    std::unique_lock<std::mutex> lock(_accessMutex);
 
     const std::filesystem::path file = std::filesystem::path(_folder) / "level.dat";
 
@@ -261,7 +261,7 @@ LevelData Persistence::loadLevelData()
 
 void Persistence::loadPlayerData(u128 uuid, PlayerData *dest)
 {
-    std::unique_lock<std::mutex> lock(accessMutex);
+    std::unique_lock<std::mutex> lock(_accessMutex);
 
     // TODO
     const std::filesystem::path file = std::filesystem::path(_folder) / "playerdata" / (uuid.toString() + ".dat");
@@ -367,14 +367,14 @@ PlayerData Persistence::loadPlayerData(const Player *player) { return loadPlayer
 
 void Persistence::loadRegion(Dimension &dim, int x, int z)
 {
-    std::unique_lock<std::mutex> lock(accessMutex);
+    std::unique_lock<std::mutex> lock(_accessMutex);
 
-    if (std::find(regionStore.begin(), regionStore.end(), Position2D(x, z)) != regionStore.end())
+    if (std::find(_regionStore.begin(), _regionStore.end(), Position2D(x, z)) != _regionStore.end())
         return; // TODO(huntears): Change this later when we can unload regions
 
     LDEBUG("Loading region ", x, " ", z);
 
-    regionStore.emplace_back(x, z);
+    _regionStore.emplace_back(x, z);
 
     const std::string regionSlice = "r." + std::to_string(x) + "." + std::to_string(z) + ".mca";
     const std::filesystem::path file = std::filesystem::path(_folder) / "region" / regionSlice;
@@ -593,7 +593,7 @@ bool Persistence::isChunkLoaded(Dimension &dim, int x, int z)
     const int rz = transformChunkPosToRegionPos(z);
 
     this->loadRegion(dim, rx, rz);
-    if (std::find(regionStore.begin(), regionStore.end(), Position2D(rx, rz)) == regionStore.end())
+    if (std::find(_regionStore.begin(), _regionStore.end(), Position2D(rx, rz)) == _regionStore.end())
         return false;
 
     auto cx = x % 32;

@@ -63,11 +63,11 @@ private:
      * @brief Global lock for any persistence actions
      *
      */
-    std::mutex accessMutex;
+    std::mutex _accessMutex;
+
+    std::vector<Position2D> _regionStore;
 
 public:
-    std::vector<Position2D> regionStore; // TODO(huntears): Get proper getter/setter
-
     Persistence(const std::string &folder);
 
     /**
