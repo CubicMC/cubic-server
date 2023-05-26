@@ -12,7 +12,7 @@ DefaultWorldGroup::DefaultWorldGroup(std::shared_ptr<Chat> chat):
 
 void DefaultWorldGroup::initialize()
 {
-    _worlds.emplace("default", std::make_shared<DefaultWorld>(shared_from_this(), CONFIG["level-name"].as<std::string>())); // TODO(huntears): config
+    _worlds.emplace("default", std::make_shared<DefaultWorld>(shared_from_this(), CONFIG["level-name"].as<std::string>()));
     _worlds.at("default")->initialize();
 
     WorldGroup::initialize();
