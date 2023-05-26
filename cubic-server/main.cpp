@@ -107,28 +107,24 @@ void signalHandler(int sig)
 
 int main(int argc, char *argv[])
 {
-    logging::instance();
     auto program = initArgs(argc, argv);
 
     auto srv = Server::getInstance();
 
-    #if GUI_UNAVAILABLE == 0
+#if GUI_UNAVAILABLE == 0
     InterfaceContainer interfaceContainer;
-    #endif
+#endif
 
     CommandLine cmd;
-
-    // auto logger = logging::Logger::getInstance();
-    // logger->unsetDisplaySpecificationLevelInConsole(logging::LogLevel::DEBUG);
 
     std::signal(SIGTERM, signalHandler);
     std::signal(SIGINT, signalHandler);
     std::signal(SIGPIPE, SIG_IGN);
 
-    #if GUI_UNAVAILABLE == 0
+#if GUI_UNAVAILABLE == 0
     if (program["nogui"] == false)
         interfaceContainer.launch(argc, argv);
-    #endif
+#endif
 
     try {
         // This should be inside the server
@@ -145,8 +141,8 @@ int main(int argc, char *argv[])
 
     cmd.stop();
 
-    #if GUI_UNAVAILABLE == 0
+#if GUI_UNAVAILABLE == 0
     interfaceContainer.stop();
-    #endif
+#endif
     return 0;
 }

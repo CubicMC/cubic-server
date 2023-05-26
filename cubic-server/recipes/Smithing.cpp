@@ -39,4 +39,4 @@ void Smithing::dump(void) const
 }
 
 std::unique_ptr<Recipe> Smithing::create(const nlohmann::json &recipe) { return (std::make_unique<Smithing>(Smithing(recipe))); }
-};
+} // namespace Recipe

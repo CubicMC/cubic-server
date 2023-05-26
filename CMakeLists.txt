@@ -145,7 +145,6 @@ target_link_libraries (${CMAKE_PROJECT_NAME} PRIVATE
     nlohmann_json::nlohmann_json
     argparse
     yaml-cpp
-    curl
     spdlog::spdlog
     $<$<BOOL:${MINGW}>:ws2_32>
 )

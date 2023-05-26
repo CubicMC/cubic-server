@@ -48,4 +48,4 @@ void CraftingShapeless::dump(void) const
 }
 
 std::unique_ptr<Recipe> CraftingShapeless::create(const nlohmann::json &recipe) { return (std::make_unique<CraftingShapeless>(CraftingShapeless(recipe))); }
-}
+} // namespace Recipe

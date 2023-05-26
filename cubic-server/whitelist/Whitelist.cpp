@@ -1,5 +1,4 @@
 #include <fstream>
-
 #include "Whitelist.hpp"
 #include "logging/logging.hpp"
 

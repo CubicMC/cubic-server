@@ -32,4 +32,4 @@ void StoneCutting::dump(void) const
 }
 
 std::unique_ptr<Recipe> StoneCutting::create(const nlohmann::json &recipe) { return (std::make_unique<StoneCutting>(StoneCutting(recipe))); }
-}
+} // namespace Recipe

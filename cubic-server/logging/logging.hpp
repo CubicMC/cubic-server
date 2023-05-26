@@ -6,6 +6,8 @@
 
 namespace logging {
 
+constexpr spdlog::string_view_t LEVEL_NAMES[] = SPDLOG_LEVEL_NAMES;
+
 #define LTRACE(...) logging::instance().threadDefaultLogger()->log(spdlog::level::trace, __VA_ARGS__)
 #define LDEBUG(...) logging::instance().threadDefaultLogger()->log(spdlog::level::debug, __VA_ARGS__)
 #define LINFO(...) logging::instance().threadDefaultLogger()->log(spdlog::level::info, __VA_ARGS__)

@@ -9,7 +9,7 @@
 
 template<isEnum T>
 struct fmt::formatter<T> : fmt::formatter<std::string> {
-    auto format(T e, format_context &ctx) -> decltype(ctx.out()) { return fmt::format_to(ctx.out(), "{}", (std::underlying_type_t<T>) e); }
+    auto format(T e, format_context &ctx) -> decltype(ctx.out()) { return fmt::format_to(ctx.out(), "{}", static_cast<std::underlying_type_t<T>>(e)); }
 };
 
 template<>

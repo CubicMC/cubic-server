@@ -108,7 +108,7 @@ bool LogsInterface::_onLogToDisplay()
     logging::Registry::LogLevel logLevel;
     std::string temp = "";
     std::stringstream ss;
-    auto q_copy = logging::Registry::instance().getMessages();
+    auto q_copy = logging::instance().getMessages();
 
     if (_selectedLogLevel == logging::Registry::LogLevel::off) {
         while (!q_copy.empty()) {

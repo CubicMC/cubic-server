@@ -3,7 +3,6 @@
 
 #include "logging/logging.hpp"
 #include "logging/Sinks.hpp"
-#include <spdlog/common.h>
 
 void command_parser::Log::autocomplete(UNUSED std::vector<std::string> &args, Player *invoker) const
 {
@@ -20,7 +19,7 @@ void command_parser::Log::execute(std::vector<std::string> &args, UNUSED Player 
         return;
     }
 
-    spdlog::string_view_t levelNames[] = SPDLOG_LEVEL_NAMES;
+    auto levelNames = logging::LEVEL_NAMES;
     auto begin = &(levelNames[0]);
     auto end = &(levelNames[static_cast<int>(logging::Registry::LogLevel::n_levels)]);
 

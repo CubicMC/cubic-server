@@ -13,4 +13,4 @@ SpecialMapCloning::SpecialMapCloning(const nlohmann::json &recipe):
 void SpecialMapCloning::dump(void) const { LINFO("recipe special map cloning"); }
 
 std::unique_ptr<Recipe> SpecialMapCloning::create(const nlohmann::json &recipe) { return (std::make_unique<SpecialMapCloning>(SpecialMapCloning(recipe))); }
-};
+} // namespace Recipe

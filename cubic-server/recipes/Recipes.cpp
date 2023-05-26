@@ -73,7 +73,7 @@ bool Recipe::isValid(void) const noexcept { return (this->_isValid); }
 
 // set the recipe validity, invalid recipes will be removed
 void Recipe::setValidity(bool validity) noexcept { this->_isValid = validity; }
-};
+} // namespace Recipe
 
 void Recipes::addRecipeCreator(const std::string &_namespace, const std::string &type, Recipe::Creator creator) { this->_recipeCreators[_namespace][type] = creator; }
 

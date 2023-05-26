@@ -129,4 +129,4 @@ bool CraftingShaped::getKey(char key, const nlohmann::json &content)
 }
 
 std::unique_ptr<Recipe> CraftingShaped::create(const nlohmann::json &recipe) { return (std::make_unique<CraftingShaped>(CraftingShaped(recipe))); }
-}
+} // namespace Recipe

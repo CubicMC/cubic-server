@@ -38,4 +38,4 @@ void Smoking::dump(void) const
 }
 
 std::unique_ptr<Recipe> Smoking::create(const nlohmann::json &recipe) { return (std::make_unique<Smoking>(Smoking(recipe))); }
-};
+} // namespace Recipe
