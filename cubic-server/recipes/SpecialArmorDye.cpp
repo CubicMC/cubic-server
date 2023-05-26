@@ -1,4 +1,5 @@
 #include "SpecialArmorDye.hpp"
+#include "logging/logging.hpp"
 
 #include "Server.hpp"
 

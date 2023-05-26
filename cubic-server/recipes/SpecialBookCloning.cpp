@@ -1,4 +1,5 @@
 #include "SpecialBookCloning.hpp"
+#include "logging/logging.hpp"
 
 #include "Server.hpp"
 

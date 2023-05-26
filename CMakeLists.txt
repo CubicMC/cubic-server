@@ -146,7 +146,6 @@ target_link_libraries (${CMAKE_PROJECT_NAME} PRIVATE
     argparse
     yaml-cpp
     curl
-    CRCpp
     spdlog::spdlog
     $<$<BOOL:${MINGW}>:ws2_32>
 )

@@ -1,4 +1,5 @@
 #include "SpecialRepairItem.hpp"
+#include "logging/logging.hpp"
 
 #include "Server.hpp"
 

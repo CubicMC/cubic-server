@@ -30,7 +30,7 @@ public:
      * @param task
      * @param pool
      */
-    Task(Id id, std::function<void()> task, Pool *pool);
+    Task(Id id, std::function<void()> task);
     Task() = default;
     Task(const Task &other) = default;
     Task(Task &&other) noexcept = default;
@@ -53,7 +53,6 @@ private:
     Id _id;
     Status _status;
     std::function<void()> _task;
-    Pool *_pool;
 };
 
 } // namespace thread_pool

@@ -1,4 +1,5 @@
 #include "SpecialMapExtending.hpp"
+#include "logging/logging.hpp"
 
 #include "Server.hpp"
 

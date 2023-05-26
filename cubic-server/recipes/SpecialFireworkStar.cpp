@@ -1,4 +1,5 @@
 #include "SpecialFireworkStar.hpp"
+#include "logging/logging.hpp"
 
 #include "Server.hpp"
 
