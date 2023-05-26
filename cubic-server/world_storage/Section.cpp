@@ -98,7 +98,7 @@ int32_t world_storage::Section::getBlock(const Position &pos) const
         throw std::out_of_range("Position is out of range");
     if (!this->_blocks.canContainData())
         return 0;
-    return this->_blocks.get(calculateSectionBlockIdx(pos));
+    return this->_blockPalette.getGlobalId(this->_blocks.get(calculateSectionBlockIdx(pos)));
 }
 
 int32_t world_storage::Section::getBiome(const Position &pos) const
@@ -107,21 +107,21 @@ int32_t world_storage::Section::getBiome(const Position &pos) const
         throw std::out_of_range("Position is out of range");
     if (!this->_biomes.canContainData())
         return 0;
-    return this->_biomes.get(calculateSectionBiomeIdx(pos));
+    return this->_biomePalette.getGlobalId(this->_biomes.get(calculateSectionBiomeIdx(pos)));
 }
 
 int32_t world_storage::Section::getBlock(uint64_t idx) const
 {
     if (!this->_blocks.canContainData())
         return 0;
-    return this->_blocks.get(idx);
+    return this->_blockPalette.getGlobalId(this->_blocks.get(idx));
 }
 
 int32_t world_storage::Section::getBiome(uint64_t idx) const
 {
     if (!this->_biomes.canContainData())
         return 0;
-    return this->_biomes.get(idx);
+    return this->_biomePalette.getGlobalId(this->_biomes.get(idx));
 }
 
 uint8_t world_storage::Section::getSkyLight(const Position &pos) const
