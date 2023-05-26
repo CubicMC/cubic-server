@@ -7,7 +7,8 @@
 #include <vector>
 
 #include "TickClock.hpp"
-#include "thread_pool/Pool.hpp"
+#include "options.hpp"
+#include "thread_pool/PriorityThreadPool.hpp"
 #include "types.hpp"
 #include "world_storage/LevelData.hpp"
 
@@ -19,39 +20,37 @@ class WorldGroup;
 
 constexpr int NB_SPAWN_CHUNKS = 19;
 
-class World {
+class World : public std::enable_shared_from_this<World> {
 public:
-    World(WorldGroup *worldGroup);
+    World(std::shared_ptr<WorldGroup> worldGroup);
+    virtual ~World() = default;
 
     virtual void tick();
     virtual void initialize();
     virtual void stop();
 
-    virtual bool isInitialized() const;
-    virtual WorldGroup *getWorldGroup() const;
-    virtual std::shared_ptr<Chat> getChat() const;
-    virtual std::vector<Entity *> getEntities() const;
-    [[nodiscard]] virtual std::vector<Player *> getPlayers() const;
-    virtual std::shared_ptr<Dimension> getDimension(const std::string_view &name) const;
-    virtual void forEachEntity(std::function<void(Entity *)> callback);
-    virtual void forEachEntityIf(std::function<void(Entity *)> callback, std::function<bool(const Entity *)> predicate);
-    virtual void forEachPlayer(std::function<void(Player *)> callback);
-    virtual void forEachPlayerIf(std::function<void(Player *)> callback, std::function<bool(const Entity *)> predicate);
-    virtual void forEachDimension(std::function<void(Dimension &)> callback);
-    virtual void forEachDimensionIf(std::function<void(Dimension &)> callback, std::function<bool(const Dimension &)> predicate);
+    NODISCARD virtual bool isInitialized() const;
+    NODISCARD virtual const std::shared_ptr<WorldGroup> getWorldGroup() const;
+    NODISCARD virtual std::shared_ptr<WorldGroup> getWorldGroup();
+    NODISCARD virtual const std::shared_ptr<Chat> getChat() const;
+    NODISCARD virtual std::shared_ptr<Chat> getChat();
+    NODISCARD virtual std::shared_ptr<Dimension> getDimension(const std::string_view &name);
+    NODISCARD virtual const std::shared_ptr<Dimension> getDimension(const std::string_view &name) const;
+    NODISCARD virtual std::unordered_map<std::string_view, std::shared_ptr<Dimension>> &getDimensions();
+    NODISCARD virtual const std::unordered_map<std::string_view, std::shared_ptr<Dimension>> &getDimensions() const;
 
-    virtual const world_storage::LevelData &getLevelData() const;
+    NODISCARD virtual const world_storage::LevelData &getLevelData() const;
     virtual void setLevelData(const world_storage::LevelData &value);
     virtual void updateTime();
     virtual void sendPlayerInfoAddPlayer(Player *);
     virtual void sendPlayerInfoRemovePlayer(const Player *current);
 
-    virtual thread_pool::Pool &getGenerationPool();
+    NODISCARD virtual thread_pool::PriorityThreadPool &getGenerationPool();
 
-    virtual Seed getSeed() const;
-    virtual uint8_t getRenderDistance() const;
-    virtual long getTime() const;
-    virtual long getAge() const;
+    NODISCARD virtual Seed getSeed() const;
+    NODISCARD virtual uint8_t getRenderDistance() const;
+    NODISCARD virtual long getTime() const;
+    NODISCARD virtual long getAge() const;
 
     /*
     **  Used in the /time command.
@@ -67,7 +66,7 @@ public:
 
 protected:
     std::shared_ptr<Chat> _chat;
-    WorldGroup *_worldGroup;
+    std::shared_ptr<WorldGroup> _worldGroup;
     std::unordered_map<std::string_view, std::shared_ptr<Dimension>> _dimensions;
     long _age;
     long _time;
@@ -75,7 +74,7 @@ protected:
     world_storage::LevelData _levelData;
     TickClock _timeUpdateClock;
     Seed _seed;
-    thread_pool::Pool _generationPool;
+    thread_pool::PriorityThreadPool _generationPool;
 };
 
 #endif // CUBICSERVER_WORLD_HPP

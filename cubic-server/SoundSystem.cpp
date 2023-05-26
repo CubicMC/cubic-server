@@ -1,10 +1,11 @@
 #include "SoundSystem.hpp"
 
+#include "Dimension.hpp"
 #include "Player.hpp"
 #include "World.hpp"
 #include "WorldGroup.hpp"
 
-SoundSystem::SoundSystem(const WorldGroup *group):
+SoundSystem::SoundSystem(const WorldGroup &group):
     _group(group)
 {
 }
@@ -17,13 +18,11 @@ void SoundSystem::tick()
         return;
     _sinceLastSE = 0;
     // TODO: play REAL sound effect
-    for (const auto &elm : _group->getWorlds()) {
-        for (auto entity : elm.second->getEntities()) {
-            auto player = dynamic_cast<Player *>(entity);
-            if (!player)
-                continue;
-
-            player->playSoundEffect(SoundsList::block_bell_use, player, SoundCategory::Ambient);
+    for (auto [_, world] : _group.getWorlds()) {
+        for (auto [_, dim] : world->getDimensions()) {
+            for (auto player : dim->getPlayers()) {
+                player->playSoundEffect(SoundsList::block_bell_use, *player, SoundCategory::Ambient);
+            }
         }
     }
 }

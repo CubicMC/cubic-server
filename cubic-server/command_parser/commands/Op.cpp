@@ -9,7 +9,7 @@
 
 using namespace command_parser;
 
-void Op::autocomplete(std::vector<std::string> &args, Player *invoker) const { }
+void Op::autocomplete(UNUSED std::vector<std::string> &args, UNUSED Player *invoker) const { }
 
 void Op::execute(std::vector<std::string> &args, Player *invoker) const
 {
@@ -28,19 +28,19 @@ void Op::execute(std::vector<std::string> &args, Player *invoker) const
 
     if (server->permissions.isOperator(args[0])) {
         if (invoker)
-            invoker->getDimension()->getWorld()->getChat()->sendSystemMessage(chat::Message(args[0] + " is already opped."), invoker);
+            invoker->getDimension()->getWorld()->getChat()->sendSystemMessage(chat::Message(args[0] + " is already opped."), *invoker);
         LINFO(args[0] + " is already opped.");
     } else {
         server->permissions.addOperator(args[0]);
         if (invoker)
-            invoker->getDimension()->getWorld()->getChat()->sendSystemMessage(chat::Message("opped " + args[0]), invoker);
+            invoker->getDimension()->getWorld()->getChat()->sendSystemMessage(chat::Message("opped " + args[0]), *invoker);
         LINFO("opped " << args[0]);
     }
 }
 
-void Op::help(std::vector<std::string> &args, Player *invoker) const
+void Op::help(UNUSED std::vector<std::string> &args, Player *invoker) const
 {
     if (invoker)
-        invoker->getDimension()->getWorld()->getChat()->sendSystemMessage("/op [<player>]", invoker);
+        invoker->getDimension()->getWorld()->getChat()->sendSystemMessage("/op [<player>]", *invoker);
     LINFO("/op [<player>]");
 }

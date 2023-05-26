@@ -8,10 +8,11 @@
 #include <thread>
 #include <vector>
 
-#include "thread_pool/Task.hpp"
+#include "options.hpp"
 #include "world_storage/ChunkColumn.hpp"
 #include "world_storage/Level.hpp"
 
+// TODO(huntears): Fix whatever this is
 constexpr int SEMAPHORE_MAX = 1000;
 
 class World;
@@ -20,36 +21,36 @@ class Entity;
 
 class Dimension {
 private:
-    struct ChunkRequest {
-        std::shared_ptr<thread_pool::Task> task;
-        std::vector<Player *> players;
-    };
+    using ChunkRequest = std::vector<std::weak_ptr<Player>>;
 
 public:
-    Dimension(World *world);
+    Dimension(std::shared_ptr<World> world);
+    virtual ~Dimension() = default;
     virtual void initialize();
     virtual void tick();
     virtual void stop();
 
-    [[nodiscard]] virtual bool isInitialized() const;
-    [[nodiscard]] virtual World *getWorld() const;
-    [[nodiscard]] virtual std::counting_semaphore<SEMAPHORE_MAX> &getDimensionLock();
-    [[nodiscard]] virtual std::vector<Player *> getPlayerList() const;
-    [[nodiscard]] virtual std::vector<Entity *> &getEntities();
-    [[nodiscard]] virtual Entity *getEntityByID(int32_t id);
+    NODISCARD virtual bool isInitialized() const;
+    NODISCARD virtual std::shared_ptr<World> getWorld();
+    NODISCARD virtual const std::shared_ptr<World> getWorld() const;
+    NODISCARD virtual std::counting_semaphore<SEMAPHORE_MAX> &getDimensionLock();
+    NODISCARD virtual std::vector<std::shared_ptr<Player>> &getPlayers();
+    NODISCARD virtual std::vector<std::shared_ptr<Entity>> &getEntities();
+    NODISCARD virtual const std::vector<std::shared_ptr<Player>> &getPlayers() const;
+    NODISCARD virtual const std::vector<std::shared_ptr<Entity>> &getEntities() const;
+    NODISCARD virtual std::shared_ptr<Entity> getEntityByID(int32_t id);
+    NODISCARD virtual const std::shared_ptr<Entity> getEntityByID(int32_t id) const;
 
-    virtual void removeEntity(Entity *entity);
-    virtual void addEntity(Entity *entity);
-    virtual void forEachEntity(std::function<void(Entity *)> callback);
-    virtual void forEachEntityIf(std::function<void(Entity *)> callback, std::function<bool(const Entity *)> predicate);
-    virtual void forEachPlayer(std::function<void(Player *)> callback);
-    virtual void forEachPlayerIf(std::function<void(Player *)> callback, std::function<bool(const Entity *)> predicate);
+    virtual void removeEntity(int32_t entity_id);
+    virtual void removePlayer(int32_t entity_id);
+    virtual void addEntity(std::shared_ptr<Entity> entity);
+    virtual void addPlayer(std::shared_ptr<Player> player);
 
     const world_storage::Level &getLevel() const;
-    world_storage::Level &getEditableLevel();
+    world_storage::Level &getLevel();
     virtual void generateChunk(int x, int z);
-    virtual void blockUpdate(Position position, int32_t id);
-    virtual void spawnPlayer(Player *player);
+    virtual void updateBlock(Position position, int32_t id);
+    virtual void spawnPlayer(Player &player);
 
     /**
      * @brief Check if a chunk is loaded
@@ -68,7 +69,7 @@ public:
      * @param pos Position2D
      * @param player Player *
      */
-    virtual void removePlayerFromLoadingChunk(const Position2D &pos, Player *player);
+    virtual void removePlayerFromLoadingChunk(const Position2D &pos, std::shared_ptr<Player> player);
 
     /**
      * @brief Get a loaded chunk
@@ -80,6 +81,7 @@ public:
      * @return world_storage::ChunkColumn&
      */
     virtual world_storage::ChunkColumn &getChunk(int x, int z);
+    virtual const world_storage::ChunkColumn &getChunk(int x, int z) const;
 
     /**
      * @brief Loads a chunk from the world save or generates it if it doesn't exist
@@ -88,17 +90,17 @@ public:
      *
      * @param x int32_t
      * @param z int32_t
-     * @return size_t a job id,
      */
-    virtual std::shared_ptr<thread_pool::Task> loadOrGenerateChunk(int x, int z, Player *player);
+    virtual void loadOrGenerateChunk(int x, int z, std::shared_ptr<Player> player);
 
 protected:
     virtual void _run();
 
 protected:
     std::counting_semaphore<SEMAPHORE_MAX> _dimensionLock;
-    std::vector<Entity *> _entities;
-    World *_world;
+    std::vector<std::shared_ptr<Entity>> _entities;
+    std::vector<std::shared_ptr<Player>> _players;
+    std::shared_ptr<World> _world;
     std::mutex _processingMutex;
     std::atomic<bool> _isInitialized;
     std::atomic<bool> _isRunning;

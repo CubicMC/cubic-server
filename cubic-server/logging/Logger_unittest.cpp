@@ -86,6 +86,8 @@ TEST(Logging, display_specification_level_in_file)
     std::string line;
     std::getline(file, line);
 
+    std::cout << "line = " << line << std::endl;
+
     EXPECT_NE(line.find("test"), std::string::npos);
     EXPECT_NE(output.find("test"), std::string::npos);
 
@@ -125,7 +127,8 @@ TEST(Logging, display_specification_level_in_console)
     std::string filename = TimeFormatter::getTime("YYYY-MM-DD-1.log");
 
     testing::internal::CaptureStdout();
-    Logger::getInstance()->debug("test");
+    auto instance = logging::Logger::getInstance();
+    instance->debug("test");
     std::string output = testing::internal::GetCapturedStdout();
 
     std::fstream file("logs/" + filename, std::ios::in);
@@ -135,10 +138,10 @@ TEST(Logging, display_specification_level_in_console)
     EXPECT_NE(line.find("test"), std::string::npos);
     EXPECT_NE(output.find("test"), std::string::npos);
 
-    Logger::getInstance()->unsetDisplaySpecificationLevelInConsole(LogLevel::DEBUG);
+    instance->unsetDisplaySpecificationLevelInConsole(LogLevel::DEBUG);
 
     testing::internal::CaptureStdout();
-    Logger::getInstance()->debug("not_a_test");
+    instance->debug("not_a_test");
     output = testing::internal::GetCapturedStdout();
     std::getline(file, line);
 
@@ -146,7 +149,7 @@ TEST(Logging, display_specification_level_in_console)
     EXPECT_EQ(output.find("not_a_test"), std::string::npos);
 
     testing::internal::CaptureStdout();
-    Logger::getInstance()->fatal("fatal_test");
+    instance->fatal("fatal_test");
     output = testing::internal::GetCapturedStdout();
     std::getline(file, line);
 

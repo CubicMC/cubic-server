@@ -59,7 +59,7 @@ public:
     const LogLevel &getLevel() const;
     const std::string &getMessage() const;
     const std::time_t &getTime() const;
-    const int getMillis() const;
+    int getMillis() const;
 
 private:
     const LogLevel _level;
@@ -102,7 +102,7 @@ public:
     const std::unordered_map<LogLevel, std::string> &getDisplaySpecificationLevelInConsole() const;
 
     const std::queue<LogMessage> &getLogs() const;
-    const int getLogBufferSize() const;
+    int getLogBufferSize() const;
     void setLogBufferSize(int size);
 
 private:
@@ -116,7 +116,8 @@ private:
     std::string getFilePath() const;
 
     // Stream to the current log file
-    std::fstream _fileStream;
+    std::ofstream _fileStream;
+    std::ofstream _lattestStream;
 
     // Handler for files and folders
     FileAndFolderHandler _fileAndFolderHandler;
@@ -131,7 +132,7 @@ private:
 
     // Buffer to store logs before the file is opened
     std::queue<LogMessage> _logBuffer;
-    int _bufferSize;
+    uint64_t _bufferSize;
 
     std::mutex _loggerMutex;
 };

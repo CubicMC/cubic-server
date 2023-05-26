@@ -1,6 +1,7 @@
 #ifndef CUBICSERVER_COMMANDPARSER_COMMANDS_BASE_HPP
 #define CUBICSERVER_COMMANDPARSER_COMMANDS_BASE_HPP
 
+#include <cstdint>
 #include <string>
 #include <vector>
 
@@ -13,6 +14,7 @@ struct CommandBase {
         _needOp(needOp)
     {
     }
+    virtual ~CommandBase() = default;
 
     virtual void autocomplete(std::vector<std::string> &args, Player *invoker) const = 0;
     virtual void execute(std::vector<std::string> &args, Player *invoker) const = 0;

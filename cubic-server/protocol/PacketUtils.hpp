@@ -1,6 +1,7 @@
 #ifndef CUBICSERVER_PROTOCOL_PACKETUTILS_HPP
 #define CUBICSERVER_PROTOCOL_PACKETUTILS_HPP
 
+#include "Server.hpp"
 #include <cstdint>
 #include <vector>
 
@@ -10,7 +11,7 @@
 namespace protocol {
 
 template<typename H>
-constexpr uint8_t *parse(uint8_t *&begin, uint8_t *end, H &out)
+constexpr uint8_t *parse(uint8_t *&begin, UNUSED uint8_t *end, UNUSED H &out)
 {
     return begin;
 }
@@ -23,12 +24,12 @@ constexpr uint8_t *parse(uint8_t *&begin, uint8_t *end, H &out, F (*parser)(uint
     return parse(begin, end, out, args...);
 }
 
-constexpr void serialize(std::vector<uint8_t> &out) { }
+constexpr void serialize(UNUSED std::vector<uint8_t> &out) { }
 
 template<typename H, typename F, typename... Args>
-constexpr void serialize(std::vector<uint8_t> &out, const H &data, void (*serializer)(std::vector<uint8_t> &, const F &), Args... args)
+constexpr void serialize(std::vector<uint8_t> &out, const H &data, void (*serializer)(std::vector<uint8_t> &, const F &), const Args &...args)
 {
-    serializer(out, (F) data);
+    serializer(out, (const F &) data);
     return serialize(out, args...);
 }
 

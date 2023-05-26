@@ -25,13 +25,11 @@ generation::Generator::GenerationNoise generation::Generator::getNoise(positionT
     // noise.noise3D.humidity = _noiseMaker.octave3D_11(_x, _z, _y, octaves);
     noise.noise3D.density = _noiseMaker.octave3D_11(_x, _z, _y, octaves);
 
-    // Cache, calling it here because the next line create it if it doesn't exist
-    bool cached2D = isCached2D(x, z);
-
+    bool is2DCached = isCached2D(x, z);
     _noiseCache[x][z].second[y] = noise.noise3D;
 
     // 2D noise
-    if (cached2D) {
+    if (is2DCached) {
         noise.noise2D = _noiseCache[x][z].first;
         return noise;
     }
@@ -42,6 +40,7 @@ generation::Generator::GenerationNoise generation::Generator::getNoise(positionT
     // noise.noise2D.weirdness = _noiseMaker.octave2D_11(_x, _z, octaves);
 
     _noiseCache[x][z].first = noise.noise2D;
+    noise.noise3D = _noiseCache[x][z].second[y];
 
     return noise;
 }

@@ -15,6 +15,7 @@
 #include "protocol/ParseExceptions.hpp"
 #include "protocol/Structures.hpp"
 #include "types.hpp"
+#include "world_storage/DynamicStorage.hpp"
 
 namespace protocol {
 constexpr void addByte(std::vector<uint8_t> &out, const uint8_t &data) { out.push_back(data); }
@@ -96,18 +97,24 @@ constexpr void addVarLong(std::vector<uint8_t> &out, const int64_t &data)
 
 constexpr void addFloat(std::vector<uint8_t> &out, const float &data)
 {
-    // addInt(out, static_cast<int32_t>(data));
-    const uint8_t *p = (const uint8_t *) &data;
+    union {
+        float f;
+        uint8_t u[4];
+    } d;
+    d.f = data;
     for (int i = 3; i >= 0; i--)
-        out.push_back(p[i]);
+        out.push_back(d.u[i]);
 }
 
 constexpr void addDouble(std::vector<uint8_t> &out, const double &data)
 {
-    // addLong(out, static_cast<int64_t>(data));
-    const uint8_t *p = (const uint8_t *) &data;
+    union {
+        double f;
+        uint8_t u[8];
+    } d;
+    d.f = data;
     for (int i = 7; i >= 0; i--)
-        out.push_back(p[i]);
+        out.push_back(d.u[i]);
 }
 
 // Add string with a varint length
@@ -146,7 +153,7 @@ constexpr void addSlot(std::vector<uint8_t> &out, const Slot &data)
     }
 }
 
-template<IsNbt T>
+template<isBaseOf<nbt::Base> T>
 constexpr void addNBT(std::vector<uint8_t> &out, const T &data)
 {
     data.serialize(out);
@@ -161,8 +168,26 @@ constexpr void addUUID(std::vector<uint8_t> &out, const u128 &data)
     addLong(out, data.least);
 }
 
+template<typename T, void (*add)(std::vector<uint8_t> &, const T &), uint64_t ArraySize>
+constexpr void addArray(std::vector<uint8_t> &out, const world_storage::DynamicStorage<T, ArraySize> &data)
+{
+    addVarInt(out, data.data().size());
+
+    for (const T &i : data.data())
+        add(out, i);
+}
+
 template<typename T, void (*add)(std::vector<uint8_t> &, const T &)>
 constexpr void addArray(std::vector<uint8_t> &out, const std::vector<T> &data)
+{
+    addVarInt(out, data.size());
+
+    for (const T &i : data)
+        add(out, i);
+}
+
+template<typename T, void (*add)(std::vector<uint8_t> &, const T &), uint64_t Size>
+constexpr void addArray(std::vector<uint8_t> &out, const std::array<T, Size> &data)
 {
     addVarInt(out, data.size());
 

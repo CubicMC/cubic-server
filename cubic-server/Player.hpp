@@ -11,6 +11,8 @@
 #include "protocol/ServerPackets.hpp"
 #include "types.hpp"
 #include "world_storage/ChunkColumn.hpp"
+#include <compare>
+#include <memory>
 
 class Client;
 // class Entity;
@@ -26,12 +28,12 @@ public:
     };
 
 public:
-    Player(Client *cli, std::shared_ptr<Dimension> dim, u128 uuid, const std::string &username);
+    Player(std::weak_ptr<Client> cli, std::shared_ptr<Dimension> dim, u128 uuid, const std::string &username);
     ~Player() override;
 
     void tick() override;
 
-    Client *getClient() const;
+    std::weak_ptr<Client> getClient() const;
     const std::string &getUsername() const;
     const u128 &getUuid() const;
     uint16_t getHeldItem() const;
@@ -56,6 +58,7 @@ public:
     void sendLoginPlay(const protocol::LoginPlay &packet);
     void sendPlayerInfoUpdate(const protocol::PlayerInfoUpdate &data);
     void sendPlayerInfoRemove(const protocol::PlayerInfoRemove &data);
+    void sendSpawnEntity(const protocol::SpawnEntity &data);
     void sendSpawnPlayer(const protocol::SpawnPlayer &data);
     void sendEntityVelocity(const protocol::EntityVelocity &data);
     void sendHealth(void);
@@ -64,11 +67,11 @@ public:
     void sendSystemChatMessage(const protocol::SystemChatMessage &packet);
     void sendWorldEvent(const protocol::WorldEvent &packet);
     void playSoundEffect(SoundsList sound, FloatingPosition position, SoundCategory category = SoundCategory::Master);
-    void playSoundEffect(SoundsList sound, const Entity *entity, SoundCategory category = SoundCategory::Master);
+    void playSoundEffect(SoundsList sound, const Entity &entity, SoundCategory category = SoundCategory::Master);
     void playCustomSound(std::string sound, FloatingPosition position, SoundCategory category = SoundCategory::Master);
     void stopSound(uint8_t flags = 0, SoundCategory category = SoundCategory::Ambient, std::string sound = "");
     void sendKeepAlive(long id);
-    void sendSynchronizePosition(Vector3<double> pos);
+    void sendSynchronizePosition(const Vector3<double> &pos);
     void sendSwingArm(bool mainHand, int32_t swingerId);
     void sendTeleportEntity(int32_t id, const Vector3<double> &pos);
     void sendRemoveEntities(const std::vector<int32_t> &entities);
@@ -85,6 +88,7 @@ public:
     void sendPlayerAbilities(const protocol::PlayerAbilitiesClient &packet);
     void sendFeatureFlags(const protocol::FeatureFlags &packet);
     void sendServerData(const protocol::ServerData &packet);
+    void sendEntityAnimation(protocol::EntityAnimation::ID animId, int32_t entityID);
     void sendSetContainerContent(const protocol::SetContainerContent &packet);
     void sendUpdateRecipes(const protocol::UpdateRecipes &packet);
     void sendUpdateTags(const protocol::UpdateTags &packet);
@@ -155,13 +159,14 @@ private:
 
 private:
     void _processKeepAlive();
+    void _tickPosition();
     void _updateRenderedChunks(const Position2D &oldChunkPos, const Position2D &newChunkPos);
     void _continueLoginSequence();
     void _unloadChunk(int32_t x, int32_t z);
     void _foodTick();
     void _eat(ItemId itemId);
 
-    Client *_cli;
+    std::weak_ptr<Client> _cli;
     std::string _username;
     std::string _uuidString;
     u128 _uuid;

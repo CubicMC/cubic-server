@@ -7,13 +7,13 @@ class WorldGroup;
 
 class SoundSystem {
 public:
-    SoundSystem(const WorldGroup *group);
+    SoundSystem(const WorldGroup &group);
     ~SoundSystem() = default;
 
     void tick();
 
 private:
-    const WorldGroup *_group;
+    const WorldGroup &_group;
     uint32_t _sinceLastSE = 0;
 };
 

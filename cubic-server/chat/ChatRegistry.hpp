@@ -10,7 +10,7 @@
 
 namespace chat::_details {
 
-nbt::Compound *getChatRegistry();
+std::shared_ptr<nbt::Compound> getChatRegistry();
 
 class ChatType {
 public:
@@ -32,7 +32,7 @@ public:
     constexpr ChatType &chatKey(const std::string &key);
     constexpr ChatType &narrateKey(const std::string &key);
 
-    nbt::Compound *toNBT() const;
+    std::shared_ptr<nbt::Compound> toNBT() const;
 
 private:
     int32_t _id;
@@ -48,7 +48,7 @@ public:
 
     constexpr Registry &addChatType(const ChatType &chatType);
 
-    nbt::Compound *toNBT() const;
+    std::shared_ptr<nbt::Compound> toNBT() const;
 
 private:
     std::vector<ChatType> _chatTypes;

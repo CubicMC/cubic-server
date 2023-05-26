@@ -4,6 +4,7 @@
 #include <iostream>
 #include <unistd.h>
 
+#include "Dimension.hpp"
 #include "Player.hpp"
 #include "Server.hpp"
 #include "World.hpp"
@@ -36,31 +37,22 @@ bool PlayersInterface::onTimeout()
 {
     std::string temp = "";
     std::string players;
-    int nbPlayers = 0;
-    std::vector<Player *> playersListCopy; // How can I get it ?
+    int nb_players = 0;
 
-    for (auto world : Server::getInstance()->getWorldGroup("default")->getWorlds()) {
-        if (world.second->getPlayers().size() != 0) {
-            if (playersListCopy.size() == 0) {
-                for (auto player : world.second->getPlayers()) {
-                    playersListCopy.push_back(player);
+    for (auto [_, worldGroup] : Server::getInstance()->getWorldGroups()) {
+        for (auto [_, world] : worldGroup->getWorlds()) {
+            for (auto [_, dim] : world->getDimensions()) {
+                for (auto player : dim->getPlayers()) {
+                    temp += player->getUsername() + "\n";
+                    nb_players++;
                 }
-            } else {
-                playersListCopy.insert(playersListCopy.end(), world.second->getPlayers().begin(), world.second->getPlayers().end());
             }
-        }
-    }
-
-    if (playersListCopy.size() != 0) {
-        for (auto player : playersListCopy) {
-            temp += player->getUsername() + "\n";
-            nbPlayers = nbPlayers + 1;
         }
     }
 
     if (_players->get_text().raw() != temp) {
         this->_players->set_text(temp.c_str());
-        this->_nbPlayers = "Players : " + std::to_string(nbPlayers);
+        this->_nbPlayers = "Players : " + std::to_string(nb_players);
     }
 
     return true;

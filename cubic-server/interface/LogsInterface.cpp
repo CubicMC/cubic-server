@@ -147,7 +147,7 @@ void LogsInterface::_scrollToEnd()
 void LogsInterface::_onFilterSelected(logging::LogLevel logLevel)
 {
     std::string logLevelFilter = logging::levelToString(logLevel);
-    _selectedFilter.set_text(logLevelFilter + "has been selected. Only " + logLevelFilter + "messages are shown.");
+    _selectedFilter.set_text(std::string(logLevelFilter + std::string("has been selected. Only ") + logLevelFilter + std::string("messages are shown.")).c_str());
     _reset.set_sensitive(true);
     _selectedLogLevel = logLevel;
 }

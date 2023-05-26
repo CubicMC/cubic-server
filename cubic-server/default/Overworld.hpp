@@ -7,10 +7,12 @@
 
 class Overworld : public Dimension {
 public:
-    Overworld(World *world):
+    Overworld(std::shared_ptr<World> world):
         Dimension(world)
     {
     }
+    ~Overworld() override = default;
+
     void tick() override;
     void initialize() override;
     void stop() override;

@@ -5,10 +5,12 @@
 
 class TheEnd : public Dimension {
 public:
-    TheEnd(World *world):
+    TheEnd(std::shared_ptr<World> world):
         Dimension(world)
     {
     }
+    ~TheEnd() override = default;
+
     void tick() override;
     void initialize() override;
 };
