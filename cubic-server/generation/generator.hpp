@@ -60,7 +60,6 @@ protected:
                 GenerationNoise2D, std::unordered_map<positionType, GenerationNoise3D> // y
                 >>>
         _noiseCache;
-    std::mutex _noiseCacheMutex;
 };
 }
 

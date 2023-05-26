@@ -5,11 +5,7 @@ generation::Generator::Generator(Seed seed):
 {
 }
 
-bool generation::Generator::isCached(positionType x, positionType y, positionType z)
-{
-    std::lock_guard<std::mutex> _(_noiseCacheMutex);
-    return isCached2D(x, z) && _noiseCache[x][z].second.contains(y);
-}
+bool generation::Generator::isCached(positionType x, positionType y, positionType z) { return isCached2D(x, z) && _noiseCache[x][z].second.contains(y); }
 
 bool generation::Generator::isCached2D(positionType x, positionType z) { return _noiseCache.contains(x) && _noiseCache[x].contains(z); }
 
@@ -29,9 +25,7 @@ generation::Generator::GenerationNoise generation::Generator::getNoise(positionT
     noise.noise3D.humidity = _noiseMaker.octave3D_11(_x, _z, _y, octaves);
     noise.noise3D.density = _noiseMaker.octave3D_11(_x, _z, _y, octaves);
 
-    _noiseCacheMutex.lock();
     bool is2DCached = isCached2D(x, z);
-    _noiseCacheMutex.unlock();
     _noiseCache[x][z].second[y] = noise.noise3D;
 
     // 2D noise
