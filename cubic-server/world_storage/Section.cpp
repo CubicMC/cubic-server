@@ -113,12 +113,21 @@ void world_storage::Section::recalculateBlockLightCount()
 
 void world_storage::Section::recalculateSkyLight()
 {
-    for (auto x = 0; x < SECTION_WIDTH; x++) {
-        for (auto y = 0; y < SECTION_WIDTH; y++) {
-            for (auto z = 0; z < SECTION_WIDTH; z++)
-                setSkyLight({x, y, z}, 15);
-        }
+    // huntears:
+    // So... I know how this looks, but hear me out, this function took 50% of
+    // the time spent in region loading. So until we have a proper way to
+    // calculate skyLights this will do :)
+    for (auto &x : _skyLight.data()) {
+        x = 0xFF;
     }
+    return;
+
+    // for (auto x = 0; x < SECTION_WIDTH; x++) {
+    //     for (auto y = 0; y < SECTION_WIDTH; y++) {
+    //         for (auto z = 0; z < SECTION_WIDTH; z++)
+    //             setSkyLight({x, y, z}, 15);
+    //     }
+    // }
 }
 
 void world_storage::Section::recalculateBlockLight()
