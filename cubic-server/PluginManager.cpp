@@ -19,7 +19,7 @@ PluginManager::~PluginManager()
 
 void PluginManager::loadPlugin(std::string filepath)
 {
-    const std::array<const char *, 21> EventKeyArray = {
+    static const std::array<const char *, 21> EventKeyArray = {
         EventKey::initialize,
         EventKey::destroy,
         EventKey::onPlayerJoin,

@@ -28,25 +28,25 @@ class Vector3;
 namespace EventType {
     typedef void (*initialize)(PluginInterface *interface);
     typedef void (*destroy)(PluginInterface *interface);
-    typedef void (*onPlayerJoin)(PluginInterface *interface, Player *player);
-    typedef void (*onPlayerLeave)(PluginInterface *interface, Player *player);
-    typedef void (*onPlayerChat)(PluginInterface *interface, Player *player, Chat *chat, std::string message);
-    typedef void (*onEntitySpawn)(PluginInterface *interface, Entity *entity);
-    typedef void (*onEntityMove)(PluginInterface *interface, Entity *entity, Vector3<double> *from, Vector3<double> *to);
-    typedef void (*onEntityRotate)(PluginInterface *interface, Entity *entity, Vector3<uint8_t> *from, Vector3<uint8_t> *to);
-    typedef void (*onEntityInteractEntity)(PluginInterface *interface, Entity *source, Entity *target);
-    typedef void (*onEntityInteractBlock)(PluginInterface *interface, Entity *entity, Block *block);
-    typedef void (*onEntityDamage)(PluginInterface *interface, Entity *source, float amount);
-    typedef void (*onEntityUse)(PluginInterface *interface, Entity *entity, Item *item);
-    typedef void (*onBlockPlace)(PluginInterface *interface, Block *block, Vector3<int> *position);
-    typedef void (*onBlockDestroy)(PluginInterface *interface, Block *block, Vector3<int> *position);
-    typedef void (*onBlockInteract)(PluginInterface *interface, Block *block, Vector3<int> *position, Entity *entity);
-    typedef void (*onInventoryOpen)(PluginInterface *interface, Player *player, Inventory *inventory);
-    typedef void (*onInventoryClose)(PluginInterface *interface, Player *player, Inventory *inventory);
-    typedef void (*onInventoryChange)(PluginInterface *interface, Inventory *inventory);
-    typedef void (*onWorldLoad)(PluginInterface *interface, World *world);
-    typedef void (*onDimensionLoad)(PluginInterface *interface, Dimension *dimension);
-    typedef void (*onChunkLoad)(PluginInterface *interface, Chunk *chunk);
+    typedef bool (*onPlayerJoin)(PluginInterface *interface, Player *player);
+    typedef bool (*onPlayerLeave)(PluginInterface *interface, Player *player);
+    typedef bool (*onPlayerChat)(PluginInterface *interface, Player *player, Chat *chat, std::string message);
+    typedef bool (*onEntitySpawn)(PluginInterface *interface, Entity *entity);
+    typedef bool (*onEntityMove)(PluginInterface *interface, Entity *entity, Vector3<double> *from, Vector3<double> *to);
+    typedef bool (*onEntityRotate)(PluginInterface *interface, Entity *entity, Vector3<uint8_t> *from, Vector3<uint8_t> *to);
+    typedef bool (*onEntityInteractEntity)(PluginInterface *interface, Entity *source, Entity *target);
+    typedef bool (*onEntityInteractBlock)(PluginInterface *interface, Entity *entity, Block *block);
+    typedef bool (*onEntityDamage)(PluginInterface *interface, Entity *source, float amount);
+    typedef bool (*onEntityUse)(PluginInterface *interface, Entity *entity, Item *item);
+    typedef bool (*onBlockPlace)(PluginInterface *interface, Block *block, Vector3<int> *position);
+    typedef bool (*onBlockDestroy)(PluginInterface *interface, Block *block, Vector3<int> *position);
+    typedef bool (*onBlockInteract)(PluginInterface *interface, Block *block, Vector3<int> *position, Entity *entity);
+    typedef bool (*onInventoryOpen)(PluginInterface *interface, Player *player, Inventory *inventory);
+    typedef bool (*onInventoryClose)(PluginInterface *interface, Player *player, Inventory *inventory);
+    typedef bool (*onInventoryChange)(PluginInterface *interface, Inventory *inventory);
+    typedef bool (*onWorldLoad)(PluginInterface *interface, World *world);
+    typedef bool (*onDimensionLoad)(PluginInterface *interface, Dimension *dimension);
+    typedef bool (*onChunkLoad)(PluginInterface *interface, Chunk *chunk);
 
     union AllTypes {
         void *rawptr;
@@ -78,27 +78,27 @@ namespace EventType {
 };
 
 namespace EventKey {
-    static const char *initialize = "initialize";
-    static const char *destroy = "destroy";
-    static const char *onPlayerJoin = "onPlayerJoin";
-    static const char *onPlayerLeave = "onPlayerLeave";
-    static const char *onPlayerChat = "onPlayerChat";
-    static const char *onEntitySpawn = "onEntitySpawn";
-    static const char *onEntityMove = "onEntityMove";
-    static const char *onEntityRotate = "onEntityRotate";
-    static const char *onEntityInteractEntity = "onEntityInteractEntity";
-    static const char *onEntityInteractBlock = "onEntityInteractBlock";
-    static const char *onEntityDamage = "onEntityDamage";
-    static const char *onEntityUse = "onEntityUse";
-    static const char *onBlockPlace = "onBlockPlace";
-    static const char *onBlockDestroy = "onBlockDestroy";
-    static const char *onBlockInteract = "onBlockInteract";
-    static const char *onInventoryOpen = "onInventoryOpen";
-    static const char *onInventoryClose = "onInventoryClose";
-    static const char *onInventoryChange = "onInventoryChange";
-    static const char *onWorldLoad = "onWorldLoad";
-    static const char *onDimensionLoad = "onDimensionLoad";
-    static const char *onChunkLoad = "onChunkLoad";
+    constexpr char initialize[] = "initialize";
+    constexpr char destroy[] = "destroy";
+    constexpr char onPlayerJoin[] = "onPlayerJoin";
+    constexpr char onPlayerLeave[] = "onPlayerLeave";
+    constexpr char onPlayerChat[] = "onPlayerChat";
+    constexpr char onEntitySpawn[] = "onEntitySpawn";
+    constexpr char onEntityMove[] = "onEntityMove";
+    constexpr char onEntityRotate[] = "onEntityRotate";
+    constexpr char onEntityInteractEntity[] = "onEntityInteractEntity";
+    constexpr char onEntityInteractBlock[] = "onEntityInteractBlock";
+    constexpr char onEntityDamage[] = "onEntityDamage";
+    constexpr char onEntityUse[] = "onEntityUse";
+    constexpr char onBlockPlace[] = "onBlockPlace";
+    constexpr char onBlockDestroy[] = "onBlockDestroy";
+    constexpr char onBlockInteract[] = "onBlockInteract";
+    constexpr char onInventoryOpen[] = "onInventoryOpen";
+    constexpr char onInventoryClose[] = "onInventoryClose";
+    constexpr char onInventoryChange[] = "onInventoryChange";
+    constexpr char onWorldLoad[] = "onWorldLoad";
+    constexpr char onDimensionLoad[] = "onDimensionLoad";
+    constexpr char onChunkLoad[] = "onChunkLoad";
 }
 
 #define onEvent(plugin_manager, key, ...) for (const auto &event : plugin_manager._events[EventKey::key]) { \
