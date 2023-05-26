@@ -441,10 +441,10 @@ void ChunkColumn::_generateVegetalDecoration(generation::Generator &generator)
 {
     std::lock_guard<std::mutex> _(this->_generationLock);
     // GET_NEIGHBOURS()
-    // generation::trees::OakTree oakTree(shared_from_this(), generator);
-    // oakTree.getPosForTreeGeneration();
-    // while (!oakTree.filterTreeGrowSpace().empty())
-    //     oakTree.generateTree();
+    generation::trees::OakTree oakTree(*this, generator);
+    oakTree.getPosForTreeGeneration();
+    while (!oakTree.filterTreeGrowSpace().empty())
+        oakTree.generateTree();
 
     // RELEASE_NEIGHBOURS()
     _currentState = GenerationState::VEGETAL_DECORATION;

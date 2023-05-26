@@ -6,13 +6,12 @@
 
 #include "generation/generator.hpp"
 #include "types.hpp"
+#include "world_storage/ChunkColumn.hpp"
 
-namespace world_storage {
-class ChunkColumn;
-}
 namespace generation::trees {
-struct Tree {
-    Tree(std::shared_ptr<world_storage::ChunkColumn> chunk, generation::Generator &generator):
+class Tree {
+public:
+    Tree(world_storage::ChunkColumn &chunk, generation::Generator &generator):
         _chunk(chunk),
         _generator(generator)
     {
@@ -21,9 +20,14 @@ struct Tree {
     virtual std::deque<Position> &filterTreeGrowSpace() = 0;
     virtual void generateTree() = 0;
 
-    std::shared_ptr<world_storage::ChunkColumn> _chunk;
+protected:
+    virtual const std::vector<generation::Generator::TreeBlock> getTree(const Position &pos) = 0;
+    virtual const std::vector<generation::Generator::TreeBlock> getTree(Generator::positionType x, Generator::positionType y, Generator::positionType z) = 0;
+
+    world_storage::ChunkColumn &_chunk;
     generation::Generator &_generator;
     std::deque<Position> _positions;
+    generation::Generator::TreeSize _treeSize;
 };
 } // namespace generation::trees
 

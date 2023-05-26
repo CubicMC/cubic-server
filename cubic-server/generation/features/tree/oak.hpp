@@ -1,11 +1,13 @@
 #ifndef CUBICSERVER_GENERATION_FEATURES_TREE_OAK_HPP
 #define CUBICSERVER_GENERATION_FEATURES_TREE_OAK_HPP
 
+#include "generation/generator.hpp"
 #include "tree.hpp"
 
 namespace generation::trees {
-struct OakTree : public Tree {
-    OakTree(std::shared_ptr<world_storage::ChunkColumn> chunk, generation::Generator &generator):
+class OakTree : public Tree {
+public:
+    OakTree(world_storage::ChunkColumn &chunk, generation::Generator &generator):
         Tree(chunk, generator)
     {
     }
@@ -13,6 +15,11 @@ struct OakTree : public Tree {
     std::deque<Position> &getPosForTreeGeneration() override;
     std::deque<Position> &filterTreeGrowSpace() override;
     void generateTree() override;
+
+private:
+    const std::vector<Generator::TreeBlock> getTree(const Position &pos) override;
+    const std::vector<Generator::TreeBlock> getTree(Generator::positionType x, Generator::positionType y, Generator::positionType z) override;
+    generation::Generator::TreeSize _treeSize = {4, 7};
 };
 } // namespace generation::trees
 
