@@ -14,7 +14,7 @@ public:
     void initialize() override;
     void stop() override;
 
-    std::unique_ptr<world_storage::Persistence> persistence;
+    world_storage::Persistence persistence;
 };
 
 #endif // CUBICSERVER_DEFAULT_DEFAULTWORLD_HPP

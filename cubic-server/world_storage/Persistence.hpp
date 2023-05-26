@@ -21,9 +21,7 @@ namespace world_storage {
  */
 class Persistence {
 private:
-    const std::string _folder;
-
-    std::weak_ptr<World> _world;
+    std::string _folder;
 
     /**
      * @brief Global lock for any persistence actions
@@ -31,18 +29,10 @@ private:
      */
     std::mutex accessMutex;
 
-    /**
-     * @brief Opens a gz compressed file and uncompresses it
-     *
-     * @param filepath File to read from
-     * @param data Output data vector
-     */
-    void uncompressFile(const std::string &filepath, std::vector<uint8_t> &data);
-
 public:
     std::vector<Position2D> regionStore; // TODO(huntears): Get proper getter/setter
 
-    Persistence(std::weak_ptr<World> world, const std::string &folder);
+    Persistence(const std::string &folder);
 
     /**
      * @brief Loads the level.dat from disk

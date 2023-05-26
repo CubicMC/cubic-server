@@ -66,7 +66,7 @@ void Overworld::stop()
 void Overworld::generateChunk(int x, int z)
 {
     auto world = std::dynamic_pointer_cast<DefaultWorld>(_world);
-    if (world->persistence->isChunkLoaded(*this, x, z)) {
+    if (world->persistence.isChunkLoaded(*this, x, z)) {
         LDEBUG("Chunk loaded ", x, " ", z);
         return;
     }

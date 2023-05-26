@@ -23,24 +23,53 @@
 #include <stdexcept>
 #include <string>
 #include <string_view>
+#include <sys/stat.h>
 #include <vector>
 #include <zlib.h>
 
 // TODO(huntears): Add better error messages
-#define GET_VALUE(type, dst, src, root)                                        \
-    do {                                                                       \
-        auto __tmp = root->getValue(src);                                      \
-        if (!__tmp || __tmp->getType() != nbt::TagType::type)                  \
-            throw std::runtime_error("");                                      \
-        dest->dst = (std::dynamic_pointer_cast<nbt::type>(__tmp))->getValue(); \
+#define GET_VALUE(t, type_accessor, dst, src, root)    \
+    do {                                               \
+        auto *__tmp = nbt_tag_compound_get(root, src); \
+        assert(__tmp);                                 \
+        assert(__tmp->type == t);                      \
+        dest->dst = __tmp->type_accessor.value;        \
     } while (0)
 
-#define GET_VALUE_TO(type, dst, src, root, dstroot)                              \
-    do {                                                                         \
-        auto __tmp = root->getValue(src);                                        \
-        if (!__tmp || __tmp->getType() != nbt::TagType::type)                    \
-            throw std::runtime_error("");                                        \
-        dstroot.dst = (std::dynamic_pointer_cast<nbt::type>(__tmp))->getValue(); \
+#define GET_VALUE_BYTE(dst, src, root) GET_VALUE(NBT_TYPE_BYTE, tag_byte, dst, src, root)
+#define GET_VALUE_INT(dst, src, root) GET_VALUE(NBT_TYPE_INT, tag_int, dst, src, root)
+#define GET_VALUE_SHORT(dst, src, root) GET_VALUE(NBT_TYPE_SHORT, tag_short, dst, src, root)
+#define GET_VALUE_LONG(dst, src, root) GET_VALUE(NBT_TYPE_LONG, tag_long, dst, src, root)
+#define GET_VALUE_FLOAT(dst, src, root) GET_VALUE(NBT_TYPE_FLOAT, tag_float, dst, src, root)
+#define GET_VALUE_DOUBLE(dst, src, root) GET_VALUE(NBT_TYPE_DOUBLE, tag_double, dst, src, root)
+#define GET_VALUE_STRING(dst, src, root)                                          \
+    do {                                                                          \
+        auto *__tmp = nbt_tag_compound_get(root, src);                            \
+        assert(__tmp);                                                            \
+        assert(__tmp->type == NBT_TYPE_STRING);                                   \
+        dest->dst = std::string(__tmp->tag_string.value, __tmp->tag_string.size); \
+    } while (0)
+
+#define GET_VALUE_TO(t, type_accessor, dst, src, root, dstroot) \
+    do {                                                        \
+        auto *__tmp = nbt_tag_compound_get(root, src);          \
+        assert(__tmp);                                          \
+        assert(__tmp->type == t);                               \
+        dstroot.dst = __tmp->type_accessor.value;               \
+    } while (0)
+
+#define GET_VALUE_TO_BYTE(dst, src, root, dstroot) GET_VALUE_TO(NBT_TYPE_BYTE, tag_byte, dst, src, root, dstroot)
+#define GET_VALUE_TO_INT(dst, src, root, dstroot) GET_VALUE_TO(NBT_TYPE_INT, tag_int, dst, src, root, dstroot)
+#define GET_VALUE_TO_SHORT(dst, src, root, dstroot) GET_VALUE_TO(NBT_TYPE_SHORT, tag_short, dst, src, root, dstroot)
+#define GET_VALUE_TO_LONG(dst, src, root, dstroot) GET_VALUE_TO(NBT_TYPE_LONG, tag_long, dst, src, root, dstroot)
+#define GET_VALUE_TO_FLOAT(dst, src, root, dstroot) GET_VALUE_TO(NBT_TYPE_FLOAT, tag_float, dst, src, root, dstroot)
+#define GET_VALUE_TO_DOUBLE(dst, src, root, dstroot) GET_VALUE_TO(NBT_TYPE_DOUBLE, tag_double, dst, src, root, dstroot)
+#define GET_VALUE_TO_STRING(dst, src, root, dstroot)                                \
+    do {                                                                            \
+        auto *__tmp = nbt_tag_compound_get(root, src);                              \
+        assert(__tmp);                                                              \
+        assert(__tmp->type == NBT_TYPE_STRING);                                     \
+        dstroot.dst = std::string(__tmp->tag_string.value, __tmp->tag_string.size); \
     } while (0)
 
 template<typename T, nbt::TagType Tag>
@@ -56,33 +85,79 @@ using namespace world_storage;
 
 namespace world_storage {
 
-Persistence::Persistence(std::weak_ptr<World> world, const std::string &folder):
-    _folder(folder),
-    _world(world)
+Persistence::Persistence(const std::string &folder):
+    _folder(folder)
 {
 }
 
-void Persistence::uncompressFile(const std::string &filepath, std::vector<uint8_t> &data)
+// void Persistence::uncompressFile(const std::string &filepath, std::vector<uint8_t> &data)
+// {
+//     // Thanks StackOverflow
+//     // https://stackoverflow.com/a/17062022
+//     constexpr uint64_t readBufferSize = 8192;
+
+//     gzFile inFileZ = gzopen(filepath.c_str(), "rb");
+//     if (inFileZ == NULL)
+//         throw std::runtime_error("Error: Failed to gzopen " + filepath);
+
+//     uint8_t unzipBuffer[readBufferSize];
+//     unsigned int unzippedBytes;
+//     while (true) {
+//         unzippedBytes = gzread(inFileZ, unzipBuffer, readBufferSize);
+//         if (unzippedBytes > 0) {
+//             data.insert(data.end(), unzipBuffer, unzipBuffer + unzippedBytes);
+//         } else {
+//             break;
+//         }
+//     }
+//     gzclose(inFileZ);
+// }
+
+struct _userData {
+    char *start;
+    char *end;
+};
+
+static size_t _readMem(void *ud, uint8_t *d, size_t s)
 {
-    // Thanks StackOverflow
-    // https://stackoverflow.com/a/17062022
-    constexpr uint64_t readBufferSize = 8192;
+    _userData *u = (_userData *) ud;
+    if (u->start > u->end)
+        return 0;
+    const auto max = ((size_t) u->end) - ((size_t) u->start) + 1;
+    const auto toCopy = std::min(max, s);
+    memcpy(d, u->start, toCopy);
+    u->start += toCopy;
+    return toCopy;
+}
 
-    gzFile inFileZ = gzopen(filepath.c_str(), "rb");
-    if (inFileZ == NULL)
-        throw std::runtime_error("Error: Failed to gzopen " + filepath);
+static int64_t getFileSize(const std::string &filename)
+{
+    struct stat stat_buf;
+    int rc = stat(filename.c_str(), &stat_buf);
+    return rc == 0 ? stat_buf.st_size : -1;
+}
 
-    uint8_t unzipBuffer[readBufferSize];
-    unsigned int unzippedBytes;
-    while (true) {
-        unzippedBytes = gzread(inFileZ, unzipBuffer, readBufferSize);
-        if (unzippedBytes > 0) {
-            data.insert(data.end(), unzipBuffer, unzipBuffer + unzippedBytes);
-        } else {
-            break;
-        }
+static char *loadFile(const std::string &file, size_t *size)
+{
+    if (!std::filesystem::exists(file))
+        return nullptr;
+
+    auto fileSize = getFileSize(file);
+    if (fileSize == -1)
+        return nullptr;
+
+    char *fileContents = (char *) malloc(fileSize);
+
+    FILE *openedFile = fopen(file.c_str(), "r");
+
+    *size = fread(fileContents, 1, fileSize, openedFile);
+
+    if (*size != (size_t) fileSize) {
+        LFATAL("Could not read everything from " << file);
+        free(fileContents);
+        return nullptr;
     }
-    gzclose(inFileZ);
+    return fileContents;
 }
 
 void Persistence::loadLevelData(LevelData *dest)
@@ -90,69 +165,89 @@ void Persistence::loadLevelData(LevelData *dest)
     std::unique_lock<std::mutex> lock(accessMutex);
 
     const std::filesystem::path file = std::filesystem::path(_folder) / "level.dat";
-    std::vector<uint8_t> unzippedData;
-    this->uncompressFile(file, unzippedData);
 
-    // Parse data
-    uint8_t *start = unzippedData.data();
-    auto root = nbt::parseCompound(start, start + unzippedData.size() - 1);
+    size_t fileSize = 0;
+    char *fileData = loadFile(file, &fileSize);
+    if (!fileData)
+        throw std::runtime_error("Could not open file " + _folder);
+
+    // clang-format off
+    _userData ud = {
+        fileData,
+        fileData + fileSize - 1
+    };
+    nbt_reader_t reader = {
+        _readMem,
+        &ud
+    };
+    // clang-format on
+    auto *root = nbt_parse(reader, NBT_PARSE_FLAG_USE_ZLIB);
+    assert(root);
+    assert(root->type == NBT_TYPE_COMPOUND);
 
     // Map data
-    auto data = std::dynamic_pointer_cast<nbt::Compound>(root->getValue("Data"));
-    if (!data)
-        throw std::runtime_error(""); // TODO(huntears): Better error message
+    auto *data = nbt_tag_compound_get(root, "Data");
+    assert(data);
+    assert(data->type == NBT_TYPE_COMPOUND);
 
     // TODO(huntears): Find a better way to map the values
-    GET_VALUE(Double, borderCenterX, "BorderCenterX", data);
-    GET_VALUE(Double, borderCenterZ, "BorderCenterZ", data);
-    GET_VALUE(Double, borderDamagePerBlock, "BorderDamagePerBlock", data);
-    GET_VALUE(Double, borderSafeZone, "BorderSafeZone", data);
-    GET_VALUE(Double, borderSize, "BorderSize", data);
-    GET_VALUE(Double, borderSizeLerpTarget, "BorderSizeLerpTarget", data);
-    GET_VALUE(Long, borderSizeLerpTime, "BorderSizeLerpTime", data);
-    GET_VALUE(Double, borderWarningBlocks, "BorderWarningBlocks", data);
-    GET_VALUE(Double, borderWarningTime, "BorderWarningTime", data);
-    GET_VALUE(Int, dataVersion, "DataVersion", data);
-    GET_VALUE(Long, dayTime, "DayTime", data);
-    GET_VALUE(Byte, difficulty, "Difficulty", data);
-    GET_VALUE(Byte, difficultyLocked, "DifficultyLocked", data);
-    GET_VALUE(Int, gameType, "GameType", data);
-    GET_VALUE(Long, lastPlayed, "LastPlayed", data);
-    GET_VALUE(String, levelName, "LevelName", data);
-    GET_VALUE(Float, spawnAngle, "SpawnAngle", data);
-    GET_VALUE(Int, spawnX, "SpawnX", data);
-    GET_VALUE(Int, spawnY, "SpawnY", data);
-    GET_VALUE(Int, spawnZ, "SpawnZ", data);
-    GET_VALUE(Long, time, "Time", data);
+    GET_VALUE_DOUBLE(borderCenterX, "BorderCenterX", data);
+    GET_VALUE_DOUBLE(borderCenterZ, "BorderCenterZ", data);
+    GET_VALUE_DOUBLE(borderDamagePerBlock, "BorderDamagePerBlock", data);
+    GET_VALUE_DOUBLE(borderSafeZone, "BorderSafeZone", data);
+    GET_VALUE_DOUBLE(borderSize, "BorderSize", data);
+    GET_VALUE_DOUBLE(borderSizeLerpTarget, "BorderSizeLerpTarget", data);
+    GET_VALUE_LONG(borderSizeLerpTime, "BorderSizeLerpTime", data);
+    GET_VALUE_DOUBLE(borderWarningBlocks, "BorderWarningBlocks", data);
+    GET_VALUE_DOUBLE(borderWarningTime, "BorderWarningTime", data);
+    GET_VALUE_INT(dataVersion, "DataVersion", data);
+    GET_VALUE_LONG(dayTime, "DayTime", data);
+    GET_VALUE_BYTE(difficulty, "Difficulty", data);
+    GET_VALUE_BYTE(difficultyLocked, "DifficultyLocked", data);
+    GET_VALUE_INT(gameType, "GameType", data);
+    GET_VALUE_LONG(lastPlayed, "LastPlayed", data);
+    GET_VALUE_STRING(levelName, "LevelName", data);
+    GET_VALUE_FLOAT(spawnAngle, "SpawnAngle", data);
+    GET_VALUE_INT(spawnX, "SpawnX", data);
+    GET_VALUE_INT(spawnY, "SpawnY", data);
+    GET_VALUE_INT(spawnZ, "SpawnZ", data);
+    GET_VALUE_LONG(time, "Time", data);
 
     {
-        const auto __tmpCompound = getConstElement<nbt::Compound, nbt::TagType::Compound>(data, "Version");
-        GET_VALUE_TO(Int, id, "Id", __tmpCompound, dest->mcVersion);
-        GET_VALUE_TO(String, name, "Name", __tmpCompound, dest->mcVersion);
-        GET_VALUE_TO(String, series, "Series", __tmpCompound, dest->mcVersion);
-        GET_VALUE_TO(Byte, snapshot, "Snapshot", __tmpCompound, dest->mcVersion);
+        // const auto __tmpCompound = getConstElement<nbt::Compound, nbt::TagType::Compound>(data, "Version");
+        auto *__tmpCompound = nbt_tag_compound_get(data, "Version");
+        assert(__tmpCompound);
+        assert(__tmpCompound->type == NBT_TYPE_COMPOUND);
+
+        GET_VALUE_TO_INT(id, "Id", __tmpCompound, dest->mcVersion);
+        GET_VALUE_TO_STRING(name, "Name", __tmpCompound, dest->mcVersion);
+        GET_VALUE_TO_STRING(series, "Series", __tmpCompound, dest->mcVersion);
+        GET_VALUE_TO_BYTE(snapshot, "Snapshot", __tmpCompound, dest->mcVersion);
     }
 
-    GET_VALUE(Int, wanderingTraderSpawnChance, "WanderingTraderSpawnChance", data);
-    GET_VALUE(Int, wanderingTraderSpawnDelay, "WanderingTraderSpawnDelay", data);
-    GET_VALUE(Byte, wasModded, "WasModded", data);
+    GET_VALUE_INT(wanderingTraderSpawnChance, "WanderingTraderSpawnChance", data);
+    GET_VALUE_INT(wanderingTraderSpawnDelay, "WanderingTraderSpawnDelay", data);
+    GET_VALUE_BYTE(wasModded, "WasModded", data);
 
     {
-        const auto __tmpCompound = getConstElement<nbt::Compound, nbt::TagType::Compound>(data, "WorldGenSettings");
-        GET_VALUE_TO(Byte, bonus_chest, "bonus_chest", __tmpCompound, dest->worldGenSettings);
-        GET_VALUE_TO(Byte, generateFeatures, "generate_features", __tmpCompound, dest->worldGenSettings);
-        GET_VALUE_TO(Long, seed, "seed", __tmpCompound, dest->worldGenSettings);
+        auto *__tmpCompound = nbt_tag_compound_get(data, "WorldGenSettings");
+        assert(__tmpCompound);
+        assert(__tmpCompound->type == NBT_TYPE_COMPOUND);
+
+        GET_VALUE_TO_BYTE(bonus_chest, "bonus_chest", __tmpCompound, dest->worldGenSettings);
+        GET_VALUE_TO_BYTE(generateFeatures, "generate_features", __tmpCompound, dest->worldGenSettings);
+        GET_VALUE_TO_LONG(seed, "seed", __tmpCompound, dest->worldGenSettings);
     }
 
-    GET_VALUE(Byte, allowCommands, "allowCommands", data);
-    GET_VALUE(Int, clearWeatherTime, "clearWeatherTime", data);
-    GET_VALUE(Byte, hardcore, "hardcore", data);
-    GET_VALUE(Byte, initialized, "initialized", data);
-    GET_VALUE(Int, rainTime, "rainTime", data);
-    GET_VALUE(Byte, raining, "raining", data);
-    GET_VALUE(Int, thunderTime, "thunderTime", data);
-    GET_VALUE(Byte, thundering, "thundering", data);
-    GET_VALUE(Int, version, "version", data);
+    GET_VALUE_BYTE(allowCommands, "allowCommands", data);
+    GET_VALUE_INT(clearWeatherTime, "clearWeatherTime", data);
+    GET_VALUE_BYTE(hardcore, "hardcore", data);
+    GET_VALUE_BYTE(initialized, "initialized", data);
+    GET_VALUE_INT(rainTime, "rainTime", data);
+    GET_VALUE_BYTE(raining, "raining", data);
+    GET_VALUE_INT(thunderTime, "thunderTime", data);
+    GET_VALUE_BYTE(thundering, "thundering", data);
+    GET_VALUE_INT(version, "version", data);
 }
 
 LevelData Persistence::loadLevelData()
@@ -170,82 +265,92 @@ void Persistence::loadPlayerData(u128 uuid, PlayerData *dest)
 
     // TODO
     const std::filesystem::path file = std::filesystem::path(_folder) / "playerdata" / (uuid.toString() + ".dat");
-    std::vector<uint8_t> unzippedData;
-    this->uncompressFile(file, unzippedData);
 
-    // Parse data
-    uint8_t *start = unzippedData.data();
-    auto root = nbt::parseCompound(start, start + unzippedData.size() - 1);
+    size_t fileSize = 0;
+    char *fileData = loadFile(file, &fileSize);
+    if (!fileData)
+        throw std::runtime_error("Could not open file " + _folder);
+
+    // clang-format off
+    _userData ud = {
+        fileData,
+        fileData + fileSize - 1
+    };
+    nbt_reader_t reader = {
+        _readMem,
+        &ud
+    };
+    // clang-format on
+    auto *root = nbt_parse(reader, NBT_PARSE_FLAG_USE_ZLIB);
+    assert(root);
+    assert(root->type == NBT_TYPE_COMPOUND);
 
     // TODO(huntears): Map the values to the destination object
-    GET_VALUE(Float, absorptionAmount, "AbsorptionAmount", root);
-    GET_VALUE(Short, air, "Air", root);
-    GET_VALUE(Int, dataVersion, "DataVersion", root);
-    GET_VALUE(Short, deathTime, "DeathTime", root);
-    GET_VALUE(String, dimension, "Dimension", root);
-    GET_VALUE(Float, fallDistance, "FallDistance", root);
-    GET_VALUE(Byte, fallFlying, "FallFlying", root);
-    GET_VALUE(Short, fire, "Fire", root);
-    GET_VALUE(Float, health, "Health", root);
-    GET_VALUE(Int, hurtByTimestamp, "HurtByTimestamp", root);
-    GET_VALUE(Short, hurtTime, "HurtTime", root);
-    GET_VALUE(Byte, invulnerable, "Invulnerable", root);
+    GET_VALUE_FLOAT(absorptionAmount, "AbsorptionAmount", root);
+    GET_VALUE_SHORT(air, "Air", root);
+    GET_VALUE_INT(dataVersion, "DataVersion", root);
+    GET_VALUE_SHORT(deathTime, "DeathTime", root);
+    GET_VALUE_STRING(dimension, "Dimension", root);
+    GET_VALUE_FLOAT(fallDistance, "FallDistance", root);
+    GET_VALUE_BYTE(fallFlying, "FallFlying", root);
+    GET_VALUE_SHORT(fire, "Fire", root);
+    GET_VALUE_FLOAT(health, "Health", root);
+    GET_VALUE_INT(hurtByTimestamp, "HurtByTimestamp", root);
+    GET_VALUE_SHORT(hurtTime, "HurtTime", root);
+    GET_VALUE_BYTE(invulnerable, "Invulnerable", root);
     {
-        const auto __tmpList = getConstElement<nbt::List, nbt::TagType::List>(root, "Motion");
-        if (__tmpList->getValues().size() != 3)
-            throw std::runtime_error(""); // TODO(huntears): Better error message
-        for (auto i : __tmpList->getValues())
-            if (i->getType() != nbt::TagType::Double)
-                throw std::runtime_error(""); // TODO(huntears): Better error message
-        dest->motion.x = (std::dynamic_pointer_cast<nbt::Double>(__tmpList->getValues().at(0)))->getValue();
-        dest->motion.y = (std::dynamic_pointer_cast<nbt::Double>(__tmpList->getValues().at(1)))->getValue();
-        dest->motion.z = (std::dynamic_pointer_cast<nbt::Double>(__tmpList->getValues().at(2)))->getValue();
+        auto *__tmpList = nbt_tag_compound_get(root, "Motion");
+        assert(__tmpList);
+        assert(__tmpList->type == NBT_TYPE_LIST);
+        assert(__tmpList->tag_list.size == 3);
+        assert(__tmpList->tag_list.type == NBT_TYPE_DOUBLE);
+        dest->motion.x = __tmpList->tag_list.value[0]->tag_double.value;
+        dest->motion.y = __tmpList->tag_list.value[1]->tag_double.value;
+        dest->motion.z = __tmpList->tag_list.value[2]->tag_double.value;
     }
-    GET_VALUE(Byte, onGround, "OnGround", root);
-    GET_VALUE(Int, portalCooldown, "PortalCooldown", root);
+    GET_VALUE_BYTE(onGround, "OnGround", root);
+    GET_VALUE_INT(portalCooldown, "PortalCooldown", root);
     {
-        const auto __tmpList = getConstElement<nbt::List, nbt::TagType::List>(root, "Pos");
-        if (__tmpList->getValues().size() != 3)
-            throw std::runtime_error(""); // TODO(huntears): Better error message
-        for (auto i : __tmpList->getValues())
-            if (i->getType() != nbt::TagType::Double)
-                throw std::runtime_error(""); // TODO(huntears): Better error message
-        dest->pos.x = (std::dynamic_pointer_cast<nbt::Double>(__tmpList->getValues().at(0)))->getValue();
-        dest->pos.y = (std::dynamic_pointer_cast<nbt::Double>(__tmpList->getValues().at(1)))->getValue();
-        dest->pos.z = (std::dynamic_pointer_cast<nbt::Double>(__tmpList->getValues().at(2)))->getValue();
+        auto *__tmpList = nbt_tag_compound_get(root, "Pos");
+        assert(__tmpList);
+        assert(__tmpList->type == NBT_TYPE_LIST);
+        assert(__tmpList->tag_list.size == 3);
+        assert(__tmpList->tag_list.type == NBT_TYPE_DOUBLE);
+        dest->pos.x = __tmpList->tag_list.value[0]->tag_double.value;
+        dest->pos.y = __tmpList->tag_list.value[1]->tag_double.value;
+        dest->pos.z = __tmpList->tag_list.value[2]->tag_double.value;
     }
     {
-        auto __tmpList = getConstElement<nbt::List, nbt::TagType::List>(root, "Rotation");
-        if (__tmpList->getValues().size() != 2)
-            throw std::runtime_error(""); // TODO(huntears): Better error message
-        for (auto i : __tmpList->getValues())
-            if (i->getType() != nbt::TagType::Float)
-                throw std::runtime_error(""); // TODO(huntears): Better error message
-        dest->rotation.yaw = (std::dynamic_pointer_cast<nbt::Float>(__tmpList->getValues().at(0)))->getValue();
-        dest->rotation.pitch = (std::dynamic_pointer_cast<nbt::Float>(__tmpList->getValues().at(1)))->getValue();
+        auto *__tmpList = nbt_tag_compound_get(root, "Rotation");
+        assert(__tmpList);
+        assert(__tmpList->type == NBT_TYPE_LIST);
+        assert(__tmpList->tag_list.size == 2);
+        assert(__tmpList->tag_list.type == NBT_TYPE_FLOAT);
+        dest->rotation.yaw = __tmpList->tag_list.value[0]->tag_float.value;
+        dest->rotation.pitch = __tmpList->tag_list.value[1]->tag_float.value;
     }
-    GET_VALUE(Int, score, "Score", root);
-    GET_VALUE(Int, selectedItemSlot, "SelectedItemSlot", root);
-    GET_VALUE(Short, sleepTimer, "SleepTimer", root);
+    GET_VALUE_INT(score, "Score", root);
+    GET_VALUE_INT(selectedItemSlot, "SelectedItemSlot", root);
+    GET_VALUE_SHORT(sleepTimer, "SleepTimer", root);
     {
-        auto __tmpArray = getConstElement<nbt::IntArray, nbt::TagType::IntArray>(root, "UUID");
-        if (__tmpArray->getValues().size() != 4)
-            throw std::runtime_error(""); // TODO(huntears): Better error message
-        // I know this is really ugly but augh
-        dest->uuid.most = *(uint64_t *) &__tmpArray->getValues().at(0);
-        dest->uuid.least = *(uint64_t *) &__tmpArray->getValues().at(2);
+        auto *__tmpArray = nbt_tag_compound_get(root, "Rotation");
+        assert(__tmpArray);
+        assert(__tmpArray->type == NBT_TYPE_INT_ARRAY);
+        assert(__tmpArray->tag_int_array.size == 4);
+        dest->uuid.most = *(uint64_t *) &__tmpArray->tag_int_array.value[0];
+        dest->uuid.least = *(uint64_t *) &__tmpArray->tag_int_array.value[2];
         dest->uuid.swapEndianness();
     }
-    GET_VALUE(Int, xpLevel, "XpLevel", root);
-    GET_VALUE(Float, xpP, "XpP", root);
-    GET_VALUE(Int, xpSeed, "XpSeed", root);
-    GET_VALUE(Int, xpTotal, "XpTotal", root);
-    GET_VALUE(Float, foodExhaustionLevel, "foodExhaustionLevel", root);
-    GET_VALUE(Int, foodLevel, "foodLevel", root);
-    GET_VALUE(Float, foodSaturationLevel, "foodSaturationLevel", root);
-    GET_VALUE(Int, foodTickTimer, "foodTickTimer", root);
-    GET_VALUE(Int, playerGameType, "playerGameType", root);
-    GET_VALUE(Byte, seenCredits, "seenCredits", root);
+    GET_VALUE_INT(xpLevel, "XpLevel", root);
+    GET_VALUE_FLOAT(xpP, "XpP", root);
+    GET_VALUE_INT(xpSeed, "XpSeed", root);
+    GET_VALUE_INT(xpTotal, "XpTotal", root);
+    GET_VALUE_FLOAT(foodExhaustionLevel, "foodExhaustionLevel", root);
+    GET_VALUE_INT(foodLevel, "foodLevel", root);
+    GET_VALUE_FLOAT(foodSaturationLevel, "foodSaturationLevel", root);
+    GET_VALUE_INT(foodTickTimer, "foodTickTimer", root);
+    GET_VALUE_INT(playerGameType, "playerGameType", root);
+    GET_VALUE_BYTE(seenCredits, "seenCredits", root);
 }
 
 PlayerData Persistence::loadPlayerData(u128 uuid)
@@ -259,66 +364,6 @@ PlayerData Persistence::loadPlayerData(u128 uuid)
 void Persistence::loadPlayerData(const Player *player, PlayerData *dest) { loadPlayerData(player->getUuid(), dest); }
 
 PlayerData Persistence::loadPlayerData(const Player *player) { return loadPlayerData(player->getUuid()); }
-
-int inflatebruh(const void *src, int srcLen, void *dst, int dstLen)
-{
-    z_stream strm = {0};
-    strm.total_in = strm.avail_in = srcLen;
-    strm.total_out = strm.avail_out = dstLen;
-    strm.next_in = (Bytef *) src;
-    strm.next_out = (Bytef *) dst;
-
-    strm.zalloc = Z_NULL;
-    strm.zfree = Z_NULL;
-    strm.opaque = Z_NULL;
-
-    int err = -1;
-    int ret = -1;
-
-    err = inflateInit2(&strm, (15 + 32)); // 15 window bits, and the +32 tells zlib to to detect if using gzip or zlib
-    if (err == Z_OK) {
-        err = inflate(&strm, Z_FINISH);
-        if (err == Z_STREAM_END) {
-            ret = strm.total_out;
-        } else {
-            inflateEnd(&strm);
-            return err;
-        }
-    } else {
-        inflateEnd(&strm);
-        return err;
-    }
-
-    inflateEnd(&strm);
-    return ret;
-}
-
-#include <sys/stat.h>
-
-static int64_t getFileSize(const std::string &filename)
-{
-    struct stat stat_buf;
-    int rc = stat(filename.c_str(), &stat_buf);
-    return rc == 0 ? stat_buf.st_size : -1;
-}
-
-struct _userData {
-    char *start;
-    char *end;
-};
-
-static size_t _readMem(void *ud, uint8_t *d, size_t s)
-{
-    // TODO
-    _userData *u = (_userData *) ud;
-    if (u->start > u->end)
-        return 0;
-    const auto max = ((size_t) u->end) - ((size_t) u->start) + 1;
-    const auto toCopy = std::min(max, s);
-    memcpy(d, u->start, toCopy);
-    u->start += toCopy;
-    return toCopy;
-}
 
 void Persistence::loadRegion(Dimension &dim, int x, int z)
 {
@@ -366,24 +411,10 @@ void Persistence::loadRegion(Dimension &dim, int x, int z)
         uint8_t getCompressionScheme() const { return compressionScheme; }
     };
 
-    if (!std::filesystem::exists(file))
+    size_t fileSize = 0;
+    char *fileContents = loadFile(file, &fileSize);
+    if (!fileContents)
         return;
-
-    auto fileSize = getFileSize(file);
-    if (fileSize == -1)
-        return;
-
-    char *fileContents = (char *) malloc(fileSize);
-
-    FILE *openedFile = fopen(file.c_str(), "r");
-
-    auto ret = fread(fileContents, 1, fileSize, openedFile);
-
-    if (ret != (size_t) fileSize) {
-        LERROR("Bruh");
-        free(fileContents);
-        return;
-    }
 
     const RegionHeader *header = (const RegionHeader *) fileContents;
 
