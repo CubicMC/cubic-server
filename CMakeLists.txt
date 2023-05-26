@@ -4,12 +4,20 @@ if(CMAKE_VERSION VERSION_GREATER_EQUAL 3.24.0)
     cmake_policy(SET CMP0135 OLD)
 endif()
 
+# Options
 option(USE_CLANG "Build application with clang" OFF)
 if (USE_CLANG)
     set(CMAKE_CXX_COMPILER /usr/bin/clang++)
     set(CMAKE_C_COMPILER /usr/bin/clang)
 endif()
 
+option(DEBUG_NETWORK "Print network messages" OFF)
+if(DEBUG_NETWORK)
+    add_compile_definitions(DEBUG_NETWORK)
+endif()
+message(STATUS "Debuging network: ${DEBUG_NETWORK}")
+
+# This must be set before the project command
 set(CMAKE_USER_MAKE_RULES_OVERRIDE_CXX ${CMAKE_CURRENT_SOURCE_DIR}/cxx_flag_overrides.cmake)
 
 project(CubicServer VERSION 0.1.0 LANGUAGES CXX)
@@ -37,13 +45,6 @@ FetchContent_Declare(
     GIT_REPOSITORY https://github.com/jbeder/yaml-cpp.git
     GIT_TAG 4ae4cb7309c07b2d8623d7e4f01efa6321441366 # The latest yaml-cpp commit at the time of writing.
 )
-# FetchContent_GetProperties(yaml-cpp)
-
-# if(NOT yaml-cpp_POPULATED)
-#     message(STATUS "Fetching yaml-cpp...")
-#     FetchContent_Populate(yaml-cpp)
-#     add_subdirectory(${yaml-cpp_SOURCE_DIR} ${yaml-cpp_BINARY_DIR})
-# endif()
 
 FetchContent_Declare(
     json
@@ -81,6 +82,10 @@ FetchContent_MakeAvailable(
 get_target_property(spdlog_include spdlog INTERFACE_INCLUDE_DIRECTORIES)
 target_include_directories(spdlog SYSTEM INTERFACE ${spdlog_include})
 
+# Fix yaml-cpp warnings
+get_target_property(yaml_cpp_include yaml-cpp INTERFACE_INCLUDE_DIRECTORIES)
+target_include_directories(yaml-cpp SYSTEM INTERFACE ${yaml_cpp_include})
+
 if(GTEST) # if the flag GTEST is true
     FetchContent_Declare(
         googletest
@@ -101,21 +106,9 @@ if(GTEST) # if the flag GTEST is true
         rapidcheck
         googletest
     )
-endif()
 
-if(GTEST)
     enable_testing()
 endif()
-
-# set(CMAKE_BUILD_RPATH /usr/local/lib/gcc12)
-# set(CMAKE_EXE_LINKER_FLAGS "-static-libgcc -static-libstdc++")
-
-option(DEBUG_NETWORK "Print network messages" OFF)
-if(DEBUG_NETWORK)
-    add_compile_definitions(DEBUG_NETWORK)
-endif()
-
-message(STATUS "Debuging network: ${DEBUG_NETWORK}")
 
 find_package(Threads REQUIRED)
 find_package(PkgConfig REQUIRED)
