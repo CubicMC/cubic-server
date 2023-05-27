@@ -21,8 +21,8 @@ public:
     virtual void generateTree() = 0;
 
 protected:
-    virtual const std::vector<generation::Generator::TreeBlock> getTree(const Position &pos) = 0;
-    virtual const std::vector<generation::Generator::TreeBlock> getTree(Generator::positionType x, Generator::positionType y, Generator::positionType z) = 0;
+    virtual const std::vector<generation::Generator::TreeBlock> getTree(const Position &pos) const = 0;
+    virtual const std::vector<generation::Generator::TreeBlock> getTree(Generator::positionType x, Generator::positionType y, Generator::positionType z) const = 0;
 
     world_storage::ChunkColumn &_chunk;
     generation::Generator &_generator;

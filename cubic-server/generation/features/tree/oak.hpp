@@ -17,8 +17,8 @@ public:
     void generateTree() override;
 
 private:
-    const std::vector<Generator::TreeBlock> getTree(const Position &pos) override;
-    const std::vector<Generator::TreeBlock> getTree(Generator::positionType x, Generator::positionType y, Generator::positionType z) override;
+    const std::vector<Generator::TreeBlock> getTree(const Position &pos) const override;
+    const std::vector<Generator::TreeBlock> getTree(Generator::positionType x, Generator::positionType y, Generator::positionType z) const override;
     generation::Generator::TreeSize _treeSize = {4, 7};
 };
 } // namespace generation::trees
