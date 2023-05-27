@@ -3,7 +3,7 @@
 #include "hovers/Entity.hpp"
 #include "hovers/Item.hpp"
 #include "hovers/Text.hpp"
-#include "logging/Logger.hpp"
+#include "logging/logging.hpp"
 
 std::shared_ptr<chat::message::event::OnHover> chat::message::event::OnHover::deserialize(const std::string &message) { return fromJson(nlohmann::json::parse(message)); }
 

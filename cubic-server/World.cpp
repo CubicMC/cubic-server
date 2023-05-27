@@ -3,7 +3,7 @@
 #include "Dimension.hpp"
 #include "Player.hpp"
 #include "WorldGroup.hpp"
-#include "logging/Logger.hpp"
+#include "logging/logging.hpp"
 
 World::World(std::shared_ptr<WorldGroup> worldGroup):
     _worldGroup(worldGroup),
@@ -164,7 +164,7 @@ void World::sendPlayerInfoAddPlayer(Player *current)
         .actionSets = playersInfo
     });
     // clang-format on
-    LDEBUG("Sent player info to " + current->getUsername());
+    LDEBUG("Sent player info to {}" + current->getUsername());
 }
 
 void World::sendPlayerInfoRemovePlayer(const Player *current)
@@ -177,7 +177,7 @@ void World::sendPlayerInfoRemovePlayer(const Player *current)
             }
         }
     }
-    LDEBUG("Sent player info to ", current->getUsername());
+    LDEBUG("Sent player info to {}", current->getUsername());
 }
 
 thread_pool::PriorityThreadPool &World::getGenerationPool() { return _generationPool; }

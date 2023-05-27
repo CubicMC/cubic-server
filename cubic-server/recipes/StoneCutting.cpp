@@ -1,4 +1,5 @@
 #include "StoneCutting.hpp"
+#include "logging/logging.hpp"
 
 #include "Server.hpp"
 
@@ -27,8 +28,8 @@ StoneCutting::StoneCutting(const nlohmann::json &recipe):
 
 void StoneCutting::dump(void) const
 {
-    LINFO("\"", ITEM_CONVERTER.fromProtocolIdToItem(this->_ingredient), "\" -> \"", ITEM_CONVERTER.fromProtocolIdToItem(this->_result), "\" (x", this->_count, ")");
+    LINFO("\"{}\" -> \"{}\" (x{})", ITEM_CONVERTER.fromProtocolIdToItem(this->_ingredient), ITEM_CONVERTER.fromProtocolIdToItem(this->_result), this->_count);
 }
 
 std::unique_ptr<Recipe> StoneCutting::create(const nlohmann::json &recipe) { return (std::make_unique<StoneCutting>(StoneCutting(recipe))); }
-};
+} // namespace Recipe

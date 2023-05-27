@@ -8,7 +8,7 @@
 #include "WorldGroup.hpp"
 #include "chat/events.hpp"
 #include "chat/events/clicks/CopyToClipboard.hpp"
-#include "logging/Logger.hpp"
+#include "logging/logging.hpp"
 
 void command_parser::Seed::autocomplete(UNUSED std::vector<std::string> &args, Player *invoker) const
 {

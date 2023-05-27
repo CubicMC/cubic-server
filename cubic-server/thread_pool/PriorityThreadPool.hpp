@@ -29,6 +29,7 @@ namespace thread_pool {
 class PriorityThreadPool {
 private:
     PriorityThreadPoolUtility _toolBox;
+    std::string_view _name;
 
     [[nodiscard]] bool safeQueueEmpty() const;
 
