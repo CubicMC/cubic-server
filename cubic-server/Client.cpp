@@ -14,7 +14,7 @@
 #include "World.hpp"
 #include "WorldGroup.hpp"
 #include "chat/ChatRegistry.hpp"
-#include "logging/Logger.hpp"
+#include "logging/logging.hpp"
 #include "protocol/ClientPackets.hpp"
 #include "protocol/ServerPackets.hpp"
 #include "protocol/serialization/popPrimaryType.hpp"
@@ -72,9 +72,10 @@ void Client::networkLoop()
         poll(pollSet, 1, 50); // TODO: Check how this can be changed
         if (pollSet[0].revents & POLLIN) {
             int readSize = read(_sockfd, inBuffer, 2048);
-            if (readSize == -1)
-                LERROR("Read error", strerror(errno));
-            else if (readSize == 0)
+            if (readSize == -1) {
+                N_LERROR("Read error {}", strerror(errno));
+                _isRunning = false;
+            } else if (readSize == 0)
                 break;
             else {
                 // TODO: This is extremely inefficient but it will do for now
@@ -117,15 +118,12 @@ void Client::_flushSendData()
     // std::copy(_sendBuffer.begin(), augh, sendBuffer);
 
     ssize_t writeReturn = write(_sockfd, _sendBuffer.linearize(), toSend);
-    if (writeReturn == -1) {
-        LERROR("Write error: ", strerror(errno));
-    }
 
     if (writeReturn <= 0) {
         _writeMutex.unlock();
-        LDEBUG("error: ", writeReturn, " -> ", strerror(errno));
         if (errno == EAGAIN)
             return;
+        N_LERROR("Write error: {}", strerror(errno));
         throw std::runtime_error("Pipe error");
     }
 
@@ -256,7 +254,7 @@ void Client::handleParsedClientPacket(std::unique_ptr<protocol::BaseServerPacket
         }
         break;
     }
-    LERROR("Unhandled packet: ", static_cast<int>(packetID), " in status ", static_cast<int>(_status)); // TODO: Properly handle the unknown packet
+    N_LERROR("Unhandled packet: {} in status {}", packetID, _status); // TODO: Properly handle the unknown packet
 }
 
 void Client::_handlePacket()
@@ -303,15 +301,15 @@ void Client::_handlePacket()
         std::vector<uint8_t> toParse(data.begin() + (at - data.data()), data.end());
         data.erase(data.begin(), data.begin() + (startPayload - data.data()) + length);
         if (error) {
-            LWARN("Unhandled packet: ", static_cast<int>(packetId), " in status ", static_cast<int>(_status));
+            N_LWARN("Unhandled packet: {} in status {}", packetId, _status);
             return;
         }
         std::unique_ptr<protocol::BaseServerPacket> packet;
         try {
             packet = parser(toParse);
         } catch (std::runtime_error &error) {
-            LERROR("Error during packet ", (int32_t) packetId, " parsing : ");
-            LERROR(error.what());
+            N_LERROR("Error during packet {} parsing : ", packetId);
+            N_LERROR("{}", error.what());
             return;
         }
         // Callback to handle the packet
@@ -321,7 +319,7 @@ void Client::_handlePacket()
 
 void Client::_onHandshake(protocol::Handshake &pck)
 {
-    LDEBUG("Got an handshake");
+    N_LDEBUG("Got an handshake");
     if (pck.nextState == protocol::Handshake::State::Status)
         this->setStatus(protocol::ClientStatus::Status);
     else if (pck.nextState == protocol::Handshake::State::Login)
@@ -330,7 +328,7 @@ void Client::_onHandshake(protocol::Handshake &pck)
 
 void Client::_onStatusRequest(UNUSED protocol::StatusRequest &pck)
 {
-    LDEBUG("Got a status request");
+    N_LDEBUG("Got a status request");
 
     auto srv = Server::getInstance();
     auto conf = srv->getConfig();
@@ -366,14 +364,14 @@ void Client::_onStatusRequest(UNUSED protocol::StatusRequest &pck)
 
 void Client::_onPingRequest(protocol::PingRequest &pck)
 {
-    LDEBUG("Got a ping request");
+    N_LDEBUG("Got a ping request");
 
     sendPingResponse(pck.payload);
 }
 
 void Client::_onLoginStart(protocol::LoginStart &pck)
 {
-    LDEBUG("Got a Login Start");
+    N_LDEBUG("Got a Login Start");
     protocol::LoginSuccess resPck;
 
     resPck.uuid = pck.hasPlayerUuid ? pck.playerUuid : u128 {std::hash<std::string> {}("OfflinePlayer:"), std::hash<std::string> {}(pck.name)};
@@ -391,14 +389,14 @@ void Client::_onLoginStart(protocol::LoginStart &pck)
     this->_loginSequence(resPck);
 }
 
-void Client::_onEncryptionResponse(UNUSED protocol::EncryptionResponse &pck) { LDEBUG("Got a Encryption Response"); }
+void Client::_onEncryptionResponse(UNUSED protocol::EncryptionResponse &pck) { N_LDEBUG("Got a Encryption Response"); }
 
 void Client::sendStatusResponse(const std::string &json)
 {
     auto pck = protocol::createStatusResponse({json});
     _sendData(*pck);
 
-    LDEBUG("Sent status response");
+    N_LDEBUG("Sent status response");
 }
 
 void Client::sendPingResponse(int64_t payload)
@@ -406,14 +404,14 @@ void Client::sendPingResponse(int64_t payload)
     auto pck = protocol::createPingResponse({payload});
     _sendData(*pck);
 
-    LDEBUG("Sent a ping response");
+    N_LDEBUG("Sent a ping response");
 }
 
 void Client::sendLoginSuccess(const protocol::LoginSuccess &packet)
 {
     auto pck = protocol::createLoginSuccess(packet);
     _sendData(*pck);
-    LDEBUG("Sent a login success");
+    N_LDEBUG("Sent a login success");
 }
 
 void Client::sendLoginPlay()
@@ -551,7 +549,7 @@ void Client::disconnect(const chat::Message &reason)
     auto pck = protocol::createLoginDisconnect({reason.serialize()});
     _sendData(*pck);
     _isRunning = false;
-    LDEBUG("Sent a disconnect login packet");
+    N_LDEBUG("Sent a disconnect login packet");
 }
 
 void Client::stop(const chat::Message &reason)

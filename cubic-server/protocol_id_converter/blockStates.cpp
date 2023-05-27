@@ -7,13 +7,13 @@
 
 #include <nlohmann/json.hpp>
 
-#include "logging/Logger.hpp"
+#include "logging/logging.hpp"
 #include "types.hpp"
 
 void Blocks::GlobalPalette::initialize(const std::string &path)
 {
     if (!std::filesystem::exists(path)) {
-        LERROR("File " << path << " not found !");
+        LERROR("File {} not found !", path);
         return;
     }
     nlohmann::json file = nlohmann::json::parse(std::ifstream(path));
@@ -43,7 +43,7 @@ void Blocks::GlobalPalette::initialize(const std::string &path)
             return state.contains("default") && state["default"] == true;
         });
         if (defaultState == block.value()["states"].end()) {
-            LERROR("Default state not found for block " << block.key());
+            LERROR("Default state not found for block {}", block.key());
             return;
         }
         if (defaultState.value().contains("properties")) {
@@ -74,11 +74,10 @@ BlockId Blocks::GlobalPalette::fromBlockToProtocolId(Blocks::Block &block) const
         return b.name == block.name;
     });
     if (internalBlock == this->_blocks.end()) {
-        LERROR("Block not found in palette (name: " << block.name << ")");
+        LERROR("Block not found in palette (name: {})", block.name);
         return 0;
     }
     if (block.properties.size() != internalBlock->properties.size()) {
-        // LERROR("Block properties size mismatch with block " << block.name);
         for (auto &[h, hh] : internalBlock->defaultProperties) {
             bool found = false;
             for (auto &[c, cc] : block.properties) {
@@ -90,7 +89,6 @@ BlockId Blocks::GlobalPalette::fromBlockToProtocolId(Blocks::Block &block) const
             if (!found)
                 block.properties.push_back({h, hh});
         }
-        // return 0;
     }
     if (block.properties.size() == 0 && internalBlock->properties.size() == 0)
         return internalBlock->baseProtocolId;
@@ -101,12 +99,12 @@ BlockId Blocks::GlobalPalette::fromBlockToProtocolId(Blocks::Block &block) const
             return p.name == property.first;
         });
         if (internalProperty == internalBlock->properties.end()) {
-            LERROR("Property not found (name: " << property.first << ")");
+            LERROR("Property not found (name: {})", property.first);
             return 0;
         }
         auto value = std::find(internalProperty->values.begin(), internalProperty->values.end(), property.second);
         if (value == internalProperty->values.end()) {
-            LERROR("Value not found (name: " << property.second << ")");
+            LERROR("Value not found (name: {})", property.second);
             return 0;
         }
         id += internalProperty->baseWeight * (value - internalProperty->values.begin());
@@ -131,6 +129,6 @@ Blocks::Block Blocks::GlobalPalette::fromProtocolIdToBlock(BlockId id) const
         }
         return block;
     }
-    LERROR("Block not found in palette (id: " << id << ")");
+    LERROR("Block not found in palette (id: {})", id);
     return {"minecraft:air", {}};
 }

@@ -1,9 +1,9 @@
 #include "Gamemode.hpp"
 
 #include "Player.hpp"
-#include "World.hpp"
 #include "Server.hpp"
-#include "logging/Logger.hpp"
+#include "World.hpp"
+#include "logging/logging.hpp"
 #include "protocol/ClientPackets.hpp"
 #include <cstdint>
 
@@ -18,7 +18,7 @@ void command_parser::Gamemode::autocomplete(UNUSED std::vector<std::string> &arg
 void command_parser::Gamemode::execute(UNUSED std::vector<std::string> &args, Player *invoker) const
 {
     if (args.size() >= 2) {
-        LDEBUG("Usage : ", _help);
+        LDEBUG("Usage : {}", _help);
         return;
     }
     if (invoker) {
@@ -48,7 +48,7 @@ void command_parser::Gamemode::execute(UNUSED std::vector<std::string> &args, Pl
         invoker->sendPlayerAbilities({0, 0.05, 0.1});
         chat::Message message = { "Set own game mode to Adventure Mode"};
         invoker->getWorld()->getChat()->sendSystemMessage(message, *invoker);
-        LINFO("Gamemode changed to adventure for ", invoker->getUsername());
+        LINFO("Gamemode changed to adventure for {}", invoker->getUsername());
     } else if (args[0] == "creative") {
         invoker->setGamemode(player_attributes::Gamemode::Creative);
         invoker->sendPlayerAbilities(
@@ -75,7 +75,7 @@ void command_parser::Gamemode::execute(UNUSED std::vector<std::string> &args, Pl
         );
         chat::Message message = { "Set own game mode to Creative Mode"};
         invoker->getWorld()->getChat()->sendSystemMessage(message, *invoker);
-        LINFO("Gamemode changed to creative for ", invoker->getUsername());
+        LINFO("Gamemode changed to creative for {}", invoker->getUsername());
     } else if (args[0] == "spectator") {
         invoker->setGamemode(player_attributes::Gamemode::Spectator);
         invoker->sendPlayerAbilities(
@@ -102,7 +102,7 @@ void command_parser::Gamemode::execute(UNUSED std::vector<std::string> &args, Pl
         );
         chat::Message message = { "Set own game mode to Spectator Mode"};
         invoker->getWorld()->getChat()->sendSystemMessage(message, *invoker);
-        LINFO("Gamemode changed to spectator for ", invoker->getUsername());
+        LINFO("Gamemode changed to spectator for {}", invoker->getUsername());
     } else if (args[0] == "survival") {
         invoker->setGamemode(player_attributes::Gamemode::Survival);
         invoker->sendPlayerAbilities({0, 0.05, 0.1});
@@ -121,14 +121,14 @@ void command_parser::Gamemode::execute(UNUSED std::vector<std::string> &args, Pl
         invoker->sendPlayerAbilities({0, 0.05, 0.1});
         chat::Message message = { "Set own game mode to Survival Mode"};
         invoker->getWorld()->getChat()->sendSystemMessage(message, *invoker);
-        LINFO("Gamemode changed to survival for ", invoker->getUsername());
+        LINFO("Gamemode changed to survival for {}", invoker->getUsername());
     } else
-        LDEBUG("Usage : ", _help);
+        LDEBUG("Usage : {}", _help);
     // clang-format on
 }
 
 void command_parser::Gamemode::help(UNUSED std::vector<std::string> &args, Player *invoker) const
 {
     if (!invoker)
-        LINFO("Usage : ", _help);
+        LINFO("Usage : {}", _help);
 }

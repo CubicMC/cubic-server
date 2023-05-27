@@ -6,7 +6,7 @@
 
 #include "CommandLine.hpp"
 #include "Server.hpp"
-#include "logging/Logger.hpp"
+#include "logging/logging.hpp"
 #include "options.hpp"
 #include "protocol/ServerPackets.hpp"
 #include "world_storage/Persistence.hpp"
@@ -149,9 +149,6 @@ int main(int argc, char *argv[])
 
     CommandLine cmd;
 
-    auto logger = logging::Logger::getInstance();
-    logger->unsetDisplaySpecificationLevelInConsole(logging::LogLevel::DEBUG);
-
     std::signal(SIGTERM, signalHandler);
     std::signal(SIGINT, signalHandler);
     std::signal(SIGPIPE, SIG_IGN);
@@ -161,10 +158,20 @@ int main(int argc, char *argv[])
         interfaceContainer.launch(argc, argv);
 #endif
 
-    // This should be inside the server
-    cmd.launch();
+    try {
+        // This should be inside the server
+        cmd.launch();
 
-    srv->launch(program);
+        srv->launch(program);
+
+        cmd.stop();
+#if GUI_UNAVAILABLE == 0
+        interfaceContainer.stop();
+#endif
+    } catch (const std::exception &e) {
+        LFATAL(e.what());
+        return 1;
+    }
 
     cmd.stop();
 

@@ -5,7 +5,7 @@
 #include "Server.hpp"
 #include "World.hpp"
 #include "WorldGroup.hpp"
-#include "logging/Logger.hpp"
+#include "logging/logging.hpp"
 #include <functional>
 
 static protocol::PlayerChatMessage buildPacket(const Player &from, size_t messageLogSize, const chat::Message &message, const chat::message::Type &type)

@@ -1,5 +1,5 @@
 #include "PriorityThreadWorker.hpp"
-#include "logging/Logger.hpp"
+#include "logging/logging.hpp"
 
 #ifdef __linux__
 #include <sys/prctl.h>
@@ -11,6 +11,7 @@ using namespace thread_pool;
 void PriorityThreadWorker::_nameThread()
 {
     prctl(PR_SET_NAME, reinterpret_cast<unsigned long>((_name + "|" + std::to_string(_threadWorkerId)).c_str()));
+    logging::Registry::instance().setThreadDefaultLogger(_name);
 } // only way to set thread name under all linux (no POSIX standard).
 #else
 void PriorityThreadWorker::_nameThread() { } // currently not supported. not all os supports this anyway

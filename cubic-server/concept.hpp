@@ -16,6 +16,9 @@ requires(std::ostream &os, const T &value) {
 template<typename Derived, typename Base>
 concept isBaseOf = std::is_base_of_v<Base, Derived>;
 
+template<typename T>
+concept isEnum = std::is_enum_v<T>;
+
 template<typename ret>
 struct helperSameFunction;
 

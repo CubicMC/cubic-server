@@ -3,7 +3,7 @@
 #include "Player.hpp"
 #include "Server.hpp"
 #include "World.hpp"
-#include "logging/Logger.hpp"
+#include "logging/logging.hpp"
 #include "math/Vector3.hpp"
 #include <mutex>
 
@@ -91,8 +91,8 @@ void Dimension::removeEntity(int32_t entity_id)
 
 void Dimension::removePlayer(int32_t entity_id)
 {
-    LDEBUG("Removing player with id: ", entity_id);
     std::lock_guard _(_playersMutex);
+    LDEBUG("Removing player with id: {}", entity_id);
     _players.erase(
         std::remove_if(
             _players.begin(), _players.end(),
@@ -223,18 +223,18 @@ void Dimension::spawnPlayer(Player &current)
     auto current_id = current.getId();
     std::lock_guard _(_playersMutex);
     for (auto player : _players) {
-        LDEBUG("player is : ", player->getUsername());
-        LDEBUG("current is : ", current.getUsername());
+        LDEBUG("player is : {}", player->getUsername());
+        LDEBUG("current is : {}", current.getUsername());
         // if (current->getPos().distance(player->getPos()) <= 12) {
         if (player->getId() != current_id) {
             player->sendSpawnPlayer(
                 {current_id, current.getUuid(), current.getPosition().x, current.getPosition().y, current.getPosition().z, current.getRotation().x, current.getRotation().z}
             );
-            LDEBUG("send spawn player to ", player->getUsername());
+            LDEBUG("send spawn player to {}", player->getUsername());
             current.sendSpawnPlayer(
                 {player->getId(), player->getUuid(), player->getPosition().x, player->getPosition().y, player->getPosition().z, player->getRotation().x, player->getRotation().z}
             );
-            LDEBUG("send spawn player to ", current.getUsername());
+            LDEBUG("send spawn player to {}", current.getUsername());
             //}
         }
     }
@@ -242,7 +242,7 @@ void Dimension::spawnPlayer(Player &current)
 
 void Dimension::updateBlock(Position position, int32_t id)
 {
-    LDEBUG("Dimension block update ", position, " -> ", id, ")");
+    LDEBUG("Dimension block update {} -> {}", position, id);
     auto &chunk = this->_level.getChunkColumnFromBlockPos(position.x, position.z);
 
     // Weird ass modulo to get the correct block position in the chunk

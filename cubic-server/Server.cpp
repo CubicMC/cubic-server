@@ -13,7 +13,7 @@
 #include "WorldGroup.hpp"
 #include "command_parser/commands/Gamemode.hpp"
 #include "default/DefaultWorldGroup.hpp"
-#include "logging/Logger.hpp"
+#include "logging/logging.hpp"
 
 Server::Server():
     _running(false),
@@ -48,7 +48,7 @@ Server::~Server() { }
 void Server::launch(const configuration::ConfigHandler &config)
 {
     this->_config = config;
-    LINFO("Starting server on ", _config["ip"], ":", _config["port"]);
+    LINFO("Starting server on {}:{}", _config["ip"], _config["port"]);
     int yes = 1;
     int no = 0;
 

@@ -1,5 +1,5 @@
 #include "Level.hpp"
-#include "logging/Logger.hpp"
+#include "logging/logging.hpp"
 #include "world_storage/ChunkColumn.hpp"
 #include <mutex>
 

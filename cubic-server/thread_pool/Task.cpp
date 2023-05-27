@@ -1,10 +1,9 @@
 #include "Task.hpp"
 
-thread_pool::Task::Task(Id id, std::function<void()> task, thread_pool::Pool *pool):
+thread_pool::Task::Task(Id id, std::function<void()> task):
     _id(id),
     _status(Status::Waiting),
-    _task(task),
-    _pool(pool)
+    _task(task)
 {
 }
 

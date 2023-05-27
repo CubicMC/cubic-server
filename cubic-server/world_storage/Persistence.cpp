@@ -2,7 +2,7 @@
 #include "Dimension.hpp"
 #include "Server.hpp"
 #include "World.hpp"
-#include "logging/Logger.hpp"
+#include "logging/logging.hpp"
 #include "nbt.h"
 #include "nbt.hpp"
 #include "types.hpp"
@@ -130,7 +130,7 @@ static char *loadFile(const std::string &file, size_t *size)
     *size = fread(fileContents, 1, fileSize, openedFile);
 
     if (*size != (size_t) fileSize) {
-        LFATAL("Could not read everything from " << file);
+        LFATAL("Could not read everything from {}", file);
         free(fileContents);
         return nullptr;
     }

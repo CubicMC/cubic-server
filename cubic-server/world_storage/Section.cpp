@@ -1,5 +1,5 @@
 #include "Section.hpp"
-#include "logging/Logger.hpp"
+#include "logging/logging.hpp"
 #include "types.hpp"
 #include <cstdint>
 #include <stdexcept>

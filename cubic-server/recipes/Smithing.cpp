@@ -1,6 +1,7 @@
 #include "Smithing.hpp"
 
 #include "Server.hpp"
+#include "logging/logging.hpp"
 
 namespace Recipe {
 Smithing::Smithing(const nlohmann::json &recipe):
@@ -32,10 +33,10 @@ Smithing::Smithing(const nlohmann::json &recipe):
 void Smithing::dump(void) const
 {
     LINFO(
-        "\"", ITEM_CONVERTER.fromProtocolIdToItem(this->_base), "\" + \"", ITEM_CONVERTER.fromProtocolIdToItem(this->_addition), "\" = \"",
-        ITEM_CONVERTER.fromProtocolIdToItem(this->_result), "\""
+        "\"{}\" + \"{}\" = {}", ITEM_CONVERTER.fromProtocolIdToItem(this->_base), ITEM_CONVERTER.fromProtocolIdToItem(this->_addition),
+        ITEM_CONVERTER.fromProtocolIdToItem(this->_result)
     );
 }
 
 std::unique_ptr<Recipe> Smithing::create(const nlohmann::json &recipe) { return (std::make_unique<Smithing>(Smithing(recipe))); }
-};
+} // namespace Recipe
