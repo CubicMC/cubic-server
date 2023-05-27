@@ -442,10 +442,12 @@ void Persistence::_regionLoadSection(ChunkColumn &chunk, nbt_tag_t *section)
 void Persistence::_regionLoadBlocks(uint8_t sectionY, nbt_tag_t *section, ChunkColumn &chunk)
 {
     auto *blockStates = nbt_tag_compound_get(section, "block_states");
-    assert(blockStates);
+    if (!blockStates)
+        return;
     assert(blockStates->type == NBT_TYPE_COMPOUND);
 
     BlockPalette &paletteMapping = chunk.getSection(sectionY).getBlockPalette();
+    paletteMapping.clear();
     _regionLoadPalette(paletteMapping, blockStates);
 
     auto *dataArray = nbt_tag_compound_get(blockStates, "data");

@@ -45,8 +45,8 @@ void command_parser::DumpChunk::execute(std::vector<std::string> &args, Player *
     LDEBUG("minecraft:bedrock -> ", GLOBAL_PALETTE.fromBlockToProtocolId("minecraft:bedrock"));
     LDEBUG("minecraft:water -> ", GLOBAL_PALETTE.fromBlockToProtocolId("minecraft:water"));
 
-    auto chunk = dim->getChunk(std::stoi(args[0]), std::stoi(args[1]));
-    auto sections = chunk.getSections();
+    const auto &chunk = dim->getChunk(std::stoi(args[0]), std::stoi(args[1]));
+    const auto &sections = chunk.getSections();
 
     // for (const auto &section : sections) {
     //     for (int idx = 0; idx < world_storage::SECTION_3D_SIZE; idx++) {

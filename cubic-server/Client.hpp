@@ -12,8 +12,9 @@
 #include "protocol/ClientPackets.hpp"
 #include "protocol/ServerPackets.hpp"
 #include "protocol/common.hpp"
+#include <boost/circular_buffer.hpp>
 
-#define __PCK_CALLBACK_PRIM(type, object) return object->_on##type(std::static_pointer_cast<type>(packet))
+#define __PCK_CALLBACK_PRIM(type, object) return object->_on##type(*(type *) packet.get())
 
 #define PCK_CALLBACK(type) __PCK_CALLBACK_PRIM(type, this)
 
@@ -67,7 +68,7 @@ public:
 
     void setStatus(protocol::ClientStatus status) { _status = status; }
     void switchToPlayState(u128 playerUuid, const std::string &username);
-    void handleParsedClientPacket(const std::shared_ptr<protocol::BaseServerPacket> &packet, protocol::ServerPacketsID packetID);
+    void handleParsedClientPacket(std::unique_ptr<protocol::BaseServerPacket> &&packet, protocol::ServerPacketsID packetID);
 
     // All the send packets go here
     void sendStatusResponse(const std::string &json);
@@ -89,11 +90,11 @@ private:
     void _flushSendData();
     void _tryFlushAllSendData();
     void _sendData(const std::vector<uint8_t> &data);
-    void _onHandshake(const std::shared_ptr<protocol::Handshake> &pck);
-    void _onStatusRequest(const std::shared_ptr<protocol::StatusRequest> &pck);
-    void _onLoginStart(const std::shared_ptr<protocol::LoginStart> &pck);
-    void _onPingRequest(const std::shared_ptr<protocol::PingRequest> &pck);
-    void _onEncryptionResponse(const std::shared_ptr<protocol::EncryptionResponse> &pck);
+    void _onHandshake(protocol::Handshake &pck);
+    void _onStatusRequest(protocol::StatusRequest &pck);
+    void _onLoginStart(protocol::LoginStart &pck);
+    void _onPingRequest(protocol::PingRequest &pck);
+    void _onEncryptionResponse(protocol::EncryptionResponse &pck);
     void _loginSequence(const protocol::LoginSuccess &packet);
 
 private:
@@ -102,7 +103,7 @@ private:
     std::atomic<bool> _isRunning;
     protocol::ClientStatus _status;
     std::vector<uint8_t> _recvBuffer;
-    std::vector<uint8_t> _sendBuffer;
+    boost::circular_buffer<uint8_t> _sendBuffer;
     std::thread _networkThread;
     std::shared_ptr<Player> _player;
     std::mutex _writeMutex;

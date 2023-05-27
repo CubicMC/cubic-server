@@ -6,6 +6,7 @@
 #include "logging/Logger.hpp"
 #include "nbt.hpp"
 #include "world_storage/Section.hpp"
+#include <cstdlib>
 #include <memory>
 
 namespace world_storage {
@@ -25,6 +26,15 @@ ChunkColumn::ChunkColumn(const Position2D &chunkPos):
 
         _heightMap.addValue(listBase);
     }
+}
+
+ChunkColumn::ChunkColumn(ChunkColumn &&chunk):
+    _sections(std::move(chunk._sections)),
+    _tickData(chunk._tickData),
+    _chunkPos(chunk._chunkPos),
+    _heightMap(chunk._heightMap),
+    _ready(chunk._ready)
+{
 }
 
 ChunkColumn::~ChunkColumn() { }
@@ -151,6 +161,9 @@ void ChunkColumn::recalculateBlockLight()
 
 void ChunkColumn::generate(WorldType worldType, Seed seed)
 {
+    if (_ready) {
+        LFATAL("AYO WTF1: " << this->_chunkPos);
+    }
     switch (worldType) {
     case WorldType::NORMAL:
         _generateOverworld(seed);
@@ -173,6 +186,16 @@ void ChunkColumn::generate(WorldType worldType, Seed seed)
 
 void ChunkColumn::_generateOverworld(Seed seed)
 {
+    static size_t block = 0;
+    for (int i = 0; i < world_storage::NB_OF_PLAYABLE_SECTIONS; i++) {
+        updateBlock({7, 7 + (i << 4) - 64, 7}, block++);
+        if (block > 23231)
+            block = 0;
+    }
+    return;
+    if (_ready) {
+        LFATAL("AYO WTF2: " << this->_chunkPos);
+    }
     auto generator = generation::Overworld(seed);
     int waterLevel = 86;
 
@@ -244,6 +267,11 @@ void ChunkColumn::_generateOverworld(Seed seed)
                 updateBiome({x, y + BIOME_HEIGHT_MIN, z}, generator.getBiome(x, y, z));
             }
         }
+    }
+
+    if (_ready) {
+        LFATAL("AYO WTF3: " << this->_chunkPos);
+        exit(1);
     }
 }
 

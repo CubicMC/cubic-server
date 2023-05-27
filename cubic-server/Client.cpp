@@ -25,10 +25,11 @@ Client::Client(int sockfd, struct sockaddr_in6 addr):
     _isRunning(true),
     _status(protocol::ClientStatus::Initial),
     _recvBuffer(0),
-    _sendBuffer(0),
+    _sendBuffer(2048 * 64 * 128 * 100),
     _networkThread(&Client::networkLoop, this),
     _player(nullptr)
 {
+    // _sendBuffer.capacity(2048);
 }
 
 Client::~Client()
@@ -50,8 +51,13 @@ Client::~Client()
 
     if (!_player)
         return;
+    // Everything that is done here is because we can't use share_from_this from the player destructor
     this->_player->_dim->removeEntity(_player->_id);
     this->_player->_dim->removePlayer(_player->_id);
+    for (auto &chunkReq : this->_player->_chunks) {
+        if (chunkReq.second == Player::ChunkState::Loading)
+            this->_player->getDimension()->removePlayerFromLoadingChunk(chunkReq.first, this->_player);
+    }
 }
 
 void Client::networkLoop()
@@ -95,18 +101,23 @@ void Client::_sendData(const std::vector<uint8_t> &data)
 {
     // This is extremely inefficient but it will do for now
     std::lock_guard<std::mutex> _(_writeMutex);
-    for (const auto &i : data)
-        _sendBuffer.emplace_back(i);
+    // for (const auto &i : data)
+    //     _sendBuffer.push_back(i);
+    _sendBuffer.insert(_sendBuffer.end(), data.begin(), data.end());
 }
 
+#define SEND_SIZE 2048 * 64 * 128 * 100
 void Client::_flushSendData()
 {
     std::lock_guard<std::mutex> _(_writeMutex);
-    char sendBuffer[2048];
-    size_t toSend = std::min(_sendBuffer.size(), (size_t) 2048);
-    std::copy(_sendBuffer.begin(), _sendBuffer.begin() + toSend, sendBuffer);
+    // char sendBuffer[SEND_SIZE];
+    // static char *sendBuffer = (char *) malloc(SEND_SIZE);
+    size_t toSend = std::min(_sendBuffer.size(), (size_t) SEND_SIZE);
+    // auto augh = _sendBuffer.begin();
+    // std::advance(augh, toSend);
+    // std::copy(_sendBuffer.begin(), augh, sendBuffer);
 
-    ssize_t writeReturn = write(_sockfd, sendBuffer, toSend);
+    ssize_t writeReturn = write(_sockfd, _sendBuffer.linearize(), toSend);
     if (writeReturn == -1) {
         LERROR("Write error: ", strerror(errno));
     }
@@ -119,7 +130,10 @@ void Client::_flushSendData()
         throw std::runtime_error("Pipe error");
     }
 
-    _sendBuffer.erase(_sendBuffer.begin(), _sendBuffer.begin() + writeReturn);
+    // auto augh2 = _sendBuffer.begin();
+    // std::advance(augh2, writeReturn);
+    // _sendBuffer.erase(_sendBuffer.begin(), augh2);
+    _sendBuffer.erase_begin(writeReturn);
 }
 
 void Client::_tryFlushAllSendData()
@@ -152,7 +166,7 @@ void Client::switchToPlayState(u128 playerUuid, const std::string &username)
     LDEBUG("Created player");
 }
 
-void Client::handleParsedClientPacket(const std::shared_ptr<protocol::BaseServerPacket> &packet, protocol::ServerPacketsID packetID)
+void Client::handleParsedClientPacket(std::unique_ptr<protocol::BaseServerPacket> &&packet, protocol::ServerPacketsID packetID)
 {
     using namespace protocol;
 
@@ -272,7 +286,7 @@ void Client::_handlePacket()
         bool error = false;
         // Handle the packet if the length is there
         const auto packetId = static_cast<protocol::ServerPacketsID>(protocol::popVarInt(at, eof));
-        std::function<std::shared_ptr<protocol::BaseServerPacket>(std::vector<uint8_t> &)> parser;
+        std::function<std::unique_ptr<protocol::BaseServerPacket>(std::vector<uint8_t> &)> parser;
         PARSER_IT_DECLARE(Initial);
         PARSER_IT_DECLARE(Login);
         PARSER_IT_DECLARE(Status);
@@ -293,7 +307,7 @@ void Client::_handlePacket()
             LWARN("Unhandled packet: ", static_cast<int>(packetId), " in status ", static_cast<int>(_status));
             return;
         }
-        std::shared_ptr<protocol::BaseServerPacket> packet;
+        std::unique_ptr<protocol::BaseServerPacket> packet;
         try {
             packet = parser(toParse);
         } catch (std::runtime_error &error) {
@@ -302,20 +316,20 @@ void Client::_handlePacket()
             return;
         }
         // Callback to handle the packet
-        handleParsedClientPacket(packet, packetId);
+        handleParsedClientPacket(std::move(packet), packetId);
     }
 }
 
-void Client::_onHandshake(const std::shared_ptr<protocol::Handshake> &pck)
+void Client::_onHandshake(protocol::Handshake &pck)
 {
     LDEBUG("Got an handshake");
-    if (pck->nextState == protocol::Handshake::State::Status)
+    if (pck.nextState == protocol::Handshake::State::Status)
         this->setStatus(protocol::ClientStatus::Status);
-    else if (pck->nextState == protocol::Handshake::State::Login)
+    else if (pck.nextState == protocol::Handshake::State::Login)
         this->setStatus(protocol::ClientStatus::Login);
 }
 
-void Client::_onStatusRequest(UNUSED const std::shared_ptr<protocol::StatusRequest> &pck)
+void Client::_onStatusRequest(UNUSED protocol::StatusRequest &pck)
 {
     LDEBUG("Got a status request");
 
@@ -351,20 +365,20 @@ void Client::_onStatusRequest(UNUSED const std::shared_ptr<protocol::StatusReque
     sendStatusResponse(json.dump());
 }
 
-void Client::_onPingRequest(const std::shared_ptr<protocol::PingRequest> &pck)
+void Client::_onPingRequest(protocol::PingRequest &pck)
 {
     LDEBUG("Got a ping request");
 
-    sendPingResponse(pck->payload);
+    sendPingResponse(pck.payload);
 }
 
-void Client::_onLoginStart(const std::shared_ptr<protocol::LoginStart> &pck)
+void Client::_onLoginStart(protocol::LoginStart &pck)
 {
     LDEBUG("Got a Login Start");
     protocol::LoginSuccess resPck;
 
-    resPck.uuid = pck->hasPlayerUuid ? pck->playerUuid : u128 {std::hash<std::string> {}("OfflinePlayer:"), std::hash<std::string> {}(pck->name)};
-    resPck.username = pck->name;
+    resPck.uuid = pck.hasPlayerUuid ? pck.playerUuid : u128 {std::hash<std::string> {}("OfflinePlayer:"), std::hash<std::string> {}(pck.name)};
+    resPck.username = pck.name;
     resPck.numberOfProperties = 0;
     resPck.properties = {}; // TODO: figure out what to put there
 
@@ -378,7 +392,7 @@ void Client::_onLoginStart(const std::shared_ptr<protocol::LoginStart> &pck)
     this->_loginSequence(resPck);
 }
 
-void Client::_onEncryptionResponse(UNUSED const std::shared_ptr<protocol::EncryptionResponse> &pck) { LDEBUG("Got a Encryption Response"); }
+void Client::_onEncryptionResponse(UNUSED protocol::EncryptionResponse &pck) { LDEBUG("Got a Encryption Response"); }
 
 void Client::sendStatusResponse(const std::string &json)
 {

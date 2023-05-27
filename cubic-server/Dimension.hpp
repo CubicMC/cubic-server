@@ -21,7 +21,10 @@ class Entity;
 
 class Dimension {
 private:
-    using ChunkRequest = std::vector<std::weak_ptr<Player>>;
+    using ChunkRequest = struct {
+        int32_t id;
+        std::vector<std::weak_ptr<Player>> players;
+    };
 
 public:
     Dimension(std::shared_ptr<World> world);
@@ -100,6 +103,7 @@ protected:
 public:
     mutable std::mutex _playersMutex;
     mutable std::mutex _entitiesMutex;
+    mutable std::mutex _loadingChunksMutex;
 
 protected:
     std::counting_semaphore<SEMAPHORE_MAX> _dimensionLock;
@@ -110,7 +114,6 @@ protected:
     std::atomic<bool> _isInitialized;
     std::atomic<bool> _isRunning;
     world_storage::Level _level;
-    std::mutex _loadingChunksMutex;
     std::unordered_map<Position2D, ChunkRequest> _loadingChunks;
     std::thread _processingThread;
 };

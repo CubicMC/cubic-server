@@ -85,7 +85,7 @@ void Server::launch(const configuration::ConfigHandler &config)
     _worldGroups.at("default")->initialize();
 
     // Initialize default recipes
-    this->_recipes.initialize();
+    // this->_recipes.initialize();
 
     this->_running = true;
 
@@ -96,8 +96,12 @@ void Server::launch(const configuration::ConfigHandler &config)
 
 void Server::stop()
 {
+    static auto num = 0;
     LINFO("Server has received a stop command");
     this->_running = false;
+    if (num++ >= 5) {
+        exit(1); // Mash that Ctrl-C xd
+    }
 }
 
 void Server::_acceptLoop()

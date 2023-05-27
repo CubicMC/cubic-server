@@ -42,6 +42,7 @@ public:
 
 public:
     Section() noexcept;
+    Section(Section &&section) noexcept;
 
     void updateBlock(const Position &pos, int32_t block);
     void setBlock(const Position &pos, int32_t block);

@@ -10,7 +10,7 @@ World::World(std::shared_ptr<WorldGroup> worldGroup, std::string folder):
     _worldGroup(worldGroup),
     _age(0),
     _time(0),
-    _renderDistance(8), // TODO: Should be loaded from config
+    _renderDistance(10), // TODO: Should be loaded from config
     _timeUpdateClock(20, std::bind(&World::updateTime, this)), // 1 second for time updates
     _generationPool(CONFIG["num-gen-thread"].as<uint16_t>(), "WorldGen"),
     _folder(folder)

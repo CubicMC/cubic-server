@@ -53,6 +53,7 @@ enum class WorldType {
 class ChunkColumn {
 public:
     ChunkColumn(const Position2D &chunkPos);
+    ChunkColumn(ChunkColumn &&chunk);
     ~ChunkColumn();
 
     void updateBlock(const Position &pos, BlockId id);

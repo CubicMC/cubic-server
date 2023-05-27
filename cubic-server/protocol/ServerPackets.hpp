@@ -80,7 +80,9 @@ enum class ServerPacketsID : int32_t {
     UseItem = 0x32,
 };
 
-struct BaseServerPacket { };
+struct BaseServerPacket {
+    virtual ~BaseServerPacket() = default;
+};
 
 // Packets
 

@@ -16,6 +16,18 @@ world_storage::Section::Section() noexcept:
     // this->_biomePalette.setCount(0, BIOME_SECTION_3D_SIZE);
 }
 
+world_storage::Section::Section(world_storage::Section &&section) noexcept:
+    _blocks(section._blocks),
+    _biomes(section._biomes),
+    _blockPalette(std::move(section._blockPalette)),
+    _biomePalette(std::move(section._biomePalette)),
+    _skyLight(section._skyLight),
+    _blockLight(section._blockLight),
+    _skyLightCount(section._skyLightCount),
+    _blockLightCount(section._blockLightCount)
+{
+}
+
 void world_storage::Section::updateBlock(const Position &pos, int32_t block)
 {
     if (pos >= SECTION_WIDTH || pos < 0)
@@ -120,6 +132,7 @@ void world_storage::Section::recalculateSkyLight()
     for (auto &x : _skyLight.data()) {
         x = 0xFF;
     }
+    recalculateSkyLightCount();
     return;
 
     // for (auto x = 0; x < SECTION_WIDTH; x++) {

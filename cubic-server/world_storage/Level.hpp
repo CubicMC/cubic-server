@@ -1,7 +1,7 @@
 #ifndef CUBICSERVER_WORLDSTORAGE_LEVEL_HPP
 #define CUBICSERVER_WORLDSTORAGE_LEVEL_HPP
 
-#include <mutex>
+#include <shared_mutex>
 #include <unordered_map>
 
 #include "ChunkColumn.hpp"
@@ -40,7 +40,7 @@ public:
     void removeChunkColumn(Position2D pos);
 
 private:
-    std::mutex _chunkColumnsMutex;
+    mutable std::shared_mutex _chunkColumnsMutex;
     std::unordered_map<Position2D, ChunkColumn> _chunkColumns;
 };
 

@@ -20,7 +20,12 @@ PriorityThreadPool::~PriorityThreadPool()
     _toolBox.jobSemaphore.release(_toolBox.targetSize); // we might end up releasing more than enough, however that's destructor so we don't care.
 }
 
-[[maybe_unused]] void PriorityThreadPool::waitUntilJobsDone() const { _toolBox.library.wait(); }
+[[maybe_unused]] void PriorityThreadPool::waitUntilJobsDone() const
+{
+    do {
+        _toolBox.library.wait();
+    } while (_toolBox.jobSemaphore.getCounter() != 0);
+}
 
 // ThreadPool::operator bool() const { return safeQueueEmpty() && _toolBox.inactiveThreads == threadCount; }
 

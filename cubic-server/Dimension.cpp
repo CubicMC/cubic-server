@@ -4,6 +4,7 @@
 #include "Server.hpp"
 #include "World.hpp"
 #include "logging/Logger.hpp"
+#include "math/Vector3.hpp"
 #include <mutex>
 
 Dimension::Dimension(std::shared_ptr<World> world):
@@ -127,31 +128,43 @@ void Dimension::loadOrGenerateChunk(int x, int z, std::shared_ptr<Player> player
 {
     std::lock_guard<std::mutex> _(_loadingChunksMutex);
     if (this->_loadingChunks.contains({x, z})) {
-        if (std::find_if(this->_loadingChunks[{x, z}].begin(), this->_loadingChunks[{x, z}].end(), [player](const std::weak_ptr<Player> current_weak_player) {
+        if (std::find_if(this->_loadingChunks[{x, z}].players.begin(), this->_loadingChunks[{x, z}].players.end(), [player](const std::weak_ptr<Player> current_weak_player) {
                 if (auto current_player = current_weak_player.lock())
                     return current_player->getId() == player->getId();
                 return false;
-            }) == this->_loadingChunks[{x, z}].end()) {
-            this->_loadingChunks[{x, z}].push_back(player);
+            }) == this->_loadingChunks[{x, z}].players.end()) {
+            this->_loadingChunks[{x, z}].players.push_back(player);
         }
         return;
     }
 
-    this->_world->getGenerationPool().addJob([this, x, z] {
-        // TODO: load chunk from disk if it exists
-        this->generateChunk(x, z);
-
-        // This send the chunk to the players that are loading it
-        std::lock_guard<std::mutex> _(_loadingChunksMutex);
-        for (auto weak_player : this->_loadingChunks[{x, z}]) {
-            if (auto player = weak_player.lock()) {
-                player->sendChunkAndLightUpdate(this->_level.getChunkColumn(x, z));
+    auto id = this->_world->getGenerationPool().addJob(
+        [this, x, z] {
+            std::lock_guard _(this->_playersMutex);
+            double current_min = 999999.0f; // TODO(huntears): Change this magic value xd;
+            for (auto player : this->getPlayers()) {
+                const auto &pos = player->getPosition();
+                const Vector3<double> chunkPos = {(double) x * 16, pos.y, (double) z * 16};
+                current_min = std::min(current_min, pos.distance(chunkPos));
             }
-        }
-        this->_loadingChunks.erase({x, z});
-    });
+            return static_cast<size_t>(std::ceil(current_min));
+        },
+        [this, x, z] {
+            // TODO: load chunk from disk if it exists
+            this->generateChunk(x, z);
 
-    auto request = ChunkRequest {{player}};
+            // This send the chunk to the players that are loading it
+            std::lock_guard<std::mutex> _(_loadingChunksMutex);
+            for (auto weak_player : this->_loadingChunks[{x, z}].players) {
+                if (auto player = weak_player.lock()) {
+                    player->sendChunkAndLightUpdate(this->_level.getChunkColumn(x, z));
+                }
+            }
+            this->_loadingChunks.erase({x, z});
+        }
+    );
+
+    auto request = ChunkRequest {id, {player}};
 
     this->_loadingChunks[{x, z}] = request;
 
@@ -182,19 +195,19 @@ void Dimension::removePlayerFromLoadingChunk(const Position2D &pos, std::shared_
     if (!this->_loadingChunks.contains(pos))
         return;
 
-    this->_loadingChunks[pos].erase(
+    this->_loadingChunks[pos].players.erase(
         std::remove_if(
-            this->_loadingChunks[pos].begin(), this->_loadingChunks[pos].end(),
+            this->_loadingChunks[pos].players.begin(), this->_loadingChunks[pos].players.end(),
             [player](const std::weak_ptr<Player> current_weak_player) {
                 if (auto current_player = current_weak_player.lock())
                     return current_player->getId() == player->getId();
                 return true;
             }
         ),
-        this->_loadingChunks[pos].end()
+        this->_loadingChunks[pos].players.end()
     );
 
-    if (this->_loadingChunks[pos].empty()) {
+    if (this->_loadingChunks[pos].players.empty() && this->getWorld()->getGenerationPool().cancelJob(this->_loadingChunks[pos].id)) {
         // this->_loadingChunks[pos].task->cancel();
         // This could be replaced using either an iterator, or something else (maybe an if condition inside the job? or simply integrated inside the overlay.)
         this->_loadingChunks.erase(pos);

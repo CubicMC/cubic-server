@@ -16,6 +16,7 @@ constexpr uint8_t bitsNeeded(int32_t n) { return n <= 1 ? 0 : 1 + bitsNeeded((n 
 class Palette {
 public:
     Palette() = default;
+    Palette(Palette &&palette);
     virtual ~Palette() = default;
 
     constexpr uint64_t getId(int32_t globalId) const
@@ -47,8 +48,10 @@ public:
     constexpr std::vector<int32_t>::const_iterator end() const { return _nameToId.end(); }
     constexpr const std::vector<int32_t> &data() const { return _nameToId; }
     constexpr int32_t operator[](uint64_t index) const { return _nameToId[index]; }
+    constexpr void clear() { _nameToId.clear(); }
 
 protected:
+    mutable std::mutex _lock;
     std::vector<int32_t> _nameToId;
     // std::vector<std::pair<int32_t, uint32_t>> _idCount;
 };
@@ -56,6 +59,7 @@ protected:
 class BlockPalette : public Palette {
 public:
     BlockPalette();
+    BlockPalette(BlockPalette &&palette) = default;
     ~BlockPalette() = default;
 
     constexpr uint8_t getBits() const override
@@ -79,6 +83,7 @@ public:
 class BiomePalette : public Palette {
 public:
     BiomePalette();
+    BiomePalette(BiomePalette &&palette) = default;
     ~BiomePalette() = default;
 
     constexpr uint8_t getBits() const override

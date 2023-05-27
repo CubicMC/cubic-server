@@ -61,7 +61,7 @@ FetchContent_Declare(
 FetchContent_Declare(
     nbt
     GIT_REPOSITORY https://github.com/CubicMC/libnbt.git
-    GIT_TAG v1.0
+    GIT_TAG v1.0.1
 )
 
 FetchContent_Declare(
@@ -156,6 +156,13 @@ target_link_libraries (${CMAKE_PROJECT_NAME} PRIVATE
     argparse
     yaml-cpp
 )
+
+# if (CMAKE_BUILD_TYPE MATCHES RELWITHDEBINFO)
+#     target_link_libraries (${CMAKE_PROJECT_NAME} PRIVATE
+#         asan
+#         ubsan
+#     )
+# endif()
 
 if (NOT NO_GUI)
     target_link_libraries(${CMAKE_PROJECT_NAME} PRIVATE

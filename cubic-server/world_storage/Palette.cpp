@@ -1,17 +1,24 @@
 #include "Palette.hpp"
 #include "logging/Logger.hpp"
 #include "world_storage/Section.hpp"
+#include <mutex>
 
 world_storage::BlockPalette::BlockPalette()
 {
-    // _nameToId.push_back(0);
+    _nameToId.push_back(0);
     // _idCount.emplace(0, world_storage::SECTION_3D_SIZE);
 }
 
 world_storage::BiomePalette::BiomePalette()
 {
-    // _nameToId.push_back(0);
+    _nameToId.push_back(0);
     // _idCount.emplace(0, world_storage::BIOME_SECTION_3D_SIZE);
+}
+
+world_storage::Palette::Palette(world_storage::Palette &&palette):
+    _lock(),
+    _nameToId(palette._nameToId)
+{
 }
 
 void world_storage::Palette::add(int32_t globalId)
@@ -19,7 +26,7 @@ void world_storage::Palette::add(int32_t globalId)
     // auto it = std::find_if(_idCount.begin(), _idCount.end(), [globalId](const auto &p) {
     //     return p.first == globalId;
     // });
-
+    std::lock_guard _(_lock);
     if (std::find(_nameToId.begin(), _nameToId.end(), globalId) == _nameToId.end()) {
         _nameToId.push_back(globalId);
         // if (it == _idCount.end())
@@ -63,6 +70,7 @@ void world_storage::Palette::removeAll(int32_t globalId)
     //     return;
 
     // _idCount.erase(globalId);
+    std::lock_guard _(_lock);
     auto it = std::find(_nameToId.begin(), _nameToId.end(), globalId);
     if (it != _nameToId.end() && it == _nameToId.end() - 1)
         _nameToId.erase(it);
@@ -83,6 +91,7 @@ void world_storage::Palette::remove(int32_t globalId)
     //     if (it != _nameToId.end() && it == _nameToId.end() - 1)
     //         _nameToId.erase(it);
     // }
+    std::lock_guard _(_lock);
 
     auto it = std::find(_nameToId.begin(), _nameToId.end(), globalId);
     if (it != _nameToId.end() && it == _nameToId.end() - 1)
