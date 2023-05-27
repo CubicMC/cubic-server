@@ -133,7 +133,9 @@ int main(int argc, char *argv[])
         srv->launch(program);
 
         cmd.stop();
+#if GUI_UNAVAILABLE == 0
         interfaceContainer.stop();
+#endif
     } catch (const std::exception &e) {
         LFATAL(e.what());
         return 1;
