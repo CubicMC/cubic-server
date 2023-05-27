@@ -2,6 +2,7 @@
 #define CUBICSERVER_CLIENT_HPP
 
 #include <arpa/inet.h>
+#include <boost/circular_buffer.hpp>
 #include <memory>
 #include <netinet/in.h>
 #include <thread>
@@ -103,7 +104,7 @@ private:
     std::atomic<bool> _isRunning;
     protocol::ClientStatus _status;
     std::vector<uint8_t> _recvBuffer;
-    boost::circular_buffer<uint8_t> _sendBuffer;
+    boost::circular_buffer_space_optimized<uint8_t> _sendBuffer;
     std::thread _networkThread;
     std::shared_ptr<Player> _player;
     std::mutex _writeMutex;

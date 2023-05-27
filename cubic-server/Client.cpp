@@ -25,11 +25,10 @@ Client::Client(int sockfd, struct sockaddr_in6 addr):
     _isRunning(true),
     _status(protocol::ClientStatus::Initial),
     _recvBuffer(0),
-    _sendBuffer(2048 * 64 * 128 * 100),
+    _sendBuffer(2048 * 64),
     _networkThread(&Client::networkLoop, this),
     _player(nullptr)
 {
-    // _sendBuffer.capacity(2048);
 }
 
 Client::~Client()
@@ -130,10 +129,10 @@ void Client::_flushSendData()
         throw std::runtime_error("Pipe error");
     }
 
-    // auto augh2 = _sendBuffer.begin();
-    // std::advance(augh2, writeReturn);
-    // _sendBuffer.erase(_sendBuffer.begin(), augh2);
-    _sendBuffer.erase_begin(writeReturn);
+    auto augh2 = _sendBuffer.begin();
+    std::advance(augh2, writeReturn);
+    _sendBuffer.erase(_sendBuffer.begin(), augh2);
+    // _sendBuffer.erase_begin(writeReturn);
 }
 
 void Client::_tryFlushAllSendData()
