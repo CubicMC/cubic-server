@@ -6,7 +6,7 @@
 #include "blocks.hpp"
 #include "generation/features/tree/oak.hpp"
 #include "generation/overworld.hpp"
-#include "logging/Logger.hpp"
+#include "logging/logging.hpp"
 #include "nbt.hpp"
 #include "types.hpp"
 #include "world_storage/Section.hpp"

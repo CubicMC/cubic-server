@@ -6,7 +6,7 @@
 #include "Server.hpp"
 #include "blocks.hpp"
 #include "generation/generator.hpp"
-#include "logging/Logger.hpp"
+#include "logging/logging.hpp"
 #include "world_storage/ChunkColumn.hpp"
 #include "world_storage/Section.hpp"
 

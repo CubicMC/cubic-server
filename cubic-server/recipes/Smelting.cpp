@@ -1,6 +1,7 @@
 #include "Smelting.hpp"
 
 #include "Server.hpp"
+#include "logging/logging.hpp"
 
 namespace Recipe {
 Smelting::Smelting(const nlohmann::json &recipe):
@@ -31,10 +32,10 @@ Smelting::Smelting(const nlohmann::json &recipe):
 void Smelting::dump(void) const
 {
     LINFO(
-        "\"", ITEM_CONVERTER.fromProtocolIdToItem(this->_ingredient), "\" -> \"" << ITEM_CONVERTER.fromProtocolIdToItem(this->_result), "\" (cooking for ", this->_cookingTime,
-        " ticks and get ", this->_experience, " xp)"
+        "\"{}\" -> \"{}\" (cooking for {} ticks and get {} xp)", ITEM_CONVERTER.fromProtocolIdToItem(this->_ingredient),
+        ITEM_CONVERTER.fromProtocolIdToItem(this->_result), this->_cookingTime, this->_experience
     );
 }
 
 std::unique_ptr<Recipe> Smelting::create(const nlohmann::json &recipe) { return (std::make_unique<Smelting>(Smelting(recipe))); }
-};
+} // namespace Recipe

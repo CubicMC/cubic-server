@@ -1,6 +1,7 @@
 #include "Smoking.hpp"
 
 #include "Server.hpp"
+#include "logging/logging.hpp"
 
 namespace Recipe {
 Smoking::Smoking(const nlohmann::json &recipe):
@@ -31,11 +32,10 @@ Smoking::Smoking(const nlohmann::json &recipe):
 void Smoking::dump(void) const
 {
     LINFO(
-        "\"",
-        ITEM_CONVERTER.fromProtocolIdToItem(this->_ingredient) << "\" -> \"" << ITEM_CONVERTER.fromProtocolIdToItem(this->_result) << "\" (cooking for " << this->_cookingTime,
-        " ticks and get ", this->_experience, " xp)"
+        "\"{}\" -> \"{}\" (cooking for {} ticks and get {} xp)", ITEM_CONVERTER.fromProtocolIdToItem(this->_ingredient), ITEM_CONVERTER.fromProtocolIdToItem(this->_result),
+        this->_cookingTime, this->_experience
     );
 }
 
 std::unique_ptr<Recipe> Smoking::create(const nlohmann::json &recipe) { return (std::make_unique<Smoking>(Smoking(recipe))); }
-};
+} // namespace Recipe

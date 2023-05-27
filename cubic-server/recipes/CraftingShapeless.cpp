@@ -1,6 +1,7 @@
 #include "CraftingShapeless.hpp"
 
 #include "Server.hpp"
+#include "logging/logging.hpp"
 
 namespace Recipe {
 CraftingShapeless::CraftingShapeless(const nlohmann::json &recipe):
@@ -47,4 +48,4 @@ void CraftingShapeless::dump(void) const
 }
 
 std::unique_ptr<Recipe> CraftingShapeless::create(const nlohmann::json &recipe) { return (std::make_unique<CraftingShapeless>(CraftingShapeless(recipe))); }
-};
+} // namespace Recipe

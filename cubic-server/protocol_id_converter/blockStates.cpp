@@ -5,12 +5,12 @@
 
 #include <nlohmann/json.hpp>
 
-#include "logging/Logger.hpp"
+#include "logging/logging.hpp"
 
 void Blocks::GlobalPalette::initialize(const std::string &path)
 {
     if (!std::filesystem::exists(path)) {
-        LERROR("File " << path << " not found !");
+        LERROR("File {} not found !", path);
         return;
     }
     nlohmann::json file = nlohmann::json::parse(std::ifstream(path));
@@ -44,11 +44,11 @@ BlockId Blocks::GlobalPalette::fromBlockToProtocolId(const Blocks::Block &block)
         return b.name == block.name;
     });
     if (internalBlock == this->_blocks.end()) {
-        LERROR("Block not found in palette (name: " << block.name << ")");
+        LERROR("Block not found in palette (name: {})", block.name);
         return 0;
     }
     if (block.properties.size() != internalBlock->properties.size()) {
-        LERROR("Block properties size mismatch with block " << block.name);
+        LERROR("Block properties size mismatch with block {}", block.name);
         return 0;
     }
     if (block.properties.size() == 0 && internalBlock->properties.size() == 0)
@@ -60,12 +60,12 @@ BlockId Blocks::GlobalPalette::fromBlockToProtocolId(const Blocks::Block &block)
             return p.name == property.first;
         });
         if (internalProperty == internalBlock->properties.end()) {
-            LERROR("Property not found (name: " << property.first << ")");
+            LERROR("Property not found (name: {})", property.first);
             return 0;
         }
         auto value = std::find(internalProperty->values.begin(), internalProperty->values.end(), property.second);
         if (value == internalProperty->values.end()) {
-            LERROR("Value not found (name: " << property.second << ")");
+            LERROR("Value not found (name: {})", property.second);
             return 0;
         }
         id += internalProperty->baseWeight * (value - internalProperty->values.begin());
@@ -89,6 +89,6 @@ Blocks::Block Blocks::GlobalPalette::fromProtocolIdToBlock(BlockId id) const
         }
         return block;
     }
-    LERROR("Block not found in palette (id: " << id << ")");
+    LERROR("Block not found in palette (id: {})", id);
     return {"minecraft:air", {}};
 }

@@ -1,5 +1,5 @@
 #include "Palette.hpp"
-#include "logging/Logger.hpp"
+#include "logging/logging.hpp"
 #include "world_storage/Section.hpp"
 
 world_storage::BlockPalette::BlockPalette()

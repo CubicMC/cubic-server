@@ -5,7 +5,7 @@
 #include "Player.hpp"
 #include "Server.hpp"
 #include "World.hpp"
-#include "logging/Logger.hpp"
+#include "logging/logging.hpp"
 
 using namespace command_parser;
 
@@ -29,12 +29,12 @@ void Op::execute(std::vector<std::string> &args, Player *invoker) const
     if (server->permissions.isOperator(args[0])) {
         if (invoker)
             invoker->getDimension()->getWorld()->getChat()->sendSystemMessage(chat::Message(args[0] + " is already opped."), *invoker);
-        LINFO(args[0] + " is already opped.");
+        LINFO("{} is already opped.", args[0]);
     } else {
         server->permissions.addOperator(args[0]);
         if (invoker)
             invoker->getDimension()->getWorld()->getChat()->sendSystemMessage(chat::Message("opped " + args[0]), *invoker);
-        LINFO("opped " << args[0]);
+        LINFO("opped {}", args[0]);
     }
 }
 

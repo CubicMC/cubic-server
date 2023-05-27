@@ -1,7 +1,6 @@
 #ifndef CUBICSERVER_WORLDSTORAGE_PALETTE_HPP
 #define CUBICSERVER_WORLDSTORAGE_PALETTE_HPP
 
-#include "logging/Logger.hpp"
 #include <algorithm>
 #include <cstdint>
 #include <numeric>

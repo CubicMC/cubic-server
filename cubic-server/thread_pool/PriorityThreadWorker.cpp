@@ -1,6 +1,5 @@
 #include "PriorityThreadWorker.hpp"
-
-#include "logging/Logger.hpp"
+#include "logging/logging.hpp"
 
 #ifdef __linux__
 #include <sys/prctl.h>
@@ -8,14 +7,15 @@
 
 using namespace thread_pool;
 
-#ifdef __linux__
 void PriorityThreadWorker::_nameThread()
 {
+// Named thread is only supported on linux.
+#ifdef __linux__
+    // only way to set thread name under all linux (no POSIX standard).
     prctl(PR_SET_NAME, reinterpret_cast<unsigned long>((_name + "|" + std::to_string(_threadWorkerId)).c_str()));
-} // only way to set thread name under all linux (no POSIX standard).
-#else
-void PriorityThreadWorker::_nameThread() { } // currently not supported. not all os supports this anyway
 #endif
+    logging::Registry::instance().setThreadDefaultLogger(_name);
+}
 
 void PriorityThreadWorker::resizePool()
 {
