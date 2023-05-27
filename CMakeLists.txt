@@ -170,12 +170,12 @@ target_link_libraries (${CMAKE_PROJECT_NAME} PRIVATE
     $<$<BOOL:${MINGW}>:ws2_32>
 )
 
-# if (CMAKE_BUILD_TYPE MATCHES RELWITHDEBINFO)
-#     target_link_libraries (${CMAKE_PROJECT_NAME} PRIVATE
-#         asan
-#         ubsan
-#     )
-# endif()
+if (CMAKE_BUILD_TYPE MATCHES RELWITHDEBINFO)
+    target_link_libraries (${CMAKE_PROJECT_NAME} PRIVATE
+        asan
+        ubsan
+    )
+endif()
 
 if (NOT NO_GUI)
     target_link_libraries(${CMAKE_PROJECT_NAME} PRIVATE

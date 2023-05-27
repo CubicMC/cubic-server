@@ -19,16 +19,17 @@
 #include "protocol/ServerPackets.hpp"
 #include "protocol/serialization/popPrimaryType.hpp"
 
-Client::Client(int sockfd, struct sockaddr_in6 addr):
-    _sockfd(sockfd),
-    _addr(addr),
+using boost::asio::ip::tcp;
+
+Client::Client(tcp::socket &&socket):
     _isRunning(true),
     _status(protocol::ClientStatus::Initial),
     _recvBuffer(0),
-    _sendBuffer(2048 * 64),
-    _networkThread(&Client::networkLoop, this),
-    _player(nullptr)
+    _sendBuffer(2048 * 128 * 100 * 64),
+    _player(nullptr),
+    _socket(std::move(socket))
 {
+    LINFO("Creating client");
 }
 
 Client::~Client()
@@ -36,17 +37,6 @@ Client::~Client()
     LDEBUG("Destroying client");
     // Stop the thread
     _isRunning = false;
-    if (this->_networkThread.joinable())
-        this->_networkThread.join();
-
-    // Close the socket
-    int errorCode;
-    uint32_t errorCodeSize = sizeof(errorCode);
-    getsockopt(_sockfd, SOL_SOCKET, SO_ERROR, &errorCode, &errorCodeSize);
-    if (errorCode == 0) {
-        this->_tryFlushAllSendData();
-        close(_sockfd);
-    }
 
     if (!_player)
         return;
@@ -59,98 +49,99 @@ Client::~Client()
     }
 }
 
-void Client::networkLoop()
-{
-    struct pollfd pollSet[1];
-    uint8_t inBuffer[2048];
+void Client::run() { doRead(); }
 
-    pollSet[0].fd = _sockfd;
-    while (_isRunning) {
-        pollSet[0].events = POLLIN;
-        if (!_sendBuffer.empty())
-            pollSet[0].events |= POLLOUT;
-        poll(pollSet, 1, 50); // TODO: Check how this can be changed
-        if (pollSet[0].revents & POLLIN) {
-            int readSize = read(_sockfd, inBuffer, 2048);
-            if (readSize == -1) {
-                N_LERROR("Read error {}", strerror(errno));
-                _isRunning = false;
-            } else if (readSize == 0)
-                break;
-            else {
-                // TODO: This is extremely inefficient but it will do for now
-                for (int i = 0; i < readSize; i++)
-                    _recvBuffer.push_back(inBuffer[i]);
-                _handlePacket();
-            }
+void Client::doRead()
+{
+    _socket.async_read_some(boost::asio::buffer(_readBuffer, _readBufferSize), [this](boost::system::error_code ec, std::size_t length) {
+        if (ec) {
+            // TODO(huntears): Handle error
+            // LERROR(ec.what());
+            return;
         }
-        if (pollSet[0].revents & POLLOUT) {
-            try {
-                _flushSendData();
-            } catch (const std::runtime_error &) {
-                _isRunning = false;
-            }
-        }
-    }
-    _isRunning = false;
+        _recvBuffer.insert(_recvBuffer.end(), _readBuffer, _readBuffer + length);
+        _handlePacket();
+        doRead();
+    });
+}
+
+void Client::doWrite(std::unique_ptr<std::vector<uint8_t>> &&data)
+{
+    const auto *h = data->data();
+    auto s = data->size();
+    // TODO(huntears): Use async stuff instead of directly sending it
+    // TODO(huntears): Check that the lifetime of the sendBuffer linearized pointer is enough for an async write
+    // boost::asio::async_write(_socket, boost::asio::buffer(h, s), [d = std::move(data)](boost::system::error_code ec, std::size_t length) {
+    //     if (ec) {
+    //         // TODO(huntears): Handle error
+    //         LERROR(ec.what());
+    //     }
+    //     // TODO(huntears): Handle incoming data
+    //     // auto toRemove = _sendBuffer.begin();
+    //     // std::advance(toRemove, length);
+    //     // _sendBuffer.erase(_sendBuffer.begin(), toRemove);
+    //     // _sendBuffer.erase_begin(length);
+    // });
+    boost::asio::write(_socket, boost::asio::buffer(h, s));
 }
 
 bool Client::isDisconnected() const { return !_isRunning; }
 
-void Client::_sendData(const std::vector<uint8_t> &data)
-{
-    // This is extremely inefficient but it will do for now
-    std::lock_guard<std::mutex> _(_writeMutex);
-    // for (const auto &i : data)
-    //     _sendBuffer.push_back(i);
-    _sendBuffer.insert(_sendBuffer.end(), data.begin(), data.end());
-}
+// void Client::_sendData(std::vector<uint8_t> &&data)
+// {
+//     // This is extremely inefficient but it will do for now
+//     // std::lock_guard<std::mutex> _(_writeMutex);
+//     // // for (const auto &i : data)
+//     // //     _sendBuffer.push_back(i);
+//     // _sendBuffer.insert(_sendBuffer.end(), data.begin(), data.end());
+//     doWrite();
+// }
 
 #define SEND_SIZE 2048 * 64 * 128 * 100
 void Client::_flushSendData()
 {
-    std::lock_guard<std::mutex> _(_writeMutex);
-    // char sendBuffer[SEND_SIZE];
-    // static char *sendBuffer = (char *) malloc(SEND_SIZE);
-    size_t toSend = std::min(_sendBuffer.size(), (size_t) SEND_SIZE);
-    // auto augh = _sendBuffer.begin();
-    // std::advance(augh, toSend);
-    // std::copy(_sendBuffer.begin(), augh, sendBuffer);
+    // std::lock_guard<std::mutex> _(_writeMutex);
+    // // char sendBuffer[SEND_SIZE];
+    // // static char *sendBuffer = (char *) malloc(SEND_SIZE);
+    // size_t toSend = std::min(_sendBuffer.size(), (size_t) SEND_SIZE);
+    // // auto augh = _sendBuffer.begin();
+    // // std::advance(augh, toSend);
+    // // std::copy(_sendBuffer.begin(), augh, sendBuffer);
 
-    ssize_t writeReturn = write(_sockfd, _sendBuffer.linearize(), toSend);
+    // ssize_t writeReturn = write(_sockfd, _sendBuffer.linearize(), toSend);
 
-    if (writeReturn <= 0) {
-        _writeMutex.unlock();
-        if (errno == EAGAIN)
-            return;
-        N_LERROR("Write error: {}", strerror(errno));
-        throw std::runtime_error("Pipe error");
-    }
+    // if (writeReturn <= 0) {
+    //     _writeMutex.unlock();
+    //     if (errno == EAGAIN)
+    //         return;
+    //     N_LERROR("Write error: {}", strerror(errno));
+    //     throw std::runtime_error("Pipe error");
+    // }
 
-    auto augh2 = _sendBuffer.begin();
-    std::advance(augh2, writeReturn);
-    _sendBuffer.erase(_sendBuffer.begin(), augh2);
+    // auto augh2 = _sendBuffer.begin();
+    // std::advance(augh2, writeReturn);
+    // _sendBuffer.erase(_sendBuffer.begin(), augh2);
     // _sendBuffer.erase_begin(writeReturn);
 }
 
 void Client::_tryFlushAllSendData()
 {
-    pollfd pollSet[1];
-    pollSet[0].fd = _sockfd;
-    pollSet[0].events = POLLOUT;
+    // pollfd pollSet[1];
+    // pollSet[0].fd = _sockfd;
+    // pollSet[0].events = POLLOUT;
 
-    try {
-        while (!_sendBuffer.empty()) {
-            if (poll(pollSet, 1, 0) == -1)
-                return;
-            if (pollSet[0].revents & POLLOUT)
-                _flushSendData();
-            else
-                return;
-        }
-    } catch (const std::runtime_error &) {
-        return;
-    }
+    // try {
+    //     while (!_sendBuffer.empty()) {
+    //         if (poll(pollSet, 1, 0) == -1)
+    //             return;
+    //         if (pollSet[0].revents & POLLOUT)
+    //             _flushSendData();
+    //         else
+    //             return;
+    //     }
+    // } catch (const std::runtime_error &) {
+    //     return;
+    // }
 }
 
 void Client::switchToPlayState(u128 playerUuid, const std::string &username)
@@ -394,7 +385,7 @@ void Client::_onEncryptionResponse(UNUSED protocol::EncryptionResponse &pck) { N
 void Client::sendStatusResponse(const std::string &json)
 {
     auto pck = protocol::createStatusResponse({json});
-    _sendData(*pck);
+    doWrite(std::move(pck));
 
     N_LDEBUG("Sent status response");
 }
@@ -402,7 +393,7 @@ void Client::sendStatusResponse(const std::string &json)
 void Client::sendPingResponse(int64_t payload)
 {
     auto pck = protocol::createPingResponse({payload});
-    _sendData(*pck);
+    doWrite(std::move(pck));
 
     N_LDEBUG("Sent a ping response");
 }
@@ -410,7 +401,7 @@ void Client::sendPingResponse(int64_t payload)
 void Client::sendLoginSuccess(const protocol::LoginSuccess &packet)
 {
     auto pck = protocol::createLoginSuccess(packet);
-    _sendData(*pck);
+    doWrite(std::move(pck));
     N_LDEBUG("Sent a login success");
 }
 
@@ -547,7 +538,7 @@ void Client::disconnect(const chat::Message &reason)
     }
 
     auto pck = protocol::createLoginDisconnect({reason.serialize()});
-    _sendData(*pck);
+    doWrite(std::move(pck));
     _isRunning = false;
     N_LDEBUG("Sent a disconnect login packet");
 }
@@ -555,8 +546,8 @@ void Client::disconnect(const chat::Message &reason)
 void Client::stop(const chat::Message &reason)
 {
     this->disconnect(reason);
-    if (this->_networkThread.joinable())
-        this->_networkThread.join();
+    // if (this->_networkThread.joinable())
+    //     this->_networkThread.join();
 }
 
 void Client::_loginSequence(const protocol::LoginSuccess &pck)

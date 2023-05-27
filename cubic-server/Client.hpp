@@ -2,7 +2,7 @@
 #define CUBICSERVER_CLIENT_HPP
 
 #include <arpa/inet.h>
-#include <boost/circular_buffer.hpp>
+#include <boost/asio.hpp>
 #include <memory>
 #include <netinet/in.h>
 #include <thread>
@@ -53,16 +53,20 @@ constexpr const char DEFAULT_FAVICON[] =
     "00jftzuSFFDFCF4ztqAJXpikeQCep6Gz3PN9+DFwxG5sPTA7TT89IxbMfBwCooqDtQ3JOX3UKbD9p+IwKRO47z+w0hf7PfPhwAEmXKECqyGTohOP1AdAMaoLpTnpfURI59doS27fA8IKHzK95vCPlIv8FkHjRbY7K+"
     "az7fd8LLTE1gIIO0+txkH6584qq9/2+4+OhkJV5u7T1L0fvcTIRPlN2AAAAAElFTkSuQmCC";
 
+constexpr auto _readBufferSize = 2048;
+
 class Player;
 
 class Client : public std::enable_shared_from_this<Client> {
     friend class Player;
 
 public:
-    Client(int sockfd, struct sockaddr_in6 addr);
+    Client(boost::asio::ip::tcp::socket &&socket);
     ~Client();
 
-    void networkLoop();
+    void run();
+    void doRead();
+    void doWrite(std::unique_ptr<std::vector<uint8_t>> &&data);
 
     NODISCARD bool isDisconnected() const;
     NODISCARD protocol::ClientStatus getStatus() const { return _status; }
@@ -90,7 +94,7 @@ private:
     void _handlePacket();
     void _flushSendData();
     void _tryFlushAllSendData();
-    void _sendData(const std::vector<uint8_t> &data);
+    // void _sendData(std::vector<uint8_t> &data);
     void _onHandshake(protocol::Handshake &pck);
     void _onStatusRequest(protocol::StatusRequest &pck);
     void _onLoginStart(protocol::LoginStart &pck);
@@ -99,15 +103,15 @@ private:
     void _loginSequence(const protocol::LoginSuccess &packet);
 
 private:
-    const int _sockfd;
-    const struct sockaddr_in6 _addr;
     std::atomic<bool> _isRunning;
     protocol::ClientStatus _status;
     std::vector<uint8_t> _recvBuffer;
-    boost::circular_buffer_space_optimized<uint8_t> _sendBuffer;
-    std::thread _networkThread;
+    char _readBuffer[_readBufferSize];
+    // boost::circular_buffer_space_optimized<uint8_t> _sendBuffer;
+    boost::circular_buffer<uint8_t> _sendBuffer;
     std::shared_ptr<Player> _player;
     std::mutex _writeMutex;
+    boost::asio::ip::tcp::socket _socket;
 };
 
 #endif // CUBICSERVER_CLIENT_HPP

@@ -1,3 +1,5 @@
+#include <cstdint>
+#include <memory>
 #include <netdb.h>
 #include <poll.h>
 #include <sys/socket.h>
@@ -14,6 +16,8 @@
 #include "command_parser/commands/Gamemode.hpp"
 #include "default/DefaultWorldGroup.hpp"
 #include "logging/logging.hpp"
+
+using boost::asio::ip::tcp;
 
 Server::Server():
     _running(false),
@@ -48,28 +52,6 @@ Server::~Server() { }
 void Server::launch(const configuration::ConfigHandler &config)
 {
     this->_config = config;
-    LINFO("Starting server on {}:{}", _config["ip"], _config["port"]);
-    int yes = 1;
-    int no = 0;
-
-    // Get the socket for the server
-    _sockfd = socket(AF_INET6, SOCK_STREAM, getprotobyname("tcp")->p_proto);
-
-    // Create the addr for the server
-    if (!inet_pton(AF_INET, _config["ip"].value().c_str(), &(_addr.sin6_addr)))
-        throw std::runtime_error("Invalid host ip address");
-
-    _addr.sin6_family = AF_INET6;
-    _addr.sin6_port = htons(_config["port"].as<uint16_t>());
-
-    // Bind server socket
-    setsockopt(_sockfd, SOL_SOCKET, SO_REUSEADDR, &yes, sizeof(yes));
-    setsockopt(_sockfd, IPPROTO_IPV6, IPV6_V6ONLY, &no, sizeof(no));
-    if (bind(_sockfd, reinterpret_cast<struct sockaddr *>(&_addr), sizeof(_addr)))
-        throw std::runtime_error(strerror(errno));
-
-    // Listen
-    listen(_sockfd, SOMAXCONN);
 
     // Initialize the global palette
     _globalPalette.initialize(std::string("blocks-") + MC_VERSION + ".json");
@@ -84,14 +66,32 @@ void Server::launch(const configuration::ConfigHandler &config)
     _worldGroups.emplace("default", new DefaultWorldGroup(defaultChat));
     _worldGroups.at("default")->initialize();
 
+    // TODO(huntears): Deal with this
     // Initialize default recipes
     // this->_recipes.initialize();
 
     this->_running = true;
 
-    _acceptLoop();
+    LINFO("Starting server on {}:{}", _config["ip"], _config["port"]);
 
-    this->_stop();
+    _acceptor = std::make_unique<boost::asio::ip::tcp::acceptor>(_io_context, tcp::endpoint(tcp::v4(), _config["port"].as<uint16_t>()));
+
+    _doAccept();
+
+    _io_context.run();
+}
+
+void Server::_doAccept()
+{
+    _acceptor->async_accept([this](boost::system::error_code ec, tcp::socket socket) {
+        if (!ec) {
+            std::shared_ptr<Client> _cli(new Client(std::move(socket)));
+            _clients.push_back(_cli);
+            _cli->run();
+        }
+
+        _doAccept();
+    });
 }
 
 void Server::stop()
@@ -106,48 +106,48 @@ void Server::stop()
 
 void Server::_acceptLoop()
 {
-    struct pollfd pollSet[1];
+    // struct pollfd pollSet[1];
 
-    pollSet[0].fd = _sockfd;
-    pollSet[0].events = POLLIN;
-    while (this->_running) {
-        poll(pollSet, 1, 50);
-        if (pollSet[0].revents & POLLIN) {
-            struct sockaddr_in6 clientAddr { };
-            socklen_t clientAddrSize = sizeof(clientAddr);
-            int clientFd = accept(_sockfd, reinterpret_cast<struct sockaddr *>(&clientAddr), &clientAddrSize);
-            if (clientFd == -1) {
-                throw std::runtime_error(strerror(errno));
-            }
-            // Add accepted client to the vector of clients
-            // auto cli = std::make_shared<Client>(clientFd, clientAddr);
-            // _clients.push_back(cli);
-            {
-                std::lock_guard _(this->clientsMutex);
-                _clients.push_back(std::make_shared<Client>(clientFd, clientAddr));
-            }
+    // pollSet[0].fd = _sockfd;
+    // pollSet[0].events = POLLIN;
+    // while (this->_running) {
+    //     poll(pollSet, 1, 50);
+    //     if (pollSet[0].revents & POLLIN) {
+    //         struct sockaddr_in6 clientAddr { };
+    //         socklen_t clientAddrSize = sizeof(clientAddr);
+    //         int clientFd = accept(_sockfd, reinterpret_cast<struct sockaddr *>(&clientAddr), &clientAddrSize);
+    //         if (clientFd == -1) {
+    //             throw std::runtime_error(strerror(errno));
+    //         }
+    //         // Add accepted client to the vector of clients
+    //         // auto cli = std::make_shared<Client>(clientFd, clientAddr);
+    //         // _clients.push_back(cli);
+    //         {
+    //             std::lock_guard _(this->clientsMutex);
+    //             _clients.push_back(std::make_shared<Client>(clientFd, clientAddr));
+    //         }
 
-            // Emplace_back is not working, I don't know why
-            // _clients.emplace_back(clientFd, clientAddr);
+    //         // Emplace_back is not working, I don't know why
+    //         // _clients.emplace_back(clientFd, clientAddr);
 
-            // That line is kinda borked, but I'll check one day how to fix it
-            // auto *cliThread = new std::thread(&Client::networkLoop, &(*cli));
-            // That is 99.99% a data race, but aight, it will probably
-            // never happen
-            // cli->setRunningThread(cliThread);
-        }
+    //         // That line is kinda borked, but I'll check one day how to fix it
+    //         // auto *cliThread = new std::thread(&Client::networkLoop, &(*cli));
+    //         // That is 99.99% a data race, but aight, it will probably
+    //         // never happen
+    //         // cli->setRunningThread(cliThread);
+    //     }
 
-        std::lock_guard _(this->clientsMutex);
-        _clients.erase(
-            std::remove_if(
-                _clients.begin(), _clients.end(),
-                [](const std::shared_ptr<Client> &cli) {
-                    return cli->isDisconnected();
-                }
-            ),
-            _clients.end()
-        );
-    }
+    //     std::lock_guard _(this->clientsMutex);
+    //     _clients.erase(
+    //         std::remove_if(
+    //             _clients.begin(), _clients.end(),
+    //             [](const std::shared_ptr<Client> &cli) {
+    //                 return cli->isDisconnected();
+    //             }
+    //         ),
+    //         _clients.end()
+    //     );
+    // }
 }
 
 void Server::_stop()

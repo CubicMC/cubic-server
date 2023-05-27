@@ -2,6 +2,7 @@
 #define CUBICSERVER_SERVER_HPP
 
 #include <arpa/inet.h>
+#include <boost/asio.hpp>
 #include <cstdint>
 #include <memory>
 #include <netinet/in.h>
@@ -111,6 +112,13 @@ private:
     Blocks::GlobalPalette _globalPalette;
     Items::ItemConverter _itemConverter;
     Recipes _recipes;
+
+    // new boost stuff
+
+    void _doAccept();
+
+    boost::asio::io_context _io_context;
+    std::unique_ptr<boost::asio::ip::tcp::acceptor> _acceptor;
 };
 
 #endif // CUBICSERVER_SERVER_HPP

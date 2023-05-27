@@ -135,7 +135,7 @@ void Player::disconnect(const chat::Message &reason)
 {
     GET_CLIENT();
     auto pck = protocol::createPlayDisconnect({reason.serialize()});
-    client->_sendData(*pck);
+    client->doWrite(std::move(pck));
     client->_isRunning = false;
     N_LDEBUG("Sent a disconnect play packet");
 }
@@ -198,7 +198,7 @@ void Player::playSoundEffect(SoundsList sound, FloatingPosition position, SoundC
         1.0, // TODO: get the right pitch
         0 // TODO: get the right seed
     });
-    client->_sendData(*pck);
+    client->doWrite(std::move(pck));
     N_LDEBUG("Sent a sound effect packet");
 }
 
@@ -211,7 +211,7 @@ void Player::playSoundEffect(SoundsList sound, const Entity &entity, SoundCatego
         1.0, // TODO: get the right pitch
         1 // TODO: get the right seed
     });
-    client->_sendData(*pck);
+    client->doWrite(std::move(pck));
     N_LDEBUG("Sent a entity sound effect packet");
 }
 
@@ -226,7 +226,7 @@ void Player::playCustomSound(std::string sound, FloatingPosition position, Sound
         1.0, // TODO: get the right pitch
         0 // TODO: get the right seed
     });
-    client->_sendData(*pck);
+    client->doWrite(std::move(pck));
     N_LDEBUG("Sent a custom sound effect packet");
 }
 
@@ -234,7 +234,7 @@ void Player::stopSound(uint8_t flags, SoundCategory category, std::string sound)
 {
     GET_CLIENT();
     auto pck = protocol::createStopSound({flags, (int32_t) category, sound});
-    client->_sendData(*pck);
+    client->doWrite(std::move(pck));
     N_LDEBUG("Sent a stop sound packet");
 }
 
@@ -242,7 +242,7 @@ void Player::sendBlockUpdate(const protocol::BlockUpdate &packet)
 {
     GET_CLIENT();
     auto pck = protocol::createBlockUpdate(packet);
-    client->_sendData(*pck);
+    client->doWrite(std::move(pck));
 
     N_LDEBUG("Sent a block update at {} = {} to {}", packet.location, packet.blockId, this->getUsername());
 }
@@ -251,7 +251,7 @@ void Player::sendFeatureFlags(const protocol::FeatureFlags &packet)
 {
     GET_CLIENT();
     auto pck = protocol::createFeatureFlags(packet);
-    client->_sendData(*pck);
+    client->doWrite(std::move(pck));
     N_LDEBUG("Sent a feature flags packet");
 }
 
@@ -259,7 +259,7 @@ void Player::sendServerData(const protocol::ServerData &packet)
 {
     GET_CLIENT();
     auto pck = protocol::createServerData(packet);
-    client->_sendData(*pck);
+    client->doWrite(std::move(pck));
     N_LDEBUG("Sent a server data packet");
 }
 
@@ -267,7 +267,7 @@ void Player::sendLoginPlay(const protocol::LoginPlay &packet)
 {
     GET_CLIENT();
     auto pck = protocol::createLoginPlay(packet);
-    client->_sendData(*pck);
+    client->doWrite(std::move(pck));
     N_LDEBUG("Sent a login play");
 }
 
@@ -275,7 +275,7 @@ void Player::sendPlayerInfoUpdate(const protocol::PlayerInfoUpdate &data)
 {
     GET_CLIENT();
     auto pck = protocol::createPlayerInfoUpdate(data);
-    client->_sendData(*pck);
+    client->doWrite(std::move(pck));
 
     N_LDEBUG("Sent a Player Info packet");
 }
@@ -284,7 +284,7 @@ void Player::sendPlayerInfoRemove(const protocol::PlayerInfoRemove &data)
 {
     GET_CLIENT();
     auto pck = protocol::createPlayerInfoRemove(data);
-    client->_sendData(*pck);
+    client->doWrite(std::move(pck));
 
     N_LDEBUG("Sent a Player Info packet");
 }
@@ -293,7 +293,7 @@ void Player::sendSpawnEntity(const protocol::SpawnEntity &data)
 {
     GET_CLIENT();
     auto pck = protocol::createSpawnEntity(data);
-    client->_sendData(*pck);
+    client->doWrite(std::move(pck));
 
     N_LDEBUG("Sent a Spawn Entity packet");
 }
@@ -302,7 +302,7 @@ void Player::sendSpawnPlayer(const protocol::SpawnPlayer &data)
 {
     GET_CLIENT();
     auto pck = protocol::createSpawnPlayer(data);
-    client->_sendData(*pck);
+    client->doWrite(std::move(pck));
 
     N_LDEBUG("Sent a Spawn Player packet on coords: ({}, {}, {})", data.x, data.y, data.z);
 }
@@ -311,7 +311,7 @@ void Player::sendEntityVelocity(const protocol::EntityVelocity &data)
 {
     GET_CLIENT();
     auto pck = protocol::createEntityVelocity(data);
-    client->_sendData(*pck);
+    client->doWrite(std::move(pck));
 
     N_LDEBUG("Sent an Entity Velocity packet with velocity: x -> {} | y -> {} | z -> {}", data.velocityX, data.velocityY, data.velocityZ);
 }
@@ -320,7 +320,7 @@ void Player::sendHealth(void)
 {
     GET_CLIENT();
     auto pck = protocol::createHealth({_health, _foodLevel, _foodSaturationLevel});
-    client->_sendData(*pck);
+    client->doWrite(std::move(pck));
 
     N_LDEBUG("Sent a Health packet");
 }
@@ -329,7 +329,7 @@ void Player::sendUpdateTime(const protocol::UpdateTime &data)
 {
     GET_CLIENT();
     auto pck = protocol::createUpdateTime(data);
-    client->_sendData(*pck);
+    client->doWrite(std::move(pck));
 
     N_LDEBUG("Sent an Update Time packet");
 }
@@ -338,7 +338,7 @@ void Player::sendChatMessageResponse(UNUSED const protocol::PlayerChatMessage &p
 {
     GET_CLIENT();
     auto pck = protocol::createPlayerChatMessage(packet);
-    client->_sendData(*pck);
+    client->doWrite(std::move(pck));
 
     N_LDEBUG("Sent a chat message response");
 }
@@ -347,7 +347,7 @@ void Player::sendSystemChatMessage(const protocol::SystemChatMessage &packet)
 {
     GET_CLIENT();
     auto pck = protocol::createSystemChatMessage(packet);
-    client->_sendData(*pck);
+    client->doWrite(std::move(pck));
 
     N_LDEBUG("Sent a system chat message to {}", this->getUsername());
 }
@@ -356,7 +356,7 @@ void Player::sendWorldEvent(const protocol::WorldEvent &packet)
 {
     GET_CLIENT();
     auto pck = protocol::createWorldEvent(packet);
-    client->_sendData(*pck);
+    client->doWrite(std::move(pck));
 
     N_LDEBUG("Sent a world event");
 }
@@ -365,7 +365,7 @@ void Player::sendKeepAlive(long id)
 {
     GET_CLIENT();
     auto pck = protocol::createKeepAlive(id);
-    client->_sendData(*pck);
+    client->doWrite(std::move(pck));
     N_LDEBUG("Sent a keep alive packet");
 }
 
@@ -373,7 +373,7 @@ void Player::sendUpdateEntityPosition(const protocol::UpdateEntityPosition &data
 {
     GET_CLIENT();
     auto pck = protocol::createUpdateEntityPosition(data);
-    client->_sendData(*pck);
+    client->doWrite(std::move(pck));
     N_LDEBUG("Sent an entity position packet");
 }
 
@@ -381,7 +381,7 @@ void Player::sendUpdateEntityPositionAndRotation(const protocol::UpdateEntityPos
 {
     GET_CLIENT();
     auto pck = protocol::createUpdateEntityPositionRotation(data);
-    client->_sendData(*pck);
+    client->doWrite(std::move(pck));
     N_LDEBUG("Sent an entity position and rotation packet");
 }
 
@@ -389,7 +389,7 @@ void Player::sendUpdateEntityRotation(const protocol::UpdateEntityRotation &data
 {
     GET_CLIENT();
     auto pck = protocol::createUpdateEntityRotation(data);
-    client->_sendData(*pck);
+    client->doWrite(std::move(pck));
     N_LDEBUG("Sent an entity rotation packet");
 }
 
@@ -397,7 +397,7 @@ void Player::sendHeadRotation(const protocol::HeadRotation &data)
 {
     GET_CLIENT();
     auto pck = protocol::createHeadRotation(data);
-    client->_sendData(*pck);
+    client->doWrite(std::move(pck));
     N_LDEBUG("Sent an entity head rotation packet");
 }
 
@@ -405,7 +405,7 @@ void Player::sendSetCenterChunk(const Position2D &pos)
 {
     GET_CLIENT();
     auto pck = protocol::createCenterChunk(pos);
-    client->_sendData(*pck);
+    client->doWrite(std::move(pck));
     N_LDEBUG("Sent a center chunk packet");
 }
 
@@ -423,7 +423,7 @@ void Player::sendSynchronizePosition(const Vector3<double> &pos)
         true,
 
     });
-    client->_sendData(*pck);
+    client->doWrite(std::move(pck));
     N_LDEBUG("Sent a synchronize position packet");
 }
 
@@ -466,7 +466,7 @@ void Player::sendChunkAndLightUpdate(const world_storage::ChunkColumn &chunk)
          chunk}
     );
 
-    client->_sendData(*packet);
+    client->doWrite(std::move(packet));
 
     std::lock_guard _(_chunksMutex);
     this->_chunks[chunkPos] = ChunkState::Loaded;
@@ -478,7 +478,7 @@ void Player::sendUnloadChunk(int32_t x, int32_t z)
 {
     GET_CLIENT();
     auto pck = protocol::createUnloadChunk({x, z});
-    client->_sendData(*pck);
+    client->doWrite(std::move(pck));
     N_LDEBUG("Sent an unload chunk packet ({}, {})", x, z);
 }
 
@@ -486,7 +486,7 @@ void Player::sendRemoveEntities(const std::vector<int32_t> &entities)
 {
     GET_CLIENT();
     auto pck = protocol::createRemoveEntities({entities});
-    client->_sendData(*pck);
+    client->doWrite(std::move(pck));
     N_LDEBUG("Sent a Remove Entities packet");
 }
 
@@ -500,7 +500,7 @@ void Player::sendEntityAnimation(protocol::EntityAnimation::ID animId, int32_t e
 {
     GET_CLIENT();
     auto pck = protocol::createEntityAnimation(animId, entityID);
-    client->_sendData(*pck);
+    client->doWrite(std::move(pck));
     N_LDEBUG("Sent an Entity Animation packet");
 }
 
@@ -508,7 +508,7 @@ void Player::sendTeleportEntity(int32_t id, const Vector3<double> &pos)
 {
     GET_CLIENT();
     auto pck = protocol::createTeleportEntity({id, pos.x, pos.y, pos.z, _rot.x, _rot.z, false});
-    client->_sendData(*pck);
+    client->doWrite(std::move(pck));
     N_LDEBUG("Sent a Teleport Entity");
 }
 
@@ -516,7 +516,7 @@ void Player::sendPlayerAbilities(const protocol::PlayerAbilitiesClient &packet)
 {
     GET_CLIENT();
     auto pck = protocol::createPlayerAbilities(packet);
-    client->_sendData(*pck);
+    client->doWrite(std::move(pck));
     N_LDEBUG("Sent a Player Abilities packet");
 }
 
@@ -524,7 +524,7 @@ void Player::sendGameEvent(const protocol::GameEvent &packet)
 {
     GET_CLIENT();
     auto pck = protocol::createGameEvent(packet);
-    client->_sendData(*pck);
+    client->doWrite(std::move(pck));
     LDEBUG("Sent a Game Event packet");
 }
 
@@ -532,7 +532,7 @@ void Player::sendSetContainerContent(const protocol::SetContainerContent &packet
 {
     GET_CLIENT();
     auto pck = protocol::createSetContainerContent(packet);
-    client->_sendData(*pck);
+    client->doWrite(std::move(pck));
     N_LDEBUG("Sent set container content packet");
 }
 
@@ -540,7 +540,7 @@ void Player::sendUpdateRecipes(const protocol::UpdateRecipes &packet)
 {
     GET_CLIENT();
     auto pck = protocol::createUpdateRecipes(packet);
-    client->_sendData(*pck);
+    client->doWrite(std::move(pck));
     N_LDEBUG("Sent update recipes packet");
 }
 
@@ -548,7 +548,7 @@ void Player::sendUpdateTags(const protocol::UpdateTags &packet)
 {
     GET_CLIENT();
     auto pck = protocol::createUpdateTags(packet);
-    client->_sendData(*pck);
+    client->doWrite(std::move(pck));
     N_LDEBUG("Sent update tags packet");
 }
 
@@ -556,7 +556,7 @@ void Player::sendCommands(const protocol::Commands &packet)
 {
     GET_CLIENT();
     auto pck = protocol::createCommands(packet);
-    client->_sendData(*pck);
+    client->doWrite(std::move(pck));
     N_LDEBUG("Sent commands packet");
 }
 
@@ -564,7 +564,7 @@ void Player::sendChangeDifficulty(const protocol::ChangeDifficultyClient &packet
 {
     GET_CLIENT();
     auto pck = protocol::createChangeDifficultyClient(packet);
-    client->_sendData(*pck);
+    client->doWrite(std::move(pck));
     N_LDEBUG("Sent change difficulty packet");
 }
 
@@ -572,7 +572,7 @@ void Player::sendSetHeldItem(const protocol::SetHeldItemClient &packet)
 {
     GET_CLIENT();
     auto pck = protocol::createSetHeldItemClient(packet);
-    client->_sendData(*pck);
+    client->doWrite(std::move(pck));
     N_LDEBUG("Sent set held item packet");
 }
 
@@ -580,7 +580,7 @@ void Player::sendEntityEvent(const protocol::EntityEvent &packet)
 {
     GET_CLIENT();
     auto pck = protocol::createEntityEvent(packet);
-    client->_sendData(*pck);
+    client->doWrite(std::move(pck));
     N_LDEBUG("Sent entity event packet");
 }
 
@@ -588,7 +588,7 @@ void Player::sendUpdateRecipiesBook(const protocol::UpdateRecipesBook &packet)
 {
     GET_CLIENT();
     auto pck = protocol::createUpdateRecipesBook(packet);
-    client->_sendData(*pck);
+    client->doWrite(std::move(pck));
     N_LDEBUG("Sent update recipies book packet");
 }
 
@@ -596,7 +596,7 @@ void Player::sendInitializeWorldBorder(const protocol::InitializeWorldBorder &pa
 {
     GET_CLIENT();
     auto pck = protocol::createInitializeWorldBorder(packet);
-    client->_sendData(*pck);
+    client->doWrite(std::move(pck));
     N_LDEBUG("Sent initialize world border packet");
 }
 
@@ -604,14 +604,14 @@ void Player::sendSetDefaultSpawnPosition(const protocol::SetDefaultSpawnPosition
 {
     GET_CLIENT();
     auto pck = protocol::createSetDefaultSpawnPosition(packet);
-    client->_sendData(*pck);
+    client->doWrite(std::move(pck));
     N_LDEBUG("Sent set default spawn position packet");
 }
 
 // void Player::sendSetEntityMetadata(const protocol::SetEntityMetadata &packet)
 // {
 //     auto pck = protocol::createSetEntityMetadata(packet);
-//     client->_sendData(*pck);
+//     client->doWrite(std::move(pck));
 //     LDEBUG("Sent set entity metadata packet");
 // }
 
@@ -619,7 +619,7 @@ void Player::sendUpdateAttributes(const protocol::UpdateAttributes &packet)
 {
     GET_CLIENT();
     auto pck = protocol::createUpdateAttributes(packet);
-    client->_sendData(*pck);
+    client->doWrite(std::move(pck));
     N_LDEBUG("Sent update attributes packet");
 }
 
@@ -627,7 +627,7 @@ void Player::sendUpdateAdvancements(const protocol::UpdateAdvancements &packet)
 {
     GET_CLIENT();
     auto pck = protocol::createUpdateAdvancements(packet);
-    client->_sendData(*pck);
+    client->doWrite(std::move(pck));
     N_LDEBUG("Sent update advancements packet");
 }
 
@@ -635,7 +635,7 @@ void Player::sendSetExperience(const protocol::SetExperience &packet)
 {
     GET_CLIENT();
     auto pck = protocol::createSetExperience(packet);
-    client->_sendData(*pck);
+    client->doWrite(std::move(pck));
     N_LDEBUG("Sent set experience packet");
 }
 
@@ -695,7 +695,7 @@ void Player::_onPluginMessage(protocol::PluginMessage &pck)
         auto pck = protocol::createPluginMessageResponse({
             "minecraft:brand", std::vector<uint8_t>({0x05, 0x43, 0x75, 0x62, 0x69, 0x63}) // 43 75 62 69 63 | "Cubic" in hex
         });
-        client->_sendData(*pck);
+        client->doWrite(std::move(pck));
         return;
     }
 }
