@@ -119,6 +119,7 @@ if(GTEST) # if the flag GTEST is true
 endif()
 
 find_package(Threads REQUIRED)
+find_package(Boost REQUIRED)
 find_package(PkgConfig REQUIRED)
 pkg_check_modules(GTKMM gtkmm-3.0)
 
