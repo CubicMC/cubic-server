@@ -89,6 +89,7 @@ FetchContent_MakeAvailable(
 # Fix spdlog warnings
 get_target_property(spdlog_include spdlog INTERFACE_INCLUDE_DIRECTORIES)
 target_include_directories(spdlog SYSTEM INTERFACE ${spdlog_include})
+target_compile_options(spdlog PUBLIC -Wno-array-bounds -Wno-stringop-overflow)
 
 # Fix yaml-cpp warnings
 get_target_property(yaml_cpp_include yaml-cpp INTERFACE_INCLUDE_DIRECTORIES)
