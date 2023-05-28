@@ -14,6 +14,7 @@
 #include "protocol/ServerPackets.hpp"
 #include "protocol/common.hpp"
 #include <boost/circular_buffer.hpp>
+#include <boost/container/deque.hpp>
 
 #define __PCK_CALLBACK_PRIM(type, object) return object->_on##type(*(type *) packet.get())
 
@@ -61,12 +62,13 @@ class Client : public std::enable_shared_from_this<Client> {
     friend class Player;
 
 public:
-    Client(boost::asio::ip::tcp::socket &&socket);
+    Client(boost::asio::ip::tcp::socket &&socket, size_t clientID);
     ~Client();
 
     void run();
     void doRead();
     void doWrite(std::unique_ptr<std::vector<uint8_t>> &&data);
+    NODISCARD inline std::thread &getThread() { return _thread; };
 
     NODISCARD bool isDisconnected() const;
     NODISCARD protocol::ClientStatus getStatus() const { return _status; }
@@ -89,6 +91,8 @@ public:
 
     std::shared_ptr<Player> getPlayer();
     const std::shared_ptr<Player> getPlayer() const;
+    inline size_t getID() const { return _clientID; };
+    inline boost::asio::ip::tcp::socket &getSocket() { return _socket; }
 
 private:
     void _handlePacket();
@@ -112,6 +116,10 @@ private:
     std::shared_ptr<Player> _player;
     std::mutex _writeMutex;
     boost::asio::ip::tcp::socket _socket;
+    // boost::lockfree::queue<uint8_t> _toSend;
+    boost::container::deque<std::unique_ptr<uint8_t>> _toSend;
+    const size_t _clientID;
+    std::thread _thread;
 };
 
 #endif // CUBICSERVER_CLIENT_HPP

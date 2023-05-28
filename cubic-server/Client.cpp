@@ -1,8 +1,12 @@
+#include <boost/system/detail/error_category.hpp>
+#include <boost/system/detail/error_code.hpp>
+#include <mutex>
 #include <poll.h>
 #include <stdexcept>
 #include <string>
 #include <sys/socket.h>
 #include <sys/types.h>
+#include <thread>
 #include <unistd.h>
 
 #include "Client.hpp"
@@ -21,13 +25,14 @@
 
 using boost::asio::ip::tcp;
 
-Client::Client(tcp::socket &&socket):
+Client::Client(tcp::socket &&socket, size_t clientID):
     _isRunning(true),
     _status(protocol::ClientStatus::Initial),
     _recvBuffer(0),
     _sendBuffer(2048 * 128 * 100 * 64),
     _player(nullptr),
-    _socket(std::move(socket))
+    _socket(std::move(socket)),
+    _clientID(clientID)
 {
     LINFO("Creating client");
 }
@@ -47,102 +52,34 @@ Client::~Client()
         if (chunkReq.second == Player::ChunkState::Loading)
             this->_player->getDimension()->removePlayerFromLoadingChunk(chunkReq.first, this->_player);
     }
+    // if (_thread.joinable())
+    // _thread.join();
+    // _thread.detach();
 }
 
-void Client::run() { doRead(); }
+void Client::run() { _thread = std::thread(&Client::doRead, this); }
 
 void Client::doRead()
 {
-    _socket.async_read_some(boost::asio::buffer(_readBuffer, _readBufferSize), [this](boost::system::error_code ec, std::size_t length) {
+    while (_isRunning) {
+        boost::system::error_code ec;
+        size_t length = _socket.read_some(boost::asio::buffer(_readBuffer, _readBufferSize), ec);
         if (ec) {
             // TODO(huntears): Handle error
             // LERROR(ec.what());
+            _isRunning = false;
+            // Server::getInstance()->triggerClientCleanup(_clientID);
             return;
         }
         _recvBuffer.insert(_recvBuffer.end(), _readBuffer, _readBuffer + length);
         _handlePacket();
-        doRead();
-    });
+    }
+    // Server::getInstance()->triggerClientCleanup(_clientID);
 }
 
-void Client::doWrite(std::unique_ptr<std::vector<uint8_t>> &&data)
-{
-    const auto *h = data->data();
-    auto s = data->size();
-    // TODO(huntears): Use async stuff instead of directly sending it
-    // TODO(huntears): Check that the lifetime of the sendBuffer linearized pointer is enough for an async write
-    // boost::asio::async_write(_socket, boost::asio::buffer(h, s), [d = std::move(data)](boost::system::error_code ec, std::size_t length) {
-    //     if (ec) {
-    //         // TODO(huntears): Handle error
-    //         LERROR(ec.what());
-    //     }
-    //     // TODO(huntears): Handle incoming data
-    //     // auto toRemove = _sendBuffer.begin();
-    //     // std::advance(toRemove, length);
-    //     // _sendBuffer.erase(_sendBuffer.begin(), toRemove);
-    //     // _sendBuffer.erase_begin(length);
-    // });
-    boost::asio::write(_socket, boost::asio::buffer(h, s));
-}
+void Client::doWrite(std::unique_ptr<std::vector<uint8_t>> &&data) { Server::getInstance()->sendData(_clientID, std::move(data)); }
 
 bool Client::isDisconnected() const { return !_isRunning; }
-
-// void Client::_sendData(std::vector<uint8_t> &&data)
-// {
-//     // This is extremely inefficient but it will do for now
-//     // std::lock_guard<std::mutex> _(_writeMutex);
-//     // // for (const auto &i : data)
-//     // //     _sendBuffer.push_back(i);
-//     // _sendBuffer.insert(_sendBuffer.end(), data.begin(), data.end());
-//     doWrite();
-// }
-
-#define SEND_SIZE 2048 * 64 * 128 * 100
-void Client::_flushSendData()
-{
-    // std::lock_guard<std::mutex> _(_writeMutex);
-    // // char sendBuffer[SEND_SIZE];
-    // // static char *sendBuffer = (char *) malloc(SEND_SIZE);
-    // size_t toSend = std::min(_sendBuffer.size(), (size_t) SEND_SIZE);
-    // // auto augh = _sendBuffer.begin();
-    // // std::advance(augh, toSend);
-    // // std::copy(_sendBuffer.begin(), augh, sendBuffer);
-
-    // ssize_t writeReturn = write(_sockfd, _sendBuffer.linearize(), toSend);
-
-    // if (writeReturn <= 0) {
-    //     _writeMutex.unlock();
-    //     if (errno == EAGAIN)
-    //         return;
-    //     N_LERROR("Write error: {}", strerror(errno));
-    //     throw std::runtime_error("Pipe error");
-    // }
-
-    // auto augh2 = _sendBuffer.begin();
-    // std::advance(augh2, writeReturn);
-    // _sendBuffer.erase(_sendBuffer.begin(), augh2);
-    // _sendBuffer.erase_begin(writeReturn);
-}
-
-void Client::_tryFlushAllSendData()
-{
-    // pollfd pollSet[1];
-    // pollSet[0].fd = _sockfd;
-    // pollSet[0].events = POLLOUT;
-
-    // try {
-    //     while (!_sendBuffer.empty()) {
-    //         if (poll(pollSet, 1, 0) == -1)
-    //             return;
-    //         if (pollSet[0].revents & POLLOUT)
-    //             _flushSendData();
-    //         else
-    //             return;
-    //     }
-    // } catch (const std::runtime_error &) {
-    //     return;
-    // }
-}
 
 void Client::switchToPlayState(u128 playerUuid, const std::string &username)
 {
@@ -345,8 +282,8 @@ void Client::_onStatusRequest(UNUSED protocol::StatusRequest &pck)
     json["players"]["max"] = conf["max-players"].as<int32_t>();
     {
         std::lock_guard _(srv->clientsMutex);
-        json["players"]["online"] = std::count_if(cli.begin(), cli.end(), [](std::shared_ptr<Client> each) {
-            return each->getStatus() == protocol::ClientStatus::Play;
+        json["players"]["online"] = std::count_if(cli.begin(), cli.end(), [](std::pair<size_t, std::shared_ptr<Client>> each) {
+            return each.second->getStatus() == protocol::ClientStatus::Play;
         });
     }
 
