@@ -6,6 +6,7 @@
 #include "logging/logging.hpp"
 #include "nbt.hpp"
 #include "world_storage/Section.hpp"
+#include <cstdlib>
 #include <memory>
 
 namespace world_storage {
@@ -25,6 +26,15 @@ ChunkColumn::ChunkColumn(const Position2D &chunkPos):
 
         _heightMap.addValue(listBase);
     }
+}
+
+ChunkColumn::ChunkColumn(ChunkColumn &&chunk):
+    _sections(std::move(chunk._sections)),
+    _tickData(chunk._tickData),
+    _chunkPos(chunk._chunkPos),
+    _heightMap(chunk._heightMap),
+    _ready(chunk._ready)
+{
 }
 
 ChunkColumn::~ChunkColumn() { }
@@ -47,6 +57,7 @@ void ChunkColumn::updateBlock(const Position &pos, BlockId id)
 
     // Block update
     // LINFO("ChunkColumn updateBlock: ", pos, "[", getSectionIndex(pos), "] -> ", id);
+    // LINFO("wtf: " << pos << " " << id);
     _sections.at(getSectionIndex(pos)).updateBlock(Position {pos.x, pos.y - CHUNK_HEIGHT_MIN, pos.z} % SECTION_WIDTH, id);
     // _blocks.at(calculateBlockIdx(pos)) = id;
 }
@@ -136,20 +147,16 @@ void ChunkColumn::updateHeightMap()
 
 void ChunkColumn::recalculateSkyLight()
 {
-    // TODO: REALY calculate the skylight
     for (auto &section : _sections) {
-        for (auto x = 0; x < SECTION_WIDTH; x++) {
-            for (auto y = 0; y < SECTION_WIDTH; y++) {
-                for (auto z = 0; z < SECTION_WIDTH; z++)
-                    section.setSkyLight({x, y, z}, 15);
-            }
-        }
+        section.recalculateSkyLight();
     }
 }
 
 void ChunkColumn::recalculateBlockLight()
 {
-    // TODO: REALY calculate the blocklight
+    for (auto &section : _sections) {
+        section.recalculateBlockLight();
+    }
 }
 
 void ChunkColumn::generate(WorldType worldType, Seed seed)
@@ -176,6 +183,14 @@ void ChunkColumn::generate(WorldType worldType, Seed seed)
 
 void ChunkColumn::_generateOverworld(Seed seed)
 {
+    // Uncomment for a funny time
+    // static size_t block = 0;
+    // for (int i = 0; i < world_storage::NB_OF_PLAYABLE_SECTIONS; i++) {
+    //     updateBlock({7, 7 + (i << 4) - 64, 7}, block++);
+    //     if (block > 23231)
+    //         block = 0;
+    // }
+    // return;
     auto generator = generation::Overworld(seed);
     int waterLevel = 86;
 

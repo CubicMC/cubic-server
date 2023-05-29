@@ -20,7 +20,7 @@ download_and_check_file(
 find_package (Python3 REQUIRED)
 
 execute_process(
-    COMMAND python3 -m venv "${CMAKE_BINARY_DIR}/../generators/.venv"
+    COMMAND python3 -m venv .venv
     WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/../generators
     COMMAND_ERROR_IS_FATAL ANY
 )

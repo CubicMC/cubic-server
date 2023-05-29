@@ -53,6 +53,7 @@ enum class WorldType {
 class ChunkColumn {
 public:
     ChunkColumn(const Position2D &chunkPos);
+    ChunkColumn(ChunkColumn &&chunk);
     ~ChunkColumn();
 
     void updateBlock(const Position &pos, BlockId id);
@@ -93,6 +94,8 @@ public:
     NODISCARD constexpr inline const nbt::Compound &getHeightMap() const { return _heightMap; }
 
     void generate(WorldType worldType, Seed seed);
+
+    friend class Persistence;
 
 private:
     void _generateOverworld(Seed seed);

@@ -1,4 +1,7 @@
 #include "Value.hpp"
+#include <cstdlib>
+#include <filesystem>
+#include <fstream>
 
 const std::vector<std::string> &configuration::Value::values() const { return _value.size() > 0 ? _value : _defaultValue; }
 std::ostream &configuration::operator<<(std::ostream &os, const configuration::Value &value) { return os << value.value(); }
@@ -87,9 +90,23 @@ void configuration::Value::parse(const Node &rootNode)
 
     // Then environment variable
     if (!_defaultValueEnvironmentVariable.empty() && _value.empty()) {
-        auto envValue = std::getenv(_defaultValueEnvironmentVariable.c_str());
-        if (envValue != nullptr)
-            _value = {envValue};
+        // We check if a `_FILE` variant of the environment variable exists
+        // since containers really like this kind of stuff for secret managements
+        auto envSecretValue = std::getenv(std::string(_defaultValueEnvironmentVariable + "_FILE").c_str());
+        if (envSecretValue != nullptr) {
+            std::string __tmpSecret(envSecretValue);
+            if (std::filesystem::exists(envSecretValue)) {
+                auto stream = std::ifstream(__tmpSecret);
+                std::ostringstream sstr;
+                sstr << stream.rdbuf();
+                _value = {sstr.str()};
+            }
+        }
+        if (_value.empty()) {
+            auto envValue = std::getenv(_defaultValueEnvironmentVariable.c_str());
+            if (envValue != nullptr)
+                _value = {envValue};
+        }
     }
 
     // Then config file

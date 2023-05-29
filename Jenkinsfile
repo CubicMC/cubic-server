@@ -21,7 +21,7 @@ pipeline {
                                 sh '''
                                 mkdir -pv build
                                 cd build
-                                CC=gcc-12 CXX=g++-12 cmake -DCMAKE_BUILD_TYPE=Release -DGTEST=1 ..
+                                CC=gcc CXX=g++ cmake -DCMAKE_BUILD_TYPE=Release -DGTEST=1 ..
                                 make -j4
                                 cp CubicServer CubicServer_x86-64_GNULinux_dev
                                 '''

@@ -203,6 +203,7 @@ std::shared_ptr<ByteArray> nbt::parseByteArray(uint8_t *&at, const uint8_t *end,
         return nullptr;
 
     std::vector<int8_t> data;
+    data.reserve(size);
     for (int i = 0; i < size; i++) {
         int8_t val = *at++;
         data.push_back(val);
