@@ -23,8 +23,8 @@ std::deque<Position> &OakTree::getPosForTreeGeneration(void)
                     continue;
                 else {
                     if (block == Blocks::GrassBlock::toProtocol(Blocks::GrassBlock::Properties::Snowy::FALSE) || block == Blocks::Dirt::toProtocol()) {
-                        if (_generator.getNoise(x + _chunk.getChunkPos().x * SECTION_WIDTH, y, z + _chunk.getChunkPos().z * SECTION_WIDTH).noise3D.density > 0.5 &&
-                            _generator.getNoise(x + _chunk.getChunkPos().x * SECTION_WIDTH, y, z + _chunk.getChunkPos().z * SECTION_WIDTH).noise2D.erosion < 0.25 &&
+                        if (_generator.getNoise(x + _chunk.getChunkPos().x * SECTION_WIDTH, y, z + _chunk.getChunkPos().z * SECTION_WIDTH).noise3D.density > 0 &&
+                            _generator.getNoise(x + _chunk.getChunkPos().x * SECTION_WIDTH, y, z + _chunk.getChunkPos().z * SECTION_WIDTH).noise2D.trees > 0.4 &&
                             _generator.getBiome(x + _chunk.getChunkPos().x * SECTION_WIDTH, y, z + _chunk.getChunkPos().z * SECTION_WIDTH)) {
                             _positions.emplace_back(x, y + 1, z);
                         }
@@ -44,8 +44,8 @@ std::deque<Position> &OakTree::filterTreeGrowSpace()
             auto block = _chunk.getBlock({pos.x, pos.y + y, pos.z});
             if (block != Blocks::Air::toProtocol())
                 return true;
-            for (int x = -2; x <= 1; x++) {
-                for (int z = -1; z <= 2; z++) {
+            for (int x = -2; x <= 2; x++) {
+                for (int z = -2; z <= 2; z++) {
                     if (x == 0 && z == 0)
                         continue;
                     if (pos.x + x < 0 || pos.x + x >= world_storage::SECTION_WIDTH || pos.z + z < 0 || pos.z + z >= world_storage::SECTION_WIDTH)

@@ -19,6 +19,7 @@ public:
         double erosion;
         double peaksAndValley;
         double weirdness;
+        double trees;
     } GenerationNoise2D;
 
     typedef struct {
