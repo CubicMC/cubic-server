@@ -3,7 +3,7 @@
 
 #include <gtkmm.h>
 
-#include "logging/Logger.hpp"
+#include "logging/logging.hpp"
 
 class LogsInterface : public Gtk::Box {
 public:
@@ -13,7 +13,7 @@ public:
 private:
     bool _onLogToDisplay();
     bool on_key_press_event(GdkEventKey *event) override;
-    void _onFilterSelected(logging::LogLevel logLevel);
+    void _onFilterSelected(logging::Registry::LogLevel logLevel);
     void _onResetFilters();
     void _scrollToEnd();
     void _onButtonClicked();
@@ -29,7 +29,7 @@ protected:
     Gtk::ButtonBox _HBoxFilters;
     Gtk::Button _info, _warn, _error, _fatal, _debug, _reset;
     Gtk::Label _selectedFilter;
-    logging::LogLevel _selectedLogLevel;
+    logging::Registry::LogLevel _selectedLogLevel;
 };
 
 #endif // CUBICSERVER_INTERFACE_LOGSINTERFACE_HPP

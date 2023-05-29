@@ -1,7 +1,8 @@
 #include "Log.hpp"
 #include "Server.hpp"
 
-#include "logging/Logger.hpp"
+#include "logging/logging.hpp"
+#include "logging/Sinks.hpp"
 
 void command_parser::Log::autocomplete(UNUSED std::vector<std::string> &args, Player *invoker) const
 {
@@ -13,49 +14,31 @@ void command_parser::Log::autocomplete(UNUSED std::vector<std::string> &args, Pl
 
 void command_parser::Log::execute(std::vector<std::string> &args, UNUSED Player *invoker) const
 {
-    if (args.size() < 2) {
-        LDEBUG("Usage : /log <on|off> (type)");
+    if (args.size() < 1) {
+        LDEBUG("Usage : /log [logger_name] type");
         return;
     }
 
-    if (args[0] == "on") {
-        args.erase(args.begin());
-        for (auto arg : args) {
-            if (arg == "debug")
-                logging::Logger::getInstance()->setDisplaySpecificationLevelInConsole(logging::LogLevel::DEBUG);
-            else if (arg == "info")
-                logging::Logger::getInstance()->setDisplaySpecificationLevelInConsole(logging::LogLevel::INFO);
-            else if (arg == "warning")
-                logging::Logger::getInstance()->setDisplaySpecificationLevelInConsole(logging::LogLevel::WARNING);
-            else if (arg == "error")
-                logging::Logger::getInstance()->setDisplaySpecificationLevelInConsole(logging::LogLevel::ERROR);
-            else if (arg == "fatal")
-                logging::Logger::getInstance()->setDisplaySpecificationLevelInConsole(logging::LogLevel::FATAL);
-            else
-                LDEBUG("Unknown log type : " + arg);
+    auto levelNames = logging::LEVEL_NAMES;
+    auto begin = &(levelNames[0]);
+    auto end = &(levelNames[static_cast<int>(logging::Registry::LogLevel::n_levels)]);
+
+    if (std::find(begin, end, args[0]) == end) {
+        if (auto logger = logging::Registry::instance().get(args[0])) {
+            logger->set_level(logging::stringToLevel(args[1]));
+            LINFO("Set level of logger {} to {}", args[0], args[1]);
+            return;
         }
-    } else if (args[0] == "off") {
-        args.erase(args.begin());
-        for (auto arg : args) {
-            if (arg == "debug")
-                logging::Logger::getInstance()->unsetDisplaySpecificationLevelInConsole(logging::LogLevel::DEBUG);
-            else if (arg == "info")
-                logging::Logger::getInstance()->unsetDisplaySpecificationLevelInConsole(logging::LogLevel::INFO);
-            else if (arg == "warning")
-                logging::Logger::getInstance()->unsetDisplaySpecificationLevelInConsole(logging::LogLevel::WARNING);
-            else if (arg == "error")
-                logging::Logger::getInstance()->unsetDisplaySpecificationLevelInConsole(logging::LogLevel::ERROR);
-            else if (arg == "fatal")
-                logging::Logger::getInstance()->unsetDisplaySpecificationLevelInConsole(logging::LogLevel::FATAL);
-            else
-                LDEBUG("Unknown log type : " + arg);
-        }
-    } else
-        LDEBUG("Usage : /log <on|off> (type)");
+        LWARN("Unknown logger {}", args[0]);
+        return;
+    }
+
+    logging::setLevel(logging::stringToLevel(args[1]));
+    LWARN("Unknown level {}", args[0]);
 }
 
 void command_parser::Log::help(UNUSED std::vector<std::string> &args, Player *invoker) const
 {
     if (!invoker)
-        LINFO("/log <on|off> (type)");
+        LINFO("/log [logger_name] type");
 }

@@ -6,8 +6,10 @@
 
 #include "CommandLine.hpp"
 #include "Server.hpp"
-#include "logging/Logger.hpp"
+#include "logging/logging.hpp"
 #include "options.hpp"
+#include "protocol/ServerPackets.hpp"
+#include "world_storage/Persistence.hpp"
 
 #if GUI_UNAVAILABLE == 0
 #include "interface/InterfaceContainer.hpp"
@@ -74,6 +76,36 @@ auto initArgs(int argc, const char *const argv[])
         .possibleValues(true, false)
         .defaultValue(false)
         .required();
+
+    program.add("enable-generation")
+        .help("Enables chunk generation")
+        .valueFromConfig("general", "enable-generation")
+        .valueFromEnvironmentVariable("CBSRV_ENABLE_GENERATION")
+        .valueFromArgument("--enable-generation")
+        .possibleValues(true, false)
+        .defaultValue(true);
+
+    program.add("level-name")
+        .help("Name of the world")
+        .valueFromConfig("general", "level-name")
+        .valueFromEnvironmentVariable("CBSRV_LEVEL_NAME")
+        .valueFromArgument("--level-name")
+        .defaultValue("world");
+
+    program.add("num-gen-thread")
+        .help("Number of threads allocated to chunk generation")
+        .valueFromConfig("general", "num-gen-thread")
+        .valueFromEnvironmentVariable("CBSRV_NUM_GEN_THREAD")
+        .valueFromArgument("--num-gen-thread")
+        .defaultValue(4);
+
+    program.add("level-type")
+        .help("World type to generate")
+        .valueFromConfig("general", "level-type")
+        .valueFromEnvironmentVariable("CBSRV_LEVEL_TYPE")
+        .valueFromArgument("--level-type")
+        .possibleValues("flat", "default", "void")
+        .defaultValue("default");
     // clang-format on
 
     try {
@@ -111,33 +143,40 @@ int main(int argc, char *argv[])
 
     auto srv = Server::getInstance();
 
-    #if GUI_UNAVAILABLE == 0
+#if GUI_UNAVAILABLE == 0
     InterfaceContainer interfaceContainer;
-    #endif
+#endif
 
     CommandLine cmd;
-
-    auto logger = logging::Logger::getInstance();
-    logger->unsetDisplaySpecificationLevelInConsole(logging::LogLevel::DEBUG);
 
     std::signal(SIGTERM, signalHandler);
     std::signal(SIGINT, signalHandler);
     std::signal(SIGPIPE, SIG_IGN);
 
-    #if GUI_UNAVAILABLE == 0
+#if GUI_UNAVAILABLE == 0
     if (program["nogui"] == false)
         interfaceContainer.launch(argc, argv);
-    #endif
+#endif
 
-    // This should be inside the server
-    cmd.launch();
+    try {
+        // This should be inside the server
+        cmd.launch();
 
-    srv->launch(program);
+        srv->launch(program);
+
+        cmd.stop();
+#if GUI_UNAVAILABLE == 0
+        interfaceContainer.stop();
+#endif
+    } catch (const std::exception &e) {
+        LFATAL(e.what());
+        return 1;
+    }
 
     cmd.stop();
 
-    #if GUI_UNAVAILABLE == 0
+#if GUI_UNAVAILABLE == 0
     interfaceContainer.stop();
-    #endif
+#endif
     return 0;
 }

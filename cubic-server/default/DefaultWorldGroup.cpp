@@ -3,6 +3,7 @@
 #include <utility>
 
 #include "DefaultWorld.hpp"
+#include "Server.hpp"
 
 DefaultWorldGroup::DefaultWorldGroup(std::shared_ptr<Chat> chat):
     WorldGroup(std::move(chat))
@@ -11,7 +12,7 @@ DefaultWorldGroup::DefaultWorldGroup(std::shared_ptr<Chat> chat):
 
 void DefaultWorldGroup::initialize()
 {
-    _worlds.emplace("default", std::make_shared<DefaultWorld>(shared_from_this()));
+    _worlds.emplace("default", std::make_shared<DefaultWorld>(shared_from_this(), CONFIG["level-name"].as<std::string>()));
     _worlds.at("default")->initialize();
 
     WorldGroup::initialize();

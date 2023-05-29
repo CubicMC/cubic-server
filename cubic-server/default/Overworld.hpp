@@ -3,11 +3,13 @@
 
 #include <future>
 
-#include "../Dimension.hpp"
+#include "Dimension.hpp"
+#include "default/DefaultWorld.hpp"
+#include "world_storage/Persistence.hpp"
 
 class Overworld : public Dimension {
 public:
-    Overworld(std::shared_ptr<World> world):
+    Overworld(std::shared_ptr<DefaultWorld> world):
         Dimension(world)
     {
     }

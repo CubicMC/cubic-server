@@ -1,13 +1,14 @@
 #ifndef CUBICSERVER_WORLDSTORAGE_LEVEL_HPP
 #define CUBICSERVER_WORLDSTORAGE_LEVEL_HPP
 
-#include <mutex>
+#include <shared_mutex>
 #include <unordered_map>
 
 #include "ChunkColumn.hpp"
 #include "types.hpp"
 
 constexpr int transformBlockPosToChunkPos(int64_t x) { return x < 0 ? -1 + int64_t((x + 1) / 16) : int64_t(x / 16); }
+constexpr int transformChunkPosToRegionPos(int64_t x) { return x < 0 ? -1 + int64_t(x + 1) / 32 : int64_t(x / 32); }
 
 namespace world_storage {
 
@@ -16,7 +17,9 @@ public:
     Level() = default;
     ~Level();
 
-    // ChunkColumn &addChunkColumn(Position2D pos, const ChunkColumn &chunkColumn);
+    ChunkColumn &addChunkColumn(Position2D pos, ChunkColumn &&chunkColumn);
+    // ChunkColumn &addChunkColumn(Position2D pos, ChunkColumn &chunkColumn);
+
     ChunkColumn &addChunkColumn(Position2D pos);
 
     bool hasChunkColumn(const Position2D &pos) const;
@@ -37,7 +40,7 @@ public:
     void removeChunkColumn(Position2D pos);
 
 private:
-    std::mutex _chunkColumnsMutex;
+    mutable std::shared_mutex _chunkColumnsMutex;
     std::unordered_map<Position2D, ChunkColumn> _chunkColumns;
 };
 

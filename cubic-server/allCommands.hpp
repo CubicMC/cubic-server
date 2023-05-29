@@ -1,5 +1,6 @@
 #include "command_parser/commands/Deop.hpp"
 #include "command_parser/commands/DumpChunk.hpp"
+#include "command_parser/commands/Gamemode.hpp"
 #include "command_parser/commands/Help.hpp"
 #include "command_parser/commands/Log.hpp"
 #include "command_parser/commands/Op.hpp"

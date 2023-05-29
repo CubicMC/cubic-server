@@ -5,7 +5,6 @@
 #include "Value.hpp"
 #include "concept.hpp"
 #include "errors.hpp"
-#include "logging/Logger.hpp"
 #include <argparse/argparse.hpp>
 #include <map>
 #include <optional>
