@@ -1171,6 +1171,6 @@ void Player::_eat(ItemId itemId)
 void Player::teleport(const Vector3<double> &pos)
 {
     this->sendSynchronizePosition(pos);
-    LDEBUG("Synchronized player position");
+    LDEBUG("Synchronize player position");
     Entity::teleport(pos);
 }

@@ -194,8 +194,8 @@ void Dimension::spawnPlayer(Player &current)
 {
     auto current_id = current.getId();
     for (auto player : _players) {
-        LDEBUG("player is : {}", player->getUsername());
-        LDEBUG("current is : {}", current.getUsername());
+        LDEBUG("player is: {}", player->getUsername());
+        LDEBUG("current is: {}", current.getUsername());
         // if (current->getPos().distance(player->getPos()) <= 12) {
         if (player->getId() != current_id) {
             player->sendSpawnPlayer(
