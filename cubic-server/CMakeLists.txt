@@ -39,6 +39,7 @@ target_sources (${CMAKE_PROJECT_NAME} PRIVATE
     PluginManager.hpp
     PluginManager.cpp
     exceptions.hpp
+    nbt.c
 )
 
 link_directories(/home/thomas/Repository/cubic-server/cubic-server/plugins)

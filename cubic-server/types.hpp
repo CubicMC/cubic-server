@@ -2,11 +2,28 @@
 #define CUBICSERVER_TYPES_HPP
 
 #include <cstdint>
+#include <iostream>
+#include <sstream>
+#include <iomanip>
+#include <string>
 #include <ostream>
 
 struct u128 {
     uint64_t most;
     uint64_t least;
+
+    /**
+     * @brief Returns a string version of the UUID
+     * 
+     * @return std::string The string version of the UUID
+     */
+    std::string toString() const;
+
+    /**
+     * @brief Swaps the endianness of the current UUID
+     * 
+     */
+    void swapEndianness();
 };
 
 typedef int64_t Seed;

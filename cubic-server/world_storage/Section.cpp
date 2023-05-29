@@ -1,5 +1,5 @@
 #include "Section.hpp"
-#include "logging/Logger.hpp"
+#include "logging/logging.hpp"
 #include "types.hpp"
 #include <cstdint>
 #include <stdexcept>
@@ -12,8 +12,20 @@ world_storage::Section::Section() noexcept:
     _skyLightCount(0),
     _blockLightCount(0)
 {
-    this->_blockPalette.setCount(0, SECTION_3D_SIZE);
-    this->_biomePalette.setCount(0, BIOME_SECTION_3D_SIZE);
+    // this->_blockPalette.setCount(0, SECTION_3D_SIZE);
+    // this->_biomePalette.setCount(0, BIOME_SECTION_3D_SIZE);
+}
+
+world_storage::Section::Section(world_storage::Section &&section) noexcept:
+    _blocks(section._blocks),
+    _biomes(section._biomes),
+    _blockPalette(std::move(section._blockPalette)),
+    _biomePalette(std::move(section._biomePalette)),
+    _skyLight(section._skyLight),
+    _blockLight(section._blockLight),
+    _skyLightCount(section._skyLightCount),
+    _blockLightCount(section._blockLightCount)
+{
 }
 
 void world_storage::Section::updateBlock(const Position &pos, int32_t block)
@@ -37,6 +49,7 @@ void world_storage::Section::setBlock(const Position &pos, int32_t block)
         this->_blocks.setValueSize(this->_blockPalette.getBits());
 
     this->_blocks.set(calculateSectionBlockIdx(pos), this->_blockPalette.getId(block));
+    // LINFO("Indeed : " << pos << " " << block);
 }
 
 void world_storage::Section::updateBiome(const Position &pos, int32_t biome)
@@ -70,11 +83,21 @@ void world_storage::Section::updateSkyLight(const Position &pos, uint8_t light)
 
 void world_storage::Section::setSkyLight(const Position &pos, uint8_t light)
 {
-    if (getSkyLight(pos) != 0 && light == 0)
+    uint64_t idx = calculateSectionBlockIdx(pos);
+    uint8_t l = _skyLight.get(idx);
+    if (l != 0 && light == 0)
         _skyLightCount--;
-    if (getSkyLight(pos) == 0 && light != 0)
+    if (l == 0 && light != 0)
         _skyLightCount++;
-    _skyLight.set(calculateSectionBlockIdx(pos), light);
+    _skyLight.set(idx, light);
+}
+
+void world_storage::Section::recalculateSkyLightCount()
+{
+    _skyLightCount = 0;
+    for (auto i : _skyLight.data()) {
+        _skyLightCount += ((i & 0b11110000) >= 1) + ((i & 0b00001111) >= 1);
+    }
 }
 
 void world_storage::Section::updateBlockLight(const Position &pos, uint8_t light)
@@ -90,6 +113,39 @@ void world_storage::Section::setBlockLight(const Position &pos, uint8_t light)
     if (getBlockLight(pos) == 0 && light != 0)
         _blockLightCount++;
     _blockLight.set(calculateSectionBlockIdx(pos), light);
+}
+
+void world_storage::Section::recalculateBlockLightCount()
+{
+    _blockLightCount = 0;
+    for (auto i : _blockLight.data()) {
+        _blockLightCount += ((i & 0b11110000) >= 1) + ((i & 0b00001111) >= 1);
+    }
+}
+
+void world_storage::Section::recalculateSkyLight()
+{
+    // huntears:
+    // So... I know how this looks, but hear me out, this function took 50% of
+    // the time spent in region loading. So until we have a proper way to
+    // calculate skyLights this will do :)
+    for (auto &x : _skyLight.data()) {
+        x = 0xFF;
+    }
+    recalculateSkyLightCount();
+    return;
+
+    // for (auto x = 0; x < SECTION_WIDTH; x++) {
+    //     for (auto y = 0; y < SECTION_WIDTH; y++) {
+    //         for (auto z = 0; z < SECTION_WIDTH; z++)
+    //             setSkyLight({x, y, z}, 15);
+    //     }
+    // }
+}
+
+void world_storage::Section::recalculateBlockLight()
+{
+    // TODO
 }
 
 int32_t world_storage::Section::getBlock(const Position &pos) const

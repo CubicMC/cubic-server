@@ -1,4 +1,5 @@
 #include "SpecialTippedArrow.hpp"
+#include "logging/logging.hpp"
 
 #include "Server.hpp"
 
@@ -12,4 +13,4 @@ SpecialTippedArrow::SpecialTippedArrow(const nlohmann::json &recipe):
 void SpecialTippedArrow::dump(void) const { LINFO("recipe special tipped arrow"); }
 
 std::unique_ptr<Recipe> SpecialTippedArrow::create(const nlohmann::json &recipe) { return (std::make_unique<SpecialTippedArrow>(SpecialTippedArrow(recipe))); }
-};
+} // namespace Recipe

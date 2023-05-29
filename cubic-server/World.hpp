@@ -22,7 +22,7 @@ constexpr int NB_SPAWN_CHUNKS = 19;
 
 class World : public std::enable_shared_from_this<World> {
 public:
-    World(std::shared_ptr<WorldGroup> worldGroup);
+    World(std::shared_ptr<WorldGroup> worldGroup, std::string folder);
     virtual ~World() = default;
 
     virtual void tick();
@@ -75,6 +75,7 @@ protected:
     TickClock _timeUpdateClock;
     Seed _seed;
     thread_pool::PriorityThreadPool _generationPool;
+    std::string _folder;
 };
 
 #endif // CUBICSERVER_WORLD_HPP

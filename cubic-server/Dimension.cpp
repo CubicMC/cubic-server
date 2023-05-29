@@ -3,9 +3,9 @@
 #include "Player.hpp"
 #include "Server.hpp"
 #include "World.hpp"
-#include "logging/Logger.hpp"
-#include "PluginManager.hpp"
-#include "Server.hpp"
+#include "logging/logging.hpp"
+#include "math/Vector3.hpp"
+#include <mutex>
 
 Dimension::Dimension(std::shared_ptr<World> world):
     _dimensionLock(std::counting_semaphore<1000>(0)),
@@ -17,6 +17,7 @@ Dimension::Dimension(std::shared_ptr<World> world):
 
 void Dimension::tick()
 {
+    std::lock_guard _(_entitiesMutex);
     for (auto ent : _entities) {
         ent->tick();
     }
@@ -51,6 +52,7 @@ const std::vector<std::shared_ptr<Entity>> &Dimension::getEntities() const { ret
 
 std::shared_ptr<Entity> Dimension::getEntityByID(int32_t id)
 {
+    std::lock_guard _(_entitiesMutex);
     for (auto &entity : _entities)
         if (entity->getId() == id)
             return entity;
@@ -59,6 +61,7 @@ std::shared_ptr<Entity> Dimension::getEntityByID(int32_t id)
 
 const std::shared_ptr<Entity> Dimension::getEntityByID(int32_t id) const
 {
+    std::lock_guard _(_entitiesMutex);
     for (auto &entity : _entities)
         if (entity->getId() == id)
             return entity;
@@ -67,22 +70,29 @@ const std::shared_ptr<Entity> Dimension::getEntityByID(int32_t id) const
 
 void Dimension::removeEntity(int32_t entity_id)
 {
-    _entities.erase(
-        std::remove_if(
-            _entities.begin(), _entities.end(),
-            [entity_id](const std::shared_ptr<Entity> ent) {
-                return entity_id == ent->getId();
-            }
-        ),
-        _entities.end()
-    );
-    for (auto &player : _players)
+    {
+        std::lock_guard _(_entitiesMutex);
+
+        _entities.erase(
+            std::remove_if(
+                _entities.begin(), _entities.end(),
+                [entity_id](const std::shared_ptr<Entity> ent) {
+                    return entity_id == ent->getId();
+                }
+            ),
+            _entities.end()
+        );
+    }
+
+    std::lock_guard _(_playersMutex);
+    for (auto player : _players)
         player->sendRemoveEntities({entity_id});
 }
 
 void Dimension::removePlayer(int32_t entity_id)
 {
-    LDEBUG("Removing player with id: ", entity_id);
+    std::lock_guard _(_playersMutex);
+    LDEBUG("Removing player with id: {}", entity_id);
     _players.erase(
         std::remove_if(
             _players.begin(), _players.end(),
@@ -92,13 +102,21 @@ void Dimension::removePlayer(int32_t entity_id)
         ),
         _players.end()
     );
-    for (auto &player : _players)
+    for (auto player : _players)
         player->sendRemoveEntities({entity_id});
 }
 
-void Dimension::addEntity(std::shared_ptr<Entity> entity) { _entities.push_back(entity); }
+void Dimension::addEntity(std::shared_ptr<Entity> entity)
+{
+    std::lock_guard _(_entitiesMutex);
+    _entities.push_back(entity);
+}
 
-void Dimension::addPlayer(std::shared_ptr<Player> entity) { _players.push_back(entity); }
+void Dimension::addPlayer(std::shared_ptr<Player> entity)
+{
+    std::lock_guard _(_playersMutex);
+    _players.push_back(entity);
+}
 
 const world_storage::Level &Dimension::getLevel() const { return _level; }
 
@@ -110,31 +128,43 @@ void Dimension::loadOrGenerateChunk(int x, int z, std::shared_ptr<Player> player
 {
     std::lock_guard<std::mutex> _(_loadingChunksMutex);
     if (this->_loadingChunks.contains({x, z})) {
-        if (std::find_if(this->_loadingChunks[{x, z}].begin(), this->_loadingChunks[{x, z}].end(), [player](const std::weak_ptr<Player> current_weak_player) {
+        if (std::find_if(this->_loadingChunks[{x, z}].players.begin(), this->_loadingChunks[{x, z}].players.end(), [player](const std::weak_ptr<Player> current_weak_player) {
                 if (auto current_player = current_weak_player.lock())
                     return current_player->getId() == player->getId();
                 return false;
-            }) == this->_loadingChunks[{x, z}].end()) {
-            this->_loadingChunks[{x, z}].push_back(player);
+            }) == this->_loadingChunks[{x, z}].players.end()) {
+            this->_loadingChunks[{x, z}].players.push_back(player);
         }
         return;
     }
 
-    this->_world->getGenerationPool().addJob([this, x, z] {
-        // TODO: load chunk from disk if it exists
-        this->generateChunk(x, z);
-
-        // This send the chunk to the players that are loading it
-        std::lock_guard<std::mutex> _(_loadingChunksMutex);
-        for (auto weak_player : this->_loadingChunks[{x, z}]) {
-            if (auto player = weak_player.lock()) {
-                player->sendChunkAndLightUpdate(this->_level.getChunkColumn(x, z));
+    auto id = this->_world->getGenerationPool().addJob(
+        [this, x, z] {
+            std::lock_guard _(this->_playersMutex);
+            double current_min = 999999.0f; // TODO(huntears): Change this magic value xd;
+            for (auto player : this->getPlayers()) {
+                const auto &pos = player->getPosition();
+                const Vector3<double> chunkPos = {(double) x * 16, pos.y, (double) z * 16};
+                current_min = std::min(current_min, pos.distance(chunkPos));
             }
-        }
-        this->_loadingChunks.erase({x, z});
-    });
+            return static_cast<size_t>(std::ceil(current_min));
+        },
+        [this, x, z] {
+            // TODO: load chunk from disk if it exists
+            this->generateChunk(x, z);
 
-    auto request = ChunkRequest {{player}};
+            // This send the chunk to the players that are loading it
+            std::lock_guard<std::mutex> _(_loadingChunksMutex);
+            for (auto weak_player : this->_loadingChunks[{x, z}].players) {
+                if (auto player = weak_player.lock()) {
+                    player->sendChunkAndLightUpdate(this->_level.getChunkColumn(x, z));
+                }
+            }
+            this->_loadingChunks.erase({x, z});
+        }
+    );
+
+    auto request = ChunkRequest {id, {player}};
 
     this->_loadingChunks[{x, z}] = request;
 
@@ -165,19 +195,19 @@ void Dimension::removePlayerFromLoadingChunk(const Position2D &pos, std::shared_
     if (!this->_loadingChunks.contains(pos))
         return;
 
-    this->_loadingChunks[pos].erase(
+    this->_loadingChunks[pos].players.erase(
         std::remove_if(
-            this->_loadingChunks[pos].begin(), this->_loadingChunks[pos].end(),
+            this->_loadingChunks[pos].players.begin(), this->_loadingChunks[pos].players.end(),
             [player](const std::weak_ptr<Player> current_weak_player) {
                 if (auto current_player = current_weak_player.lock())
                     return current_player->getId() == player->getId();
                 return true;
             }
         ),
-        this->_loadingChunks[pos].end()
+        this->_loadingChunks[pos].players.end()
     );
 
-    if (this->_loadingChunks[pos].empty()) {
+    if (this->_loadingChunks[pos].players.empty() && this->getWorld()->getGenerationPool().cancelJob(this->_loadingChunks[pos].id)) {
         // this->_loadingChunks[pos].task->cancel();
         // This could be replaced using either an iterator, or something else (maybe an if condition inside the job? or simply integrated inside the overlay.)
         this->_loadingChunks.erase(pos);
@@ -185,24 +215,26 @@ void Dimension::removePlayerFromLoadingChunk(const Position2D &pos, std::shared_
 }
 
 world_storage::ChunkColumn &Dimension::getChunk(int x, int z) { return this->_level.getChunkColumn(x, z); }
+
 const world_storage::ChunkColumn &Dimension::getChunk(int x, int z) const { return this->_level.getChunkColumn(x, z); }
 
 void Dimension::spawnPlayer(Player &current)
 {
     auto current_id = current.getId();
+    std::lock_guard _(_playersMutex);
     for (auto player : _players) {
-        LDEBUG("player is : ", player->getUsername());
-        LDEBUG("current is : ", current.getUsername());
+        LDEBUG("player is : {}", player->getUsername());
+        LDEBUG("current is : {}", current.getUsername());
         // if (current->getPos().distance(player->getPos()) <= 12) {
         if (player->getId() != current_id) {
             player->sendSpawnPlayer(
                 {current_id, current.getUuid(), current.getPosition().x, current.getPosition().y, current.getPosition().z, current.getRotation().x, current.getRotation().z}
             );
-            LDEBUG("send spawn player to ", player->getUsername());
+            LDEBUG("send spawn player to {}", player->getUsername());
             current.sendSpawnPlayer(
                 {player->getId(), player->getUuid(), player->getPosition().x, player->getPosition().y, player->getPosition().z, player->getRotation().x, player->getRotation().z}
             );
-            LDEBUG("send spawn player to ", current.getUsername());
+            LDEBUG("send spawn player to {}", current.getUsername());
             //}
         }
     }
@@ -210,7 +242,7 @@ void Dimension::spawnPlayer(Player &current)
 
 void Dimension::updateBlock(Position position, int32_t id)
 {
-    LDEBUG("Dimension block update ", position, " -> ", id, ")");
+    LDEBUG("Dimension block update {} -> {}", position, id);
     auto &chunk = this->_level.getChunkColumnFromBlockPos(position.x, position.z);
 
     // Weird ass modulo to get the correct block position in the chunk
@@ -222,6 +254,7 @@ void Dimension::updateBlock(Position position, int32_t id)
         z += 16;
 
     chunk.updateBlock({x, position.y, z}, id);
+    std::lock_guard _(_playersMutex);
     for (auto player : _players) {
         player->sendBlockUpdate({position, id});
     }

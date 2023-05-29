@@ -42,6 +42,7 @@ public:
 
 public:
     Section() noexcept;
+    Section(Section &&section) noexcept;
 
     void updateBlock(const Position &pos, int32_t block);
     void setBlock(const Position &pos, int32_t block);
@@ -51,9 +52,11 @@ public:
 
     void updateSkyLight(const Position &pos, uint8_t light);
     void setSkyLight(const Position &pos, uint8_t light);
+    void recalculateSkyLightCount();
 
     void updateBlockLight(const Position &pos, uint8_t light);
     void setBlockLight(const Position &pos, uint8_t);
+    void recalculateBlockLightCount();
 
     [[nodiscard]] int32_t getBlock(const Position &pos) const;
     [[nodiscard]] int32_t getBiome(const Position &pos) const;

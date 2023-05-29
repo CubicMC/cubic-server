@@ -1,6 +1,12 @@
+#include <cstddef>
+#include <cstdint>
+#include <memory>
+#include <mutex>
 #include <netdb.h>
 #include <poll.h>
+#include <string>
 #include <sys/socket.h>
+#include <thread>
 #include <unistd.h>
 
 #include "Server.hpp"
@@ -11,13 +17,17 @@
 #include "Dimension.hpp"
 #include "Player.hpp"
 #include "WorldGroup.hpp"
+#include "command_parser/commands/Gamemode.hpp"
 #include "default/DefaultWorldGroup.hpp"
-#include "logging/Logger.hpp"
+#include "logging/logging.hpp"
+
+using boost::asio::ip::tcp;
 
 Server::Server():
     _running(false),
-    _sockfd(-1),
+    // _sockfd(-1),
     _config(),
+    _toSend(1024),
     _pluginManager(this)
 {
     // _config.load("./config.yml");
@@ -29,7 +39,7 @@ Server::Server():
     // _motd = _config.getMotd();
     // _enforceWhitelist = _config.getEnforceWhitelist();
 
-    _commands.reserve(10);
+    _commands.reserve(11);
     _commands.emplace_back(std::make_unique<command_parser::Help>());
     _commands.emplace_back(std::make_unique<command_parser::QuestionMark>());
     _commands.emplace_back(std::make_unique<command_parser::Stop>());
@@ -40,6 +50,7 @@ Server::Server():
     _commands.emplace_back(std::make_unique<command_parser::Deop>());
     _commands.emplace_back(std::make_unique<command_parser::Reload>());
     _commands.emplace_back(std::make_unique<command_parser::Time>());
+    _commands.emplace_back(std::make_unique<command_parser::Gamemode>());
 }
 
 Server::~Server() { }
@@ -47,28 +58,6 @@ Server::~Server() { }
 void Server::launch(const configuration::ConfigHandler &config)
 {
     this->_config = config;
-    LINFO("Starting server on ", _config["ip"], ":", _config["port"]);
-    int yes = 1;
-    int no = 0;
-
-    // Get the socket for the server
-    _sockfd = socket(AF_INET6, SOCK_STREAM, getprotobyname("tcp")->p_proto);
-
-    // Create the addr for the server
-    if (!inet_pton(AF_INET, _config["ip"].value().c_str(), &(_addr.sin6_addr)))
-        throw std::runtime_error("Invalid host ip address");
-
-    _addr.sin6_family = AF_INET6;
-    _addr.sin6_port = htons(_config["port"].as<uint16_t>());
-
-    // Bind server socket
-    setsockopt(_sockfd, SOL_SOCKET, SO_REUSEADDR, &yes, sizeof(yes));
-    setsockopt(_sockfd, IPPROTO_IPV6, IPV6_V6ONLY, &no, sizeof(no));
-    if (bind(_sockfd, reinterpret_cast<struct sockaddr *>(&_addr), sizeof(_addr)))
-        throw std::runtime_error(strerror(errno));
-
-    // Listen
-    listen(_sockfd, SOMAXCONN);
 
     // Get plugins
     this->_pluginManager.load();
@@ -86,68 +75,155 @@ void Server::launch(const configuration::ConfigHandler &config)
     _worldGroups.emplace("default", new DefaultWorldGroup(defaultChat));
     _worldGroups.at("default")->initialize();
 
+    // TODO(huntears): Deal with this
     // Initialize default recipes
-    this->_recipes.initialize();
+    // this->_recipes.initialize();
 
     this->_running = true;
 
-    _acceptLoop();
+    LINFO("Starting server on {}:{}", _config["ip"], _config["port"]);
 
-    this->_stop();
+    _acceptor = std::make_unique<boost::asio::ip::tcp::acceptor>(_io_context, tcp::endpoint(tcp::v4(), _config["port"].as<uint16_t>()));
+
+    _writeThread = std::thread(&Server::_writeLoop, this);
+
+    _doAccept();
+
+    _io_context.run();
+
+    // Cleanup stuff here
+    this->_writeThread.join();
+    std::unique_lock _(clientsMutex);
+    for (auto [id, cli] : _clients) {
+        cli->stop();
+    }
+    for (auto [id, cli] : _clients) {
+        cli->getThread().join();
+    }
+    _clients.clear();
+    using namespace std::chrono_literals;
+    // Wait for 5 seconds max for all data to be out
+    for (int i = 0; i < 500; i++) {
+        if (_toSend.empty())
+            break;
+        std::this_thread::sleep_for(10ms);
+    }
+}
+
+void Server::sendData(size_t clientID, std::unique_ptr<std::vector<uint8_t>> &&data) { _toSend.push({clientID, data.release()}); }
+
+void Server::_writeLoop()
+{
+    using namespace std::chrono_literals;
+
+    // TODO(huntears): Check if doing something other than a busy loop is worth it
+    while (_running) {
+        while (_toSend.empty()) {
+            std::this_thread::sleep_for(500us);
+            if (!_running)
+                return;
+        }
+        OutboundClientData data = {0, nullptr};
+        if (!_toSend.pop(data))
+            continue;
+        {
+            std::unique_lock _(clientsMutex);
+            triggerClientCleanup();
+            if (!_clients.contains(data.clientID)) {
+                delete data.data;
+                continue;
+            }
+            auto client = _clients.at(data.clientID);
+            if (client->isDisconnected()) {
+                triggerClientCleanup(client->getID());
+                delete data.data;
+                continue;
+            }
+            boost::system::error_code ec;
+            boost::asio::write(client->getSocket(), boost::asio::buffer(data.data->data(), data.data->size()), ec);
+            // TODO(huntears): Handle errors properly xd
+            if (ec) {
+                // LERROR(ec.what());
+                continue;
+            }
+        }
+        delete data.data;
+    }
+}
+
+void Server::triggerClientCleanup(size_t clientID)
+{
+    if (clientID != (size_t) -1) {
+        _clients.erase(clientID);
+        return;
+    }
+    // boost::lockfree::queue<size_t> toDelete(_clients.size());
+    // for (auto [id, cli] : _clients) {
+    //     if (!cli) {
+    //         _clients.erase(id);
+    //     } else if (cli->isDisconnected()) {
+    //         cli->getThread().join();
+    //         _clients.erase(id);
+    //     }
+    // }
+    std::erase_if(_clients, [](const auto augh) {
+        if (augh.second->isDisconnected()) {
+            augh.second->getThread().join();
+            return true;
+        }
+        return false;
+    });
+}
+
+void Server::_doAccept()
+{
+    // while (_running) {
+    //     boost::system::error_code ec;
+    //     tcp::socket socket(_io_context);
+
+    //     _acceptor->accept(socket, ec);
+    //     if (!ec) {
+    //         std::shared_ptr<Client> _cli(new Client(std::move(socket), currentClientID));
+    //         _clients.emplace(currentClientID++, _cli);
+    //         _cli->run();
+    //     }
+    // }
+    tcp::socket *socket = new tcp::socket(_io_context);
+
+    _acceptor->async_accept(*socket, [socket, this](const boost::system::error_code &error) {
+        static size_t currentClientID = 0;
+        if (!error) {
+            std::shared_ptr<Client> _cli(new Client(std::move(*socket), currentClientID));
+            _clients.emplace(currentClientID++, _cli);
+            _cli->run();
+        }
+        delete socket;
+        if (this->_running) {
+            // for (auto [id, cli] : _clients) {
+            //     if (!cli || cli->isDisconnected()) // Somehow they can already be freed before we get here...
+            //         _clients.erase(id);
+            // }
+            this->_doAccept();
+        }
+    });
 }
 
 void Server::stop()
 {
+    static auto num = 0;
     LINFO("Server has received a stop command");
     this->_running = false;
-}
-
-void Server::_acceptLoop()
-{
-    struct pollfd pollSet[1];
-
-    pollSet[0].fd = _sockfd;
-    pollSet[0].events = POLLIN;
-    while (this->_running) {
-        poll(pollSet, 1, 50);
-        if (pollSet[0].revents & POLLIN) {
-            struct sockaddr_in6 clientAddr { };
-            socklen_t clientAddrSize = sizeof(clientAddr);
-            int clientFd = accept(_sockfd, reinterpret_cast<struct sockaddr *>(&clientAddr), &clientAddrSize);
-            if (clientFd == -1) {
-                throw std::runtime_error(strerror(errno));
-            }
-            // Add accepted client to the vector of clients
-            // auto cli = std::make_shared<Client>(clientFd, clientAddr);
-            // _clients.push_back(cli);
-            _clients.push_back(std::make_shared<Client>(clientFd, clientAddr));
-
-            // Emplace_back is not working, I don't know why
-            // _clients.emplace_back(clientFd, clientAddr);
-
-            // That line is kinda borked, but I'll check one day how to fix it
-            // auto *cliThread = new std::thread(&Client::networkLoop, &(*cli));
-            // That is 99.99% a data race, but aight, it will probably
-            // never happen
-            // cli->setRunningThread(cliThread);
-        }
-
-        _clients.erase(
-            std::remove_if(
-                _clients.begin(), _clients.end(),
-                [](const std::shared_ptr<Client> &cli) {
-                    return cli->isDisconnected();
-                }
-            ),
-            _clients.end()
-        );
+    this->_acceptor->cancel();
+    if (num++ >= 5) {
+        exit(1); // Mash that Ctrl-C xd
     }
 }
 
 void Server::_stop()
 {
     // Disconect all clients
-    for (auto &client : _clients)
+    clientsMutex.lock();
+    for (auto [_, client] : _clients)
         client->stop("Server Closed");
 
     // Needed because the client will not be destroyed if a reference still exists
@@ -157,8 +233,8 @@ void Server::_stop()
         worldGroup->stop();
         worldGroup.reset();
     }
-    if (this->_sockfd != -1)
-        close(this->_sockfd);
+    // if (this->_sockfd != -1)
+    //     close(this->_sockfd);
     LINFO("Server stopped");
 }
 
