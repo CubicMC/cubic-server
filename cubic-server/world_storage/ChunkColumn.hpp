@@ -82,6 +82,7 @@ class ChunkColumn: public std::enable_shared_from_this<ChunkColumn> {
 public:
     ChunkColumn(const Position2D &chunkPos, std::shared_ptr<Dimension> dimension);
     ChunkColumn(const ChunkColumn &);
+    ChunkColumn(ChunkColumn &&chunk);
     ~ChunkColumn();
 
     void updateBlock(const Position &pos, BlockId id);
@@ -123,6 +124,8 @@ public:
     NODISCARD constexpr inline const nbt::Compound &getHeightMap() const { return _heightMap; }
 
     void generate(GenerationState goalState = GenerationState::READY);
+
+    friend class Persistence;
 
 private:
     void _generateOverworld(GenerationState goalState);

@@ -6,6 +6,7 @@
 //=============
 #include <atomic>
 #include <climits>
+#include <cstdint>
 #include <functional>
 #include <mutex>
 #include <queue>
@@ -68,21 +69,38 @@ public:
             --_toolBox.targetSize;
     }
 
-    void addJob(std::function<int(void)> priority, sameFunction<helperSameFunction<void(void)>> auto... job)
+    bool cancelJob(int32_t id)
+    {
+        std::lock_guard _(_toolBox.queueProtection);
+
+        auto it = std::find_if(this->_toolBox.jobQueue.begin(), this->_toolBox.jobQueue.end(), [id](const auto &job) {
+            return job.id == id;
+        });
+        if (it != this->_toolBox.jobQueue.end()) {
+            this->_toolBox.jobQueue.erase(it);
+            this->_toolBox.jobSemaphore.acquire();
+            return true;
+        }
+        return false;
+    }
+
+    int32_t addJob(std::function<int(void)> priority, sameFunction<helperSameFunction<void(void)>> auto... job)
     {
         std::deque<std::function<void(void)>> jobList {job...};
         std::queue<std::function<void(void)>> realJobList(std::move(jobList));
+        int32_t jobId = 0;
         {
             const std::lock_guard<std::mutex> _guard(_toolBox.queueProtection);
-            _toolBox.jobQueue.emplace_back(priority, std::move(realJobList));
+            jobId = ++_toolBox.totalJobsPushed;
+            _toolBox.jobQueue.emplace_back(jobId, priority, std::move(realJobList));
         }
-        ++_toolBox.totalJobsPushed;
         _toolBox.jobSemaphore.release(sizeof...(job));
+        return jobId;
     }
 
-    void addJob(int priority, sameFunction<helperSameFunction<void(void)>> auto... job)
+    int32_t addJob(int priority, sameFunction<helperSameFunction<void(void)>> auto... job)
     {
-        addJob(
+        return addJob(
             [priority] {
                 return priority;
             },
@@ -90,7 +108,7 @@ public:
         );
     }
 
-    void addJob(sameFunction<helperSameFunction<void(void)>> auto... job) { addJob(0, job...); }
+    int32_t addJob(sameFunction<helperSameFunction<void(void)>> auto... job) { return addJob(0, job...); }
 
     [[maybe_unused]] void waitUntilJobsDone() const;
 

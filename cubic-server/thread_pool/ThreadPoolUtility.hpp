@@ -65,7 +65,13 @@ struct PriorityThreadPoolUtility {
     mutable std::mutex sizeProtection;
 
     // utiliser un deque
-    std::deque<std::pair<std::function<int(void)>, std::queue<std::function<void(void)>>>> jobQueue;
+    using Job = struct {
+        int32_t id;
+        std::function<int(void)> priority;
+        std::queue<std::function<void(void)>> jobs;
+    };
+
+    std::deque<Job> jobQueue;
     mutable std::mutex queueProtection;
 
     std::atomic<int> totalJobsPushed {};

@@ -21,7 +21,10 @@ class Entity;
 
 class Dimension : public std::enable_shared_from_this<Dimension> {
 private:
-    using ChunkRequest = std::vector<std::weak_ptr<Player>>;
+    using ChunkRequest = struct {
+        int32_t id;
+        std::vector<std::weak_ptr<Player>> players;
+    };
 
 public:
     Dimension(std::shared_ptr<World> world, world_storage::DimensionType dimensionType);
@@ -90,6 +93,7 @@ public:
      * @return world_storage::ChunkColumn&
      */
     virtual world_storage::ChunkColumn &getChunk(int x, int z);
+
     virtual const world_storage::ChunkColumn &getChunk(int x, int z) const;
 
     /**
@@ -126,6 +130,11 @@ public:
 protected:
     virtual void _run();
 
+public:
+    mutable std::mutex _playersMutex;
+    mutable std::mutex _entitiesMutex;
+    mutable std::mutex _loadingChunksMutex;
+
 protected:
     std::counting_semaphore<SEMAPHORE_MAX> _dimensionLock;
     std::vector<std::shared_ptr<Entity>> _entities;
@@ -135,7 +144,6 @@ protected:
     std::atomic<bool> _isInitialized;
     std::atomic<bool> _isRunning;
     world_storage::Level _level;
-    std::mutex _loadingChunksMutex;
     std::unordered_map<Position2D, ChunkRequest> _loadingChunks;
     std::thread _processingThread;
     world_storage::DimensionType _dimensionType;

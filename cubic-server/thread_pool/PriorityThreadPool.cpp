@@ -24,7 +24,12 @@ PriorityThreadPool::~PriorityThreadPool()
     logging::unregisterLogger(std::string(_name));
 }
 
-[[maybe_unused]] void PriorityThreadPool::waitUntilJobsDone() const { _toolBox.library.wait(); }
+[[maybe_unused]] void PriorityThreadPool::waitUntilJobsDone() const
+{
+    do {
+        _toolBox.library.wait();
+    } while (_toolBox.jobSemaphore.getCounter() != 0);
+}
 
 // ThreadPool::operator bool() const { return safeQueueEmpty() && _toolBox.inactiveThreads == threadCount; }
 

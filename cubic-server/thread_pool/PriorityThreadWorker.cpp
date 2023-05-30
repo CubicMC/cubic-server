@@ -58,25 +58,26 @@ void PriorityThreadWorker::doJob()
     if (!_toolBox.stayAlive.load())
         return;
     --_toolBox.inactiveThreads;
-    std::queue<std::function<void(void)>> jobList;
+    PriorityThreadPoolUtility::Job jobList;
     {
         const std::lock_guard<std::mutex> _guard(_toolBox.queueProtection);
         auto greater = _toolBox.jobQueue.begin();
         for (auto it = greater; it != _toolBox.jobQueue.end(); ++it)
-            if (it->first() > greater->first())
+            if (it->priority() < greater->priority())
                 greater = it;
-        jobList = std::move(greater->second);
+        // auto tmp = std::move(greater->second);
+        jobList = *greater;
         _toolBox.jobQueue.erase(greater);
     }
     do {
-        const auto job = jobList.front();
+        const auto job = jobList.jobs.front();
         try {
             job();
-        } catch (const std::exception &e) {
-            LFATAL(e.what());
+        } catch (const std::exception &e) { /* TODO: add either a logger or an exception propagation here */
+            LERROR(e.what());
         }
-        jobList.pop();
-    } while (!jobList.empty());
+        jobList.jobs.pop();
+    } while (!jobList.jobs.empty());
     ++_toolBox.totalJobsDone;
     ++_toolBox.inactiveThreads;
     _toolBox.library.decrement();

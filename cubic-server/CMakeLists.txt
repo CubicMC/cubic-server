@@ -36,6 +36,7 @@ target_sources (${CMAKE_PROJECT_NAME} PRIVATE
     types.hpp
     types.cpp
     exceptions.hpp
+    nbt.c
 )
 
 if (GTEST)

@@ -10,6 +10,7 @@
 #include "nbt.hpp"
 #include "types.hpp"
 #include "world_storage/Section.hpp"
+#include <cstdlib>
 #include <memory>
 
 #define APPEND_CHUNK_TO(neighbours, chunkMap, pos2D)                                        \
@@ -64,19 +65,14 @@ ChunkColumn::ChunkColumn(const Position2D &chunkPos, std::shared_ptr<Dimension> 
     }
 }
 
-ChunkColumn::ChunkColumn(const ChunkColumn &other):
-    std::enable_shared_from_this<ChunkColumn>(other),
-    // _blocks(other._blocks),
-    // _skyLights(other._skyLights),
-    // _blockLights(other._blockLights),
-    // _biomes(other._biomes),
-    _sections(other._sections),
-    _tickData(other._tickData),
-    _chunkPos(other._chunkPos),
-    _heightMap(other._heightMap),
-    _currentState(other._currentState),
+ChunkColumn::ChunkColumn(ChunkColumn &&chunk):
+    _sections(std::move(chunk._sections)),
+    _tickData(chunk._tickData),
+    _chunkPos(chunk._chunkPos),
+    _heightMap(chunk._heightMap),
+    _currentState(chunk._currentState),
     _generationLock(),
-    _dimension(other._dimension)
+    _dimension(chunk._dimension)
 {
 }
 
@@ -100,6 +96,7 @@ void ChunkColumn::updateBlock(const Position &pos, BlockId id)
 
     // Block update
     // LINFO("ChunkColumn updateBlock: ", pos, "[", getSectionIndex(pos), "] -> ", id);
+    // LINFO("wtf: " << pos << " " << id);
     _sections.at(getSectionIndex(pos)).updateBlock(Position {pos.x, pos.y - CHUNK_HEIGHT_MIN, pos.z} % SECTION_WIDTH, id);
     // _blocks.at(calculateBlockIdx(pos)) = id;
 }
@@ -192,20 +189,16 @@ void ChunkColumn::updateHeightMap()
 
 void ChunkColumn::recalculateSkyLight()
 {
-    // TODO: REALY calculate the skylight
     for (auto &section : _sections) {
-        for (auto x = 0; x < SECTION_WIDTH; x++) {
-            for (auto y = 0; y < SECTION_WIDTH; y++) {
-                for (auto z = 0; z < SECTION_WIDTH; z++)
-                    section.setSkyLight({x, y, z}, 15);
-            }
-        }
+        section.recalculateSkyLight();
     }
 }
 
 void ChunkColumn::recalculateBlockLight()
 {
-    // TODO: REALY calculate the blocklight
+    for (auto &section : _sections) {
+        section.recalculateBlockLight();
+    }
 }
 
 void ChunkColumn::generate(GenerationState goalState)
@@ -298,9 +291,15 @@ void ChunkColumn::_generateEnd(UNUSED GenerationState goalState) { std::lock_gua
 
 void ChunkColumn::_generateFlat(UNUSED GenerationState goalState)
 {
+    // Uncomment for a funny time
+    // static size_t block = 0;
+    // for (int i = 0; i < world_storage::NB_OF_PLAYABLE_SECTIONS; i++) {
+    //     updateBlock({7, 7 + (i << 4) - 64, 7}, block++);
+    //     if (block > 23231)
+    //         block = 0;
+    // }
+    // return;
     std::lock_guard<std::mutex> _(this->_generationLock);
-    // TODO: optimize this
-    // This take forever because of the Block constructor
     for (int y = 0; y < 11; y++) {
         for (int z = 0; z < SECTION_WIDTH; z++) {
             for (int x = 0; x < SECTION_WIDTH; x++) {
@@ -391,8 +390,10 @@ void ChunkColumn::_generateLocalModifications(UNUSED generation::Generator &gene
                 }
                 if (block == Blocks::Stone::toProtocol() && lastBlock == Blocks::Air::toProtocol()) {
                     updateBlock({x, y, z}, Blocks::GrassBlock::toProtocol(Blocks::GrassBlock::Properties::Snowy::FALSE)); // grass
-                    updateBlock({x, y - 1, z}, Blocks::Dirt::toProtocol()); // dirt
-                    updateBlock({x, y - 2, z}, Blocks::Dirt::toProtocol()); // dirt
+                    if (y - 1 >= CHUNK_HEIGHT_MIN)
+                        updateBlock({x, y - 1, z}, Blocks::Dirt::toProtocol()); // dirt
+                    if (y - 2 >= CHUNK_HEIGHT_MIN)
+                        updateBlock({x, y - 2, z}, Blocks::Dirt::toProtocol()); // dirt
                     break;
                 }
             }

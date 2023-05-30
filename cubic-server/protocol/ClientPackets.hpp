@@ -36,6 +36,7 @@ enum class ClientPacketID : int32_t {
     DisconnectPlay = 0x17,
     EntityEvent = 0x19,
     UnloadChunk = 0x1b,
+    GameEvent = 0x1c,
     InitializeWorldBorder = 0x1e,
     KeepAlive = 0x1F,
     ChunkDataAndLightUpdate = 0x20,
@@ -322,6 +323,25 @@ std::unique_ptr<std::vector<uint8_t>> createEntityEvent(const EntityEvent &);
 
 std::unique_ptr<std::vector<uint8_t>> createUnloadChunk(const Position2D &);
 
+struct GameEvent {
+    enum class Event : uint8_t {
+        NoRespawnBlockAvailable,
+        EndRaining,
+        BeginRaining,
+        ChangeGamemode,
+        WinGame,
+        DemoEvent,
+        ArrowHitPlayer,
+        RainLevelChange,
+        ThunderLevelChange,
+        PlayPufferfishStingSound,
+        PlayElderGuardianMobAppearance,
+        EnableRespawnScreen
+    } event;
+    float value;
+};
+
+std::unique_ptr<std::vector<uint8_t>> createGameEvent(const GameEvent &);
 struct InitializeWorldBorder {
     double x;
     double z;

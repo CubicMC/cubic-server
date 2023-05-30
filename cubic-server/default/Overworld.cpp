@@ -1,7 +1,13 @@
 #include "Overworld.hpp"
 
+#include "Server.hpp"
 #include "World.hpp"
+#include "default/DefaultWorld.hpp"
 #include "logging/logging.hpp"
+#include "world_storage/Level.hpp"
+#include <future>
+#include <memory>
+#include <queue>
 
 #include <iostream>
 
@@ -66,7 +72,17 @@ void Overworld::stop()
 
 void Overworld::generateChunk(int x, int z, world_storage::GenerationState goalState)
 {
+    auto world = std::dynamic_pointer_cast<DefaultWorld>(_world);
+    if (world->persistence.isChunkLoaded(*this, x, z)) {
+        LDEBUG("Chunk loaded {} {}", x, z);
+        return;
+    }
+
     LDEBUG("Generate - Overworld ({}, {})", x, z);
     Position2D pos {x, z};
-    _level.addChunkColumn(pos, shared_from_this()).generate(goalState);
+    // TODO(huntears): tmp to deactivate generation
+    if (CONFIG["enable-generation"].as<bool>())
+        _level.addChunkColumn(pos, shared_from_this()).generate(goalState);
+    else
+        _level.addChunkColumn(pos, shared_from_this());
 }

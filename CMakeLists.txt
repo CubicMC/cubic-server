@@ -15,12 +15,13 @@ option(DEBUG_NETWORK "Print network messages" OFF)
 if(DEBUG_NETWORK)
     add_compile_definitions(DEBUG_NETWORK)
 endif()
-message(STATUS "Debuging network: ${DEBUG_NETWORK}")
+message(STATUS "Debugging network: ${DEBUG_NETWORK}")
 
 # This must be set before the project command
 set(CMAKE_USER_MAKE_RULES_OVERRIDE_CXX ${CMAKE_CURRENT_SOURCE_DIR}/cxx_flag_overrides.cmake)
+set(CMAKE_USER_MAKE_RULES_OVERRIDE_C ${CMAKE_CURRENT_SOURCE_DIR}/c_flag_overrides.cmake)
 
-project(CubicServer VERSION 0.1.0 LANGUAGES CXX)
+project(CubicServer VERSION 0.1.0 LANGUAGES CXX C)
 
 set(MINECRAFT_VERSION "1.19.3")
 
@@ -65,6 +66,12 @@ FetchContent_Declare(
 )
 
 FetchContent_Declare(
+    nbt
+    GIT_REPOSITORY https://github.com/CubicMC/libnbt.git
+    GIT_TAG v1.0.1
+)
+
+FetchContent_Declare(
     argparse
     GIT_REPOSITORY https://github.com/p-ranav/argparse.git
     GIT_TAG v2.9
@@ -75,12 +82,14 @@ FetchContent_MakeAvailable(
     json
     noise
     argparse
+    nbt
     spdlog
 )
 
 # Fix spdlog warnings
 get_target_property(spdlog_include spdlog INTERFACE_INCLUDE_DIRECTORIES)
 target_include_directories(spdlog SYSTEM INTERFACE ${spdlog_include})
+target_compile_options(spdlog PUBLIC -Wno-array-bounds -Wno-stringop-overflow)
 
 # Fix yaml-cpp warnings
 get_target_property(yaml_cpp_include yaml-cpp INTERFACE_INCLUDE_DIRECTORIES)
@@ -111,6 +120,7 @@ if(GTEST) # if the flag GTEST is true
 endif()
 
 find_package(Threads REQUIRED)
+find_package(Boost REQUIRED)
 find_package(PkgConfig REQUIRED)
 pkg_check_modules(GTKMM gtkmm-3.0)
 
@@ -120,6 +130,8 @@ if(NOT GTKMM_FOUND)
     set(NO_GUI ON)
 endif()
 
+option(STATIC_LINK "Link the binary statically" OFF)
+
 add_executable(${CMAKE_PROJECT_NAME})
 target_compile_definitions(${CMAKE_PROJECT_NAME} PRIVATE
     PROGRAM_NAME="${CMAKE_PROJECT_NAME}"
@@ -128,14 +140,24 @@ target_compile_definitions(${CMAKE_PROJECT_NAME} PRIVATE
     GUI_UNAVAILABLE=$<BOOL:${NO_GUI}>
 )
 
+if (STATIC_LINK)
+    target_link_libraries (${CMAKE_PROJECT_NAME} PRIVATE -static)
+endif()
+
 include(blocks.cmake)
 
 add_subdirectory(cubic-server)
 
 target_include_directories(${CMAKE_PROJECT_NAME} PRIVATE
-    ${GTKMM_INCLUDE_DIRS}
     ${noise_SOURCE_DIR}
+    ${nbt_SOURCE_DIR}
 )
+
+if (NOT NO_GUI)
+    target_include_directories(${CMAKE_PROJECT_NAME} PRIVATE
+        ${GTKMM_INCLUDE_DIRS}
+    )
+endif()
 
 target_include_directories(${CMAKE_PROJECT_NAME} PUBLIC cubic-server ${Blocks_SOURCE_DIR})
 
@@ -143,11 +165,19 @@ target_link_libraries (${CMAKE_PROJECT_NAME} PRIVATE
     Blocks
     Threads::Threads
     nlohmann_json::nlohmann_json
+    z
     argparse
     yaml-cpp
     spdlog::spdlog
     $<$<BOOL:${MINGW}>:ws2_32>
 )
+
+if (CMAKE_BUILD_TYPE MATCHES RELWITHDEBINFO)
+    target_link_libraries (${CMAKE_PROJECT_NAME} PRIVATE
+        asan
+        ubsan
+    )
+endif()
 
 if (NOT NO_GUI)
     target_link_libraries(${CMAKE_PROJECT_NAME} PRIVATE

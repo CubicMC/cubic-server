@@ -2,6 +2,7 @@
 #define CUBICSERVER_CLIENT_HPP
 
 #include <arpa/inet.h>
+#include <boost/asio.hpp>
 #include <memory>
 #include <netinet/in.h>
 #include <thread>
@@ -12,8 +13,10 @@
 #include "protocol/ClientPackets.hpp"
 #include "protocol/ServerPackets.hpp"
 #include "protocol/common.hpp"
+#include <boost/circular_buffer.hpp>
+#include <boost/container/deque.hpp>
 
-#define __PCK_CALLBACK_PRIM(type, object) return object->_on##type(std::static_pointer_cast<type>(packet))
+#define __PCK_CALLBACK_PRIM(type, object) return object->_on##type(*(type *) packet.get())
 
 #define PCK_CALLBACK(type) __PCK_CALLBACK_PRIM(type, this)
 
@@ -51,23 +54,28 @@ constexpr const char DEFAULT_FAVICON[] =
     "00jftzuSFFDFCF4ztqAJXpikeQCep6Gz3PN9+DFwxG5sPTA7TT89IxbMfBwCooqDtQ3JOX3UKbD9p+IwKRO47z+w0hf7PfPhwAEmXKECqyGTohOP1AdAMaoLpTnpfURI59doS27fA8IKHzK95vCPlIv8FkHjRbY7K+"
     "az7fd8LLTE1gIIO0+txkH6584qq9/2+4+OhkJV5u7T1L0fvcTIRPlN2AAAAAElFTkSuQmCC";
 
+constexpr auto _readBufferSize = 2048;
+
 class Player;
 
 class Client : public std::enable_shared_from_this<Client> {
     friend class Player;
 
 public:
-    Client(int sockfd, struct sockaddr_in6 addr);
+    Client(boost::asio::ip::tcp::socket &&socket, size_t clientID);
     ~Client();
 
-    void networkLoop();
+    void run();
+    void doRead();
+    void doWrite(std::unique_ptr<std::vector<uint8_t>> &&data);
+    NODISCARD inline std::thread &getThread() { return _thread; };
 
     NODISCARD bool isDisconnected() const;
     NODISCARD protocol::ClientStatus getStatus() const { return _status; }
 
     void setStatus(protocol::ClientStatus status) { _status = status; }
     void switchToPlayState(u128 playerUuid, const std::string &username);
-    void handleParsedClientPacket(const std::shared_ptr<protocol::BaseServerPacket> &packet, protocol::ServerPacketsID packetID);
+    void handleParsedClientPacket(std::unique_ptr<protocol::BaseServerPacket> &&packet, protocol::ServerPacketsID packetID);
 
     // All the send packets go here
     void sendStatusResponse(const std::string &json);
@@ -83,29 +91,35 @@ public:
 
     std::shared_ptr<Player> getPlayer();
     const std::shared_ptr<Player> getPlayer() const;
+    inline size_t getID() const { return _clientID; };
+    inline boost::asio::ip::tcp::socket &getSocket() { return _socket; }
 
 private:
     void _handlePacket();
     void _flushSendData();
     void _tryFlushAllSendData();
-    void _sendData(const std::vector<uint8_t> &data);
-    void _onHandshake(const std::shared_ptr<protocol::Handshake> &pck);
-    void _onStatusRequest(const std::shared_ptr<protocol::StatusRequest> &pck);
-    void _onLoginStart(const std::shared_ptr<protocol::LoginStart> &pck);
-    void _onPingRequest(const std::shared_ptr<protocol::PingRequest> &pck);
-    void _onEncryptionResponse(const std::shared_ptr<protocol::EncryptionResponse> &pck);
+    // void _sendData(std::vector<uint8_t> &data);
+    void _onHandshake(protocol::Handshake &pck);
+    void _onStatusRequest(protocol::StatusRequest &pck);
+    void _onLoginStart(protocol::LoginStart &pck);
+    void _onPingRequest(protocol::PingRequest &pck);
+    void _onEncryptionResponse(protocol::EncryptionResponse &pck);
     void _loginSequence(const protocol::LoginSuccess &packet);
 
 private:
-    const int _sockfd;
-    const struct sockaddr_in6 _addr;
     std::atomic<bool> _isRunning;
     protocol::ClientStatus _status;
     std::vector<uint8_t> _recvBuffer;
-    std::vector<uint8_t> _sendBuffer;
-    std::thread _networkThread;
+    char _readBuffer[_readBufferSize];
+    // boost::circular_buffer_space_optimized<uint8_t> _sendBuffer;
+    boost::circular_buffer<uint8_t> _sendBuffer;
     std::shared_ptr<Player> _player;
     std::mutex _writeMutex;
+    boost::asio::ip::tcp::socket _socket;
+    // boost::lockfree::queue<uint8_t> _toSend;
+    boost::container::deque<std::unique_ptr<uint8_t>> _toSend;
+    const size_t _clientID;
+    std::thread _thread;
 };
 
 #endif // CUBICSERVER_CLIENT_HPP

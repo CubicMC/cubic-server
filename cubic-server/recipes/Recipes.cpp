@@ -123,6 +123,7 @@ void Recipes::loadFolder(const std::string &_namespace, const std::string &folde
 
 void Recipes::initialize(void)
 {
+    return;
     // adding default's minecraft recipes
     addRecipeCreator("minecraft", "blasting", Recipe::Blasting::create);
     addRecipeCreator("minecraft", "campfire_cooking", Recipe::CampfireCooking::create);

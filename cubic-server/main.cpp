@@ -8,6 +8,8 @@
 #include "Server.hpp"
 #include "logging/logging.hpp"
 #include "options.hpp"
+#include "protocol/ServerPackets.hpp"
+#include "world_storage/Persistence.hpp"
 
 #if GUI_UNAVAILABLE == 0
 #include "interface/InterfaceContainer.hpp"
@@ -74,6 +76,36 @@ auto initArgs(int argc, const char *const argv[])
         .possibleValues(true, false)
         .defaultValue(false)
         .required();
+
+    program.add("enable-generation")
+        .help("Enables chunk generation")
+        .valueFromConfig("general", "enable-generation")
+        .valueFromEnvironmentVariable("CBSRV_ENABLE_GENERATION")
+        .valueFromArgument("--enable-generation")
+        .possibleValues(true, false)
+        .defaultValue(true);
+
+    program.add("level-name")
+        .help("Name of the world")
+        .valueFromConfig("general", "level-name")
+        .valueFromEnvironmentVariable("CBSRV_LEVEL_NAME")
+        .valueFromArgument("--level-name")
+        .defaultValue("world");
+
+    program.add("num-gen-thread")
+        .help("Number of threads allocated to chunk generation")
+        .valueFromConfig("general", "num-gen-thread")
+        .valueFromEnvironmentVariable("CBSRV_NUM_GEN_THREAD")
+        .valueFromArgument("--num-gen-thread")
+        .defaultValue(4);
+
+    program.add("level-type")
+        .help("World type to generate")
+        .valueFromConfig("general", "level-type")
+        .valueFromEnvironmentVariable("CBSRV_LEVEL_TYPE")
+        .valueFromArgument("--level-type")
+        .possibleValues("flat", "default", "void")
+        .defaultValue("default");
     // clang-format on
 
     try {

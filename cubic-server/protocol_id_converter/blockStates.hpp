@@ -22,6 +22,7 @@ struct InternalProperty {
 struct InternalBlock {
     std::string name;
     std::vector<InternalProperty> properties;
+    std::vector<std::pair<std::string, std::string>> defaultProperties;
     uint16_t baseProtocolId;
     uint16_t maxProtocolId;
 };
@@ -33,6 +34,8 @@ struct Block {
     std::string name;
     std::vector<std::pair<std::string, std::string>> properties;
 };
+
+// minecraft:grass_block[snowy=false]
 
 /**
  * @brief Global palette of blocks used to convert from protocol id to block and vice versa
@@ -46,7 +49,8 @@ public:
      * @param block The block to convert
      * @return The protocol id of the block
      */
-    BlockId fromBlockToProtocolId(const Block &block) const;
+    BlockId fromBlockToProtocolId(Block &block) const;
+    BlockId fromBlockToProtocolId(const std::string &block) const;
     /**
      * @brief Convert a protocol id to a block
      * @param id The protocol id to convert
