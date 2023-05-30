@@ -77,6 +77,12 @@ FetchContent_Declare(
     GIT_TAG v2.9
 )
 
+FetchContent_Declare(
+    mbedtls
+    GIT_REPOSITORY https://github.com/Mbed-TLS/mbedtls.git
+    GIT_TAG v3.4.0
+)
+
 FetchContent_MakeAvailable(
     yaml-cpp
     json
@@ -84,6 +90,7 @@ FetchContent_MakeAvailable(
     argparse
     nbt
     spdlog
+    mbedtls
 )
 
 # Fix spdlog warnings
