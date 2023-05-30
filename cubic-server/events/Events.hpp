@@ -23,17 +23,17 @@ namespace EventType {
     typedef bool (*destroy)(PluginInterface *interface);
     typedef bool (*onPlayerJoin)(PluginInterface *interface, Player *player);
     typedef bool (*onPlayerLeave)(PluginInterface *interface, Player *player);
-    typedef bool (*onPlayerChat)(PluginInterface *interface, Player *player, Chat *chat, std::string message);
-    typedef bool (*onEntitySpawn)(PluginInterface *interface, Entity *entity);
-    typedef bool (*onEntityMove)(PluginInterface *interface, Entity *entity, Vector3<double> *from, Vector3<double> *to);
-    typedef bool (*onEntityRotate)(PluginInterface *interface, Entity *entity, Vector3<uint8_t> *from, Vector3<uint8_t> *to);
+    typedef bool (*onPlayerChat)(PluginInterface *interface, Player *player, Chat *chat, std::string message); // TODO - Place event
+    typedef bool (*onEntitySpawn)(PluginInterface *interface, Entity *entity); // TODO - Place event
+    typedef bool (*onEntityMove)(PluginInterface *interface, Entity *entity, Vector3<double> from, Vector3<double> to);
+    typedef bool (*onEntityRotate)(PluginInterface *interface, Entity *entity, Vector3<uint8_t> from, Vector3<uint8_t> to);
     typedef bool (*onEntityInteractEntity)(PluginInterface *interface, Entity *source, Entity *target);
-    typedef bool (*onEntityInteractBlock)(PluginInterface *interface, Entity *entity, Block *block);
+    typedef bool (*onEntityInteractBlock)(PluginInterface *interface, Entity *entity, int32_t block_id);
     typedef bool (*onEntityDamage)(PluginInterface *interface, Entity *source, float amount);
     typedef bool (*onEntityUse)(PluginInterface *interface, Entity *entity, Item *item);
-    typedef bool (*onBlockPlace)(PluginInterface *interface, Block *block, Vector3<int> *position);
-    typedef bool (*onBlockDestroy)(PluginInterface *interface, Block *block, Vector3<int> *position);
-    typedef bool (*onBlockInteract)(PluginInterface *interface, Block *block, Vector3<int> *position, Entity *entity);
+    typedef bool (*onBlockPlace)(PluginInterface *interface, int32_t block_id, Vector3<int> position);
+    typedef bool (*onBlockDestroy)(PluginInterface *interface, int32_t block_id, Vector3<int> position);
+    typedef bool (*onBlockInteract)(PluginInterface *interface, int32_t block_id, Vector3<int> position, Entity *entity);
     typedef bool (*onInventoryOpen)(PluginInterface *interface, Player *player, Inventory *inventory);
     typedef bool (*onInventoryClose)(PluginInterface *interface, Player *player, Inventory *inventory);
     typedef bool (*onInventoryChange)(PluginInterface *interface, Inventory *inventory);
