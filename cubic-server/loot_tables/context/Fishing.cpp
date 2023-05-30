@@ -7,6 +7,7 @@ Fishing::Fishing(const FloatingPosition &origin, const ItemId &tool, const Entit
     origin(origin),
     tool(tool),
     entity(entity)
-{}
+{
+}
 }
 }

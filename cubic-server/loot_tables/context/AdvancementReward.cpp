@@ -6,6 +6,7 @@ AdvancementReward::AdvancementReward(const Player &player, const FloatingPositio
     LootContext("minecraft:advancement_reward"),
     player(player),
     origin(origin)
-{}
+{
+}
 }
 }

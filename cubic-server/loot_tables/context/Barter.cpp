@@ -5,6 +5,7 @@ namespace Context {
 Barter::Barter(const Entity &barterer):
     LootContext("minecraft:barter"),
     barterer(barterer)
-{}
+{
+}
 }
 }

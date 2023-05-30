@@ -10,6 +10,7 @@ Block::Block(const int32_t &blockState, const FloatingPosition &origin, const It
     breaker(breaker),
     blockEntityData(blockEntityData),
     explosionRadius(explosionRadius)
-{}
+{
+}
 }
 }

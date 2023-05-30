@@ -6,6 +6,7 @@ AdvancementEntity::AdvancementEntity(const Entity &gifter, const FloatingPositio
     LootContext("minecraft:advancement_entity"),
     gifter(gifter),
     origin(origin)
-{}
+{
+}
 }
 }

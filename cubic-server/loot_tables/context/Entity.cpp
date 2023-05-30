@@ -10,6 +10,7 @@ Entity::Entity(const Entity &victim, const FloatingPosition &origin, const int32
     killer(killer),
     direct_killer(direct_killer),
     killer_player(killer_player)
-{}
+{
+}
 }
 }
