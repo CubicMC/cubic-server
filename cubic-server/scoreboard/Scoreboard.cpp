@@ -2,7 +2,7 @@
 #include "Player.hpp"
 #include "World.hpp"
 #include "WorldGroup.hpp"
-#include "logging/Logger.hpp"
+#include "logging/logging.hpp"
 #include "protocol/ClientPackets.hpp"
 #include <string>
 
@@ -64,9 +64,9 @@ void Scoreboard::displayObjective(DisplaySlot slot, Objective::Objective *object
     this->_displaySlots[slot] = objective;
     this->sendDisplayObjective(slot, objective);
     if (objective)
-        LDEBUG("displayed objective \"", objective->getName(), "\" in slot ", std::to_string(static_cast<int>(slot)));
+        LDEBUG("displayed objective \"{}\" in slot {}", objective->getName(), std::to_string(static_cast<int>(slot)));
     else
-        LDEBUG("removed displayed objectived from slot ", std::to_string(static_cast<int>(slot)));
+        LDEBUG("removed displayed objectived from slot {}", std::to_string(static_cast<int>(slot)));
 }
 
 void Scoreboard::addToObjectivebyCriteria(const std::string &criteria, const std::string &entity, int32_t value)
@@ -217,7 +217,7 @@ void Scoreboard::sendRemoveTeam(const Team::Team &team) const
 }
 void Scoreboard::sendScoreboardStatus(Player &player) const
 {
-    LDEBUG("scoreboard status? ", player.getUsername());
+    LDEBUG("scoreboard status? {}", player.getUsername());
     // send all objectives
     for (const auto &[_, objective] : this->_objectives) {
         const protocol::UpdateObjectives update {objective->getName(), 0, objective->getDisplayName(), static_cast<protocol::UpdateObjectives::Type>(objective->getRenderType())};

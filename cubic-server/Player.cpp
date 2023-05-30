@@ -644,7 +644,7 @@ void Player::sendUpdateObjective(const protocol::UpdateObjectives &packet)
 {
     GET_CLIENT();
     auto pck = protocol::createUpdateObjectives(packet);
-    client->_sendData(*pck);
+    client->doWrite(std::move(pck));
     LDEBUG("Sent update objectives packet");
 }
 
@@ -652,7 +652,7 @@ void Player::sendDisplayObjective(const protocol::DisplayObjective &packet)
 {
     GET_CLIENT();
     auto pck = protocol::createDisplayObjective(packet);
-    client->_sendData(*pck);
+    client->doWrite(std::move(pck));
     LDEBUG("Sent display objective packet");
 }
 
@@ -660,7 +660,7 @@ void Player::sendUpdateScore(const protocol::UpdateScore &packet)
 {
     GET_CLIENT();
     auto pck = protocol::createUpdateScore(packet);
-    client->_sendData(*pck);
+    client->doWrite(std::move(pck));
     LDEBUG("Sent update score packet");
 }
 
@@ -668,7 +668,7 @@ void Player::sendUpdateTeams(const protocol::UpdateTeams &packet)
 {
     GET_CLIENT();
     auto pck = protocol::createUpdateTeams(packet);
-    client->_sendData(*pck);
+    client->doWrite(std::move(pck));
     LDEBUG("Sent update teams packet");
 }
 

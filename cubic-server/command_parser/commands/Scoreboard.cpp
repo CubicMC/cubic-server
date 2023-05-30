@@ -2,7 +2,7 @@
 
 #include "Server.hpp"
 #include "WorldGroup.hpp"
-#include "logging/Logger.hpp"
+#include "logging/logging.hpp"
 
 /*
     objectives
@@ -18,11 +18,11 @@ void command_parser::Objectives::autocomplete(UNUSED std::vector<std::string> &a
 void command_parser::Objectives::execute(UNUSED std::vector<std::string> &args, UNUSED Player *invoker) const
 {
     for (auto &[name, worldgroup] : Server::getInstance()->getWorldGroups()) {
-        LINFO("in worldgroup ", name, ":");
+        LINFO("in worldgroup {}:", name);
         for (const auto &[objective, obj] : worldgroup->getScoreboard().getObjectives()) {
-            LINFO("\t", objective);
+            LINFO("\t{}", objective);
             for (const auto &[name, score] : obj->getScores()) {
-                LINFO("\t\t", name, " ", score.get());
+                LINFO("\t\t{} {}", name, score.get());
             }
         }
     }
@@ -130,7 +130,7 @@ void command_parser::DisplayObjective::execute(std::vector<std::string> &args, U
             if (worldgroup->getScoreboard().isObjective(args[1]))
                 worldgroup->getScoreboard().displayObjective(static_cast<Scoreboard::DisplaySlot>(std::stoi(args[0])), &worldgroup->getScoreboard().getObjective(args[1]));
             else
-                LINFO("no objetive \"", args[1], "\"");
+                LINFO("no objetive \"{}\"", args[1]);
         } else
             worldgroup->getScoreboard().displayObjective(static_cast<Scoreboard::DisplaySlot>(std::stoi(args[0])), nullptr);
     }
@@ -182,11 +182,11 @@ void command_parser::Teams::autocomplete(UNUSED std::vector<std::string> &args, 
 void command_parser::Teams::execute(UNUSED std::vector<std::string> &args, UNUSED Player *invoker) const
 {
     for (auto &[name, worldgroup] : Server::getInstance()->getWorldGroups()) {
-        LINFO("in worldgroup ", name, ":");
+        LINFO("in worldgroup {}:", name);
         for (const auto &[team, obj] : worldgroup->getScoreboard().getTeams()) {
-            LINFO("\t", team, ":");
+            LINFO("\t{}:", team);
             for (const auto &player : obj->getMembers()) {
-                LINFO("\t\t", player);
+                LINFO("\t\t{}", player);
             }
         }
     }

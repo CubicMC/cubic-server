@@ -3,7 +3,7 @@
 #include "World.hpp"
 #include "WorldGroup.hpp"
 #include "chat/Message.hpp"
-#include "logging/Logger.hpp"
+#include "logging/logging.hpp"
 #include "protocol/ClientPackets.hpp"
 
 #include "Teams.hpp"
@@ -70,7 +70,7 @@ Team::Team(const Scoreboard &scoreboard, const std::string &name):
     _memberNamePrefix(""),
     _memberNameSuffix("")
 {
-    LDEBUG("Added team \"", name, "\"");
+    LDEBUG("Added team \"{}\"", name);
 }
 
 Team::Team(const Scoreboard &scoreboard, const std::string &name, const Color &color):
@@ -86,7 +86,7 @@ Team::Team(const Scoreboard &scoreboard, const std::string &name, const Color &c
     _memberNamePrefix(""),
     _memberNameSuffix("")
 {
-    LDEBUG("Added team \"", name, "\"");
+    LDEBUG("Added team \"{}\"", name);
 }
 
 Team::Team(const Scoreboard &scoreboard, const std::string &name, const std::string &displayName):
@@ -102,7 +102,7 @@ Team::Team(const Scoreboard &scoreboard, const std::string &name, const std::str
     _memberNamePrefix(""),
     _memberNameSuffix("")
 {
-    LDEBUG("Added team \"", name, "\"");
+    LDEBUG("Added team \"{}\"", name);
 }
 
 Team::Team(const Scoreboard &scoreboard, const std::string &name, const Color &color, const std::string &displayName):
@@ -118,10 +118,10 @@ Team::Team(const Scoreboard &scoreboard, const std::string &name, const Color &c
     _memberNamePrefix(""),
     _memberNameSuffix("")
 {
-    LDEBUG("Added team \"", name, "\"");
+    LDEBUG("Added team \"{}\"", name);
 }
 
-Team::~Team() { LDEBUG("Removed team \"", this->_name, "\""); }
+Team::~Team() { LDEBUG("Removed team \"{}\"", this->_name); }
 
 const std::unordered_set<std::string> &Team::getMembers(void) const noexcept { return (this->_members); }
 
@@ -240,7 +240,7 @@ void Team::sendJoinTeam(const std::string &name) const
 {
     // join team packet only sens the name of the team and the entity joining it
     const protocol::UpdateTeams update {this->_name, 3, "", 0, "", "", this->_color, "", "", {name}};
-    LDEBUG(name, " joined team ", this->_name);
+    LDEBUG("{} joined team {}", name, this->_name);
     for (const auto &[_, world] : this->_scoreboard.getWorldGroup().getWorlds()) {
         for (const auto &[_, dimension] : world->getDimensions()) {
             for (const auto &player : dimension->getPlayers()) {
@@ -254,7 +254,7 @@ void Team::sendLeaveTeam(const std::string &name) const
 {
     // leave team packet only sens the name of the team and the entity leaving it
     const protocol::UpdateTeams update {this->_name, 4, "", 0, "", "", this->_color, "", "", {name}};
-    LDEBUG(name, " left team ", this->_name);
+    LDEBUG("{} left team {}", name, this->_name);
     for (const auto &[_, world] : this->_scoreboard.getWorldGroup().getWorlds()) {
         for (const auto &[_, dimension] : world->getDimensions()) {
             for (const auto &player : dimension->getPlayers()) {

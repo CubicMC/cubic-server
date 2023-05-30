@@ -2,7 +2,7 @@
 #include "Player.hpp"
 #include "World.hpp"
 #include "WorldGroup.hpp"
-#include "logging/Logger.hpp"
+#include "logging/logging.hpp"
 #include "protocol/ClientPackets.hpp"
 
 #include "Objectives.hpp"
@@ -45,7 +45,7 @@ Objective::Objective(const Scoreboard &scoreboard, const std::string &name, cons
     _displayName(name),
     _renderType(RenderType::RenderInteger)
 {
-    LDEBUG("Added objective \"", name, "\"");
+    LDEBUG("Added objective \"{}\"", name);
 }
 
 Objective::Objective(const Scoreboard &scoreboard, const std::string &name, const std::string &criteria, const chat::Message &displayName):
@@ -55,7 +55,7 @@ Objective::Objective(const Scoreboard &scoreboard, const std::string &name, cons
     _displayName(displayName),
     _renderType(RenderType::RenderInteger)
 {
-    LDEBUG("Added objective \"", name, "\"");
+    LDEBUG("Added objective \"{}\"", name);
 }
 
 Objective::Objective(const Scoreboard &scoreboard, const std::string &name, const std::string &criteria, const RenderType &renderType):
@@ -65,7 +65,7 @@ Objective::Objective(const Scoreboard &scoreboard, const std::string &name, cons
     _displayName(name),
     _renderType(renderType)
 {
-    LDEBUG("Added objective \"", name, "\"");
+    LDEBUG("Added objective \"{}\"", name);
 }
 
 Objective::Objective(const Scoreboard &scoreboard, const std::string &name, const std::string &criteria, const chat::Message &displayName, const RenderType &renderType):
@@ -75,10 +75,10 @@ Objective::Objective(const Scoreboard &scoreboard, const std::string &name, cons
     _displayName(displayName),
     _renderType(renderType)
 {
-    LDEBUG("Added objective \"", name, "\"");
+    LDEBUG("Added objective \"{}\"", name);
 }
 
-Objective::~Objective() { LDEBUG("Removed objective \"", this->_name, "\""); }
+Objective::~Objective() { LDEBUG("Removed objective \"{}\"", this->_name); }
 
 const std::string &Objective::getName(void) const noexcept { return (this->_name); }
 
@@ -110,7 +110,7 @@ void Objective::setScore(const std::string &name, int32_t value)
         return;
     this->_values[name].set(value);
     this->sendUpdateScore(name, this->_values[name]);
-    LDEBUG(this->_name, ": set ", name, "'s score to ", value);
+    LDEBUG("{}: set {}'s score to {}", this->_name, name, value);
 }
 
 void Objective::addScore(const std::string &name, int32_t value)
