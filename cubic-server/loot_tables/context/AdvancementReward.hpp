@@ -11,17 +11,15 @@ class Player;
 
 namespace LootTable {
 namespace Context {
-class AdvancementReward {
+class AdvancementReward : public LootContext {
 public:
     AdvancementReward(const Player &player, const FloatingPosition &origin);
     ~AdvancementReward() = default;
 
-    const std::string &getType() const;
-
-    const Player &_player;
-    const FloatingPosition &_origin;
+    const Player &player;
+    const FloatingPosition &origin;
 };
-};
-};
+}
+}
 
 #endif // CUBIC_SERVER_LOOT_TABLES_CONTEXT_ADVANCEMENTREWARD_HPP

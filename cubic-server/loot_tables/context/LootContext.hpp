@@ -3,27 +3,19 @@
 
 #include <string>
 
-#include "AdvancementEntity.hpp"
-#include "AdvancementReward.hpp"
-#include "Barter.hpp"
-#include "Block.hpp"
-#include "Chest.hpp"
-#include "Command.hpp"
-#include "Empty.hpp"
-#include "Entity.hpp"
-#include "Fishing.hpp"
-#include "Generic.hpp"
-#include "Gift.hpp"
-#include "Selector.hpp"
-
 namespace LootTable {
-/*
-  Loot context class to be overloaded
-*/
+namespace Context {
 class LootContext {
 public:
-    virtual const std::string &getType() const = 0;
+    LootContext(const std::string &type);
+    ~LootContext() = default;
+
+    const std::string &getType() const noexcept;
+
+private:
+    const std::string _type;
 };
-};
+}
+}
 
 #endif // CUBIC_SERVER_LOOT_TABLES_LOOT_CONTEXT_HPP

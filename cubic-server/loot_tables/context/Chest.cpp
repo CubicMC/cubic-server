@@ -3,11 +3,9 @@
 namespace LootTable {
 namespace Context {
 Chest::Chest(const Position &origin, const Entity *entity):
-    _origin(origin),
-    _entity(entity)
-{
+    LootContext("minecraft:chest"),
+    origin(origin),
+    entity(entity)
+{}
 }
-
-const std::string &Chest::getType() const { return ("minecraft:chest"); }
-};
-};
+}

@@ -2,6 +2,8 @@
 
 namespace LootTable {
 namespace Context {
-const std::string &Empty::getType() const { return ("minecraft:empty"); }
-};
-};
+Empty::Empty():
+    LootContext("minecraft:empty")
+{}
+}
+}

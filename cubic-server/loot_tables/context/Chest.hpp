@@ -11,17 +11,15 @@ class Entity;
 
 namespace LootTable {
 namespace Context {
-class Chest {
+class Chest : public LootContext {
 public:
     Chest(const Position &origin, const Entity *entity);
     ~Chest() = default;
 
-    const std::string &getType() const;
-
-    const Position &_origin;
-    const Entity *_entity;
+    const Position &origin;
+    const Entity *entity;
 };
-};
-};
+}
+}
 
 #endif // CUBIC_SERVER_LOOT_TABLES_CONTEXT_CHEST_HPP

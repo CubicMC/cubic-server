@@ -38,7 +38,7 @@ Server::Server():
     // _motd = _config.getMotd();
     // _enforceWhitelist = _config.getEnforceWhitelist();
 
-    _commands.reserve(11);
+    _commands.reserve(12);
     _commands.emplace_back(std::make_unique<command_parser::Help>());
     _commands.emplace_back(std::make_unique<command_parser::QuestionMark>());
     _commands.emplace_back(std::make_unique<command_parser::Stop>());

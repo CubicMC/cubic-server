@@ -7,14 +7,12 @@
 
 namespace LootTable {
 namespace Context {
-class Generic {
+class Generic : public LootContext {
 public:
-    Generic() = default;
+    Generic();
     ~Generic() = default;
-
-    const std::string &getType() const;
 };
-};
-};
+}
+}
 
 #endif // CUBIC_SERVER_LOOT_TABLES_CONTEXT_GENERIC_HPP

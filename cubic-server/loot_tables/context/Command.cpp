@@ -3,11 +3,9 @@
 namespace LootTable {
 namespace Context {
 Command::Command(const FloatingPosition &origin, const Entity *entity):
-    _origin(origin),
-    _entity(entity)
-{
+    LootContext("minecraft:command"),
+    origin(origin),
+    entity(entity)
+{}
 }
-
-const std::string &Command::getType() const { return ("minecraft:command"); }
-};
-};
+}

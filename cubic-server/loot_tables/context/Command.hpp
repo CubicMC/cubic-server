@@ -11,19 +11,15 @@ class Entity;
 
 namespace LootTable {
 namespace Context {
-class Command {
+class Command : public LootContext {
 public:
     Command(const FloatingPosition &origin, const Entity *entity);
     ~Command();
 
-    const std::string &getType() const;
-
-    static std::unique_ptr<LootContext> create(void);
-
-    const FloatingPosition &_origin;
-    const Entity *_entity;
+    const FloatingPosition &origin;
+    const Entity *entity;
 };
-};
-};
+}
+}
 
 #endif // CUBIC_SERVER_LOOT_TABLES_CONTEXT_COMMAND_HPP

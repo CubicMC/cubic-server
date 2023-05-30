@@ -3,11 +3,9 @@
 namespace LootTable {
 namespace Context {
 Selector::Selector(const FloatingPosition &origin, const Entity &entity):
-    _origin(origin),
-    _entity(entity)
-{
+    LootContext("minecraft:selector"),
+    origin(origin),
+    entity(entity)
+{}
 }
-
-const std::string &Selector::getType() const { return ("minecraft:selector"); }
-};
-};
+}

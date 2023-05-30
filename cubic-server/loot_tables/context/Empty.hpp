@@ -7,14 +7,12 @@
 
 namespace LootTable {
 namespace Context {
-class Empty {
+class Empty : public LootContext {
 public:
-    Empty() = default;
+    Empty();
     ~Empty() = default;
-
-    const std::string &getType() const;
 };
-};
-};
+}
+}
 
 #endif // CUBIC_SERVER_LOOT_TABLES_CONTEXT_EMPTY_HPP

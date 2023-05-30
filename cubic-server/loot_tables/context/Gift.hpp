@@ -11,17 +11,15 @@ class Entity;
 
 namespace LootTable {
 namespace Context {
-class Gift {
+class Gift : public LootContext {
 public:
     Gift(const FloatingPosition &origin, const Entity &gifter);
     ~Gift() = default;
 
-    const std::string &getType() const;
-
-    const FloatingPosition &_origin;
-    const Entity &_gifter;
+    const FloatingPosition &origin;
+    const Entity &gifter;
 };
-};
-};
+}
+}
 
 #endif // CUBIC_SERVER_LOOT_TABLES_CONTEXT_GIFT_HPP

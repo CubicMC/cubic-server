@@ -3,10 +3,8 @@
 namespace LootTable {
 namespace Context {
 Barter::Barter(const Entity &barterer):
-    _barterer(barterer)
-{
+    LootContext("minecraft:barter"),
+    barterer(barterer)
+{}
 }
-
-const std::string &Barter::getType() const { return ("minecraft:barter"); }
-};
-};
+}
