@@ -3,6 +3,7 @@
 #include "Chat.hpp"
 #include "Client.hpp"
 #include "Dimension.hpp"
+#include "world_storage/Level.hpp"
 #include "Entity.hpp"
 #include "PlayerAttributes.hpp"
 #include "Server.hpp"
@@ -11,6 +12,7 @@
 #include "command_parser/CommandParser.hpp"
 #include "items/foodItems.hpp"
 #include "PluginManager.hpp"
+#include "events/CancelEvents.hpp"
 #include "logging/logging.hpp"
 #include <memory>
 #include <mutex>
@@ -792,6 +794,9 @@ void Player::_onPlayerAbilities(protocol::PlayerAbilities &pck)
 
 void Player::_onPlayerAction(protocol::PlayerAction &pck)
 {
+    bool canceled = false;
+    Vector3<int> tmp(pck.location.x, pck.location.y, pck.location.z);
+
     // N_LINFO("Got a Player Action {} at {}", pck.status, pck.location);
     N_LDEBUG("Got a Player Action and player is in gamemode {} and status is {}", this->getGamemode(), pck.status);
     switch (pck.status) {
@@ -802,6 +807,15 @@ void Player::_onPlayerAction(protocol::PlayerAction &pck)
     case protocol::PlayerAction::Status::CancelledDigging:
         break;
     case protocol::PlayerAction::Status::FinishedDigging:
+        onEventCancelable(Server::getInstance()->getPluginManager(), onBlockDestroy, canceled, nullptr, &tmp);
+        if (canceled) {
+            Event::cancelBlockDestroy(
+                this,
+                this->getDimension()->getLevel().getChunkColumnFromBlockPos(pck.location.x, pck.location.z).getBlock(pck.location),
+                pck.location
+            );
+            return ;
+        }
         this->getDimension()->updateBlock(pck.location, 0);
         _foodExhaustionLevel += 0.005;
         break;
