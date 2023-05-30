@@ -258,11 +258,4 @@ void Dimension::updateBlock(Position position, int32_t id)
     for (auto player : _players) {
         player->sendBlockUpdate({position, id});
     }
-
-    Vector3<int> pos = Vector3<int>(position.x, position.y, position.z);
-    if (id) {
-        onEvent(Server::getInstance()->getPluginManager(), onBlockPlace, nullptr, &pos);
-    } else {
-        onEvent(Server::getInstance()->getPluginManager(), onBlockDestroy, nullptr, &pos);
-    }
 }

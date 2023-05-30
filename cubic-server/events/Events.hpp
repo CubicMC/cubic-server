@@ -28,15 +28,15 @@ namespace EventType {
     typedef bool (*onEntityMove)(PluginInterface *interface, Entity *entity, Vector3<double> from, Vector3<double> to);
     typedef bool (*onEntityRotate)(PluginInterface *interface, Entity *entity, Vector3<uint8_t> from, Vector3<uint8_t> to);
     typedef bool (*onEntityInteractEntity)(PluginInterface *interface, Entity *source, Entity *target);
-    typedef bool (*onEntityInteractBlock)(PluginInterface *interface, Entity *entity, int32_t block_id);
+    typedef bool (*onEntityInteractBlock)(PluginInterface *interface, Entity *entity, int32_t block_id); // Todo - Place event
     typedef bool (*onEntityDamage)(PluginInterface *interface, Entity *source, float amount);
-    typedef bool (*onEntityUse)(PluginInterface *interface, Entity *entity, Item *item);
+    typedef bool (*onEntityUse)(PluginInterface *interface, Entity *entity, Item *item); // Todo - Place event
     typedef bool (*onBlockPlace)(PluginInterface *interface, int32_t block_id, Vector3<int> position);
     typedef bool (*onBlockDestroy)(PluginInterface *interface, int32_t block_id, Vector3<int> position);
-    typedef bool (*onBlockInteract)(PluginInterface *interface, int32_t block_id, Vector3<int> position, Entity *entity);
-    typedef bool (*onInventoryOpen)(PluginInterface *interface, Player *player, Inventory *inventory);
-    typedef bool (*onInventoryClose)(PluginInterface *interface, Player *player, Inventory *inventory);
-    typedef bool (*onInventoryChange)(PluginInterface *interface, Inventory *inventory);
+    typedef bool (*onBlockInteract)(PluginInterface *interface, int32_t block_id, Vector3<int> position, Entity *entity); // Todo - ?
+    typedef bool (*onInventoryOpen)(PluginInterface *interface, Player *player, Inventory *inventory); // Todo - Place event
+    typedef bool (*onInventoryClose)(PluginInterface *interface, Player *player, Inventory *inventory); // Todo - Place event
+    typedef bool (*onInventoryChange)(PluginInterface *interface, Inventory *inventory); // Todo - Place event
     typedef bool (*onWorldLoad)(PluginInterface *interface, World *world);
     typedef bool (*onDimensionLoad)(PluginInterface *interface, Dimension *dimension);
     typedef bool (*onChunkLoad)(PluginInterface *interface, Chunk *chunk);

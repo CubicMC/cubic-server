@@ -42,10 +42,7 @@ target_sources (${CMAKE_PROJECT_NAME} PRIVATE
     nbt.c
 )
 
-link_directories(/home/thomas/Repository/cubic-server/cubic-server/plugins)
-target_link_libraries(${CMAKE_PROJECT_NAME} PRIVATE libplugin_interface.so)
-
-file(COPY plugins DESTINATION ${CMAKE_BINARY_DIR})
+file(MAKE_DIRECTORY ${CMAKE_BINARY_DIR}/plugins)
 
 if (GTEST)
     enable_testing()

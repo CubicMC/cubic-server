@@ -2,6 +2,9 @@
 
 #include "Dimension.hpp"
 #include "Player.hpp"
+#include "Server.hpp"
+#include "events/Events.hpp"
+#include "PluginManager.hpp"
 
 /*
  * @brief Attack the entity
@@ -12,6 +15,7 @@
 void LivingEntity::attack(const Vector3<double> &source)
 {
     //  TODO : think about how to deal with damage calculation later
+    onEvent(Server::getInstance()->getPluginManager(), onEntityDamage, this, 1.0f);
     this->damage(1);
     this->knockback(source);
 }
