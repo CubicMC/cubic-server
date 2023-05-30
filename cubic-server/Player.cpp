@@ -20,7 +20,7 @@
     return
 
 Player::Player(std::weak_ptr<Client> cli, std::shared_ptr<Dimension> dim, u128 uuid, const std::string &username):
-    LivingEntity(dim),
+    LivingEntity(dim, protocol::SpawnEntity::EntityType::Player),
     _cli(cli),
     _username(username),
     _uuid(uuid),

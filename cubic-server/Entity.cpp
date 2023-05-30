@@ -5,33 +5,82 @@
 #include "Server.hpp"
 #include "World.hpp"
 #include "options.hpp"
-#include "types.hpp"
 
-Entity::Entity(std::shared_ptr<Dimension> dim):
+// Entity::Entity(std::shared_ptr<Dimension> dim):
+//     _dim(dim)
+// {
+//     static std::atomic<int32_t> currentID = 0;
+
+//     _onFire = false;
+//     _crouching = false;
+//     _sprinting = false;
+//     _swimming = false;
+//     _invisible = false;
+//     _glowing = false;
+//     _flyingWithElytra = false;
+//     _airTicks = 300;
+//     _customName = "";
+//     _customNameVisible = false;
+//     _silent = false;
+//     _noGravity = false;
+//     _pose = Pose::Standing;
+//     _tickFrozenInPowderedSnow = 0;
+//     _id = currentID.fetch_add(1);
+//     _pos = {0, 0, 0};
+//     _lastPos = {0, 0, 0};
+//     _rot = {0, 0};
+//     _lastRot = {0, 0};
+// }
+
+// clang-format off
+Entity::Entity(std::shared_ptr<Dimension> dim,
+    protocol::SpawnEntity::EntityType type,
+    bool onFire,
+    bool crouching,
+    bool sprinting,
+    bool swimming,
+    bool invisible,
+    bool glowing,
+    bool flyingWithElytra,
+    int16_t airTicks,
+    std::string customName,
+    bool customNameVisible,
+    bool silent,
+    bool noGravity,
+    Pose pose,
+    int16_t tickFrozenInPowderedSnow,
+    int32_t id,
+    Vector3<double> pos,
+    Vector2<uint8_t> rot,
+    Vector3<double> lastPos,
+    Vector2<uint8_t> lastRot):
     _dim(dim)
 {
     static std::atomic<int32_t> currentID = 0;
 
-    _onFire = false;
-    _crouching = false;
-    _sprinting = false;
-    _swimming = false;
-    _invisible = false;
-    _glowing = false;
-    _flyingWithElytra = false;
-    _airTicks = 300;
-    _customName = "";
-    _customNameVisible = false;
-    _silent = false;
-    _noGravity = false;
-    _pose = Pose::Standing;
-    _tickFrozenInPowderedSnow = 0;
+    _onFire = onFire;
+    _crouching = crouching;
+    _sprinting = sprinting;
+    _swimming = swimming;
+    _invisible = invisible;
+    _glowing = glowing;
+    _flyingWithElytra = flyingWithElytra;
+    _airTicks = airTicks;
+    _customName = customName;
+    _customNameVisible = customNameVisible;
+    _silent = silent;
+    _noGravity = noGravity;
+    _pose = pose;
+    _tickFrozenInPowderedSnow = tickFrozenInPowderedSnow;
     _id = currentID.fetch_add(1);
-    _pos = {0, 0, 0};
-    _lastPos = {0, 0, 0};
-    _rot = {0, 0};
-    _lastRot = {0, 0};
+    _pos = pos;
+    _lastPos = lastPos;
+    _rot = rot;
+    _lastRot = lastRot;
+    _type = type;
 }
+
+// clang-format on
 
 void Entity::setDimension(std::shared_ptr<Dimension> dim) { _dim = dim; }
 
@@ -89,4 +138,11 @@ void Entity::teleport(const Vector3<double> &pos)
             continue;
         i->sendTeleportEntity(this->getId(), pos);
     }
+}
+
+void Entity::dropItem(const ItemId &itemId, const Position &pos)
+{
+    // protocol::SpawnEntity spawnItem;
+    // Entity item(this->getDimension());
+    // this->getDimension()->addEntity(item);
 }

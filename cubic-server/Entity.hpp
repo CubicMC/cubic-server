@@ -4,6 +4,8 @@
 #include "math/Vector2.hpp"
 #include "math/Vector3.hpp"
 #include "options.hpp"
+#include "types.hpp"
+#include "protocol/ClientPackets.hpp"
 #include <memory>
 
 class World;
@@ -30,7 +32,13 @@ class Entity : public std::enable_shared_from_this<Entity> {
 
 public:
     // Subject to change
-    Entity(std::shared_ptr<Dimension> dim);
+    // Entity(std::shared_ptr<Dimension> dim);
+    Entity(
+        std::shared_ptr<Dimension> dim, protocol::SpawnEntity::EntityType type, bool onFire = false, bool crouching = false, bool sprinting = false, bool swimming = false, bool invisible = false, bool glowing = false,
+        bool flyingWithElytra = false, int16_t airTicks = 300, std::string customName = "", bool customNameVisible = false, bool silent = false, bool noGravity = false,
+        Pose pose = Pose::Standing, int16_t tickFrozenInPowderedSnow = 0, int32_t id = 0, Vector3<double> pos = {0, 0, 0}, Vector2<uint8_t> rot = {0, 0},
+        Vector3<double> lastPos = {0, 0, 0}, Vector2<uint8_t> lastRot = {0, 0}
+    );
     virtual ~Entity() {};
     virtual void tick() = 0;
     virtual void setDimension(std::shared_ptr<Dimension> dim);
@@ -52,6 +60,10 @@ public:
     NODISCARD virtual Vector2<uint8_t> &getLastRotation();
 
     virtual void teleport(const Vector3<double> &pos);
+
+    // Drop an item when necessary (death of the entity, broken block, ...)
+    // The dropped item is determined by the loot tables
+    virtual void dropItem(const ItemId &itemId, const Position &pos);
 
 protected:
     std::shared_ptr<Dimension> _dim;
@@ -75,6 +87,7 @@ protected:
     Vector2<uint8_t> _rot;
     Vector3<double> _lastPos;
     Vector2<uint8_t> _lastRot;
+    protocol::SpawnEntity::EntityType _type;
 };
 
 #endif // CUBICSERVER_ENTITY_HPP
