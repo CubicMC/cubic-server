@@ -2,16 +2,18 @@
 
 #include "Dimension.hpp"
 #include "Player.hpp"
+#include "Server.hpp"
 #include "WorldGroup.hpp"
-#include "logging/Logger.hpp"
+#include "logging/logging.hpp"
 
-World::World(std::shared_ptr<WorldGroup> worldGroup):
+World::World(std::shared_ptr<WorldGroup> worldGroup, std::string folder):
     _worldGroup(worldGroup),
     _age(0),
     _time(0),
-    _renderDistance(8), // TODO: Should be loaded from config
+    _renderDistance(10), // TODO: Should be loaded from config
     _timeUpdateClock(20, std::bind(&World::updateTime, this)), // 1 second for time updates
-    _generationPool(4, "WorldGen")
+    _generationPool(CONFIG["num-gen-thread"].as<uint16_t>(), "WorldGen"),
+    _folder(folder)
 {
     _timeUpdateClock.start();
     _seed = -721274728; // TODO: Should be loaded from config or generated
@@ -164,7 +166,7 @@ void World::sendPlayerInfoAddPlayer(Player *current)
         .actionSets = playersInfo
     });
     // clang-format on
-    LDEBUG("Sent player info to " + current->getUsername());
+    LDEBUG("Sent player info to {}" + current->getUsername());
 }
 
 void World::sendPlayerInfoRemovePlayer(const Player *current)
@@ -177,7 +179,7 @@ void World::sendPlayerInfoRemovePlayer(const Player *current)
             }
         }
     }
-    LDEBUG("Sent player info to ", current->getUsername());
+    LDEBUG("Sent player info to {}", current->getUsername());
 }
 
 thread_pool::PriorityThreadPool &World::getGenerationPool() { return _generationPool; }

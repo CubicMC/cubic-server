@@ -4,8 +4,8 @@
 #include "Server.hpp"
 #include "SoundSystem.hpp"
 #include "World.hpp"
+#include "logging/logging.hpp"
 #include "Dimension.hpp"
-#include "logging/Logger.hpp"
 #include "scoreboard/Scoreboard.hpp"
 
 WorldGroup::WorldGroup(std::shared_ptr<Chat> chat):

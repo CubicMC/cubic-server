@@ -2,6 +2,7 @@
 
 #include "PacketUtils.hpp"
 #include "serialization/add.hpp"
+#include <memory>
 
 using namespace protocol;
 
@@ -295,6 +296,15 @@ std::unique_ptr<std::vector<uint8_t>> protocol::createInitializeWorldBorder(cons
     return packet;
 }
 
+std::unique_ptr<std::vector<uint8_t>> protocol::createGameEvent(const GameEvent &in)
+{
+    std::vector<uint8_t> payload;
+    serialize(payload, (uint8_t) in.event, addByte, in.value, addFloat);
+    auto packet = std::make_unique<std::vector<uint8_t>>();
+    finalize(*packet, payload, ClientPacketID::GameEvent);
+    return packet;
+}
+
 std::unique_ptr<std::vector<uint8_t>> protocol::createKeepAlive(long id)
 {
     std::vector<uint8_t> payload;
@@ -311,6 +321,7 @@ std::unique_ptr<std::vector<uint8_t>> protocol::createKeepAlive(long id)
 std::unique_ptr<std::vector<uint8_t>> protocol::createChunkDataAndLightUpdate(const ChunkDataAndLightUpdate &in)
 {
     std::vector<uint8_t> payload;
+
     // clang-format off
     serialize(payload,
         in.chunkX, addInt,
@@ -696,7 +707,7 @@ std::unique_ptr<std::vector<uint8_t>> protocol::createSetDefaultSpawnPosition(co
     return packet;
 }
 
-std::unique_ptr<std::vector<uint8_t>> protocol::createDisplayObjective(const DisplaySlot &in)
+std::unique_ptr<std::vector<uint8_t>> protocol::createDisplayObjective(const DisplayObjective &in)
 {
     std::vector<uint8_t> payload;
     // clang-format off

@@ -4,15 +4,26 @@ if(CMAKE_VERSION VERSION_GREATER_EQUAL 3.24.0)
     cmake_policy(SET CMP0135 OLD)
 endif()
 
+# Options
 option(USE_CLANG "Build application with clang" OFF)
 if (USE_CLANG)
     set(CMAKE_CXX_COMPILER /usr/bin/clang++)
     set(CMAKE_C_COMPILER /usr/bin/clang)
 endif()
 
-set(CMAKE_USER_MAKE_RULES_OVERRIDE_CXX ${CMAKE_CURRENT_SOURCE_DIR}/cxx_flag_overrides.cmake)
+option(DEBUG_NETWORK "Print network messages" OFF)
+if(DEBUG_NETWORK)
+    add_compile_definitions(DEBUG_NETWORK)
+endif()
+message(STATUS "Debugging network: ${DEBUG_NETWORK}")
 
-project(CubicServer VERSION 0.1.0 LANGUAGES CXX)
+# This must be set before the project command
+set(CMAKE_USER_MAKE_RULES_OVERRIDE_CXX ${CMAKE_CURRENT_SOURCE_DIR}/cxx_flag_overrides.cmake)
+set(CMAKE_USER_MAKE_RULES_OVERRIDE_C ${CMAKE_CURRENT_SOURCE_DIR}/c_flag_overrides.cmake)
+
+project(CubicServer VERSION 0.1.0 LANGUAGES CXX C)
+
+set(MINECRAFT_VERSION "1.19.3")
 
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
@@ -20,8 +31,12 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 include(CheckIPOSupported)
 
 if (CMAKE_BUILD_TYPE MATCHES Release)
-    check_ipo_supported()
-    set_property(GLOBAL PROPERTY INTERPROCEDURAL_OPTIMIZATION TRUE)
+    check_ipo_supported(RESULT ipo_supported OUTPUT ipo_error)
+    if (ipo_supported)
+        set_property(GLOBAL PROPERTY INTERPROCEDURAL_OPTIMIZATION TRUE)
+    else()
+        message(STATUS "IPO / LTO not supported!")
+    endif()
 endif()
 
 include(FetchContent)
@@ -31,18 +46,17 @@ FetchContent_Declare(
     GIT_REPOSITORY https://github.com/jbeder/yaml-cpp.git
     GIT_TAG 4ae4cb7309c07b2d8623d7e4f01efa6321441366 # The latest yaml-cpp commit at the time of writing.
 )
-# FetchContent_GetProperties(yaml-cpp)
-
-# if(NOT yaml-cpp_POPULATED)
-#     message(STATUS "Fetching yaml-cpp...")
-#     FetchContent_Populate(yaml-cpp)
-#     add_subdirectory(${yaml-cpp_SOURCE_DIR} ${yaml-cpp_BINARY_DIR})
-# endif()
 
 FetchContent_Declare(
     json
     GIT_REPOSITORY https://github.com/nlohmann/json.git
     GIT_TAG v3.11.2
+)
+
+FetchContent_Declare(
+    spdlog
+    GIT_REPOSITORY https://github.com/gabime/spdlog.git
+    GIT_TAG v1.11.0
 )
 
 FetchContent_Declare(
@@ -52,15 +66,15 @@ FetchContent_Declare(
 )
 
 FetchContent_Declare(
-    argparse
-    GIT_REPOSITORY https://github.com/p-ranav/argparse.git
-    GIT_TAG v2.9
+    nbt
+    GIT_REPOSITORY https://github.com/CubicMC/libnbt.git
+    GIT_TAG v1.0.1
 )
 
 FetchContent_Declare(
-    CRCpp
-    GIT_REPOSITORY https://github.com/d-bahr/CRCpp.git
-    GIT_TAG release-1.2.0.0
+    argparse
+    GIT_REPOSITORY https://github.com/p-ranav/argparse.git
+    GIT_TAG v2.9
 )
 
 FetchContent_MakeAvailable(
@@ -68,8 +82,18 @@ FetchContent_MakeAvailable(
     json
     noise
     argparse
-    CRCpp
+    nbt
+    spdlog
 )
+
+# Fix spdlog warnings
+get_target_property(spdlog_include spdlog INTERFACE_INCLUDE_DIRECTORIES)
+target_include_directories(spdlog SYSTEM INTERFACE ${spdlog_include})
+target_compile_options(spdlog PUBLIC -Wno-array-bounds -Wno-stringop-overflow)
+
+# Fix yaml-cpp warnings
+get_target_property(yaml_cpp_include yaml-cpp INTERFACE_INCLUDE_DIRECTORIES)
+target_include_directories(yaml-cpp SYSTEM INTERFACE ${yaml_cpp_include})
 
 if(GTEST) # if the flag GTEST is true
     FetchContent_Declare(
@@ -91,38 +115,72 @@ if(GTEST) # if the flag GTEST is true
         rapidcheck
         googletest
     )
-endif()
 
-if(GTEST)
     enable_testing()
 endif()
 
-# set(CMAKE_BUILD_RPATH /usr/local/lib/gcc12)
-# set(CMAKE_EXE_LINKER_FLAGS "-static-libgcc -static-libstdc++")
-
 find_package(Threads REQUIRED)
+find_package(Boost REQUIRED)
 find_package(PkgConfig REQUIRED)
-pkg_check_modules(GTKMM REQUIRED gtkmm-3.0)
+pkg_check_modules(GTKMM gtkmm-3.0)
+
+option(NO_GUI "Build without GUI" OFF)
+if(NOT GTKMM_FOUND)
+    message(WARNING "Gtkmm not found! Building without GUI.")
+    set(NO_GUI ON)
+endif()
+
+option(STATIC_LINK "Link the binary statically" OFF)
 
 add_executable(${CMAKE_PROJECT_NAME})
 target_compile_definitions(${CMAKE_PROJECT_NAME} PRIVATE
     PROGRAM_NAME="${CMAKE_PROJECT_NAME}"
     PROGRAM_VERSION="${CMAKE_PROJECT_VERSION}"
+    MINECRAFT_VERSION="${MINECRAFT_VERSION}"
+    GUI_UNAVAILABLE=$<BOOL:${NO_GUI}>
 )
+
+if (STATIC_LINK)
+    target_link_libraries (${CMAKE_PROJECT_NAME} PRIVATE -static)
+endif()
+
+include(blocks.cmake)
+
 add_subdirectory(cubic-server)
 
 target_include_directories(${CMAKE_PROJECT_NAME} PRIVATE
-    ${GTKMM_INCLUDE_DIRS}
     ${noise_SOURCE_DIR}
+    ${nbt_SOURCE_DIR}
 )
-target_include_directories(${CMAKE_PROJECT_NAME} PUBLIC cubic-server)
+
+if (NOT NO_GUI)
+    target_include_directories(${CMAKE_PROJECT_NAME} PRIVATE
+        ${GTKMM_INCLUDE_DIRS}
+    )
+endif()
+
+target_include_directories(${CMAKE_PROJECT_NAME} PUBLIC cubic-server ${Blocks_SOURCE_DIR})
+
 target_link_libraries (${CMAKE_PROJECT_NAME} PRIVATE
     Blocks
     Threads::Threads
     nlohmann_json::nlohmann_json
-    ${GTKMM_LIBRARIES}
+    z
     argparse
     yaml-cpp
-    curl
-    CRCpp
+    spdlog::spdlog
+    $<$<BOOL:${MINGW}>:ws2_32>
 )
+
+if (CMAKE_BUILD_TYPE MATCHES RELWITHDEBINFO)
+    target_link_libraries (${CMAKE_PROJECT_NAME} PRIVATE
+        asan
+        ubsan
+    )
+endif()
+
+if (NOT NO_GUI)
+    target_link_libraries(${CMAKE_PROJECT_NAME} PRIVATE
+        ${GTKMM_LIBRARIES}
+    )
+endif()

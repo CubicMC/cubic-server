@@ -6,7 +6,7 @@
 #include "Server.hpp"
 #include "World.hpp"
 #include "WorldGroup.hpp"
-#include "logging/Logger.hpp"
+#include "logging/logging.hpp"
 
 using namespace command_parser;
 
@@ -106,14 +106,14 @@ void checkArgsTime(std::vector<std::string> &args, Player *invoker)
         time = setTimeToAdd(args[1], invoker);
         if (time != -1) {
             int added = Server::getInstance()->getWorldGroup("default")->getWorld("default")->addTime(time);
-            LINFO("Set the time to " << added);
+            LINFO("Set the time to {}", added);
             invoker->getDimension()->getWorld()->getChat()->sendSystemMessage("Set the time to " + std::to_string(added), *invoker);
         }
     } else if (args[0] == "set") {
         time = setTimeToSet(args[1], invoker);
         if (time != -1) {
             Server::getInstance()->getWorldGroup("default")->getWorld("default")->setTime(time);
-            LINFO("Set the time to " << time);
+            LINFO("Set the time to {}", time);
             invoker->getDimension()->getWorld()->getChat()->sendSystemMessage("Set the time to " + std::to_string(time), *invoker);
         }
     } else if (args[0] == "query") {
@@ -128,7 +128,7 @@ void checkArgsTime(std::vector<std::string> &args, Player *invoker)
             invoker->getDimension()->getWorld()->getChat()->sendSystemMessage("Incorrect argument for command", *invoker);
             return;
         }
-        LINFO("The time is " << time);
+        LINFO("The time is {}", time);
         invoker->getDimension()->getWorld()->getChat()->sendSystemMessage("The time is " + std::to_string(time), *invoker);
     }
 }

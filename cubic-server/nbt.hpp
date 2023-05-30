@@ -223,11 +223,11 @@ public:
      * @param str Name of the wanted NBT Tag
      * @return Base* The wanted NBT Tag (nullptr if not found)
      */
-    constexpr Base *getValue(const std::string &str)
+    inline std::shared_ptr<Base> getValue(const std::string &str)
     {
         for (auto &&i : _value)
             if (i->getName() == str)
-                return i.get();
+                return i;
         return nullptr;
     }
 
@@ -237,11 +237,11 @@ public:
      * @param str Name of the wanted NBT Tag
      * @return const Base* The wanted NBT Tag (nullptr if not found)
      */
-    constexpr const Base *getValue(const std::string &str) const
+    inline const std::shared_ptr<Base> getValue(const std::string &str) const
     {
         for (auto &&i : _value)
             if (i->getName() == str)
-                return i.get();
+                return i;
         return nullptr;
     }
 
@@ -521,6 +521,8 @@ public:
     ~LongArray() override = default;
 
     NODISCARD constexpr std::vector<int64_t> &getValues() { return _value; }
+
+    NODISCARD constexpr const std::vector<int64_t> &getValues() const { return _value; }
 
     NODISCARD constexpr std::vector<uint8_t> serialize() const override
     {

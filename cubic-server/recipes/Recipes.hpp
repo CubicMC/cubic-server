@@ -21,7 +21,7 @@ namespace Recipe {
 class Recipe {
 public:
     Recipe(const nlohmann::json &recipe);
-    ~Recipe() = default;
+    virtual ~Recipe() = default;
 
     bool hasCategory(void) const noexcept;
     void setCategory(const nlohmann::json &recipe);

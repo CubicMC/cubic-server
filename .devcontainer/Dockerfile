@@ -24,7 +24,7 @@ RUN wget -O - https://apt.llvm.org/llvm-snapshot.gpg.key | sudo apt-key add -
 
 RUN sudo apt-get update
 
-RUN sudo apt-get install -y gcc-12 g++-12 cmake pkg-config gtkmm-3.0 clang-15 clangd clang-format-15
+RUN sudo apt-get install -y gcc-12 g++-12 cmake pkg-config gtkmm-3.0 clang-15 clangd clang-format-15 python3.10-venv
 
 RUN sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-12 12
 

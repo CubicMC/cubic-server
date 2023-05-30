@@ -4,6 +4,8 @@ target_sources (${CMAKE_PROJECT_NAME} PRIVATE
     Deop.cpp
     DumpChunk.cpp
     DumpChunk.hpp
+    Gamemode.cpp
+    Gamemode.hpp
     Help.cpp
     Help.hpp
     Log.cpp

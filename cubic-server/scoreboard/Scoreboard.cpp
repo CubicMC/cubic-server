@@ -165,7 +165,7 @@ void Scoreboard::sendDisplayObjective(DisplaySlot slot, const Objective::Objecti
     if (objective)
         name = objective->getName();
 
-    const protocol::DisplaySlot display {static_cast<uint8_t>(slot), name};
+    const protocol::DisplayObjective display {static_cast<uint8_t>(slot), name};
     for (const auto &[_, world] : this->_worldGroup.getWorlds()) {
         for (const auto &[_, dimension] : world->getDimensions()) {
             for (const auto &player : dimension->getPlayers()) {

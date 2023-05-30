@@ -1,4 +1,5 @@
 #include "SpecialFireworkStar.hpp"
+#include "logging/logging.hpp"
 
 #include "Server.hpp"
 
@@ -12,4 +13,4 @@ SpecialFireworkStar::SpecialFireworkStar(const nlohmann::json &recipe):
 void SpecialFireworkStar::dump(void) const { LINFO("recipe special firework star"); }
 
 std::unique_ptr<Recipe> SpecialFireworkStar::create(const nlohmann::json &recipe) { return (std::make_unique<SpecialFireworkStar>(SpecialFireworkStar(recipe))); }
-};
+} // namespace Recipe

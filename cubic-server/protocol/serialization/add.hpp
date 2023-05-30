@@ -126,7 +126,12 @@ constexpr void addChunkColumn(std::vector<uint8_t> &out, const world_storage::Ch
     for (uint64_t idx = 1; idx < sections.size() - 1; idx++) {
         const auto &section = sections[idx];
         // Blocks
-        addShort(chunkData, section.getBlockPalette().getTotalCount());
+        uint16_t blockCount = 0;
+        for (uint16_t i = 0; i < world_storage::SECTION_3D_SIZE; i++) {
+            if (section.getBlock(i) != 0)
+                blockCount++;
+        }
+        addShort(chunkData, blockCount);
         addPalette(chunkData, section.getBlockPalette());
         if (section.hasBlocks())
             addArray<uint64_t, addUnsignedLong>(chunkData, section.getBlocks().data());

@@ -1,6 +1,12 @@
+#include <boost/system/detail/error_category.hpp>
+#include <boost/system/detail/error_code.hpp>
+#include <mutex>
 #include <poll.h>
 #include <stdexcept>
 #include <string>
+#include <sys/socket.h>
+#include <sys/types.h>
+#include <thread>
 #include <unistd.h>
 
 #include "Client.hpp"
@@ -12,21 +18,23 @@
 #include "World.hpp"
 #include "WorldGroup.hpp"
 #include "chat/ChatRegistry.hpp"
-#include "logging/Logger.hpp"
+#include "logging/logging.hpp"
 #include "protocol/ClientPackets.hpp"
 #include "protocol/ServerPackets.hpp"
 #include "protocol/serialization/popPrimaryType.hpp"
 
-Client::Client(int sockfd, struct sockaddr_in6 addr):
-    _sockfd(sockfd),
-    _addr(addr),
+using boost::asio::ip::tcp;
+
+Client::Client(tcp::socket &&socket, size_t clientID):
     _isRunning(true),
     _status(protocol::ClientStatus::Initial),
     _recvBuffer(0),
-    _sendBuffer(0),
-    _networkThread(&Client::networkLoop, this),
-    _player(nullptr)
+    _sendBuffer(2048 * 128 * 100 * 64),
+    _player(nullptr),
+    _socket(std::move(socket)),
+    _clientID(clientID)
 {
+    LINFO("Creating client");
 }
 
 Client::~Client()
@@ -34,122 +42,56 @@ Client::~Client()
     LDEBUG("Destroying client");
     // Stop the thread
     _isRunning = false;
-    if (this->_networkThread.joinable())
-        this->_networkThread.join();
-
-    // Close the socket
-    int errorCode;
-    uint32_t errorCodeSize = sizeof(errorCode);
-    getsockopt(_sockfd, SOL_SOCKET, SO_ERROR, &errorCode, &errorCodeSize);
-    if (errorCode == 0) {
-        this->_tryFlushAllSendData();
-        close(_sockfd);
-    }
 
     if (!_player)
         return;
+    // Everything that is done here is because we can't use share_from_this from the player destructor
     this->_player->_dim->removeEntity(_player->_id);
     this->_player->_dim->removePlayer(_player->_id);
-}
-
-void Client::networkLoop()
-{
-    struct pollfd pollSet[1];
-    uint8_t inBuffer[2048];
-
-    pollSet[0].fd = _sockfd;
-    while (_isRunning) {
-        pollSet[0].events = POLLIN;
-        if (!_sendBuffer.empty())
-            pollSet[0].events |= POLLOUT;
-        poll(pollSet, 1, 50); // TODO: Check how this can be changed
-        if (pollSet[0].revents & POLLIN) {
-            int readSize = read(_sockfd, inBuffer, 2048);
-            if (readSize == -1)
-                LERROR("Read error", strerror(errno));
-            else if (readSize == 0)
-                break;
-            else {
-                // TODO: This is extremely inefficient but it will do for now
-                for (int i = 0; i < readSize; i++)
-                    _recvBuffer.push_back(inBuffer[i]);
-                _handlePacket();
-            }
-        }
-        if (pollSet[0].revents & POLLOUT) {
-            try {
-                _flushSendData();
-            } catch (const std::runtime_error &) {
-                _isRunning = false;
-            }
-        }
+    for (auto &chunkReq : this->_player->_chunks) {
+        if (chunkReq.second == Player::ChunkState::Loading)
+            this->_player->getDimension()->removePlayerFromLoadingChunk(chunkReq.first, this->_player);
     }
-    _isRunning = false;
+    // if (_thread.joinable())
+    // _thread.join();
+    // _thread.detach();
 }
+
+void Client::run() { _thread = std::thread(&Client::doRead, this); }
+
+void Client::doRead()
+{
+    while (_isRunning) {
+        boost::system::error_code ec;
+        size_t length = _socket.read_some(boost::asio::buffer(_readBuffer, _readBufferSize), ec);
+        if (ec) {
+            // TODO(huntears): Handle error
+            // LERROR(ec.what());
+            _isRunning = false;
+            // Server::getInstance()->triggerClientCleanup(_clientID);
+            return;
+        }
+        _recvBuffer.insert(_recvBuffer.end(), _readBuffer, _readBuffer + length);
+        _handlePacket();
+    }
+    // Server::getInstance()->triggerClientCleanup(_clientID);
+}
+
+void Client::doWrite(std::unique_ptr<std::vector<uint8_t>> &&data) { Server::getInstance()->sendData(_clientID, std::move(data)); }
 
 bool Client::isDisconnected() const { return !_isRunning; }
-
-void Client::_sendData(const std::vector<uint8_t> &data)
-{
-    // This is extremely inefficient but it will do for now
-    std::lock_guard<std::mutex> _(_writeMutex);
-    for (const auto &i : data)
-        _sendBuffer.emplace_back(i);
-}
-
-void Client::_flushSendData()
-{
-    std::lock_guard<std::mutex> _(_writeMutex);
-    char sendBuffer[2048];
-    size_t toSend = std::min(_sendBuffer.size(), (size_t) 2048);
-    std::copy(_sendBuffer.begin(), _sendBuffer.begin() + toSend, sendBuffer);
-
-    ssize_t writeReturn = write(_sockfd, sendBuffer, toSend);
-    if (writeReturn == -1) {
-        LERROR("Write error: ", strerror(errno));
-    }
-
-    if (writeReturn <= 0) {
-        _writeMutex.unlock();
-        LDEBUG("error: ", writeReturn, " -> ", strerror(errno));
-        if (errno == EAGAIN)
-            return;
-        throw std::runtime_error("Pipe error");
-    }
-
-    _sendBuffer.erase(_sendBuffer.begin(), _sendBuffer.begin() + writeReturn);
-}
-
-void Client::_tryFlushAllSendData()
-{
-    pollfd pollSet[1];
-    pollSet[0].fd = _sockfd;
-    pollSet[0].events = POLLOUT;
-
-    try {
-        while (!_sendBuffer.empty()) {
-            if (poll(pollSet, 1, 0) == -1)
-                return;
-            if (pollSet[0].revents & POLLOUT)
-                _flushSendData();
-            else
-                return;
-        }
-    } catch (const std::runtime_error &) {
-        return;
-    }
-}
 
 void Client::switchToPlayState(u128 playerUuid, const std::string &username)
 {
     this->setStatus(protocol::ClientStatus::Play);
     LDEBUG("Switched to play state");
     // TODO: get the player dimension from the world by his uuid
-    this->_player = std::make_shared<Player>(weak_from_this(), Server::getInstance()->getWorldGroup("default")->getWorld("default")->getDimension("overworld"), playerUuid, username);
+    this->_player =
+        std::make_shared<Player>(weak_from_this(), Server::getInstance()->getWorldGroup("default")->getWorld("default")->getDimension("overworld"), playerUuid, username);
     LDEBUG("Created player");
 }
 
-void Client::handleParsedClientPacket(const std::shared_ptr<protocol::BaseServerPacket> &packet, protocol::ServerPacketsID packetID)
+void Client::handleParsedClientPacket(std::unique_ptr<protocol::BaseServerPacket> &&packet, protocol::ServerPacketsID packetID)
 {
     using namespace protocol;
 
@@ -240,7 +182,7 @@ void Client::handleParsedClientPacket(const std::shared_ptr<protocol::BaseServer
         }
         break;
     }
-    LERROR("Unhandled packet: ", static_cast<int>(packetID), " in status ", static_cast<int>(_status)); // TODO: Properly handle the unknown packet
+    N_LERROR("Unhandled packet: {} in status {}", packetID, _status); // TODO: Properly handle the unknown packet
 }
 
 void Client::_handlePacket()
@@ -269,7 +211,7 @@ void Client::_handlePacket()
         bool error = false;
         // Handle the packet if the length is there
         const auto packetId = static_cast<protocol::ServerPacketsID>(protocol::popVarInt(at, eof));
-        std::function<std::shared_ptr<protocol::BaseServerPacket>(std::vector<uint8_t> &)> parser;
+        std::function<std::unique_ptr<protocol::BaseServerPacket>(std::vector<uint8_t> &)> parser;
         PARSER_IT_DECLARE(Initial);
         PARSER_IT_DECLARE(Login);
         PARSER_IT_DECLARE(Status);
@@ -287,38 +229,38 @@ void Client::_handlePacket()
         std::vector<uint8_t> toParse(data.begin() + (at - data.data()), data.end());
         data.erase(data.begin(), data.begin() + (startPayload - data.data()) + length);
         if (error) {
-            LWARN("Unhandled packet: ", static_cast<int>(packetId), " in status ", static_cast<int>(_status));
+            N_LWARN("Unhandled packet: {} in status {}", packetId, _status);
             return;
         }
-        std::shared_ptr<protocol::BaseServerPacket> packet;
+        std::unique_ptr<protocol::BaseServerPacket> packet;
         try {
             packet = parser(toParse);
         } catch (std::runtime_error &error) {
-            LERROR("Error during packet ", (int32_t) packetId, " parsing : ");
-            LERROR(error.what());
+            N_LERROR("Error during packet {} parsing : ", packetId);
+            N_LERROR("{}", error.what());
             return;
         }
         // Callback to handle the packet
-        handleParsedClientPacket(packet, packetId);
+        handleParsedClientPacket(std::move(packet), packetId);
     }
 }
 
-void Client::_onHandshake(const std::shared_ptr<protocol::Handshake> &pck)
+void Client::_onHandshake(protocol::Handshake &pck)
 {
-    LDEBUG("Got an handshake");
-    if (pck->nextState == protocol::Handshake::State::Status)
+    N_LDEBUG("Got an handshake");
+    if (pck.nextState == protocol::Handshake::State::Status)
         this->setStatus(protocol::ClientStatus::Status);
-    else if (pck->nextState == protocol::Handshake::State::Login)
+    else if (pck.nextState == protocol::Handshake::State::Login)
         this->setStatus(protocol::ClientStatus::Login);
 }
 
-void Client::_onStatusRequest(UNUSED const std::shared_ptr<protocol::StatusRequest> &pck)
+void Client::_onStatusRequest(UNUSED protocol::StatusRequest &pck)
 {
-    LDEBUG("Got a status request");
+    N_LDEBUG("Got a status request");
 
     auto srv = Server::getInstance();
     auto conf = srv->getConfig();
-    auto cli = srv->getClients();
+    auto &cli = srv->getClients();
     auto worldGroup = srv->getWorldGroup("default");
 
     // TODO: Fix this
@@ -338,27 +280,30 @@ void Client::_onStatusRequest(UNUSED const std::shared_ptr<protocol::StatusReque
     json["version"]["name"] = MC_VERSION;
     json["version"]["protocol"] = MC_PROTOCOL;
     json["players"]["max"] = conf["max-players"].as<int32_t>();
-    json["players"]["online"] = std::count_if(cli.begin(), cli.end(), [](std::shared_ptr<Client> &each) {
-        return each->getStatus() == protocol::ClientStatus::Play;
-    });
+    {
+        std::lock_guard _(srv->clientsMutex);
+        json["players"]["online"] = std::count_if(cli.begin(), cli.end(), [](std::pair<size_t, std::shared_ptr<Client>> each) {
+            return each.second->getStatus() == protocol::ClientStatus::Play;
+        });
+    }
 
     sendStatusResponse(json.dump());
 }
 
-void Client::_onPingRequest(const std::shared_ptr<protocol::PingRequest> &pck)
+void Client::_onPingRequest(protocol::PingRequest &pck)
 {
-    LDEBUG("Got a ping request");
+    N_LDEBUG("Got a ping request");
 
-    sendPingResponse(pck->payload);
+    sendPingResponse(pck.payload);
 }
 
-void Client::_onLoginStart(const std::shared_ptr<protocol::LoginStart> &pck)
+void Client::_onLoginStart(protocol::LoginStart &pck)
 {
-    LDEBUG("Got a Login Start");
+    N_LDEBUG("Got a Login Start");
     protocol::LoginSuccess resPck;
 
-    resPck.uuid = pck->hasPlayerUuid ? pck->playerUuid : u128 {std::hash<std::string> {}("OfflinePlayer:"), std::hash<std::string> {}(pck->name)};
-    resPck.username = pck->name;
+    resPck.uuid = pck.hasPlayerUuid ? pck.playerUuid : u128 {std::hash<std::string> {}("OfflinePlayer:"), std::hash<std::string> {}(pck.name)};
+    resPck.username = pck.name;
     resPck.numberOfProperties = 0;
     resPck.properties = {}; // TODO: figure out what to put there
 
@@ -372,29 +317,29 @@ void Client::_onLoginStart(const std::shared_ptr<protocol::LoginStart> &pck)
     this->_loginSequence(resPck);
 }
 
-void Client::_onEncryptionResponse(UNUSED const std::shared_ptr<protocol::EncryptionResponse> &pck) { LDEBUG("Got a Encryption Response"); }
+void Client::_onEncryptionResponse(UNUSED protocol::EncryptionResponse &pck) { N_LDEBUG("Got a Encryption Response"); }
 
 void Client::sendStatusResponse(const std::string &json)
 {
     auto pck = protocol::createStatusResponse({json});
-    _sendData(*pck);
+    doWrite(std::move(pck));
 
-    LDEBUG("Sent status response");
+    N_LDEBUG("Sent status response");
 }
 
 void Client::sendPingResponse(int64_t payload)
 {
     auto pck = protocol::createPingResponse({payload});
-    _sendData(*pck);
+    doWrite(std::move(pck));
 
-    LDEBUG("Sent a ping response");
+    N_LDEBUG("Sent a ping response");
 }
 
 void Client::sendLoginSuccess(const protocol::LoginSuccess &packet)
 {
     auto pck = protocol::createLoginSuccess(packet);
-    _sendData(*pck);
-    LDEBUG("Sent a login success");
+    doWrite(std::move(pck));
+    N_LDEBUG("Sent a login success");
 }
 
 void Client::sendLoginPlay()
@@ -508,7 +453,7 @@ void Client::sendLoginPlay()
         .dimensionName = "overworld", // TODO: something like this this->_player->getDimension()->name;
         .hashedSeed = 0, // TODO: something like this this->_player->_dim->getWorld()->getHashedSeed();
         .maxPlayers = 20, // TODO: something like this this->_player->_dim->getWorld()->maxPlayers;
-        .viewDistance = 16, // TODO: something like this->_player->_dim->getWorld()->getViewDistance();
+        .viewDistance = 10, // TODO: something like this->_player->_dim->getWorld()->getViewDistance();
         .simulationDistance = 16, // TODO: something like this->_player->_dim->getWorld()->getSimulationDistance();
         .reducedDebugInfo = false, // false for developpment only
         .enableRespawnScreen = true, // TODO: implement gamerules !this->_player->_dim->getWorld()->getGamerules()["doImmediateRespawn"];
@@ -530,16 +475,16 @@ void Client::disconnect(const chat::Message &reason)
     }
 
     auto pck = protocol::createLoginDisconnect({reason.serialize()});
-    _sendData(*pck);
+    doWrite(std::move(pck));
     _isRunning = false;
-    LDEBUG("Sent a disconnect login packet");
+    N_LDEBUG("Sent a disconnect login packet");
 }
 
 void Client::stop(const chat::Message &reason)
 {
     this->disconnect(reason);
-    if (this->_networkThread.joinable())
-        this->_networkThread.join();
+    // if (this->_networkThread.joinable())
+    //     this->_networkThread.join();
 }
 
 void Client::_loginSequence(const protocol::LoginSuccess &pck)
