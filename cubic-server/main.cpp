@@ -79,7 +79,7 @@ auto initArgs(int argc, const char *const argv[])
 
     program.add("enable-generation")
         .help("Enables chunk generation")
-        .valueFromConfig("general", "enable-generation")
+        .valueFromConfig("generation", "enable-generation")
         .valueFromEnvironmentVariable("CBSRV_ENABLE_GENERATION")
         .valueFromArgument("--enable-generation")
         .possibleValues(true, false)
@@ -101,11 +101,18 @@ auto initArgs(int argc, const char *const argv[])
 
     program.add("level-type")
         .help("World type to generate")
-        .valueFromConfig("general", "level-type")
+        .valueFromConfig("generation", "level-type")
         .valueFromEnvironmentVariable("CBSRV_LEVEL_TYPE")
         .valueFromArgument("--level-type")
         .possibleValues("flat", "default", "void")
         .defaultValue("default");
+
+    program.add("seed")
+        .help("Seed to use for world generation")
+        .valueFromConfig("generation", "seed")
+        .valueFromEnvironmentVariable("CBSRV_SEED")
+        .valueFromArgument("--seed")
+        .defaultValue(-721274728);
     // clang-format on
 
     try {

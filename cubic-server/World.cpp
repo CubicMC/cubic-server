@@ -17,7 +17,7 @@ World::World(std::shared_ptr<WorldGroup> worldGroup, world_storage::WorldType wo
     _folder(folder)
 {
     _timeUpdateClock.start();
-    _seed = -721274728; // TODO: Should be loaded from config or generated
+    _seed = CONFIG["seed"].as<int64_t>();
     _chat = worldGroup->getChat();
 }
 
