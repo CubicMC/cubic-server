@@ -2,6 +2,7 @@
 #include "Server.hpp"
 #include "loot_tables/LootTables.hpp"
 #include "loot_tables/context/Empty.hpp"
+#include "logging/logging.hpp"
 
 void command_parser::Loot::autocomplete(UNUSED std::vector<std::string> &args, UNUSED Player *invoker) const
 {

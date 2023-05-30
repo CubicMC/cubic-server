@@ -3,7 +3,7 @@
 #include <filesystem>
 #include <fstream>
 
-#include "logging/Logger.hpp"
+#include "logging/logging.hpp"
 
 void LootTables::initialize(const std::string &defaultFolder)
 {
