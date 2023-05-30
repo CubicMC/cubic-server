@@ -1,6 +1,6 @@
 #include "PluginManager.hpp"
 #include "PluginInterface.hpp"
-#include "logging/Logger.hpp"
+#include "logging/logging.hpp"
 #include "Server.hpp"
 
 #include <dlfcn.h>
@@ -52,7 +52,7 @@ void PluginManager::loadPlugin(std::string filepath)
         return;
     }
 
-    LINFO("Adding ", filepath, " to plugin list");
+    LINFO("Adding {} to plugin list", filepath);
 
     this->_plugins[filepath] = nhandle;
 
@@ -61,7 +61,7 @@ void PluginManager::loadPlugin(std::string filepath)
     for (const auto &key : EventKeyArray) {
         rawptr = dlsym(nhandle, key);
         if (rawptr) {
-            LINFO("Loading event ", key);
+            LINFO("{} : Loading event {}", filepath, key);
             this->_events[key].push_back(rawptr);
         }
     }
@@ -69,7 +69,7 @@ void PluginManager::loadPlugin(std::string filepath)
 
 void PluginManager::load(void)
 {
-    LINFO("Loading plugins from ", this->_folder, "...");
+    LINFO("Loading plugins from {}...", this->_folder);
     if (!std::filesystem::is_directory(this->_folder))
         return;
 

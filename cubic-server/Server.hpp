@@ -83,7 +83,7 @@ public:
 
     const std::vector<std::unique_ptr<CommandBase>> &getCommands() const { return _commands; }
 
-    bool isRunning() const { return _running; }
+    [[gnu::used]] bool isRunning() const { return _running; }
 
     const Blocks::GlobalPalette &getGlobalPalette() const { return _globalPalette; }
 

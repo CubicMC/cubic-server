@@ -80,6 +80,7 @@ namespace EventType {
 namespace EventKey {
     constexpr char initialize[] = "initialize";
     constexpr char destroy[] = "destroy";
+    constexpr char tick[] = "tick";
     constexpr char onPlayerJoin[] = "onPlayerJoin";
     constexpr char onPlayerLeave[] = "onPlayerLeave";
     constexpr char onPlayerChat[] = "onPlayerChat";
