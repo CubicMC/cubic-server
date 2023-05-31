@@ -24,7 +24,6 @@
         // chunkMap.at(_chunkPos + pos2D)._generationLock.lock();                                                                    \
         // neighbours.push_back(&chunkMap.at(_chunkPos + pos2D));*/                                                                  \
     }                                                                                                                                \
-    _dimension->getLevel().chunkColumnsMutex.unlock();
 
 #define GET_NEIGHBOURS()                                           \
     std::vector<ChunkColumn *> neighbours;                         \
@@ -549,13 +548,13 @@ void ChunkColumn::_generateFluidSprings(UNUSED generation::Generator &generator)
 void ChunkColumn::_generateVegetalDecoration(generation::Generator &generator)
 {
     std::lock_guard<std::mutex> _(this->_generationLock);
-    GET_NEIGHBOURS()
+    // GET_NEIGHBOURS() // does not work for now (dead lock)
     generation::trees::OakTree oakTree(*this, generator);
     oakTree.getPosForTreeGeneration();
     while (!oakTree.filterTreeGrowSpace().empty())
-        oakTree.generateTree(neighbours);
+        oakTree.generateTree(std::vector<world_storage::ChunkColumn *>());
 
-    RELEASE_NEIGHBOURS()
+    // RELEASE_NEIGHBOURS()
     _currentState = GenerationState::VEGETAL_DECORATION;
 }
 

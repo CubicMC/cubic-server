@@ -49,7 +49,7 @@ std::deque<Position> &OakTree::filterTreeGrowSpace()
                     if (x == 0 && z == 0)
                         continue;
                     if (pos.x + x < 0 || pos.x + x >= world_storage::SECTION_WIDTH || pos.z + z < 0 || pos.z + z >= world_storage::SECTION_WIDTH)
-                        continue;
+                        return true; // has to continue if we enable the generation of leaves outside the current chunk
                     auto block = _chunk.getBlock({pos.x + x, pos.y + y, pos.z + z});
                     if (block == Blocks::OakLog::toProtocol(Blocks::OakLog::Properties::Axis::Y))
                         return true;
@@ -61,7 +61,7 @@ std::deque<Position> &OakTree::filterTreeGrowSpace()
     return _positions;
 }
 
-void OakTree::generateTree(std::vector<world_storage::ChunkColumn *> neighbours)
+void OakTree::generateTree(UNUSED std::vector<world_storage::ChunkColumn *> neighbours)
 {
     const auto &treeEmplacement = _positions.front();
     auto tree = getTree(
