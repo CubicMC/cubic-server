@@ -59,9 +59,6 @@ void Server::launch(const configuration::ConfigHandler &config)
 {
     this->_config = config;
 
-    // Get plugins
-    this->_pluginManager.load();
-
     // Initialize the global palette
     _globalPalette.initialize(std::string("blocks-") + MC_VERSION + ".json");
     LINFO("GlobalPalette initialized");
@@ -78,6 +75,9 @@ void Server::launch(const configuration::ConfigHandler &config)
     // TODO(huntears): Deal with this
     // Initialize default recipes
     // this->_recipes.initialize();
+
+    // Get plugins
+    this->_pluginManager.load();
 
     this->_running = true;
 
@@ -177,7 +177,7 @@ void Server::triggerClientCleanup(size_t clientID)
 
 void Server::addCommand(std::unique_ptr<CommandBase> command)
 {
-    this->_commands.emplace(this->_commands.end(), command);
+    this->_commands.emplace_back(std::move(command));
 }
 
 void Server::_doAccept()
