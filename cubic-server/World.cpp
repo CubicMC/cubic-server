@@ -5,12 +5,13 @@
 #include "Server.hpp"
 #include "WorldGroup.hpp"
 #include "logging/logging.hpp"
+#include <cstdint>
 
 World::World(std::shared_ptr<WorldGroup> worldGroup, world_storage::WorldType worldType, std::string folder):
     _worldGroup(worldGroup),
     _age(0),
     _time(0),
-    _renderDistance(10), // TODO: Should be loaded from config
+    _renderDistance(CONFIG["render-distance"].as<uint8_t>()),
     _timeUpdateClock(20, std::bind(&World::updateTime, this)), // 1 second for time updates
     _generationPool(CONFIG["num-gen-thread"].as<uint16_t>(), "WorldGen"),
     _worldType(worldType),

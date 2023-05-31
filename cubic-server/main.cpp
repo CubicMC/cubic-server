@@ -99,12 +99,12 @@ auto initArgs(int argc, const char *const argv[])
         .valueFromArgument("--num-gen-thread")
         .defaultValue(4);
 
-    program.add("level-type")
+    program.add("world-type")
         .help("World type to generate")
-        .valueFromConfig("generation", "level-type")
+        .valueFromConfig("generation", "world-type")
         .valueFromEnvironmentVariable("CBSRV_LEVEL_TYPE")
-        .valueFromArgument("--level-type")
-        .possibleValues("flat", "default", "void")
+        .valueFromArgument("--world-type")
+        .possibleValues("default", "superflat", "largebiome", "amplified", "singlebiome", "debug", "superflat_cubic_server")
         .defaultValue("default");
 
     program.add("seed")
@@ -113,6 +113,13 @@ auto initArgs(int argc, const char *const argv[])
         .valueFromEnvironmentVariable("CBSRV_SEED")
         .valueFromArgument("--seed")
         .defaultValue(-721274728);
+
+    program.add("render-distance")
+        .help("Render distance")
+        .valueFromConfig("general", "render-distance")
+        .valueFromEnvironmentVariable("CBSRV_RENDER_DISTANCE")
+        .valueFromArgument("--render-distance")
+        .defaultValue(10);
     // clang-format on
 
     try {

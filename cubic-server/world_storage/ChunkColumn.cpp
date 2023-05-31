@@ -226,8 +226,13 @@ void ChunkColumn::generate(GenerationState goalState)
     case WorldType::LARGEBIOME:
     case WorldType::AMPLIFIED:
     case WorldType::SINGLEBIOME:
-    case WorldType::DEBUG:
         LERROR("World type not implemented yet");
+        break;
+    case WorldType::DEBUG:
+        _generateDebug(goalState);
+        break;
+    case WorldType::SUPERFLAT_CUBIC_SERVER:
+        _generateFlatCubicServer(goalState);
         break;
     default:
         LERROR("Unknown world type");
@@ -291,14 +296,6 @@ void ChunkColumn::_generateEnd(UNUSED GenerationState goalState) { std::lock_gua
 
 void ChunkColumn::_generateFlat(UNUSED GenerationState goalState)
 {
-    // Uncomment for a funny time
-    // static size_t block = 0;
-    // for (int i = 0; i < world_storage::NB_OF_PLAYABLE_SECTIONS; i++) {
-    //     updateBlock({7, 7 + (i << 4) - 64, 7}, block++);
-    //     if (block > 23231)
-    //         block = 0;
-    // }
-    // return;
     std::lock_guard<std::mutex> _(this->_generationLock);
     for (int y = 0; y < 11; y++) {
         for (int z = 0; z < SECTION_WIDTH; z++) {
@@ -313,6 +310,118 @@ void ChunkColumn::_generateFlat(UNUSED GenerationState goalState)
             }
         }
     }
+    _currentState = GenerationState::READY;
+}
+
+void ChunkColumn::_generateDebug(UNUSED GenerationState goalState)
+{
+    static size_t block = 0;
+    for (int i = 0; i < world_storage::NB_OF_PLAYABLE_SECTIONS; i++) {
+        updateBlock({7, 7 + (i << 4) - 64, 7}, block++);
+        if (block > 23231)
+            block = 0;
+    }
+    _currentState = GenerationState::READY;
+}
+
+void ChunkColumn::_generateFlatCubicServer(UNUSED GenerationState goalState)
+{
+    for (int y = 0; y < 11; y++) {
+        for (int z = 0; z < SECTION_WIDTH; z++) {
+            for (int x = 0; x < SECTION_WIDTH; x++) {
+                if (y == 0) {
+                    updateBlock({x, y + CHUNK_HEIGHT_MIN, z}, Blocks::Bedrock::toProtocol());
+                } else if (y == 1 || y == 2) {
+                    updateBlock({x, y + CHUNK_HEIGHT_MIN, z}, Blocks::Dirt::toProtocol());
+                } else if (y == 3) {
+                    updateBlock({x, y + CHUNK_HEIGHT_MIN, z}, Blocks::GrassBlock::toProtocol(Blocks::GrassBlock::Properties::Snowy::FALSE));
+                } else if ((y == 4 || y == 5 || y == 6) && z == 8 && x == 8) {
+                    updateBlock({x, y + CHUNK_HEIGHT_MIN, z}, Blocks::OakLog::toProtocol(Blocks::OakLog::Properties::Axis::Y));
+                } else if (y == 7 || y == 8) {
+                    switch (x + (z * 16)) {
+                    case 6 + 6 * 16:
+                    case 7 + 6 * 16:
+                    case 8 + 6 * 16:
+                    case 9 + 6 * 16:
+                    case 10 + 6 * 16:
+                        updateBlock(
+                            {x, y + CHUNK_HEIGHT_MIN, z},
+                            Blocks::OakLeaves::toProtocol(
+                                Blocks::OakLeaves::Properties::Distance::ONE, Blocks::OakLeaves::Properties::Persistent::FALSE, Blocks::OakLeaves::Properties::Waterlogged::FALSE
+                            )
+                        );
+                        break;
+                    case 6 + 7 * 16:
+                    case 7 + 7 * 16:
+                    case 8 + 7 * 16:
+                    case 9 + 7 * 16:
+                    case 10 + 7 * 16:
+                        updateBlock(
+                            {x, y + CHUNK_HEIGHT_MIN, z},
+                            Blocks::OakLeaves::toProtocol(
+                                Blocks::OakLeaves::Properties::Distance::ONE, Blocks::OakLeaves::Properties::Persistent::FALSE, Blocks::OakLeaves::Properties::Waterlogged::FALSE
+                            )
+                        );
+                        break;
+                    case 6 + 8 * 16:
+                    case 7 + 8 * 16:
+                    case 9 + 8 * 16:
+                    case 10 + 8 * 16:
+                        updateBlock(
+                            {x, y + CHUNK_HEIGHT_MIN, z},
+                            Blocks::OakLeaves::toProtocol(
+                                Blocks::OakLeaves::Properties::Distance::ONE, Blocks::OakLeaves::Properties::Persistent::FALSE, Blocks::OakLeaves::Properties::Waterlogged::FALSE
+                            )
+                        );
+                        break;
+                    case 6 + 9 * 16:
+                    case 7 + 9 * 16:
+                    case 8 + 9 * 16:
+                    case 9 + 9 * 16:
+                    case 10 + 9 * 16:
+                        updateBlock(
+                            {x, y + CHUNK_HEIGHT_MIN, z},
+                            Blocks::OakLeaves::toProtocol(
+                                Blocks::OakLeaves::Properties::Distance::ONE, Blocks::OakLeaves::Properties::Persistent::FALSE, Blocks::OakLeaves::Properties::Waterlogged::FALSE
+                            )
+                        );
+                        break;
+                    case 6 + 10 * 16:
+                    case 7 + 10 * 16:
+                    case 8 + 10 * 16:
+                    case 9 + 10 * 16:
+                    case 10 + 10 * 16:
+                        updateBlock(
+                            {x, y + CHUNK_HEIGHT_MIN, z},
+                            Blocks::OakLeaves::toProtocol(
+                                Blocks::OakLeaves::Properties::Distance::ONE, Blocks::OakLeaves::Properties::Persistent::FALSE, Blocks::OakLeaves::Properties::Waterlogged::FALSE
+                            )
+                        );
+                        break;
+                    case 8 + 8 * 16:
+                        updateBlock({x, y + CHUNK_HEIGHT_MIN, z}, Blocks::OakLog::toProtocol(Blocks::OakLog::Properties::Axis::Y));
+                        break;
+                    }
+                } else if (y == 9 || y == 10) {
+                    switch (x + (z * 16)) {
+                    case 8 + 7 * 16:
+                    case 7 + 8 * 16:
+                    case 9 + 8 * 16:
+                    case 8 + 9 * 16:
+                    case 8 + 8 * 16:
+                        updateBlock(
+                            {x, y + CHUNK_HEIGHT_MIN, z},
+                            Blocks::OakLeaves::toProtocol(
+                                Blocks::OakLeaves::Properties::Distance::ONE, Blocks::OakLeaves::Properties::Persistent::FALSE, Blocks::OakLeaves::Properties::Waterlogged::FALSE
+                            )
+                        );
+                        break;
+                    }
+                }
+            }
+        }
+    }
+    _currentState = GenerationState::READY;
 }
 
 void ChunkColumn::_generateRawGeneration(generation::Generator &generator)

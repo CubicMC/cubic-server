@@ -53,7 +53,8 @@ enum class WorldType {
     LARGEBIOME,
     AMPLIFIED,
     SINGLEBIOME,
-    DEBUG
+    DEBUG,
+    SUPERFLAT_CUBIC_SERVER
 };
 
 enum class DimensionType {
@@ -131,7 +132,10 @@ private:
     void _generateOverworld(GenerationState goalState);
     void _generateNether(GenerationState goalState);
     void _generateEnd(GenerationState goalState);
+
     void _generateFlat(GenerationState goalState);
+    void _generateDebug(GenerationState goalState);
+    void _generateFlatCubicServer(GenerationState goalState);
 
     void _generateRawGeneration(generation::Generator &generator);
     void _generateLakes(generation::Generator &generator);
