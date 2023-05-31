@@ -3,6 +3,7 @@
 #include "Chat.hpp"
 #include "Client.hpp"
 #include "Dimension.hpp"
+#include "world_storage/Level.hpp"
 #include "Entity.hpp"
 #include "Item.hpp"
 #include "PlayerAttributes.hpp"
@@ -11,6 +12,8 @@
 #include "blocks.hpp"
 #include "command_parser/CommandParser.hpp"
 #include "items/foodItems.hpp"
+#include "PluginManager.hpp"
+#include "events/CancelEvents.hpp"
 #include "logging/logging.hpp"
 #include "protocol/ClientPackets.hpp"
 #include "protocol/PacketUtils.hpp"
@@ -70,6 +73,7 @@ Player::~Player()
 
     // Send a disconnect message
     this->_dim->getWorld()->getChat()->sendSystemMessage(disconnectMsg, *this->getWorldGroup());
+    onEvent(Server::getInstance()->getPluginManager(), onPlayerLeave, this);
 }
 
 void Player::tick()
@@ -178,6 +182,7 @@ void Player::disconnect(const chat::Message &reason)
     client->doWrite(std::move(pck));
     client->_isRunning = false;
     N_LDEBUG("Sent a disconnect play packet");
+    onEvent(Server::getInstance()->getPluginManager(), onPlayerLeave, this);
 }
 
 #pragma region ClientBound
@@ -820,6 +825,7 @@ void Player::_onInteract(protocol::Interact &pck)
     case protocol::Interact::Type::Interact:
         break;
     case protocol::Interact::Type::Attack:
+        onEvent(Server::getInstance()->getPluginManager(), onEntityInteractEntity, this, target.get());
         if (player != nullptr && player->_gamemode != player_attributes::Gamemode::Creative) {
             player->attack(_pos);
             player->sendHealth();
@@ -856,6 +862,7 @@ void Player::_onSetPlayerPosition(protocol::SetPlayerPosition &pck)
 {
     N_LDEBUG("Got a Set Player Position ({}, {}, {})", pck.x, pck.feetY, pck.z);
     // TODO: Validate the position
+    onEvent(Server::getInstance()->getPluginManager(), onEntityMove, this, _pos, {pck.x, pck.feetY, pck.z});
     this->setPosition(pck.x, pck.feetY, pck.z, pck.onGround);
 }
 
@@ -863,6 +870,9 @@ void Player::_onSetPlayerPositionAndRotation(protocol::SetPlayerPositionAndRotat
 {
     N_LDEBUG("Got a Set Player Position And Rotation ({}, {}, {})", pck.x, pck.feetY, pck.z);
     // TODO: Validate the position
+
+    onEvent(Server::getInstance()->getPluginManager(), onEntityMove, this, _pos, {pck.x, pck.feetY, pck.z});
+    onEvent(Server::getInstance()->getPluginManager(), onEntityRotate, this, {_rot.x, _rot.z, 0}, {(uint8_t)pck.yaw, (uint8_t)pck.pitch, 0});
     this->setPosition(pck.x, pck.feetY, pck.z, pck.onGround);
     this->setRotation(pck.yaw, pck.pitch);
 }
@@ -871,6 +881,7 @@ void Player::_onSetPlayerRotation(protocol::SetPlayerRotation &pck)
 {
     N_LDEBUG("Got a Set Player Rotation");
     this->setRotation(pck.yaw, pck.pitch);
+    onEvent(Server::getInstance()->getPluginManager(), onEntityRotate, this, {_rot.x, _rot.z, 0}, {(uint8_t)pck.yaw, (uint8_t)pck.pitch, 0});
 }
 
 void Player::_onSetPlayerOnGround(UNUSED protocol::SetPlayerOnGround &pck) { N_LDEBUG("Got a Set Player On Ground"); }
@@ -894,16 +905,29 @@ void Player::_onPlayerAbilities(protocol::PlayerAbilities &pck)
 
 void Player::_onPlayerAction(protocol::PlayerAction &pck)
 {
+    bool canceled = false;
+    Vector3<int> tmp(pck.location.x, pck.location.y, pck.location.z);
+
     // N_LINFO("Got a Player Action {} at {}", pck.status, pck.location);
     N_LDEBUG("Got a Player Action and player is in gamemode {} and status is {}", this->getGamemode(), pck.status);
     switch (pck.status) {
     case protocol::PlayerAction::Status::StartedDigging:
         if (this->getGamemode() == player_attributes::Gamemode::Creative)
+            onEventCancelable(Server::getInstance()->getPluginManager(), onBlockDestroy, canceled, 0, tmp);
             this->getDimension()->updateBlock(pck.location, 0);
         break;
     case protocol::PlayerAction::Status::CancelledDigging:
         break;
     case protocol::PlayerAction::Status::FinishedDigging:
+        onEventCancelable(Server::getInstance()->getPluginManager(), onBlockDestroy, canceled, 0, tmp);
+        if (canceled) {
+            Event::cancelBlockDestroy(
+                this,
+                this->getDimension()->getLevel().getChunkColumnFromBlockPos(pck.location.x, pck.location.z).getBlock(pck.location),
+                pck.location
+            );
+            return;
+        }
         this->getDimension()->updateBlock(pck.location, 0);
         _foodExhaustionLevel += 0.005;
         // TODO: change the 721 magic value with the loot tables (for instance it's a acaccia boat)
@@ -1187,6 +1211,7 @@ void Player::_continueLoginSequence()
     chat::Message connectionMsg = chat::Message::fromTranslationKey<chat::message::TranslationKey::MultiplayerPlayerJoined>(*this);
 
     this->getWorld()->getChat()->sendSystemMessage(connectionMsg, *this->getWorldGroup());
+    onEvent(Server::getInstance()->getPluginManager(), onPlayerJoin, this);
 }
 
 void Player::_unloadChunk(int32_t x, int32_t z)

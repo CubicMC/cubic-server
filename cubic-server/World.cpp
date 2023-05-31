@@ -24,6 +24,8 @@ World::World(std::shared_ptr<WorldGroup> worldGroup, world_storage::WorldType wo
 
 void World::tick()
 {
+    onEvent(Server::getInstance()->getPluginManager(), tick);
+
     // TODO: I don't think this should tick if there are no players / chunks loaded
     _timeUpdateClock.tick();
     for (auto &[_, dim] : this->_dimensions)

@@ -37,6 +37,9 @@ target_sources (${CMAKE_PROJECT_NAME} PRIVATE
     Permissions.cpp
     types.hpp
     types.cpp
+    PluginInterface.hpp
+    PluginManager.hpp
+    PluginManager.cpp
     exceptions.hpp
     nbt.c
     EASEncryptionHandler.cpp
@@ -46,6 +49,8 @@ target_sources (${CMAKE_PROJECT_NAME} PRIVATE
     Checksum.cpp
     Checksum.hpp
 )
+
+file(MAKE_DIRECTORY ${CMAKE_BINARY_DIR}/plugins)
 
 if (GTEST)
     enable_testing()
@@ -102,4 +107,5 @@ add_subdirectory (items)
 add_subdirectory (chat)
 add_subdirectory (loot_tables)
 add_subdirectory (recipes)
+add_subdirectory (events)
 add_subdirectory (utility)

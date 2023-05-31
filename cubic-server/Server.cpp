@@ -33,7 +33,8 @@ Server::Server():
     _running(false),
     // _sockfd(-1),
     _config(),
-    _toSend(1024)
+    _toSend(1024),
+    _pluginManager(this)
 {
     // _config.load("./config.yml");
     // _config.parse("./config.yml");
@@ -87,6 +88,9 @@ void Server::launch(const configuration::ConfigHandler &config)
     // TODO(huntears): Deal with this
     // Initialize default recipes
     // this->_recipes.initialize();
+
+    // Get plugins
+    this->_pluginManager.load();
 
     this->_running = true;
 
@@ -204,6 +208,11 @@ void Server::triggerClientCleanup(size_t clientID)
         }
         return false;
     });
+}
+
+void Server::addCommand(std::unique_ptr<CommandBase> command)
+{
+    this->_commands.emplace_back(std::move(command));
 }
 
 void Server::_doAccept()

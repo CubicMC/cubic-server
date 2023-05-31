@@ -36,6 +36,13 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 include(CheckIPOSupported)
 
+# if debug mode is enabled, add -g3 flag
+if (CMAKE_BUILD_TYPE MATCHES Debug)
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g3 -rdynamic")
+endif()#include "Plu
+
+set(CMAKE_CXX_FLAGS "-rdynamic")
+
 if (CMAKE_BUILD_TYPE MATCHES Release)
     check_ipo_supported(RESULT ipo_supported OUTPUT ipo_error)
     if (ipo_supported)
@@ -108,6 +115,11 @@ FetchContent_Declare(
     GIT_TAG v3.4.0
 )
 
+FetchContent_Declare(
+    plugin-interface
+    GIT_REPOSITORY https://github.com/CubicMC/plugin-interface.git
+)
+
 FetchContent_MakeAvailable(
     yaml-cpp
     json
@@ -117,6 +129,7 @@ FetchContent_MakeAvailable(
     spdlog
     mbedtls
     boost
+    plugin-interface
 )
 
 # Fix spdlog warnings
@@ -208,6 +221,7 @@ target_link_libraries (${CMAKE_PROJECT_NAME} PRIVATE
     Boost::system
     Boost::lockfree
     Boost::circular_buffer
+    plugin-interface
 )
 
 if (CMAKE_BUILD_TYPE MATCHES RELWITHDEBINFO)

@@ -35,6 +35,8 @@
 
 #include "recipes/Recipes.hpp"
 
+#include "PluginManager.hpp"
+
 constexpr char MC_VERSION[] = "1.19.3";
 constexpr uint16_t MC_PROTOCOL = 761;
 constexpr uint16_t MS_PER_TICK = 50;
@@ -84,12 +86,15 @@ public:
     const Items::ItemConverter &getItemConverter() const { return _itemConverter; }
     std::unordered_map<std::string_view, std::shared_ptr<WorldGroup>> &getWorldGroups();
     const std::unordered_map<std::string_view, std::shared_ptr<WorldGroup>> &getWorldGroups() const;
+    PluginManager &getPluginManager() noexcept { return _pluginManager; }
     Recipes &getRecipeSystem(void) noexcept;
 
     LootTables &getLootTableSystem(void) noexcept;
 
     void sendData(size_t clientID, std::unique_ptr<std::vector<uint8_t>> &&data);
     void triggerClientCleanup(size_t clientID = -1);
+
+    void addCommand(std::unique_ptr<CommandBase> command);
 
     Permissions permissions;
 
@@ -122,6 +127,7 @@ private:
     Blocks::GlobalPalette _globalPalette;
     Items::ItemConverter _itemConverter;
     Recipes _recipes;
+    PluginManager _pluginManager;
     LootTables _lootTables;
 
     // new boost stuff
