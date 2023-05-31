@@ -12,6 +12,7 @@
 #include "math/Vector3.hpp"
 #include "protocol/ClientPackets.hpp"
 #include "protocol/ServerPackets.hpp"
+#include "protocol/common.hpp"
 #include "protocol/container/Container.hpp"
 #include "protocol/container/Inventory.hpp"
 #include "types.hpp"
@@ -51,6 +52,8 @@ public:
     long keepAliveId() const;
     uint8_t keepAliveIgnored() const;
     bool isOperator() const;
+    NODISCARD const std::vector<protocol::PlayerProperty> &getProperties() const;
+    void sendSkinLayers(int32_t entityID);
     std::shared_ptr<const protocol::container::Inventory> getInventory() const { return _inventory; };
 
 public:
@@ -212,7 +215,6 @@ private:
     bool _isSprinting;
     bool _isJumping;
 };
-
 
 template<isBaseOf<protocol::container::Container> Container, typename... Args>
 std::shared_ptr<Container> Player::openContainer(Args &...args)

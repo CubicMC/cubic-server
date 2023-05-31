@@ -120,6 +120,13 @@ auto initArgs(int argc, const char *const argv[])
         .valueFromEnvironmentVariable("CBSRV_RENDER_DISTANCE")
         .valueFromArgument("--render-distance")
         .defaultValue(10);
+    program.add("online-mode")
+        .help("Enable client/server encryption and only accepts legitimate accounts")
+        .valueFromConfig("general", "online-mode")
+        .valueFromEnvironmentVariable("CBSRV_ONLINE_MODE")
+        .valueFromArgument("--online-mode")
+        .possibleValues(false, true)
+        .defaultValue(true);
     // clang-format on
 
     try {
