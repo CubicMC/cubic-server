@@ -97,12 +97,9 @@ void LootTables::importTableFolder(const std::string &_namespace, const std::str
     for (const auto &filepath : std::filesystem::recursive_directory_iterator(path)) {
         if (filepath.is_regular_file() && filepath.path().string().ends_with(".json")) {
             std::ifstream filestream(filepath.path().string());
-            std::stringstream filecontent;
-
-            filecontent << filestream.rdbuf();
 
             // create new table from json
-            std::unique_ptr<LootTable::LootTable> newTable = std::make_unique<LootTable::LootTable>(nlohmann::json::parse(filecontent.str()));
+            std::unique_ptr<LootTable::LootTable> newTable = std::make_unique<LootTable::LootTable>(nlohmann::json::parse(filestream));
 
             // keep table if valid, drop if not
             if (newTable->isValid()) {
