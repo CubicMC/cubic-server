@@ -93,6 +93,11 @@ FetchContent_Declare(
     GIT_TAG boost-1.82.0
 )
 
+FetchContent_Declare(
+    plugin-interface
+    GIT_REPOSITORY https://github.com/CubicMC/plugin-interface.git
+)
+
 FetchContent_MakeAvailable(
     yaml-cpp
     json
@@ -101,6 +106,7 @@ FetchContent_MakeAvailable(
     nbt
     spdlog
     boost
+    plugin-interface
 )
 
 # Fix spdlog warnings
@@ -193,7 +199,7 @@ target_link_libraries (${CMAKE_PROJECT_NAME} PRIVATE
     Boost::system
     Boost::lockfree
     Boost::circular_buffer
-    libplugin_interface.so
+    plugin-interface
 )
 
 if (CMAKE_BUILD_TYPE MATCHES RELWITHDEBINFO)

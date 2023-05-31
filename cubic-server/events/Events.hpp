@@ -2,6 +2,7 @@
 #define CUBICSERVER_PLUGINMANAGER_EVENTS_HPP
 
 #include <string>
+#include <cstdint>
 
 class PluginInterface;
 class Entity;
