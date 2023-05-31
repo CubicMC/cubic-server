@@ -175,6 +175,11 @@ void Server::triggerClientCleanup(size_t clientID)
     });
 }
 
+void Server::addCommand(std::unique_ptr<CommandBase> command)
+{
+    this->_commands.emplace(this->_commands.end(), command);
+}
+
 void Server::_doAccept()
 {
     // while (_running) {

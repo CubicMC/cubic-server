@@ -101,6 +101,8 @@ public:
 
     void triggerClientCleanup(size_t clientID = -1);
 
+    void addCommand(std::unique_ptr<CommandBase> command);
+
     Permissions permissions;
 
 private:
