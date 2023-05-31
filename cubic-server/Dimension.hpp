@@ -28,7 +28,7 @@ private:
     };
 
 public:
-    Dimension(std::shared_ptr<World> world);
+    Dimension(std::shared_ptr<World> world, world_storage::DimensionType dimensionType);
     virtual ~Dimension() = default;
     virtual void initialize();
     virtual void tick();
@@ -52,7 +52,8 @@ public:
 
     const world_storage::Level &getLevel() const;
     world_storage::Level &getLevel();
-    virtual void generateChunk(int x, int z);
+    virtual void generateChunk(Position2D pos, world_storage::GenerationState goalState = world_storage::GenerationState::READY);
+    virtual void generateChunk(int x, int z, world_storage::GenerationState goalState = world_storage::GenerationState::READY);
     virtual void updateBlock(Position position, int32_t id);
     void addEntityMetadata(const protocol::SetEntityMetadata &metadata);
     void updateEntityAttributes(const protocol::UpdateAttributes &attributes);
@@ -60,6 +61,14 @@ public:
     virtual void spawnEntity(std::shared_ptr<Entity> entity);
     template<isBaseOf<Entity> T, typename... Args>
     std::shared_ptr<T> makeEntity(Args &&...);
+
+    /**
+     * @brief Send the chunk to the players that are loading it
+     *
+     * @param x int
+     * @param z int
+     */
+    virtual void sendChunkToPlayers(int x, int z);
 
     /**
      * @brief Check if a chunk is loaded
@@ -94,6 +103,17 @@ public:
     virtual const world_storage::ChunkColumn &getChunk(int x, int z) const;
 
     /**
+     * @brief Get a loaded chunk
+     *
+     * @throws std::runtime_error if the chunk is not loaded
+     *
+     * @param pos Position2D
+     * @return world_storage::ChunkColumn&
+     */
+    virtual world_storage::ChunkColumn &getChunk(const Position2D &pos);
+    virtual const world_storage::ChunkColumn &getChunk(const Position2D &pos) const;
+
+    /**
      * @brief Loads a chunk from the world save or generates it if it doesn't exist
      *
      * @note This function is thread-safe
@@ -102,6 +122,16 @@ public:
      * @param z int32_t
      */
     virtual void loadOrGenerateChunk(int x, int z, std::shared_ptr<Player> player);
+
+    /**
+     * @brief Get the dimension type
+     *
+     * @return world_storage::DimensionType
+     */
+    [[nodiscard]] virtual world_storage::DimensionType getDimensionType() const { return _dimensionType; }
+
+    virtual void lockLoadingChunksMutex() { _loadingChunksMutex.lock(); };
+    virtual void unlockLoadingChunksMutex() { _loadingChunksMutex.unlock(); };
 
 protected:
     virtual void _run();
@@ -122,6 +152,7 @@ protected:
     world_storage::Level _level;
     std::unordered_map<Position2D, ChunkRequest> _loadingChunks;
     std::thread _processingThread;
+    world_storage::DimensionType _dimensionType;
 };
 
 template<isBaseOf<Entity> T, typename... Args>

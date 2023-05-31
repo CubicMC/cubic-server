@@ -79,7 +79,7 @@ auto initArgs(int argc, const char *const argv[])
 
     program.add("enable-generation")
         .help("Enables chunk generation")
-        .valueFromConfig("general", "enable-generation")
+        .valueFromConfig("generation", "enable-generation")
         .valueFromEnvironmentVariable("CBSRV_ENABLE_GENERATION")
         .valueFromArgument("--enable-generation")
         .possibleValues(true, false)
@@ -99,14 +99,27 @@ auto initArgs(int argc, const char *const argv[])
         .valueFromArgument("--num-gen-thread")
         .defaultValue(4);
 
-    program.add("level-type")
+    program.add("world-type")
         .help("World type to generate")
-        .valueFromConfig("general", "level-type")
+        .valueFromConfig("generation", "world-type")
         .valueFromEnvironmentVariable("CBSRV_LEVEL_TYPE")
-        .valueFromArgument("--level-type")
-        .possibleValues("flat", "default", "void")
+        .valueFromArgument("--world-type")
+        .possibleValues("default", "superflat", "largebiome", "amplified", "singlebiome", "debug", "superflat_cubic_server")
         .defaultValue("default");
 
+    program.add("seed")
+        .help("Seed to use for world generation")
+        .valueFromConfig("generation", "seed")
+        .valueFromEnvironmentVariable("CBSRV_SEED")
+        .valueFromArgument("--seed")
+        .defaultValue(-721274728);
+
+    program.add("render-distance")
+        .help("Render distance")
+        .valueFromConfig("general", "render-distance")
+        .valueFromEnvironmentVariable("CBSRV_RENDER_DISTANCE")
+        .valueFromArgument("--render-distance")
+        .defaultValue(10);
     program.add("online-mode")
         .help("Enable client/server encryption and only accepts legitimate accounts")
         .valueFromConfig("general", "online-mode")

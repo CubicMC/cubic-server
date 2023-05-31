@@ -81,8 +81,6 @@ static inline const std::shared_ptr<T> getConstElement(const std::shared_ptr<nbt
     return std::dynamic_pointer_cast<T>(__tmp);
 }
 
-using namespace world_storage;
-
 namespace world_storage {
 
 Persistence::Persistence(const std::string &folder):
@@ -408,7 +406,7 @@ void Persistence::_regionLoadChunk(Dimension &dim, uint16_t cx, uint16_t cz, int
     const auto chunkX = cx + x * 32;
     const auto chunkZ = cz + z * 32;
 
-    auto &chunk = dim.getLevel().addChunkColumn(Position2D(chunkX, chunkZ));
+    auto &chunk = dim.getLevel().addChunkColumn(Position2D(chunkX, chunkZ), dim.shared_from_this());
 
     // Section
     auto *sections = nbt_tag_compound_get(data, "sections");
@@ -423,7 +421,7 @@ void Persistence::_regionLoadChunk(Dimension &dim, uint16_t cx, uint16_t cz, int
 
     _regionLoadHeightmaps(chunk, data);
 
-    chunk._ready = true;
+    chunk._currentState = GenerationState::READY;
 
     nbt_free_tag(data);
 }

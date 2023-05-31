@@ -10,6 +10,7 @@
 #include "options.hpp"
 #include "thread_pool/PriorityThreadPool.hpp"
 #include "types.hpp"
+#include "world_storage/ChunkColumn.hpp"
 #include "world_storage/LevelData.hpp"
 
 class Chat;
@@ -22,7 +23,7 @@ constexpr int NB_SPAWN_CHUNKS = 19;
 
 class World : public std::enable_shared_from_this<World> {
 public:
-    World(std::shared_ptr<WorldGroup> worldGroup, std::string folder);
+    World(std::shared_ptr<WorldGroup> worldGroup, world_storage::WorldType worldType, std::string folder);
     virtual ~World() = default;
 
     virtual void tick();
@@ -64,6 +65,8 @@ public:
     */
     virtual void setTime(int time);
 
+    [[nodiscard]] virtual world_storage::WorldType getWorldType() const { return _worldType; }
+
 protected:
     std::shared_ptr<Chat> _chat;
     std::shared_ptr<WorldGroup> _worldGroup;
@@ -75,6 +78,7 @@ protected:
     TickClock _timeUpdateClock;
     Seed _seed;
     thread_pool::PriorityThreadPool _generationPool;
+    world_storage::WorldType _worldType;
     std::string _folder;
 };
 

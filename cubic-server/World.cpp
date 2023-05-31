@@ -5,18 +5,20 @@
 #include "Server.hpp"
 #include "WorldGroup.hpp"
 #include "logging/logging.hpp"
+#include <cstdint>
 
-World::World(std::shared_ptr<WorldGroup> worldGroup, std::string folder):
+World::World(std::shared_ptr<WorldGroup> worldGroup, world_storage::WorldType worldType, std::string folder):
     _worldGroup(worldGroup),
     _age(0),
     _time(0),
-    _renderDistance(10), // TODO: Should be loaded from config
+    _renderDistance(CONFIG["render-distance"].as<uint8_t>()),
     _timeUpdateClock(20, std::bind(&World::updateTime, this)), // 1 second for time updates
     _generationPool(CONFIG["num-gen-thread"].as<uint16_t>(), "WorldGen"),
+    _worldType(worldType),
     _folder(folder)
 {
     _timeUpdateClock.start();
-    _seed = -721274728; // TODO: Should be loaded from config or generated
+    _seed = CONFIG["seed"].as<int64_t>();
     _chat = worldGroup->getChat();
 }
 
@@ -42,7 +44,7 @@ void World::stop()
     for (auto &[_, dim] : _dimensions)
         dim->stop();
 
-    // TODO: Save the worlds
+    // TODO: Save the world
 }
 
 bool World::isInitialized() const
@@ -167,7 +169,7 @@ void World::sendPlayerInfoAddPlayer(Player *current)
         .actionSets = playersInfo
     });
     // clang-format on
-    LDEBUG("Sent player info to {}" + current->getUsername());
+    LDEBUG("Sent player info to {}", current->getUsername());
 }
 
 void World::sendPlayerInfoRemovePlayer(const Player *current)

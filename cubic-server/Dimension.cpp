@@ -13,11 +13,12 @@
 #include <mutex>
 #include <thread>
 
-Dimension::Dimension(std::shared_ptr<World> world):
+Dimension::Dimension(std::shared_ptr<World> world, world_storage::DimensionType dimensionType):
     _dimensionLock(std::counting_semaphore<1000>(0)),
     _world(world),
     _isInitialized(false),
-    _isRunning(false)
+    _isRunning(false),
+    _dimensionType(dimensionType)
 {
 }
 
@@ -36,6 +37,9 @@ void Dimension::stop()
 
     if (_processingThread.joinable())
         _processingThread.join();
+    // TODO: Save the dimension
+
+    _level.clear();
 }
 
 void Dimension::initialize()
@@ -128,7 +132,9 @@ const world_storage::Level &Dimension::getLevel() const { return _level; }
 
 world_storage::Level &Dimension::getLevel() { return _level; }
 
-void Dimension::generateChunk(UNUSED int x, UNUSED int z) { }
+void Dimension::generateChunk(Position2D pos, world_storage::GenerationState goalState) { generateChunk(pos.x, pos.z, goalState); }
+
+void Dimension::generateChunk(UNUSED int x, UNUSED int z, UNUSED world_storage::GenerationState goalState) { }
 
 void Dimension::loadOrGenerateChunk(int x, int z, std::shared_ptr<Player> player)
 {
@@ -159,16 +165,11 @@ void Dimension::loadOrGenerateChunk(int x, int z, std::shared_ptr<Player> player
             // TODO: load chunk from disk if it exists
             this->generateChunk(x, z);
 
-            // This send the chunk to the players that are loading it
-            std::lock_guard<std::mutex> _(_loadingChunksMutex);
-            for (auto weak_player : this->_loadingChunks[{x, z}].players) {
-                if (auto player = weak_player.lock()) {
-                    player->sendChunkAndLightUpdate(this->_level.getChunkColumn(x, z));
-                }
-            }
-            this->_loadingChunks.erase({x, z});
-        }
-    );
+            if (!this->hasChunkLoaded(x, z))
+                return;
+
+            this->sendChunkToPlayers(x, z);
+    });
 
     auto request = ChunkRequest {id, {player}};
 
@@ -221,16 +222,18 @@ void Dimension::removePlayerFromLoadingChunk(const Position2D &pos, std::shared_
 }
 
 world_storage::ChunkColumn &Dimension::getChunk(int x, int z) { return this->_level.getChunkColumn(x, z); }
+world_storage::ChunkColumn &Dimension::getChunk(const Position2D &pos) { return this->_level.getChunkColumn(pos); }
 
 const world_storage::ChunkColumn &Dimension::getChunk(int x, int z) const { return this->_level.getChunkColumn(x, z); }
+const world_storage::ChunkColumn &Dimension::getChunk(const Position2D &pos) const { return this->_level.getChunkColumn(pos); }
 
 void Dimension::spawnPlayer(Player &current)
 {
     auto current_id = current.getId();
     std::lock_guard _(_playersMutex);
     for (auto player : _players) {
-        LDEBUG("player is : {}", player->getUsername());
-        LDEBUG("current is : {}", current.getUsername());
+        LDEBUG("player is: {}", player->getUsername());
+        LDEBUG("current is: {}", current.getUsername());
         // if (current->getPos().distance(player->getPos()) <= 12) {
         if (player->getId() != current_id) {
             player->sendSpawnPlayer(
@@ -305,4 +308,16 @@ void Dimension::addEntityMetadata(const protocol::SetEntityMetadata &metadata)
     for (auto player : _players) {
         player->sendSetEntityMetadata(metadata);
     }
+}
+
+void Dimension::sendChunkToPlayers(int x, int z)
+{
+    // This send the chunk to the players that are loading it
+    std::lock_guard<std::mutex> _(_loadingChunksMutex);
+    for (auto weak_player : this->_loadingChunks[{x, z}].players) {
+        if (auto player = weak_player.lock()) {
+            player->sendChunkAndLightUpdate(this->_level.getChunkColumn(x, z));
+        }
+    }
+    this->_loadingChunks.erase({x, z});
 }

@@ -5,15 +5,19 @@
 #include <cmath>
 #include <cstdint>
 #include <memory>
+#include <mutex>
 #include <vector>
 
 #include "Palette.hpp"
+#include "generation/generator.hpp"
 #include "Section.hpp"
 #include "nbt.hpp"
 #include "protocol/Structures.hpp"
 #include "protocol/common.hpp"
 #include "types.hpp"
 #include "world_storage/DynamicStorage.hpp"
+
+class Dimension;
 
 namespace world_storage {
 
@@ -44,15 +48,40 @@ constexpr uint64_t calculateBiomeIdx(const Position &pos)
 }
 
 enum class WorldType {
-    NORMAL,
+    DEFAULT = 0,
+    SUPERFLAT,
+    LARGEBIOME,
+    AMPLIFIED,
+    SINGLEBIOME,
+    DEBUG,
+    SUPERFLAT_CUBIC_SERVER
+};
+
+enum class DimensionType {
+    OVERWORLD = 0,
     NETHER,
-    END,
-    FLAT
+    END
+};
+
+enum class GenerationState {
+    INITIALIZED = 0,
+    RAW_GENERATION,
+    LAKES,
+    LOCAL_MODIFICATIONS,
+    UNDERGROUND_STRUCTURES,
+    SURFACE_STRUCTURES,
+    STRONGHOLDS,
+    UNDERGROUND_ORES,
+    UNDERGROUND_DECORATION,
+    FLUID_SPRINGS,
+    VEGETAL_DECORATION,
+    TOP_LAYER_MODIFICATION,
+    READY,
 };
 
 class ChunkColumn {
 public:
-    ChunkColumn(const Position2D &chunkPos);
+    ChunkColumn(const Position2D &chunkPos, std::shared_ptr<Dimension> dimension);
     ChunkColumn(ChunkColumn &&chunk);
     ~ChunkColumn();
 
@@ -80,6 +109,7 @@ public:
     void setTick(int64_t tick);
     Position2D getChunkPos() const;
     bool isReady() const;
+    GenerationState getState() const;
 
     // void updateEntity(std::size_t id, Entity *e);
     // void updateEntity(u128 uuid, Entity *e);
@@ -93,17 +123,33 @@ public:
     void updateHeightMap();
     NODISCARD constexpr inline const nbt::Compound &getHeightMap() const { return _heightMap; }
 
-    void generate(WorldType worldType, Seed seed);
+    void generate(GenerationState goalState = GenerationState::READY);
 
     friend class Persistence;
 
 private:
-    void _generateOverworld(Seed seed);
-    void _generateNether(Seed seed);
-    void _generateEnd(Seed seed);
-    void _generateFlat(Seed seed);
+    void _generateOverworld(GenerationState goalState);
+    void _generateNether(GenerationState goalState);
+    void _generateEnd(GenerationState goalState);
+
+    void _generateFlat(GenerationState goalState);
+    void _generateDebug(GenerationState goalState);
+    void _generateFlatCubicServer(GenerationState goalState);
+
+    void _generateRawGeneration(generation::Generator &generator);
+    void _generateLakes(generation::Generator &generator);
+    void _generateLocalModifications(generation::Generator &generator);
+    void _generateUndergroundStructures(generation::Generator &generator);
+    void _generateSurfaceStructures(generation::Generator &generator);
+    void _generateStrongholds(generation::Generator &generator);
+    void _generateUndergroundOres(generation::Generator &generator);
+    void _generateUndergroundDecoration(generation::Generator &generator);
+    void _generateFluidSprings(generation::Generator &generator);
+    void _generateVegetalDecoration(generation::Generator &generator);
+    void _generateTopLayerModification(generation::Generator &generator);
 
 private:
+    private:
     std::array<Section, NB_OF_SECTIONS> _sections;
     // std::array<uint8_t, (NB_OF_PLAYABLE_SECTIONS + 2) * SECTION_3D_SIZE> _skyLights;
     // std::array<uint8_t, (NB_OF_PLAYABLE_SECTIONS + 2) * SECTION_3D_SIZE> _blockLights;
@@ -112,8 +158,9 @@ private:
     int64_t _tickData;
     Position2D _chunkPos;
     nbt::Compound _heightMap;
-    bool _ready;
-    // std::mutex _mutex;
+    GenerationState _currentState;
+    std::mutex _generationLock;
+    std::shared_ptr<Dimension> _dimension;
 };
 
 } // namespace world_storage

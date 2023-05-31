@@ -1283,6 +1283,6 @@ void Player::_eat()
 void Player::teleport(const Vector3<double> &pos)
 {
     this->sendSynchronizePosition(pos);
-    LDEBUG("Synchronized player position");
+    LDEBUG("Synchronize player position");
     Entity::teleport(pos);
 }

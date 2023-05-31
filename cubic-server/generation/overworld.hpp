@@ -3,6 +3,7 @@
 
 #include "generator.hpp"
 #include "types.hpp"
+#include <vector>
 
 namespace generation {
 class Overworld : public Generator {
@@ -15,6 +16,9 @@ public:
 
     BiomeId getBiome(positionType x, positionType y, positionType z) override;
     BiomeId getBiome(const Position &pos) override;
+
+    int getTreeSize(positionType x, positionType y, positionType z, const TreeSize &treeSize) override;
+    int getTreeSize(const Position &pos, const TreeSize &treeSize) override;
 };
 }
 

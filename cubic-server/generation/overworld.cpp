@@ -2,6 +2,9 @@
 #include "blocks/Air.hpp"
 #include "blocks/Stone.hpp"
 
+#include "blocks.hpp"
+#include "types.hpp"
+
 generation::Overworld::Overworld(Seed seed):
     Generator(seed)
 {
@@ -86,3 +89,10 @@ BiomeId generation::Overworld::getBiome(positionType x, positionType y, position
 }
 
 BiomeId generation::Overworld::getBiome(const Position &pos) { return getBiome(pos.x, pos.y, pos.z); }
+
+int generation::Overworld::getTreeSize(positionType x, positionType y, positionType z, const TreeSize &treeSize)
+{
+    return getNoise(x, y, z).noise3D.temperature * (treeSize.sizeMax - treeSize.sizeMin) + treeSize.sizeMin;
+}
+
+int generation::Overworld::getTreeSize(const Position &pos, const TreeSize &treeSize) { return getTreeSize(pos.x, pos.y, pos.z, treeSize); }
