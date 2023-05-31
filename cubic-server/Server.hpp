@@ -27,6 +27,8 @@
 #include "protocol_id_converter/itemConverter.hpp"
 
 #include "Permissions.hpp"
+#include "loot_tables/LootTables.hpp"
+
 #include "options.hpp"
 
 #include "recipes/Recipes.hpp"
@@ -85,6 +87,8 @@ public:
     PluginManager &getPluginManager() noexcept { return _pluginManager; }
     Recipes &getRecipeSystem(void) noexcept;
 
+    LootTables &getLootTableSystem(void) noexcept;
+
     void sendData(size_t clientID, std::unique_ptr<std::vector<uint8_t>> &&data);
     void triggerClientCleanup(size_t clientID = -1);
 
@@ -119,6 +123,7 @@ private:
     Items::ItemConverter _itemConverter;
     Recipes _recipes;
     PluginManager _pluginManager;
+    LootTables _lootTables;
 
     // new boost stuff
 
