@@ -1,6 +1,6 @@
-#include <fstream>
 #include "Whitelist.hpp"
 #include "logging/logging.hpp"
+#include <fstream>
 
 std::string u128ToUuidString(u128 u)
 {

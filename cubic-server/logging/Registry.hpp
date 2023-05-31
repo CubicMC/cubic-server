@@ -14,7 +14,10 @@ class Registry {
 public:
     using LogLevel = spdlog::level::level_enum;
     using Logger = spdlog::logger;
-    using Message = struct { LogLevel level; std::string message; };
+    using Message = struct {
+        LogLevel level;
+        std::string message;
+    };
 
 public:
     static Registry &instance();
