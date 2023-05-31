@@ -61,7 +61,7 @@ std::deque<Position> &OakTree::filterTreeGrowSpace()
     return _positions;
 }
 
-void OakTree::generateTree()
+void OakTree::generateTree(std::vector<world_storage::ChunkColumn *> neighbours)
 {
     const auto &treeEmplacement = _positions.front();
     auto tree = getTree(

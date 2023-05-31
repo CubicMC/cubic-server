@@ -79,10 +79,9 @@ enum class GenerationState {
     READY,
 };
 
-class ChunkColumn: public std::enable_shared_from_this<ChunkColumn> {
+class ChunkColumn {
 public:
     ChunkColumn(const Position2D &chunkPos, std::shared_ptr<Dimension> dimension);
-    ChunkColumn(const ChunkColumn &);
     ChunkColumn(ChunkColumn &&chunk);
     ~ChunkColumn();
 

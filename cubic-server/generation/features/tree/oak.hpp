@@ -14,7 +14,7 @@ public:
 
     std::deque<Position> &getPosForTreeGeneration() override;
     std::deque<Position> &filterTreeGrowSpace() override;
-    void generateTree() override;
+    void generateTree(std::vector<world_storage::ChunkColumn *>) override;
 
 private:
     const std::vector<Generator::TreeBlock> getTree(const Position &pos) const override;

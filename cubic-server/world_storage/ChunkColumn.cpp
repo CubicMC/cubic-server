@@ -13,31 +13,30 @@
 #include <cstdlib>
 #include <memory>
 
-#define APPEND_CHUNK_TO(neighbours, chunkMap, pos2D)                                        \
-    _dimension->getLevel().chunkColumnsMutex.lock();                                        \
-    if (chunkMap.contains(_chunkPos + pos2D)) {                                             \
-        chunkMap.at(_chunkPos + pos2D)._generationLock.lock();                              \
-        neighbours.push_back(&chunkMap.at(_chunkPos + pos2D));                              \
-    } else {                                                                                \
-        _dimension->getLevel().chunkColumnsMutex.unlock();                                  \
-        _dimension->generateChunk(_chunkPos + pos2D, GenerationState::LOCAL_MODIFICATIONS); \
-        _dimension->getLevel().chunkColumnsMutex.lock();                                    \
-        chunkMap.at(_chunkPos + pos2D)._generationLock.lock();                              \
-        neighbours.push_back(&chunkMap.at(_chunkPos + pos2D));                              \
-    }                                                                                       \
+#define APPEND_CHUNK_TO(neighbours, chunkMap, pos2D)                                                                                 \
+    if (chunkMap.contains(_chunkPos + pos2D) && chunkMap.at(_chunkPos + pos2D).getState() >= GenerationState::LOCAL_MODIFICATIONS) { \
+        chunkMap.at(_chunkPos + pos2D)._generationLock.lock();                                                                       \
+        neighbours.push_back(&chunkMap.at(_chunkPos + pos2D));                                                                       \
+    } else {                                                                                                                         \
+        /* _dimension->getLevel().chunkColumnsMutex.unlock();                                                                        \
+        // _dimension->generateChunk(_chunkPos + pos2D, GenerationState::LOCAL_MODIFICATIONS);                                       \
+        // _dimension->getLevel().chunkColumnsMutex.lock();                                                                          \
+        // chunkMap.at(_chunkPos + pos2D)._generationLock.lock();                                                                    \
+        // neighbours.push_back(&chunkMap.at(_chunkPos + pos2D));*/                                                                  \
+    }                                                                                                                                \
     _dimension->getLevel().chunkColumnsMutex.unlock();
 
-#define GET_NEIGHBOURS()                                          \
-    std::vector<ChunkColumn *> neighbours;                        \
-    neighbours.reserve(8);                                        \
-    auto chunkColumns = _dimension->getLevel().getChunkColumns(); \
-    APPEND_CHUNK_TO(neighbours, chunkColumns, Position2D(1, 1))   \
-    APPEND_CHUNK_TO(neighbours, chunkColumns, Position2D(0, 1))   \
-    APPEND_CHUNK_TO(neighbours, chunkColumns, Position2D(-1, 1))  \
-    APPEND_CHUNK_TO(neighbours, chunkColumns, Position2D(1, 0))   \
-    APPEND_CHUNK_TO(neighbours, chunkColumns, Position2D(-1, 0))  \
-    APPEND_CHUNK_TO(neighbours, chunkColumns, Position2D(1, -1))  \
-    APPEND_CHUNK_TO(neighbours, chunkColumns, Position2D(0, -1))  \
+#define GET_NEIGHBOURS()                                           \
+    std::vector<ChunkColumn *> neighbours;                         \
+    neighbours.reserve(8);                                         \
+    auto &chunkColumns = _dimension->getLevel().getChunkColumns(); \
+    APPEND_CHUNK_TO(neighbours, chunkColumns, Position2D(1, 1))    \
+    APPEND_CHUNK_TO(neighbours, chunkColumns, Position2D(0, 1))    \
+    APPEND_CHUNK_TO(neighbours, chunkColumns, Position2D(-1, 1))   \
+    APPEND_CHUNK_TO(neighbours, chunkColumns, Position2D(1, 0))    \
+    APPEND_CHUNK_TO(neighbours, chunkColumns, Position2D(-1, 0))   \
+    APPEND_CHUNK_TO(neighbours, chunkColumns, Position2D(1, -1))   \
+    APPEND_CHUNK_TO(neighbours, chunkColumns, Position2D(0, -1))   \
     APPEND_CHUNK_TO(neighbours, chunkColumns, Position2D(-1, -1))
 
 #define RELEASE_NEIGHBOURS()                 \
@@ -550,13 +549,13 @@ void ChunkColumn::_generateFluidSprings(UNUSED generation::Generator &generator)
 void ChunkColumn::_generateVegetalDecoration(generation::Generator &generator)
 {
     std::lock_guard<std::mutex> _(this->_generationLock);
-    // GET_NEIGHBOURS()
+    GET_NEIGHBOURS()
     generation::trees::OakTree oakTree(*this, generator);
     oakTree.getPosForTreeGeneration();
     while (!oakTree.filterTreeGrowSpace().empty())
-        oakTree.generateTree();
+        oakTree.generateTree(neighbours);
 
-    // RELEASE_NEIGHBOURS()
+    RELEASE_NEIGHBOURS()
     _currentState = GenerationState::VEGETAL_DECORATION;
 }
 

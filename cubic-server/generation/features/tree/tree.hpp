@@ -3,6 +3,7 @@
 
 #include <deque>
 #include <memory>
+#include <vector>
 
 #include "generation/generator.hpp"
 #include "types.hpp"
@@ -18,7 +19,7 @@ public:
     }
     virtual std::deque<Position> &getPosForTreeGeneration() = 0;
     virtual std::deque<Position> &filterTreeGrowSpace() = 0;
-    virtual void generateTree() = 0;
+    virtual void generateTree(std::vector<world_storage::ChunkColumn *>) = 0;
 
 protected:
     virtual const std::vector<generation::Generator::TreeBlock> getTree(const Position &pos) const = 0;
