@@ -1,21 +1,20 @@
 #include "PluginManager.hpp"
 #include "PluginInterface.hpp"
-#include "logging/logging.hpp"
 #include "Server.hpp"
+#include "logging/logging.hpp"
 
+#include <array>
 #include <dlfcn.h>
 #include <filesystem>
-#include <array>
 
-PluginManager::PluginManager(Server *server, const std::string &folder) : _folder(folder), _interface(std::make_shared<PluginInterface>())
+PluginManager::PluginManager(Server *server, const std::string &folder):
+    _folder(folder),
+    _interface(std::make_shared<PluginInterface>())
 {
     this->_interface->load(server);
 }
 
-PluginManager::~PluginManager()
-{
-    this->unload();
-}
+PluginManager::~PluginManager() { this->unload(); }
 
 void PluginManager::loadPlugin(std::string filepath)
 {
@@ -49,7 +48,7 @@ void PluginManager::loadPlugin(std::string filepath)
     nhandle = dlopen(filepath.c_str(), RTLD_LAZY);
     if (!nhandle) {
         LERROR("SRO");
-        //SRO
+        // SRO
         return;
     }
 
@@ -88,8 +87,8 @@ void PluginManager::load(void)
 void PluginManager::unload(void)
 {
     LINFO("Unloading plugins...");
-    for (const auto &plugin : this->_plugins)
-        dlclose(plugin.second);
+    for (const auto &[_, plugin] : this->_plugins)
+        dlclose(plugin);
     this->_plugins.clear();
     this->_events.clear();
     LINFO("Unloaded plugins");
@@ -101,6 +100,4 @@ void PluginManager::reload(void)
     this->load();
 }
 
-std::shared_ptr<PluginInterface> PluginManager::getInterface() const {
-    return this->_interface;
-}
+std::shared_ptr<PluginInterface> PluginManager::getInterface() const { return this->_interface; }

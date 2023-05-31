@@ -1,8 +1,8 @@
 #ifndef PLUGIN_INTERFACE_HPP
 #define PLUGIN_INTERFACE_HPP
 
-#include <vector>
 #include <string>
+#include <vector>
 
 #include "types.hpp"
 
@@ -27,7 +27,8 @@ public:
     Server *server;
 
     struct player {
-        explicit player(PluginInterface *interface) : _intern(interface) {};
+        explicit player(PluginInterface *interface):
+            _intern(interface) {};
 
         Player *getByID(u128 uuid);
         Player *getByName(std::string name);
@@ -52,7 +53,8 @@ public:
     } player {this};
 
     struct entity {
-        explicit entity(PluginInterface *interface) : _intern(interface) {};
+        explicit entity(PluginInterface *interface):
+            _intern(interface) {};
 
         Entity *getByID();
 
@@ -71,7 +73,8 @@ public:
     } entity {this};
 
     struct block {
-        explicit block(PluginInterface *interface) : _intern(interface) {};
+        explicit block(PluginInterface *interface):
+            _intern(interface) {};
 
         void getByID();
         void getByPosition();
@@ -85,7 +88,8 @@ public:
     } block {this};
 
     struct inventory {
-        explicit inventory(PluginInterface *interface) : _intern(interface) {};
+        explicit inventory(PluginInterface *interface):
+            _intern(interface) {};
 
         Inventory *getByID();
         Inventory *getByPosition();
@@ -103,7 +107,8 @@ public:
     } inventory {this};
 
     struct chat {
-        explicit chat(PluginInterface *interface) : _intern(interface) {};
+        explicit chat(PluginInterface *interface):
+            _intern(interface) {};
 
         Chat *get();
 
@@ -112,7 +117,8 @@ public:
     } chat {this};
 
     struct command {
-        explicit command(PluginInterface *interface) : _intern(interface) {};
+        explicit command(PluginInterface *interface):
+            _intern(interface) {};
 
         void registerCommand();
         void unregisterCommand();
