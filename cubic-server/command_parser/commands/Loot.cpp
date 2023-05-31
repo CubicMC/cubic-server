@@ -20,7 +20,7 @@ void command_parser::Loot::execute(std::vector<std::string> &args, UNUSED Player
     }
     LootTable::LootTablePoll poll = Server::getInstance()->getLootTableSystem().get(args[0], args[1]).poll(nullptr);
     for (const auto &[item, count] : poll.getRolledItems()) {
-        std::cout << std::to_string(count) << " " << Server::getInstance()->getItemConverter().fromProtocolIdToItem(item) << std::endl;
+        LINFO("{} {}", std::to_string(count), Server::getInstance()->getItemConverter().fromProtocolIdToItem(item));
     }
 }
 
