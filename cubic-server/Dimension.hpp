@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "options.hpp"
+#include "protocol/ClientPackets.hpp"
 #include "world_storage/ChunkColumn.hpp"
 #include "world_storage/Level.hpp"
 
@@ -54,7 +55,12 @@ public:
     virtual void generateChunk(Position2D pos, world_storage::GenerationState goalState = world_storage::GenerationState::READY);
     virtual void generateChunk(int x, int z, world_storage::GenerationState goalState = world_storage::GenerationState::READY);
     virtual void updateBlock(Position position, int32_t id);
+    void addEntityMetadata(const protocol::SetEntityMetadata &metadata);
+    void updateEntityAttributes(const protocol::UpdateAttributes &attributes);
     virtual void spawnPlayer(Player &player);
+    virtual void spawnEntity(std::shared_ptr<Entity> entity);
+    template<isBaseOf<Entity> T, typename... Args>
+    std::shared_ptr<T> makeEntity(Args &&...);
 
     /**
      * @brief Send the chunk to the players that are loading it
@@ -148,5 +154,13 @@ protected:
     std::thread _processingThread;
     world_storage::DimensionType _dimensionType;
 };
+
+template<isBaseOf<Entity> T, typename... Args>
+std::shared_ptr<T> Dimension::makeEntity(Args &&...args)
+{
+    auto entity = std::make_shared<T>(shared_from_this(), args...);
+    this->addEntity(entity);
+    return entity;
+}
 
 #endif // CUBICSERVER_DIMENSION_HPP

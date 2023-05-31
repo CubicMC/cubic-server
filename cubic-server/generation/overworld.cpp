@@ -1,4 +1,6 @@
 #include "overworld.hpp"
+#include "blocks/Air.hpp"
+#include "blocks/Stone.hpp"
 
 #include "blocks.hpp"
 #include "types.hpp"
@@ -52,10 +54,10 @@ BlockId generation::Overworld::getBlock(positionType x, positionType y, position
     auto noise = getNoise(x, y, z);
     int heightOffset = 100;
     int surfaceLevel = heightOffset + noise.noise2D.continentalness * 20;
-    BlockId blockId = 0;
+    BlockId blockId = Blocks::Air::toProtocol();
 
     if (y < surfaceLevel)
-        blockId = 1;
+        blockId = Blocks::Stone::toProtocol();
 
     // Trying to make caves
     // auto density = noise.noise3D.density / (1.0 / (double (y + world_storage::CHUNK_HEIGHT_MIN) + 0.001)) * 10;
@@ -69,11 +71,11 @@ BlockId generation::Overworld::getBlock(positionType x, positionType y, position
         density *= 1.5;
     if (y >= 100)
         density *= 100.0;
-    if (blockId == 1 && density >= -.15 && density <= .05)
-        blockId = 0;
+    if (blockId == Blocks::Stone::toProtocol() && density >= -.15 && density <= .05)
+        blockId = Blocks::Air::toProtocol();
     // Trying to repair caves surface
-    if (blockId == 0 && noise.noise3D.density >= -.4 && noise.noise3D.density <= .4 && y < surfaceLevel && y > heightOffset - 10)
-        blockId = 1;
+    if (blockId == Blocks::Air::toProtocol() && noise.noise3D.density >= -.4 && noise.noise3D.density <= .4 && y < surfaceLevel && y > heightOffset - 10)
+        blockId = Blocks::Stone::toProtocol();
 
     return blockId;
 }

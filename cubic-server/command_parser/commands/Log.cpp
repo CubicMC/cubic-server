@@ -1,8 +1,8 @@
 #include "Log.hpp"
 #include "Server.hpp"
 
-#include "logging/logging.hpp"
 #include "logging/Sinks.hpp"
+#include "logging/logging.hpp"
 
 void command_parser::Log::autocomplete(UNUSED std::vector<std::string> &args, Player *invoker) const
 {
@@ -33,8 +33,8 @@ void command_parser::Log::execute(std::vector<std::string> &args, UNUSED Player 
         return;
     }
 
-    logging::setLevel(logging::stringToLevel(args[1]));
-    LWARN("Unknown level {}", args[0]);
+    logging::setLevel(logging::stringToLevel(args[0]));
+    LWARN("Set level of all logger to {}", args[0]);
 }
 
 void command_parser::Log::help(UNUSED std::vector<std::string> &args, Player *invoker) const

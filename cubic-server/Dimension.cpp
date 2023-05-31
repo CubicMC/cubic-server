@@ -1,10 +1,15 @@
 #include "Dimension.hpp"
 
+#include "Entity.hpp"
 #include "Player.hpp"
 #include "Server.hpp"
 #include "World.hpp"
 #include "logging/logging.hpp"
 #include "math/Vector3.hpp"
+#include "protocol/ClientPackets.hpp"
+#include "types.hpp"
+#include <cstdint>
+#include <memory>
 #include <mutex>
 
 Dimension::Dimension(std::shared_ptr<World> world, world_storage::DimensionType dimensionType):
@@ -243,6 +248,29 @@ void Dimension::spawnPlayer(Player &current)
     }
 }
 
+void Dimension::spawnEntity(std::shared_ptr<Entity> current)
+{
+    std::lock_guard _(_entitiesMutex);
+    for (auto player : _players) {
+        LDEBUG("spawn entity with id: {}", current->getId());
+        player->sendSpawnEntity(
+            {current->getId(),
+             {(uint64_t) current->getId(), (uint64_t) current->getId()},
+             current->getType(),
+             current->getPosition().x,
+             current->getPosition().y,
+             current->getPosition().z,
+             0,
+             0,
+             0,
+             0,
+             16,
+             0,
+             0}
+        );
+    }
+}
+
 void Dimension::updateBlock(Position position, int32_t id)
 {
     LDEBUG("Dimension block update {} -> {}", position, id);
@@ -260,6 +288,22 @@ void Dimension::updateBlock(Position position, int32_t id)
     std::lock_guard _(_playersMutex);
     for (auto player : _players) {
         player->sendBlockUpdate({position, id});
+    }
+}
+
+void Dimension::updateEntityAttributes(const protocol::UpdateAttributes &attributes)
+{
+    std::lock_guard _(_entitiesMutex);
+    for (auto player : _players) {
+        player->sendUpdateAttributes(attributes);
+    }
+}
+
+void Dimension::addEntityMetadata(const protocol::SetEntityMetadata &metadata)
+{
+    std::lock_guard _(_entitiesMutex);
+    for (auto player : _players) {
+        player->sendSetEntityMetadata(metadata);
     }
 }
 

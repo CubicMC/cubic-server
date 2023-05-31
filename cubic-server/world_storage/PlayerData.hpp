@@ -12,10 +12,9 @@ namespace world_storage {
  *
  * Some stuff is not implemented yet (Or I just don't know
  * how it works at all/what is the purpose of it).
- * 
+ *
  */
-struct PlayerData
-{
+struct PlayerData {
     float absorptionAmount;
     int16_t air;
     // TODO(huntears): Attributes
@@ -53,7 +52,7 @@ struct PlayerData
     int16_t sleepTimer;
     u128 uuid;
     int32_t xpLevel;
-    float xpP; //TODO(huntears): What is this ?
+    float xpP; // TODO(huntears): What is this ?
     int32_t xpSeed;
     int32_t xpTotal;
     // TODO(huntears): abilities
