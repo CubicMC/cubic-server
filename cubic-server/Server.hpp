@@ -27,6 +27,8 @@
 #include "protocol_id_converter/itemConverter.hpp"
 
 #include "Permissions.hpp"
+#include "loot_tables/LootTables.hpp"
+
 #include "options.hpp"
 
 #include "recipes/Recipes.hpp"
@@ -82,6 +84,8 @@ public:
     const std::unordered_map<std::string_view, std::shared_ptr<WorldGroup>> &getWorldGroups() const;
     Recipes &getRecipeSystem(void) noexcept;
 
+    LootTables &getLootTableSystem(void) noexcept;
+
     void sendData(size_t clientID, std::unique_ptr<std::vector<uint8_t>> &&data);
     void triggerClientCleanup(size_t clientID = -1);
 
@@ -113,6 +117,7 @@ private:
     Blocks::GlobalPalette _globalPalette;
     Items::ItemConverter _itemConverter;
     Recipes _recipes;
+    LootTables _lootTables;
 
     // new boost stuff
 
