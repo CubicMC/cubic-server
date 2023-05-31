@@ -1,0 +1,104 @@
+#include "Inventory.hpp"
+#include "protocol/container/Container.hpp"
+#include <variant>
+
+using Inventory = protocol::container::Inventory;
+
+template<size_t N>
+static void swapContainer(protocol::Slot &slot, std::array<protocol::Slot, N> &container)
+{
+    for (auto &containerSlot : container) {
+        if (containerSlot == slot) {
+            containerSlot.itemCount += slot.itemCount;
+            if (containerSlot.itemCount <= 64) {
+                slot.present = false;
+                slot.itemID = 0;
+                slot.itemCount = 0;
+                return;
+            }
+            slot.itemCount = containerSlot.itemCount - 64;
+            containerSlot.itemCount = 64;
+        }
+    }
+    for (auto &containerSlot : container) {
+        if (!containerSlot.present) {
+            containerSlot = slot;
+            slot.present = false;
+            slot.itemID = 0;
+            slot.itemCount = 0;
+            return;
+        }
+    }
+}
+
+Inventory::Inventory(
+    // std::array<protocol::Slot, INVENTORY_SIZE> &playerInventory, std::array<protocol::Slot, HOTBAR_SIZE> &hotbar, std::array<protocol::Slot, ARMOR_SIZE> &armor,
+    // protocol::Slot &offhand
+):
+    Container(0, 0, "Inventory")
+//     Container(0, 0, "Inventory"),
+//     _playerInventory(playerInventory),
+//     _hotbar(hotbar),
+//     _armor(armor),
+//     _offhand(offhand)
+{
+}
+
+protocol::Slot &Inventory::at(int16_t index)
+{
+    if (index == -1)
+        return cursor();
+    else if (index < 5)
+        return _craftingGrid.at(index);
+    else if (index < 9)
+        return _armor.at(index - 5);
+    else if (index < 36)
+        return _playerInventory.at(index - 9);
+    else if (index < 45)
+        return _hotbar.at(index - 36);
+    else if (index == 45)
+        return _offhand;
+    else
+        throw std::out_of_range("Index out of range");
+}
+
+const protocol::Slot &Inventory::at(int16_t index) const
+{
+    if (index == -1)
+        return cursor();
+    else if (index < 5)
+        return _craftingGrid.at(index);
+    else if (index < 9)
+        return _armor.at(index - 5);
+    else if (index < 36)
+        return _playerInventory.at(index - 9);
+    else if (index < 45)
+        return _hotbar.at(index - 36);
+    else if (index == 45)
+        return _offhand;
+    else
+        throw std::out_of_range("Index out of range");
+}
+
+void Inventory::onClick(std::shared_ptr<Player> player,  int16_t index, uint8_t buttonId, uint8_t mode, const std::vector<protocol::ClickContainer::SlotWithIndex> &updates)
+{
+    switch (mode) {
+        case ClickMode::ShiftClick:
+            if (index >= 9 && index < 36)
+                swapContainer(at(index), _hotbar);
+            else
+                swapContainer(at(index), _playerInventory);
+            break;
+
+        case ClickMode::Keys:
+            if (buttonId == 40)
+                std::swap(_offhand, at(index));
+            else
+                std::swap(_hotbar.at(buttonId), at(index));
+            break;
+
+        default:
+            Container::onClick(player, index, buttonId, mode, updates);
+            break;
+    }
+}

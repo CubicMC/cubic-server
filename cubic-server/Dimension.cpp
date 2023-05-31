@@ -31,7 +31,7 @@ void Dimension::tick()
 void Dimension::stop()
 {
     this->_isRunning = false;
-    this->_dimensionLock.release();
+    this->_dimensionLock.release(_dimensionLock.max());
 
     if (_processingThread.joinable())
         _processingThread.join();

@@ -86,9 +86,6 @@ public:
     // Disconnect the client
     void disconnect(const chat::Message &reason = "Disconnected");
 
-    // Stop the client (called by the server on shutdown)
-    void stop(const chat::Message &reason = "Disconnected");
-
     std::shared_ptr<Player> getPlayer();
     const std::shared_ptr<Player> getPlayer() const;
     inline size_t getID() const { return _clientID; };
