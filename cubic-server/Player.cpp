@@ -943,7 +943,11 @@ void Player::_onProgramCommandBlock(UNUSED protocol::ProgramCommandBlock &pck) {
 
 void Player::_onProgramCommandBlockMinecart(UNUSED protocol::ProgramCommandBlockMinecart &pck) { N_LDEBUG("Got a Program Command Block Minecart"); }
 
-void Player::_onSetCreativeModeSlot(UNUSED protocol::SetCreativeModeSlot &pck) { N_LDEBUG("Got a Set Creative Mode Slot"); }
+void Player::_onSetCreativeModeSlot(UNUSED protocol::SetCreativeModeSlot &pck)
+{
+    N_LDEBUG("Got a Set Creative Mode Slot");
+    this->_inventory->at(pck.slot) = pck.clickedItem;
+}
 
 void Player::_onProgramJigsawBlock(UNUSED protocol::ProgramJigsawBlock &pck) { N_LDEBUG("Got a Program Jigsaw Block"); }
 
