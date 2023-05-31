@@ -90,7 +90,6 @@ void Server::launch(const configuration::ConfigHandler &config)
         addr = tmpaddr.to_v6();
     auto endpoint = tcp::endpoint(addr, _config["port"].as<uint16_t>());
 
-
     _acceptor = std::make_unique<boost::asio::ip::tcp::acceptor>(_io_context, tcp::v6());
     _acceptor->set_option(boost::asio::ip::tcp::acceptor::reuse_address(true));
     _acceptor->set_option(boost::asio::ip::v6_only(false));

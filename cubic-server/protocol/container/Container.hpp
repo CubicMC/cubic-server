@@ -50,12 +50,7 @@ public:
 
     virtual void onClick(std::shared_ptr<Player> player, int16_t index, uint8_t buttonId, uint8_t mode, const std::vector<protocol::ClickContainer::SlotWithIndex> &updates);
     virtual void onButtonClick(UNUSED std::shared_ptr<Player> player, UNUSED uint8_t buttonId) { };
-    virtual void close(UNUSED std::shared_ptr<Player> player)
-    {
-        if (_cursor.present) {
-            // TODO: Drop cursor item
-        }
-    }
+    virtual void close(UNUSED std::shared_ptr<Player> player);
 
     NODISCARD constexpr inline int32_t id() const { return _id; }
     NODISCARD constexpr inline int32_t type() const { return _type; }

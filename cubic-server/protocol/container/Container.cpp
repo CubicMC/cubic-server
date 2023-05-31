@@ -1,10 +1,20 @@
 #include "Container.hpp"
+#include "Dimension.hpp"
+#include "Item.hpp"
 #include "PlayerAttributes.hpp"
 #include "logging/logging.hpp"
 #include "protocol/Structures.hpp"
 #include "Player.hpp"
 
 using Container = protocol::container::Container;
+
+void Container::close(std::shared_ptr<Player> player)
+{
+    if (_cursor.present) {
+        player->getDimension()->makeEntity<Item>(_cursor)->dropItem(player->getPosition());
+        _cursor.reset();
+    }
+}
 
 void Container::onClick(std::shared_ptr<Player> player, int16_t index, uint8_t buttonId, uint8_t mode, const std::vector<protocol::ClickContainer::SlotWithIndex> &updates)
 {
@@ -16,10 +26,11 @@ void Container::onClick(std::shared_ptr<Player> player, int16_t index, uint8_t b
                 if (!_cursor.present)
                     break;
                 if (buttonId == 0) {
-                    // TODO: drop stack from _cursor
+                    player->getDimension()->makeEntity<Item>(_cursor)->dropItem(player->getPosition());
                     _cursor.reset();
                 } else {
-                    // TODO: drop one from _cursor
+                    protocol::Slot item = {true, _cursor.itemID, 1};
+                    player->getDimension()->makeEntity<Item>(item)->dropItem(player->getPosition());
                     _cursor.itemCount--;
                     if (_cursor.itemCount == 0)
                         _cursor.reset();
@@ -48,7 +59,6 @@ void Container::onClick(std::shared_ptr<Player> player, int16_t index, uint8_t b
             if (isCreative)
                 break;
             _cursor = at(index);
-            // TODO: create item from _cursor and get the max stack for this item
             _cursor.itemCount = 64;
             break;
 
@@ -57,10 +67,16 @@ void Container::onClick(std::shared_ptr<Player> player, int16_t index, uint8_t b
                 break;
             if (!at(index).present)
                 break;
-            if (buttonId == 0)
+            if (buttonId == 0) {
+                protocol::Slot item = {true, at(index).itemID, 1};
+                player->getDimension()->makeEntity<Item>(item)->dropItem(player->getPosition());
                 at(index).itemCount--;
-            else
-                at(index).itemCount = 0;
+                if (at(index).itemCount == 0)
+                    at(index).reset();
+            } else {
+                player->getDimension()->makeEntity<Item>(at(index))->dropItem(player->getPosition());
+                at(index).reset();
+            }
             if (at(index).itemCount == 0)
                 at(index).reset();
             break;

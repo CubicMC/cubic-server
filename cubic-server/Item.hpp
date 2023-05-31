@@ -6,19 +6,19 @@
 
 class Item : public Entity {
 public:
-    Item(std::shared_ptr<Dimension> dim, ItemId itemId):
-        Entity(dim, protocol::SpawnEntity::EntityType::Item)
+    Item(std::shared_ptr<Dimension> dim, protocol::Slot slot):
+        Entity(dim, protocol::SpawnEntity::EntityType::Item),
+        _slot(slot)
     {
-        _itemId = itemId;
     }
     ~Item() { }
 
     void tick() override;
     void dropItem(const Vector3<double> &pos) override;
-    ItemId getItemId() const { return _itemId; };
+    ItemId getItemId() const { return _slot.itemID; };
 
 private:
-    ItemId _itemId;
+    protocol::Slot _slot;
 };
 
 #endif // CUBICSERVER_ITEM_HPP

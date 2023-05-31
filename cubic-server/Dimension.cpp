@@ -114,13 +114,13 @@ void Dimension::removePlayer(int32_t entity_id)
 void Dimension::addEntity(std::shared_ptr<Entity> entity)
 {
     std::lock_guard _(_entitiesMutex);
-    _entities.push_back(entity);
+    _entities.emplace_back(entity);
 }
 
 void Dimension::addPlayer(std::shared_ptr<Player> entity)
 {
     std::lock_guard _(_playersMutex);
-    _players.push_back(entity);
+    _players.emplace_back(entity);
 }
 
 const world_storage::Level &Dimension::getLevel() const { return _level; }

@@ -1,12 +1,17 @@
 function(download_and_check_file URL OUTPUT_FILE WORK_DIR)
-    find_file(FOUND ${OUTPUT_FILE} PATHS ${WORK_DIR})
+    cmake_path(APPEND FILE_PATH ${WORK_DIR} ${OUTPUT_FILE})
+    cmake_path(GET FILE_PATH FILENAME FILE_NAME)
 
-    if (FOUND)
-        execute_process(COMMAND sha256sum --quiet -c ${OUTPUT_FILE}.sha256 WORKING_DIRECTORY ${WORK_DIR} RESULT_VARIABLE SHA256_RESULT)
-        if (NOT ${SHA256_RESULT} EQUAL 0)
+    find_file(FOUND ${OUTPUT_FILE} HINTS ${WORK_DIR} NO_CACHE)
+    find_file(FOUND_SHA256 "${OUTPUT_FILE}.sha256" HINTS ${WORK_DIR} NO_CACHE)
+
+    message(STATUS "File ${FILE_PATH} already exists (${FOUND} && ${FOUND_SHA256}), checking sha256sum")
+    if (FOUND AND FOUND_SHA256)
+        file(SHA256 ${FILE_PATH} SHA256SUM)
+        file(READ ${FILE_PATH}.sha256 SHA256SUM_EXPECTED)
+        string(REPLACE "  ${FILE_NAME}\n" "" SHA256SUM_EXPECTED ${SHA256SUM_EXPECTED})
+        if (NOT ${SHA256SUM} STREQUAL ${SHA256SUM_EXPECTED})
             message(STATUS "File ${OUTPUT_FILE} is corrupted, redownloading")
-            execute_process(COMMAND rm -f ${OUTPUT_FILE} WORKING_DIRECTORY ${WORK_DIR})
-            execute_process(COMMAND rm -f ${OUTPUT_FILE}.sha256 WORKING_DIRECTORY ${WORK_DIR})
         else()
             message(STATUS "File ${OUTPUT_FILE} already exists and is not corrupted, skipping download")
             return()
@@ -15,9 +20,19 @@ function(download_and_check_file URL OUTPUT_FILE WORK_DIR)
         message(STATUS "Downloading ${URL} to ${OUTPUT_FILE}")
     endif()
 
-    execute_process(COMMAND wget -q ${URL} -O ${OUTPUT_FILE} WORKING_DIRECTORY ${WORK_DIR})
-    execute_process(COMMAND wget -q ${URL}.sha256 -O ${OUTPUT_FILE}.sha256 WORKING_DIRECTORY ${WORK_DIR})
-    execute_process(COMMAND sha256sum --quiet -c ${OUTPUT_FILE}.sha256 WORKING_DIRECTORY ${WORK_DIR} COMMAND_ERROR_IS_FATAL ANY)
+    file(REMOVE ${FILE_PATH} ${FILE_PATH}.sha256)
+
+    file(DOWNLOAD ${URL} ${FILE_PATH} SHOW_PROGRESS)
+    file(DOWNLOAD ${URL}.sha256 ${FILE_PATH}.sha256 SHOW_PROGRESS)
+
+    file(SHA256 ${FILE_PATH} SHA256SUM)
+    file(READ ${FILE_PATH}.sha256 SHA256SUM_EXPECTED)
+
+    string(REPLACE "  ${FILE_NAME}\n" "" SHA256SUM_EXPECTED ${SHA256SUM_EXPECTED})
+
+    if (NOT ${SHA256SUM} STREQUAL ${SHA256SUM_EXPECTED})
+        message(FATAL_ERROR "File ${OUTPUT_FILE} is corrupted, sha256sum does not match")
+    endif()
 endfunction()
 
 set(Blocks_SOURCE_DIR ${CMAKE_BINARY_DIR}/blocks)
@@ -35,32 +50,15 @@ download_and_check_file(
 
 find_package (Python3 REQUIRED Interpreter)
 
-# execute_process(
-#     COMMAND python3 -m venv .venv
-#     WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/../generators
-#     COMMAND_ERROR_IS_FATAL ANY
-# )
-
-# execute_process(
-#     COMMAND .venv/bin/pip install -r requirements.txt
-#     WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/../generators
-#     COMMAND_ERROR_IS_FATAL ANY
-# )
-
 execute_process(
     COMMAND ${Python3_EXECUTABLE} protocol_block_ids.py -i ${CMAKE_BINARY_DIR}/blocks-1.19.3.json --get-generated-files
     WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/../generators
     COMMAND_ERROR_IS_FATAL ANY
     OUTPUT_VARIABLE BLOCKS_SRC
 )
+
 list(TRANSFORM BLOCKS_SRC PREPEND "${Blocks_SOURCE_DIR}/")
 list(APPEND BLOCKS_SRC ${Blocks_SOURCE_DIR}/blocks.hpp)
-
-# execute_process(
-#     COMMAND .venv/bin/python protocol_block_ids.py -i ${CMAKE_BINARY_DIR}/blocks-1.19.3.json -o ${Blocks_SOURCE_DIR}/ --format
-#     WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/../generators
-#     COMMAND_ERROR_IS_FATAL ANY
-# )
 
 add_custom_command(
     OUTPUT ${BLOCKS_SRC}

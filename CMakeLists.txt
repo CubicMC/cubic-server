@@ -44,46 +44,55 @@ set(BOOST_ENABLE_CMAKE ON)
 
 include(FetchContent)
 
+set(FETCHCONTENT_QUIET OFF)
+
 FetchContent_Declare(
     yaml-cpp
     GIT_REPOSITORY https://github.com/jbeder/yaml-cpp.git
     GIT_TAG 4ae4cb7309c07b2d8623d7e4f01efa6321441366 # The latest yaml-cpp commit at the time of writing.
+    GIT_PROGRESS TRUE
 )
 
 FetchContent_Declare(
     json
     GIT_REPOSITORY https://github.com/nlohmann/json.git
     GIT_TAG v3.11.2
+    GIT_PROGRESS TRUE
 )
 
 FetchContent_Declare(
     spdlog
     GIT_REPOSITORY https://github.com/gabime/spdlog.git
     GIT_TAG v1.11.0
+    GIT_PROGRESS TRUE
 )
 
 FetchContent_Declare(
     noise
     GIT_REPOSITORY https://github.com/Reputeless/PerlinNoise.git
     GIT_TAG v3.0.0
+    GIT_PROGRESS TRUE
 )
 
 FetchContent_Declare(
     nbt
     GIT_REPOSITORY https://github.com/CubicMC/libnbt.git
     GIT_TAG v1.0.1
+    GIT_PROGRESS TRUE
 )
 
 FetchContent_Declare(
     argparse
     GIT_REPOSITORY https://github.com/p-ranav/argparse.git
     GIT_TAG v2.9
+    GIT_PROGRESS TRUE
 )
 
 FetchContent_Declare(
     boost
     GIT_REPOSITORY https://github.com/boostorg/boost.git
     GIT_TAG boost-1.82.0
+    GIT_PROGRESS TRUE
 )
 
 FetchContent_MakeAvailable(

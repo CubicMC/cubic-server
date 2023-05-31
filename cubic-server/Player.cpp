@@ -875,14 +875,16 @@ void Player::_onPlayerAction(protocol::PlayerAction &pck)
         this->getDimension()->updateBlock(pck.location, 0);
         _foodExhaustionLevel += 0.005;
         // TODO: change the 721 magic value with the loot tables (for instance it's a acaccia boat)
-        _dim->makeEntity<Item>(721)->dropItem({static_cast<double>(pck.location.x) + 0.5, static_cast<double>(pck.location.y), static_cast<double>(pck.location.z) + 0.5});
+        _dim->makeEntity<Item>(protocol::Slot {true, 721, 1})->dropItem({static_cast<double>(pck.location.x) + 0.5, static_cast<double>(pck.location.y), static_cast<double>(pck.location.z) + 0.5});
         break;
     case protocol::PlayerAction::Status::DropItemStack:
+        getDimension()->makeEntity<Item>(_inventory->hotbar().at(this->_heldItem))->dropItem(this->getPosition());
         _inventory->hotbar().at(this->_heldItem).reset();
         break;
     case protocol::PlayerAction::Status::DropItem:
         if (!_inventory->hotbar().at(this->_heldItem).present)
             break;
+        getDimension()->makeEntity<Item>(protocol::Slot {true, _inventory->hotbar().at(this->_heldItem).itemID, 1})->dropItem(this->getPosition());
         _inventory->hotbar().at(this->_heldItem).itemCount--;
         if (_inventory->hotbar().at(this->_heldItem).itemCount == 0)
             _inventory->hotbar().at(this->_heldItem).reset();
