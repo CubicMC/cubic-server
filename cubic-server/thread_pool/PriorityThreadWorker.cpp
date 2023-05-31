@@ -53,23 +53,31 @@ void PriorityThreadWorker::resizePool()
 
 void PriorityThreadWorker::doJob()
 {
-    _toolBox.jobSemaphore.acquire();
-    _toolBox.library.increment();
-    if (!_toolBox.stayAlive.load())
-        return;
-    --_toolBox.inactiveThreads;
     PriorityThreadPoolUtility::Job jobList;
+
+    _toolBox.jobSemaphore.acquire();
     {
         const std::lock_guard<std::mutex> _guard(_toolBox.queueProtection);
+
+        if (!_toolBox.stayAlive.load() || _toolBox.jobQueue.empty())
+            return;
+
+        _toolBox.library.increment();
+        --_toolBox.inactiveThreads;
+
         auto greater = _toolBox.jobQueue.begin();
         for (auto it = greater; it != _toolBox.jobQueue.end(); ++it)
             if (it->priority() < greater->priority())
                 greater = it;
         // auto tmp = std::move(greater->second);
-        jobList = *greater;
-        _toolBox.jobQueue.erase(greater);
+        if (greater != _toolBox.jobQueue.end()) {
+            jobList = *greater;
+            _toolBox.jobQueue.erase(greater);
+        }
     }
     do {
+        if (jobList.jobs.empty())
+            break;
         const auto job = jobList.jobs.front();
         try {
             job();

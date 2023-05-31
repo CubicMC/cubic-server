@@ -56,15 +56,25 @@ public:
         _counter.notify_all();
     }
 
-    void acquire()
+    void increment(std::ptrdiff_t n = 1)
+    {
+        std::lock_guard<std::mutex> guard(_counterMutex);
+        if (_counter > n)
+            _counter -= n;
+        else
+            _counter = 0;
+        _counter.notify_all();
+    }
+
+    void acquire(std::ptrdiff_t n = 1)
     {
         while (true) {
             _counter.wait(0, std::memory_order::relaxed);
 
             std::lock_guard<std::mutex> guard(_counterMutex);
-            if (_counter == 0)
+            if (_counter < n)
                 continue;
-            --_counter;
+            _counter -= n;
             return;
         }
     }

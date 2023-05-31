@@ -47,23 +47,9 @@ target_sources (${CMAKE_PROJECT_NAME} PRIVATE
 
 download_and_check_file(
     "https://cdn.cubic-mc.com/${MINECRAFT_VERSION}/recipes.tar.gz"
-    "${CMAKE_BINARY_DIR}/recipes.tar.gz"
+    recipes.tar.gz
     ${CMAKE_BINARY_DIR}
 )
 
-execute_process(
-    COMMAND tar xzf ${CMAKE_BINARY_DIR}/recipes.tar.gz
-    WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
-    COMMAND_ERROR_IS_FATAL ANY
-)
-
-execute_process(
-    COMMAND mkdir -p assets
-    WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
-    COMMAND_ERROR_IS_FATAL ANY
-)
-
-execute_process(
-    COMMAND mv -n ${CMAKE_BINARY_DIR}/recipes ${CMAKE_BINARY_DIR}/assets/recipes
-    WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
-)
+file(MAKE_DIRECTORY ${CMAKE_BINARY_DIR}/assets)
+file(ARCHIVE_EXTRACT INPUT ${CMAKE_BINARY_DIR}/recipes.tar.gz DESTINATION ${CMAKE_BINARY_DIR}/assets)
