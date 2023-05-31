@@ -1,6 +1,9 @@
 #include <boost/system/detail/error_category.hpp>
 #include <boost/system/detail/error_code.hpp>
+#include <cstdint>
+#include <cstring>
 #include <mutex>
+#include <netinet/in.h>
 #include <poll.h>
 #include <stdexcept>
 #include <string>
@@ -32,9 +35,10 @@ Client::Client(tcp::socket &&socket, size_t clientID):
     _sendBuffer(2048 * 128 * 100 * 64),
     _player(nullptr),
     _socket(std::move(socket)),
-    _clientID(clientID)
+    _clientID(clientID),
+    _isEncrypted(false)
 {
-    LINFO("Creating client");
+    LDEBUG("Creating client");
 }
 
 Client::~Client()
@@ -71,13 +75,20 @@ void Client::doRead()
             // Server::getInstance()->triggerClientCleanup(_clientID);
             return;
         }
+        if (_isEncrypted)
+            _encryption.decrypt((uint8_t *) _readBuffer, length);
         _recvBuffer.insert(_recvBuffer.end(), _readBuffer, _readBuffer + length);
         _handlePacket();
     }
     // Server::getInstance()->triggerClientCleanup(_clientID);
 }
 
-void Client::doWrite(std::unique_ptr<std::vector<uint8_t>> &&data) { Server::getInstance()->sendData(_clientID, std::move(data)); }
+void Client::doWrite(std::unique_ptr<std::vector<uint8_t>> &&data)
+{
+    if (_isEncrypted)
+        _encryption.encrypt(*data);
+    Server::getInstance()->sendData(_clientID, std::move(data));
+}
 
 bool Client::isDisconnected() const { return !_isRunning; }
 
@@ -314,10 +325,61 @@ void Client::_onLoginStart(protocol::LoginStart &pck)
         this->disconnect("You are not whitelisted on this server.");
         return;
     }
-    this->_loginSequence(resPck);
+    if (CONFIG["encryption"].as<bool>()) {
+        _resPck = resPck;
+        sendEncryptionRequest();
+    } else {
+        this->_loginSequence(resPck);
+    }
 }
 
-void Client::_onEncryptionResponse(UNUSED protocol::EncryptionResponse &pck) { N_LDEBUG("Got a Encryption Response"); }
+constexpr int encryptionMaximumLength = 512;
+
+void Client::_onEncryptionResponse(UNUSED protocol::EncryptionResponse &pck)
+{
+    N_LDEBUG("Got a Encryption Response");
+    if (pck.sharedSecret.size() > encryptionMaximumLength || pck.verifyToken.size() > encryptionMaximumLength) {
+        LWARN("Encryption key too long");
+        stop();
+        return;
+    }
+    auto &rsaKey = Server::getInstance()->getPrivateKey();
+    uint32_t decryptedToken[encryptionMaximumLength / sizeof(uint32_t)];
+    int res = rsaKey.decrypt(pck.verifyToken, (uint8_t *) decryptedToken, sizeof(decryptedToken));
+    if (res != 4) {
+        LWARN("Bad verify token of size {}", res);
+        stop();
+        return;
+    }
+    if (decryptedToken[0] != (uint32_t) (uintptr_t) this) {
+        LWARN("Bad verify token");
+        stop();
+        return;
+    }
+    uint8_t decryptedKey[encryptionMaximumLength];
+    res = rsaKey.decrypt(pck.sharedSecret, decryptedKey, sizeof(decryptedKey));
+    if (res != 16) {
+        LWARN("Bad key length");
+        stop();
+        return;
+    }
+    N_LDEBUG("Starting encryption");
+    _isEncrypted = true;
+    std::array<uint8_t, 16> key;
+    memcpy(key.data(), decryptedKey, 16);
+    _encryption.initialize(key, key);
+    _loginSequence(_resPck);
+}
+
+void Client::sendEncryptionRequest()
+{
+    std::vector<uint8_t> verifyToken = {0, 0, 0, 0};
+    ((uint32_t *) verifyToken.data())[0] = (uint32_t) (uintptr_t) this;
+    auto pck = protocol::createEncryptionRequest({"", Server::getInstance()->getPrivateKey().getPublicKey(), verifyToken});
+    doWrite(std::move(pck));
+
+    N_LDEBUG("Sent encryption request");
+}
 
 void Client::sendStatusResponse(const std::string &json)
 {

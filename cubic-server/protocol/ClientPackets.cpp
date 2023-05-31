@@ -1,6 +1,7 @@
 #include "ClientPackets.hpp"
 
 #include "PacketUtils.hpp"
+#include "protocol/serialization/addPrimaryType.hpp"
 #include "serialization/add.hpp"
 #include <memory>
 
@@ -16,6 +17,21 @@ std::unique_ptr<std::vector<uint8_t>> protocol::createLoginDisconnect(const Disc
     // clang-format on
     auto packet = std::make_unique<std::vector<uint8_t>>();
     finalize(*packet, payload, ClientPacketID::DisconnectLogin);
+    return packet;
+}
+
+std::unique_ptr<std::vector<uint8_t>> protocol::createEncryptionRequest(const EncryptionRequest &in)
+{
+    std::vector<uint8_t> payload;
+    // clang-format off
+    serialize(payload,
+        in.serverID, addString,
+        in.publicKey, addArray<uint8_t, addByte>,
+        in.verifyToken, addArray<uint8_t, addByte>
+    );
+    // clang-format on
+    auto packet = std::make_unique<std::vector<uint8_t>>();
+    finalize(*packet, payload, ClientPacketID::EncryptionRequest);
     return packet;
 }
 

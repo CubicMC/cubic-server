@@ -106,6 +106,14 @@ auto initArgs(int argc, const char *const argv[])
         .valueFromArgument("--level-type")
         .possibleValues("flat", "default", "void")
         .defaultValue("default");
+
+    program.add("encryption")
+        .help("Enable client/server encryption")
+        .valueFromConfig("general", "encryption")
+        .valueFromEnvironmentVariable("CBSRC_ENCRYPTION")
+        .valueFromArgument("--encryption")
+        .possibleValues(false, true)
+        .defaultValue(true);
     // clang-format on
 
     try {

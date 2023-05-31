@@ -175,6 +175,7 @@ target_link_libraries (${CMAKE_PROJECT_NAME} PRIVATE
     z
     argparse
     yaml-cpp
+    MbedTLS::mbedtls
     spdlog::spdlog
     $<$<BOOL:${MINGW}>:ws2_32>
 )

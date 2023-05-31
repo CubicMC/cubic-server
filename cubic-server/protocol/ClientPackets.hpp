@@ -17,6 +17,7 @@ namespace protocol {
 enum class ClientPacketID : int32_t {
     // Login State
     DisconnectLogin = 0x00,
+    EncryptionRequest = 0x01,
     LoginSuccess = 0x02,
 
     // Status State
@@ -78,6 +79,13 @@ struct Disconnect {
     std::string reason;
 };
 std::unique_ptr<std::vector<uint8_t>> createLoginDisconnect(const Disconnect &);
+
+struct EncryptionRequest {
+    std::string serverID;
+    std::vector<uint8_t> publicKey;
+    std::vector<uint8_t> verifyToken;
+};
+std::unique_ptr<std::vector<uint8_t>> createEncryptionRequest(const EncryptionRequest &);
 
 struct LoginSuccess {
     struct Property {

@@ -9,6 +9,8 @@
 #include <thread>
 #include <unistd.h>
 
+#include <mbedtls/rsa.h>
+
 #include "Server.hpp"
 #include "World.hpp"
 
@@ -57,6 +59,8 @@ Server::~Server() { }
 void Server::launch(const configuration::ConfigHandler &config)
 {
     this->_config = config;
+
+    _rsaKey.generate();
 
     // Initialize the global palette
     _globalPalette.initialize(std::string("blocks-") + MC_VERSION + ".json");

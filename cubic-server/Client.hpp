@@ -8,6 +8,7 @@
 #include <thread>
 #include <vector>
 
+#include "EASEncryptionHandler.hpp"
 #include "chat/Message.hpp"
 #include "options.hpp"
 #include "protocol/ClientPackets.hpp"
@@ -82,6 +83,7 @@ public:
     void sendPingResponse(int64_t payload);
     void sendLoginSuccess(const protocol::LoginSuccess &packet);
     void sendLoginPlay(void);
+    void sendEncryptionRequest(void);
 
     // Disconnect the client
     void disconnect(const chat::Message &reason = "Disconnected");
@@ -120,6 +122,9 @@ private:
     boost::container::deque<std::unique_ptr<uint8_t>> _toSend;
     const size_t _clientID;
     std::thread _thread;
+    bool _isEncrypted;
+    EASEncryptionHandler _encryption;
+    protocol::LoginSuccess _resPck;
 };
 
 #endif // CUBICSERVER_CLIENT_HPP
