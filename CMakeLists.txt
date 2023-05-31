@@ -39,6 +39,9 @@ if (CMAKE_BUILD_TYPE MATCHES Release)
     endif()
 endif()
 
+set(BOOST_INCLUDE_LIBRARIES asio system container lockfree circular_buffer)
+set(BOOST_ENABLE_CMAKE ON)
+
 include(FetchContent)
 
 FetchContent_Declare(
@@ -77,6 +80,12 @@ FetchContent_Declare(
     GIT_TAG v2.9
 )
 
+FetchContent_Declare(
+    boost
+    GIT_REPOSITORY https://github.com/boostorg/boost.git
+    GIT_TAG boost-1.82.0
+)
+
 FetchContent_MakeAvailable(
     yaml-cpp
     json
@@ -84,6 +93,7 @@ FetchContent_MakeAvailable(
     argparse
     nbt
     spdlog
+    boost
 )
 
 # Fix spdlog warnings
@@ -120,7 +130,7 @@ if(GTEST) # if the flag GTEST is true
 endif()
 
 find_package(Threads REQUIRED)
-find_package(Boost REQUIRED)
+#find_package(Boost REQUIRED)
 find_package(PkgConfig REQUIRED)
 pkg_check_modules(GTKMM gtkmm-3.0)
 
@@ -151,6 +161,7 @@ add_subdirectory(cubic-server)
 target_include_directories(${CMAKE_PROJECT_NAME} PRIVATE
     ${noise_SOURCE_DIR}
     ${nbt_SOURCE_DIR}
+    ${boost_SOURCE_DIR}
 )
 
 if (NOT NO_GUI)
@@ -170,6 +181,11 @@ target_link_libraries (${CMAKE_PROJECT_NAME} PRIVATE
     yaml-cpp
     spdlog::spdlog
     $<$<BOOL:${MINGW}>:ws2_32>
+    Boost::asio
+    Boost::container
+    Boost::system
+    Boost::lockfree
+    Boost::circular_buffer
 )
 
 if (CMAKE_BUILD_TYPE MATCHES RELWITHDEBINFO)
