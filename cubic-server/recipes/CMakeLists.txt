@@ -67,3 +67,8 @@ execute_process(
     COMMAND mv -n ${CMAKE_BINARY_DIR}/recipes ${CMAKE_BINARY_DIR}/assets/recipes
     WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
 )
+
+execute_process(
+    COMMAND rm -r ${CMAKE_BINARY_DIR}/recipes
+    WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
+)
