@@ -2,11 +2,13 @@
 #define CUBICSERVER_PROTOCOL_SERIALIZATION_ADD_HPP
 
 #include <cstdint>
+#include <memory>
 #include <string>
 #include <vector>
 
 #include "addPrimaryType.hpp"
 #include "protocol/ClientPackets.hpp"
+#include "protocol/container/Container.hpp"
 #include "world_storage/ChunkColumn.hpp"
 #include "world_storage/DynamicStorage.hpp"
 #include "world_storage/Section.hpp"
@@ -234,6 +236,14 @@ constexpr void addRawMessage(std::vector<uint8_t> &out, const std::pair<int32_t,
 {
     addVarInt(out, rawMessage.first);
     addArray<uint8_t, addByte>(out, rawMessage.second);
+}
+
+constexpr void addContainer(std::vector<uint8_t> &out, const container::Container &container)
+{
+    addVarInt(out, container.size());
+
+    for (uint64_t i = 0; i < container.size(); i++)
+        addSlot(out, container.at(i));
 }
 
 } // namespace protocol

@@ -38,6 +38,7 @@ void World::initialize()
 
 void World::stop()
 {
+    _generationPool.cancelAll();
     _generationPool.waitUntilJobsDone();
 
     for (auto &[_, dim] : _dimensions)

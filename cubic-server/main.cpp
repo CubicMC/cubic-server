@@ -170,6 +170,9 @@ int main(int argc, char *argv[])
 #endif
     } catch (const std::exception &e) {
         LFATAL(e.what());
+        srv->stop();
+        srv->_stop();
+        cmd.stop();
         return 1;
     }
 

@@ -1,3 +1,6 @@
+#include <boost/asio/ip/address.hpp>
+#include <boost/asio/ip/address_v6.hpp>
+#include <boost/asio/ip/v6_only.hpp>
 #include <cstddef>
 #include <cstdint>
 #include <memory>
@@ -18,6 +21,7 @@
 #include "Player.hpp"
 #include "WorldGroup.hpp"
 #include "command_parser/commands/Gamemode.hpp"
+#include "command_parser/commands/InventoryDump.hpp"
 #include "default/DefaultWorldGroup.hpp"
 #include "logging/logging.hpp"
 
@@ -39,7 +43,7 @@ Server::Server():
     // _motd = _config.getMotd();
     // _enforceWhitelist = _config.getEnforceWhitelist();
 
-    _commands.reserve(11);
+    _commands.reserve(12);
     _commands.emplace_back(std::make_unique<command_parser::Help>());
     _commands.emplace_back(std::make_unique<command_parser::QuestionMark>());
     _commands.emplace_back(std::make_unique<command_parser::Stop>());
@@ -51,6 +55,7 @@ Server::Server():
     _commands.emplace_back(std::make_unique<command_parser::Reload>());
     _commands.emplace_back(std::make_unique<command_parser::Time>());
     _commands.emplace_back(std::make_unique<command_parser::Gamemode>());
+    _commands.emplace_back(std::make_unique<command_parser::InventoryDump>());
 }
 
 Server::~Server() { }
@@ -81,9 +86,22 @@ void Server::launch(const configuration::ConfigHandler &config)
 
     this->_running = true;
 
-    LINFO("Starting server on {}:{}", _config["ip"], _config["port"]);
+    auto tmpaddr = boost::asio::ip::make_address(_config["ip"].as<std::string>());
+    boost::asio::ip::address_v6 addr;
+    if (tmpaddr.is_v4())
+        addr = boost::asio::ip::make_address_v6(boost::asio::ip::v4_mapped, tmpaddr.to_v4());
+    else
+        addr = tmpaddr.to_v6();
+    auto endpoint = tcp::endpoint(addr, _config["port"].as<uint16_t>());
 
-    _acceptor = std::make_unique<boost::asio::ip::tcp::acceptor>(_io_context, tcp::endpoint(tcp::v4(), _config["port"].as<uint16_t>()));
+    _acceptor = std::make_unique<boost::asio::ip::tcp::acceptor>(_io_context, tcp::v6());
+    _acceptor->set_option(boost::asio::ip::tcp::acceptor::reuse_address(true));
+    _acceptor->set_option(boost::asio::ip::v6_only(false));
+    _acceptor->bind(endpoint);
+    _acceptor->listen();
+
+    auto opt = boost::asio::ip::v6_only();
+    _acceptor->get_option(opt);
 
     _writeThread = std::thread(&Server::_writeLoop, this);
 
@@ -92,22 +110,27 @@ void Server::launch(const configuration::ConfigHandler &config)
     _io_context.run();
 
     // Cleanup stuff here
-    this->_writeThread.join();
-    std::unique_lock _(clientsMutex);
-    for (auto [id, cli] : _clients) {
-        cli->stop();
-    }
-    for (auto [id, cli] : _clients) {
-        cli->getThread().join();
-    }
-    _clients.clear();
-    using namespace std::chrono_literals;
-    // Wait for 5 seconds max for all data to be out
-    for (int i = 0; i < 500; i++) {
-        if (_toSend.empty())
-            break;
-        std::this_thread::sleep_for(10ms);
-    }
+    this->_stop();
+    // this->_writeThread.join();
+    // std::unique_lock _(clientsMutex);
+
+    // for (auto [id, cli] : _clients)
+    //     cli->stop();
+
+    // for (auto [id, cli] : _clients) {
+    //     if (cli->getThread().joinable())
+    //         cli->getThread().join();
+    // }
+
+    // _clients.clear();
+
+    // using namespace std::chrono_literals;
+    // // Wait for 5 seconds max for all data to be out
+    // for (int i = 0; i < 500; i++) {
+    //     if (_toSend.empty())
+    //         break;
+    //     std::this_thread::sleep_for(10ms);
+    // }
 }
 
 void Server::sendData(size_t clientID, std::unique_ptr<std::vector<uint8_t>> &&data) { _toSend.push({clientID, data.release()}); }
@@ -117,12 +140,13 @@ void Server::_writeLoop()
     using namespace std::chrono_literals;
 
     // TODO(huntears): Check if doing something other than a busy loop is worth it
-    while (_running) {
+    while (!_hasTerminated || !_toSend.empty()) {
         while (_toSend.empty()) {
             std::this_thread::sleep_for(500us);
-            if (!_running)
+            if (_hasTerminated)
                 return;
         }
+
         OutboundClientData data = {0, nullptr};
         if (!_toSend.pop(data))
             continue;
@@ -143,7 +167,7 @@ void Server::_writeLoop()
             boost::asio::write(client->getSocket(), boost::asio::buffer(data.data->data(), data.data->size()), ec);
             // TODO(huntears): Handle errors properly xd
             if (ec) {
-                // LERROR(ec.what());
+                LERROR(ec.what());
                 continue;
             }
         }
@@ -154,6 +178,8 @@ void Server::_writeLoop()
 void Server::triggerClientCleanup(size_t clientID)
 {
     if (clientID != (size_t) -1) {
+        if (_clients.at(clientID)->getThread().joinable())
+            _clients[clientID]->getThread().join();
         _clients.erase(clientID);
         return;
     }
@@ -168,7 +194,8 @@ void Server::triggerClientCleanup(size_t clientID)
     // }
     std::erase_if(_clients, [](const auto augh) {
         if (augh.second->isDisconnected()) {
-            augh.second->getThread().join();
+            if (augh.second->getThread().joinable())
+                augh.second->getThread().join();
             return true;
         }
         return false;
@@ -218,7 +245,8 @@ void Server::stop()
     static auto num = 0;
     LINFO("Server has received a stop command");
     this->_running = false;
-    this->_acceptor->cancel();
+    if (this->_acceptor)
+        this->_acceptor->cancel();
     if (num++ >= 5) {
         exit(1); // Mash that Ctrl-C xd
     }
@@ -227,12 +255,37 @@ void Server::stop()
 void Server::_stop()
 {
     // Disconect all clients
-    clientsMutex.lock();
-    for (auto [_, client] : _clients)
-        client->stop("Server Closed");
+    {
+        std::lock_guard _(clientsMutex);
+        for (auto [_, client] : _clients)
+            client->disconnect("Server Closed");
 
-    // Needed because the client will not be destroyed if a reference still exists
-    this->_clients.clear();
+        for (auto [_, client] : _clients) {
+            if (client->getThread().joinable())
+                client->getThread().join();
+        }
+    }
+
+    using namespace std::chrono_literals;
+    // Wait for 5 seconds max for all data to be out
+    for (int i = 0; i < 500; i++) {
+        if (_toSend.empty())
+            break;
+        std::this_thread::sleep_for(10ms);
+    }
+
+    _hasTerminated = true;
+    if (this->_writeThread.joinable())
+        this->_writeThread.join();
+
+    while (!_toSend.empty()) {
+        OutboundClientData data = {0, nullptr};
+        _toSend.pop(data);
+        if (data.data)
+            delete data.data;
+    }
+
+    _clients.clear();
 
     for (auto &[name, worldGroup] : _worldGroups) {
         worldGroup->stop();
