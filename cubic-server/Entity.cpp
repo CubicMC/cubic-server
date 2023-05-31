@@ -6,32 +6,6 @@
 #include "World.hpp"
 #include "options.hpp"
 
-// Entity::Entity(std::shared_ptr<Dimension> dim):
-//     _dim(dim)
-// {
-//     static std::atomic<int32_t> currentID = 0;
-
-//     _onFire = false;
-//     _crouching = false;
-//     _sprinting = false;
-//     _swimming = false;
-//     _invisible = false;
-//     _glowing = false;
-//     _flyingWithElytra = false;
-//     _airTicks = 300;
-//     _customName = "";
-//     _customNameVisible = false;
-//     _silent = false;
-//     _noGravity = false;
-//     _pose = Pose::Standing;
-//     _tickFrozenInPowderedSnow = 0;
-//     _id = currentID.fetch_add(1);
-//     _pos = {0, 0, 0};
-//     _lastPos = {0, 0, 0};
-//     _rot = {0, 0};
-//     _lastRot = {0, 0};
-// }
-
 // clang-format off
 Entity::Entity(std::shared_ptr<Dimension> dim,
     protocol::SpawnEntity::EntityType type,
@@ -78,7 +52,6 @@ Entity::Entity(std::shared_ptr<Dimension> dim,
     _lastRot = lastRot;
     _type = type;
 }
-
 // clang-format on
 
 void Entity::setDimension(std::shared_ptr<Dimension> dim) { _dim = dim; }

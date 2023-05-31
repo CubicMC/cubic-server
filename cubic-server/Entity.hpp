@@ -32,7 +32,6 @@ class Entity : public std::enable_shared_from_this<Entity> {
 
 public:
     // Subject to change
-    // Entity(std::shared_ptr<Dimension> dim);
     // clang-format off
     Entity(std::shared_ptr<Dimension> dim,
         protocol::SpawnEntity::EntityType type,
