@@ -150,6 +150,7 @@ constexpr void addSlot(std::vector<uint8_t> &out, const Slot &data)
         addVarInt(out, data.itemID);
         addByte(out, data.itemCount);
         // addNBT(out, data.nbt);
+        // TODO: Send a NBT_TAG_END, implement NBT
         addByte(out, 0);
     }
 }

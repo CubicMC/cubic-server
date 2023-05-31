@@ -23,7 +23,7 @@ public:
     {
         auto it = std::find(_nameToId.begin(), _nameToId.end(), globalId);
         if (it == _nameToId.end())
-            return 0;
+            return -1;
         return std::distance(_nameToId.begin(), it);
     }
 
@@ -31,15 +31,12 @@ public:
     {
         if (localId >= _nameToId.size())
             return -1;
-        return _nameToId[localId];
+        return _nameToId.at(localId);
     }
 
     void add(int32_t globalId);
-    // void setCount(int32_t globalId, uint32_t count);
-    // uint32_t getCount(int32_t globalId) const;
     void removeAll(int32_t globalId);
     void remove(int32_t globalId);
-    // uint64_t getTotalCount(bool countZero = false) const;
 
     virtual uint8_t getBits() const = 0;
 
@@ -47,13 +44,12 @@ public:
     constexpr std::vector<int32_t>::const_iterator begin() const { return _nameToId.begin(); }
     constexpr std::vector<int32_t>::const_iterator end() const { return _nameToId.end(); }
     constexpr const std::vector<int32_t> &data() const { return _nameToId; }
-    constexpr int32_t operator[](uint64_t index) const { return _nameToId[index]; }
+    constexpr int32_t operator[](uint64_t index) const { return _nameToId.at(index); }
     constexpr void clear() { _nameToId.clear(); }
 
 protected:
     mutable std::mutex _lock;
     std::vector<int32_t> _nameToId;
-    // std::vector<std::pair<int32_t, uint32_t>> _idCount;
 };
 
 class BlockPalette : public Palette {

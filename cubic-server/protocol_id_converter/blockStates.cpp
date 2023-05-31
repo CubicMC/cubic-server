@@ -62,6 +62,9 @@ BlockId Blocks::GlobalPalette::fromBlockToProtocolId(const std::string &blockNam
         return b.name == block.name;
     });
 
+    if (internalBlock == this->_blocks.end())
+        return 0;
+
     for (auto property : internalBlock->defaultProperties)
         block.properties.push_back({property.first, property.second});
 

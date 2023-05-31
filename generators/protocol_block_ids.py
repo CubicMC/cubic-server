@@ -2,7 +2,44 @@ import json
 import argparse
 import os
 import re
-from num2words import num2words
+
+num2wordsDict = {
+    0: "ZERO",
+    1: "ONE",
+    2: "TWO",
+    3: "THREE",
+    4: "FOUR",
+    5: "FIVE",
+    6: "SIX",
+    7: "SEVEN",
+    8: "EIGHT",
+    9: "NINE",
+    10: "TEN",
+    11: "ELEVEN",
+    12: "TWELVE",
+    13: "THIRTEEN",
+    14: "FOURTEEN",
+    15: "FIFTEEN",
+    16: "SIXTEEN",
+    17: "SEVENTEEN",
+    18: "EIGHTEEN",
+    19: "NINETEEN",
+    20: "TWENTY",
+    21: "TWENTY_ONE",
+    22: "TWENTY_TWO",
+    23: "TWENTY_THREE",
+    24: "TWENTY_FOUR",
+    25: "TWENTY_FIVE",
+}
+
+def num2words(i) -> str:
+    if not i.isdigit():
+        return i
+    if int(i) in num2wordsDict:
+        return num2wordsDict[int(i)]
+    else:
+        raise ValueError("Number out of range ({}): {}".format(i, type(i)))
+
 
 # Variables for formatting the output
 global indentation

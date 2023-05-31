@@ -6,13 +6,14 @@
 #include "options.hpp"
 #include "protocol/ClientPackets.hpp"
 #include "types.hpp"
+#include "utility/SharedFromThis.hpp"
 #include <memory>
 
 class World;
 class WorldGroup;
 class Dimension;
 
-class Entity : public std::enable_shared_from_this<Entity> {
+class Entity : public utility::SharedFromThis<Entity> {
     enum class Pose {
         Standing,
         FallFlying,

@@ -69,6 +69,15 @@ public:
             --_toolBox.targetSize;
     }
 
+    void cancelAll()
+    {
+        std::lock_guard _(_toolBox.queueProtection);
+
+        auto size = this->_toolBox.jobQueue.size();
+        this->_toolBox.jobQueue.clear();
+        this->_toolBox.jobSemaphore.increment(size);
+    }
+
     bool cancelJob(int32_t id)
     {
         std::lock_guard _(_toolBox.queueProtection);
@@ -78,7 +87,20 @@ public:
         });
         if (it != this->_toolBox.jobQueue.end()) {
             this->_toolBox.jobQueue.erase(it);
-            this->_toolBox.jobSemaphore.acquire();
+            this->_toolBox.jobSemaphore.increment();
+            return true;
+        }
+        return false;
+    }
+
+    bool addSubJob(int32_t jobId, sameFunction<helperSameFunction<void(void)>> auto... job)
+    {
+        std::lock_guard _(_toolBox.queueProtection);
+        auto it = std::find_if(_toolBox.jobQueue.begin(), _toolBox.jobQueue.end(), [jobId](const auto &job) {
+            return job.id == jobId;
+        });
+        if (it != _toolBox.jobQueue.end()) {
+            it->jobQueue.emplace_back(job...);
             return true;
         }
         return false;
