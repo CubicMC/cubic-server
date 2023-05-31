@@ -57,7 +57,7 @@ enum class ClientPacketID : int32_t {
     SetHeldItem = 0x49,
     CenterChunk = 0x4a,
     SetDefaultSpawnPosition = 0x4c,
-    // SetEntityMetadata = 0x4e, HAHA LOL
+    SetEntityMetadata = 0x4e,
     EntityVelocity = 0x50,
     SetExperience = 0x52,
     Health = 0x53,
@@ -649,45 +649,46 @@ struct SetDefaultSpawnPosition {
 };
 std::unique_ptr<std::vector<uint8_t>> createSetDefaultSpawnPosition(const SetDefaultSpawnPosition &);
 
-// struct SetEntityMetadata {
-//     struct EntityMetadata {
-//         uint8_t index;
-//         enum class Type : int32_t {
-//             Byte = 0,
-//             VarInt = 1,
-//             VarLong = 2,
-//             Float = 3,
-//             String = 4,
-//             Chat = 5,
-//             OptChat = 6,
-//             Slot = 7,
-//             Boolean = 8,
-//             Rotation = 9,
-//             Position = 10,
-//             OptPosition = 11,
-//             Direction = 12,
-//             OptUUID = 13,
-//             BlockID = 14,
-//             OptBlockID = 15,
-//             NBT = 16,
-//             Particle = 17,
-//             VillagerData = 18,
-//             OptVarInt = 19,
-//             Pose = 20,
-//             CatVariant = 21,
-//             FrogVariant = 22,
-//             OptGlobalPos = 23,
-//             PaintingVariant = 24,
-//             SnifferState = 25,
-//             Vector3 = 26,
-//             Quaternion = 27,
-//         } type;
-//         // TODO: value GLHF;
-//     };
-//     int32_t entityId;
-//     std::vector<EntityMetadata> metadata;
-// };
-// std::unique_ptr<std::vector<uint8_t>> createSetEntityMetadata(const SetEntityMetadata &);
+struct SetEntityMetadata {
+    struct EntityMetadata {
+        uint8_t index;
+        enum class Type : int32_t {
+            Byte = 0,
+            VarInt = 1,
+            VarLong = 2,
+            Float = 3,
+            String = 4,
+            Chat = 5,
+            OptChat = 6,
+            Slot = 7,
+            Boolean = 8,
+            Rotation = 9,
+            Position = 10,
+            OptPosition = 11,
+            Direction = 12,
+            OptUUID = 13,
+            BlockID = 14,
+            OptBlockID = 15,
+            NBT = 16,
+            Particle = 17,
+            VillagerData = 18,
+            OptVarInt = 19,
+            Pose = 20,
+            CatVariant = 21,
+            FrogVariant = 22,
+            OptGlobalPos = 23,
+            PaintingVariant = 24,
+            SnifferState = 25,
+            Vector3 = 26,
+            Quaternion = 27,
+        } type;
+        Slot slot; // TODO: remove (hardcoded)
+        // TODO: value GLHF;
+    };
+    int32_t entityId;
+    std::vector<EntityMetadata> metadata;
+};
+std::unique_ptr<std::vector<uint8_t>> createSetEntityMetadata(const SetEntityMetadata &);
 
 struct UpdateTime {
     long worldAge;

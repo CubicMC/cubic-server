@@ -8,8 +8,8 @@ constexpr float KNOCKBACK_DEFAULT_FORCE = 2500.0f;
 
 class LivingEntity : public Entity {
 public:
-    LivingEntity(std::shared_ptr<Dimension> dim, float health = 20, float maxHealth = 20):
-        Entity(dim),
+    LivingEntity(std::shared_ptr<Dimension> dim, protocol::SpawnEntity::EntityType type, float health = 20, float maxHealth = 20):
+        Entity(dim, type),
         _health(health),
         _maxHealth(maxHealth)
     {
