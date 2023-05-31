@@ -88,15 +88,9 @@ struct EncryptionRequest {
 std::unique_ptr<std::vector<uint8_t>> createEncryptionRequest(const EncryptionRequest &);
 
 struct LoginSuccess {
-    struct Property {
-        std::string name;
-        std::string value;
-        bool isSigned;
-        std::string signature;
-    };
     u128 uuid;
     std::string username;
-    std::vector<Property> properties;
+    std::vector<PlayerProperty> properties;
 };
 std::unique_ptr<std::vector<uint8_t>> createLoginSuccess(const LoginSuccess &);
 
@@ -559,14 +553,8 @@ struct PlayerInfoUpdate {
     struct Action {
         u128 uuid;
         struct AddPlayer {
-            struct Property {
-                std::string name;
-                std::string value;
-                bool isSigned;
-                std::string signature;
-            };
             std::string name;
-            std::vector<Property> properties;
+            std::vector<PlayerProperty> properties;
         } addPlayer;
 
         struct InitializeChat {

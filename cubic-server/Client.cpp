@@ -414,7 +414,6 @@ bool Client::_handleOnline(const std::array<uint8_t, 16> &key)
         stop();
         return false;
     }
-    LINFO(readBuffer);
     nlohmann::json result = nlohmann::json::parse(readBuffer);
 
     _resPck.uuid = u128::fromShortString(result["id"]);

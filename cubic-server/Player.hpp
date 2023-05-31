@@ -11,6 +11,7 @@
 #include "math/Vector3.hpp"
 #include "protocol/ClientPackets.hpp"
 #include "protocol/ServerPackets.hpp"
+#include "protocol/common.hpp"
 #include "types.hpp"
 #include "world_storage/ChunkColumn.hpp"
 #include <compare>
@@ -45,6 +46,8 @@ public:
     long keepAliveId() const;
     uint8_t keepAliveIgnored() const;
     bool isOperator() const;
+    NODISCARD const std::vector<protocol::PlayerProperty> &getProperties() const;
+    void sendSkinLayers(int32_t entityID);
 
 public:
     void setPosition(const Vector3<double> &pos, bool onGround) override;

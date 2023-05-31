@@ -11,8 +11,13 @@
 #include "command_parser/CommandParser.hpp"
 #include "items/foodItems.hpp"
 #include "logging/logging.hpp"
+#include "protocol/ClientPackets.hpp"
+#include "protocol/PacketUtils.hpp"
+#include "protocol/common.hpp"
+#include "protocol/serialization/addPrimaryType.hpp"
 #include <memory>
 #include <mutex>
+#include <stdexcept>
 
 #define GET_CLIENT()                 \
     auto client = this->_cli.lock(); \
@@ -42,7 +47,7 @@ Player::Player(std::weak_ptr<Client> cli, std::shared_ptr<Dimension> dim, u128 u
 
     this->_uuidString = this->getUuid().toString();
 
-    LINFO("Player with uuid {} just logged in", this->_uuidString);
+    LINFO("Player {} with uuid {} just logged in", this->_username, this->_uuidString);
     this->setHealth(20);
 
     this->setOperator(Server::getInstance()->permissions.isOperator(username));
@@ -130,6 +135,32 @@ void Player::setGamemode(player_attributes::Gamemode gamemode) { _gamemode = gam
 void Player::setOperator(const bool isOp) { this->_isOperator = isOp; }
 
 bool Player::isOperator() const { return this->_isOperator; }
+
+NODISCARD const std::vector<protocol::PlayerProperty> &Player::getProperties() const
+{
+    static std::vector<protocol::PlayerProperty> def;
+    auto client = this->_cli.lock();
+    if (client == nullptr)
+        return def;
+    return client->getProperties();
+}
+
+void Player::sendSkinLayers(int32_t entityID)
+{
+    GET_CLIENT();
+    auto data = std::vector<uint8_t>();
+    // data->push_back(5);
+    // data->push_back(0x4e);
+    protocol::addVarInt(data, entityID);
+    data.push_back(17);
+    data.push_back(0);
+    data.push_back(0xff);
+    data.push_back(0xff);
+    auto result = std::make_unique<std::vector<uint8_t>>();
+    protocol::finalize(*result, data, (protocol::ClientPacketID) 0x4e);
+    client->doWrite(std::move(result));
+    N_LDEBUG("Sent skin layers");
+}
 
 void Player::disconnect(const chat::Message &reason)
 {
