@@ -38,12 +38,12 @@ void command_parser::DumpChunk::execute(std::vector<std::string> &args, Player *
     LDEBUG("Chunk is loaded");
 
     LDEBUG("Dumping known global palette id");
-    LDEBUG("minecraft:air -> ", GLOBAL_PALETTE.fromBlockToProtocolId("minecraft:air"));
-    LDEBUG("minecraft:grass_block -> ", GLOBAL_PALETTE.fromBlockToProtocolId("minecraft:grass_block"));
-    LDEBUG("minecraft:dirt -> ", GLOBAL_PALETTE.fromBlockToProtocolId("minecraft:dirt"));
-    LDEBUG("minecraft:stone -> ", GLOBAL_PALETTE.fromBlockToProtocolId("minecraft:stone"));
-    LDEBUG("minecraft:bedrock -> ", GLOBAL_PALETTE.fromBlockToProtocolId("minecraft:bedrock"));
-    LDEBUG("minecraft:water -> ", GLOBAL_PALETTE.fromBlockToProtocolId("minecraft:water"));
+    LDEBUG("minecraft:air -> {}", GLOBAL_PALETTE.fromBlockToProtocolId("minecraft:air"));
+    LDEBUG("minecraft:grass_block -> {}", GLOBAL_PALETTE.fromBlockToProtocolId("minecraft:grass_block"));
+    LDEBUG("minecraft:dirt -> {}", GLOBAL_PALETTE.fromBlockToProtocolId("minecraft:dirt"));
+    LDEBUG("minecraft:stone -> {}", GLOBAL_PALETTE.fromBlockToProtocolId("minecraft:stone"));
+    LDEBUG("minecraft:bedrock -> {}", GLOBAL_PALETTE.fromBlockToProtocolId("minecraft:bedrock"));
+    LDEBUG("minecraft:water -> {}", GLOBAL_PALETTE.fromBlockToProtocolId("minecraft:water"));
 
     const auto &chunk = dim->getChunk(std::stoi(args[0]), std::stoi(args[1]));
     const auto &sections = chunk.getSections();
@@ -57,23 +57,19 @@ void command_parser::DumpChunk::execute(std::vector<std::string> &args, Player *
     //     }
     // }
     LDEBUG("Dumping palette...");
-    for (uint8_t sectionID = 0; sectionID < world_storage::NB_OF_PLAYABLE_SECTIONS; sectionID++) {
-        const auto &section = sections[sectionID];
-        LDEBUG("Section {}", sectionID);
+    for (uint8_t sectionID = 1; sectionID < world_storage::NB_OF_SECTIONS - 1; sectionID++) {
+        const auto &section = sections.at(sectionID);
+        LINFO("Section {}", sectionID);
 
         LDEBUG("Bits: {}", section.getBlockPalette().getBits());
         LDEBUG("Size: {}", section.getBlockPalette().size());
         uint16_t blockInsideSection = 0;
-        uint16_t blockInsideSectionWitAir = 0;
         for (uint16_t i = 0; i < world_storage::SECTION_3D_SIZE; i++) {
             auto block = section.getBlock(i);
             if (block != 0)
                 blockInsideSection++;
-            blockInsideSectionWitAir++;
         }
         LDEBUG("Total Count: {}", blockInsideSection);
-        if (blockInsideSectionWitAir != world_storage::SECTION_3D_SIZE)
-            LDEBUG("ERROR: Block palette does not have the right size: {} != {}", blockInsideSectionWitAir, world_storage::SECTION_3D_SIZE);
         for (uint16_t i = 0; i < section.getBlockPalette().size(); i++) {
             auto block = section.getBlockPalette().getGlobalId(i);
             LDEBUG("\tPalette[{}]: ({}) -> {} ", i, block, GLOBAL_PALETTE.fromProtocolIdToBlock(block).name);
@@ -83,8 +79,8 @@ void command_parser::DumpChunk::execute(std::vector<std::string> &args, Player *
     LDEBUG("--- CHUNK DATA ---");
 
     LDEBUG("Checking palette...");
-    for (uint8_t sectionID = 0; sectionID < world_storage::NB_OF_PLAYABLE_SECTIONS; sectionID++) {
-        const auto &section = sections[sectionID];
+    for (uint8_t sectionID = 1; sectionID < world_storage::NB_OF_SECTIONS - 1; sectionID++) {
+        const auto &section = sections.at(sectionID);
         LDEBUG("Section {}", sectionID);
 
         for (uint16_t i = 0; i < world_storage::SECTION_3D_SIZE; i++) {

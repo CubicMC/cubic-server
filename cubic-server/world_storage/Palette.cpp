@@ -5,13 +5,13 @@
 
 world_storage::BlockPalette::BlockPalette()
 {
-    _nameToId.push_back(0);
+    _nameToId.emplace_back(0);
     // _idCount.emplace(0, world_storage::SECTION_3D_SIZE);
 }
 
 world_storage::BiomePalette::BiomePalette()
 {
-    _nameToId.push_back(0);
+    _nameToId.emplace_back(0);
     // _idCount.emplace(0, world_storage::BIOME_SECTION_3D_SIZE);
 }
 
@@ -28,7 +28,7 @@ void world_storage::Palette::add(int32_t globalId)
     // });
     std::lock_guard _(_lock);
     if (std::find(_nameToId.begin(), _nameToId.end(), globalId) == _nameToId.end()) {
-        _nameToId.push_back(globalId);
+        _nameToId.emplace_back(globalId);
         // if (it == _idCount.end())
         //     _idCount.emplace_back(std::make_pair(globalId, 1));
         // else
@@ -94,8 +94,10 @@ void world_storage::Palette::remove(int32_t globalId)
     std::lock_guard _(_lock);
 
     auto it = std::find(_nameToId.begin(), _nameToId.end(), globalId);
-    if (it != _nameToId.end() && it == _nameToId.end() - 1)
+    while (it != _nameToId.end() && it == _nameToId.end() - 1) {
         _nameToId.erase(it);
+        it = std::find(_nameToId.begin(), _nameToId.end(), globalId);
+    }
 }
 
 // uint64_t world_storage::Palette::getTotalCount(bool countZero) const
