@@ -114,10 +114,7 @@ std::unique_ptr<LoginStart> parseLoginStart(std::vector<uint8_t> &buffer);
 
 struct EncryptionResponse : BaseServerPacket {
     std::vector<uint8_t> sharedSecret;
-    bool hasVerifyToken;
     std::vector<uint8_t> verifyToken;
-    int64_t salt;
-    std::vector<uint8_t> messageSignature;
 };
 std::unique_ptr<EncryptionResponse> parseEncryptionResponse(std::vector<uint8_t> &buffer);
 

@@ -39,6 +39,12 @@ target_sources (${CMAKE_PROJECT_NAME} PRIVATE
     types.cpp
     exceptions.hpp
     nbt.c
+    EASEncryptionHandler.cpp
+    EASEncryptionHandler.hpp
+    RSAEncryptionHandler.cpp
+    RSAEncryptionHandler.hpp
+    Checksum.cpp
+    Checksum.hpp
 )
 
 if (GTEST)

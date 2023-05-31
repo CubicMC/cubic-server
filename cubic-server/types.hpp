@@ -24,6 +24,8 @@ struct u128 {
      *
      */
     void swapEndianness();
+
+    static u128 fromShortString(const std::string &str);
 };
 
 typedef int64_t Seed;

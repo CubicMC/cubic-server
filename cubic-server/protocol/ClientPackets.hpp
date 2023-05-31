@@ -18,6 +18,7 @@ namespace protocol {
 enum class ClientPacketID : int32_t {
     // Login State
     DisconnectLogin = 0x00,
+    EncryptionRequest = 0x01,
     LoginSuccess = 0x02,
 
     // Status State
@@ -82,17 +83,17 @@ struct Disconnect {
 };
 std::unique_ptr<std::vector<uint8_t>> createLoginDisconnect(const Disconnect &);
 
+struct EncryptionRequest {
+    std::string serverID;
+    std::vector<uint8_t> publicKey;
+    std::vector<uint8_t> verifyToken;
+};
+std::unique_ptr<std::vector<uint8_t>> createEncryptionRequest(const EncryptionRequest &);
+
 struct LoginSuccess {
-    struct Property {
-        std::string name;
-        std::string value;
-        bool isSigned;
-        std::string signature;
-    };
     u128 uuid;
     std::string username;
-    int32_t numberOfProperties;
-    std::vector<Property> properties;
+    std::vector<PlayerProperty> properties;
 };
 std::unique_ptr<std::vector<uint8_t>> createLoginSuccess(const LoginSuccess &);
 
@@ -568,14 +569,8 @@ struct PlayerInfoUpdate {
     struct Action {
         u128 uuid;
         struct AddPlayer {
-            struct Property {
-                std::string name;
-                std::string value;
-                bool isSigned;
-                std::string signature;
-            };
             std::string name;
-            std::vector<Property> properties;
+            std::vector<PlayerProperty> properties;
         } addPlayer;
 
         struct InitializeChat {

@@ -2,6 +2,7 @@
 #define CUBICSERVER_SERVER_HPP
 
 #include <arpa/inet.h>
+#include <array>
 #include <boost/asio.hpp>
 #include <boost/container/flat_map.hpp>
 #include <boost/lockfree/queue.hpp>
@@ -13,6 +14,7 @@
 #include <vector>
 
 #include "Client.hpp"
+#include "RSAEncryptionHandler.hpp"
 #include "command_parser/commands/Gamemode.hpp"
 #include "command_parser/commands/Help.hpp"
 #include "protocol/ServerPackets.hpp"
@@ -91,12 +93,15 @@ public:
 
     Permissions permissions;
 
+    NODISCARD inline RSAEncryptionHandler &getPrivateKey() { return _rsaKey; }
+
 private:
     Server();
     void _stop();
     void _reloadWhitelist();
     void _reloadConfig();
     void _enforceWhitelistOnReload();
+    void _generateKeyPair();
 
 public:
     std::mutex clientsMutex;
@@ -129,6 +134,8 @@ private:
     boost::lockfree::queue<OutboundClientData> _toSend;
     void _writeLoop();
     std::thread _writeThread;
+
+    RSAEncryptionHandler _rsaKey;
 };
 
 #endif // CUBICSERVER_SERVER_HPP

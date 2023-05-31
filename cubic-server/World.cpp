@@ -111,7 +111,7 @@ void World::sendPlayerInfoAddPlayer(Player *current)
                             .uuid = current->getUuid(),
                             .addPlayer = {
                                 .name = current->getUsername(),
-                                .properties = {},
+                                .properties = current->getProperties(),
                             },
                         .initializeChat = {
                                 .hasSigData = false,
@@ -138,7 +138,7 @@ void World::sendPlayerInfoAddPlayer(Player *current)
                 .uuid = player->getUuid(),
                 .addPlayer = {
                     .name = player->getUsername(),
-                    .properties = {},
+                    .properties = player->getProperties(),
                 },
                 .initializeChat = {
                     .hasSigData = false,
