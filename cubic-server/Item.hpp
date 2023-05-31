@@ -2,6 +2,7 @@
 #define CUBICSERVER_ITEM_HPP
 
 #include "Entity.hpp"
+#include "protocol/Structures.hpp"
 #include "types.hpp"
 
 class Item : public Entity {
@@ -15,7 +16,7 @@ public:
 
     void tick() override;
     void dropItem(const Vector3<double> &pos) override;
-    ItemId getItemId() const { return _slot.itemID; };
+    const protocol::Slot &getItem() const { return _slot; };
 
 private:
     protocol::Slot _slot;

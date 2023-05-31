@@ -54,6 +54,7 @@ Player::Player(std::weak_ptr<Client> cli, std::shared_ptr<Dimension> dim, u128 u
 
     this->setOperator(Server::getInstance()->permissions.isOperator(username));
     this->_inventory->playerInventory().at(12) = protocol::Slot {true, 734, 42};
+    this->_inventory->playerInventory().at(13) = protocol::Slot {true, 1, 12};
 }
 
 Player::~Player()
@@ -985,40 +986,41 @@ void Player::_onUseItemOn(protocol::UseItemOn &pck)
         pck.location.x++;
         break;
     }
-    switch (this->_heldItem) {
-    case 0:
-        this->getDimension()->updateBlock(pck.location, Blocks::GrassBlock::toProtocol(Blocks::GrassBlock::Properties::Snowy::FALSE));
-        break;
-    case 1:
-        this->getDimension()->updateBlock(pck.location, Blocks::Dirt::toProtocol());
-        break;
-    case 2:
-        this->getDimension()->updateBlock(pck.location, Blocks::Bedrock::toProtocol());
-        break;
-    case 3:
-        this->getDimension()->updateBlock(pck.location, Blocks::OakLog::toProtocol(Blocks::OakLog::Properties::Axis::Y));
-        break;
-    case 4:
-        this->getDimension()->updateBlock(
-            pck.location,
-            Blocks::OakLeaves::toProtocol(
-                Blocks::OakLeaves::Properties::Distance::ONE, Blocks::OakLeaves::Properties::Persistent::FALSE, Blocks::OakLeaves::Properties::Waterlogged::FALSE
-            )
-        );
-        break;
-    case 5:
-        this->getDimension()->updateBlock(pck.location, Blocks::Glass::toProtocol());
-        break;
-    case 6:
-        this->getDimension()->updateBlock(pck.location, Blocks::Cobblestone::toProtocol());
-        break;
-    case 7:
-        this->getDimension()->updateBlock(pck.location, Blocks::PinkTerracotta::toProtocol());
-        break;
-    case 8:
-        this->getDimension()->updateBlock(pck.location, Blocks::PurpleCarpet::toProtocol());
-        break;
-    }
+    this->getDimension()->updateBlock(pck.location, GLOBAL_PALETTE.fromBlockToProtocolId(ITEM_CONVERTER.fromProtocolIdToItem(_inventory->hotbar().at(this->_heldItem).itemID)));
+    // switch (this->_heldItem) {
+    // case 0:
+    //     this->getDimension()->updateBlock(pck.location, Blocks::GrassBlock::toProtocol(Blocks::GrassBlock::Properties::Snowy::FALSE));
+    //     break;
+    // case 1:
+    //     this->getDimension()->updateBlock(pck.location, Blocks::Dirt::toProtocol());
+    //     break;
+    // case 2:
+    //     this->getDimension()->updateBlock(pck.location, Blocks::Bedrock::toProtocol());
+    //     break;
+    // case 3:
+    //     this->getDimension()->updateBlock(pck.location, Blocks::OakLog::toProtocol(Blocks::OakLog::Properties::Axis::Y));
+    //     break;
+    // case 4:
+    //     this->getDimension()->updateBlock(
+    //         pck.location,
+    //         Blocks::OakLeaves::toProtocol(
+    //             Blocks::OakLeaves::Properties::Distance::ONE, Blocks::OakLeaves::Properties::Persistent::FALSE, Blocks::OakLeaves::Properties::Waterlogged::FALSE
+    //         )
+    //     );
+    //     break;
+    // case 5:
+    //     this->getDimension()->updateBlock(pck.location, Blocks::Glass::toProtocol());
+    //     break;
+    // case 6:
+    //     this->getDimension()->updateBlock(pck.location, Blocks::Cobblestone::toProtocol());
+    //     break;
+    // case 7:
+    //     this->getDimension()->updateBlock(pck.location, Blocks::PinkTerracotta::toProtocol());
+    //     break;
+    // case 8:
+    //     this->getDimension()->updateBlock(pck.location, Blocks::PurpleCarpet::toProtocol());
+    //     break;
+    // }
 }
 
 void Player::_onUseItem(UNUSED protocol::UseItem &pck) { N_LDEBUG("Got a Use Item"); }
@@ -1267,7 +1269,7 @@ void Player::_eat()
         _foodSaturationLevel = _foodLevel;
     this->sendHealth();
     _inventory->hotbar().at(this->_heldItem).itemCount--;
-    this->sendSetContainerSlot({_inventory, -2, static_cast<int16_t>(this->_heldItem + HOTBAR_OFFSET)});
+    this->sendSetContainerSlot({_inventory, static_cast<int16_t>(this->_heldItem + HOTBAR_OFFSET)});
 }
 
 void Player::teleport(const Vector3<double> &pos)

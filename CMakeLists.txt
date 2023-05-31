@@ -93,6 +93,7 @@ FetchContent_Declare(
     GIT_REPOSITORY https://github.com/boostorg/boost.git
     GIT_TAG boost-1.82.0
     GIT_PROGRESS TRUE
+    GIT_SHALLOW TRUE
 )
 
 FetchContent_MakeAvailable(
