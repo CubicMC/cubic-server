@@ -805,7 +805,7 @@ void Player::_onPlayerAction(protocol::PlayerAction &pck)
         this->getDimension()->updateBlock(pck.location, 0);
         _foodExhaustionLevel += 0.005;
         // TODO: change the 721 magic value with the loot tables (for instance it's a acaccia boat)
-        _dim->makeEntity<Item>(721)->dropItem({static_cast<double>(pck.location.x), static_cast<double>(pck.location.y), static_cast<double>(pck.location.z)});
+        _dim->makeEntity<Item>(721)->dropItem({static_cast<double>(pck.location.x) + 0.5, static_cast<double>(pck.location.y), static_cast<double>(pck.location.z) + 0.5});
         break;
     case protocol::PlayerAction::Status::DropItemStack:
         break;
