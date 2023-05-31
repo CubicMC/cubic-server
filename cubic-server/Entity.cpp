@@ -49,7 +49,6 @@ Entity::Entity(std::shared_ptr<Dimension> dim,
     bool noGravity,
     Pose pose,
     int16_t tickFrozenInPowderedSnow,
-    int32_t id,
     Vector3<double> pos,
     Vector2<uint8_t> rot,
     Vector3<double> lastPos,
@@ -138,11 +137,4 @@ void Entity::teleport(const Vector3<double> &pos)
             continue;
         i->sendTeleportEntity(this->getId(), pos);
     }
-}
-
-void Entity::dropItem(const ItemId &itemId, const Position &pos)
-{
-    // protocol::SpawnEntity spawnItem;
-    // Entity item(this->getDimension());
-    // this->getDimension()->addEntity(item);
 }
