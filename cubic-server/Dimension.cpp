@@ -251,8 +251,19 @@ void Dimension::spawnEntity(std::shared_ptr<Entity> current)
     for (auto player : _players) {
         LDEBUG("spawn entity with id: {}", current->getId());
         player->sendSpawnEntity(
-            {current->getId(), {(uint64_t) current->getId(), (uint64_t) current->getId()}, current->getType(), current->getPosition().x, current->getPosition().y,
-             current->getPosition().z, 0, 0, 0, 0, 16, 0, 0}
+            {current->getId(),
+             {(uint64_t) current->getId(), (uint64_t) current->getId()},
+             current->getType(),
+             current->getPosition().x,
+             current->getPosition().y,
+             current->getPosition().z,
+             0,
+             0,
+             0,
+             0,
+             16,
+             0,
+             0}
         );
     }
 }

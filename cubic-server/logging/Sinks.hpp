@@ -3,12 +3,12 @@
 
 #include <queue>
 
-#include <spdlog/spdlog.h>
-#include <spdlog/common.h>
-#include <spdlog/sinks/stdout_color_sinks.h>
-#include <spdlog/sinks/base_sink.h>
-#include "formating.hpp"
 #include "Registry.hpp"
+#include "formating.hpp"
+#include <spdlog/common.h>
+#include <spdlog/sinks/base_sink.h>
+#include <spdlog/sinks/stdout_color_sinks.h>
+#include <spdlog/spdlog.h>
 
 namespace logging {
 

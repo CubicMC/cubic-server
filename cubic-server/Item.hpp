@@ -11,7 +11,7 @@ public:
     {
         _itemId = itemId;
     }
-    ~Item() {}
+    ~Item() { }
 
     void tick() override;
     void dropItem(const Vector3<double> &pos) override;

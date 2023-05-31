@@ -9,9 +9,9 @@
 #include <vector>
 
 #include "options.hpp"
+#include "protocol/ClientPackets.hpp"
 #include "world_storage/ChunkColumn.hpp"
 #include "world_storage/Level.hpp"
-#include "protocol/ClientPackets.hpp"
 
 // TODO(huntears): Fix whatever this is
 constexpr int SEMAPHORE_MAX = 1000;
@@ -58,7 +58,7 @@ public:
     void updateEntityAttributes(const protocol::UpdateAttributes &attributes);
     virtual void spawnPlayer(Player &player);
     virtual void spawnEntity(std::shared_ptr<Entity> entity);
-    template<isBaseOf<Entity> T, typename ... Args>
+    template<isBaseOf<Entity> T, typename... Args>
     std::shared_ptr<T> makeEntity(Args &&...);
 
     /**
@@ -124,10 +124,10 @@ protected:
     std::thread _processingThread;
 };
 
-template<isBaseOf<Entity> T, typename ... Args>
-std::shared_ptr<T> Dimension::makeEntity(Args &&... args)
+template<isBaseOf<Entity> T, typename... Args>
+std::shared_ptr<T> Dimension::makeEntity(Args &&...args)
 {
-    auto entity = std::make_shared<T>(shared_from_this(), args ...);
+    auto entity = std::make_shared<T>(shared_from_this(), args...);
     this->addEntity(entity);
     return entity;
 }
