@@ -2,7 +2,7 @@
 #define CUBICSERVER_PLUGINMANAGER_HPP
 
 #include <memory>
-#include <stdint.h>
+#include <cstdint>
 #include <string>
 #include <unordered_map>
 #include <variant>

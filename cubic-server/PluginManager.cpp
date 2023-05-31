@@ -86,12 +86,10 @@ void PluginManager::load(void)
 
 void PluginManager::unload(void)
 {
-    LINFO("Unloading plugins...");
     for (const auto &[_, plugin] : this->_plugins)
         dlclose(plugin);
     this->_plugins.clear();
     this->_events.clear();
-    LINFO("Unloaded plugins");
 }
 
 void PluginManager::reload(void)
