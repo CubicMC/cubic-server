@@ -19,9 +19,10 @@ PluginManager::~PluginManager()
 
 void PluginManager::loadPlugin(std::string filepath)
 {
-    static const std::array<const char *, 21> EventKeyArray = {
+    static const std::array<const char *, 22> EventKeyArray = {
         EventKey::initialize,
         EventKey::destroy,
+        EventKey::tick,
         EventKey::onPlayerJoin,
         EventKey::onPlayerLeave,
         EventKey::onPlayerChat,
