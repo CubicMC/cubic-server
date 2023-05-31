@@ -394,7 +394,7 @@ void Persistence::loadRegion(Dimension &dim, int x, int z)
         }
     }
     free(fileContents);
-    LDEBUG("Loaded region ", x, " ", z);
+    LDEBUG("Loaded region {} {}", x, z);
 }
 
 void Persistence::_regionLoadChunk(Dimension &dim, uint16_t cx, uint16_t cz, int x, int z, nbt_tag_t *data)

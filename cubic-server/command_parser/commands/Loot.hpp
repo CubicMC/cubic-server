@@ -6,7 +6,7 @@
 namespace command_parser {
 struct Loot : public CommandBase {
     Loot():
-        CommandBase("loot", "/loot", true)
+        CommandBase("loot", "/loot namespace path", true)
     {
     }
 
@@ -14,6 +14,6 @@ struct Loot : public CommandBase {
     void execute(std::vector<std::string> &args, Player *invoker) const override;
     void help(std::vector<std::string> &args, Player *invoker) const override;
 };
-}
+} // namespace command_parser
 
 #endif /* !LOOT_HPP_ */

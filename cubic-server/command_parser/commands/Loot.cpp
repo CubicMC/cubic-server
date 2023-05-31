@@ -1,12 +1,10 @@
 #include "Loot.hpp"
 #include "Server.hpp"
+#include "logging/logging.hpp"
 #include "loot_tables/LootTables.hpp"
 #include "loot_tables/context/Empty.hpp"
-#include "logging/logging.hpp"
 
-void command_parser::Loot::autocomplete(UNUSED std::vector<std::string> &args, UNUSED Player *invoker) const
-{
-}
+void command_parser::Loot::autocomplete(UNUSED std::vector<std::string> &args, UNUSED Player *invoker) const { }
 
 void command_parser::Loot::execute(std::vector<std::string> &args, UNUSED Player *invoker) const
 {
@@ -16,7 +14,7 @@ void command_parser::Loot::execute(std::vector<std::string> &args, UNUSED Player
     }
 
     if (!Server::getInstance()->getLootTableSystem().exists(args[0], args[1])) {
-        std::cout << "loot " << args[0] << ':' << args[1] << " noes not exist" << std::endl;
+        LWARN("loot {} :{} does not exist", args[0], args[1]);
         // Server::getInstance()->getLootTableSystem().snitchTables();
         return;
     }
@@ -26,7 +24,4 @@ void command_parser::Loot::execute(std::vector<std::string> &args, UNUSED Player
     }
 }
 
-void command_parser::Loot::help(UNUSED std::vector<std::string> &args, UNUSED Player *invoker) const
-{
-    LINFO("/help seed");
-}
+void command_parser::Loot::help(UNUSED std::vector<std::string> &args, UNUSED Player *invoker) const { LINFO(this->_help); }

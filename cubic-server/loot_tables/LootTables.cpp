@@ -107,12 +107,12 @@ void LootTables::importTableFolder(const std::string &_namespace, const std::str
             // keep table if valid, drop if not
             if (newTable->isValid()) {
                 this->_lootTables[_namespace][filepath.path().string().substr(path_length + 1, filepath.path().string().length() - (path_length + 1) - 5)].swap(newTable);
-                LDEBUG("loaded ", _namespace, ":", filepath.path().string().substr(path_length + 1, filepath.path().string().length() - (path_length + 1) - 5));
+                LDEBUG("loaded {} :{}", _namespace, filepath.path().string().substr(path_length + 1, filepath.path().string().length() - (path_length + 1) - 5));
             } else
                 LDEBUG("invalid table " + filepath.path().string());
         }
     }
-    LINFO("Loaded ", std::to_string(this->_lootTables[_namespace].size()), " loot tables from path ", path, " into namespace \"", _namespace, "\"");
+    LINFO("Loaded {} loot tables from path {} into namespace \"{}\"", std::to_string(this->_lootTables[_namespace].size()), path, _namespace);
 }
 
 bool LootTables::exists(const std::string &_namespace, const std::string &table)
