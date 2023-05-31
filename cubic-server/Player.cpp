@@ -4,6 +4,7 @@
 #include "Client.hpp"
 #include "Dimension.hpp"
 #include "Entity.hpp"
+#include "Item.hpp"
 #include "PlayerAttributes.hpp"
 #include "Server.hpp"
 #include "World.hpp"
@@ -803,6 +804,8 @@ void Player::_onPlayerAction(protocol::PlayerAction &pck)
     case protocol::PlayerAction::Status::FinishedDigging:
         this->getDimension()->updateBlock(pck.location, 0);
         _foodExhaustionLevel += 0.005;
+        // TODO: change the 721 magic value with the loot tables (for instance it's a acaccia boat)
+        _dim->makeEntity<Item>(721)->dropItem({static_cast<double>(pck.location.x), static_cast<double>(pck.location.y), static_cast<double>(pck.location.z)});
         break;
     case protocol::PlayerAction::Status::DropItemStack:
         break;
