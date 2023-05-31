@@ -59,6 +59,7 @@ Player::~Player()
 
     // Send a disconnect message
     this->_dim->getWorld()->getChat()->sendSystemMessage(disconnectMsg, *this->getWorldGroup());
+    onEvent(Server::getInstance()->getPluginManager(), onPlayerLeave, this);
 }
 
 void Player::tick()
