@@ -990,41 +990,12 @@ void Player::_onUseItemOn(protocol::UseItemOn &pck)
         pck.location.x++;
         break;
     }
-    this->getDimension()->updateBlock(pck.location, GLOBAL_PALETTE.fromBlockToProtocolId(ITEM_CONVERTER.fromProtocolIdToItem(_inventory->hotbar().at(this->_heldItem).itemID)));
-    // switch (this->_heldItem) {
-    // case 0:
-    //     this->getDimension()->updateBlock(pck.location, Blocks::GrassBlock::toProtocol(Blocks::GrassBlock::Properties::Snowy::FALSE));
-    //     break;
-    // case 1:
-    //     this->getDimension()->updateBlock(pck.location, Blocks::Dirt::toProtocol());
-    //     break;
-    // case 2:
-    //     this->getDimension()->updateBlock(pck.location, Blocks::Bedrock::toProtocol());
-    //     break;
-    // case 3:
-    //     this->getDimension()->updateBlock(pck.location, Blocks::OakLog::toProtocol(Blocks::OakLog::Properties::Axis::Y));
-    //     break;
-    // case 4:
-    //     this->getDimension()->updateBlock(
-    //         pck.location,
-    //         Blocks::OakLeaves::toProtocol(
-    //             Blocks::OakLeaves::Properties::Distance::ONE, Blocks::OakLeaves::Properties::Persistent::FALSE, Blocks::OakLeaves::Properties::Waterlogged::FALSE
-    //         )
-    //     );
-    //     break;
-    // case 5:
-    //     this->getDimension()->updateBlock(pck.location, Blocks::Glass::toProtocol());
-    //     break;
-    // case 6:
-    //     this->getDimension()->updateBlock(pck.location, Blocks::Cobblestone::toProtocol());
-    //     break;
-    // case 7:
-    //     this->getDimension()->updateBlock(pck.location, Blocks::PinkTerracotta::toProtocol());
-    //     break;
-    // case 8:
-    //     this->getDimension()->updateBlock(pck.location, Blocks::PurpleCarpet::toProtocol());
-    //     break;
-    // }
+    if (_inventory->hotbar().at(this->_heldItem).present)
+        this->getDimension()->updateBlock(pck.location, GLOBAL_PALETTE.fromBlockToProtocolId(ITEM_CONVERTER.fromProtocolIdToItem(_inventory->hotbar().at(this->_heldItem).itemID)));
+    if (_gamemode != player_attributes::Gamemode::Creative)
+        this->_inventory->hotbar().at(this->_heldItem).itemCount--;
+    if (_inventory->hotbar().at(this->_heldItem).itemCount == 0)
+        _inventory->hotbar().at(this->_heldItem).reset();
 }
 
 void Player::_onUseItem(UNUSED protocol::UseItem &pck) { N_LDEBUG("Got a Use Item"); }
