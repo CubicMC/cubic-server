@@ -41,6 +41,8 @@ target_sources (${CMAKE_PROJECT_NAME} PRIVATE
     EASEncryptionHandler.hpp
     RSAEncryptionHandler.cpp
     RSAEncryptionHandler.hpp
+    Checksum.cpp
+    Checksum.hpp
 )
 
 if (GTEST)

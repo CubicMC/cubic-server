@@ -96,7 +96,6 @@ struct LoginSuccess {
     };
     u128 uuid;
     std::string username;
-    int32_t numberOfProperties;
     std::vector<Property> properties;
 };
 std::unique_ptr<std::vector<uint8_t>> createLoginSuccess(const LoginSuccess &);

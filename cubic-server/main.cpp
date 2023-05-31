@@ -107,11 +107,11 @@ auto initArgs(int argc, const char *const argv[])
         .possibleValues("flat", "default", "void")
         .defaultValue("default");
 
-    program.add("encryption")
-        .help("Enable client/server encryption")
-        .valueFromConfig("general", "encryption")
-        .valueFromEnvironmentVariable("CBSRC_ENCRYPTION")
-        .valueFromArgument("--encryption")
+    program.add("online-mode")
+        .help("Enable client/server encryption and only accepts legitimate accounts")
+        .valueFromConfig("general", "online-mode")
+        .valueFromEnvironmentVariable("CBSRV_ONLINE_MODE")
+        .valueFromArgument("--online-mode")
         .possibleValues(false, true)
         .defaultValue(true);
     // clang-format on

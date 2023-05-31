@@ -2,6 +2,7 @@
 #include <boost/system/detail/error_code.hpp>
 #include <cstdint>
 #include <cstring>
+#include <curl/curl.h>
 #include <mutex>
 #include <netinet/in.h>
 #include <poll.h>
@@ -15,6 +16,7 @@
 #include "Client.hpp"
 #include "nbt.hpp"
 
+#include "Checksum.hpp"
 #include "Dimension.hpp"
 #include "Player.hpp"
 #include "Server.hpp"
@@ -22,9 +24,11 @@
 #include "WorldGroup.hpp"
 #include "chat/ChatRegistry.hpp"
 #include "logging/logging.hpp"
+#include "nlohmann/json.hpp"
 #include "protocol/ClientPackets.hpp"
 #include "protocol/ServerPackets.hpp"
 #include "protocol/serialization/popPrimaryType.hpp"
+#include "types.hpp"
 
 using boost::asio::ip::tcp;
 
@@ -315,7 +319,6 @@ void Client::_onLoginStart(protocol::LoginStart &pck)
 
     resPck.uuid = pck.hasPlayerUuid ? pck.playerUuid : u128 {std::hash<std::string> {}("OfflinePlayer:"), std::hash<std::string> {}(pck.name)};
     resPck.username = pck.name;
-    resPck.numberOfProperties = 0;
     resPck.properties = {}; // TODO: figure out what to put there
 
     if (!Server::getInstance()->getWorldGroup("default")->isInitialized()) {
@@ -325,7 +328,7 @@ void Client::_onLoginStart(protocol::LoginStart &pck)
         this->disconnect("You are not whitelisted on this server.");
         return;
     }
-    if (CONFIG["encryption"].as<bool>()) {
+    if (CONFIG["online-mode"].as<bool>()) {
         _resPck = resPck;
         sendEncryptionRequest();
     } else {
@@ -364,11 +367,66 @@ void Client::_onEncryptionResponse(UNUSED protocol::EncryptionResponse &pck)
         return;
     }
     N_LDEBUG("Starting encryption");
+
     _isEncrypted = true;
     std::array<uint8_t, 16> key;
     memcpy(key.data(), decryptedKey, 16);
     _encryption.initialize(key, key);
+
+    if (!_handleOnline(key))
+        return;
+
     _loginSequence(_resPck);
+}
+
+static size_t WriteCallback(void *contents, size_t size, size_t nmemb, void *userp)
+{
+    ((std::string *) userp)->append((char *) contents, size * nmemb);
+    return size * nmemb;
+}
+
+bool Client::_handleOnline(const std::array<uint8_t, 16> &key)
+{
+    Checksum cs;
+    cs.update(key.data(), key.size());
+    cs.update(reinterpret_cast<const uint8_t *>(Server::getInstance()->getPrivateKey().getPublicKey().data()), Server::getInstance()->getPrivateKey().getPublicKey().size());
+    uint8_t digest[20];
+    cs.finalize(digest);
+    auto serverID = Checksum::digestToProtocol(digest);
+
+    CURL *curl;
+    CURLcode res;
+    std::string readBuffer;
+
+    curl = curl_easy_init();
+    if (!curl) {
+        LERROR("Could not init curl");
+        stop();
+        return false;
+    }
+    curl_easy_setopt(curl, CURLOPT_URL, std::string("https://sessionserver.mojang.com/session/minecraft/hasJoined?username=" + _resPck.username + "&serverId=" + serverID).c_str());
+    curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, WriteCallback);
+    curl_easy_setopt(curl, CURLOPT_WRITEDATA, &readBuffer);
+    res = curl_easy_perform(curl);
+    curl_easy_cleanup(curl);
+    if (res != CURLcode::CURLE_OK || readBuffer.empty()) {
+        LERROR("Could not query mojang's API or authentication failed");
+        stop();
+        return false;
+    }
+    LINFO(readBuffer);
+    nlohmann::json result = nlohmann::json::parse(readBuffer);
+
+    _resPck.uuid = u128::fromShortString(result["id"]);
+
+    for (auto &i : result["properties"]) {
+        if (i.contains("signature"))
+            _resPck.properties.emplace_back(i["name"].get<std::string>(), i["value"].get<std::string>(), true, i["signature"].get<std::string>());
+        else
+            _resPck.properties.emplace_back(i["name"].get<std::string>(), i["value"].get<std::string>(), false, "");
+    }
+
+    return true;
 }
 
 void Client::sendEncryptionRequest()

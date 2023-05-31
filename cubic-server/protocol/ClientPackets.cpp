@@ -42,7 +42,7 @@ std::unique_ptr<std::vector<uint8_t>> protocol::createLoginSuccess(const LoginSu
     serialize(payload,
         in.uuid, addUUID,
         in.username, addString,
-        in.numberOfProperties, addVarInt
+        in.properties.size(), addVarInt
     );
 
     // in.name, addString,

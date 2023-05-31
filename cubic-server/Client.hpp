@@ -107,6 +107,8 @@ private:
     void _onPingRequest(protocol::PingRequest &pck);
     void _onEncryptionResponse(protocol::EncryptionResponse &pck);
     void _loginSequence(const protocol::LoginSuccess &packet);
+    bool _handleOnline(const std::array<uint8_t, 16> &key);
+    NODISCARD inline const std::vector<protocol::LoginSuccess::Property> &getProperties() const { return _resPck.properties; }
 
 private:
     std::atomic<bool> _isRunning;

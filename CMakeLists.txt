@@ -128,6 +128,7 @@ endif()
 
 find_package(Threads REQUIRED)
 find_package(Boost REQUIRED)
+find_package(CURL REQUIRED)
 find_package(PkgConfig REQUIRED)
 pkg_check_modules(GTKMM gtkmm-3.0)
 
@@ -177,6 +178,7 @@ target_link_libraries (${CMAKE_PROJECT_NAME} PRIVATE
     yaml-cpp
     MbedTLS::mbedtls
     spdlog::spdlog
+    CURL::libcurl
     $<$<BOOL:${MINGW}>:ws2_32>
 )
 
