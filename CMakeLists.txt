@@ -52,9 +52,11 @@ if (CMAKE_BUILD_TYPE MATCHES Release)
     endif()
 endif()
 
-set(BOOST_INCLUDE_LIBRARIES asio system container lockfree circular_buffer)
-set(BOOST_ENABLE_CMAKE ON)
+# Disable building of mbedtls programs
+set(ENABLE_PROGRAMS OFF CACHE BOOL "" FORCE)
+set(ENABLE_TESTING OFF)
 
+include(boost.cmake)
 include(FetchContent)
 
 set(FETCHCONTENT_QUIET OFF)
@@ -106,6 +108,7 @@ FetchContent_Declare(
     GIT_REPOSITORY https://github.com/boostorg/boost.git
     GIT_TAG boost-1.82.0
     GIT_PROGRESS TRUE
+    GIT_SUBMODULES ${BOOST_REQD_SUBMODULES}
     GIT_SHALLOW TRUE
 )
 
@@ -162,6 +165,7 @@ if(GTEST) # if the flag GTEST is true
         googletest
     )
 
+    set(ENABLE_TESTING ON CACHE BOOL "" FORCE)
     enable_testing()
 endif()
 
