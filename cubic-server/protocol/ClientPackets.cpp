@@ -721,19 +721,22 @@ std::unique_ptr<std::vector<uint8_t>> protocol::createDisplayObjective(const Dis
     return packet;
 }
 
-// std::unique_ptr<std::vector<uint8_t>> protocol::createSetEntityMetadata(const SetEntityMetadata &in)
-// {
-//     std::vector<uint8_t> payload;
-//     // clang-format off
-//     serialize(payload,
-//         in.entityId, addVarInt,
-//         in.metadata, addMetadata
-//     );
-//     // clang-format on
-//     auto packet = std::make_unique<std::vector<uint8_t>>();
-//     finalize(*packet, payload, ClientPacketID::SetEntityMetadata);
-//     return packet;
-// }
+std::unique_ptr<std::vector<uint8_t>> protocol::createSetEntityMetadata(const SetEntityMetadata &in)
+{
+    std::vector<uint8_t> payload;
+    // clang-format off
+    serialize(payload,
+        in.entityId, addVarInt,
+        in.metadata[0].index, addByte,
+        in.metadata[0].type, addVarInt,
+        in.metadata[0].slot, addSlot,
+        0xff, addByte
+    );
+    // clang-format on
+    auto packet = std::make_unique<std::vector<uint8_t>>();
+    finalize(*packet, payload, ClientPacketID::SetEntityMetadata);
+    return packet;
+}
 
 std::unique_ptr<std::vector<uint8_t>> protocol::createUpdateTime(const UpdateTime &in)
 {
