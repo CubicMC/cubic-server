@@ -56,7 +56,8 @@ void Container::onClick(std::shared_ptr<Player> player, int16_t index, uint8_t b
             break;
 
         case ClickMode::MiddleClick:
-            if (isCreative)
+            LDEBUG("Middle click {} {}", _cursor.itemID, at(index).itemID);
+            if (!isCreative)
                 break;
             _cursor = at(index);
             _cursor.itemCount = 64;

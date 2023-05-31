@@ -943,7 +943,7 @@ void Player::_onProgramCommandBlock(UNUSED protocol::ProgramCommandBlock &pck) {
 
 void Player::_onProgramCommandBlockMinecart(UNUSED protocol::ProgramCommandBlockMinecart &pck) { N_LDEBUG("Got a Program Command Block Minecart"); }
 
-void Player::_onSetCreativeModeSlot(UNUSED protocol::SetCreativeModeSlot &pck)
+void Player::_onSetCreativeModeSlot(protocol::SetCreativeModeSlot &pck)
 {
     N_LDEBUG("Got a Set Creative Mode Slot");
     this->_inventory->at(pck.slot) = pck.clickedItem;
@@ -992,8 +992,9 @@ void Player::_onUseItemOn(protocol::UseItemOn &pck)
     }
     if (_inventory->hotbar().at(this->_heldItem).present)
         this->getDimension()->updateBlock(pck.location, GLOBAL_PALETTE.fromBlockToProtocolId(ITEM_CONVERTER.fromProtocolIdToItem(_inventory->hotbar().at(this->_heldItem).itemID)));
-    if (_gamemode != player_attributes::Gamemode::Creative)
-        this->_inventory->hotbar().at(this->_heldItem).itemCount--;
+    if (_gamemode == player_attributes::Gamemode::Creative)
+        return;
+    this->_inventory->hotbar().at(this->_heldItem).itemCount--;
     if (_inventory->hotbar().at(this->_heldItem).itemCount == 0)
         _inventory->hotbar().at(this->_heldItem).reset();
 }
