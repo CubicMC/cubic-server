@@ -16,6 +16,7 @@
 #include "protocol/ParseExceptions.hpp"
 #include "protocol/Structures.hpp"
 #include "protocol/common.hpp"
+#include "types.hpp"
 
 namespace protocol {
 constexpr uint8_t popByte(uint8_t *&at, uint8_t *eof)
@@ -221,7 +222,9 @@ constexpr Slot popSlot(uint8_t *&at, uint8_t *eof)
     if (slot.present) {
         slot.itemID = popVarInt(at, eof);
         slot.itemCount = popByte(at, eof);
+        // TODO
         // slot.nbt = popNbt(at, eof);
+        popByte(at, eof); // Fix for nbt
     }
     return slot;
 }

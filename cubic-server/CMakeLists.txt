@@ -61,8 +61,20 @@ if (GTEST)
     # file(DOWNLOAD https://cdn.cubic-mc.com/tests/hello_world.nbt, ${CMAKE_CURRENT_BINARY_DIR}/hello_world.nbt SHOW_PROGRESS TLS_VERIFY ON)
     # file(DOWNLOAD https://cdn.cubic-mc.com/tests/bigtest.nbt, ${CMAKE_CURRENT_BINARY_DIR}/bigtest.nbt SHOW_PROGRESS TLS_VERIFY ON)
 
-    execute_process(COMMAND wget -q https://cdn.cubic-mc.com/tests/hello_world.nbt -O ${CMAKE_CURRENT_BINARY_DIR}/hello_world.nbt)
-    execute_process(COMMAND wget -q https://cdn.cubic-mc.com/tests/bigtest.nbt -O ${CMAKE_CURRENT_BINARY_DIR}/bigtest.nbt)
+    download_and_check_file(
+        https://cdn.cubic-mc.com/tests/hello_world.nbt
+        hello_world.nbt
+        ${CMAKE_CURRENT_BINARY_DIR}
+    )
+
+    download_and_check_file(
+        https://cdn.cubic-mc.com/tests/bigtest.nbt
+        bigtest.nbt
+        ${CMAKE_CURRENT_BINARY_DIR}
+    )
+
+    # execute_process(COMMAND wget -q https://cdn.cubic-mc.com/tests/hello_world.nbt -O ${CMAKE_CURRENT_BINARY_DIR}/hello_world.nbt)
+    # execute_process(COMMAND wget -q https://cdn.cubic-mc.com/tests/bigtest.nbt -O ${CMAKE_CURRENT_BINARY_DIR}/bigtest.nbt)
 
     include(GoogleTest)
     gtest_discover_tests(nbt_test)
@@ -82,4 +94,6 @@ add_subdirectory (generation)
 add_subdirectory (thread_pool)
 add_subdirectory (items)
 add_subdirectory (chat)
+add_subdirectory (loot_tables)
 add_subdirectory (recipes)
+add_subdirectory (utility)

@@ -12,6 +12,11 @@
 #include "command_parser/CommandParser.hpp"
 #include "items/foodItems.hpp"
 #include "logging/logging.hpp"
+#include "protocol/ServerPackets.hpp"
+#include "protocol/container/Container.hpp"
+#include "protocol/container/Inventory.hpp"
+#include <algorithm>
+#include <cstdint>
 #include <memory>
 #include <mutex>
 
@@ -29,7 +34,8 @@ Player::Player(std::weak_ptr<Client> cli, std::shared_ptr<Dimension> dim, u128 u
     _keepAliveIgnored(0),
     _gamemode(player_attributes::Gamemode::Survival),
     _keepAliveClock(200, std::bind(&Player::_processKeepAlive, this)), // 5 seconds for keep-alives
-    _foodLevel(player_attributes::MAX_FOOD_LEVEL), // TODO: Take this from the saved data
+    _inventory(std::make_shared<protocol::container::Inventory>()),
+    _foodLevel(player_attributes::MAX_FOOD_LEVEL - 4), // TODO: Take this from the saved data
     _foodSaturationLevel(player_attributes::DEFAULT_FOOD_SATURATION_LEVEL), // TODO: Take this from the saved data
     _foodTickTimer(0), // TODO: Take this from the saved data
     _foodExhaustionLevel(0.0f), // TODO: Take this from the saved data
@@ -47,6 +53,8 @@ Player::Player(std::weak_ptr<Client> cli, std::shared_ptr<Dimension> dim, u128 u
     this->setHealth(20);
 
     this->setOperator(Server::getInstance()->permissions.isOperator(username));
+    this->_inventory->playerInventory().at(12) = protocol::Slot {true, 734, 42};
+    this->_inventory->playerInventory().at(13) = protocol::Slot {true, 1, 12};
 }
 
 Player::~Player()
@@ -186,6 +194,23 @@ void Player::updatePlayerInfo(const protocol::PlayerInfoUpdate &data)
             player->sendPlayerInfoUpdate(data);
         }
     }
+}
+
+void Player::closeContainer(uint8_t id)
+{
+    if (id == 0) {
+        _inventory->close(dynamicSharedFromThis<Player>());
+        return;
+    }
+
+    auto it = std::find_if(_containers.begin(), _containers.end(), [id](const std::shared_ptr<protocol::container::Container> &container) {
+        return container->id() == id;
+    });
+    if (it == _containers.end())
+        return;
+    (*it)->close(dynamicSharedFromThis<Player>());
+    _containers.erase(it);
+    sendCloseContainer(id);
 }
 
 void Player::playSoundEffect(SoundsList sound, FloatingPosition position, SoundCategory category)
@@ -529,12 +554,28 @@ void Player::sendGameEvent(const protocol::GameEvent &packet)
     LDEBUG("Sent a Game Event packet");
 }
 
+void Player::sendCloseContainer(uint8_t containerId)
+{
+    GET_CLIENT();
+    auto pck = protocol::createCloseContainer({containerId});
+    client->doWrite(std::move(pck));
+    N_LDEBUG("Sent a Close Container packet");
+}
+
 void Player::sendSetContainerContent(const protocol::SetContainerContent &packet)
 {
     GET_CLIENT();
     auto pck = protocol::createSetContainerContent(packet);
     client->doWrite(std::move(pck));
     N_LDEBUG("Sent set container content packet");
+}
+
+void Player::sendSetContainerSlot(const protocol::SetContainerSlot &packet)
+{
+    GET_CLIENT();
+    auto pck = protocol::createSetContainerSlot(packet);
+    client->doWrite(std::move(pck));
+    N_LDEBUG("Sent set container slot packet");
 }
 
 void Player::sendUpdateRecipes(const protocol::UpdateRecipes &packet)
@@ -682,11 +723,41 @@ void Player::_onClientInformation(protocol::ClientInformation &pck)
 
 void Player::_onCommandSuggestionRequest(UNUSED protocol::CommandSuggestionRequest &pck) { N_LDEBUG("Got a Command Suggestion Request"); }
 
-void Player::_onClickContainerButton(UNUSED protocol::ClickContainerButton &pck) { N_LDEBUG("Got a Click Container Button"); }
+void Player::_onClickContainerButton(protocol::ClickContainerButton &pck)
+{
+    N_LDEBUG("Got a Click Container Button");
+    if (pck.windowId == 0) {
+        _inventory->onButtonClick(dynamicSharedFromThis<Player>(), pck.buttonId);
+        return;
+    }
+    auto it = std::find_if(_containers.begin(), _containers.end(), [&](const auto &container) {
+        if (container->id() == pck.windowId)
+            return true;
+        return false;
+    });
+    (*it)->onButtonClick(dynamicSharedFromThis<Player>(), pck.buttonId);
+}
 
-void Player::_onClickContainer(UNUSED protocol::ClickContainer &pck) { N_LDEBUG("Got a Click Container"); }
+void Player::_onClickContainer(protocol::ClickContainer &pck)
+{
+    N_LDEBUG("Got a Click Container");
+    if (pck.windowId == 0) {
+        _inventory->onClick(dynamicSharedFromThis<Player>(), pck.slot, pck.button, pck.mode, pck.arrayOfSlots);
+        return;
+    }
+    auto it = std::find_if(_containers.begin(), _containers.end(), [&](const auto &container) {
+        if (container->id() == pck.windowId)
+            return true;
+        return false;
+    });
+    (*it)->onClick(dynamicSharedFromThis<Player>(), pck.slot, pck.button, pck.mode, pck.arrayOfSlots);
+}
 
-void Player::_onCloseContainerRequest(UNUSED protocol::CloseContainerRequest &pck) { N_LDEBUG("Got a Close Container Request"); }
+void Player::_onCloseContainerRequest(protocol::CloseContainerRequest &pck)
+{
+    N_LDEBUG("Got a Close Container Request");
+    this->closeContainer(pck.windowId);
+}
 
 void Player::_onPluginMessage(protocol::PluginMessage &pck)
 {
@@ -805,16 +876,25 @@ void Player::_onPlayerAction(protocol::PlayerAction &pck)
         this->getDimension()->updateBlock(pck.location, 0);
         _foodExhaustionLevel += 0.005;
         // TODO: change the 721 magic value with the loot tables (for instance it's a acaccia boat)
-        _dim->makeEntity<Item>(721)->dropItem({static_cast<double>(pck.location.x) + 0.5, static_cast<double>(pck.location.y), static_cast<double>(pck.location.z) + 0.5});
+        _dim->makeEntity<Item>(protocol::Slot {true, 721, 1})->dropItem({static_cast<double>(pck.location.x) + 0.5, static_cast<double>(pck.location.y), static_cast<double>(pck.location.z) + 0.5});
         break;
     case protocol::PlayerAction::Status::DropItemStack:
+        getDimension()->makeEntity<Item>(_inventory->hotbar().at(this->_heldItem))->dropItem(this->getPosition());
+        _inventory->hotbar().at(this->_heldItem).reset();
         break;
     case protocol::PlayerAction::Status::DropItem:
+        if (!_inventory->hotbar().at(this->_heldItem).present)
+            break;
+        getDimension()->makeEntity<Item>(protocol::Slot {true, _inventory->hotbar().at(this->_heldItem).itemID, 1})->dropItem(this->getPosition());
+        _inventory->hotbar().at(this->_heldItem).itemCount--;
+        if (_inventory->hotbar().at(this->_heldItem).itemCount == 0)
+            _inventory->hotbar().at(this->_heldItem).reset();
         break;
     case protocol::PlayerAction::Status::ShootArrowOrFinishEating:
-        _eat(922); // TODO: Change that to use the item in hand (for instance it's a raw chicken)
+        _eat();
         break;
     case protocol::PlayerAction::Status::SwapItemInHand:
+        _inventory->offhand().swap(_inventory->hotbar().at(this->_heldItem));
         break;
     default:
         N_LERROR("Got a Player Action with an unknown status: {}", pck.status);
@@ -863,7 +943,11 @@ void Player::_onProgramCommandBlock(UNUSED protocol::ProgramCommandBlock &pck) {
 
 void Player::_onProgramCommandBlockMinecart(UNUSED protocol::ProgramCommandBlockMinecart &pck) { N_LDEBUG("Got a Program Command Block Minecart"); }
 
-void Player::_onSetCreativeModeSlot(UNUSED protocol::SetCreativeModeSlot &pck) { N_LDEBUG("Got a Set Creative Mode Slot"); }
+void Player::_onSetCreativeModeSlot(protocol::SetCreativeModeSlot &pck)
+{
+    N_LDEBUG("Got a Set Creative Mode Slot");
+    this->_inventory->at(pck.slot) = pck.clickedItem;
+}
 
 void Player::_onProgramJigsawBlock(UNUSED protocol::ProgramJigsawBlock &pck) { N_LDEBUG("Got a Program Jigsaw Block"); }
 
@@ -906,40 +990,13 @@ void Player::_onUseItemOn(protocol::UseItemOn &pck)
         pck.location.x++;
         break;
     }
-    switch (this->_heldItem) {
-    case 0:
-        this->getDimension()->updateBlock(pck.location, Blocks::GrassBlock::toProtocol(Blocks::GrassBlock::Properties::Snowy::FALSE));
-        break;
-    case 1:
-        this->getDimension()->updateBlock(pck.location, Blocks::Dirt::toProtocol());
-        break;
-    case 2:
-        this->getDimension()->updateBlock(pck.location, Blocks::Bedrock::toProtocol());
-        break;
-    case 3:
-        this->getDimension()->updateBlock(pck.location, Blocks::OakLog::toProtocol(Blocks::OakLog::Properties::Axis::Y));
-        break;
-    case 4:
-        this->getDimension()->updateBlock(
-            pck.location,
-            Blocks::OakLeaves::toProtocol(
-                Blocks::OakLeaves::Properties::Distance::ONE, Blocks::OakLeaves::Properties::Persistent::FALSE, Blocks::OakLeaves::Properties::Waterlogged::FALSE
-            )
-        );
-        break;
-    case 5:
-        this->getDimension()->updateBlock(pck.location, Blocks::Glass::toProtocol());
-        break;
-    case 6:
-        this->getDimension()->updateBlock(pck.location, Blocks::Cobblestone::toProtocol());
-        break;
-    case 7:
-        this->getDimension()->updateBlock(pck.location, Blocks::PinkTerracotta::toProtocol());
-        break;
-    case 8:
-        this->getDimension()->updateBlock(pck.location, Blocks::PurpleCarpet::toProtocol());
-        break;
-    }
+    if (_inventory->hotbar().at(this->_heldItem).present)
+        this->getDimension()->updateBlock(pck.location, GLOBAL_PALETTE.fromBlockToProtocolId(ITEM_CONVERTER.fromProtocolIdToItem(_inventory->hotbar().at(this->_heldItem).itemID)));
+    if (_gamemode == player_attributes::Gamemode::Creative)
+        return;
+    this->_inventory->hotbar().at(this->_heldItem).itemCount--;
+    if (_inventory->hotbar().at(this->_heldItem).itemCount == 0)
+        _inventory->hotbar().at(this->_heldItem).reset();
 }
 
 void Player::_onUseItem(UNUSED protocol::UseItem &pck) { N_LDEBUG("Got a Use Item"); }
@@ -1070,7 +1127,7 @@ void Player::_continueLoginSequence()
 
     this->sendSetDefaultSpawnPosition({{0, 100, 0}, 0.0f});
 
-    this->sendSetContainerContent({0, 0, {}, {false}});
+    this->sendSetContainerContent({_inventory});
 
     // TODO: set entity metadata
     // this->sendEntityMetadata({this->_id, {}});
@@ -1160,11 +1217,17 @@ void Player::_foodTick()
         _foodTickTimer++;
 }
 
-void Player::_eat(ItemId itemId)
+void Player::_eat()
 {
+    if (_gamemode != player_attributes::Gamemode::Survival && _gamemode != player_attributes::Gamemode::Adventure)
+        return;
+    if (this->_inventory->hotbar().at(this->_heldItem).present == false)
+        return;
+
     using namespace player_attributes;
-    auto food = std::find_if(Items::foodItems.begin(), Items::foodItems.end(), [itemId](const Items::FoodItem &item) {
-        return item.id == itemId;
+
+    auto food = std::find_if(Items::foodItems.begin(), Items::foodItems.end(), [this](const Items::FoodItem &item) {
+        return item.id == this->_inventory->hotbar().at(this->_heldItem).itemID;
     });
     if (food == Items::foodItems.end()) {
         LERROR("Trying to eat an item that is not food");
@@ -1181,6 +1244,8 @@ void Player::_eat(ItemId itemId)
     if (_foodSaturationLevel > _foodLevel)
         _foodSaturationLevel = _foodLevel;
     this->sendHealth();
+    _inventory->hotbar().at(this->_heldItem).itemCount--;
+    this->sendSetContainerSlot({_inventory, static_cast<int16_t>(this->_heldItem + HOTBAR_OFFSET)});
 }
 
 void Player::teleport(const Vector3<double> &pos)

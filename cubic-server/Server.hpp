@@ -27,6 +27,8 @@
 #include "protocol_id_converter/itemConverter.hpp"
 
 #include "Permissions.hpp"
+#include "loot_tables/LootTables.hpp"
+
 #include "options.hpp"
 
 #include "recipes/Recipes.hpp"
@@ -49,20 +51,18 @@ struct OutboundClientData {
 
 class Server {
 public:
+    friend int main(int argc, char **argv);
+
+public:
     ~Server();
 
     void launch(const configuration::ConfigHandler &config);
-
     void stop();
-
     void reload();
 
     const configuration::ConfigHandler &getConfig() const { return _config; }
-
     const WhitelistHandling::Whitelist &getWhitelist() const { return _whitelist; }
-
     bool isWhitelistEnabled() const { return _config["whitelist-enabled"]; }
-
     bool isWhitelistEnforce() const { return _config["enforce-whitelist"]; }
 
     static Server *getInstance()
@@ -74,27 +74,19 @@ public:
     // const boost::container::flat_map<size_t, std::shared_ptr<Client>> &getClients() const { return _clients; }
 
     const std::unordered_map<size_t, std::shared_ptr<Client>> &getClients() const { return _clients; }
-
     std::shared_ptr<WorldGroup> getWorldGroup(const std::string_view &name) { return this->_worldGroups.at(name); }
-
     const std::shared_ptr<WorldGroup> getWorldGroup(const std::string_view &name) const { return this->_worldGroups.at(name); }
-
     const std::vector<std::unique_ptr<CommandBase>> &getCommands() const { return _commands; }
-
     bool isRunning() const { return _running; }
-
     const Blocks::GlobalPalette &getGlobalPalette() const { return _globalPalette; }
-
     const Items::ItemConverter &getItemConverter() const { return _itemConverter; }
-
     std::unordered_map<std::string_view, std::shared_ptr<WorldGroup>> &getWorldGroups();
-
     const std::unordered_map<std::string_view, std::shared_ptr<WorldGroup>> &getWorldGroups() const;
-
     Recipes &getRecipeSystem(void) noexcept;
 
-    void sendData(size_t clientID, std::unique_ptr<std::vector<uint8_t>> &&data);
+    LootTables &getLootTableSystem(void) noexcept;
 
+    void sendData(size_t clientID, std::unique_ptr<std::vector<uint8_t>> &&data);
     void triggerClientCleanup(size_t clientID = -1);
 
     Permissions permissions;
@@ -111,6 +103,7 @@ public:
 
 private:
     std::atomic<bool> _running;
+    std::atomic<bool> _hasTerminated;
 
     // Looks like it is thread-safe, if something breaks it is here
     // std::vector<std::shared_ptr<Client>> _clients;
@@ -124,6 +117,7 @@ private:
     Blocks::GlobalPalette _globalPalette;
     Items::ItemConverter _itemConverter;
     Recipes _recipes;
+    LootTables _lootTables;
 
     // new boost stuff
 

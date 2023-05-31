@@ -1,0 +1,28 @@
+target_sources (${CMAKE_PROJECT_NAME} PRIVATE 
+    AdvancementEntity.cpp
+    AdvancementEntity.hpp
+    AdvancementReward.cpp
+    AdvancementReward.hpp
+    Barter.cpp
+    Barter.hpp
+    Block.cpp
+    Block.hpp
+    Chest.cpp
+    Chest.hpp
+    Command.cpp
+    Command.hpp
+    Empty.cpp
+    Empty.hpp
+    Entity.cpp
+    Entity.hpp
+    Fishing.cpp
+    Fishing.hpp
+    Generic.cpp
+    Generic.hpp
+    Gift.cpp
+    Gift.hpp
+    LootContext.cpp
+    LootContext.hpp
+    Selector.cpp
+    Selector.hpp
+)

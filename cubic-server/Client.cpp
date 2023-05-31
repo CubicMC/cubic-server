@@ -480,13 +480,6 @@ void Client::disconnect(const chat::Message &reason)
     N_LDEBUG("Sent a disconnect login packet");
 }
 
-void Client::stop(const chat::Message &reason)
-{
-    this->disconnect(reason);
-    // if (this->_networkThread.joinable())
-    //     this->_networkThread.join();
-}
-
 void Client::_loginSequence(const protocol::LoginSuccess &pck)
 {
     // Encryption request
