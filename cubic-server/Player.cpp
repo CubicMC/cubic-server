@@ -608,12 +608,13 @@ void Player::sendSetDefaultSpawnPosition(const protocol::SetDefaultSpawnPosition
     N_LDEBUG("Sent set default spawn position packet");
 }
 
-// void Player::sendSetEntityMetadata(const protocol::SetEntityMetadata &packet)
-// {
-//     auto pck = protocol::createSetEntityMetadata(packet);
-//     client->doWrite(std::move(pck));
-//     LDEBUG("Sent set entity metadata packet");
-// }
+void Player::sendSetEntityMetadata(const protocol::SetEntityMetadata &packet)
+{
+    GET_CLIENT();
+    auto pck = protocol::createSetEntityMetadata(packet);
+    client->doWrite(std::move(pck));
+    LDEBUG("Sent set entity metadata packet");
+}
 
 void Player::sendUpdateAttributes(const protocol::UpdateAttributes &packet)
 {
