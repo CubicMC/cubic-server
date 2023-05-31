@@ -1,8 +1,8 @@
 #include "Log.hpp"
 #include "Server.hpp"
 
-#include "logging/logging.hpp"
 #include "logging/Sinks.hpp"
+#include "logging/logging.hpp"
 
 void command_parser::Log::autocomplete(UNUSED std::vector<std::string> &args, Player *invoker) const
 {

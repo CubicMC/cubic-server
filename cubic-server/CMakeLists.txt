@@ -10,6 +10,8 @@ target_sources (${CMAKE_PROJECT_NAME} PRIVATE
     PlayerAttributes.hpp
     Entity.cpp
     Entity.hpp
+    Item.cpp
+    Item.hpp
     LivingEntity.cpp
     LivingEntity.hpp
     Chat.cpp

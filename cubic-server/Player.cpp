@@ -5,6 +5,7 @@
 #include "Dimension.hpp"
 #include "world_storage/Level.hpp"
 #include "Entity.hpp"
+#include "Item.hpp"
 #include "PlayerAttributes.hpp"
 #include "Server.hpp"
 #include "World.hpp"
@@ -23,7 +24,7 @@
     return
 
 Player::Player(std::weak_ptr<Client> cli, std::shared_ptr<Dimension> dim, u128 uuid, const std::string &username):
-    LivingEntity(dim),
+    LivingEntity(dim, protocol::SpawnEntity::EntityType::Player),
     _cli(cli),
     _username(username),
     _uuid(uuid),
@@ -613,12 +614,13 @@ void Player::sendSetDefaultSpawnPosition(const protocol::SetDefaultSpawnPosition
     N_LDEBUG("Sent set default spawn position packet");
 }
 
-// void Player::sendSetEntityMetadata(const protocol::SetEntityMetadata &packet)
-// {
-//     auto pck = protocol::createSetEntityMetadata(packet);
-//     client->doWrite(std::move(pck));
-//     LDEBUG("Sent set entity metadata packet");
-// }
+void Player::sendSetEntityMetadata(const protocol::SetEntityMetadata &packet)
+{
+    GET_CLIENT();
+    auto pck = protocol::createSetEntityMetadata(packet);
+    client->doWrite(std::move(pck));
+    LDEBUG("Sent set entity metadata packet");
+}
 
 void Player::sendUpdateAttributes(const protocol::UpdateAttributes &packet)
 {
@@ -826,6 +828,8 @@ void Player::_onPlayerAction(protocol::PlayerAction &pck)
         }
         this->getDimension()->updateBlock(pck.location, 0);
         _foodExhaustionLevel += 0.005;
+        // TODO: change the 721 magic value with the loot tables (for instance it's a acaccia boat)
+        _dim->makeEntity<Item>(721)->dropItem({static_cast<double>(pck.location.x) + 0.5, static_cast<double>(pck.location.y), static_cast<double>(pck.location.z) + 0.5});
         break;
     case protocol::PlayerAction::Status::DropItemStack:
         break;

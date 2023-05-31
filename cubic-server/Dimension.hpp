@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "options.hpp"
+#include "protocol/ClientPackets.hpp"
 #include "world_storage/ChunkColumn.hpp"
 #include "world_storage/Level.hpp"
 
@@ -19,7 +20,7 @@ class World;
 class Player;
 class Entity;
 
-class Dimension {
+class Dimension : public std::enable_shared_from_this<Dimension> {
 private:
     using ChunkRequest = struct {
         int32_t id;
@@ -53,7 +54,12 @@ public:
     world_storage::Level &getLevel();
     virtual void generateChunk(int x, int z);
     virtual void updateBlock(Position position, int32_t id);
+    void addEntityMetadata(const protocol::SetEntityMetadata &metadata);
+    void updateEntityAttributes(const protocol::UpdateAttributes &attributes);
     virtual void spawnPlayer(Player &player);
+    virtual void spawnEntity(std::shared_ptr<Entity> entity);
+    template<isBaseOf<Entity> T, typename... Args>
+    std::shared_ptr<T> makeEntity(Args &&...);
 
     /**
      * @brief Check if a chunk is loaded
@@ -117,5 +123,13 @@ protected:
     std::unordered_map<Position2D, ChunkRequest> _loadingChunks;
     std::thread _processingThread;
 };
+
+template<isBaseOf<Entity> T, typename... Args>
+std::shared_ptr<T> Dimension::makeEntity(Args &&...args)
+{
+    auto entity = std::make_shared<T>(shared_from_this(), args...);
+    this->addEntity(entity);
+    return entity;
+}
 
 #endif // CUBICSERVER_DIMENSION_HPP
