@@ -42,6 +42,12 @@ target_sources (${CMAKE_PROJECT_NAME} PRIVATE
     PluginManager.cpp
     exceptions.hpp
     nbt.c
+    EASEncryptionHandler.cpp
+    EASEncryptionHandler.hpp
+    RSAEncryptionHandler.cpp
+    RSAEncryptionHandler.hpp
+    Checksum.cpp
+    Checksum.hpp
 )
 
 file(MAKE_DIRECTORY ${CMAKE_BINARY_DIR}/plugins)

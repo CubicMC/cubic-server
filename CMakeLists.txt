@@ -110,6 +110,12 @@ FetchContent_Declare(
 )
 
 FetchContent_Declare(
+    mbedtls
+    GIT_REPOSITORY https://github.com/Mbed-TLS/mbedtls.git
+    GIT_TAG v3.4.0
+)
+
+FetchContent_Declare(
     plugin-interface
     GIT_REPOSITORY https://github.com/CubicMC/plugin-interface.git
 )
@@ -121,6 +127,7 @@ FetchContent_MakeAvailable(
     argparse
     nbt
     spdlog
+    mbedtls
     boost
     plugin-interface
 )
@@ -159,7 +166,7 @@ if(GTEST) # if the flag GTEST is true
 endif()
 
 find_package(Threads REQUIRED)
-#find_package(Boost REQUIRED)
+find_package(CURL REQUIRED)
 find_package(PkgConfig REQUIRED)
 pkg_check_modules(GTKMM gtkmm-3.0)
 
@@ -205,7 +212,9 @@ target_link_libraries (${CMAKE_PROJECT_NAME} PRIVATE
     z
     argparse
     yaml-cpp
+    MbedTLS::mbedtls
     spdlog::spdlog
+    CURL::libcurl
     $<$<BOOL:${MINGW}>:ws2_32>
     Boost::asio
     Boost::container

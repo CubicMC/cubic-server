@@ -11,6 +11,7 @@
 #include <cstdint>
 #include <memory>
 #include <mutex>
+#include <thread>
 
 Dimension::Dimension(std::shared_ptr<World> world):
     _dimensionLock(std::counting_semaphore<1000>(0)),
@@ -242,6 +243,8 @@ void Dimension::spawnPlayer(Player &current)
             LDEBUG("send spawn player to {}", current.getUsername());
             //}
         }
+        player->sendSkinLayers(current_id);
+        current.sendSkinLayers(player->getId());
     }
 }
 
