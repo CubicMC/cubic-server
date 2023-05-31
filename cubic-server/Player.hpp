@@ -8,14 +8,20 @@
 #include "SoundList.hpp"
 #include "TickClock.hpp"
 #include "chat/Message.hpp"
+#include "concept.hpp"
 #include "math/Vector3.hpp"
 #include "protocol/ClientPackets.hpp"
 #include "protocol/ServerPackets.hpp"
 #include "protocol/common.hpp"
+#include "protocol/container/Container.hpp"
+#include "protocol/container/Inventory.hpp"
 #include "types.hpp"
 #include "world_storage/ChunkColumn.hpp"
 #include <compare>
+#include <cstdint>
 #include <memory>
+#include <sys/types.h>
+#include <type_traits>
 
 class Client;
 // class Entity;
@@ -48,6 +54,7 @@ public:
     bool isOperator() const;
     NODISCARD const std::vector<protocol::PlayerProperty> &getProperties() const;
     void sendSkinLayers(int32_t entityID);
+    std::shared_ptr<const protocol::container::Inventory> getInventory() const { return _inventory; };
 
 public:
     void setPosition(const Vector3<double> &pos, bool onGround) override;
@@ -58,6 +65,10 @@ public:
     void setOperator(const bool isOp);
     void setKeepAliveId(long id);
     void updatePlayerInfo(const protocol::PlayerInfoUpdate &data);
+
+    template<isBaseOf<protocol::container::Container> Container, typename... Args>
+    std::shared_ptr<Container> openContainer(Args &...);
+    void closeContainer(uint8_t id);
 
 public:
     void disconnect(const chat::Message &reason = "Disconnected");
@@ -96,7 +107,9 @@ public:
     void sendServerData(const protocol::ServerData &packet);
     void sendGameEvent(const protocol::GameEvent &packet);
     void sendEntityAnimation(protocol::EntityAnimation::ID animId, int32_t entityID);
+    void sendCloseContainer(uint8_t containerId);
     void sendSetContainerContent(const protocol::SetContainerContent &packet);
+    void sendSetContainerSlot(const protocol::SetContainerSlot &packet);
     void sendUpdateRecipes(const protocol::UpdateRecipes &packet);
     void sendUpdateTags(const protocol::UpdateTags &packet);
     void sendCommands(const protocol::Commands &packet);
@@ -106,7 +119,7 @@ public:
     void sendUpdateRecipiesBook(const protocol::UpdateRecipesBook &packet);
     void sendInitializeWorldBorder(const protocol::InitializeWorldBorder &packet);
     void sendSetDefaultSpawnPosition(const protocol::SetDefaultSpawnPosition &packet);
-    // void sendSetEntityMetadata(const protocol::SetEntityMetadata &packet);
+    void sendSetEntityMetadata(const protocol::SetEntityMetadata &packet); // TODO: mourrir
     void sendUpdateAttributes(const protocol::UpdateAttributes &packet);
     void sendUpdateAdvancements(const protocol::UpdateAdvancements &packet);
     void sendSetExperience(const protocol::SetExperience &packet);
@@ -171,7 +184,7 @@ private:
     void _continueLoginSequence();
     void _unloadChunk(int32_t x, int32_t z);
     void _foodTick();
-    void _eat(ItemId itemId);
+    void _eat();
 
     std::weak_ptr<Client> _cli;
     std::string _username;
@@ -179,11 +192,15 @@ private:
     u128 _uuid;
     long _keepAliveId;
     uint8_t _keepAliveIgnored;
-    uint16_t _heldItem;
+    int16_t _heldItem;
     player_attributes::Gamemode _gamemode;
     TickClock _keepAliveClock;
     std::unordered_map<Position2D, ChunkState> _chunks;
     mutable std::mutex _chunksMutex;
+
+    // Inventory
+    std::shared_ptr<protocol::container::Inventory> _inventory;
+    std::vector<std::shared_ptr<protocol::container::Container>> _containers;
 
     // Food Mechanics
     int _foodLevel;
@@ -198,5 +215,11 @@ private:
     bool _isSprinting;
     bool _isJumping;
 };
+
+template<isBaseOf<protocol::container::Container> Container, typename... Args>
+std::shared_ptr<Container> Player::openContainer(Args &...args)
+{
+    return _containers.emplace_back(std::make_shared<Container>(std::forward<Args>(args)...));
+}
 
 #endif // CUBICSERVER_PLAYER_HPP

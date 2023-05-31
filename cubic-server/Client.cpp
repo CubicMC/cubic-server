@@ -343,7 +343,7 @@ void Client::_onEncryptionResponse(UNUSED protocol::EncryptionResponse &pck)
     N_LDEBUG("Got a Encryption Response");
     if (pck.sharedSecret.size() > encryptionMaximumLength || pck.verifyToken.size() > encryptionMaximumLength) {
         LWARN("Encryption key too long");
-        stop();
+        disconnect();
         return;
     }
     auto &rsaKey = Server::getInstance()->getPrivateKey();
@@ -351,19 +351,19 @@ void Client::_onEncryptionResponse(UNUSED protocol::EncryptionResponse &pck)
     int res = rsaKey.decrypt(pck.verifyToken, (uint8_t *) decryptedToken, sizeof(decryptedToken));
     if (res != 4) {
         LWARN("Bad verify token of size {}", res);
-        stop();
+        disconnect();
         return;
     }
     if (decryptedToken[0] != (uint32_t) (uintptr_t) this) {
         LWARN("Bad verify token");
-        stop();
+        disconnect();
         return;
     }
     uint8_t decryptedKey[encryptionMaximumLength];
     res = rsaKey.decrypt(pck.sharedSecret, decryptedKey, sizeof(decryptedKey));
     if (res != 16) {
         LWARN("Bad key length");
-        stop();
+        disconnect();
         return;
     }
     N_LDEBUG("Starting encryption");
@@ -401,7 +401,7 @@ bool Client::_handleOnline(const std::array<uint8_t, 16> &key)
     curl = curl_easy_init();
     if (!curl) {
         LERROR("Could not init curl");
-        stop();
+        disconnect();
         return false;
     }
     curl_easy_setopt(curl, CURLOPT_URL, std::string("https://sessionserver.mojang.com/session/minecraft/hasJoined?username=" + _resPck.username + "&serverId=" + serverID).c_str());
@@ -411,7 +411,7 @@ bool Client::_handleOnline(const std::array<uint8_t, 16> &key)
     curl_easy_cleanup(curl);
     if (res != CURLcode::CURLE_OK || readBuffer.empty()) {
         LERROR("Could not query mojang's API or authentication failed");
-        stop();
+        disconnect();
         return false;
     }
     nlohmann::json result = nlohmann::json::parse(readBuffer);
@@ -597,13 +597,6 @@ void Client::disconnect(const chat::Message &reason)
     doWrite(std::move(pck));
     _isRunning = false;
     N_LDEBUG("Sent a disconnect login packet");
-}
-
-void Client::stop(const chat::Message &reason)
-{
-    this->disconnect(reason);
-    // if (this->_networkThread.joinable())
-    //     this->_networkThread.join();
 }
 
 void Client::_loginSequence(const protocol::LoginSuccess &pck)

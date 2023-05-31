@@ -9,6 +9,7 @@
 #include "PlayerAttributes.hpp"
 #include "Structures.hpp"
 #include "common.hpp"
+#include "protocol/container/Container.hpp"
 #include "types.hpp"
 #include "world_storage/ChunkColumn.hpp"
 
@@ -31,7 +32,9 @@ enum class ClientPacketID : int32_t {
     BlockUpdate = 0x09,
     ChangeDifficulty = 0x0B,
     Commands = 0x0E,
+    CloseContainer = 0x0F,
     SetContainerContent = 0x10,
+    SetContainerSlot = 0x12,
     PluginMessage = 0x15,
     // CustomSoundEffect = 0x16, TODO: This is removed in the last revision of wiki.vg
     DisconnectPlay = 0x17,
@@ -58,7 +61,7 @@ enum class ClientPacketID : int32_t {
     SetHeldItem = 0x49,
     CenterChunk = 0x4a,
     SetDefaultSpawnPosition = 0x4c,
-    // SetEntityMetadata = 0x4e, HAHA LOL
+    SetEntityMetadata = 0x4e,
     EntityVelocity = 0x50,
     SetExperience = 0x52,
     Health = 0x53,
@@ -288,13 +291,26 @@ struct Commands {
 };
 std::unique_ptr<std::vector<uint8_t>> createCommands(const Commands &);
 
-struct SetContainerContent {
+struct CloseContainer {
     uint8_t windowId;
-    int32_t stateId;
-    std::vector<Slot> slotData;
-    Slot carriedItem;
+};
+std::unique_ptr<std::vector<uint8_t>> createCloseContainer(const CloseContainer &);
+
+struct SetContainerContent {
+    const std::shared_ptr<container::Container> container;
 };
 std::unique_ptr<std::vector<uint8_t>> createSetContainerContent(const SetContainerContent &);
+
+struct SetContainerSlot {
+    SetContainerSlot(const std::shared_ptr<container::Container> &container, int8_t containerId, int16_t slot)
+        : container(container), containerId(containerId), slot(slot) {}
+    SetContainerSlot(const std::shared_ptr<container::Container> &container, int16_t slot)
+        : container(container), containerId(container->id()), slot(slot) {}
+    const std::shared_ptr<container::Container> container;
+    int8_t containerId;
+    int16_t slot;
+};
+std::unique_ptr<std::vector<uint8_t>> createSetContainerSlot(const SetContainerSlot &);
 
 struct PluginMessageResponse {
     std::string channel;
@@ -644,45 +660,46 @@ struct SetDefaultSpawnPosition {
 };
 std::unique_ptr<std::vector<uint8_t>> createSetDefaultSpawnPosition(const SetDefaultSpawnPosition &);
 
-// struct SetEntityMetadata {
-//     struct EntityMetadata {
-//         uint8_t index;
-//         enum class Type : int32_t {
-//             Byte = 0,
-//             VarInt = 1,
-//             VarLong = 2,
-//             Float = 3,
-//             String = 4,
-//             Chat = 5,
-//             OptChat = 6,
-//             Slot = 7,
-//             Boolean = 8,
-//             Rotation = 9,
-//             Position = 10,
-//             OptPosition = 11,
-//             Direction = 12,
-//             OptUUID = 13,
-//             BlockID = 14,
-//             OptBlockID = 15,
-//             NBT = 16,
-//             Particle = 17,
-//             VillagerData = 18,
-//             OptVarInt = 19,
-//             Pose = 20,
-//             CatVariant = 21,
-//             FrogVariant = 22,
-//             OptGlobalPos = 23,
-//             PaintingVariant = 24,
-//             SnifferState = 25,
-//             Vector3 = 26,
-//             Quaternion = 27,
-//         } type;
-//         // TODO: value GLHF;
-//     };
-//     int32_t entityId;
-//     std::vector<EntityMetadata> metadata;
-// };
-// std::unique_ptr<std::vector<uint8_t>> createSetEntityMetadata(const SetEntityMetadata &);
+struct SetEntityMetadata {
+    struct EntityMetadata {
+        uint8_t index;
+        enum class Type : int32_t {
+            Byte = 0,
+            VarInt = 1,
+            VarLong = 2,
+            Float = 3,
+            String = 4,
+            Chat = 5,
+            OptChat = 6,
+            Slot = 7,
+            Boolean = 8,
+            Rotation = 9,
+            Position = 10,
+            OptPosition = 11,
+            Direction = 12,
+            OptUUID = 13,
+            BlockID = 14,
+            OptBlockID = 15,
+            NBT = 16,
+            Particle = 17,
+            VillagerData = 18,
+            OptVarInt = 19,
+            Pose = 20,
+            CatVariant = 21,
+            FrogVariant = 22,
+            OptGlobalPos = 23,
+            PaintingVariant = 24,
+            SnifferState = 25,
+            Vector3 = 26,
+            Quaternion = 27,
+        } type;
+        Slot slot; // TODO: remove (hardcoded)
+        // TODO: value GLHF;
+    };
+    int32_t entityId;
+    std::vector<EntityMetadata> metadata;
+};
+std::unique_ptr<std::vector<uint8_t>> createSetEntityMetadata(const SetEntityMetadata &);
 
 struct UpdateTime {
     long worldAge;

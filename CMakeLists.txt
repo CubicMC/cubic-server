@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.14.0)
+cmake_minimum_required(VERSION 3.20.0)
 
 if(CMAKE_VERSION VERSION_GREATER_EQUAL 3.24.0)
     cmake_policy(SET CMP0135 OLD)
@@ -15,7 +15,13 @@ option(DEBUG_NETWORK "Print network messages" OFF)
 if(DEBUG_NETWORK)
     add_compile_definitions(DEBUG_NETWORK)
 endif()
+
+option(NO_GUI "Build without GUI" OFF)
+option(STATIC_LINK "Link the binary statically" OFF)
+
 message(STATUS "Debugging network: ${DEBUG_NETWORK}")
+message(STATUS "Building without GUI: ${NO_GUI}")
+message(STATUS "Linking statically: ${STATIC_LINK}")
 
 # This must be set before the project command
 set(CMAKE_USER_MAKE_RULES_OVERRIDE_CXX ${CMAKE_CURRENT_SOURCE_DIR}/cxx_flag_overrides.cmake)
@@ -39,42 +45,61 @@ if (CMAKE_BUILD_TYPE MATCHES Release)
     endif()
 endif()
 
+set(BOOST_INCLUDE_LIBRARIES asio system container lockfree circular_buffer)
+set(BOOST_ENABLE_CMAKE ON)
+
 include(FetchContent)
+
+set(FETCHCONTENT_QUIET OFF)
 
 FetchContent_Declare(
     yaml-cpp
     GIT_REPOSITORY https://github.com/jbeder/yaml-cpp.git
     GIT_TAG 4ae4cb7309c07b2d8623d7e4f01efa6321441366 # The latest yaml-cpp commit at the time of writing.
+    GIT_PROGRESS TRUE
 )
 
 FetchContent_Declare(
     json
     GIT_REPOSITORY https://github.com/nlohmann/json.git
     GIT_TAG v3.11.2
+    GIT_PROGRESS TRUE
 )
 
 FetchContent_Declare(
     spdlog
     GIT_REPOSITORY https://github.com/gabime/spdlog.git
     GIT_TAG v1.11.0
+    GIT_PROGRESS TRUE
 )
 
 FetchContent_Declare(
     noise
     GIT_REPOSITORY https://github.com/Reputeless/PerlinNoise.git
     GIT_TAG v3.0.0
+    GIT_PROGRESS TRUE
 )
 
 FetchContent_Declare(
     nbt
     GIT_REPOSITORY https://github.com/CubicMC/libnbt.git
     GIT_TAG v1.0.1
+    GIT_PROGRESS TRUE
 )
 
 FetchContent_Declare(
     argparse
     GIT_REPOSITORY https://github.com/p-ranav/argparse.git
     GIT_TAG v2.9
+    GIT_PROGRESS TRUE
+)
+
+FetchContent_Declare(
+    boost
+    GIT_REPOSITORY https://github.com/boostorg/boost.git
+    GIT_TAG boost-1.82.0
+    GIT_PROGRESS TRUE
+    GIT_SHALLOW TRUE
 )
 
 FetchContent_Declare(
@@ -91,6 +116,7 @@ FetchContent_MakeAvailable(
     nbt
     spdlog
     mbedtls
+    boost
 )
 
 # Fix spdlog warnings
@@ -127,18 +153,14 @@ if(GTEST) # if the flag GTEST is true
 endif()
 
 find_package(Threads REQUIRED)
-find_package(Boost REQUIRED)
 find_package(CURL REQUIRED)
 find_package(PkgConfig REQUIRED)
 pkg_check_modules(GTKMM gtkmm-3.0)
 
-option(NO_GUI "Build without GUI" OFF)
 if(NOT GTKMM_FOUND)
     message(WARNING "Gtkmm not found! Building without GUI.")
     set(NO_GUI ON)
 endif()
-
-option(STATIC_LINK "Link the binary statically" OFF)
 
 add_executable(${CMAKE_PROJECT_NAME})
 target_compile_definitions(${CMAKE_PROJECT_NAME} PRIVATE
@@ -159,6 +181,7 @@ add_subdirectory(cubic-server)
 target_include_directories(${CMAKE_PROJECT_NAME} PRIVATE
     ${noise_SOURCE_DIR}
     ${nbt_SOURCE_DIR}
+    ${boost_SOURCE_DIR}
 )
 
 if (NOT NO_GUI)
@@ -180,6 +203,11 @@ target_link_libraries (${CMAKE_PROJECT_NAME} PRIVATE
     spdlog::spdlog
     CURL::libcurl
     $<$<BOOL:${MINGW}>:ws2_32>
+    Boost::asio
+    Boost::container
+    Boost::system
+    Boost::lockfree
+    Boost::circular_buffer
 )
 
 if (CMAKE_BUILD_TYPE MATCHES RELWITHDEBINFO)

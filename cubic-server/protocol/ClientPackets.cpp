@@ -50,12 +50,9 @@ std::unique_ptr<std::vector<uint8_t>> protocol::createLoginSuccess(const LoginSu
     // in.isSigned, addBoolean
     for (auto &property : in.properties) {
         serialize(payload,
-            property.name,
-            addString,
-            property.value,
-            addString,
-            property.isSigned,
-            addBoolean
+            property.name, addString,
+            property.value, addString,
+            property.isSigned, addBoolean
         );
         if (property.isSigned) {
             serialize(payload,
@@ -197,19 +194,48 @@ std::unique_ptr<std::vector<uint8_t>> protocol::createCommands(const Commands &i
     return packet;
 }
 
+std::unique_ptr<std::vector<uint8_t>> protocol::createCloseContainer(const CloseContainer &in)
+{
+    std::vector<uint8_t> payload;
+    // clang-format off
+    serialize(payload,
+        in.windowId, addByte
+    );
+    // clang-format on
+    auto packet = std::make_unique<std::vector<uint8_t>>();
+    finalize(*packet, payload, ClientPacketID::CloseContainer);
+    return packet;
+}
+
 std::unique_ptr<std::vector<uint8_t>> protocol::createSetContainerContent(const SetContainerContent &in)
 {
     std::vector<uint8_t> payload;
     // clang-format off
     serialize(payload,
-        in.windowId, addByte,
-        in.stateId, addVarInt,
-        in.slotData, addArray<Slot, addSlot>,
-        in.carriedItem, addSlot
+        in.container->id(), addByte,
+        in.container->state(), addVarInt,
+        *in.container, addContainer,
+        in.container->cariedItem(), addSlot
     );
     // clang-format on
     auto packet = std::make_unique<std::vector<uint8_t>>();
     finalize(*packet, payload, ClientPacketID::SetContainerContent);
+    return packet;
+}
+
+std::unique_ptr<std::vector<uint8_t>> protocol::createSetContainerSlot(const SetContainerSlot &in)
+{
+    std::vector<uint8_t> payload;
+    // clang-format off
+    serialize(payload,
+        in.containerId, addByte,
+        in.container->state(), addVarInt,
+        in.slot, addShort,
+        in.container->at(in.slot), addSlot
+    );
+    // clang-format on
+    auto packet = std::make_unique<std::vector<uint8_t>>();
+    finalize(*packet, payload, ClientPacketID::SetContainerSlot);
     return packet;
 }
 
@@ -723,19 +749,22 @@ std::unique_ptr<std::vector<uint8_t>> protocol::createSetDefaultSpawnPosition(co
     return packet;
 }
 
-// std::unique_ptr<std::vector<uint8_t>> protocol::createSetEntityMetadata(const SetEntityMetadata &in)
-// {
-//     std::vector<uint8_t> payload;
-//     // clang-format off
-//     serialize(payload,
-//         in.entityId, addVarInt,
-//         in.metadata, addMetadata
-//     );
-//     // clang-format on
-//     auto packet = std::make_unique<std::vector<uint8_t>>();
-//     finalize(*packet, payload, ClientPacketID::SetEntityMetadata);
-//     return packet;
-// }
+std::unique_ptr<std::vector<uint8_t>> protocol::createSetEntityMetadata(const SetEntityMetadata &in)
+{
+    std::vector<uint8_t> payload;
+    // clang-format off
+    serialize(payload,
+        in.entityId, addVarInt,
+        in.metadata[0].index, addByte,
+        in.metadata[0].type, addVarInt,
+        in.metadata[0].slot, addSlot,
+        0xff, addByte
+    );
+    // clang-format on
+    auto packet = std::make_unique<std::vector<uint8_t>>();
+    finalize(*packet, payload, ClientPacketID::SetEntityMetadata);
+    return packet;
+}
 
 std::unique_ptr<std::vector<uint8_t>> protocol::createUpdateTime(const UpdateTime &in)
 {

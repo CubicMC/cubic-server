@@ -9,3 +9,4 @@
 #include "command_parser/commands/Seed.hpp"
 #include "command_parser/commands/Stop.hpp"
 #include "command_parser/commands/Time.hpp"
+#include "command_parser/commands/Loot.hpp"
