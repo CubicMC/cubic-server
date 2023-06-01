@@ -12,6 +12,21 @@ enum class Gamemode : uint8_t {
     Adventure,
     Spectator,
 };
+
+inline Gamemode gamemodeFromString(const std::string &str)
+{
+    if (str == "survival")
+        return Gamemode::Survival;
+    else if (str == "creative")
+        return Gamemode::Creative;
+    else if (str == "adventure")
+        return Gamemode::Adventure;
+    else if (str == "spectator")
+        return Gamemode::Spectator;
+    else
+        return Gamemode::Survival;
+}
+
 std::ostream &operator<<(std::ostream &os, const Gamemode &gm);
 
 constexpr int32_t MAX_FOOD_LEVEL = 20;

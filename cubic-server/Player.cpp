@@ -41,7 +41,7 @@ Player::Player(std::weak_ptr<Client> cli, std::shared_ptr<Dimension> dim, u128 u
     _uuid(uuid),
     _keepAliveId(0),
     _keepAliveIgnored(0),
-    _gamemode(player_attributes::Gamemode::Creative),
+    _gamemode(player_attributes::gamemodeFromString(CONFIG["gamemode"].as<std::string>())),
     _keepAliveClock(200, std::bind(&Player::_processKeepAlive, this)), // 5 seconds for keep-alives
     _inventory(std::make_shared<protocol::container::Inventory>()),
     _foodLevel(player_attributes::MAX_FOOD_LEVEL - 4), // TODO: Take this from the saved data
