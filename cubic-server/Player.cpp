@@ -41,7 +41,7 @@ Player::Player(std::weak_ptr<Client> cli, std::shared_ptr<Dimension> dim, u128 u
     _uuid(uuid),
     _keepAliveId(0),
     _keepAliveIgnored(0),
-    _gamemode(player_attributes::Gamemode::Survival),
+    _gamemode(player_attributes::Gamemode::Creative),
     _keepAliveClock(200, std::bind(&Player::_processKeepAlive, this)), // 5 seconds for keep-alives
     _inventory(std::make_shared<protocol::container::Inventory>()),
     _foodLevel(player_attributes::MAX_FOOD_LEVEL - 4), // TODO: Take this from the saved data
@@ -929,9 +929,11 @@ void Player::_onPlaceRecipe(UNUSED protocol::PlaceRecipe &pck) { N_LDEBUG("Got a
 
 void Player::_onPlayerAbilities(protocol::PlayerAbilities &pck)
 {
+    using FlagsByMode = protocol::PlayerAbilities::FlagsByMode;
+
     this->_isFlying = pck.flags & protocol::PlayerAbilities::Flags::Flying;
     uint8_t flags = this->_isFlying ? protocol::PlayerAbilities::Flags::Flying : 0x00;
-    flags |= protocol::PlayerAbilities::Flags::Invulnerable | protocol::PlayerAbilities::Flags::AllowFlying | protocol::PlayerAbilities::Flags::CreativeMode;
+    flags |= getGamemode() == player_attributes::Gamemode::Creative ? FlagsByMode::Creative : FlagsByMode::Survival;
     this->sendPlayerAbilities({flags, 0.05f, 0.1f});
     N_LDEBUG("Got a Player Abilities");
 }

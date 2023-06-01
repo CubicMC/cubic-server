@@ -113,11 +113,13 @@ FetchContent_Declare(
     mbedtls
     GIT_REPOSITORY https://github.com/Mbed-TLS/mbedtls.git
     GIT_TAG v3.4.0
+    GIT_PROGRESS TRUE
 )
 
 FetchContent_Declare(
     plugin-interface
     GIT_REPOSITORY https://github.com/CubicMC/plugin-interface.git
+    GIT_PROGRESS TRUE
 )
 
 FetchContent_MakeAvailable(

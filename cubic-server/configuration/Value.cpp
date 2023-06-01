@@ -1,4 +1,5 @@
 #include "Value.hpp"
+#include "logging/logging.hpp"
 #include <cstdlib>
 #include <filesystem>
 #include <fstream>
@@ -119,23 +120,28 @@ void configuration::Value::parse(const Node &rootNode)
                 break;
         }
         if (!node->isDefined())
-            throw ConfigurationError("Missing value: " + _name);
+            return;
 
         if (node->isArray())
             _value = node->getArray();
         else if (node->isScalar())
             _value = {node->get()};
-        else
-            throw ConfigurationError("Invalid value: '" + _name + "' is not a value or an array of values");
+    }
+
+    // Check if required
+    if (_value.empty()) {
+        if (_required)
+            throw ConfigurationError("Missing value: " + _name);
+        if (_defaultValueConfig.size() > 0)
+            LWARN("Missing value in config: " + _name);
     }
 
     // Check if the value is in the possible values list
     if (_possibleValue.empty())
         return;
 
-    if (_value.empty() && _defaultValue.empty() && _required)
-        throw ConfigurationError("Missing value: " + _name);
-
+    if (_value.empty())
+        return;
     for (auto &value : _value) {
         if (std::find(_possibleValue.begin(), _possibleValue.end(), value) == _possibleValue.end())
             throw ConfigurationError("Invalid value: " + _name + " value '" + value + "' is not in the possible values list");

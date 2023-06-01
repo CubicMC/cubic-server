@@ -14,6 +14,7 @@
 #include <unistd.h>
 
 #include "Client.hpp"
+#include "PlayerAttributes.hpp"
 #include "nbt.hpp"
 
 #include "Checksum.hpp"
@@ -468,7 +469,7 @@ void Client::sendLoginPlay()
         .isHardcore = false, // TODO: something like this this->_player->_dim->getWorld()->getDifficulty(); Thats not difficulty tho (peaceful, easy, normal, hard)
         .gamemode = this->_player->getGamemode(),
         .previousGamemode =
-            player_attributes::Gamemode::Survival, // TODO: something like this this->_player->getPreviousGamemode().has_value() ? this->_player->getPreviousGamemode() : -1;
+            this->_player->getGamemode() == player_attributes::Gamemode::Survival ? player_attributes::Gamemode::Creative : player_attributes::Gamemode::Survival,
         .dimensionNames = std::vector<std::string>({"minecraft:overworld"}), // TODO: something like this this->_player->_dim->getWorld()->getDimensions();
         // clang-format off
         .registryCodec = std::shared_ptr<nbt::Compound>(new nbt::Compound("", {

@@ -352,6 +352,10 @@ struct PlayerAbilities : BaseServerPacket {
         AllowFlying = 0x04,
         CreativeMode = 0x08
     };
+    enum FlagsByMode : uint8_t {
+        Survival = 0,
+        Creative = Invulnerable | Flying | AllowFlying | CreativeMode,
+    };
     uint8_t flags;
 };
 std::unique_ptr<PlayerAbilities> parsePlayerAbilities(std::vector<uint8_t> &buffer);
