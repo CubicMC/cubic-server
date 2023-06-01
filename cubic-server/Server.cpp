@@ -110,22 +110,27 @@ void Server::launch(const configuration::ConfigHandler &config)
 
     this->_running = true;
 
-    auto tmpaddr = boost::asio::ip::make_address(_config["ip"].as<std::string>());
-    boost::asio::ip::address_v6 addr;
-    if (tmpaddr.is_v4())
-        addr = boost::asio::ip::make_address_v6(boost::asio::ip::v4_mapped, tmpaddr.to_v4());
-    else
-        addr = tmpaddr.to_v6();
+    boost::asio::ip::tcp::resolver resolver(_io_context);
+    auto it = resolver.resolve(boost::asio::ip::tcp::resolver::query(_config["ip"].as<std::string>(), std::to_string(_config["port"].as<uint16_t>())));
+    boost::asio::ip::address addr = it->endpoint().address();
+
+    // This force ipv6 for any and loopback
+    // If the user want to use ipv6, he should provide an ipv6 address
+    if (addr == boost::asio::ip::address_v4::any())
+        addr = boost::asio::ip::address_v6::any();
+    else if (addr == boost::asio::ip::address_v4::loopback())
+        addr = boost::asio::ip::address_v6::loopback();
+
     auto endpoint = tcp::endpoint(addr, _config["port"].as<uint16_t>());
 
-    _acceptor = std::make_unique<boost::asio::ip::tcp::acceptor>(_io_context, tcp::v6());
+    _acceptor = std::make_unique<boost::asio::ip::tcp::acceptor>(_io_context, endpoint.protocol());
+
     _acceptor->set_option(boost::asio::ip::tcp::acceptor::reuse_address(true));
-    _acceptor->set_option(boost::asio::ip::v6_only(false));
+    if (addr.is_v6())
+        _acceptor->set_option(boost::asio::ip::v6_only(false));
+
     _acceptor->bind(endpoint);
     _acceptor->listen();
-
-    auto opt = boost::asio::ip::v6_only();
-    _acceptor->get_option(opt);
 
     _writeThread = std::thread(&Server::_writeLoop, this);
 
