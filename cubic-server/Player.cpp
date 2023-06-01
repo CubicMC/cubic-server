@@ -1037,6 +1037,8 @@ void Player::_onProgramCommandBlockMinecart(UNUSED protocol::ProgramCommandBlock
 void Player::_onSetCreativeModeSlot(protocol::SetCreativeModeSlot &pck)
 {
     N_LDEBUG("Got a Set Creative Mode Slot");
+    if (_gamemode != player_attributes::Gamemode::Creative)
+        return;
     this->_inventory->at(pck.slot) = pck.clickedItem;
 }
 
