@@ -3,9 +3,8 @@
 #========
 
 cubic_src += files([
-	'TimeFormatter.cpp',
-	'FileAndFolderHandler.cpp',
-	'Logger.cpp'
+	'Registry.cpp',
+	'Sinks.cpp',
 ])
 
 # cubic_include += include_directories('.')

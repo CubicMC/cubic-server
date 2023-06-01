@@ -7,11 +7,14 @@ project('cubic-server', 'cpp',
 # variables declaration
 #======================
 
-cxxflags =          []
-ldflags  =          []
-cubic_include =     []
-cubic_src =         []
-cubic_deps =        []
+cxxflags =           []
+ldflags  =           []
+cubic_include =      []
+cubic_src =          []
+cubic_deps =         []
+cubic_test_deps =    []
+cubic_test_include = []
+cubic_test_src =     []
 
 #=================================
 # use libc++ on clang if installed
@@ -43,12 +46,16 @@ cxxflags += ['-DPROGRAM_NAME="CubicServer"', '-DPROGRAM_VERSION="' + meson.proje
 thread = dependency('threads',   required: true)
 gtkmm =  dependency('gtkmm-3.0', required: true)
 curl =   dependency('libcurl', required: true)
+boost =  dependency('boost', modules : ['system', 'container'], required: false)
 
-yaml     = dependency('yaml-cpp',      required: false)
-json     = dependency('nlohmann_json', required: false)
-noise    = dependency('perlin_noise',  required: false)
-argparse = dependency('argparse',      required: false)
-crcpp    = dependency('CRCpp',         required: false)
+json     = dependency('nlohmann_json', required: true, default_options: ['warning_level=0'])
+noise    = dependency('perlin_noise',  required: true, default_options: ['warning_level=0'])
+argparse = dependency('argparse',      required: true, default_options: ['warning_level=0'])
+spdlog   = dependency('spdlog',        required: true, default_options: ['warning_level=0'])
+
+yaml     = dependency('yaml-cpp',      required: false, default_options: ['warning_level=0'])
+crcpp    = dependency('CRCpp',         required: false, default_options: ['warning_level=0'])
+mbedtls  = dependency('mbedtls',       required: false, default_options: ['warning_level=0'])
 
 if get_option('buildtype') == 'debug' and get_option('test')
   gtest = dependency('gtest', main: true, required: false)
@@ -61,22 +68,19 @@ endif
 
 cmake = import('cmake')
 
+if not mbedtls.found()
+  mbedtls_subproj = cmake.subproject('mbedtls')
+  mbedtls = mbedtls_subproj.dependency('mbedtls')
+endif
+
+if not boost.found()
+  boost_subproj = cmake.subproject('boost')
+  boost = boost_subproj.dependency('Boost')
+endif
+
 if not yaml.found()
   yaml_subproj = cmake.subproject('yaml-cpp')
   yaml = yaml_subproj.dependency('yaml-cpp')
-endif
-
-if not json.found()
-  json = dependency('nlohmann_json')
-endif
-
-# we need to create a patch fot this one.
-if not noise.found()
-  noise = dependency('perlin_noise')
-endif
-
-if not argparse.found()
-  argparse = dependency('argparse')
 endif
 
 if not crcpp.found()
@@ -84,7 +88,7 @@ if not crcpp.found()
   crcpp = crcpp_subproj.dependency('CRCpp')
 endif
 
-cubic_deps += [ thread, gtkmm, curl, yaml, json, noise, argparse, crcpp ] # need to add perlin
+cubic_deps += [ thread, gtkmm, curl, boost, yaml, json, noise, argparse, spdlog, crcpp, mbedtls ] # need to add perlin
 
 if get_option('buildtype') == 'debug' and get_option('test')
   if not gtest.found()

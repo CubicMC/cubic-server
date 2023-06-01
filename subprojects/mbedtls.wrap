@@ -1,0 +1,7 @@
+[wrap-git]
+url = https://github.com/Mbed-TLS/mbedtls.git
+revision = v3.4.0
+depth = 1
+
+[provide]
+mbedtls = mbedtls_dep

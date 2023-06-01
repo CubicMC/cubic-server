@@ -28,7 +28,6 @@ cubic_include += include_directories('.')
 # Other subdirs
 #==============
 
-subdir('blocks')
 subdir('chat')
 subdir('command_parser')
 subdir('configuration')
