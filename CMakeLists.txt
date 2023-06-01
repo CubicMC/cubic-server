@@ -6,6 +6,20 @@ endif()
 
 # Options
 option(USE_CLANG "Build application with clang" OFF)
+option(DEBUG_NETWORK "Print network messages" OFF)
+option(NO_GUI "Build without GUI" OFF)
+option(STATIC_LINK "Link the binary statically" OFF)
+option(GTEST "Build with Google Test" OFF)
+option(ARM "Build for ARM" OFF)
+
+message(STATUS "Debugging network: ${DEBUG_NETWORK}")
+message(STATUS "Building without GUI: ${NO_GUI}")
+message(STATUS "Linking statically: ${STATIC_LINK}")
+
+if(DEBUG_NETWORK)
+    add_compile_definitions(DEBUG_NETWORK)
+endif()
+
 if (USE_CLANG)
     set(CMAKE_CXX_COMPILER /usr/bin/clang++)
     set(CMAKE_C_COMPILER /usr/bin/clang)
@@ -18,13 +32,6 @@ option(DEBUG_NETWORK "Print network messages" OFF)
 if(DEBUG_NETWORK)
     add_compile_definitions(DEBUG_NETWORK)
 endif()
-
-option(NO_GUI "Build without GUI" OFF)
-option(STATIC_LINK "Link the binary statically" OFF)
-
-message(STATUS "Debugging network: ${DEBUG_NETWORK}")
-message(STATUS "Building without GUI: ${NO_GUI}")
-message(STATUS "Linking statically: ${STATIC_LINK}")
 
 # This must be set before the project command
 set(CMAKE_USER_MAKE_RULES_OVERRIDE_CXX ${CMAKE_CURRENT_SOURCE_DIR}/cxx_flag_overrides.cmake)
