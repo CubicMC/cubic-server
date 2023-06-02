@@ -1,4 +1,9 @@
 #include "overworld.hpp"
+#include "blocks/Air.hpp"
+#include "blocks/Stone.hpp"
+
+#include "blocks.hpp"
+#include "types.hpp"
 
 generation::Overworld::Overworld(Seed seed):
     Generator(seed)
@@ -49,10 +54,10 @@ BlockId generation::Overworld::getBlock(positionType x, positionType y, position
     auto noise = getNoise(x, y, z);
     int heightOffset = 100;
     int surfaceLevel = heightOffset + noise.noise2D.continentalness * 20;
-    BlockId blockId = 0;
+    BlockId blockId = Blocks::Air::toProtocol();
 
     if (y < surfaceLevel)
-        blockId = 1;
+        blockId = Blocks::Stone::toProtocol();
 
     // Trying to make caves
     // auto density = noise.noise3D.density / (1.0 / (double (y + world_storage::CHUNK_HEIGHT_MIN) + 0.001)) * 10;
@@ -66,11 +71,11 @@ BlockId generation::Overworld::getBlock(positionType x, positionType y, position
         density *= 1.5;
     if (y >= 100)
         density *= 100.0;
-    if (blockId == 1 && density >= -.15 && density <= .05)
-        blockId = 0;
+    if (blockId == Blocks::Stone::toProtocol() && density >= -.15 && density <= .05)
+        blockId = Blocks::Air::toProtocol();
     // Trying to repair caves surface
-    if (blockId == 0 && noise.noise3D.density >= -.4 && noise.noise3D.density <= .4 && y < surfaceLevel && y > heightOffset - 10)
-        blockId = 1;
+    if (blockId == Blocks::Air::toProtocol() && noise.noise3D.density >= -.4 && noise.noise3D.density <= .4 && y < surfaceLevel && y > heightOffset - 10)
+        blockId = Blocks::Stone::toProtocol();
 
     return blockId;
 }
@@ -84,3 +89,10 @@ BiomeId generation::Overworld::getBiome(positionType x, positionType y, position
 }
 
 BiomeId generation::Overworld::getBiome(const Position &pos) { return getBiome(pos.x, pos.y, pos.z); }
+
+int generation::Overworld::getTreeSize(positionType x, positionType y, positionType z, const TreeSize &treeSize)
+{
+    return getNoise(x, y, z).noise3D.temperature * (treeSize.sizeMax - treeSize.sizeMin) + treeSize.sizeMin;
+}
+
+int generation::Overworld::getTreeSize(const Position &pos, const TreeSize &treeSize) { return getTreeSize(pos.x, pos.y, pos.z, treeSize); }

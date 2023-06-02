@@ -4,3 +4,5 @@ target_sources (${CMAKE_PROJECT_NAME} PRIVATE
     overworld.cpp
     overworld.hpp
 )
+
+add_subdirectory (features)

@@ -61,16 +61,7 @@ std::unique_ptr<EncryptionResponse> protocol::parseEncryptionResponse(std::vecto
     // clang-format off
     parse(at, buffer.data() + buffer.size() - 1, *h,
         popArray<uint8_t, popByte>, &EncryptionResponse::sharedSecret,
-        popBoolean, &EncryptionResponse::hasVerifyToken
-    );
-    // clang-format on
-    if (!h->hasVerifyToken)
-        return h;
-    // clang-format off
-    parse(at, buffer.data() + buffer.size() - 1, *h,
-        popArray<uint8_t, popByte>, &EncryptionResponse::verifyToken,
-        popLong, &EncryptionResponse::salt,
-        popArray<uint8_t, popByte>, &EncryptionResponse::messageSignature
+        popArray<uint8_t, popByte>, &EncryptionResponse::verifyToken
     );
     // clang-format on
     return h;

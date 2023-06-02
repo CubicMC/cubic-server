@@ -2,6 +2,7 @@
 #define CUBICSERVER_GENERATION_GENERATOR_HPP
 
 #include <cstdint>
+#include <mutex>
 #include <unordered_map>
 
 #include <PerlinNoise.hpp>
@@ -18,6 +19,7 @@ public:
         double erosion;
         double peaksAndValley;
         double weirdness;
+        double trees;
     } GenerationNoise2D;
 
     typedef struct {
@@ -34,6 +36,16 @@ public:
         GenerationNoise3D noise3D;
     } GenerationNoise;
 
+    typedef struct {
+        Position pos;
+        BlockId block;
+    } TreeBlock;
+
+    typedef struct {
+        int sizeMin;
+        int sizeMax;
+    } TreeSize;
+
 public:
     Generator(Seed seed);
     virtual ~Generator() = default;
@@ -44,6 +56,9 @@ public:
     virtual BiomeId getBiome(const Position &pos) = 0;
 
     virtual GenerationNoise getNoise(positionType x, positionType y, positionType z, double frequency = 0.02, uint8_t octaves = 3);
+
+    virtual int getTreeSize(positionType x, positionType y, positionType z, const TreeSize &treeSize) = 0;
+    virtual int getTreeSize(const Position &pos, const TreeSize &treeSize) = 0;
 
 protected:
     bool isCached(positionType x, positionType y, positionType z);

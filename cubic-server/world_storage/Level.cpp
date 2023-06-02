@@ -15,11 +15,10 @@ ChunkColumn &Level::addChunkColumn(Position2D pos, ChunkColumn &&chunkColumn)
     return _chunkColumns.at(pos);
 }
 
-ChunkColumn &Level::addChunkColumn(Position2D pos)
+ChunkColumn &Level::addChunkColumn(Position2D pos, std::shared_ptr<Dimension> dimension)
 {
-    std::lock_guard _(this->_chunkColumnsMutex);
-    _chunkColumns.emplace(pos, pos);
-
+    std::lock_guard<std::mutex> _(this->chunkColumnsMutex);
+    _chunkColumns.emplace(pos, ChunkColumn {pos, dimension});
     return _chunkColumns.at(pos);
 }
 
@@ -61,4 +60,22 @@ const ChunkColumn &Level::getChunkColumnFromBlockPos(Position2D pos) const
 
 void Level::removeChunkColumn(Position2D pos) { _chunkColumns.erase(pos); }
 
+const std::unordered_map<Position2D, ChunkColumn> &Level::getChunkColumns() const
+{
+    std::lock_guard<std::mutex> _(this->chunkColumnsMutex);
+    return _chunkColumns;
 }
+
+std::unordered_map<Position2D, ChunkColumn> &Level::getChunkColumns()
+{
+    std::lock_guard<std::mutex> _(this->chunkColumnsMutex);
+    return _chunkColumns;
+}
+
+void Level::clear()
+{
+    std::lock_guard<std::mutex> _(this->chunkColumnsMutex);
+    _chunkColumns.clear();
+}
+
+} // namespace world_storage

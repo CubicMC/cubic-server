@@ -9,6 +9,7 @@
 #include "PlayerAttributes.hpp"
 #include "Structures.hpp"
 #include "common.hpp"
+#include "protocol/container/Container.hpp"
 #include "types.hpp"
 #include "world_storage/ChunkColumn.hpp"
 #include "chat/Message.hpp"
@@ -18,6 +19,7 @@ namespace protocol {
 enum class ClientPacketID : int32_t {
     // Login State
     DisconnectLogin = 0x00,
+    EncryptionRequest = 0x01,
     LoginSuccess = 0x02,
 
     // Status State
@@ -31,7 +33,9 @@ enum class ClientPacketID : int32_t {
     BlockUpdate = 0x09,
     ChangeDifficulty = 0x0B,
     Commands = 0x0E,
+    CloseContainer = 0x0F,
     SetContainerContent = 0x10,
+    SetContainerSlot = 0x12,
     PluginMessage = 0x15,
     // CustomSoundEffect = 0x16, TODO: This is removed in the last revision of wiki.vg
     DisconnectPlay = 0x17,
@@ -84,17 +88,17 @@ struct Disconnect {
 };
 std::unique_ptr<std::vector<uint8_t>> createLoginDisconnect(const Disconnect &);
 
+struct EncryptionRequest {
+    std::string serverID;
+    std::vector<uint8_t> publicKey;
+    std::vector<uint8_t> verifyToken;
+};
+std::unique_ptr<std::vector<uint8_t>> createEncryptionRequest(const EncryptionRequest &);
+
 struct LoginSuccess {
-    struct Property {
-        std::string name;
-        std::string value;
-        bool isSigned;
-        std::string signature;
-    };
     u128 uuid;
     std::string username;
-    int32_t numberOfProperties;
-    std::vector<Property> properties;
+    std::vector<PlayerProperty> properties;
 };
 std::unique_ptr<std::vector<uint8_t>> createLoginSuccess(const LoginSuccess &);
 
@@ -292,13 +296,26 @@ struct Commands {
 };
 std::unique_ptr<std::vector<uint8_t>> createCommands(const Commands &);
 
-struct SetContainerContent {
+struct CloseContainer {
     uint8_t windowId;
-    int32_t stateId;
-    std::vector<Slot> slotData;
-    Slot carriedItem;
+};
+std::unique_ptr<std::vector<uint8_t>> createCloseContainer(const CloseContainer &);
+
+struct SetContainerContent {
+    const std::shared_ptr<container::Container> container;
 };
 std::unique_ptr<std::vector<uint8_t>> createSetContainerContent(const SetContainerContent &);
+
+struct SetContainerSlot {
+    SetContainerSlot(const std::shared_ptr<container::Container> &container, int8_t containerId, int16_t slot)
+        : container(container), containerId(containerId), slot(slot) {}
+    SetContainerSlot(const std::shared_ptr<container::Container> &container, int16_t slot)
+        : container(container), containerId(container->id()), slot(slot) {}
+    const std::shared_ptr<container::Container> container;
+    int8_t containerId;
+    int16_t slot;
+};
+std::unique_ptr<std::vector<uint8_t>> createSetContainerSlot(const SetContainerSlot &);
 
 struct PluginMessageResponse {
     std::string channel;
@@ -557,14 +574,8 @@ struct PlayerInfoUpdate {
     struct Action {
         u128 uuid;
         struct AddPlayer {
-            struct Property {
-                std::string name;
-                std::string value;
-                bool isSigned;
-                std::string signature;
-            };
             std::string name;
-            std::vector<Property> properties;
+            std::vector<PlayerProperty> properties;
         } addPlayer;
 
         struct InitializeChat {

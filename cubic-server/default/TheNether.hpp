@@ -7,7 +7,7 @@
 class TheNether : public Dimension {
 public:
     TheNether(std::shared_ptr<DefaultWorld> world):
-        Dimension(world)
+        Dimension(world, world_storage::DimensionType::NETHER)
     {
     }
     ~TheNether() override = default;

@@ -1,6 +1,10 @@
 #include <boost/system/detail/error_category.hpp>
 #include <boost/system/detail/error_code.hpp>
+#include <cstdint>
+#include <cstring>
+#include <curl/curl.h>
 #include <mutex>
+#include <netinet/in.h>
 #include <poll.h>
 #include <stdexcept>
 #include <string>
@@ -12,6 +16,7 @@
 #include "Client.hpp"
 #include "nbt.hpp"
 
+#include "Checksum.hpp"
 #include "Dimension.hpp"
 #include "Player.hpp"
 #include "Server.hpp"
@@ -19,9 +24,11 @@
 #include "WorldGroup.hpp"
 #include "chat/ChatRegistry.hpp"
 #include "logging/logging.hpp"
+#include "nlohmann/json.hpp"
 #include "protocol/ClientPackets.hpp"
 #include "protocol/ServerPackets.hpp"
 #include "protocol/serialization/popPrimaryType.hpp"
+#include "types.hpp"
 
 using boost::asio::ip::tcp;
 
@@ -32,9 +39,10 @@ Client::Client(tcp::socket &&socket, size_t clientID):
     _sendBuffer(2048 * 128 * 100 * 64),
     _player(nullptr),
     _socket(std::move(socket)),
-    _clientID(clientID)
+    _clientID(clientID),
+    _isEncrypted(false)
 {
-    LINFO("Creating client");
+    LDEBUG("Creating client");
 }
 
 Client::~Client()
@@ -71,13 +79,20 @@ void Client::doRead()
             // Server::getInstance()->triggerClientCleanup(_clientID);
             return;
         }
+        if (_isEncrypted)
+            _encryption.decrypt((uint8_t *) _readBuffer, length);
         _recvBuffer.insert(_recvBuffer.end(), _readBuffer, _readBuffer + length);
         _handlePacket();
     }
     // Server::getInstance()->triggerClientCleanup(_clientID);
 }
 
-void Client::doWrite(std::unique_ptr<std::vector<uint8_t>> &&data) { Server::getInstance()->sendData(_clientID, std::move(data)); }
+void Client::doWrite(std::unique_ptr<std::vector<uint8_t>> &&data)
+{
+    if (_isEncrypted)
+        _encryption.encrypt(*data);
+    Server::getInstance()->sendData(_clientID, std::move(data));
+}
 
 bool Client::isDisconnected() const { return !_isRunning; }
 
@@ -304,7 +319,6 @@ void Client::_onLoginStart(protocol::LoginStart &pck)
 
     resPck.uuid = pck.hasPlayerUuid ? pck.playerUuid : u128 {std::hash<std::string> {}("OfflinePlayer:"), std::hash<std::string> {}(pck.name)};
     resPck.username = pck.name;
-    resPck.numberOfProperties = 0;
     resPck.properties = {}; // TODO: figure out what to put there
 
     if (!Server::getInstance()->getWorldGroup("default")->isInitialized()) {
@@ -314,10 +328,115 @@ void Client::_onLoginStart(protocol::LoginStart &pck)
         this->disconnect("You are not whitelisted on this server.");
         return;
     }
-    this->_loginSequence(resPck);
+    if (CONFIG["online-mode"].as<bool>()) {
+        _resPck = resPck;
+        sendEncryptionRequest();
+    } else {
+        this->_loginSequence(resPck);
+    }
 }
 
-void Client::_onEncryptionResponse(UNUSED protocol::EncryptionResponse &pck) { N_LDEBUG("Got a Encryption Response"); }
+constexpr int encryptionMaximumLength = 512;
+
+void Client::_onEncryptionResponse(UNUSED protocol::EncryptionResponse &pck)
+{
+    N_LDEBUG("Got a Encryption Response");
+    if (pck.sharedSecret.size() > encryptionMaximumLength || pck.verifyToken.size() > encryptionMaximumLength) {
+        LWARN("Encryption key too long");
+        disconnect();
+        return;
+    }
+    auto &rsaKey = Server::getInstance()->getPrivateKey();
+    uint32_t decryptedToken[encryptionMaximumLength / sizeof(uint32_t)];
+    int res = rsaKey.decrypt(pck.verifyToken, (uint8_t *) decryptedToken, sizeof(decryptedToken));
+    if (res != 4) {
+        LWARN("Bad verify token of size {}", res);
+        disconnect();
+        return;
+    }
+    if (decryptedToken[0] != (uint32_t) (uintptr_t) this) {
+        LWARN("Bad verify token");
+        disconnect();
+        return;
+    }
+    uint8_t decryptedKey[encryptionMaximumLength];
+    res = rsaKey.decrypt(pck.sharedSecret, decryptedKey, sizeof(decryptedKey));
+    if (res != 16) {
+        LWARN("Bad key length");
+        disconnect();
+        return;
+    }
+    N_LDEBUG("Starting encryption");
+
+    _isEncrypted = true;
+    std::array<uint8_t, 16> key;
+    memcpy(key.data(), decryptedKey, 16);
+    _encryption.initialize(key, key);
+
+    if (!_handleOnline(key))
+        return;
+
+    _loginSequence(_resPck);
+}
+
+static size_t WriteCallback(void *contents, size_t size, size_t nmemb, void *userp)
+{
+    ((std::string *) userp)->append((char *) contents, size * nmemb);
+    return size * nmemb;
+}
+
+bool Client::_handleOnline(const std::array<uint8_t, 16> &key)
+{
+    Checksum cs;
+    cs.update(key.data(), key.size());
+    cs.update(reinterpret_cast<const uint8_t *>(Server::getInstance()->getPrivateKey().getPublicKey().data()), Server::getInstance()->getPrivateKey().getPublicKey().size());
+    uint8_t digest[20];
+    cs.finalize(digest);
+    auto serverID = Checksum::digestToProtocol(digest);
+
+    CURL *curl;
+    CURLcode res;
+    std::string readBuffer;
+
+    curl = curl_easy_init();
+    if (!curl) {
+        LERROR("Could not init curl");
+        disconnect();
+        return false;
+    }
+    curl_easy_setopt(curl, CURLOPT_URL, std::string("https://sessionserver.mojang.com/session/minecraft/hasJoined?username=" + _resPck.username + "&serverId=" + serverID).c_str());
+    curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, WriteCallback);
+    curl_easy_setopt(curl, CURLOPT_WRITEDATA, &readBuffer);
+    res = curl_easy_perform(curl);
+    curl_easy_cleanup(curl);
+    if (res != CURLcode::CURLE_OK || readBuffer.empty()) {
+        LERROR("Could not query mojang's API or authentication failed");
+        disconnect();
+        return false;
+    }
+    nlohmann::json result = nlohmann::json::parse(readBuffer);
+
+    _resPck.uuid = u128::fromShortString(result["id"]);
+
+    for (auto &i : result["properties"]) {
+        if (i.contains("signature"))
+            _resPck.properties.emplace_back(i["name"].get<std::string>(), i["value"].get<std::string>(), true, i["signature"].get<std::string>());
+        else
+            _resPck.properties.emplace_back(i["name"].get<std::string>(), i["value"].get<std::string>(), false, "");
+    }
+
+    return true;
+}
+
+void Client::sendEncryptionRequest()
+{
+    std::vector<uint8_t> verifyToken = {0, 0, 0, 0};
+    ((uint32_t *) verifyToken.data())[0] = (uint32_t) (uintptr_t) this;
+    auto pck = protocol::createEncryptionRequest({"", Server::getInstance()->getPrivateKey().getPublicKey(), verifyToken});
+    doWrite(std::move(pck));
+
+    N_LDEBUG("Sent encryption request");
+}
 
 void Client::sendStatusResponse(const std::string &json)
 {
@@ -453,7 +572,7 @@ void Client::sendLoginPlay()
         .dimensionName = "overworld", // TODO: something like this this->_player->getDimension()->name;
         .hashedSeed = 0, // TODO: something like this this->_player->_dim->getWorld()->getHashedSeed();
         .maxPlayers = 20, // TODO: something like this this->_player->_dim->getWorld()->maxPlayers;
-        .viewDistance = 10, // TODO: something like this->_player->_dim->getWorld()->getViewDistance();
+        .viewDistance = this->_player->getWorld()->getRenderDistance(),
         .simulationDistance = 16, // TODO: something like this->_player->_dim->getWorld()->getSimulationDistance();
         .reducedDebugInfo = false, // false for developpment only
         .enableRespawnScreen = true, // TODO: implement gamerules !this->_player->_dim->getWorld()->getGamerules()["doImmediateRespawn"];
@@ -478,13 +597,6 @@ void Client::disconnect(const chat::Message &reason)
     doWrite(std::move(pck));
     _isRunning = false;
     N_LDEBUG("Sent a disconnect login packet");
-}
-
-void Client::stop(const chat::Message &reason)
-{
-    this->disconnect(reason);
-    // if (this->_networkThread.joinable())
-    //     this->_networkThread.join();
 }
 
 void Client::_loginSequence(const protocol::LoginSuccess &pck)

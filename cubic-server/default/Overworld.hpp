@@ -10,7 +10,7 @@
 class Overworld : public Dimension {
 public:
     Overworld(std::shared_ptr<DefaultWorld> world):
-        Dimension(world)
+        Dimension(world, world_storage::DimensionType::OVERWORLD)
     {
     }
     ~Overworld() override = default;
@@ -18,7 +18,7 @@ public:
     void tick() override;
     void initialize() override;
     void stop() override;
-    void generateChunk(int x, int z) override;
+    void generateChunk(int x, int z, world_storage::GenerationState goalState = world_storage::GenerationState::READY) override;
 
 private:
     std::future<void> _worldGenFuture;

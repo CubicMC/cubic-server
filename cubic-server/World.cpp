@@ -5,23 +5,27 @@
 #include "Server.hpp"
 #include "WorldGroup.hpp"
 #include "logging/logging.hpp"
+#include <cstdint>
 
-World::World(std::shared_ptr<WorldGroup> worldGroup, std::string folder):
+World::World(std::shared_ptr<WorldGroup> worldGroup, world_storage::WorldType worldType, std::string folder):
     _worldGroup(worldGroup),
     _age(0),
     _time(0),
-    _renderDistance(10), // TODO: Should be loaded from config
+    _renderDistance(CONFIG["render-distance"].as<uint8_t>()),
     _timeUpdateClock(20, std::bind(&World::updateTime, this)), // 1 second for time updates
     _generationPool(CONFIG["num-gen-thread"].as<uint16_t>(), "WorldGen"),
+    _worldType(worldType),
     _folder(folder)
 {
     _timeUpdateClock.start();
-    _seed = -721274728; // TODO: Should be loaded from config or generated
+    _seed = CONFIG["seed"].as<int64_t>();
     _chat = worldGroup->getChat();
 }
 
 void World::tick()
 {
+    onEvent(Server::getInstance()->getPluginManager(), tick);
+
     // TODO: I don't think this should tick if there are no players / chunks loaded
     _timeUpdateClock.tick();
     for (auto &[_, dim] : this->_dimensions)
@@ -36,12 +40,13 @@ void World::initialize()
 
 void World::stop()
 {
+    _generationPool.cancelAll();
     _generationPool.waitUntilJobsDone();
 
     for (auto &[_, dim] : _dimensions)
         dim->stop();
 
-    // TODO: Save the worlds
+    // TODO: Save the world
 }
 
 bool World::isInitialized() const
@@ -110,7 +115,7 @@ void World::sendPlayerInfoAddPlayer(Player *current)
                             .uuid = current->getUuid(),
                             .addPlayer = {
                                 .name = current->getUsername(),
-                                .properties = {},
+                                .properties = current->getProperties(),
                             },
                         .initializeChat = {
                                 .hasSigData = false,
@@ -137,7 +142,7 @@ void World::sendPlayerInfoAddPlayer(Player *current)
                 .uuid = player->getUuid(),
                 .addPlayer = {
                     .name = player->getUsername(),
-                    .properties = {},
+                    .properties = player->getProperties(),
                 },
                 .initializeChat = {
                     .hasSigData = false,
@@ -166,7 +171,7 @@ void World::sendPlayerInfoAddPlayer(Player *current)
         .actionSets = playersInfo
     });
     // clang-format on
-    LDEBUG("Sent player info to {}" + current->getUsername());
+    LDEBUG("Sent player info to {}", current->getUsername());
 }
 
 void World::sendPlayerInfoRemovePlayer(const Player *current)

@@ -1,6 +1,7 @@
 #include "ClientPackets.hpp"
 
 #include "PacketUtils.hpp"
+#include "protocol/serialization/addPrimaryType.hpp"
 #include "serialization/add.hpp"
 #include <memory>
 
@@ -19,6 +20,21 @@ std::unique_ptr<std::vector<uint8_t>> protocol::createLoginDisconnect(const Disc
     return packet;
 }
 
+std::unique_ptr<std::vector<uint8_t>> protocol::createEncryptionRequest(const EncryptionRequest &in)
+{
+    std::vector<uint8_t> payload;
+    // clang-format off
+    serialize(payload,
+        in.serverID, addString,
+        in.publicKey, addArray<uint8_t, addByte>,
+        in.verifyToken, addArray<uint8_t, addByte>
+    );
+    // clang-format on
+    auto packet = std::make_unique<std::vector<uint8_t>>();
+    finalize(*packet, payload, ClientPacketID::EncryptionRequest);
+    return packet;
+}
+
 std::unique_ptr<std::vector<uint8_t>> protocol::createLoginSuccess(const LoginSuccess &in)
 {
     std::vector<uint8_t> payload;
@@ -26,7 +42,7 @@ std::unique_ptr<std::vector<uint8_t>> protocol::createLoginSuccess(const LoginSu
     serialize(payload,
         in.uuid, addUUID,
         in.username, addString,
-        in.numberOfProperties, addVarInt
+        in.properties.size(), addVarInt
     );
 
     // in.name, addString,
@@ -34,12 +50,9 @@ std::unique_ptr<std::vector<uint8_t>> protocol::createLoginSuccess(const LoginSu
     // in.isSigned, addBoolean
     for (auto &property : in.properties) {
         serialize(payload,
-            property.name,
-            addString,
-            property.value,
-            addString,
-            property.isSigned,
-            addBoolean
+            property.name, addString,
+            property.value, addString,
+            property.isSigned, addBoolean
         );
         if (property.isSigned) {
             serialize(payload,
@@ -181,19 +194,48 @@ std::unique_ptr<std::vector<uint8_t>> protocol::createCommands(const Commands &i
     return packet;
 }
 
+std::unique_ptr<std::vector<uint8_t>> protocol::createCloseContainer(const CloseContainer &in)
+{
+    std::vector<uint8_t> payload;
+    // clang-format off
+    serialize(payload,
+        in.windowId, addByte
+    );
+    // clang-format on
+    auto packet = std::make_unique<std::vector<uint8_t>>();
+    finalize(*packet, payload, ClientPacketID::CloseContainer);
+    return packet;
+}
+
 std::unique_ptr<std::vector<uint8_t>> protocol::createSetContainerContent(const SetContainerContent &in)
 {
     std::vector<uint8_t> payload;
     // clang-format off
     serialize(payload,
-        in.windowId, addByte,
-        in.stateId, addVarInt,
-        in.slotData, addArray<Slot, addSlot>,
-        in.carriedItem, addSlot
+        in.container->id(), addByte,
+        in.container->state(), addVarInt,
+        *in.container, addContainer,
+        in.container->cariedItem(), addSlot
     );
     // clang-format on
     auto packet = std::make_unique<std::vector<uint8_t>>();
     finalize(*packet, payload, ClientPacketID::SetContainerContent);
+    return packet;
+}
+
+std::unique_ptr<std::vector<uint8_t>> protocol::createSetContainerSlot(const SetContainerSlot &in)
+{
+    std::vector<uint8_t> payload;
+    // clang-format off
+    serialize(payload,
+        in.containerId, addByte,
+        in.container->state(), addVarInt,
+        in.slot, addShort,
+        in.container->at(in.slot), addSlot
+    );
+    // clang-format on
+    auto packet = std::make_unique<std::vector<uint8_t>>();
+    finalize(*packet, payload, ClientPacketID::SetContainerSlot);
     return packet;
 }
 

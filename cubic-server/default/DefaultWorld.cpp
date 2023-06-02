@@ -6,8 +6,8 @@
 #include "world_storage/Persistence.hpp"
 #include <memory>
 
-DefaultWorld::DefaultWorld(std::shared_ptr<WorldGroup> worldGroup, std::string folder):
-    World(worldGroup, folder),
+DefaultWorld::DefaultWorld(std::shared_ptr<WorldGroup> worldGroup, world_storage::WorldType worldType, std::string folder):
+    World(worldGroup, worldType, folder),
     persistence(folder)
 {
 }

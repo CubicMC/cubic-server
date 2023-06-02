@@ -29,22 +29,16 @@ void Overworld::initialize()
     Dimension::initialize();
     LINFO("Initialize - Overworld");
     int x = -NB_SPAWN_CHUNKS / 2, z = -NB_SPAWN_CHUNKS / 2;
-#ifdef NDEBUG
     int i = 0;
-#endif
     while (x < NB_SPAWN_CHUNKS / 2 || z < NB_SPAWN_CHUNKS / 2) {
-#ifdef NDEBUG
         // temporary percentage calculation. ugly but works :DDD gets deleted after usage to ensure clean logs.
         ++i;
-#endif
-        this->getWorld()->getGenerationPool().addJob([=, this] {
-#ifdef NDEBUG
+        this->getWorld()->getGenerationPool().addJob([x, z, i, this] {
             std::stringstream ss;
             constexpr std::array<std::string_view, 4> animation {"/", "-", "\\", "|"}; // cute little animation :D
             ss << animation[i % 4] << " Generating " << i * 100 / (NB_SPAWN_CHUNKS * NB_SPAWN_CHUNKS) << "% " << animation[i % 4] << '\r';
             std::cerr << ss.str();
-#endif
-            generateChunk(x, z);
+            generateChunk(x, z, world_storage::GenerationState::READY);
         });
         if (x == NB_SPAWN_CHUNKS / 2) {
             x = -NB_SPAWN_CHUNKS / 2;
@@ -52,8 +46,8 @@ void Overworld::initialize()
         } else
             x++;
     }
-    this->getWorld()->getGenerationPool().addJob([=, this] {
-        generateChunk(x, z);
+    this->getWorld()->getGenerationPool().addJob([x, z, this] {
+        generateChunk(x, z, world_storage::GenerationState::READY);
     });
 
     // TODO: Move this to a better place
@@ -70,7 +64,7 @@ void Overworld::stop()
     this->_worldGenFuture.wait();
 }
 
-void Overworld::generateChunk(int x, int z)
+void Overworld::generateChunk(int x, int z, world_storage::GenerationState goalState)
 {
     auto world = std::dynamic_pointer_cast<DefaultWorld>(_world);
     if (world->persistence.isChunkLoaded(*this, x, z)) {
@@ -82,7 +76,7 @@ void Overworld::generateChunk(int x, int z)
     Position2D pos {x, z};
     // TODO(huntears): tmp to deactivate generation
     if (CONFIG["enable-generation"].as<bool>())
-        _level.addChunkColumn(pos).generate(world_storage::WorldType::NORMAL, this->getWorld()->getSeed());
+        _level.addChunkColumn(pos, shared_from_this()).generate(goalState);
     else
-        _level.addChunkColumn(pos);
+        _level.addChunkColumn(pos, shared_from_this());
 }

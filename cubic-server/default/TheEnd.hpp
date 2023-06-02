@@ -7,7 +7,7 @@
 class TheEnd : public Dimension {
 public:
     TheEnd(std::shared_ptr<DefaultWorld> world):
-        Dimension(world)
+        Dimension(world, world_storage::DimensionType::END)
     {
     }
     ~TheEnd() override = default;

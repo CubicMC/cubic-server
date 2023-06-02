@@ -1,20 +1,55 @@
 #include "ChunkColumn.hpp"
 
+#include "Dimension.hpp"
 #include "Server.hpp"
+#include "World.hpp"
 #include "blocks.hpp"
+#include "generation/features/tree/oak.hpp"
 #include "generation/overworld.hpp"
 #include "logging/logging.hpp"
 #include "nbt.hpp"
+#include "types.hpp"
 #include "world_storage/Section.hpp"
 #include <cstdlib>
 #include <memory>
 
+#define APPEND_CHUNK_TO(neighbours, chunkMap, pos2D)                                                                                 \
+    if (chunkMap.contains(_chunkPos + pos2D) && chunkMap.at(_chunkPos + pos2D).getState() >= GenerationState::LOCAL_MODIFICATIONS) { \
+        chunkMap.at(_chunkPos + pos2D)._generationLock.lock();                                                                       \
+        neighbours.push_back(&chunkMap.at(_chunkPos + pos2D));                                                                       \
+    } else {                                                                                                                         \
+        /* _dimension->getLevel().chunkColumnsMutex.unlock();                                                                        \
+        // _dimension->generateChunk(_chunkPos + pos2D, GenerationState::LOCAL_MODIFICATIONS);                                       \
+        // _dimension->getLevel().chunkColumnsMutex.lock();                                                                          \
+        // chunkMap.at(_chunkPos + pos2D)._generationLock.lock();                                                                    \
+        // neighbours.push_back(&chunkMap.at(_chunkPos + pos2D));*/                                                                  \
+    }                                                                                                                                \
+
+#define GET_NEIGHBOURS()                                           \
+    std::vector<ChunkColumn *> neighbours;                         \
+    neighbours.reserve(8);                                         \
+    auto &chunkColumns = _dimension->getLevel().getChunkColumns(); \
+    APPEND_CHUNK_TO(neighbours, chunkColumns, Position2D(1, 1))    \
+    APPEND_CHUNK_TO(neighbours, chunkColumns, Position2D(0, 1))    \
+    APPEND_CHUNK_TO(neighbours, chunkColumns, Position2D(-1, 1))   \
+    APPEND_CHUNK_TO(neighbours, chunkColumns, Position2D(1, 0))    \
+    APPEND_CHUNK_TO(neighbours, chunkColumns, Position2D(-1, 0))   \
+    APPEND_CHUNK_TO(neighbours, chunkColumns, Position2D(1, -1))   \
+    APPEND_CHUNK_TO(neighbours, chunkColumns, Position2D(0, -1))   \
+    APPEND_CHUNK_TO(neighbours, chunkColumns, Position2D(-1, -1))
+
+#define RELEASE_NEIGHBOURS()                 \
+    for (auto neighbour : neighbours) {      \
+        neighbour->_generationLock.unlock(); \
+    }
+
 namespace world_storage {
 
-ChunkColumn::ChunkColumn(const Position2D &chunkPos):
+ChunkColumn::ChunkColumn(const Position2D &chunkPos, std::shared_ptr<Dimension> dimension):
     _chunkPos(chunkPos),
     _heightMap(""),
-    _ready(false)
+    _currentState(GenerationState::INITIALIZED),
+    _dimension(dimension)
 {
     // OOF
     for (auto idx = 0; HEIGHTMAP_ENTRY[idx] != nullptr; idx++) {
@@ -33,7 +68,9 @@ ChunkColumn::ChunkColumn(ChunkColumn &&chunk):
     _tickData(chunk._tickData),
     _chunkPos(chunk._chunkPos),
     _heightMap(chunk._heightMap),
-    _ready(chunk._ready)
+    _currentState(chunk._currentState),
+    _generationLock(),
+    _dimension(chunk._dimension)
 {
 }
 
@@ -96,7 +133,10 @@ uint8_t ChunkColumn::getBiome(const Position &pos) const { return _sections.at(g
 int64_t ChunkColumn::getTick() { return _tickData; }
 void ChunkColumn::setTick(int64_t tick) { _tickData = tick; }
 Position2D ChunkColumn::getChunkPos() const { return _chunkPos; }
-bool ChunkColumn::isReady() const { return this->_ready; }
+
+bool ChunkColumn::isReady() const { return this->_currentState == GenerationState::READY ? true : false; }
+
+GenerationState ChunkColumn::getState() const { return this->_currentState; }
 
 // void ChunkColumn::updateEntity(std::size_t id, Entity *e) {
 //     _entities.at(id) = e;
@@ -159,120 +199,131 @@ void ChunkColumn::recalculateBlockLight()
     }
 }
 
-void ChunkColumn::generate(WorldType worldType, Seed seed)
+void ChunkColumn::generate(GenerationState goalState)
 {
-    switch (worldType) {
-    case WorldType::NORMAL:
-        _generateOverworld(seed);
+    switch (_dimension->getWorld()->getWorldType()) {
+    case WorldType::DEFAULT:
+        switch (_dimension->getDimensionType()) {
+        case DimensionType::OVERWORLD:
+            _generateOverworld(goalState);
+            break;
+        case DimensionType::NETHER:
+            _generateNether(goalState);
+            break;
+        case DimensionType::END:
+            _generateEnd(goalState);
+            break;
+        default:
+            LERROR("Unknown dimension type");
+            break;
+        }
         break;
-    case WorldType::NETHER:
-        _generateNether(seed);
+    case WorldType::SUPERFLAT:
+        _generateFlat(goalState);
         break;
-    case WorldType::END:
-        _generateEnd(seed);
+    case WorldType::LARGEBIOME:
+    case WorldType::AMPLIFIED:
+    case WorldType::SINGLEBIOME:
+        LERROR("World type not implemented yet");
         break;
-    case WorldType::FLAT:
-        _generateFlat(seed);
+    case WorldType::DEBUG:
+        _generateDebug(goalState);
+        break;
+    case WorldType::SUPERFLAT_CUBIC_SERVER:
+        _generateFlatCubicServer(goalState);
         break;
     default:
+        LERROR("Unknown world type");
         break;
     }
     this->recalculateSkyLight();
-    this->_ready = true;
 }
 
-void ChunkColumn::_generateOverworld(Seed seed)
+void ChunkColumn::_generateOverworld(GenerationState goalState)
 {
-    // Uncomment for a funny time
-    // static size_t block = 0;
-    // for (int i = 0; i < world_storage::NB_OF_PLAYABLE_SECTIONS; i++) {
-    //     updateBlock({7, 7 + (i << 4) - 64, 7}, block++);
-    //     if (block > 23231)
-    //         block = 0;
-    // }
-    // return;
-    auto generator = generation::Overworld(seed);
-    int waterLevel = 86;
+    auto generator = generation::Overworld(_dimension->getWorld()->getSeed());
 
-    // generate blocks
-    for (int y = CHUNK_HEIGHT_MIN; y < CHUNK_HEIGHT_MAX; y++) {
+    while (_currentState < goalState) {
+        switch (this->_currentState) {
+        case GenerationState::INITIALIZED:
+            _generateRawGeneration(generator);
+            break;
+        case GenerationState::RAW_GENERATION:
+            _generateLakes(generator);
+            break;
+        case GenerationState::LAKES:
+            _generateLocalModifications(generator);
+            break;
+        case GenerationState::LOCAL_MODIFICATIONS:
+            _generateUndergroundStructures(generator);
+            break;
+        case GenerationState::UNDERGROUND_STRUCTURES:
+            _generateSurfaceStructures(generator);
+            break;
+        case GenerationState::SURFACE_STRUCTURES:
+            _generateStrongholds(generator);
+            break;
+        case GenerationState::STRONGHOLDS:
+            _generateUndergroundOres(generator);
+            break;
+        case GenerationState::UNDERGROUND_ORES:
+            _generateUndergroundDecoration(generator);
+            break;
+        case GenerationState::UNDERGROUND_DECORATION:
+            _generateFluidSprings(generator);
+            break;
+        case GenerationState::FLUID_SPRINGS:
+            _generateVegetalDecoration(generator);
+            break;
+        case GenerationState::VEGETAL_DECORATION:
+            _generateTopLayerModification(generator);
+            break;
+        case GenerationState::TOP_LAYER_MODIFICATION:
+            _currentState = GenerationState::READY;
+            break;
+        default:
+            LERROR("Chunk: ", _chunkPos, " Unknown state");
+            break;
+        }
+    }
+}
+
+void ChunkColumn::_generateNether(UNUSED GenerationState goalState) { std::lock_guard<std::mutex> _(this->_generationLock); }
+
+void ChunkColumn::_generateEnd(UNUSED GenerationState goalState) { std::lock_guard<std::mutex> _(this->_generationLock); }
+
+void ChunkColumn::_generateFlat(UNUSED GenerationState goalState)
+{
+    std::lock_guard<std::mutex> _(this->_generationLock);
+    for (int y = 0; y < 11; y++) {
         for (int z = 0; z < SECTION_WIDTH; z++) {
             for (int x = 0; x < SECTION_WIDTH; x++) {
-                auto block = generator.getBlock(x + this->_chunkPos.x * SECTION_WIDTH, y, z + this->_chunkPos.z * SECTION_WIDTH);
-                // if (block != Blocks::Air::toProtocol())
-                updateBlock({x, y, z}, block);
-            }
-        }
-    }
-
-    // TODO: improve this to fill caves
-    // generate water
-    for (int z = 0; z < SECTION_WIDTH; z++) {
-        for (int x = 0; x < SECTION_WIDTH; x++) {
-            for (int y = waterLevel; 0 < y; y--) {
-                if (getBlock({x, y, z}) == 1)
-                    break;
-                updateBlock({x, y, z}, Blocks::Water::toProtocol(Blocks::Water::Properties::Level::ZERO));
-            }
-        }
-    }
-
-    // generate grass
-    for (int z = 0; z < SECTION_WIDTH; z++) {
-        for (int x = 0; x < SECTION_WIDTH; x++) {
-            auto lastBlock = 0;
-            for (int y = CHUNK_HEIGHT_MAX - 2; CHUNK_HEIGHT_MIN <= y; y--) {
-                auto block = getBlock({x, y, z});
-                if (block == Blocks::Air::toProtocol())
-                    continue;
-                if (block == Blocks::Water::toProtocol(Blocks::Water::Properties::Level::ZERO)) {
-                    lastBlock = Blocks::Water::toProtocol(Blocks::Water::Properties::Level::ZERO);
-                    continue;
-                }
-                if (block == Blocks::Stone::toProtocol() && lastBlock == Blocks::Water::toProtocol(Blocks::Water::Properties::Level::ZERO)) {
-                    updateBlock({x, y, z}, Blocks::Sand::toProtocol()); // sand
-                    break;
-                }
-                if (block == Blocks::Stone::toProtocol() && lastBlock == Blocks::Air::toProtocol()) {
-                    updateBlock({x, y, z}, Blocks::GrassBlock::toProtocol(Blocks::GrassBlock::Properties::Snowy::FALSE)); // grass
-                    updateBlock({x, y - 1, z}, Blocks::Dirt::toProtocol()); // dirt
-                    updateBlock({x, y - 2, z}, Blocks::Dirt::toProtocol()); // dirt
-                    break;
+                if (y == 0) {
+                    updateBlock({x, y + CHUNK_HEIGHT_MIN, z}, Blocks::Bedrock::toProtocol());
+                } else if (y == 1 || y == 2) {
+                    updateBlock({x, y + CHUNK_HEIGHT_MIN, z}, Blocks::Dirt::toProtocol());
+                } else if (y == 3) {
+                    updateBlock({x, y + CHUNK_HEIGHT_MIN, z}, Blocks::GrassBlock::toProtocol(Blocks::GrassBlock::Properties::Snowy::FALSE));
                 }
             }
         }
     }
-
-    // generate bedrock
-    int64_t state = (((this->_chunkPos.x * 0x4F9939F508L + this->_chunkPos.z * 0x1EF1565BD5L) ^ 0x5DEECE66DL) * 0x9D89DAE4D6C29D9L + 0x1844E300013E5B56L) & 0xFFFFFFFFFFFFL;
-    for (int x = 0; x < SECTION_WIDTH; x++) {
-        for (int z = 0; z < SECTION_WIDTH; z++) {
-            updateBlock({x, 0 + CHUNK_HEIGHT_MIN, z}, Blocks::Bedrock::toProtocol()); // bedrock
-            if (4 <= (state >> 17) % 5)
-                updateBlock({x, 1 + CHUNK_HEIGHT_MIN, z}, Blocks::Bedrock::toProtocol()); // bedrock
-            state = ((state * 0x530F32EB772C5F11L + 0x89712D3873C4CD04L) * 0x9D89DAE4D6C29D9L + 0x1844E300013E5B56L) & 0xFFFFFFFFFFFFL;
-        }
-    }
-
-    // generate biomes
-    for (int y = 0; y < BIOME_HEIGHT_MAX; y++) {
-        for (int z = 0; z < BIOME_SECTION_WIDTH; z++) {
-            for (int x = 0; x < BIOME_SECTION_WIDTH; x++) {
-                // TODO
-                updateBiome({x, y + BIOME_HEIGHT_MIN, z}, generator.getBiome(x, y, z));
-            }
-        }
-    }
+    _currentState = GenerationState::READY;
 }
 
-void ChunkColumn::_generateNether(UNUSED Seed seed) { }
-
-void ChunkColumn::_generateEnd(UNUSED Seed seed) { }
-
-void ChunkColumn::_generateFlat(UNUSED Seed seed)
+void ChunkColumn::_generateDebug(UNUSED GenerationState goalState)
 {
-    // TODO: optimize this
-    // This take forever because of the Block constructor
+    static size_t block = 0;
+    for (int i = 0; i < world_storage::NB_OF_PLAYABLE_SECTIONS; i++) {
+        updateBlock({7, 7 + (i << 4) - 64, 7}, block++);
+        if (block > 23231)
+            block = 0;
+    }
+    _currentState = GenerationState::READY;
+}
+
+void ChunkColumn::_generateFlatCubicServer(UNUSED GenerationState goalState)
+{
     for (int y = 0; y < 11; y++) {
         for (int z = 0; z < SECTION_WIDTH; z++) {
             for (int x = 0; x < SECTION_WIDTH; x++) {
@@ -368,6 +419,151 @@ void ChunkColumn::_generateFlat(UNUSED Seed seed)
             }
         }
     }
+    _currentState = GenerationState::READY;
+}
+
+void ChunkColumn::_generateRawGeneration(generation::Generator &generator)
+{
+    std::lock_guard<std::mutex> _(this->_generationLock);
+    // generate blocks
+    for (int y = CHUNK_HEIGHT_MIN; y < CHUNK_HEIGHT_MAX; y++) {
+        for (int z = 0; z < SECTION_WIDTH; z++) {
+            for (int x = 0; x < SECTION_WIDTH; x++) {
+                auto block = generator.getBlock(x + this->_chunkPos.x * SECTION_WIDTH, y, z + this->_chunkPos.z * SECTION_WIDTH);
+                // if (block != Blocks::Air::toProtocol())
+                updateBlock({x, y, z}, block);
+            }
+        }
+    }
+    // generate bedrock
+    // int64_t state = (((this->_chunkPos.x * 0x4F9939F508L + this->_chunkPos.z * 0x1EF1565BD5L) ^ 0x5DEECE66DL) * 0x9D89DAE4D6C29D9L + 0x1844E300013E5B56L) & 0xFFFFFFFFFFFFL;
+    for (int x = 0; x < SECTION_WIDTH; x++) {
+        for (int z = 0; z < SECTION_WIDTH; z++) {
+            updateBlock({x, 0 + CHUNK_HEIGHT_MIN, z}, Blocks::Bedrock::toProtocol()); // bedrock
+            // if (4 <= (state >> 17) % 5)
+            //     updateBlock({x, 1 + CHUNK_HEIGHT_MIN, z}, Blocks::Bedrock::toProtocol()); // bedrock
+            // state = ((state * 0x530F32EB772C5F11L + 0x89712D3873C4CD04L) * 0x9D89DAE4D6C29D9L + 0x1844E300013E5B56L) & 0xFFFFFFFFFFFFL;
+        }
+    }
+    // generate biomes
+    for (int y = 0; y < BIOME_HEIGHT_MAX; y++) {
+        for (int z = 0; z < BIOME_SECTION_WIDTH; z++) {
+            for (int x = 0; x < BIOME_SECTION_WIDTH; x++) {
+                // TODO
+                updateBiome({x, y + BIOME_HEIGHT_MIN, z}, generator.getBiome(x, y, z));
+            }
+        }
+    }
+    _currentState = GenerationState::RAW_GENERATION;
+}
+
+void ChunkColumn::_generateLakes(UNUSED generation::Generator &generator)
+{
+    std::lock_guard<std::mutex> _(this->_generationLock);
+    int waterLevel = 86;
+
+    // TODO: improve this to fill caves
+    // generate water
+    for (int z = 0; z < SECTION_WIDTH; z++) {
+        for (int x = 0; x < SECTION_WIDTH; x++) {
+            for (int y = waterLevel; 0 < y; y--) {
+                if (getBlock({x, y, z}) == 1)
+                    break;
+                updateBlock({x, y, z}, Blocks::Water::toProtocol(Blocks::Water::Properties::Level::ZERO));
+            }
+        }
+    }
+    _currentState = GenerationState::LAKES;
+}
+
+void ChunkColumn::_generateLocalModifications(UNUSED generation::Generator &generator)
+{
+    std::lock_guard<std::mutex> _(this->_generationLock);
+    // generate grass
+    for (int z = 0; z < SECTION_WIDTH; z++) {
+        for (int x = 0; x < SECTION_WIDTH; x++) {
+            auto lastBlock = 0;
+            for (int y = CHUNK_HEIGHT_MAX - 2; CHUNK_HEIGHT_MIN <= y; y--) {
+                auto block = getBlock({x, y, z});
+                if (block == Blocks::Air::toProtocol())
+                    continue;
+                if (block == Blocks::Water::toProtocol(Blocks::Water::Properties::Level::ZERO)) {
+                    lastBlock = Blocks::Water::toProtocol(Blocks::Water::Properties::Level::ZERO);
+                    continue;
+                }
+                if (block == Blocks::Stone::toProtocol() && lastBlock == Blocks::Water::toProtocol(Blocks::Water::Properties::Level::ZERO)) {
+                    updateBlock({x, y, z}, Blocks::Sand::toProtocol()); // sand
+                    break;
+                }
+                if (block == Blocks::Stone::toProtocol() && lastBlock == Blocks::Air::toProtocol()) {
+                    updateBlock({x, y, z}, Blocks::GrassBlock::toProtocol(Blocks::GrassBlock::Properties::Snowy::FALSE)); // grass
+                    if (y - 1 >= CHUNK_HEIGHT_MIN)
+                        updateBlock({x, y - 1, z}, Blocks::Dirt::toProtocol()); // dirt
+                    if (y - 2 >= CHUNK_HEIGHT_MIN)
+                        updateBlock({x, y - 2, z}, Blocks::Dirt::toProtocol()); // dirt
+                    break;
+                }
+            }
+        }
+    }
+    _currentState = GenerationState::LOCAL_MODIFICATIONS;
+}
+
+void ChunkColumn::_generateUndergroundStructures(UNUSED generation::Generator &generator)
+{
+    std::lock_guard<std::mutex> _(this->_generationLock);
+    _currentState = GenerationState::UNDERGROUND_STRUCTURES;
+}
+
+void ChunkColumn::_generateSurfaceStructures(UNUSED generation::Generator &generator)
+{
+    std::lock_guard<std::mutex> _(this->_generationLock);
+    _currentState = GenerationState::SURFACE_STRUCTURES;
+}
+
+void ChunkColumn::_generateStrongholds(UNUSED generation::Generator &generator)
+{
+    std::lock_guard<std::mutex> _(this->_generationLock);
+    _currentState = GenerationState::STRONGHOLDS;
+}
+
+void ChunkColumn::_generateUndergroundOres(UNUSED generation::Generator &generator)
+{
+    std::lock_guard<std::mutex> _(this->_generationLock);
+    _currentState = GenerationState::UNDERGROUND_ORES;
+}
+
+void ChunkColumn::_generateUndergroundDecoration(UNUSED generation::Generator &generator)
+{
+    std::lock_guard<std::mutex> _(this->_generationLock);
+    _currentState = GenerationState::UNDERGROUND_DECORATION;
+}
+
+void ChunkColumn::_generateFluidSprings(UNUSED generation::Generator &generator)
+{
+    std::lock_guard<std::mutex> _(this->_generationLock);
+    _currentState = GenerationState::FLUID_SPRINGS;
+}
+
+void ChunkColumn::_generateVegetalDecoration(generation::Generator &generator)
+{
+    std::lock_guard<std::mutex> _(this->_generationLock);
+    // GET_NEIGHBOURS() // does not work for now (dead lock)
+    generation::trees::OakTree oakTree(*this, generator);
+    oakTree.getPosForTreeGeneration();
+    while (!oakTree.filterTreeGrowSpace().empty())
+        oakTree.generateTree(std::vector<world_storage::ChunkColumn *>());
+
+    // RELEASE_NEIGHBOURS()
+    _currentState = GenerationState::VEGETAL_DECORATION;
+}
+
+void ChunkColumn::_generateTopLayerModification(UNUSED generation::Generator &generator)
+{
+    std::lock_guard<std::mutex> _(this->_generationLock);
+    // GET_NEIGHBOURS()
+    // RELEASE_NEIGHBOURS()
+    _currentState = GenerationState::TOP_LAYER_MODIFICATION;
 }
 
 } // namespace world_storage
