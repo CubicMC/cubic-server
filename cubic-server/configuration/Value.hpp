@@ -6,6 +6,7 @@
 #include "concept.hpp"
 #include "conversion.hpp"
 #include "options.hpp"
+#include <optional>
 #include <string>
 #include <variant>
 
@@ -75,6 +76,9 @@ public:
      */
     template<typename T, typename... Args>
     Value &possibleValues(const T &value, Args... values);
+
+    template<typename T>
+    Value &inRange(const T &min, const T &max);
 
     /**
      * @brief Specify a help message for the value.
@@ -160,6 +164,8 @@ private:
     std::string _name;
     ArgumentsParser &_arguments;
 
+    std::optional<std::function<bool(std::string)>> _rangeChecker;
+    std::optional<std::pair<std::string, std::string>> _rangeValues;
     std::vector<std::string> _possibleValue;
     std::vector<std::string> _defaultValueConfig;
     std::string _defaultValueArgument;
@@ -182,6 +188,17 @@ Value &Value::possibleValues(const T &value, Args... values)
     this->_possibleValue.resize(sizeof...(values) + 1);
     _possibleValue.push_back(_details::Convertor<std::string>()(value));
     ((_possibleValue.push_back(_details::Convertor<std::string>()(std::forward<Args>(values)))), ...);
+    return *this;
+}
+
+template<typename T>
+Value &Value::inRange(const T &min, const T &max)
+{
+    _rangeChecker = [min, max](const std::string &value) {
+        auto v = _details::Convertor<T>()(value);
+        return v >= min && v <= max;
+    };
+    _rangeValues = {_details::Convertor<std::string>()(min), _details::Convertor<std::string>()(max)};
     return *this;
 }
 
