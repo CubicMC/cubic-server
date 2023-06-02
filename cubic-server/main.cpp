@@ -55,12 +55,6 @@ auto initArgs(int argc, const char *const argv[])
         .defaultValue("A Cubic Server")
         .required();
 
-    // program.add("world")
-    //     .help("sets the world to load")
-    //     .valueFromConfig("general", "world")
-    //     .valueFromEnvironmentVariable("CBSRV_WORLD")
-    //     .defaultValue("world");
-
     program.add("whitelist-enabled")
         .help("enables the whitelist")
         .valueFromConfig("general", "whitelist-enabled")
@@ -136,6 +130,13 @@ auto initArgs(int argc, const char *const argv[])
         .valueFromEnvironmentVariable("CBSRV_GAMEMODE")
         .possibleValues("creative", "survival", "adventure", "spectator")
         .defaultValue("survival");
+
+    program.add("world-border")
+        .help("Set the world border")
+        .valueFromConfig("general", "world-border")
+        .valueFromEnvironmentVariable("CBSRV_WORLD_BORDER")
+        .valueFromArgument("--world-border")
+        .defaultValue(10000);
     // clang-format on
 
     try {

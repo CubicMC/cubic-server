@@ -1268,7 +1268,7 @@ void Player::_continueLoginSequence()
     }
 
     // TODO: Initialize world border
-    this->sendInitializeWorldBorder({0, 0, 0, 10000, 0, 29999984, 10, 10});
+    this->sendInitializeWorldBorder({0, 0, 0, CONFIG["world-border"].as<double>(), 0, 29999984, 10, 10});
 
     this->sendSetDefaultSpawnPosition({{0, 100, 0}, 0.0f});
 
