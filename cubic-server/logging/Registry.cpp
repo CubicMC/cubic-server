@@ -9,12 +9,13 @@
 #include <spdlog/spdlog.h>
 #include <string>
 
-#include "spdlog/common.h"
-#include "spdlog/details/registry.h"
-#include "spdlog/logger.h"
-#include "spdlog/sinks/basic_file_sink.h"
-#include "spdlog/sinks/daily_file_sink.h"
-#include "spdlog/sinks/stdout_color_sinks.h"
+#include <spdlog/common.h>
+#include <spdlog/details/registry.h>
+#include <spdlog/logger.h>
+#include <spdlog/sinks/basic_file_sink.h>
+#include <spdlog/sinks/daily_file_sink.h>
+#include <spdlog/sinks/stdout_color_sinks.h>
+#include <spdlog/cfg/env.h>
 
 #include "Sinks.hpp"
 
@@ -45,6 +46,7 @@ Registry::Registry()
 #else
     spdlog::set_level(spdlog::level::trace);
 #endif
+    spdlog::cfg::load_env_levels();
 }
 
 Registry &Registry::instance()

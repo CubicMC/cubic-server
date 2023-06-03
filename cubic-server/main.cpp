@@ -120,6 +120,7 @@ auto initArgs(int argc, const char *const argv[])
         .valueFromEnvironmentVariable("CBSRV_RENDER_DISTANCE")
         .valueFromArgument("--render-distance")
         .defaultValue(10);
+
     program.add("online-mode")
         .help("Enable client/server encryption and only accepts legitimate accounts")
         .valueFromConfig("general", "online-mode")
@@ -127,6 +128,13 @@ auto initArgs(int argc, const char *const argv[])
         .valueFromArgument("--online-mode")
         .possibleValues(false, true)
         .defaultValue(true);
+
+    program.add("gamemode")
+        .help("Default gamemode")
+        .valueFromConfig("general", "gamemode")
+        .valueFromEnvironmentVariable("CBSRV_GAMEMODE")
+        .possibleValues("creative", "survival", "adventure", "spectator")
+        .defaultValue("survival");
     // clang-format on
 
     try {

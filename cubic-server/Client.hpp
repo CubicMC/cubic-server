@@ -14,6 +14,7 @@
 #include "protocol/ClientPackets.hpp"
 #include "protocol/ServerPackets.hpp"
 #include "protocol/common.hpp"
+#include "types.hpp"
 #include <boost/circular_buffer.hpp>
 #include <boost/container/deque.hpp>
 
