@@ -39,6 +39,8 @@ set(CMAKE_USER_MAKE_RULES_OVERRIDE_C ${CMAKE_CURRENT_SOURCE_DIR}/c_flag_override
 
 project(CubicServer VERSION 0.1.0 LANGUAGES CXX C)
 
+message(STATUS "System Architecture: ${CMAKE_SYSTEM_PROCESSOR}")
+
 set(MINECRAFT_VERSION "1.19.3")
 
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
@@ -48,9 +50,13 @@ include(CheckIPOSupported)
 # if debug mode is enabled, add -g3 flag
 if (CMAKE_BUILD_TYPE MATCHES Debug)
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g3 -rdynamic")
-endif()#include "Plu
+endif()
 
-set(CMAKE_CXX_FLAGS "-rdynamic")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -rdynamic")
+
+if (CMAKE_SYSTEM_PROCESSOR MATCHES "aarch64")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -ldl")
+endif()
 
 if (CMAKE_BUILD_TYPE MATCHES Release)
     check_ipo_supported(RESULT ipo_supported OUTPUT ipo_error)
