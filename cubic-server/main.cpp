@@ -94,9 +94,10 @@ auto initArgs(int argc, const char *const argv[])
 
     program.add("num-gen-thread")
         .help("Number of threads allocated to chunk generation")
-        .valueFromConfig("general", "num-gen-thread")
+        .valueFromConfig("generation", "num-gen-thread")
         .valueFromEnvironmentVariable("CBSRV_NUM_GEN_THREAD")
         .valueFromArgument("--num-gen-thread")
+        .inRange((unsigned int)1, std::thread::hardware_concurrency())
         .defaultValue(4);
 
     program.add("world-type")
