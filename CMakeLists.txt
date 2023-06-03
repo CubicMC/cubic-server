@@ -54,12 +54,14 @@ if (CMAKE_BUILD_TYPE MATCHES Release)
     endif()
 endif()
 
-set(BOOST_INCLUDE_LIBRARIES asio system container lockfree circular_buffer)
-set(BOOST_ENABLE_CMAKE ON)
-
-include(FetchContent)
+# Disable building of mbedtls programs
+set(ENABLE_PROGRAMS OFF CACHE BOOL "" FORCE)
+set(ENABLE_TESTING OFF CACHE BOOL "" FORCE)
 
 set(FETCHCONTENT_QUIET OFF)
+
+include(FetchContent)
+include(boost.cmake)
 
 FetchContent_Declare(
     yaml-cpp
@@ -104,14 +106,6 @@ FetchContent_Declare(
 )
 
 FetchContent_Declare(
-    boost
-    GIT_REPOSITORY https://github.com/boostorg/boost.git
-    GIT_TAG boost-1.82.0
-    GIT_PROGRESS TRUE
-    GIT_SHALLOW TRUE
-)
-
-FetchContent_Declare(
     mbedtls
     GIT_REPOSITORY https://github.com/Mbed-TLS/mbedtls.git
     GIT_TAG v3.4.0
@@ -132,7 +126,6 @@ FetchContent_MakeAvailable(
     nbt
     spdlog
     mbedtls
-    boost
     plugin-interface
 )
 
@@ -166,6 +159,7 @@ if(GTEST) # if the flag GTEST is true
         googletest
     )
 
+    set(ENABLE_TESTING ON CACHE BOOL "" FORCE)
     enable_testing()
 endif()
 
@@ -220,11 +214,11 @@ target_link_libraries (${CMAKE_PROJECT_NAME} PRIVATE
     spdlog::spdlog
     CURL::libcurl
     $<$<BOOL:${MINGW}>:ws2_32>
-    Boost::asio
-    Boost::container
-    Boost::system
-    Boost::lockfree
-    Boost::circular_buffer
+    $<$<NOT:$<BOOL:${Boost_FOUND}>>:Boost::asio>
+    $<$<NOT:$<BOOL:${Boost_FOUND}>>:Boost::container>
+    $<$<NOT:$<BOOL:${Boost_FOUND}>>:Boost::system>
+    $<$<NOT:$<BOOL:${Boost_FOUND}>>:Boost::lockfree>
+    $<$<NOT:$<BOOL:${Boost_FOUND}>>:Boost::circular_buffer>
     plugin-interface
 )
 
