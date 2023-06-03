@@ -7,6 +7,8 @@
 #include <thread>
 #include <unordered_map>
 
+#include "scoreboard/Scoreboard.hpp"
+
 class World;
 class Chat;
 class SoundSystem;
@@ -22,6 +24,7 @@ public:
     virtual std::shared_ptr<World> getWorld(const std::string_view &name) const;
     virtual std::unordered_map<std::string_view, std::shared_ptr<World>> &getWorlds();
     virtual const std::unordered_map<std::string_view, std::shared_ptr<World>> &getWorlds() const;
+    virtual Scoreboard::Scoreboard &getScoreboard(void);
 
     virtual bool isInitialized() const;
 
@@ -33,6 +36,7 @@ protected:
     SoundSystem *_soundSystem;
     std::atomic<bool> _running;
     std::thread _thread;
+    Scoreboard::Scoreboard _scoreboard;
 };
 
 #endif // CUBICSERVER_WORLDGROUP_HPP

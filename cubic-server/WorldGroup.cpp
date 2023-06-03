@@ -5,11 +5,14 @@
 #include "SoundSystem.hpp"
 #include "World.hpp"
 #include "logging/logging.hpp"
+#include "Dimension.hpp"
+#include "scoreboard/Scoreboard.hpp"
 
 WorldGroup::WorldGroup(std::shared_ptr<Chat> chat):
     _chat(std::move(chat)),
     _soundSystem(new SoundSystem(*this)),
-    _running(false)
+    _running(false),
+    _scoreboard(Server::getInstance()->getScoreboardSystem(), *this)
 {
 }
 
@@ -58,6 +61,9 @@ std::shared_ptr<World> WorldGroup::getWorld(const std::string_view &name) const 
 std::unordered_map<std::string_view, std::shared_ptr<World>> &WorldGroup::getWorlds() { return this->_worlds; }
 
 const std::unordered_map<std::string_view, std::shared_ptr<World>> &WorldGroup::getWorlds() const { return this->_worlds; }
+
+Scoreboard::Scoreboard &WorldGroup::getScoreboard(void) { return (this->_scoreboard); }
+
 
 // void WorldGroup::initialize()
 //{

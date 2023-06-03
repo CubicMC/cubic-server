@@ -4,6 +4,7 @@
 #include "Player.hpp"
 #include "Server.hpp"
 #include "World.hpp"
+#include "WorldGroup.hpp"
 #include "options.hpp"
 
 // clang-format off
@@ -54,7 +55,21 @@ Entity::Entity(std::shared_ptr<Dimension> dim,
 }
 // clang-format on
 
-void Entity::setDimension(std::shared_ptr<Dimension> dim) { _dim = dim; }
+void Entity::setDimension(std::shared_ptr<Dimension> dim) {
+    Player *player = dynamic_cast<Player *>(this);
+
+    // if entity is a player
+    if (player) {
+        // send init scoreboard data if entered another worldgroup
+        if (this->getDimension() == nullptr || // no previous dimension or
+            this->getDimension() == dim || // different previous dimension or
+            this->getWorld() == dim->getWorld() || // different previous world or
+            this->getWorldGroup() == dim->getWorld()->getWorldGroup()) { // different previous worldgroup
+                dim->getWorld()->getWorldGroup()->getScoreboard().sendScoreboardStatus(*player);
+        }
+    }
+    _dim = dim;
+}
 
 void Entity::setPosition(const Vector3<double> &pos, UNUSED bool onGround) { _pos = pos; }
 

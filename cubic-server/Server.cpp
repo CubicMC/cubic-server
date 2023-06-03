@@ -26,6 +26,7 @@
 #include "command_parser/commands/InventoryDump.hpp"
 #include "default/DefaultWorldGroup.hpp"
 #include "logging/logging.hpp"
+#include "scoreboard/ScoreboardSystem.hpp"
 
 using boost::asio::ip::tcp;
 
@@ -45,7 +46,7 @@ Server::Server():
     // _motd = _config.getMotd();
     // _enforceWhitelist = _config.getEnforceWhitelist();
 
-    _commands.reserve(12);
+    _commands.reserve(25);
     _commands.emplace_back(std::make_unique<command_parser::Help>());
     _commands.emplace_back(std::make_unique<command_parser::QuestionMark>());
     _commands.emplace_back(std::make_unique<command_parser::Stop>());
@@ -56,6 +57,18 @@ Server::Server():
     _commands.emplace_back(std::make_unique<command_parser::Deop>());
     _commands.emplace_back(std::make_unique<command_parser::Reload>());
     _commands.emplace_back(std::make_unique<command_parser::Time>());
+    _commands.emplace_back(std::make_unique<command_parser::Objectives>());
+    _commands.emplace_back(std::make_unique<command_parser::AddObjective>());
+    _commands.emplace_back(std::make_unique<command_parser::SetScore>());
+    _commands.emplace_back(std::make_unique<command_parser::RemoveScore>());
+    _commands.emplace_back(std::make_unique<command_parser::DisplayObjective>());
+    _commands.emplace_back(std::make_unique<command_parser::RemoveObjective>());
+    _commands.emplace_back(std::make_unique<command_parser::Teams>());
+    _commands.emplace_back(std::make_unique<command_parser::AddTeam>());
+    _commands.emplace_back(std::make_unique<command_parser::ModifyTeam>());
+    _commands.emplace_back(std::make_unique<command_parser::JoinTeam>());
+    _commands.emplace_back(std::make_unique<command_parser::LeaveTeam>());
+    _commands.emplace_back(std::make_unique<command_parser::RemoveTeam>());
     _commands.emplace_back(std::make_unique<command_parser::Loot>());
     _commands.emplace_back(std::make_unique<command_parser::Gamemode>());
     _commands.emplace_back(std::make_unique<command_parser::InventoryDump>());
@@ -88,6 +101,9 @@ void Server::launch(const configuration::ConfigHandler &config)
     // TODO(huntears): Deal with this
     // Initialize default recipes
     // this->_recipes.initialize();
+
+    // Initialize scoreboard system
+    this->_scoreboardSystem.initialize();
 
     // Get plugins
     this->_pluginManager.load();
@@ -369,5 +385,9 @@ void Server::_enforceWhitelistOnReload()
 std::unordered_map<std::string_view, std::shared_ptr<WorldGroup>> &Server::getWorldGroups() { return _worldGroups; }
 
 const std::unordered_map<std::string_view, std::shared_ptr<WorldGroup>> &Server::getWorldGroups() const { return _worldGroups; }
+
 Recipes &Server::getRecipeSystem(void) noexcept { return (this->_recipes); }
+
+ScoreboardSystem &Server::getScoreboardSystem(void) { return (this->_scoreboardSystem); }
+
 LootTables &Server::getLootTableSystem(void) noexcept { return (this->_lootTables); }

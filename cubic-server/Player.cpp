@@ -9,6 +9,7 @@
 #include "PlayerAttributes.hpp"
 #include "Server.hpp"
 #include "World.hpp"
+#include "WorldGroup.hpp"
 #include "blocks.hpp"
 #include "command_parser/CommandParser.hpp"
 #include "items/foodItems.hpp"
@@ -718,6 +719,38 @@ void Player::sendSetExperience(const protocol::SetExperience &packet)
     N_LDEBUG("Sent set experience packet");
 }
 
+void Player::sendUpdateObjective(const protocol::UpdateObjectives &packet)
+{
+    GET_CLIENT();
+    auto pck = protocol::createUpdateObjectives(packet);
+    client->doWrite(std::move(pck));
+    LDEBUG("Sent update objectives packet");
+}
+
+void Player::sendDisplayObjective(const protocol::DisplayObjective &packet)
+{
+    GET_CLIENT();
+    auto pck = protocol::createDisplayObjective(packet);
+    client->doWrite(std::move(pck));
+    LDEBUG("Sent display objective packet");
+}
+
+void Player::sendUpdateScore(const protocol::UpdateScore &packet)
+{
+    GET_CLIENT();
+    auto pck = protocol::createUpdateScore(packet);
+    client->doWrite(std::move(pck));
+    LDEBUG("Sent update score packet");
+}
+
+void Player::sendUpdateTeams(const protocol::UpdateTeams &packet)
+{
+    GET_CLIENT();
+    auto pck = protocol::createUpdateTeams(packet);
+    client->doWrite(std::move(pck));
+    LDEBUG("Sent update teams packet");
+}
+
 #pragma endregion
 #pragma region ServerBound
 
@@ -1206,6 +1239,9 @@ void Player::_continueLoginSequence()
     // this->_player->sendChunkAndLightUpdate(0, 0);
     getDimension()->spawnPlayer(*this);
     this->teleport({8.5, 100, 8.5}); // TODO: change that to player_attributes::DEFAULT_SPAWN_POINT
+
+    // send scoreboard status (objectives and teams)
+    _dim->getWorld()->getWorldGroup()->getScoreboard().sendScoreboardStatus(*this);
 
     // Send login message
     chat::Message connectionMsg = chat::Message::fromTranslationKey<chat::message::TranslationKey::MultiplayerPlayerJoined>(*this);

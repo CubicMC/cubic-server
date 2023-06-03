@@ -24,4 +24,6 @@ target_sources (${CMAKE_PROJECT_NAME} PRIVATE
     Time.hpp
     Loot.hpp
     Loot.cpp
+    Scoreboard.cpp
+    Scoreboard.hpp
 )

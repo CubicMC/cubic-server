@@ -32,6 +32,7 @@
 #include "loot_tables/LootTables.hpp"
 
 #include "options.hpp"
+#include "scoreboard/ScoreboardSystem.hpp"
 
 #include "recipes/Recipes.hpp"
 
@@ -89,9 +90,12 @@ public:
     PluginManager &getPluginManager() noexcept { return _pluginManager; }
     Recipes &getRecipeSystem(void) noexcept;
 
-    LootTables &getLootTableSystem(void) noexcept;
+    ScoreboardSystem &getScoreboardSystem(void);
 
     void sendData(size_t clientID, std::unique_ptr<std::vector<uint8_t>> &&data);
+    
+    LootTables &getLootTableSystem(void) noexcept;
+
     void triggerClientCleanup(size_t clientID = -1);
 
     void addCommand(std::unique_ptr<CommandBase> command);
@@ -129,6 +133,7 @@ private:
     Recipes _recipes;
     PluginManager _pluginManager;
     LootTables _lootTables;
+    ScoreboardSystem _scoreboardSystem;
 
     // new boost stuff
 
