@@ -27,6 +27,29 @@ inline Gamemode gamemodeFromString(const std::string &str)
         return Gamemode::Survival;
 }
 
+enum AbilitiesFlags : uint8_t {
+    Invulnerable = 0x01,
+    Flying = 0x02,
+    AllowFlying = 0x04,
+    CreativeMode = 0x08
+};
+
+inline uint8_t getAbilitiesByGamemode(Gamemode gm)
+{
+    switch (gm) {
+    case Gamemode::Survival:
+        return 0;
+    case Gamemode::Creative:
+        return Invulnerable | Flying | AllowFlying | CreativeMode;
+    case Gamemode::Adventure:
+        return 0;
+    case Gamemode::Spectator:
+        return Invulnerable | Flying | AllowFlying;
+    default:
+        return 0x00;
+    }
+}
+
 std::ostream &operator<<(std::ostream &os, const Gamemode &gm);
 
 constexpr int32_t MAX_FOOD_LEVEL = 20;

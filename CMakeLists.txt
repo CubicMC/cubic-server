@@ -11,6 +11,9 @@ if (USE_CLANG)
     set(CMAKE_C_COMPILER /usr/bin/clang)
 endif()
 
+set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+
 option(DEBUG_NETWORK "Print network messages" OFF)
 if(DEBUG_NETWORK)
     add_compile_definitions(DEBUG_NETWORK)
@@ -31,7 +34,6 @@ project(CubicServer VERSION 0.1.0 LANGUAGES CXX C)
 
 set(MINECRAFT_VERSION "1.19.3")
 
-set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 include(CheckIPOSupported)

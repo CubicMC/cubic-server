@@ -468,8 +468,7 @@ void Client::sendLoginPlay()
         .entityID = _player->getId(), // TODO: figure out what is this
         .isHardcore = false, // TODO: something like this this->_player->_dim->getWorld()->getDifficulty(); Thats not difficulty tho (peaceful, easy, normal, hard)
         .gamemode = this->_player->getGamemode(),
-        .previousGamemode =
-            this->_player->getGamemode() == player_attributes::Gamemode::Survival ? player_attributes::Gamemode::Creative : player_attributes::Gamemode::Survival,
+        .previousGamemode = this->_player->getGamemode(),
         .dimensionNames = std::vector<std::string>({"minecraft:overworld"}), // TODO: something like this this->_player->_dim->getWorld()->getDimensions();
         // clang-format off
         .registryCodec = std::shared_ptr<nbt::Compound>(new nbt::Compound("", {

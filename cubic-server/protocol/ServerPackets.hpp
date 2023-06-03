@@ -346,16 +346,6 @@ struct PlaceRecipe : BaseServerPacket {
 std::unique_ptr<PlaceRecipe> parsePlaceRecipe(std::vector<uint8_t> &buffer);
 
 struct PlayerAbilities : BaseServerPacket {
-    enum Flags : uint8_t {
-        Invulnerable = 0x01,
-        Flying = 0x02,
-        AllowFlying = 0x04,
-        CreativeMode = 0x08
-    };
-    enum FlagsByMode : uint8_t {
-        Survival = 0,
-        Creative = Invulnerable | Flying | AllowFlying | CreativeMode,
-    };
     uint8_t flags;
 };
 std::unique_ptr<PlayerAbilities> parsePlayerAbilities(std::vector<uint8_t> &buffer);
