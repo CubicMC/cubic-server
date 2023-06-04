@@ -113,7 +113,7 @@ FetchContent_Declare(
 FetchContent_Declare(
     nbt
     GIT_REPOSITORY https://github.com/CubicMC/libnbt.git
-    GIT_TAG v1.0.1
+    GIT_TAG v1.0.2
     GIT_PROGRESS TRUE
     GIT_SHALLOW TRUE
 )
