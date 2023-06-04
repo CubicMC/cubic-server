@@ -69,7 +69,7 @@ pipeline {
                         label "cubic-freebsd"
                     }
                     options {
-                        timeout(time: 20, unit: 'MINUTES')
+                        timeout(time: 1, unit: 'HOURS')
                     }
                     stages {
                         stage ('Build FreeBSD') {

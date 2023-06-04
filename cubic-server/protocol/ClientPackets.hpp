@@ -515,12 +515,6 @@ struct UpdateEntityRotation {
 std::unique_ptr<std::vector<uint8_t>> createUpdateEntityRotation(const UpdateEntityRotation &);
 
 struct PlayerAbilitiesClient {
-    enum Flags : uint8_t {
-        Invulnerable = 0x01,
-        Flying = 0x02,
-        AllowFlying = 0x04,
-        CreativeMode = 0x08
-    };
     uint8_t flags;
     float flyingSpeed;
     float fieldOfViewModifier;
