@@ -1,6 +1,7 @@
 #ifndef CUBICSERVER_ENTITY_HPP
 #define CUBICSERVER_ENTITY_HPP
 
+#include "EntityType.hpp"
 #include "math/Vector2.hpp"
 #include "math/Vector3.hpp"
 #include "options.hpp"
@@ -36,7 +37,8 @@ public:
     // Subject to change
     // clang-format off
     Entity(std::shared_ptr<Dimension> dim,
-        protocol::SpawnEntity::EntityType type,
+        EntityType type,
+        u128 uuid = {0, 0},
         bool onFire = false,
         bool crouching = false,
         bool sprinting = false,
@@ -66,6 +68,7 @@ public:
     virtual void setRotation(const Vector2<uint8_t> &rot);
     virtual void setRotation(uint8_t x, uint8_t y);
     virtual void setRotation(float yaw, float pitch);
+    NODISCARD virtual const u128 &getUuid() const;
     NODISCARD virtual std::shared_ptr<Dimension> getDimension() const;
     NODISCARD virtual std::shared_ptr<World> getWorld() const;
     NODISCARD virtual std::shared_ptr<WorldGroup> getWorldGroup() const;
@@ -77,7 +80,7 @@ public:
     NODISCARD virtual Vector2<float> getRotationDegree() const;
     NODISCARD virtual Vector3<double> &getLastPosition();
     NODISCARD virtual Vector2<uint8_t> &getLastRotation();
-    NODISCARD virtual protocol::SpawnEntity::EntityType getType() const { return _type; }
+    NODISCARD virtual EntityType getType() const { return _type; }
 
     virtual void teleport(const Vector3<double> &pos);
 
@@ -107,11 +110,12 @@ protected:
     Pose _pose;
     int16_t _tickFrozenInPowderedSnow;
     int32_t _id;
+    u128 _uuid;
     Vector3<double> _pos;
     Vector2<uint8_t> _rot;
     Vector3<double> _lastPos;
     Vector2<uint8_t> _lastRot;
-    protocol::SpawnEntity::EntityType _type;
+    EntityType _type;
 };
 
 #endif // CUBICSERVER_ENTITY_HPP

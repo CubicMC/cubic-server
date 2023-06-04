@@ -31,6 +31,10 @@ if(DEBUG_NETWORK)
     add_compile_definitions(DEBUG_NETWORK)
 endif()
 
+if (CMAKE_CXX_COMPILER_ID MATCHES "Clang" OR CMAKE_CXX_COMPILER_ID MATCHES "GNU")
+    set(CMAKE_EXE_LINKER_FLAGS_INIT "-rdynamic")
+endif()
+
 # This must be set before the project command
 set(CMAKE_USER_MAKE_RULES_OVERRIDE_CXX ${CMAKE_CURRENT_SOURCE_DIR}/cxx_flag_overrides.cmake)
 set(CMAKE_USER_MAKE_RULES_OVERRIDE_C ${CMAKE_CURRENT_SOURCE_DIR}/c_flag_overrides.cmake)
@@ -65,6 +69,9 @@ endif()
 # Disable building of mbedtls programs
 set(ENABLE_PROGRAMS OFF CACHE BOOL "" FORCE)
 set(ENABLE_TESTING OFF CACHE BOOL "" FORCE)
+
+# Fix mbedtls errors on warnings
+set(MBEDTLS_FATAL_WARNINGS OFF CACHE BOOL "" FORCE)
 
 set(FETCHCONTENT_QUIET OFF)
 
@@ -148,7 +155,6 @@ FetchContent_MakeAvailable(
 # Fix spdlog warnings
 get_target_property(spdlog_include spdlog INTERFACE_INCLUDE_DIRECTORIES)
 target_include_directories(spdlog SYSTEM INTERFACE ${spdlog_include})
-target_compile_options(spdlog PUBLIC -Wno-array-bounds -Wno-stringop-overflow)
 
 # Fix yaml-cpp warnings
 get_target_property(yaml_cpp_include yaml-cpp INTERFACE_INCLUDE_DIRECTORIES)

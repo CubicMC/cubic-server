@@ -31,6 +31,9 @@ struct InternalBlock {
  * @brief Representation of a block with a name and a list of properties
  */
 struct Block {
+    Block() {};
+    Block(std::string name, std::vector<std::pair<std::string, std::string>> properties)
+        : name(std::move(name)), properties(std::move(properties)) {}
     std::string name;
     std::vector<std::pair<std::string, std::string>> properties;
 };

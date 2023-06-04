@@ -3,9 +3,10 @@
 #include "Message.hpp"
 #include "Player.hpp"
 #include "events.hpp"
+#include "logging/logging.hpp"
 
 template<>
-chat::Message chat::message::_detail::fromTranslationKey<chat::message::TranslationKey::MultiplayerPlayerJoined>(const Player &player)
+chat::Message chat::message::_detail::fromTranslationKey<chat::message::TranslationKey::MultiplayerPlayerJoined>(Player &player)
 {
     chat::Message message = chat::Message();
     chat::Message userName = chat::Message(player.getUsername());
@@ -15,9 +16,7 @@ chat::Message chat::message::_detail::fromTranslationKey<chat::message::Translat
         userName.style().color = "gold";
 
     userName.makeClickEvent<chat::message::event::SuggestCommandClick>("/tell " + player.getUsername() + " ");
-    userName.makeHoverEvent<chat::message::event::EntityHover>(
-        //  "{\"type\": \"minecraft:player\", \"id\": \"" + player->getUuidString() + "\", \"name\": \"" + player->getUsername() + "\"}"
-    );
+    userName.makeHoverEvent<chat::message::event::EntityHover>(player);
 
     message.style().color = "yellow";
     message.options().translate = "multiplayer.player.joined";
@@ -27,7 +26,7 @@ chat::Message chat::message::_detail::fromTranslationKey<chat::message::Translat
 }
 
 template<>
-chat::Message chat::message::_detail::fromTranslationKey<chat::message::TranslationKey::MultiplayerPlayerLeft>(const Player &player)
+chat::Message chat::message::_detail::fromTranslationKey<chat::message::TranslationKey::MultiplayerPlayerLeft>(Player &player)
 {
     chat::Message message = chat::Message();
     chat::Message userName = chat::Message(player.getUsername());
@@ -37,9 +36,7 @@ chat::Message chat::message::_detail::fromTranslationKey<chat::message::Translat
         userName.style().color = "gold";
 
     userName.makeClickEvent<chat::message::event::SuggestCommandClick>("/tell " + player.getUsername() + " ");
-    userName.makeHoverEvent<chat::message::event::EntityHover>(
-        //  "{\"type\": \"minecraft:player\", \"id\": \"" + player->getUuidString() + "\", \"name\": \"" + player->getUsername() + "\"}"
-    );
+    userName.makeHoverEvent<chat::message::event::EntityHover>(player);
 
     message.style().color = "yellow";
     message.options().translate = "multiplayer.player.left";
@@ -49,15 +46,13 @@ chat::Message chat::message::_detail::fromTranslationKey<chat::message::Translat
 }
 
 template<>
-chat::Message chat::message::_detail::fromTranslationKey<chat::message::TranslationKey::CommandsMessageDisplayIncoming>(const Player &player, const chat::Message &message)
+chat::Message chat::message::_detail::fromTranslationKey<chat::message::TranslationKey::CommandsMessageDisplayIncoming>(Player &player, const chat::Message &message)
 {
     auto response = chat::Message();
     auto sender = chat::Message(player.getUsername());
 
     sender.makeClickEvent<chat::message::event::SuggestCommandClick>("/tell " + player.getUsername() + " ");
-    sender.makeHoverEvent<chat::message::event::EntityHover>(
-        //  "{\"type\": \"minecraft:player\", \"id\": \"" + player->getUuidString() + "\", \"name\": \"" + player->getUsername() + "\"}"
-    );
+    sender.makeHoverEvent<chat::message::event::EntityHover>(player);
 
     response.options().translate = "commands.message.display.incoming";
     response.options().with = std::vector<chat::Message>({sender, message});
@@ -66,15 +61,14 @@ chat::Message chat::message::_detail::fromTranslationKey<chat::message::Translat
 }
 
 template<>
-chat::Message chat::message::_detail::fromTranslationKey<chat::message::TranslationKey::CommandsMessageDisplayOutgoing>(const Player &player, const chat::Message &message)
+chat::Message chat::message::_detail::fromTranslationKey<chat::message::TranslationKey::CommandsMessageDisplayOutgoing>(Player &player, const chat::Message &message)
 {
     auto response = chat::Message();
     auto sender = chat::Message(player.getUsername());
 
     sender.makeClickEvent<chat::message::event::SuggestCommandClick>("/tell " + player.getUsername() + " ");
-    sender.makeHoverEvent<chat::message::event::EntityHover>(
-        //  "{\"type\": \"minecraft:player\", \"id\": \"" + player->getUuidString() + "\", \"name\": \"" + player->getUsername() + "\"}"
-    );
+    //  "{\"type\": \"minecraft:player\", \"id\": \"" + player.getUuidString() + "\", \"name\": \"" + player.getUsername() + "\"}"
+    sender.makeHoverEvent<chat::message::event::EntityHover>(player);
 
     response.options().translate = "commands.message.display.outgoing";
     response.options().with = std::vector<chat::Message>({sender, message});
@@ -83,15 +77,13 @@ chat::Message chat::message::_detail::fromTranslationKey<chat::message::Translat
 }
 
 template<>
-chat::Message chat::message::_detail::fromTranslationKey<chat::message::TranslationKey::ChatTypeAnnouncement>(const Player &player, const chat::Message &message)
+chat::Message chat::message::_detail::fromTranslationKey<chat::message::TranslationKey::ChatTypeAnnouncement>(Player &player, const chat::Message &message)
 {
     auto response = chat::Message();
     auto sender = chat::Message(player.getUsername());
 
     sender.makeClickEvent<chat::message::event::SuggestCommandClick>("/tell " + player.getUsername() + " ");
-    sender.makeHoverEvent<chat::message::event::EntityHover>(
-        //  "{\"type\": \"minecraft:player\", \"id\": \"" + player->getUuidString() + "\", \"name\": \"" + player->getUsername() + "\"}"
-    );
+    sender.makeHoverEvent<chat::message::event::EntityHover>(player);
 
     response.options().translate = "chat.type.announcement";
     response.options().with = std::vector<chat::Message>({sender, message});
@@ -100,16 +92,14 @@ chat::Message chat::message::_detail::fromTranslationKey<chat::message::Translat
 }
 
 template<>
-chat::Message chat::message::_detail::fromTranslationKey<chat::message::TranslationKey::ChatTypeTeamText>(const Player &player, const chat::Message &message)
+chat::Message chat::message::_detail::fromTranslationKey<chat::message::TranslationKey::ChatTypeTeamText>(Player &player, const chat::Message &message)
 {
     auto response = chat::Message();
-    auto team = chat::Message(/* player->getTeam() */ "TEAM CUCK");
+    auto team = chat::Message(/* player.getTeam() */ "TEAM CUCK");
     auto sender = chat::Message(player.getUsername());
 
     sender.makeClickEvent<chat::message::event::SuggestCommandClick>("/tell " + player.getUsername() + " ");
-    sender.makeHoverEvent<chat::message::event::EntityHover>(
-        //  "{\"type\": \"minecraft:player\", \"id\": \"" + player->getUuidString() + "\", \"name\": \"" + player->getUsername() + "\"}"
-    );
+    sender.makeHoverEvent<chat::message::event::EntityHover>(player);
 
     response.options().translate = "chat.type.team.text";
     response.options().with = std::vector<chat::Message>({team, sender, message});
@@ -118,16 +108,14 @@ chat::Message chat::message::_detail::fromTranslationKey<chat::message::Translat
 }
 
 template<>
-chat::Message chat::message::_detail::fromTranslationKey<chat::message::TranslationKey::ChatTypeTeamSent>(const Player &player, const chat::Message &message)
+chat::Message chat::message::_detail::fromTranslationKey<chat::message::TranslationKey::ChatTypeTeamSent>(Player &player, const chat::Message &message)
 {
     auto response = chat::Message();
-    auto team = chat::Message(/* player->getTeam() */ "TEAM CUCK");
+    auto team = chat::Message(/* player.getTeam() */ "TEAM CUCK");
     auto sender = chat::Message(player.getUsername());
 
     sender.makeClickEvent<chat::message::event::SuggestCommandClick>("/tell " + player.getUsername() + " ");
-    sender.makeHoverEvent<chat::message::event::EntityHover>(
-        //  "{\"type\": \"minecraft:player\", \"id\": \"" + player->getUuidString() + "\", \"name\": \"" + player->getUsername() + "\"}"
-    );
+    sender.makeHoverEvent<chat::message::event::EntityHover>(player);
 
     response.options().translate = "chat.type.team.sent";
     response.options().with = std::vector<chat::Message>({team, sender, message});

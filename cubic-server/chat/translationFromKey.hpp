@@ -2,6 +2,7 @@
 #define CHAT_TRANSLATIONKEY_HPP
 
 #include <cstdint>
+#include <memory>
 
 class Player;
 namespace chat {
@@ -23,30 +24,30 @@ enum TranslationKey : int32_t {
 
 namespace _detail {
 template<chat::message::TranslationKey key>
-chat::Message fromTranslationKey(const Player &);
+chat::Message fromTranslationKey(Player &);
 template<chat::message::TranslationKey key>
-chat::Message fromTranslationKey(const Player &player, const chat::Message &message);
+chat::Message fromTranslationKey(Player &player, const chat::Message &message);
 
 template<>
-chat::Message fromTranslationKey<chat::message::TranslationKey::ChatTypeText>(const Player &player, const chat::Message &message);
+chat::Message fromTranslationKey<chat::message::TranslationKey::ChatTypeText>(Player &player, const chat::Message &message);
 // template<>
 // chat::Message fromTranslationKey<chat::message::TranslationKey::ChatTypeEmote>(const Player *player, const chat::Message &message);
 template<>
-chat::Message fromTranslationKey<chat::message::TranslationKey::CommandsMessageDisplayIncoming>(const Player &player, const chat::Message &message);
+chat::Message fromTranslationKey<chat::message::TranslationKey::CommandsMessageDisplayIncoming>(Player &player, const chat::Message &message);
 template<>
-chat::Message fromTranslationKey<chat::message::TranslationKey::CommandsMessageDisplayOutgoing>(const Player &player, const chat::Message &message);
+chat::Message fromTranslationKey<chat::message::TranslationKey::CommandsMessageDisplayOutgoing>(Player &player, const chat::Message &message);
 template<>
-chat::Message fromTranslationKey<chat::message::TranslationKey::ChatTypeAnnouncement>(const Player &player, const chat::Message &message);
+chat::Message fromTranslationKey<chat::message::TranslationKey::ChatTypeAnnouncement>(Player &player, const chat::Message &message);
 template<>
-chat::Message fromTranslationKey<chat::message::TranslationKey::ChatTypeTeamText>(const Player &player, const chat::Message &message);
+chat::Message fromTranslationKey<chat::message::TranslationKey::ChatTypeTeamText>(Player &player, const chat::Message &message);
 template<>
-chat::Message fromTranslationKey<chat::message::TranslationKey::ChatTypeTeamSent>(const Player &player, const chat::Message &message);
+chat::Message fromTranslationKey<chat::message::TranslationKey::ChatTypeTeamSent>(Player &player, const chat::Message &message);
 template<>
-chat::Message fromTranslationKey<chat::message::TranslationKey::ChatTypeTeamText>(const Player &player, const chat::Message &message);
+chat::Message fromTranslationKey<chat::message::TranslationKey::ChatTypeTeamText>(Player &player, const chat::Message &message);
 template<>
-chat::Message fromTranslationKey<chat::message::TranslationKey::MultiplayerPlayerJoined>(const Player &player);
+chat::Message fromTranslationKey<chat::message::TranslationKey::MultiplayerPlayerJoined>(Player &player);
 template<>
-chat::Message fromTranslationKey<chat::message::TranslationKey::MultiplayerPlayerLeft>(const Player &player);
+chat::Message fromTranslationKey<chat::message::TranslationKey::MultiplayerPlayerLeft>(Player &player);
 } // namespace message::_detail
 } // namespace chat::message
 

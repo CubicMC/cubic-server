@@ -84,7 +84,7 @@ static void execute(const std::vector<std::string> &args, Player *invoker)
         for (Entity &moving : toTeleport) {
             auto finalPos = endPoint->getPosition();
             moving.teleport(finalPos);
-            if (moving.getType() == protocol::SpawnEntity::EntityType::Player) {
+            if (moving.getType() == EntityType::Player) {
                 auto &player = (Player &) moving;
                 auto toSend = fmt::format("Teleported {} to {}", player.getUsername(), endPoint->getUsername());
                 if (invoker)
@@ -123,7 +123,7 @@ static void execute(const std::vector<std::string> &args, Player *invoker)
                 isZRelative ? position.z + Z : Z,
             };
             moving.teleport(finalPos);
-            if (moving.getType() == protocol::SpawnEntity::EntityType::Player) {
+            if (moving.getType() == EntityType::Player) {
                 auto &player = (Player &) moving;
                 auto toSend = fmt::format("Teleported {} to {}", player.getUsername(), finalPos.toString());
                 if (invoker)

@@ -8,7 +8,7 @@ namespace Entry {
 class Group : public Entry {
 public:
     Group(const nlohmann::json &entry);
-    Group() = default;
+    ~Group() = default;
 
     bool poll(LootTablePoll &poll, LootContext *context) const override;
 

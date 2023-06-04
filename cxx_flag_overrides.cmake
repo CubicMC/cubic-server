@@ -1,4 +1,4 @@
-set(CMAKE_CXX_FLAGS_INIT "-Wall -Wextra -Wno-unknown-pragmas -Wno-missing-field-initializers -rdynamic")
+set(CMAKE_CXX_FLAGS_INIT "-Wall -Wextra -Wpedantic -Wno-unknown-pragmas -Wno-missing-field-initializers")
 set(CMAKE_CXX_FLAGS_DEBUG_INIT "-ggdb3")
 set(CMAKE_CXX_FLAGS_RELEASE_INIT "-O3 -DNDEBUG")
 set(CMAKE_CXX_FLAGS_RELWITHDEBINFO_INIT "-O2 -ggdb3 -fno-omit-frame-pointer -fsanitize=address -fsanitize=null")
@@ -9,3 +9,4 @@ elseif(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
 else()
     message(FATAL_ERROR "Unsupported compiler: ${CMAKE_CXX_COMPILER_ID}")
 endif()
+

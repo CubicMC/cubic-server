@@ -159,7 +159,7 @@ void Dimension::loadOrGenerateChunk(int x, int z, std::shared_ptr<Player> player
                 const Vector3<double> chunkPos = {(double) x * 16, pos.y, (double) z * 16};
                 current_min = std::min(current_min, pos.distance(chunkPos));
             }
-            return static_cast<size_t>(std::ceil(current_min));
+            return static_cast<int>(std::ceil(current_min));
         },
         [this, x, z] {
             // TODO: load chunk from disk if it exists

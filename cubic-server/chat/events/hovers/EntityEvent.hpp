@@ -1,8 +1,11 @@
 #ifndef CHAT_EVENTS_HOVER_ENTITY_HPP
 #define CHAT_EVENTS_HOVER_ENTITY_HPP
 
-#include "Entity.hpp"
 #include "chat/events/Hover.hpp"
+#include <functional>
+#include <optional>
+
+class Entity;
 
 namespace chat::message::event {
 /**
@@ -12,9 +15,9 @@ namespace chat::message::event {
  */
 class EntityHover : public OnHover {
 public:
-    EntityHover() { }
-    // EntityHover(const std::shared_ptr<Entity> &entity):
-    //     _entity(entity) {};
+    EntityHover() = default;
+    EntityHover(Entity &entity):
+        _entity(entity) {};
 
     ~EntityHover() override = default;
 
@@ -23,10 +26,7 @@ public:
     static std::shared_ptr<EntityHover> fromJson(const nlohmann::json &json);
 
 private:
-    // Need to have a shared instead of a weak pointer because the entity can be created from the json
-    // Or we need to get the entity from the world
-    // That may be a better idea
-    // std::shared_ptr<Entity> _entity;
+    std::optional<std::reference_wrapper<Entity>> _entity;
 };
 } // namespace chat::message
 

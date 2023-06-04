@@ -8,8 +8,8 @@
 #include <filesystem>
 
 PluginManager::PluginManager(Server *server, const std::string &folder):
-    _folder(folder),
-    _interface(std::make_shared<PluginInterface>())
+    _interface(std::make_shared<PluginInterface>()),
+    _folder(folder)
 {
     this->_interface->load(server);
 }

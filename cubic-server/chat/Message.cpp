@@ -34,7 +34,8 @@ nlohmann::json chat::Message::toJson() const
 {
     nlohmann::json response;
 
-    response["text"] = _message;
+    if (!_message.empty())
+        response["text"] = _message;
 
     if (_style.bold.has_value())
         response["bold"] = _style.bold.value();
@@ -71,6 +72,9 @@ nlohmann::json chat::Message::toJson() const
 
     if (_hoverEvent)
         response["hoverEvent"] = _hoverEvent->toJson();
+
+    if (response.empty())
+        response["text"] = "";
 
     return response;
 }

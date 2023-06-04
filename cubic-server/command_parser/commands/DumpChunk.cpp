@@ -211,6 +211,7 @@ void command_parser::DumpChunk::execute(std::vector<std::string> &args, Player *
     LDEBUG("--- CHUNK PACKET DATA END ---");
 
     LINFO("Done");
+    invoker->getDimension()->getWorld()->getChat()->sendSystemMessage("Done", *invoker);
 }
 
 void command_parser::DumpChunk::help(UNUSED std::vector<std::string> &args, Player *invoker) const

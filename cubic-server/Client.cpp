@@ -61,6 +61,8 @@ Client::~Client()
         if (chunkReq.second == Player::ChunkState::Loading)
             this->_player->getDimension()->removePlayerFromLoadingChunk(chunkReq.first, this->_player);
     }
+    chat::Message disconnectMsg = chat::Message::fromTranslationKey<chat::message::TranslationKey::MultiplayerPlayerLeft>(*_player);
+    this->_player->getWorld()->getChat()->sendSystemMessage(disconnectMsg, *_player->getWorldGroup());
     // if (_thread.joinable())
     // _thread.join();
     // _thread.detach();

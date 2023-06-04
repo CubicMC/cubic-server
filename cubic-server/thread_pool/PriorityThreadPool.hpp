@@ -114,7 +114,7 @@ public:
         {
             const std::lock_guard<std::mutex> _guard(_toolBox.queueProtection);
             jobId = ++_toolBox.totalJobsPushed;
-            _toolBox.jobQueue.emplace_back(jobId, priority, std::move(realJobList));
+            _toolBox.jobQueue.emplace_back(PriorityThreadPoolUtility::Job {jobId, priority, std::move(realJobList)});
         }
         _toolBox.jobSemaphore.release(sizeof...(job));
         return jobId;

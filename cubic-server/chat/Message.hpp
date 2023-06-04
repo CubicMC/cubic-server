@@ -84,7 +84,7 @@ public:
      * @param args
      */
     template<isBaseOf<chat::message::event::OnHover> Event, typename... Args>
-    void makeHoverEvent(Args... args)
+    void makeHoverEvent(Args&&... args)
     { this->_hoverEvent = std::make_shared<Event>(std::forward<Args>(args)...); }
 
     /**
@@ -95,7 +95,7 @@ public:
      * @param args
      */
     template<isBaseOf<chat::message::event::OnClick> Event, typename... Args>
-    void makeClickEvent(Args... args)
+    void makeClickEvent(Args&&... args)
     { this->_clickEvent = std::make_shared<Event>(std::forward<Args>(args)...); }
     // clang-format on
 
@@ -156,7 +156,7 @@ public:
      * @return Message
      */
     template<chat::message::TranslationKey key>
-    static Message fromTranslationKey(const Player &player)
+    static Message fromTranslationKey(Player &player)
     {
         return message::_detail::fromTranslationKey<key>(player);
     }
@@ -170,7 +170,7 @@ public:
      * @return Message
      */
     template<chat::message::TranslationKey key>
-    static Message fromTranslationKey(const Player &player, const Message &message)
+    static Message fromTranslationKey(Player &player, const Message &message)
     {
         return message::_detail::fromTranslationKey<key>(player, message);
     }

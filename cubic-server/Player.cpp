@@ -35,10 +35,9 @@
     return
 
 Player::Player(std::weak_ptr<Client> cli, std::shared_ptr<Dimension> dim, u128 uuid, const std::string &username):
-    LivingEntity(dim, protocol::SpawnEntity::EntityType::Player),
+    LivingEntity(dim, EntityType::Player, uuid),
     _cli(cli),
     _username(username),
-    _uuid(uuid),
     _keepAliveId(0),
     _keepAliveIgnored(0),
     _gamemode(player_attributes::gamemodeFromString(CONFIG["gamemode"].as<std::string>())),
@@ -57,9 +56,7 @@ Player::Player(std::weak_ptr<Client> cli, std::shared_ptr<Dimension> dim, u128 u
     _keepAliveClock.start();
     _heldItem = 0;
 
-    this->_uuidString = this->getUuid().toString();
-
-    LINFO("Player {} with uuid {} just logged in", this->_username, this->_uuidString);
+    LINFO("Player {} with uuid {} just logged in", this->_username, this->_uuid.toString());
     this->setHealth(20);
 
     this->setOperator(Server::getInstance()->permissions.isOperator(username));
@@ -69,12 +66,9 @@ Player::Player(std::weak_ptr<Client> cli, std::shared_ptr<Dimension> dim, u128 u
 
 Player::~Player()
 {
-    chat::Message disconnectMsg = chat::Message::fromTranslationKey<chat::message::TranslationKey::MultiplayerPlayerLeft>(*this);
-
     this->_dim->getWorld()->sendPlayerInfoRemovePlayer(this);
 
     // Send a disconnect message
-    this->_dim->getWorld()->getChat()->sendSystemMessage(disconnectMsg, *this->getWorldGroup());
     onEvent(Server::getInstance()->getPluginManager(), onPlayerLeave, this);
 }
 
@@ -142,11 +136,7 @@ std::weak_ptr<Client> Player::getClient() const { return _cli; }
 
 const std::string &Player::getUsername() const { return _username; }
 
-const u128 &Player::getUuid() const { return _uuid; }
-
 uint16_t Player::getHeldItem() const { return this->_heldItem; }
-
-const std::string &Player::getUuidString() const { return this->_uuidString; }
 
 player_attributes::Gamemode Player::getGamemode() const { return _gamemode; }
 
@@ -506,7 +496,7 @@ void Player::sendSynchronizePlayerPosition(const protocol::SynchronizePlayerPosi
     LDEBUG("Synchronized player position");
 }
 
-void Player::sendSynchronizePlayerPosition(void)
+void Player::sendSynchronizePlayerPosition()
 {
     Vector2<float> rotDegree = this->getRotationDegree();
     GET_CLIENT();
@@ -1244,7 +1234,8 @@ void Player::_continueLoginSequence()
     // TODO: send the player recipies book
     this->sendUpdateRecipiesBook({});
 
-    this->teleport({8.5, 100, 8.5}); // TODO: change that to player_attributes::DEFAULT_SPAWN_POINT
+    // TODO: change that to player_attributes::DEFAULT_SPAWN_POINT
+    this->teleport({8.5, 100, 8.5});
 
     this->sendServerData({false, "", false, "", false});
 

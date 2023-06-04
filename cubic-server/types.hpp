@@ -51,6 +51,14 @@ struct Position {
     valueType y;
     valueType z;
 
+    constexpr Position() = default;
+    constexpr Position(valueType x, valueType y, valueType z):
+        x(x),
+        y(y),
+        z(z)
+    {
+    }
+
     constexpr Position operator*(valueType i) const;
     constexpr Position operator*(const Position &other) const;
 

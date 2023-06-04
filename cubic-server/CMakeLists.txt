@@ -8,6 +8,7 @@ target_sources (${CMAKE_PROJECT_NAME} PRIVATE
     Player.hpp
     PlayerAttributes.cpp
     PlayerAttributes.hpp
+    EntityType.hpp
     Entity.cpp
     Entity.hpp
     Item.cpp
