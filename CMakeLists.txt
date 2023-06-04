@@ -51,16 +51,6 @@ if (CMAKE_SYSTEM_PROCESSOR MATCHES "aarch64")
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -ldl")
 endif()
 
-message(STATUS "System Architecture: ${CMAKE_SYSTEM_PROCESSOR}")
-
-# This is needed for the aarch64 architecture
-# And this can't be in the cxx_flag_overrides.cmake file because the file needs
-# to be included before the project command
-# And the variable CMAKE_SYSTEM_PROCESSOR is only set after the project command
-if (CMAKE_SYSTEM_PROCESSOR MATCHES "aarch64")
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -ldl")
-endif()
-
 set(MINECRAFT_VERSION "1.19.3")
 
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
