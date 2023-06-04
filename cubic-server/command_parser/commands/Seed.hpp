@@ -12,9 +12,9 @@ struct Seed : public CommandBase {
 
     ~Seed() override = default;
 
-    void autocomplete(std::vector<std::string> &args, Player *invoker) const override;
-    void execute(std::vector<std::string> &args, Player *invoker) const override;
-    void help(std::vector<std::string> &args, Player *invoker) const override;
+    void autocomplete(std::vector<std::string> &args, std::shared_ptr<Player> invoker) const override;
+    void execute(std::vector<std::string> &args, std::shared_ptr<Player> invoker) const override;
+    void help(std::vector<std::string> &args, std::shared_ptr<Player> invoker) const override;
 };
 }
 

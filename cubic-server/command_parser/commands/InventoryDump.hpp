@@ -14,16 +14,16 @@ public:
     {
     }
 
-    inline void autocomplete(std::vector<std::string> &args, Player *invoker) const override;
-    inline void execute(std::vector<std::string> &args, Player *invoker) const override;
-    inline void help(std::vector<std::string> &args, Player *invoker) const override;
+    inline void autocomplete(std::vector<std::string> &args, std::shared_ptr<Player> invoker) const override;
+    inline void execute(std::vector<std::string> &args, std::shared_ptr<Player> invoker) const override;
+    inline void help(std::vector<std::string> &args, std::shared_ptr<Player> invoker) const override;
 };
 
 } // namespace command_parser
 
 inline void command_parser::InventoryDump::autocomplete(UNUSED std::vector<std::string> &args, UNUSED Player *invoker) const { }
 
-inline void command_parser::InventoryDump::execute(UNUSED std::vector<std::string> &args, Player *invoker) const
+inline void command_parser::InventoryDump::execute(UNUSED std::vector<std::string> &args, std::shared_ptr<Player> invoker) const
 {
     if (!invoker) {
         LINFO("J'ai la flemme de chercher un joueur");

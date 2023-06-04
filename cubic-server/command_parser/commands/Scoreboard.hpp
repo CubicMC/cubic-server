@@ -12,9 +12,9 @@ struct Objectives : public CommandBase {
 
     ~Objectives() override = default;
 
-    void autocomplete(std::vector<std::string> &args, Player *invoker) const override;
-    void execute(std::vector<std::string> &args, Player *invoker) const override;
-    void help(std::vector<std::string> &args, Player *invoker) const override;
+    void autocomplete(std::vector<std::string> &args, std::shared_ptr<Player> invoker) const override;
+    void execute(std::vector<std::string> &args, std::shared_ptr<Player> invoker) const override;
+    void help(std::vector<std::string> &args, std::shared_ptr<Player> invoker) const override;
 };
 
 struct AddObjective : public CommandBase {
@@ -25,9 +25,9 @@ struct AddObjective : public CommandBase {
 
     ~AddObjective() override = default;
 
-    void autocomplete(std::vector<std::string> &args, Player *invoker) const override;
-    void execute(std::vector<std::string> &args, Player *invoker) const override;
-    void help(std::vector<std::string> &args, Player *invoker) const override;
+    void autocomplete(std::vector<std::string> &args, std::shared_ptr<Player> invoker) const override;
+    void execute(std::vector<std::string> &args, std::shared_ptr<Player> invoker) const override;
+    void help(std::vector<std::string> &args, std::shared_ptr<Player> invoker) const override;
 };
 
 struct SetScore : public CommandBase {
@@ -38,9 +38,9 @@ struct SetScore : public CommandBase {
 
     ~SetScore() override = default;
 
-    void autocomplete(std::vector<std::string> &args, Player *invoker) const override;
-    void execute(std::vector<std::string> &args, Player *invoker) const override;
-    void help(std::vector<std::string> &args, Player *invoker) const override;
+    void autocomplete(std::vector<std::string> &args, std::shared_ptr<Player> invoker) const override;
+    void execute(std::vector<std::string> &args, std::shared_ptr<Player> invoker) const override;
+    void help(std::vector<std::string> &args, std::shared_ptr<Player> invoker) const override;
 };
 
 struct RemoveScore : public CommandBase {
@@ -51,9 +51,9 @@ struct RemoveScore : public CommandBase {
 
     ~RemoveScore() override = default;
 
-    void autocomplete(std::vector<std::string> &args, Player *invoker) const override;
-    void execute(std::vector<std::string> &args, Player *invoker) const override;
-    void help(std::vector<std::string> &args, Player *invoker) const override;
+    void autocomplete(std::vector<std::string> &args, std::shared_ptr<Player> invoker) const override;
+    void execute(std::vector<std::string> &args, std::shared_ptr<Player> invoker) const override;
+    void help(std::vector<std::string> &args, std::shared_ptr<Player> invoker) const override;
 };
 
 struct DisplayObjective : public CommandBase {
@@ -64,9 +64,9 @@ struct DisplayObjective : public CommandBase {
 
     ~DisplayObjective() override = default;
 
-    void autocomplete(std::vector<std::string> &args, Player *invoker) const override;
-    void execute(std::vector<std::string> &args, Player *invoker) const override;
-    void help(std::vector<std::string> &args, Player *invoker) const override;
+    void autocomplete(std::vector<std::string> &args, std::shared_ptr<Player> invoker) const override;
+    void execute(std::vector<std::string> &args, std::shared_ptr<Player> invoker) const override;
+    void help(std::vector<std::string> &args, std::shared_ptr<Player> invoker) const override;
 };
 
 struct RemoveObjective : public CommandBase {
@@ -77,9 +77,9 @@ struct RemoveObjective : public CommandBase {
 
     ~RemoveObjective() override = default;
 
-    void autocomplete(std::vector<std::string> &args, Player *invoker) const override;
-    void execute(std::vector<std::string> &args, Player *invoker) const override;
-    void help(std::vector<std::string> &args, Player *invoker) const override;
+    void autocomplete(std::vector<std::string> &args, std::shared_ptr<Player> invoker) const override;
+    void execute(std::vector<std::string> &args, std::shared_ptr<Player> invoker) const override;
+    void help(std::vector<std::string> &args, std::shared_ptr<Player> invoker) const override;
 };
 
 struct Teams : public CommandBase {
@@ -90,9 +90,9 @@ struct Teams : public CommandBase {
 
     ~Teams() override = default;
 
-    void autocomplete(std::vector<std::string> &args, Player *invoker) const override;
-    void execute(std::vector<std::string> &args, Player *invoker) const override;
-    void help(std::vector<std::string> &args, Player *invoker) const override;
+    void autocomplete(std::vector<std::string> &args, std::shared_ptr<Player> invoker) const override;
+    void execute(std::vector<std::string> &args, std::shared_ptr<Player> invoker) const override;
+    void help(std::vector<std::string> &args, std::shared_ptr<Player> invoker) const override;
 };
 
 struct AddTeam : public CommandBase {
@@ -103,9 +103,9 @@ struct AddTeam : public CommandBase {
 
     ~AddTeam() override = default;
 
-    void autocomplete(std::vector<std::string> &args, Player *invoker) const override;
-    void execute(std::vector<std::string> &args, Player *invoker) const override;
-    void help(std::vector<std::string> &args, Player *invoker) const override;
+    void autocomplete(std::vector<std::string> &args, std::shared_ptr<Player> invoker) const override;
+    void execute(std::vector<std::string> &args, std::shared_ptr<Player> invoker) const override;
+    void help(std::vector<std::string> &args, std::shared_ptr<Player> invoker) const override;
 };
 
 struct ModifyTeam : public CommandBase {
@@ -116,9 +116,9 @@ struct ModifyTeam : public CommandBase {
 
     ~ModifyTeam() override = default;
 
-    void autocomplete(std::vector<std::string> &args, Player *invoker) const override;
-    void execute(std::vector<std::string> &args, Player *invoker) const override;
-    void help(std::vector<std::string> &args, Player *invoker) const override;
+    void autocomplete(std::vector<std::string> &args, std::shared_ptr<Player> invoker) const override;
+    void execute(std::vector<std::string> &args, std::shared_ptr<Player> invoker) const override;
+    void help(std::vector<std::string> &args, std::shared_ptr<Player> invoker) const override;
 };
 
 struct JoinTeam : public CommandBase {
@@ -129,9 +129,9 @@ struct JoinTeam : public CommandBase {
 
     ~JoinTeam() override = default;
 
-    void autocomplete(std::vector<std::string> &args, Player *invoker) const override;
-    void execute(std::vector<std::string> &args, Player *invoker) const override;
-    void help(std::vector<std::string> &args, Player *invoker) const override;
+    void autocomplete(std::vector<std::string> &args, std::shared_ptr<Player> invoker) const override;
+    void execute(std::vector<std::string> &args, std::shared_ptr<Player> invoker) const override;
+    void help(std::vector<std::string> &args, std::shared_ptr<Player> invoker) const override;
 };
 
 struct LeaveTeam : public CommandBase {
@@ -142,9 +142,9 @@ struct LeaveTeam : public CommandBase {
 
     ~LeaveTeam() override = default;
 
-    void autocomplete(std::vector<std::string> &args, Player *invoker) const override;
-    void execute(std::vector<std::string> &args, Player *invoker) const override;
-    void help(std::vector<std::string> &args, Player *invoker) const override;
+    void autocomplete(std::vector<std::string> &args, std::shared_ptr<Player> invoker) const override;
+    void execute(std::vector<std::string> &args, std::shared_ptr<Player> invoker) const override;
+    void help(std::vector<std::string> &args, std::shared_ptr<Player> invoker) const override;
 };
 
 struct RemoveTeam : public CommandBase {
@@ -155,9 +155,9 @@ struct RemoveTeam : public CommandBase {
 
     ~RemoveTeam() override = default;
 
-    void autocomplete(std::vector<std::string> &args, Player *invoker) const override;
-    void execute(std::vector<std::string> &args, Player *invoker) const override;
-    void help(std::vector<std::string> &args, Player *invoker) const override;
+    void autocomplete(std::vector<std::string> &args, std::shared_ptr<Player> invoker) const override;
+    void execute(std::vector<std::string> &args, std::shared_ptr<Player> invoker) const override;
+    void help(std::vector<std::string> &args, std::shared_ptr<Player> invoker) const override;
 };
 }
 

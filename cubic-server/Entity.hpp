@@ -74,14 +74,14 @@ public:
     virtual void setRotation(float yaw, float pitch);
 
     NODISCARD virtual std::shared_ptr<Dimension> getDimension() { return _dim; }
-    NODISCARD virtual std::shared_ptr<World> getWorld();
-    NODISCARD virtual std::shared_ptr<WorldGroup> getWorldGroup();
-
-    NODISCARD virtual const u128 &getUuid() const { return _uuid; }
     NODISCARD virtual std::shared_ptr<const Dimension> getDimension() const { return _dim; }
+    NODISCARD virtual std::shared_ptr<World> getWorld();
     NODISCARD virtual std::shared_ptr<const World> getWorld() const;
+    NODISCARD virtual std::shared_ptr<WorldGroup> getWorldGroup();
     NODISCARD virtual std::shared_ptr<const WorldGroup> getWorldGroup() const;
+
     NODISCARD virtual int32_t getId() const { return _id; }
+    NODISCARD virtual const u128 &getUuid() const { return _uuid; }
     NODISCARD virtual const Vector3<double> &getPosition() const { return _pos; }
     NODISCARD virtual const Vector2<uint8_t> &getRotation() const { return _rot; }
     NODISCARD virtual const Vector2<float> getRotationDegree() const { return {(float) _rot.x / (256.0f / 360.0f), (float) _rot.z / (256.0f / 360.0f)}; }

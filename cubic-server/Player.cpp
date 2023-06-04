@@ -780,7 +780,7 @@ void Player::_onChangeDifficulty(UNUSED protocol::ChangeDifficulty &pck) { N_LDE
 void Player::_onChatMessage(protocol::ChatMessage &pck)
 {
     // TODO: verify that the message is valid (signature, etc.)
-    _dim->getWorld()->getChat()->sendPlayerMessage(pck.message, *this);
+    _dim->getWorld()->getChat()->sendPlayerMessage(pck.message, dynamicSharedFromThis<Player>());
     N_LDEBUG("Got a Chat Message");
 }
 
@@ -795,7 +795,7 @@ void Player::_onChatCommand(protocol::ChatCommand &pck)
 {
     N_LDEBUG("Got a Chat Command");
     N_LDEBUG("The command is :\"{}\"", pck.command);
-    command_parser::parseCommand(pck.command, this);
+    command_parser::parseCommand(pck.command, dynamicSharedFromThis<Player>());
 }
 
 void Player::_onClientCommand(UNUSED protocol::ClientCommand &pck) { N_LDEBUG("Got a Client Command"); }
@@ -1285,7 +1285,7 @@ void Player::_continueLoginSequence()
     _dim->getWorld()->getWorldGroup()->getScoreboard().sendScoreboardStatus(*this);
 
     // Send login message
-    chat::Message connectionMsg = chat::Message::fromTranslationKey<chat::message::TranslationKey::MultiplayerPlayerJoined>(*this);
+    chat::Message connectionMsg = chat::Message::fromTranslationKey<chat::message::TranslationKey::MultiplayerPlayerJoined>(dynamicSharedFromThis<Player>());
 
     this->getWorld()->getChat()->sendSystemMessage(connectionMsg, *this->getWorldGroup());
     onEvent(Server::getInstance()->getPluginManager(), onPlayerJoin, this);

@@ -7,7 +7,7 @@
 #include "World.hpp"
 #include "logging/logging.hpp"
 
-void command_parser::parseCommand(std::string &command, Player *invoker)
+void command_parser::parseCommand(std::string &command, std::shared_ptr<Player> invoker)
 {
     std::vector<std::string> args;
     size_t pos = command.find(' ');
@@ -34,8 +34,8 @@ void command_parser::parseCommand(std::string &command, Player *invoker)
         }
     }
     if (invoker) {
-        invoker->getDimension()->getWorld()->getChat()->sendSystemMessage("Unknown or incomplete command, see below for error", *invoker);
-        invoker->getDimension()->getWorld()->getChat()->sendSystemMessage(commandName.erase(commandName.find_last_not_of(' ') + 1) + "<--[HERE]", *invoker);
+        invoker->getDimension()->getWorld()->getChat()->sendSystemMessage("Unknown or incomplete command, see below for error", invoker);
+        invoker->getDimension()->getWorld()->getChat()->sendSystemMessage(commandName.erase(commandName.find_last_not_of(' ') + 1) + "<--[HERE]", invoker);
     } else {
         LINFO("Unknown or incomplete command, see below for error");
         LINFO("{}<--[HERE]", commandName.erase(commandName.find_last_not_of(' ') + 1));

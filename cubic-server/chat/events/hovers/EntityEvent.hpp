@@ -7,6 +7,8 @@
 
 class Entity;
 
+class Entity;
+
 namespace chat::message::event {
 /**
  * @brief Show an entity in the hover event

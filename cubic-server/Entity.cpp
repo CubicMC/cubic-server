@@ -15,6 +15,7 @@
 #include <memory>
 #include <optional>
 #include <utility>
+#include "types.hpp"
 
 // clang-format off
 Entity::Entity(std::shared_ptr<Dimension> dim,
@@ -111,11 +112,13 @@ void Entity::setRotation(float yaw, float pitch)
     this->_rot.z = pitch * (256.0 / 360.0);
 }
 
-std::shared_ptr<WorldGroup> Entity::getWorldGroup() { return _dim->getWorld()->getWorldGroup(); }
 std::shared_ptr<World> Entity::getWorld() { return _dim->getWorld(); }
 
-std::shared_ptr<const WorldGroup> Entity::getWorldGroup() const { return _dim->getWorld()->getWorldGroup(); }
 std::shared_ptr<const World> Entity::getWorld() const { return _dim->getWorld(); }
+
+std::shared_ptr<WorldGroup> Entity::getWorldGroup() { return _dim->getWorld()->getWorldGroup(); }
+
+std::shared_ptr<const WorldGroup> Entity::getWorldGroup() const { return _dim->getWorld()->getWorldGroup(); }
 
 void Entity::teleport(const Vector3<double> &pos)
 {

@@ -50,7 +50,7 @@ void Chat::sendSystemMessage(const chat::Message &message, const std::vector<std
     this->_sendSystem(message, players, overlay);
 }
 
-void Chat::sendSayMessage(const chat::Message &raw, Player &from)
+void Chat::sendSayMessage(const chat::Message &raw, const Player &from)
 {
     auto message = chat::Message::fromTranslationKey<chat::message::TranslationKey::ChatTypeAnnouncement>(from, raw);
 
@@ -72,9 +72,9 @@ void Chat::sendTeamMessage(const chat::Message &message, Player &sender)
     this->_sendMessage(message, sender, *sender.getWorldGroup(), chat::message::Type::TeamSent);
 }
 
-void Chat::sendTellrawMessage(const chat::Message &message, Player &from, UNUSED const std::string &selector) { this->_sendSystem(message, *from.getWorldGroup()); }
+void Chat::sendTellrawMessage(const chat::Message &message, const Player &from, UNUSED const std::string &selector) { this->_sendSystem(message, *from.getWorldGroup()); }
 
-void Chat::_sendMessage(const chat::Message &message, Player &from, Player &to, const chat::message::Type &type)
+void Chat::_sendMessage(const chat::Message &message, const Player &from, Player &to, const chat::message::Type &type)
 {
     if (to.getChatVisibility() != protocol::ClientInformation::ChatVisibility::Enabled)
         return;
@@ -87,7 +87,7 @@ void Chat::_sendMessage(const chat::Message &message, Player &from, Player &to, 
     to.sendChatMessageResponse(pck);
 }
 
-void Chat::_sendMessage(const chat::Message &message, Player &from, const WorldGroup &worldGroup, const chat::message::Type &type)
+void Chat::_sendMessage(const chat::Message &message, const Player &from, const WorldGroup &worldGroup, const chat::message::Type &type)
 {
     protocol::PlayerChatMessage pck = buildPacket(from, this->_messagesLog.size(), message, type);
 
@@ -104,7 +104,7 @@ void Chat::_sendMessage(const chat::Message &message, Player &from, const WorldG
     }
 }
 
-void Chat::_sendMessage(const chat::Message &message, Player &from, const std::vector<std::reference_wrapper<Player>> &players, const chat::message::Type &type)
+void Chat::_sendMessage(const chat::Message &message, const Player &from, const std::vector<std::reference_wrapper<Player>> &players, const chat::message::Type &type)
 {
     if (from.getChatVisibility() != protocol::ClientInformation::ChatVisibility::Enabled)
         return;
