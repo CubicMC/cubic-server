@@ -38,7 +38,7 @@ public:
     // clang-format off
     Entity(std::shared_ptr<Dimension> dim,
         EntityType type,
-        u128 uuid = {0, 0},
+        u128 uuid = u128::random(),
         bool onFire = false,
         bool crouching = false,
         bool sprinting = false,

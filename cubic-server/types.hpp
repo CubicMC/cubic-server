@@ -26,6 +26,7 @@ struct u128 {
     void swapEndianness();
 
     static u128 fromShortString(const std::string &str);
+    static u128 random();
 };
 
 typedef int64_t Seed;
