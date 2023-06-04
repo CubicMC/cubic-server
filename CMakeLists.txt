@@ -39,7 +39,7 @@ endif()
 set(CMAKE_USER_MAKE_RULES_OVERRIDE_CXX ${CMAKE_CURRENT_SOURCE_DIR}/cxx_flag_overrides.cmake)
 set(CMAKE_USER_MAKE_RULES_OVERRIDE_C ${CMAKE_CURRENT_SOURCE_DIR}/c_flag_overrides.cmake)
 
-project(CubicServer VERSION 0.1.0 LANGUAGES CXX C)
+project(CubicServer VERSION 0.2.0 LANGUAGES CXX C)
 
 message(STATUS "System Architecture: ${CMAKE_SYSTEM_PROCESSOR}")
 
