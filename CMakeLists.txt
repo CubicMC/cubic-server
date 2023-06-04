@@ -41,22 +41,19 @@ project(CubicServer VERSION 0.1.0 LANGUAGES CXX C)
 
 message(STATUS "System Architecture: ${CMAKE_SYSTEM_PROCESSOR}")
 
+# This is needed for the aarch64 architecture
+# And this can't be in the cxx_flag_overrides.cmake file because the file needs
+# to be included before the project command
+# And the variable CMAKE_SYSTEM_PROCESSOR is only set after the project command
+if (CMAKE_SYSTEM_PROCESSOR MATCHES "aarch64")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -ldl")
+endif()
+
 set(MINECRAFT_VERSION "1.19.3")
 
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 include(CheckIPOSupported)
-
-# if debug mode is enabled, add -g3 flag
-if (CMAKE_BUILD_TYPE MATCHES Debug)
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g3 -rdynamic")
-endif()
-
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -rdynamic")
-
-if (CMAKE_SYSTEM_PROCESSOR MATCHES "aarch64")
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -ldl")
-endif()
 
 if (CMAKE_BUILD_TYPE MATCHES Release)
     check_ipo_supported(RESULT ipo_supported OUTPUT ipo_error)
