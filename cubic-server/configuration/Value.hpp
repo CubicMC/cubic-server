@@ -77,6 +77,14 @@ public:
     template<typename T, typename... Args>
     Value &possibleValues(const T &value, Args... values);
 
+    /**
+     * @brief Specify a range of values for the value.
+     *
+     * @tparam T
+     * @param min
+     * @param max
+     * @return Value&
+     */
     template<typename T>
     Value &inRange(const T &min, const T &max);
 
