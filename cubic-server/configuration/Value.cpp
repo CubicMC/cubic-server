@@ -136,6 +136,9 @@ void configuration::Value::parse(const Node &rootNode)
             LWARN("Missing value in config: " + _name);
     }
 
+    if (_rangeValues.has_value() && _rangeChecker.has_value() && !_rangeChecker.value()(value()))
+        throw ConfigurationError("Invalid value: " + _name + " value '" + value() + "' is not in the range (" + _rangeValues.value().first + ", " + _rangeValues.value().second + ")");
+
     // Check if the value is in the possible values list
     if (_possibleValue.empty())
         return;

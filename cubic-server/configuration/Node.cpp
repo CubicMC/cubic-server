@@ -73,10 +73,6 @@ const configuration::Node &configuration::Node::at(const std::string &key) const
     return _children.at(key);
 }
 
-// template<typename... Args>
-// configuration::_details::Node<T> &configuration::_details::Node<T>::at(const std::string &key, Args... args) const
-// { return at(key).at(args...); }
-
 bool configuration::Node::has(const std::string &key) const { return _impl[key].IsDefined(); }
 bool configuration::Node::isArray() const { return _impl.IsDefined() && _impl.IsSequence(); }
 bool configuration::Node::isScalar() const { return _impl.IsDefined() && (_impl.IsScalar() || _impl.IsNull()); }
