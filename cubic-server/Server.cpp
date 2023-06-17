@@ -27,6 +27,7 @@
 #include "default/DefaultWorldGroup.hpp"
 #include "logging/logging.hpp"
 #include "scoreboard/ScoreboardSystem.hpp"
+#include "registry/Dimension.hpp"
 
 using boost::asio::ip::tcp;
 
@@ -81,6 +82,7 @@ void Server::launch(const configuration::ConfigHandler &config)
     this->_config = config;
 
     _rsaKey.generate();
+    auto dimension = _registry.addRegistry<registry::DimensionElement, registry::DIMENSION_REGISTRY_NAME>();
 
     // Initialize the global palette
     _globalPalette.initialize(std::string("blocks-") + MC_VERSION + ".json");
@@ -96,7 +98,6 @@ void Server::launch(const configuration::ConfigHandler &config)
     // Initialize default world group
     auto defaultChat = std::make_shared<Chat>();
     _worldGroups.emplace("default", new DefaultWorldGroup(defaultChat));
-    _worldGroups.at("default")->initialize();
 
     // TODO(huntears): Deal with this
     // Initialize default recipes
@@ -107,6 +108,8 @@ void Server::launch(const configuration::ConfigHandler &config)
 
     // Get plugins
     this->_pluginManager.load();
+
+    _worldGroups.at("default")->initialize();
 
     this->_running = true;
 
