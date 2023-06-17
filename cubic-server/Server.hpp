@@ -38,6 +38,8 @@
 
 #include "PluginManager.hpp"
 
+#include "registry/MasterRegistry.hpp"
+
 constexpr char MC_VERSION[] = "1.19.3";
 constexpr uint16_t MC_PROTOCOL = 761;
 constexpr uint16_t MS_PER_TICK = 50;
@@ -111,6 +113,8 @@ private:
     void _reloadConfig();
     void _enforceWhitelistOnReload();
     void _generateKeyPair();
+    void _doAccept();
+    void _writeLoop();
 
 public:
     std::mutex clientsMutex;
@@ -135,15 +139,13 @@ private:
     LootTables _lootTables;
     ScoreboardSystem _scoreboardSystem;
 
+    registry::MasterRegistry _registry;
+
     // new boost stuff
-
-    void _doAccept();
-
     boost::asio::io_context _io_context;
     std::unique_ptr<boost::asio::ip::tcp::acceptor> _acceptor;
 
     boost::lockfree::queue<OutboundClientData> _toSend;
-    void _writeLoop();
     std::thread _writeThread;
 
     RSAEncryptionHandler _rsaKey;
