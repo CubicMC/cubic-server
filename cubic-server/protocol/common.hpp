@@ -13,6 +13,13 @@ enum class ClientStatus : int32_t {
 };
 
 struct PlayerProperty {
+    PlayerProperty(std::string name, std::string value, bool isSigned, std::string signature):
+        name(std::move(name)),
+        value(std::move(value)),
+        isSigned(isSigned),
+        signature(std::move(signature))
+    {
+    }
     std::string name;
     std::string value;
     bool isSigned;

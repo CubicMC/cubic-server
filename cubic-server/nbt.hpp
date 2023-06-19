@@ -32,7 +32,7 @@ enum class TagType {
     LongArray
 };
 
-class Base {
+class Base : public std::enable_shared_from_this<Base> {
 public:
     static constexpr auto type = TagType::End;
 
@@ -43,11 +43,27 @@ public:
     constexpr Base(const char name[], TagType type):
         _name(name),
         _type(type) {};
-    constexpr virtual ~Base() { }
+    virtual ~Base() { }
 
     NODISCARD constexpr const std::string &getName() const { return _name; };
 
     NODISCARD constexpr TagType getType() const { return _type; }
+
+    template<isBaseOf<Base> T>
+    NODISCARD constexpr std::shared_ptr<T> as()
+    {
+        if (T::type != _type)
+            throw TypeMismatch("Type mismatch");
+        return std::dynamic_pointer_cast<T>(shared_from_this());
+    }
+
+    template<isBaseOf<Base> T>
+    NODISCARD constexpr std::shared_ptr<const T> as() const
+    {
+        if (T::type != _type)
+            throw TypeMismatch("Type mismatch");
+        return std::dynamic_pointer_cast<T>(shared_from_this());
+    }
 
     NODISCARD constexpr virtual std::vector<uint8_t> serialize() const
     {
@@ -441,6 +457,7 @@ public:
     explicit constexpr String(std::string name, std::string value = ""):
         Base(std::move(name), TagType::String),
         _value(std::move(value)) {};
+
     ~String() override = default;
 
     NODISCARD constexpr const std::string &getValue() const { return _value; }
@@ -570,6 +587,8 @@ public:
 
     inline void push_back(std::shared_ptr<Base> value) { _value.push_back(value); }
 
+    NODISCARD constexpr size_t size() const noexcept { return _value.size(); }
+
     NODISCARD constexpr std::vector<uint8_t> serialize() const override
     {
         std::vector<uint8_t> data;
@@ -591,9 +610,13 @@ public:
     {
         Base::preSerialize(data, includeName);
         TagType current = TagType::End;
-        // TODO(@huntears): What if the list is empty ?
         // serialize the type of the first componant of the list
+        if (_value.size() == 0) {
+            data.push_back((uint8_t) TagType::End);
+            return;
+        }
         data.push_back((uint8_t) _value[0]->getType());
+
         // Serialize the length of the data as int32
         for (int i = 0; i < 4; i++)
             data.push_back((_value.size() >> (24 - i * 8)) & 0xFF);

@@ -4,6 +4,7 @@
 #include "concept.hpp"
 #include "nbt.hpp"
 #include <memory>
+#include <numeric>
 #include <vector>
 #include <string_view>
 
@@ -14,44 +15,50 @@ namespace registry {
 class Entry {
 public:
     explicit Entry() = default;
-    virtual ~Entry();
+    virtual ~Entry() = default;
 
     virtual std::shared_ptr<nbt::Base> toNBT() const = 0;
     virtual bool operator==(const std::string &) const = 0;
 };
 
+/**
+ * @brief Define a registry class.
+ *
+ * This class is used to store all entries of a registry.
+ */
+#define DEFINE_REGISTRY_CLASS(T, N) \
+    class T: public Registry { \
+        public: \
+            explicit T() = default; \
+            ~T() = default; \
+            \
+            std::string_view name() const override { return N; } \
+            \
+            T##Element &addEntry() override { \
+                _entries.emplace_back(std::make_shared<T##Element>()); \
+                return *std::dynamic_pointer_cast<T##Element>(_entries.back()); \
+            } \
+    }
+
+/**
+ * @brief Base class for all registries.
+ */
 class Registry {
 public:
-    template<isBaseOf<Entry> T>
-    explicit Registry(std::string_view name);
-    ~Registry();
+    explicit Registry() = default;
+    virtual ~Registry() = default;
 
-    template<isBaseOf<Entry> T, typename... Args>
-    std::shared_ptr<T> addEntry(Args &&... args);
+
+    virtual std::string_view name() const = 0;
+    virtual Entry &addEntry() = 0;
 
     std::shared_ptr<nbt::Base> toNBT() const;
+    bool operator==(const std::string_view &name) const { return name == this->name(); }
 
 protected:
     std::vector<std::shared_ptr<Entry>> _entries;
-    std::function<std::shared_ptr<Entry>(std::string_view)> _entryFactory;
 };
 
 } // namespace regsitry
-
-template<isBaseOf<registry::Entry> T>
-registry::Registry::Registry(std::string_view name):
-    _entryFactory([name](auto &&... entry) -> std::shared_ptr<registry::Entry> {
-        return std::make_shared<T>(name, std::forward(entry)...);
-    })
-{
-}
-
-template<isBaseOf<registry::Entry> T, typename... Args>
-std::shared_ptr<T> registry::Registry::addEntry(Args &&... args)
-{
-    auto entry = _entryFactory(std::forward<Args>(args)...);
-    _entries.push_back(entry);
-    return entry;
-}
 
 #endif // CUBICSERVER_REGISTRY_HPP

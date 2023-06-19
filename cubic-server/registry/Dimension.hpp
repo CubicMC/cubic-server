@@ -6,27 +6,66 @@
 
 namespace registry {
 
-constexpr const char DIMENSION_REGISTRY_NAME[] = "minecraft:dimension_type";
-
 class DimensionElement : public Entry {
 public:
     struct MonsterSpawnLightLevel {
-        std::string _type;
+        std::string type;
         struct {
-            int32_t _maxInclusive;
-            int32_t _minInclusive;
-        } _value;
+            int32_t maxInclusive;
+            int32_t minInclusive;
+        } value;
     };
 
 public:
-    DimensionElement(
-        std::string name, int32_t id, bool ultrawarm, int32_t logicalHeight, std::string infiniburn, bool piglinSafe, float ambientLight, bool hasSkylight, std::string effects,
-        bool hasRaids, int32_t monsterSpawnBlockLightLimit, bool respawnAnchorWorks, int32_t height, bool hasCeiling, MonsterSpawnLightLevel monsterSpawnLightLevel, bool natural,
-        int32_t minY, float coordinateScale, bool bedWorks
-    );
+    DimensionElement() = default;
+    ~DimensionElement() = default;
 
     std::shared_ptr<nbt::Base> toNBT() const override;
     bool operator==(const std::string &) const override;
+
+// Getters
+public:
+    constexpr std::string name() const { return _name; }
+    constexpr int32_t id() const { return _id; }
+    constexpr bool ultrawarm() const { return _ultrawarm; }
+    constexpr int32_t logicalHeight() const { return _logicalHeight; }
+    constexpr std::string infiniburn() const { return _infiniburn; }
+    constexpr bool piglinSafe() const { return _piglinSafe; }
+    constexpr float ambientLight() const { return _ambientLight; }
+    constexpr bool hasSkylight() const { return _hasSkylight; }
+    constexpr std::string effects() const { return _effects; }
+    constexpr bool hasRaids() const { return _hasRaids; }
+    constexpr int32_t monsterSpawnBlockLightLimit() const { return _monsterSpawnBlockLightLimit; }
+    constexpr bool respawnAnchorWorks() const { return _respawnAnchorWorks; }
+    constexpr int32_t height() const { return _height; }
+    constexpr bool hasCeiling() const { return _hasCeiling; }
+    constexpr MonsterSpawnLightLevel monsterSpawnLightLevel() const { return _monsterSpawnLightLevel; }
+    constexpr bool natural() const { return _natural; }
+    constexpr int32_t minY() const { return _minY; }
+    constexpr float coordinateScale() const { return _coordinateScale; }
+    constexpr bool bedWorks() const { return _bedWorks; }
+
+// Setters
+public:
+    constexpr DimensionElement &name(std::string name);
+    constexpr DimensionElement &id(int32_t id);
+    constexpr DimensionElement &ultrawarm(bool ultrawarm);
+    constexpr DimensionElement &logicalHeight(int32_t logicalHeight);
+    constexpr DimensionElement &infiniburn(std::string infiniburn);
+    constexpr DimensionElement &piglinSafe(bool piglinSafe);
+    constexpr DimensionElement &ambientLight(float ambientLight);
+    constexpr DimensionElement &hasSkylight(bool hasSkylight);
+    constexpr DimensionElement &effects(std::string effects);
+    constexpr DimensionElement &hasRaids(bool hasRaids);
+    constexpr DimensionElement &monsterSpawnBlockLightLimit(int32_t monsterSpawnBlockLightLimit);
+    constexpr DimensionElement &respawnAnchorWorks(bool respawnAnchorWorks);
+    constexpr DimensionElement &height(int32_t height);
+    constexpr DimensionElement &hasCeiling(bool hasCeiling);
+    constexpr DimensionElement &monsterSpawnLightLevel(MonsterSpawnLightLevel monsterSpawnLightLevel);
+    constexpr DimensionElement &natural(bool natural);
+    constexpr DimensionElement &minY(int32_t minY);
+    constexpr DimensionElement &coordinateScale(float coordinateScale);
+    constexpr DimensionElement &bedWorks(bool bedWorks);
 
 private:
     std::string _name;
@@ -50,41 +89,156 @@ private:
     bool _bedWorks;
 };
 
-// NBT_MAKE(nbt::Compound, "minecraft:dimension_type", {
-//     NBT_MAKE(nbt::String, "type", "minecraft:dimension_type"),
-//     NBT_MAKE(nbt::List, "value", {
-//         NBT_MAKE(nbt::Compound, "", {
-//             NBT_MAKE(nbt::String, "name", "minecraft:overworld"),
-//             NBT_MAKE(nbt::Int, "id", 0),
-//             NBT_MAKE(nbt::Compound, "element", {
-//                 NBT_MAKE(nbt::Byte, "ultrawarm", 0),
-//                 NBT_MAKE(nbt::Int, "logical_height", 256),
-//                 NBT_MAKE(nbt::String, "infiniburn", "#minecraft:infiniburn_overworld"),
-//                 NBT_MAKE(nbt::Byte, "piglin_safe", 0),
-//                 NBT_MAKE(nbt::Float, "ambient_light", 0.0),
-//                 NBT_MAKE(nbt::Byte, "has_skylight", 1),
-//                 NBT_MAKE(nbt::String, "effects", "minecraft:overworld"),
-//                 NBT_MAKE(nbt::Byte, "has_raids", 1),
-//                 NBT_MAKE(nbt::Int, "monster_spawn_block_light_limit", 0),
-//                 NBT_MAKE(nbt::Byte, "respawn_anchor_works", 0),
-//                 NBT_MAKE(nbt::Int, "height", 384),
-//                 NBT_MAKE(nbt::Byte, "has_ceiling", 0),
-//                 NBT_MAKE(nbt::Compound, "monster_spawn_light_level", {
-//                     NBT_MAKE(nbt::String, "type", "minecraft:uniform"),
-//                     NBT_MAKE(nbt::Compound, "value", {
-//                         NBT_MAKE(nbt::Int, "max_inclusive", 7),
-//                         NBT_MAKE(nbt::Int, "min_inclusive", 0)
-//                     })
-//                 }),
-//                 NBT_MAKE(nbt::Byte, "natural", 1),
-//                 NBT_MAKE(nbt::Int, "min_y", -64),
-//                 NBT_MAKE(nbt::Float, "coordinate_scale", 1.0),
-//                 NBT_MAKE(nbt::Byte, "bed_works", 1)
-//             })
-//         })
-//     })
-// })
+DEFINE_REGISTRY_CLASS(Dimension, "minecraft:dimension_type");
+
+constexpr void setupDefaultsDimension(Dimension &registry);
 
 } // namespace registry
 
-#endif
+constexpr registry::DimensionElement &registry::DimensionElement::name(std::string name)
+{
+    _name = name;
+    return *this;
+}
+
+constexpr registry::DimensionElement &registry::DimensionElement::id(int32_t id)
+{
+    _id = id;
+    return *this;
+}
+
+constexpr registry::DimensionElement &registry::DimensionElement::ultrawarm(bool ultrawarm)
+{
+    _ultrawarm = ultrawarm;
+    return *this;
+}
+
+constexpr registry::DimensionElement &registry::DimensionElement::logicalHeight(int32_t logicalHeight)
+{
+    _logicalHeight = logicalHeight;
+    return *this;
+}
+
+constexpr registry::DimensionElement &registry::DimensionElement::infiniburn(std::string infiniburn)
+{
+    _infiniburn = infiniburn;
+    return *this;
+}
+
+constexpr registry::DimensionElement &registry::DimensionElement::piglinSafe(bool piglinSafe)
+{
+    _piglinSafe = piglinSafe;
+    return *this;
+}
+
+constexpr registry::DimensionElement &registry::DimensionElement::ambientLight(float ambientLight)
+{
+    _ambientLight = ambientLight;
+    return *this;
+}
+
+constexpr registry::DimensionElement &registry::DimensionElement::hasSkylight(bool hasSkylight)
+{
+    _hasSkylight = hasSkylight;
+    return *this;
+}
+
+constexpr registry::DimensionElement &registry::DimensionElement::effects(std::string effects)
+{
+    _effects = effects;
+    return *this;
+}
+
+constexpr registry::DimensionElement &registry::DimensionElement::hasRaids(bool hasRaids)
+{
+    _hasRaids = hasRaids;
+    return *this;
+}
+
+constexpr registry::DimensionElement &registry::DimensionElement::monsterSpawnBlockLightLimit(int32_t monsterSpawnBlockLightLimit)
+{
+    _monsterSpawnBlockLightLimit = monsterSpawnBlockLightLimit;
+    return *this;
+}
+
+constexpr registry::DimensionElement &registry::DimensionElement::respawnAnchorWorks(bool respawnAnchorWorks)
+{
+    _respawnAnchorWorks = respawnAnchorWorks;
+    return *this;
+}
+
+constexpr registry::DimensionElement &registry::DimensionElement::height(int32_t height)
+{
+    _height = height;
+    return *this;
+}
+
+constexpr registry::DimensionElement &registry::DimensionElement::hasCeiling(bool hasCeiling)
+{
+    _hasCeiling = hasCeiling;
+    return *this;
+}
+
+constexpr registry::DimensionElement &registry::DimensionElement::monsterSpawnLightLevel(MonsterSpawnLightLevel monsterSpawnLightLevel)
+{
+    _monsterSpawnLightLevel = monsterSpawnLightLevel;
+    return *this;
+}
+
+constexpr registry::DimensionElement &registry::DimensionElement::natural(bool natural)
+{
+    _natural = natural;
+    return *this;
+}
+
+constexpr registry::DimensionElement &registry::DimensionElement::minY(int32_t minY)
+{
+    _minY = minY;
+    return *this;
+}
+
+constexpr registry::DimensionElement &registry::DimensionElement::coordinateScale(float coordinateScale)
+{
+    _coordinateScale = coordinateScale;
+    return *this;
+}
+
+constexpr registry::DimensionElement &registry::DimensionElement::bedWorks(bool bedWorks)
+{
+    _bedWorks = bedWorks;
+    return *this;
+}
+
+constexpr void registry::setupDefaultsDimension(registry::Dimension &registry)
+{
+    registry.addEntry()
+        .name("minecraft:overworld")
+        .id(0)
+        .ultrawarm(false)
+        .logicalHeight(256)
+        .infiniburn("#minecraft:infiniburn_overworld")
+        .piglinSafe(false)
+        .ambientLight(0.0)
+        .hasSkylight(true)
+        .effects("minecraft:overworld")
+        .hasRaids(true)
+        .monsterSpawnBlockLightLimit(0)
+        .respawnAnchorWorks(false)
+        .height(384)
+        .hasCeiling(false)
+        .monsterSpawnLightLevel({
+            .type = "uniform",
+            .value = {
+                .maxInclusive = 7,
+                .minInclusive = 0,
+            },
+        })
+        .natural(true)
+        .minY(-64)
+        .coordinateScale(1.0)
+        .bedWorks(true);
+
+    // TODO: Add the rest of the dimensions
+}
+
+#endif // CUBICSERVER_REGISTRY_DIMENSION_HPP

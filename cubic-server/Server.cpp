@@ -26,6 +26,9 @@
 #include "command_parser/commands/InventoryDump.hpp"
 #include "default/DefaultWorldGroup.hpp"
 #include "logging/logging.hpp"
+#include "registry/Biome.hpp"
+#include "registry/Chat.hpp"
+#include "registry/MasterRegistry.hpp"
 #include "scoreboard/ScoreboardSystem.hpp"
 #include "registry/Dimension.hpp"
 
@@ -82,7 +85,13 @@ void Server::launch(const configuration::ConfigHandler &config)
     this->_config = config;
 
     _rsaKey.generate();
-    auto dimension = _registry.addRegistry<registry::DimensionElement, registry::DIMENSION_REGISTRY_NAME>();
+    auto &dimensionRegistry = _registry.addRegistry<registry::Dimension>();
+    auto &biomeRegistry = _registry.addRegistry<registry::Biome>();
+    auto &chatRegistry = _registry.addRegistry<registry::Chat>();
+
+    registry::setupDefaultsDimension(dimensionRegistry);
+    registry::setupDefaultsBiome(biomeRegistry);
+    registry::setupDefaultsChat(chatRegistry);
 
     // Initialize the global palette
     _globalPalette.initialize(std::string("blocks-") + MC_VERSION + ".json");
@@ -110,6 +119,7 @@ void Server::launch(const configuration::ConfigHandler &config)
     this->_pluginManager.load();
 
     _worldGroups.at("default")->initialize();
+    _registry.initialize();
 
     this->_running = true;
 

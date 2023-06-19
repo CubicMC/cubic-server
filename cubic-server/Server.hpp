@@ -17,10 +17,12 @@
 #include "RSAEncryptionHandler.hpp"
 #include "command_parser/commands/Gamemode.hpp"
 #include "command_parser/commands/Help.hpp"
+#include "nbt.hpp"
 #include "protocol/ServerPackets.hpp"
 
 #include "WorldGroup.hpp"
 #include "configuration/ConfigHandler.hpp"
+#include "registry/Registry.hpp"
 #include "whitelist/Whitelist.hpp"
 
 #include "allCommands.hpp"
@@ -87,6 +89,7 @@ public:
     bool isRunning() const { return _running; }
     const Blocks::GlobalPalette &getGlobalPalette() const { return _globalPalette; }
     const Items::ItemConverter &getItemConverter() const { return _itemConverter; }
+    const registry::MasterRegistry &getRegistry() const noexcept { return _registry; }
     std::unordered_map<std::string_view, std::shared_ptr<WorldGroup>> &getWorldGroups();
     const std::unordered_map<std::string_view, std::shared_ptr<WorldGroup>> &getWorldGroups() const;
     PluginManager &getPluginManager() noexcept { return _pluginManager; }
@@ -95,7 +98,7 @@ public:
     ScoreboardSystem &getScoreboardSystem(void);
 
     void sendData(size_t clientID, std::unique_ptr<std::vector<uint8_t>> &&data);
-    
+
     LootTables &getLootTableSystem(void) noexcept;
 
     void triggerClientCleanup(size_t clientID = -1);

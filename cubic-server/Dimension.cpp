@@ -169,7 +169,8 @@ void Dimension::loadOrGenerateChunk(int x, int z, std::shared_ptr<Player> player
                 return;
 
             this->sendChunkToPlayers(x, z);
-    });
+        }
+    );
 
     auto request = ChunkRequest {id, {player}};
 
