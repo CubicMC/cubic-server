@@ -9,12 +9,6 @@
 
 namespace registry {
 
-// template<typename T>
-// concept isRegistry =
-//     requires {
-//         T::EntryType;
-//     } && isBaseOf<typename T::EntryType, Entry> && isBaseOf<T, Registry<typename T::EntryType>>;
-
 /**
  * @brief Master registry.
  *
@@ -22,7 +16,7 @@ namespace registry {
  */
 class MasterRegistry {
 public:
-    friend class Server;
+    friend class ::Server;
     enum class Status {
         Loading,
         Initialized,
@@ -30,53 +24,49 @@ public:
 
 public:
     explicit MasterRegistry();
-    virtual ~MasterRegistry();
+    virtual ~MasterRegistry() = default;
 
     /**
      * @brief Add a registry to the master registry.
      *
      * This function call is valid only if the registry is not initialized.
      *
-     * @throw std::runtime_error if the registry is initialized.
+     * @throw std::runtime_error if the registry is already initialized.
      *
-     * @tparam RegEntry
-     * @tparam T
+     * @tparam T Type of the registry.
      * @return T&
      */
-    template<isBaseOf<Entry> T, const char *name>
-    Registry &addRegistry();
+    template<isBaseOf<registry::Registry> T>
+    T &addRegistry();
 
     /**
-     * @brief Get the Registry object
+     * @brief Convert the master registry to NBT.
      *
-     * This function call is valid only if the registry is initialized.
-     *
-     * @throw std::runtime_error if the registry is not initialized.
-     *
-     * @return std::shared_ptr<nbt::Compound>
+     * @return const std::shared_ptr<const nbt::Compound>
      */
-    std::shared_ptr<nbt::Compound> toNBT() const;
+    const std::shared_ptr<const nbt::Compound> toNBT() const;
 
-    Status getStatus() const;
-
-private:
-    void setStatus(Status status);
+    Status status() const;
 
 private:
-    std::vector<Registry> _registries;
+    void initialize();
+
+private:
+    std::vector<std::shared_ptr<Registry>> _registries;
     Status _status;
+    std::shared_ptr<nbt::Compound> _nbt;
 };
 
 } // namespace registry
 
-template<isBaseOf<registry::Entry> T, const char *name>
-registry::Registry &registry::MasterRegistry::addRegistry()
+template<isBaseOf<registry::Registry> T>
+T &registry::MasterRegistry::addRegistry()
 {
     if (_status != Status::Loading)
         throw std::runtime_error("Master registry is already initialized");
 
-    _registries.emplace_back(Registry(std::string_view(name)));
-    return _registries.back();
+    _registries.emplace_back(std::make_shared<T>());
+    return dynamic_cast<T&>(*_registries.back());
 }
 
 #endif // CUBICSERVER_REGISTRY_MASTER_REGISTRY_HPP

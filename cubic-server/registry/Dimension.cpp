@@ -1,34 +1,40 @@
 #include "Dimension.hpp"
 #include "nbt.hpp"
 
-registry::DimensionElement::DimensionElement(
-        std::string name, int32_t id, bool ultrawarm, int32_t logicalHeight, std::string infiniburn, bool piglinSafe, float ambientLight, bool hasSkylight, std::string effects,
-        bool hasRaids, int32_t monsterSpawnBlockLightLimit, bool respawnAnchorWorks, int32_t height, bool hasCeiling, MonsterSpawnLightLevel monsterSpawnLightLevel, bool natural,
-        int32_t minY, float coordinateScale, bool bedWorks
-    ):
-    registry::Entry(),
-    _name(name),
-    _id(id),
-    _ultrawarm(ultrawarm),
-    _logicalHeight(logicalHeight),
-    _infiniburn(infiniburn),
-    _piglinSafe(piglinSafe),
-    _ambientLight(ambientLight),
-    _hasSkylight(hasSkylight),
-    _effects(effects),
-    _hasRaids(hasRaids),
-    _monsterSpawnBlockLightLimit(monsterSpawnBlockLightLimit),
-    _respawnAnchorWorks(respawnAnchorWorks),
-    _height(height),
-    _hasCeiling(hasCeiling),
-    _monsterSpawnLightLevel(monsterSpawnLightLevel),
-    _natural(natural),
-    _minY(minY),
-    _coordinateScale(coordinateScale),
-    _bedWorks(bedWorks)
-{}
-
 std::shared_ptr<nbt::Base> registry::DimensionElement::toNBT() const
 {
-    return NBT_MAKE(nbt::Compound, "", {});
+    return NBT_MAKE(nbt::Compound, "", {
+        NBT_MAKE(nbt::String, "name", _name),
+        NBT_MAKE(nbt::Int, "id", _id),
+        NBT_MAKE(nbt::Compound, "element", {
+            NBT_MAKE(nbt::Byte, "ultrawarm", _ultrawarm),
+            NBT_MAKE(nbt::Int, "logical_height", _logicalHeight),
+            NBT_MAKE(nbt::String, "infiniburn", _infiniburn),
+            NBT_MAKE(nbt::Byte, "piglin_safe", _piglinSafe),
+            NBT_MAKE(nbt::Float, "ambient_light", _ambientLight),
+            NBT_MAKE(nbt::Byte, "has_skylight", _hasSkylight),
+            NBT_MAKE(nbt::String, "effects", _effects),
+            NBT_MAKE(nbt::Byte, "has_raids", _hasRaids),
+            NBT_MAKE(nbt::Int, "monster_spawn_block_light_limit", _monsterSpawnBlockLightLimit),
+            NBT_MAKE(nbt::Byte, "respawn_anchor_works", _respawnAnchorWorks),
+            NBT_MAKE(nbt::Int, "height", _height),
+            NBT_MAKE(nbt::Byte, "has_ceiling", _hasCeiling),
+            NBT_MAKE(nbt::Compound, "monster_spawn_light_level", {
+                NBT_MAKE(nbt::String, "type", _monsterSpawnLightLevel.type),
+                NBT_MAKE(nbt::Compound, "value", {
+                    NBT_MAKE(nbt::Int, "max_inclusive", _monsterSpawnLightLevel.value.maxInclusive),
+                    NBT_MAKE(nbt::Int, "min_inclusive", _monsterSpawnLightLevel.value.minInclusive)
+                })
+            }),
+            NBT_MAKE(nbt::Byte, "natural", _natural),
+            NBT_MAKE(nbt::Int, "min_y", _minY),
+            NBT_MAKE(nbt::Float, "coordinate_scale", _coordinateScale),
+            NBT_MAKE(nbt::Byte, "bed_works", _bedWorks)
+        })
+    });
+}
+
+bool registry::DimensionElement::operator==(const std::string &name) const
+{
+    return name == _name;
 }
