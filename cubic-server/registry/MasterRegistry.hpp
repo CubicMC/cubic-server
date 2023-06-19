@@ -44,6 +44,8 @@ public:
     /**
      * @brief Get the Registry object
      *
+     * @throw std::out_of_range if the registry is not found.
+     *
      * @tparam T Registry type.
      * @return T&
      */
@@ -52,6 +54,8 @@ public:
 
     /**
      * @brief Convert the master registry to NBT.
+     *
+     * @throw std::runtime_error if the registry is not initialized.
      *
      * @return const std::shared_ptr<const nbt::Compound>
      */
