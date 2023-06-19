@@ -19,7 +19,7 @@ void MasterRegistry::initialize()
     _nbt = std::accumulate(
         _registries.begin(), _registries.end(), NBT_MAKE(nbt::Compound, "", {}),
         [](std::shared_ptr<nbt::Base> &&acc, const auto &reg) -> decltype(acc)&& {
-            acc->as<nbt::Compound>()->addValue(reg->toNBT());
+            acc->as<nbt::Compound>()->addValue(reg.second->toNBT());
             return std::move(acc);
         }
     )->as<nbt::Compound>();

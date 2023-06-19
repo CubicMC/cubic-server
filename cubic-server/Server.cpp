@@ -399,13 +399,3 @@ void Server::_enforceWhitelistOnReload()
         }
     }
 }
-
-std::unordered_map<std::string_view, std::shared_ptr<WorldGroup>> &Server::getWorldGroups() { return _worldGroups; }
-
-const std::unordered_map<std::string_view, std::shared_ptr<WorldGroup>> &Server::getWorldGroups() const { return _worldGroups; }
-
-Recipes &Server::getRecipeSystem(void) noexcept { return (this->_recipes); }
-
-ScoreboardSystem &Server::getScoreboardSystem(void) { return (this->_scoreboardSystem); }
-
-LootTables &Server::getLootTableSystem(void) noexcept { return (this->_lootTables); }
