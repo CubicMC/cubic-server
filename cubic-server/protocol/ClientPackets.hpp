@@ -742,6 +742,12 @@ struct StopSound {
 };
 std::unique_ptr<std::vector<uint8_t>> createStopSound(const StopSound &);
 
+struct SystemChatMessage {
+    std::string JSONData;
+    bool overlay;
+};
+std::unique_ptr<std::vector<uint8_t>> createSystemChatMessage(const SystemChatMessage &);
+
 struct PickupItem {
     int32_t collectedEntityId;
     int32_t collectorEntityId;
@@ -749,12 +755,6 @@ struct PickupItem {
 
 };
 std::unique_ptr<std::vector<uint8_t>> createPickupItem(const PickupItem &);
-
-struct SystemChatMessage {
-    std::string JSONData;
-    bool overlay;
-};
-std::unique_ptr<std::vector<uint8_t>> createSystemChatMessage(const SystemChatMessage &);
 
 struct EntityVelocity {
     int32_t entityId;
