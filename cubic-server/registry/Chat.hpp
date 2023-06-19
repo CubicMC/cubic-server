@@ -28,7 +28,7 @@ public:
     constexpr ChatElement &narrateKey(const std::string &key);
 
     std::shared_ptr<nbt::Base> toNBT() const override;
-    bool operator==(const std::string &) const override;
+    constexpr bool operator==(const std::string &name) const override { return name == _name; }
 
 private:
     int32_t _id;

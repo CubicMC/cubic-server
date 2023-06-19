@@ -80,12 +80,12 @@ public:
         return &srv;
     }
 
-// Random thingy
+    // Random thingy
 public:
     Permissions permissions;
     NODISCARD inline RSAEncryptionHandler &getPrivateKey() { return _rsaKey; }
 
-// Const getters
+    // Const getters
 public:
     const std::unordered_map<size_t, std::shared_ptr<Client>> &getClients() const { return _clients; }
     const std::shared_ptr<const WorldGroup> getWorldGroup(const std::string_view &name) const { return this->_worldGroups.at(name); }
@@ -96,7 +96,7 @@ public:
     const registry::MasterRegistry &getRegistry() const noexcept { return _registry; }
     const std::unordered_map<std::string_view, std::shared_ptr<WorldGroup>> &getWorldGroups() const { return _worldGroups; }
 
-// Getters
+    // Getters
 public:
     std::shared_ptr<WorldGroup> getWorldGroup(const std::string_view &name) { return this->_worldGroups.at(name); }
     registry::MasterRegistry &getRegistry() noexcept { return _registry; }
@@ -106,7 +106,7 @@ public:
     PluginManager &getPluginManager() noexcept { return _pluginManager; }
     Recipes &getRecipeSystem() noexcept { return _recipes; }
 
-// Network
+    // Network
 public:
     void sendData(size_t clientID, std::unique_ptr<std::vector<uint8_t>> &&data);
     void triggerClientCleanup(size_t clientID = -1);
@@ -122,7 +122,7 @@ private:
     void _doAccept();
     void _writeLoop();
 
-// Random mutex
+    // Random mutex
 public:
     mutable std::mutex clientsMutex;
 

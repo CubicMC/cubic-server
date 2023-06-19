@@ -3,6 +3,7 @@
 
 std::shared_ptr<nbt::Base> registry::DimensionElement::toNBT() const
 {
+    // clang-format off
     return NBT_MAKE(nbt::Compound, "", {
         NBT_MAKE(nbt::String, "name", _name),
         NBT_MAKE(nbt::Int, "id", _id),
@@ -32,9 +33,5 @@ std::shared_ptr<nbt::Base> registry::DimensionElement::toNBT() const
             NBT_MAKE(nbt::Byte, "bed_works", _bedWorks)
         })
     });
-}
-
-bool registry::DimensionElement::operator==(const std::string &name) const
-{
-    return name == _name;
+    // clang-format on
 }

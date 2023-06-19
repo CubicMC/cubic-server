@@ -28,9 +28,9 @@
 #include "logging/logging.hpp"
 #include "registry/Biome.hpp"
 #include "registry/Chat.hpp"
+#include "registry/Dimension.hpp"
 #include "registry/MasterRegistry.hpp"
 #include "scoreboard/ScoreboardSystem.hpp"
-#include "registry/Dimension.hpp"
 
 using boost::asio::ip::tcp;
 
@@ -244,10 +244,7 @@ void Server::triggerClientCleanup(size_t clientID)
     });
 }
 
-void Server::addCommand(std::unique_ptr<CommandBase> command)
-{
-    this->_commands.emplace_back(std::move(command));
-}
+void Server::addCommand(std::unique_ptr<CommandBase> command) { this->_commands.emplace_back(std::move(command)); }
 
 void Server::_doAccept()
 {

@@ -7,22 +7,20 @@ using namespace registry;
 
 MasterRegistry::MasterRegistry():
     _status(Status::Loading)
-{}
-
-MasterRegistry::Status MasterRegistry::status() const
 {
-    return _status;
 }
 
 void MasterRegistry::initialize()
 {
+    // clang-format off
     _nbt = std::accumulate(
-        _registries.begin(), _registries.end(), NBT_MAKE(nbt::Compound, "", {}),
-        [](std::shared_ptr<nbt::Base> &&acc, const auto &reg) -> decltype(acc)&& {
-            acc->as<nbt::Compound>()->addValue(reg.second->toNBT());
+        _registries.begin(), _registries.end(), NBT_MAKE_AS(nbt::Compound, "", {}),
+        [](std::shared_ptr<nbt::Compound> &&acc, const auto &reg) -> decltype(acc)&& {
+            acc->addValue(reg.second->toNBT());
             return std::move(acc);
         }
-    )->as<nbt::Compound>();
+    );
+    // clang-format on
     _status = Status::Initialized;
     LINFO("Master registry initialized with {} registries", _registries.size());
 }

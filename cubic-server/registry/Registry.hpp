@@ -5,8 +5,8 @@
 #include "nbt.hpp"
 #include <memory>
 #include <numeric>
-#include <vector>
 #include <string_view>
+#include <vector>
 
 class Server;
 
@@ -26,19 +26,26 @@ public:
  *
  * This class is used to store all entries of a registry.
  */
-#define DEFINE_REGISTRY_CLASS(T, N) \
-    class T: public Registry { \
-        public: \
-            explicit T() = default; \
-            ~T() = default; \
-            \
-            std::string_view name() const override { return N; } \
-            static std::string_view staticName() { return N; } \
-            \
-            T##Element &addEntry() override { \
-                _entries.emplace_back(std::make_shared<T##Element>()); \
-                return *std::dynamic_pointer_cast<T##Element>(_entries.back()); \
-            } \
+#define DEFINE_REGISTRY_CLASS(T, N)                                         \
+    class T : public Registry {                                             \
+    public:                                                                 \
+        explicit T() = default;                                             \
+        ~T() = default;                                                     \
+                                                                            \
+        std::string_view name() const override                              \
+        {                                                                   \
+            return N;                                                       \
+        }                                                                   \
+        static std::string_view staticName()                                \
+        {                                                                   \
+            return N;                                                       \
+        }                                                                   \
+                                                                            \
+        T##Element &addEntry() override                                     \
+        {                                                                   \
+            _entries.emplace_back(std::make_shared<T##Element>());          \
+            return *std::dynamic_pointer_cast<T##Element>(_entries.back()); \
+        }                                                                   \
     }
 
 /**

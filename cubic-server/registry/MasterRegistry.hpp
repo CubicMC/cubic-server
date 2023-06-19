@@ -57,7 +57,7 @@ public:
      */
     const std::shared_ptr<const nbt::Compound> toNBT() const;
 
-    Status status() const;
+    Status status() const { return _status; }
 
 private:
     void initialize();

@@ -21,9 +21,9 @@ public:
     ~DimensionElement() = default;
 
     std::shared_ptr<nbt::Base> toNBT() const override;
-    bool operator==(const std::string &) const override;
+    bool operator==(const std::string &name) const override { return name == _name; }
 
-// Getters
+    // Getters
 public:
     constexpr std::string name() const { return _name; }
     constexpr int32_t id() const { return _id; }
@@ -45,7 +45,7 @@ public:
     constexpr float coordinateScale() const { return _coordinateScale; }
     constexpr bool bedWorks() const { return _bedWorks; }
 
-// Setters
+    // Setters
 public:
     constexpr DimensionElement &name(std::string name);
     constexpr DimensionElement &id(int32_t id);
@@ -228,10 +228,11 @@ constexpr void registry::setupDefaultsDimension(registry::Dimension &registry)
         .hasCeiling(false)
         .monsterSpawnLightLevel({
             .type = "uniform",
-            .value = {
-                .maxInclusive = 7,
-                .minInclusive = 0,
-            },
+            .value =
+                {
+                    .maxInclusive = 7,
+                    .minInclusive = 0,
+                },
         })
         .natural(true)
         .minY(-64)
