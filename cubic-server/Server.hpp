@@ -80,34 +80,37 @@ public:
         return &srv;
     }
 
-    // const boost::container::flat_map<size_t, std::shared_ptr<Client>> &getClients() const { return _clients; }
+// Random thingy
+public:
+    Permissions permissions;
+    NODISCARD inline RSAEncryptionHandler &getPrivateKey() { return _rsaKey; }
 
+// Const getters
+public:
     const std::unordered_map<size_t, std::shared_ptr<Client>> &getClients() const { return _clients; }
-    std::shared_ptr<WorldGroup> getWorldGroup(const std::string_view &name) { return this->_worldGroups.at(name); }
-    const std::shared_ptr<WorldGroup> getWorldGroup(const std::string_view &name) const { return this->_worldGroups.at(name); }
+    const std::shared_ptr<const WorldGroup> getWorldGroup(const std::string_view &name) const { return this->_worldGroups.at(name); }
     const std::vector<std::unique_ptr<CommandBase>> &getCommands() const { return _commands; }
     bool isRunning() const { return _running; }
     const Blocks::GlobalPalette &getGlobalPalette() const { return _globalPalette; }
     const Items::ItemConverter &getItemConverter() const { return _itemConverter; }
     const registry::MasterRegistry &getRegistry() const noexcept { return _registry; }
-    std::unordered_map<std::string_view, std::shared_ptr<WorldGroup>> &getWorldGroups();
-    const std::unordered_map<std::string_view, std::shared_ptr<WorldGroup>> &getWorldGroups() const;
+    const std::unordered_map<std::string_view, std::shared_ptr<WorldGroup>> &getWorldGroups() const { return _worldGroups; }
+
+// Getters
+public:
+    std::shared_ptr<WorldGroup> getWorldGroup(const std::string_view &name) { return this->_worldGroups.at(name); }
+    registry::MasterRegistry &getRegistry() noexcept { return _registry; }
+    ScoreboardSystem &getScoreboardSystem() { return _scoreboardSystem; }
+    LootTables &getLootTableSystem() noexcept { return _lootTables; }
+    std::unordered_map<std::string_view, std::shared_ptr<WorldGroup>> &getWorldGroups() { return _worldGroups; }
     PluginManager &getPluginManager() noexcept { return _pluginManager; }
-    Recipes &getRecipeSystem(void) noexcept;
+    Recipes &getRecipeSystem() noexcept { return _recipes; }
 
-    ScoreboardSystem &getScoreboardSystem(void);
-
+// Network
+public:
     void sendData(size_t clientID, std::unique_ptr<std::vector<uint8_t>> &&data);
-
-    LootTables &getLootTableSystem(void) noexcept;
-
     void triggerClientCleanup(size_t clientID = -1);
-
     void addCommand(std::unique_ptr<CommandBase> command);
-
-    Permissions permissions;
-
-    NODISCARD inline RSAEncryptionHandler &getPrivateKey() { return _rsaKey; }
 
 private:
     Server();
@@ -119,8 +122,9 @@ private:
     void _doAccept();
     void _writeLoop();
 
+// Random mutex
 public:
-    std::mutex clientsMutex;
+    mutable std::mutex clientsMutex;
 
 private:
     std::atomic<bool> _running;

@@ -33,6 +33,7 @@ public:
             ~T() = default; \
             \
             std::string_view name() const override { return N; } \
+            static std::string_view staticName() { return N; } \
             \
             T##Element &addEntry() override { \
                 _entries.emplace_back(std::make_shared<T##Element>()); \
@@ -47,7 +48,6 @@ class Registry {
 public:
     explicit Registry() = default;
     virtual ~Registry() = default;
-
 
     virtual std::string_view name() const = 0;
     virtual Entry &addEntry() = 0;
