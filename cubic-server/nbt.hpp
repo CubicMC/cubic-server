@@ -636,6 +636,7 @@ private:
 };
 
 #define NBT_MAKE(nbt_type, ...) std::shared_ptr<nbt::Base>(new nbt_type(__VA_ARGS__))
+#define NBT_MAKE_AS(nbt_type, ...) NBT_MAKE(nbt_type, __VA_ARGS__)->as<nbt_type>()
 
 std::shared_ptr<Byte> parseByte(uint8_t *&at, const uint8_t *end, bool includeName = true, bool inList = false);
 std::shared_ptr<Short> parseShort(uint8_t *&at, const uint8_t *end, bool includeName = true, bool inList = false);

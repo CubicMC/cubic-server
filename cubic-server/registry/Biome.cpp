@@ -3,6 +3,7 @@
 
 std::shared_ptr<nbt::Base> registry::BiomeElement::toNBT() const
 {
+    // clang-format off
     return NBT_MAKE(nbt::Compound, "", {
         NBT_MAKE(nbt::String, "name", _name),
         NBT_MAKE(nbt::Int, "id", _id),
@@ -18,9 +19,5 @@ std::shared_ptr<nbt::Base> registry::BiomeElement::toNBT() const
             })
         }),
     });
-}
-
-bool registry::BiomeElement::operator==(const std::string &name) const
-{
-    return name == _name;
+    // clang-format on
 }

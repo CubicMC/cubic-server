@@ -20,9 +20,9 @@ public:
     ~BiomeElement() = default;
 
     std::shared_ptr<nbt::Base> toNBT() const override;
-    bool operator==(const std::string &) const override;
+    constexpr bool operator==(const std::string &name) const override { return name == _name; }
 
-// Getters
+    // Getters
 public:
     constexpr std::string name() const { return _name; };
     constexpr int32_t id() const { return _id; };
@@ -31,7 +31,7 @@ public:
     constexpr float downfall() const { return _downfall; };
     constexpr Effects effects() const { return _effects; };
 
-// Setters
+    // Setters
 public:
     constexpr BiomeElement &name(const std::string &value);
     constexpr BiomeElement &id(const int32_t &value);
