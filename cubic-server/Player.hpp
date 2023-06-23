@@ -126,7 +126,8 @@ public:
     void sendUpdateObjective(const protocol::UpdateObjectives &packet);
     void sendDisplayObjective(const protocol::DisplayObjective &packet);
     void sendUpdateScore(const protocol::UpdateScore &packet);
-    void sendUpdateTeams(const protocol::UpdateTeams &packet);    
+    void sendUpdateTeams(const protocol::UpdateTeams &packet);
+    void sendPickupItem(const protocol::PickupItem &packet);
 
 private:
     void _onConfirmTeleportation(protocol::ConfirmTeleportation &pck);

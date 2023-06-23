@@ -859,7 +859,7 @@ std::unique_ptr<std::vector<uint8_t>> protocol::createSystemChatMessage(const Sy
     return packet;
 }
 
-std::unique_ptr<std::vector<uint8_t>> protocol::createPickupItem(const PickupItem &)
+std::unique_ptr<std::vector<uint8_t>> protocol::createPickupItem(const PickupItem &in)
 {
     std::vector<uint8_t> payload;
     // clang-format off

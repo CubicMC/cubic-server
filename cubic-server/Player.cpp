@@ -751,6 +751,14 @@ void Player::sendUpdateTeams(const protocol::UpdateTeams &packet)
     LDEBUG("Sent update teams packet");
 }
 
+void Player::sendPickupItem(const protocol::PickupItem &packet)
+{
+    GET_CLIENT();
+    auto pck = protocol::createPickupItem(packet);
+    client->doWrite(std::move(pck));
+    LDEBUG("Sent pickup item packet");
+}
+
 #pragma endregion
 #pragma region ServerBound
 
