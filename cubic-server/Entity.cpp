@@ -83,18 +83,20 @@ void Entity::forceSetPosition(const Vector3<double> &pos)
 
 void Entity::forceSetPosition(double x, double y, double z) { this->forceSetPosition({x, y, z}); }
 
-void Entity::setRotation(const Vector2<uint8_t> &rot)
-{
-    float yawTmp = rot.x;
-    while (yawTmp < 0) // TODO: change that completely
-        yawTmp += 360;
-    while (yawTmp > 360)
-        yawTmp -= 360;
-    _rot.x = yawTmp;
-    _rot.z = rot.z / 1.5;
-}
+void Entity::setRotation(const Vector2<uint8_t> &rot) { _rot = _rot; }
 
-void Entity::setRotation(uint8_t yaw, uint8_t pitch) { this->setRotation({yaw, pitch}); }
+void Entity::setRotation(uint8_t x, uint8_t y) { this->setRotation({x, y}); }
+
+void Entity::setRotation(float yaw, float pitch) {
+    while (yaw < 0) {
+        yaw += 360;
+    }
+    while (yaw > 360) {
+        yaw -= 360;
+    }
+    this->_rot.x = yaw * (256.0 / 360.0);
+    this->_rot.z = pitch * (256.0 / 360.0);
+}
 
 std::shared_ptr<Dimension> Entity::getDimension() const { return _dim; }
 
@@ -111,6 +113,15 @@ const Vector3<double> &Entity::getPosition() const { return _pos; }
 Vector2<uint8_t> &Entity::getRotation() { return _rot; }
 
 const Vector2<uint8_t> &Entity::getRotation() const { return _rot; }
+
+Vector2<float> Entity::getRotationDegree() {
+    return Vector2<float>((float)_rot.x / (256.0 / 360.0), (float)_rot.z / (256.0 / 360.0));
+}
+
+const Vector2<float> Entity::getRotationDegree() const {
+    return Vector2<float>((float)_rot.x / (256.0 / 360.0), (float)_rot.z / (256.0 / 360.0));
+}
+
 
 Vector3<double> &Entity::getLastPosition() { return _lastPos; }
 
