@@ -1,8 +1,8 @@
 #include "EntityEvent.hpp"
-#include "Entity.hpp"
-#include "EntityType.hpp"
 #include "Player.hpp"
 #include "Server.hpp"
+#include "entities/Entity.hpp"
+#include "entities/EntityType.hpp"
 #include <memory>
 
 std::shared_ptr<chat::message::event::EntityHover> chat::message::event::EntityHover::fromJson(UNUSED const nlohmann::json &json)

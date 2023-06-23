@@ -8,13 +8,6 @@ target_sources (${CMAKE_PROJECT_NAME} PRIVATE
     Player.hpp
     PlayerAttributes.cpp
     PlayerAttributes.hpp
-    EntityType.hpp
-    Entity.cpp
-    Entity.hpp
-    Item.cpp
-    Item.hpp
-    LivingEntity.cpp
-    LivingEntity.hpp
     Chat.cpp
     Chat.hpp
     WorldGroup.cpp
@@ -115,4 +108,5 @@ add_subdirectory (events)
 add_subdirectory (utility)
 add_subdirectory (scoreboard)
 add_subdirectory (registry)
+add_subdirectory (entities)
 add_subdirectory (ai)

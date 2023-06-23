@@ -1,5 +1,5 @@
-#ifndef CUBICSERVER_ITEM_HPP
-#define CUBICSERVER_ITEM_HPP
+#ifndef CUBICSERVER_ENTITIES_ITEM_HPP
+#define CUBICSERVER_ENTITIES_ITEM_HPP
 
 #include "Entity.hpp"
 #include "protocol/Structures.hpp"
@@ -29,4 +29,4 @@ private:
     protocol::Slot _slot;
 };
 
-#endif // CUBICSERVER_ITEM_HPP
+#endif // CUBICSERVER_ENTITIES_ITEM_HPP

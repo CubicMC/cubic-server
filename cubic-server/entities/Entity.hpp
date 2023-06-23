@@ -1,5 +1,5 @@
-#ifndef CUBICSERVER_ENTITY_HPP
-#define CUBICSERVER_ENTITY_HPP
+#ifndef CUBICSERVER_ENTITIES_ENTITY_HPP
+#define CUBICSERVER_ENTITIES_ENTITY_HPP
 
 #include "EntityType.hpp"
 #include "math/Vector2.hpp"
@@ -144,4 +144,4 @@ protected:
     EntityType _type;
 };
 
-#endif // CUBICSERVER_ENTITY_HPP
+#endif // CUBICSERVER_ENTITIES_ENTITY_HPP

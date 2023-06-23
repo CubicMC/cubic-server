@@ -1,5 +1,5 @@
-#ifndef CUBICSERVER_LIVINGENTITY_HPP
-#define CUBICSERVER_LIVINGENTITY_HPP
+#ifndef CUBICSERVER_ENTITIES_LIVINGENTITY_HPP
+#define CUBICSERVER_ENTITIES_LIVINGENTITY_HPP
 
 #include "Entity.hpp"
 #include "EntityType.hpp"
@@ -63,4 +63,4 @@ protected:
     Position _posBedSleeping;
 };
 
-#endif // CUBICSERVER_LIVINGENTITY_HPP
+#endif // CUBICSERVER_ENTITIES_LIVINGENTITY_HPP

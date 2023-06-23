@@ -6,7 +6,7 @@
 #include <string>
 #include <vector>
 
-#include "EntityType.hpp"
+#include "entities/EntityType.hpp"
 #include "PlayerAttributes.hpp"
 #include "Structures.hpp"
 #include "chat/Message.hpp"

@@ -1,6 +1,6 @@
 #include "Container.hpp"
 #include "Dimension.hpp"
-#include "Item.hpp"
+#include "entities/Item.hpp"
 #include "Player.hpp"
 #include "PlayerAttributes.hpp"
 #include "logging/logging.hpp"
