@@ -205,6 +205,22 @@ private:
     int16_t _heldItem;
     player_attributes::Gamemode _gamemode;
     TickClock _keepAliveClock;
+    TickClock _synchronizeClock;
+    std::unordered_map<Position2D, ChunkState> _chunks;
+    mutable std::mutex _chunksMutex;
+
+    // Inventory
+    std::shared_ptr<protocol::container::Inventory> _inventory;
+    std::vector<std::shared_ptr<protocol::container::Container>> _containers;
+
+    // Food Mechanics
+    int _foodLevel;
+    float _foodSaturationLevel;
+    int _foodTickTimer;
+    float _foodExhaustionLevel;
+
+    // player status
+    protocol::ClientInformation::ChatVisibility _chatVisibility;
     bool _isFlying;
     bool _isOperator;
     bool _isSprinting;

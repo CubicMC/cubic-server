@@ -113,13 +113,13 @@ void Player::_tickPosition()
             i->sendUpdateEntityPositionAndRotation({this->getId(), deltaX, deltaY, deltaZ, this->_rot.x, this->_rot.z, true});
             i->sendHeadRotation({this->getId(), _rot.x});
         }
-    } else if (updatePos && !updateRot) {
+    } else if (updatePos) {
         for (auto i : this->getDimension()->getPlayers()) {
             if (i->getId() == this->getId())
                 continue;
             i->sendUpdateEntityPosition({this->getId(), deltaX, deltaY, deltaZ, true});
         }
-    } else if (!updatePos && updateRot) {
+    } else if (updateRot) {
         for (auto i : this->getDimension()->getPlayers()) {
             if (i->getId() == this->getId())
                 continue;
@@ -500,24 +500,27 @@ void Player::sendSynchronizePosition(const Vector3<double> &pos)
 
 void Player::sendSynchronizePlayerPosition(const protocol::SynchronizePlayerPosition &data)
 {
+    GET_CLIENT();
     auto pck = protocol::createSynchronizePlayerPosition(data);
-    this->_cli->_sendData(*pck);
+    client->doWrite(std::move(pck));
     LDEBUG("Synchronized player position");
 }
 
 void Player::sendSynchronizePlayerPosition(void)
 {
+    Vector2<float> rotDegree = this->getRotationDegree();
+    GET_CLIENT();
     auto pck = protocol::createSynchronizePlayerPosition({
         this->_pos.x,
         this->_pos.y,
         this->_pos.z,
-        static_cast<float>(this->_rot.x),
-        static_cast<float>(this->_rot.y),
+        static_cast<float>(rotDegree.x),
+        static_cast<float>(rotDegree.z),
         0,
         0,
         false,
         });
-    this->_cli->_sendData(*pck);
+    client->doWrite(std::move(pck));
     LDEBUG("Synchronized player position");
 }
 
