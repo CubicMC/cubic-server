@@ -8,6 +8,37 @@
 #include "PluginManager.hpp"
 
 /*
+ * @brief Detect whether the entity is immune to fall damage
+ *
+ * @param TBD
+ */
+bool LivingEntity::isImmune()
+{
+    return (// TODO isInWater() ||
+            this->flyingWithElytra ||
+            // TODO hasSlowFalling() ||
+            // TODO isSoft(blockUnder) ||
+            1);
+}
+
+/*
+ * @brief Deal fall damage to the entity
+ *
+ * @param height The height level from which the entity fell
+ * @param immunity The height level from which the entity fell
+ */
+void LivingEntity::falldamage(const double &height)
+{
+    int fallBlkDistance = ceil(height - this->getPosition().y);
+
+    if (fallBlkDistance >= this->_health + 3.5) { // making sure death is infliged
+        this->damage(999);
+        return;
+    }
+    this->damage(fallBlkDistance);
+}
+
+/*
  * @brief Attack the entity
  *
  * @param damage The damage to deal
