@@ -47,6 +47,7 @@ void World::stop()
         dim->stop();
 
     // TODO: Save the world
+    this->save();
 }
 
 bool World::isInitialized() const
