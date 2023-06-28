@@ -66,6 +66,8 @@ struct LevelData {
     int32_t thunderTime;
     int8_t thundering;
     int32_t version;
+
+    void save(std::string const &folder);
 };
 
 }

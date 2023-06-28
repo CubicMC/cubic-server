@@ -3,6 +3,7 @@ target_sources (${CMAKE_PROJECT_NAME} PRIVATE
     ChunkColumn.hpp
     Level.cpp
     Level.hpp
+    LevelData.cpp
     LevelData.hpp
     PlayerData.hpp
     Palette.hpp

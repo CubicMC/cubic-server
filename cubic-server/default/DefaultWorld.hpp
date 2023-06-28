@@ -12,7 +12,6 @@ public:
     ~DefaultWorld() override = default;
     void tick() override;
     void initialize() override;
-    void save() override;
     void stop() override;
 
     world_storage::Persistence persistence;

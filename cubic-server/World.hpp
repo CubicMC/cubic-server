@@ -33,7 +33,7 @@ public:
     virtual void tick();
     virtual void initialize();
     virtual void stop();
-    virtual void save() {};
+    virtual void save();
 
     NODISCARD virtual bool isInitialized() const;
     NODISCARD virtual const std::shared_ptr<WorldGroup> getWorldGroup() const;

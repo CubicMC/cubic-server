@@ -6,6 +6,7 @@
 #include "WorldGroup.hpp"
 #include "logging/logging.hpp"
 #include <cstdint>
+#include <filesystem>
 
 World::World(std::shared_ptr<WorldGroup> worldGroup, world_storage::WorldType worldType, std::string folder):
     _worldGroup(worldGroup),
@@ -48,6 +49,15 @@ void World::stop()
 
     // TODO: Save the world
     this->save();
+}
+
+void World::save()
+{
+    if (!std::filesystem::exists(this->_folder)) {
+        std::filesystem::create_directory(this->_folder);
+    }
+
+    this->_levelData.save(this->_folder);
 }
 
 bool World::isInitialized() const
