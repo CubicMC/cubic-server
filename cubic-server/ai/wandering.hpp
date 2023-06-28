@@ -5,11 +5,13 @@
 
 namespace ai {
 class Wandering : public AI {
- public:
-  Wandering();
-  ~Wandering();
+public:
+    Wandering(std::shared_ptr<Entity>);
+    ~Wandering();
 
-  void update(float delta_time) override;
+    bool see() override;
+    void think() override;
+    void act() override;
 };
-}  // namespace ai
+} // namespace ai
 #endif // CUBICSERVER_AI_WANDERING_HPP
