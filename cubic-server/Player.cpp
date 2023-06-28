@@ -15,6 +15,7 @@
 #include "events/CancelEvents.hpp"
 #include "items/foodItems.hpp"
 #include "logging/logging.hpp"
+#include "nbt.hpp"
 #include "protocol/ClientPackets.hpp"
 #include "protocol/PacketUtils.hpp"
 #include "protocol/ServerPackets.hpp"
@@ -23,8 +24,10 @@
 #include "protocol/container/Inventory.hpp"
 #include "protocol/serialization/addPrimaryType.hpp"
 #include "world_storage/Level.hpp"
+#include "world_storage/GZIP.hpp"
 #include <algorithm>
 #include <cstdint>
+#include <initializer_list>
 #include <memory>
 #include <mutex>
 #include <stdexcept>
@@ -184,6 +187,9 @@ void Player::disconnect(const chat::Message &reason)
     client->_isRunning = false;
     N_LDEBUG("Sent a disconnect play packet");
     onEvent(Server::getInstance()->getPluginManager(), onPlayerLeave, this);
+
+    // if (!std::filesystem::exists(this->getWorld()->getFolder() + "/playerdata")) std::filesystem::create_directories(this->getWorld()->getFolder() + "/playerdata");
+    // this->save(this->getWorld()->getFolder());
 }
 
 #pragma region ClientBound
@@ -1345,4 +1351,112 @@ void Player::teleport(const Vector3<double> &pos)
     this->sendSynchronizePosition(pos);
     LDEBUG("Synchronize player position");
     Entity::teleport(pos);
+}
+
+void Player::save(const std::string &folder)
+{
+    nbt::Compound data(
+        "root",
+        std::initializer_list<std::shared_ptr<nbt::Base>> {
+            std::make_shared<nbt::Short>("Air", 300),
+            std::make_shared<nbt::Float>("FallDistance", 0),
+            std::make_shared<nbt::Short>("Fire", -20),
+            std::make_shared<nbt::Byte>("Glowing", 0),
+            std::make_shared<nbt::Byte>("HasVisualFire", 0),
+            std::make_shared<nbt::Byte>("Invulnerable", 0),
+            std::make_shared<nbt::List>(
+                "Motion",
+                std::initializer_list<std::shared_ptr<nbt::Base>> {
+                    std::make_shared<nbt::Double>("dX", 0),
+                    std::make_shared<nbt::Double>("dY", 0),
+                    std::make_shared<nbt::Double>("dZ", 0),
+                }
+            ),
+            std::make_shared<nbt::Byte>("NoGravity", 0),
+            std::make_shared<nbt::Byte>("OnGround", 0),
+            std::make_shared<nbt::List>("Passengers"),
+            std::make_shared<nbt::Int>("PortalCooldown", 300),
+            std::make_shared<nbt::List>(
+                "Pos",
+                std::initializer_list<std::shared_ptr<nbt::Base>> {
+                    std::make_shared<nbt::Double>("X", this->_pos.x),
+                    std::make_shared<nbt::Double>("Y", this->_pos.y),
+                    std::make_shared<nbt::Double>("Z", this->_pos.z),
+                }
+            ),
+            std::make_shared<nbt::List>(
+                "Rotation",
+                std::initializer_list<std::shared_ptr<nbt::Base>> {
+                    std::make_shared<nbt::Float>("yaw", this->_rot.x), // TODO : Switch to degrees when merged
+                    std::make_shared<nbt::Float>("pitch", this->_pos.z), // TODO : Switch to degrees when merged
+                }
+            ),
+            std::make_shared<nbt::List>("Tags"), // TODO : Ask pierrick to implement those tags once and for all
+            std::make_shared<nbt::Int>("TicksFrozen", 0),
+            std::make_shared<nbt::IntArray>(
+                "UUID",
+                std::vector<int32_t> {
+                    (int32_t) (this->_uuid.most >> 32),
+                    (int32_t) (this->_uuid.most & 0x1FFFFFFFF),
+                    (int32_t) (this->_uuid.least >> 32),
+                    (int32_t) (this->_uuid.least & 0x1FFFFFFFF),
+                }
+            ),
+            std::make_shared<nbt::Float>("AbsorptionAmount", 0),
+            std::make_shared<nbt::List>("Attributes"),
+            std::make_shared<nbt::Compound>(
+                "Brain",
+                std::initializer_list<std::shared_ptr<nbt::Base>> {
+                    std::make_shared<nbt::Compound>("memories"),
+                }
+            ),
+            std::make_shared<nbt::Short>("DeathTime", 0),
+            std::make_shared<nbt::Byte>("FallFlying", 0),
+            std::make_shared<nbt::Float>("Health", this->_health),
+            std::make_shared<nbt::Int>("HurtByTimestamp", 0),
+            std::make_shared<nbt::Short>("HurtTime", 0),
+            std::make_shared<nbt::Byte>("LeftHanded", 0),
+            std::make_shared<nbt::Byte>("NoAI", 0),
+            std::make_shared<nbt::Compound>(
+                "abilities",
+                std::initializer_list<std::shared_ptr<nbt::Base>> {
+                    std::make_shared<nbt::Byte>("flying", this->_isFlying),
+                    std::make_shared<nbt::Float>("flySpeed", 0.05),
+                    std::make_shared<nbt::Byte>("instabuild", this->_gamemode == player_attributes::Gamemode::Creative),
+                    std::make_shared<nbt::Byte>("invulnerable", player_attributes::getAbilitiesByGamemode(this->_gamemode) & player_attributes::Invulnerable),
+                    std::make_shared<nbt::Byte>("mayBuild", this->_gamemode == player_attributes::Gamemode::Creative || this->_gamemode == player_attributes::Gamemode::Survival),
+                    std::make_shared<nbt::Byte>("mayfly", this->_gamemode == player_attributes::Gamemode::Creative || this->_gamemode == player_attributes::Gamemode::Spectator),
+                    std::make_shared<nbt::Float>("walkSpeed", 0.1),
+                }
+            ),
+            std::make_shared<nbt::Int>("DataVersion", 19133),
+            std::make_shared<nbt::String>("Dimension", "minecraft:overworld"), // TODO : Figure out what on earth does that actually refers to
+            std::make_shared<nbt::Compound>("EnderItems"),
+            std::make_shared<nbt::Float>("foodExhaustionLevel", this->_foodExhaustionLevel),
+            std::make_shared<nbt::Int>("foodLevel", this->_foodLevel),
+            std::make_shared<nbt::Float>("foodSaturationLevel", this->_foodSaturationLevel),
+            std::make_shared<nbt::Int>("foodTickTimer", this->_foodTickTimer),
+            std::make_shared<nbt::Compound>("Inventory"), // TODO : Add inventory
+            std::make_shared<nbt::Int>("playerGameType", (int32_t) this->_gamemode),
+            std::make_shared<nbt::Int>("previousPlayerGameType", (int32_t) this->_gamemode),
+            std::make_shared<nbt::Compound>("recipeBook"),
+            std::make_shared<nbt::Int>("Score", 0),
+            std::make_shared<nbt::Byte>("seenCredits", 0),
+            std::make_shared<nbt::Int>("SelectedItemSlot", this->_heldItem),
+            std::make_shared<nbt::Compound>("ShoulderEntityLeft"),
+            std::make_shared<nbt::Compound>("ShoulderEntityRight"),
+            std::make_shared<nbt::Short>("SleepTimer", 0),
+            std::make_shared<nbt::Int>("XpLevel", 0),
+            std::make_shared<nbt::Float>("XpP", 0),
+            std::make_shared<nbt::Int>("XpSeed", 0),
+            std::make_shared<nbt::Int>("XpTotal", 0),
+        }
+    );
+    GZIP gzip;
+
+    std::vector<uint8_t> buffer = data.serialize();
+
+    if (!std::filesystem::exists(folder + "/playerdata")) std::filesystem::create_directories(folder + "/playerdata");
+
+    gzip.compress(buffer, std::string(folder + "/playerdata/" + this->_uuidString + ".dat").c_str());
 }

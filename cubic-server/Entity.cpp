@@ -126,3 +126,7 @@ void Entity::teleport(const Vector3<double> &pos)
         i->sendTeleportEntity(this->getId(), pos);
     }
 }
+
+void Entity::save(std::string const &folder) {
+    // TODO : Save entities
+}

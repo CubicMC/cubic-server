@@ -53,11 +53,14 @@ void World::stop()
 
 void World::save()
 {
-    if (!std::filesystem::exists(this->_folder)) {
-        std::filesystem::create_directory(this->_folder);
-    }
+    if (!std::filesystem::exists(this->_folder)) std::filesystem::create_directory(this->_folder);
 
     this->_levelData.save(this->_folder);
+    for (auto dim : this->_dimensions) {
+        for (auto player : dim.second->getPlayers()) {
+            player->save(this->_folder);
+        }
+    }
 }
 
 bool World::isInitialized() const
@@ -207,6 +210,8 @@ uint8_t World::getRenderDistance() const { return _renderDistance; }
 long World::getTime() const { return _time; }
 
 long World::getAge() const { return _age; }
+
+std::string World::getFolder() const { return _folder; }
 
 int World::addTime(int time)
 {

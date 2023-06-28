@@ -72,6 +72,7 @@ public:
 
 public:
     void disconnect(const chat::Message &reason = "Disconnected");
+    void save(std::string const &folder) override;
     void sendLoginPlay(const protocol::LoginPlay &packet);
     void sendPlayerInfoUpdate(const protocol::PlayerInfoUpdate &data);
     void sendPlayerInfoRemove(const protocol::PlayerInfoRemove &data);

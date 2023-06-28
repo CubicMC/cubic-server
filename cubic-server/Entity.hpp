@@ -82,6 +82,9 @@ public:
     // The dropped item is determined by the loot tables
     virtual void dropItem(UNUSED const Vector3<double> &pos) {};
 
+    // Save entity in world folder
+    virtual void save(std::string const &folder);
+
 protected:
     std::shared_ptr<Dimension> _dim;
     bool _onFire;

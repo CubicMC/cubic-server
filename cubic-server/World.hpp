@@ -57,6 +57,7 @@ public:
     NODISCARD virtual uint8_t getRenderDistance() const;
     NODISCARD virtual long getTime() const;
     NODISCARD virtual long getAge() const;
+    NODISCARD virtual std::string getFolder() const;
 
     /*
     **  Used in the /time command.

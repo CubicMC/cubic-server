@@ -55,6 +55,7 @@ Client::~Client()
     if (!_player)
         return;
     // Everything that is done here is because we can't use share_from_this from the player destructor
+    this->_player->save(this->_player->getWorld()->getFolder());
     this->_player->_dim->removeEntity(_player->_id);
     this->_player->_dim->removePlayer(_player->_id);
     for (auto &chunkReq : this->_player->_chunks) {
