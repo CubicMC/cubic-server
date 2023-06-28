@@ -7,4 +7,6 @@ target_sources(${CMAKE_PROJECT_NAME} PRIVATE
     LivingEntity.cpp
     LivingEntity.hpp
     Mob.hpp
+    Chicken.cpp
+    Chicken.hpp
 )
