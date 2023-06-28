@@ -3,7 +3,7 @@
 #include "math/Vector3.hpp"
 
 namespace ai {
-Wandering::Wandering(std::shared_ptr<Entity> entity):
+Wandering::Wandering(Entity &entity):
     AI(entity)
 {
 }
@@ -14,7 +14,7 @@ bool Wandering::see() { return true; }
 
 void Wandering::think()
 {
-    Vector3<double> pos = this->_entity->getPosition();
+    Vector3<double> pos = this->_entity.getPosition();
     Vector3<double> finalPos = {pos.x + 1, pos.y, pos.z - 1};
     // get the straight line equation between the two points
     // z = mx + b
@@ -34,7 +34,7 @@ void Wandering::think()
 void Wandering::act()
 {
     auto pos = _path.front();
-    this->_entity->teleport(pos);
+    this->_entity.teleport(pos);
     _path.pop();
 }
 } // namespace ai

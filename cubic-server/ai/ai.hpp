@@ -10,7 +10,7 @@ class Entity;
 namespace ai {
 class AI {
 public:
-    AI(std::shared_ptr<Entity> entity):
+    AI(Entity &entity):
         _entity(entity) {};
     virtual ~AI() {};
 
@@ -29,7 +29,7 @@ public:
 
 protected:
     std::queue<Vector3<double>> _path;
-    std::shared_ptr<Entity> _entity;
+    Entity &_entity;
 };
 } // namespace ai
 

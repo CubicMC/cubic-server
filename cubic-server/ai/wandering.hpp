@@ -6,7 +6,7 @@
 namespace ai {
 class Wandering : public AI {
 public:
-    Wandering(std::shared_ptr<Entity>);
+    Wandering(Entity &);
     ~Wandering();
 
     bool see() override;
