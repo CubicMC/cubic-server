@@ -16,6 +16,7 @@ public:
     }
     ~LivingEntity() override = default;
 
+    virtual bool takesFalldmg();
     virtual void falldamage(const double &height);
     virtual void attack(const Vector3<double> &source);
     virtual void damage(float damage);

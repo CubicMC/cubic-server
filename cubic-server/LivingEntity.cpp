@@ -8,28 +8,33 @@
 #include "PluginManager.hpp"
 
 /*
- * @brief Detect whether the entity is immune to fall damage
+ * @brief Detect whether the entity is not immune to fall damage
  *
  * @param TBD
  */
-bool LivingEntity::isImmune()
+bool LivingEntity::takesFalldmg()
 {
-    return (// TODO isInWater() ||
-            this->flyingWithElytra ||
-            // TODO hasSlowFalling() ||
-            // TODO isSoft(blockUnder) ||
-            1);
+    // method class dimension: return block from relative position %chunk_sz
+    // round(this->_pos());
+    return !(// TODO for Player:: only
+            // !isGamemode("creative") &&
+            // TODO check if entity landed in water
+            // !isInWater() &&
+            // TODO waiting for potion effect
+            // !this->hasEffect(PotionEffect::SlowFalling) &&
+            // TODO detect block under, make list of soft blocks
+            // !isSoft(blockUnder) &&
+            !this->_flyingWithElytra);
 }
 
 /*
  * @brief Deal fall damage to the entity
  *
  * @param height The height level from which the entity fell
- * @param immunity The height level from which the entity fell
  */
 void LivingEntity::falldamage(const double &height)
 {
-    int fallBlkDistance = ceil(height - this->getPosition().y);
+    int fallBlkDistance = ceil(height - this->_pos.y); // nb of blocks fallen
 
     if (fallBlkDistance >= this->_health + 3.5) { // making sure death is infliged
         this->damage(999);
