@@ -15,20 +15,20 @@ public:
     };
 
 public:
-    constexpr ChatElement() = default;
+    inline ChatElement() = default;
 
-    constexpr ChatElement &id(int32_t id);
-    constexpr ChatElement &name(const std::string &name);
-    constexpr ChatElement &addStyle(chat::message::Style style);
+    inline ChatElement &id(int32_t id);
+    inline ChatElement &name(const std::string &name);
+    inline ChatElement &addStyle(chat::message::Style style);
 
-    constexpr ChatElement &addChatParameter(const std::string &name);
-    constexpr ChatElement &addNarrateParameter(const std::string &name);
+    inline ChatElement &addChatParameter(const std::string &name);
+    inline ChatElement &addNarrateParameter(const std::string &name);
 
-    constexpr ChatElement &chatKey(const std::string &key);
-    constexpr ChatElement &narrateKey(const std::string &key);
+    inline ChatElement &chatKey(const std::string &key);
+    inline ChatElement &narrateKey(const std::string &key);
 
     std::shared_ptr<nbt::Base> toNBT() const override;
-    constexpr bool operator==(const std::string &name) const override { return name == _name; }
+    inline bool operator==(const std::string &name) const override { return name == _name; }
 
 private:
     int32_t _id;
@@ -40,51 +40,51 @@ private:
 
 DEFINE_REGISTRY_CLASS(Chat, "minecraft:chat_type");
 
-constexpr void setupDefaultsChat(Chat &registry);
+inline void setupDefaultsChat(Chat &registry);
 
 } // namespace registry
 
-constexpr registry::ChatElement &registry::ChatElement::id(int32_t id)
+inline registry::ChatElement &registry::ChatElement::id(int32_t id)
 {
     _id = id;
     return *this;
 }
 
-constexpr registry::ChatElement &registry::ChatElement::name(const std::string &name)
+inline registry::ChatElement &registry::ChatElement::name(const std::string &name)
 {
     _name = name;
     return *this;
 }
 
-constexpr registry::ChatElement &registry::ChatElement::addStyle(chat::message::Style style)
+inline registry::ChatElement &registry::ChatElement::addStyle(chat::message::Style style)
 {
     this->_style = style;
     return *this;
 }
 
-constexpr registry::ChatElement &registry::ChatElement::addChatParameter(const std::string &name)
+inline registry::ChatElement &registry::ChatElement::addChatParameter(const std::string &name)
 {
     _chat.args.push_back(name);
     return *this;
 }
-constexpr registry::ChatElement &registry::ChatElement::addNarrateParameter(const std::string &name)
+inline registry::ChatElement &registry::ChatElement::addNarrateParameter(const std::string &name)
 {
     _narrate.args.push_back(name);
     return *this;
 }
 
-constexpr registry::ChatElement &registry::ChatElement::chatKey(const std::string &key)
+inline registry::ChatElement &registry::ChatElement::chatKey(const std::string &key)
 {
     _chat.key = key;
     return *this;
 }
-constexpr registry::ChatElement &registry::ChatElement::narrateKey(const std::string &key)
+inline registry::ChatElement &registry::ChatElement::narrateKey(const std::string &key)
 {
     _narrate.key = key;
     return *this;
 }
 
-constexpr void registry::setupDefaultsChat(registry::Chat &registry)
+inline void registry::setupDefaultsChat(registry::Chat &registry)
 {
     // clang-format off
 
