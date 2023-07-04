@@ -20,25 +20,25 @@ public:
     ~BiomeElement() = default;
 
     std::shared_ptr<nbt::Base> toNBT() const override;
-    constexpr bool operator==(const std::string &name) const override { return name == _name; }
+    inline bool operator==(const std::string &name) const override { return name == _name; }
 
     // Getters
 public:
-    constexpr std::string name() const { return _name; };
-    constexpr int32_t id() const { return _id; };
-    constexpr std::string precipitation() const { return _precipitation; };
-    constexpr float temperature() const { return _temperature; };
-    constexpr float downfall() const { return _downfall; };
-    constexpr Effects effects() const { return _effects; };
+    inline std::string name() const { return _name; };
+    inline int32_t id() const { return _id; };
+    inline std::string precipitation() const { return _precipitation; };
+    inline float temperature() const { return _temperature; };
+    inline float downfall() const { return _downfall; };
+    inline Effects effects() const { return _effects; };
 
     // Setters
 public:
-    constexpr BiomeElement &name(const std::string &value);
-    constexpr BiomeElement &id(const int32_t &value);
-    constexpr BiomeElement &precipitation(const std::string &value);
-    constexpr BiomeElement &temperature(const float &value);
-    constexpr BiomeElement &downfall(const float &value);
-    constexpr BiomeElement &effects(const Effects &value);
+    inline BiomeElement &name(const std::string &value);
+    inline BiomeElement &id(const int32_t &value);
+    inline BiomeElement &precipitation(const std::string &value);
+    inline BiomeElement &temperature(const float &value);
+    inline BiomeElement &downfall(const float &value);
+    inline BiomeElement &effects(const Effects &value);
 
 private:
     std::string _name;
@@ -51,47 +51,47 @@ private:
 
 DEFINE_REGISTRY_CLASS(Biome, "minecraft:worldgen/biome");
 
-constexpr void setupDefaultsBiome(Biome &registry);
+inline void setupDefaultsBiome(Biome &registry);
 
 } // namespace registry
 
-constexpr registry::BiomeElement &registry::BiomeElement::name(const std::string &value)
+inline registry::BiomeElement &registry::BiomeElement::name(const std::string &value)
 {
     this->_name = value;
     return *this;
 }
 
-constexpr registry::BiomeElement &registry::BiomeElement::id(const int32_t &value)
+inline registry::BiomeElement &registry::BiomeElement::id(const int32_t &value)
 {
     this->_id = value;
     return *this;
 }
 
-constexpr registry::BiomeElement &registry::BiomeElement::precipitation(const std::string &value)
+inline registry::BiomeElement &registry::BiomeElement::precipitation(const std::string &value)
 {
     this->_precipitation = value;
     return *this;
 }
 
-constexpr registry::BiomeElement &registry::BiomeElement::temperature(const float &value)
+inline registry::BiomeElement &registry::BiomeElement::temperature(const float &value)
 {
     this->_temperature = value;
     return *this;
 }
 
-constexpr registry::BiomeElement &registry::BiomeElement::downfall(const float &value)
+inline registry::BiomeElement &registry::BiomeElement::downfall(const float &value)
 {
     this->_downfall = value;
     return *this;
 }
 
-constexpr registry::BiomeElement &registry::BiomeElement::effects(const Effects &value)
+inline registry::BiomeElement &registry::BiomeElement::effects(const Effects &value)
 {
     this->_effects = value;
     return *this;
 }
 
-constexpr void registry::setupDefaultsBiome(registry::Biome &registry)
+inline void registry::setupDefaultsBiome(registry::Biome &registry)
 {
     registry.addEntry()
         .name("minecraft:plains")
