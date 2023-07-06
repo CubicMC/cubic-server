@@ -5,6 +5,8 @@
 #include "Server.hpp"
 #include "World.hpp"
 #include "WorldGroup.hpp"
+#include "logging/logging.hpp"
+#include "math/Vector3.hpp"
 #include "options.hpp"
 
 // clang-format off
@@ -55,7 +57,8 @@ Entity::Entity(std::shared_ptr<Dimension> dim,
 }
 // clang-format on
 
-void Entity::setDimension(std::shared_ptr<Dimension> dim) {
+void Entity::setDimension(std::shared_ptr<Dimension> dim)
+{
     Player *player = dynamic_cast<Player *>(this);
 
     // if entity is a player
@@ -65,7 +68,7 @@ void Entity::setDimension(std::shared_ptr<Dimension> dim) {
             this->getDimension() == dim || // different previous dimension or
             this->getWorld() == dim->getWorld() || // different previous world or
             this->getWorldGroup() == dim->getWorld()->getWorldGroup()) { // different previous worldgroup
-                dim->getWorld()->getWorldGroup()->getScoreboard().sendScoreboardStatus(*player);
+            dim->getWorld()->getWorldGroup()->getScoreboard().sendScoreboardStatus(*player);
         }
     }
     _dim = dim;
@@ -125,4 +128,23 @@ void Entity::teleport(const Vector3<double> &pos)
             continue;
         i->sendTeleportEntity(this->getId(), pos);
     }
+}
+
+bool Entity::checkPickupItem()
+{
+    auto collectorPosition = this->getPosition();
+    Vector3<double> pickupBoxH = {1, 1, 1};
+    Vector3<double> pickupBoxV = {0.5, 0.5, 0.5};
+
+    for (auto i : this->getDimension()->getEntities()) {
+        if (i->getType() == protocol::SpawnEntity::EntityType::Item && i->getId() != this->getId()) {
+            if (((collectorPosition.x - i->getPosition().x) <= pickupBoxH.x && (collectorPosition.x - i->getPosition().x) >= -pickupBoxH.x) &&
+                ((collectorPosition.y - i->getPosition().y) <= pickupBoxV.y && (collectorPosition.y - i->getPosition().y) >= -pickupBoxV.y) &&
+                ((collectorPosition.z - i->getPosition().z) <= pickupBoxH.z && (collectorPosition.z - i->getPosition().z) >= -pickupBoxH.z)) {
+                // LINFO("There is an item to pickup at {}, {}, {}", (collectorPosition.x - i->getPosition().x), (collectorPosition.y - i->getPosition().y),(collectorPosition.z - i->getPosition().z));
+                return true;
+            }
+        }
+    }
+    return false;
 }

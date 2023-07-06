@@ -82,6 +82,10 @@ public:
     // The dropped item is determined by the loot tables
     virtual void dropItem(UNUSED const Vector3<double> &pos) {};
 
+    // Check if there is an item to pickup within the entity pickup box
+    // (1 block on each side, 0.5 block above & below)
+    virtual bool checkPickupItem();
+
 protected:
     std::shared_ptr<Dimension> _dim;
     bool _onFire;
