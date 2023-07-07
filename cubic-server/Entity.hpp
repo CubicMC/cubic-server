@@ -74,7 +74,7 @@ public:
     NODISCARD virtual Vector2<uint8_t> &getRotation();
     NODISCARD virtual const Vector2<uint8_t> &getRotation() const;
     NODISCARD virtual Vector2<float> getRotationDegree();
-    NODISCARD virtual const Vector2<float> getRotationDegree() const;
+    NODISCARD virtual Vector2<float> getRotationDegree() const;
     NODISCARD virtual Vector3<double> &getLastPosition();
     NODISCARD virtual Vector2<uint8_t> &getLastRotation();
     NODISCARD virtual protocol::SpawnEntity::EntityType getType() const { return _type; }
