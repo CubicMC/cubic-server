@@ -34,8 +34,8 @@ u128 u128::fromShortString(const std::string &str)
 
 u128 u128::random()
 {
-    std::random_device rd;
-    std::mt19937_64 gen(rd());
+    static std::random_device rd;
+    static std::mt19937_64 gen(rd());
     std::uniform_int_distribution<uint64_t> dis(0, 0xffffffffffffffff);
     return u128({dis(gen), dis(gen)});
 }
