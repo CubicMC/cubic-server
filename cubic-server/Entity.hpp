@@ -73,7 +73,6 @@ public:
     NODISCARD virtual const Vector3<double> &getPosition() const;
     NODISCARD virtual Vector2<uint8_t> &getRotation();
     NODISCARD virtual const Vector2<uint8_t> &getRotation() const;
-    NODISCARD virtual Vector2<float> getRotationDegree();
     NODISCARD virtual Vector2<float> getRotationDegree() const;
     NODISCARD virtual Vector3<double> &getLastPosition();
     NODISCARD virtual Vector2<uint8_t> &getLastRotation();
