@@ -469,7 +469,7 @@ struct LoginPlay {
     player_attributes::Gamemode gamemode;
     player_attributes::Gamemode previousGamemode; // must be a signed byte
     std::vector<std::string> dimensionNames;
-    std::shared_ptr<nbt::Compound> registryCodec;
+    const std::shared_ptr<const nbt::Compound> &registryCodec;
     std::string dimensionType;
     std::string dimensionName;
     long hashedSeed;
