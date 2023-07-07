@@ -121,7 +121,7 @@ Vector2<float> Entity::getRotationDegree() {
     return Vector2<float>((float)_rot.x / (256.0 / 360.0), (float)_rot.z / (256.0 / 360.0));
 }
 
-const Vector2<float> Entity::getRotationDegree() const {
+Vector2<float> Entity::getRotationDegree() const {
     return Vector2<float>((float)_rot.x / (256.0 / 360.0), (float)_rot.z / (256.0 / 360.0));
 }
 
