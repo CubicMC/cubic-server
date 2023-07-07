@@ -63,7 +63,8 @@ public:
     virtual void forceSetPosition(const Vector3<double> &pos);
     virtual void forceSetPosition(double x, double y, double z);
     virtual void setRotation(const Vector2<uint8_t> &rot);
-    virtual void setRotation(uint8_t yaw, uint8_t pitch);
+    virtual void setRotation(uint8_t x, uint8_t y);
+    virtual void setRotation(float yaw, float pitch);
     NODISCARD virtual std::shared_ptr<Dimension> getDimension() const;
     NODISCARD virtual std::shared_ptr<World> getWorld() const;
     NODISCARD virtual std::shared_ptr<WorldGroup> getWorldGroup() const;
@@ -72,6 +73,7 @@ public:
     NODISCARD virtual const Vector3<double> &getPosition() const;
     NODISCARD virtual Vector2<uint8_t> &getRotation();
     NODISCARD virtual const Vector2<uint8_t> &getRotation() const;
+    NODISCARD virtual Vector2<float> getRotationDegree() const;
     NODISCARD virtual Vector3<double> &getLastPosition();
     NODISCARD virtual Vector2<uint8_t> &getLastRotation();
     NODISCARD virtual protocol::SpawnEntity::EntityType getType() const { return _type; }
