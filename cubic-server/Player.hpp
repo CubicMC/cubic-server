@@ -71,6 +71,10 @@ public:
     void closeContainer(uint8_t id);
 
 public:
+    /**
+     * @brief Synchronize the player with the server
+     */
+    void synchronize();
     void disconnect(const chat::Message &reason = "Disconnected");
     void sendLoginPlay(const protocol::LoginPlay &packet);
     void sendPlayerInfoUpdate(const protocol::PlayerInfoUpdate &data);
@@ -89,6 +93,8 @@ public:
     void stopSound(uint8_t flags = 0, SoundCategory category = SoundCategory::Ambient, std::string sound = "");
     void sendKeepAlive(long id);
     void sendSynchronizePosition(const Vector3<double> &pos);
+    void sendSynchronizePlayerPosition(const protocol::SynchronizePlayerPosition &data);
+    void sendSynchronizePlayerPosition(void);
     void sendSwingArm(bool mainHand, int32_t swingerId);
     void sendTeleportEntity(int32_t id, const Vector3<double> &pos);
     void sendRemoveEntities(const std::vector<int32_t> &entities);
@@ -200,6 +206,7 @@ private:
     int16_t _heldItem;
     player_attributes::Gamemode _gamemode;
     TickClock _keepAliveClock;
+    TickClock _synchronizeClock;
     std::unordered_map<Position2D, ChunkState> _chunks;
     mutable std::mutex _chunksMutex;
 

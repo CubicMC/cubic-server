@@ -26,6 +26,10 @@
 #include "command_parser/commands/InventoryDump.hpp"
 #include "default/DefaultWorldGroup.hpp"
 #include "logging/logging.hpp"
+#include "registry/Biome.hpp"
+#include "registry/Chat.hpp"
+#include "registry/Dimension.hpp"
+#include "registry/MasterRegistry.hpp"
 #include "scoreboard/ScoreboardSystem.hpp"
 
 using boost::asio::ip::tcp;
@@ -81,6 +85,13 @@ void Server::launch(const configuration::ConfigHandler &config)
     this->_config = config;
 
     _rsaKey.generate();
+    auto &dimensionRegistry = _registry.addRegistry<registry::Dimension>();
+    auto &biomeRegistry = _registry.addRegistry<registry::Biome>();
+    auto &chatRegistry = _registry.addRegistry<registry::Chat>();
+
+    registry::setupDefaultsDimension(dimensionRegistry);
+    registry::setupDefaultsBiome(biomeRegistry);
+    registry::setupDefaultsChat(chatRegistry);
 
     // Initialize the global palette
     _globalPalette.initialize(std::string("blocks-") + MC_VERSION + ".json");
@@ -96,7 +107,6 @@ void Server::launch(const configuration::ConfigHandler &config)
     // Initialize default world group
     auto defaultChat = std::make_shared<Chat>();
     _worldGroups.emplace("default", new DefaultWorldGroup(defaultChat));
-    _worldGroups.at("default")->initialize();
 
     // TODO(huntears): Deal with this
     // Initialize default recipes
@@ -108,24 +118,32 @@ void Server::launch(const configuration::ConfigHandler &config)
     // Get plugins
     this->_pluginManager.load();
 
+    _worldGroups.at("default")->initialize();
+    _registry.initialize();
+
     this->_running = true;
 
-    auto tmpaddr = boost::asio::ip::make_address(_config["ip"].as<std::string>());
-    boost::asio::ip::address_v6 addr;
-    if (tmpaddr.is_v4())
-        addr = boost::asio::ip::make_address_v6(boost::asio::ip::v4_mapped, tmpaddr.to_v4());
-    else
-        addr = tmpaddr.to_v6();
+    boost::asio::ip::tcp::resolver resolver(_io_context);
+    auto it = resolver.resolve(boost::asio::ip::tcp::resolver::query(_config["ip"].as<std::string>(), std::to_string(_config["port"].as<uint16_t>())));
+    boost::asio::ip::address addr = it->endpoint().address();
+
+    // This force ipv6 for any and loopback
+    // If the user want to use ipv6, he should provide an ipv6 address
+    if (addr == boost::asio::ip::address_v4::any())
+        addr = boost::asio::ip::address_v6::any();
+    else if (addr == boost::asio::ip::address_v4::loopback())
+        addr = boost::asio::ip::address_v6::loopback();
+
     auto endpoint = tcp::endpoint(addr, _config["port"].as<uint16_t>());
 
-    _acceptor = std::make_unique<boost::asio::ip::tcp::acceptor>(_io_context, tcp::v6());
+    _acceptor = std::make_unique<boost::asio::ip::tcp::acceptor>(_io_context, endpoint.protocol());
+
     _acceptor->set_option(boost::asio::ip::tcp::acceptor::reuse_address(true));
-    _acceptor->set_option(boost::asio::ip::v6_only(false));
+    if (addr.is_v6())
+        _acceptor->set_option(boost::asio::ip::v6_only(false));
+
     _acceptor->bind(endpoint);
     _acceptor->listen();
-
-    auto opt = boost::asio::ip::v6_only();
-    _acceptor->get_option(opt);
 
     _writeThread = std::thread(&Server::_writeLoop, this);
 
@@ -226,10 +244,7 @@ void Server::triggerClientCleanup(size_t clientID)
     });
 }
 
-void Server::addCommand(std::unique_ptr<CommandBase> command)
-{
-    this->_commands.emplace_back(std::move(command));
-}
+void Server::addCommand(std::unique_ptr<CommandBase> command) { this->_commands.emplace_back(std::move(command)); }
 
 void Server::_doAccept()
 {
@@ -381,13 +396,3 @@ void Server::_enforceWhitelistOnReload()
         }
     }
 }
-
-std::unordered_map<std::string_view, std::shared_ptr<WorldGroup>> &Server::getWorldGroups() { return _worldGroups; }
-
-const std::unordered_map<std::string_view, std::shared_ptr<WorldGroup>> &Server::getWorldGroups() const { return _worldGroups; }
-
-Recipes &Server::getRecipeSystem(void) noexcept { return (this->_recipes); }
-
-ScoreboardSystem &Server::getScoreboardSystem(void) { return (this->_scoreboardSystem); }
-
-LootTables &Server::getLootTableSystem(void) noexcept { return (this->_lootTables); }

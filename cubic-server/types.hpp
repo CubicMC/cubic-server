@@ -75,8 +75,6 @@ struct Position {
     constexpr bool operator<=(valueType i) const;
 };
 
-std::ostream &operator<<(std::ostream &os, const Position &pos);
-
 struct Position2D {
     typedef int32_t valueType;
 
@@ -114,14 +112,10 @@ struct Position2D {
     constexpr bool operator<=(valueType i) const;
 };
 
-std::ostream &operator<<(std::ostream &os, const Position2D &pos);
-
 struct Rotation {
     float yaw;
     float pitch;
 };
-
-std::ostream &operator<<(std::ostream &os, const Rotation &rot);
 
 // Position
 constexpr Position Position::operator*(valueType i) const { return Position {x * i, y * i, z * i}; }
