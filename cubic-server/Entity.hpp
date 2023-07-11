@@ -8,6 +8,7 @@
 #include "types.hpp"
 #include "utility/SharedFromThis.hpp"
 #include <memory>
+#include <utility>
 
 class World;
 class WorldGroup;
@@ -86,7 +87,11 @@ public:
 
     // Check if there is an item to pickup within the entity pickup box
     // (1 block on each side, 0.5 block above & below)
-    virtual bool checkPickupItem();
+    virtual std::pair<bool, std::pair<int32_t, int8_t>> pickupItem();
+
+    // Return the type of the item and the number of item to pick up
+    // from the slot
+    virtual std::pair<int32_t, int8_t> getPickupItemFromEntity(Entity &item);
 
 protected:
     std::shared_ptr<Dimension> _dim;
