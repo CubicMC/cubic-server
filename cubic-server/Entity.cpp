@@ -1,4 +1,5 @@
 #include "Entity.hpp"
+#include "Item.hpp"
 
 #include "Dimension.hpp"
 #include "Player.hpp"
@@ -8,6 +9,8 @@
 #include "logging/logging.hpp"
 #include "math/Vector3.hpp"
 #include "options.hpp"
+#include <memory>
+#include <utility>
 
 // clang-format off
 Entity::Entity(std::shared_ptr<Dimension> dim,
@@ -90,7 +93,8 @@ void Entity::setRotation(const Vector2<uint8_t> &rot) { _rot = _rot; }
 
 void Entity::setRotation(uint8_t x, uint8_t y) { this->setRotation({x, y}); }
 
-void Entity::setRotation(float yaw, float pitch) {
+void Entity::setRotation(float yaw, float pitch)
+{
     while (yaw < 0) {
         yaw += 360;
     }
@@ -117,10 +121,7 @@ Vector2<uint8_t> &Entity::getRotation() { return _rot; }
 
 const Vector2<uint8_t> &Entity::getRotation() const { return _rot; }
 
-Vector2<float> Entity::getRotationDegree() const {
-    return Vector2<float>((float)_rot.x / (256.0 / 360.0), (float)_rot.z / (256.0 / 360.0));
-}
-
+Vector2<float> Entity::getRotationDegree() const { return Vector2<float>((float) _rot.x / (256.0 / 360.0), (float) _rot.z / (256.0 / 360.0)); }
 
 Vector3<double> &Entity::getLastPosition() { return _lastPos; }
 
@@ -137,21 +138,35 @@ void Entity::teleport(const Vector3<double> &pos)
     }
 }
 
-bool Entity::checkPickupItem()
+std::pair<bool, std::pair<int32_t, int8_t>> Entity::pickupItem()
 {
     auto collectorPosition = this->getPosition();
     Vector3<double> pickupBoxH = {1, 1, 1};
     Vector3<double> pickupBoxV = {0.5, 0.5, 0.5};
+    bool val = false;
+    std::pair<int32_t, int8_t> itemData(0, 0);
 
-    for (auto i : this->getDimension()->getEntities()) {
-        if (i->getType() == protocol::SpawnEntity::EntityType::Item && i->getId() != this->getId()) {
-            if (((collectorPosition.x - i->getPosition().x) <= pickupBoxH.x && (collectorPosition.x - i->getPosition().x) >= -pickupBoxH.x) &&
-                ((collectorPosition.y - i->getPosition().y) <= pickupBoxV.y && (collectorPosition.y - i->getPosition().y) >= -pickupBoxV.y) &&
-                ((collectorPosition.z - i->getPosition().z) <= pickupBoxH.z && (collectorPosition.z - i->getPosition().z) >= -pickupBoxH.z)) {
-                // LINFO("There is an item to pickup at {}, {}, {}", (collectorPosition.x - i->getPosition().x), (collectorPosition.y - i->getPosition().y),(collectorPosition.z - i->getPosition().z));
-                return true;
+    for (auto item : this->getDimension()->getEntities()) {
+        if (item->getType() == protocol::SpawnEntity::EntityType::Item && item->getId() != this->getId()) {
+            if (((collectorPosition.x - item->getPosition().x) <= pickupBoxH.x && (collectorPosition.x - item->getPosition().x) >= -pickupBoxH.x) &&
+                ((collectorPosition.y - item->getPosition().y) <= pickupBoxV.y && (collectorPosition.y - item->getPosition().y) >= -pickupBoxV.y) &&
+                ((collectorPosition.z - item->getPosition().z) <= pickupBoxH.z && (collectorPosition.z - item->getPosition().z) >= -pickupBoxH.z)) {
+                // LINFO("There is an item to pickup at {}, {}, {}", (collectorPosition.x - item->getPosition().x), (collectorPosition.y -
+                // item->getPosition().y),(collectorPosition.z - item->getPosition().z));
+                itemData.first = item->getId();
+                itemData.second = getPickupItemFromEntity(*item).second;
+                item->getDimension()->removeEntity(item->getId());
+                val = true;
             }
         }
     }
-    return false;
+    std::pair<bool, std::pair<int32_t, int8_t>> result (val, itemData);
+    return result;
+}
+
+std::pair<int32_t, int8_t> Entity::getPickupItemFromEntity(Entity &entity)
+{
+    auto item = entity.dynamicSharedFromThis<Item>();
+    auto val = std::make_pair(item->getItem().itemID, item->getItem().itemCount);
+    return val;
 }
