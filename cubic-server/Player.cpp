@@ -939,7 +939,10 @@ void Player::_onSetPlayerPosition(protocol::SetPlayerPosition &pck)
     // TODO: Validate the position
     onEvent(Server::getInstance()->getPluginManager(), onEntityMove, this, _pos, {pck.x, pck.feetY, pck.z});
     this->setPosition(pck.x, pck.feetY, pck.z, pck.onGround);
-    Entity::checkPickupItem();
+    if (Entity::pickupItem().first) {
+        //send packet pickupItem
+        sendPickupItem({Entity::pickupItem().second.first, this->getId(), Entity::pickupItem().second.second});
+    }
 }
 
 void Player::_onSetPlayerPositionAndRotation(protocol::SetPlayerPositionAndRotation &pck)
@@ -951,7 +954,10 @@ void Player::_onSetPlayerPositionAndRotation(protocol::SetPlayerPositionAndRotat
     onEvent(Server::getInstance()->getPluginManager(), onEntityRotate, this, {_rot.x, _rot.z, 0}, {(uint8_t) pck.yaw, (uint8_t) pck.pitch, 0});
     this->setPosition(pck.x, pck.feetY, pck.z, pck.onGround);
     this->setRotation(pck.yaw, pck.pitch);
-    Entity::checkPickupItem();
+    if (Entity::pickupItem().first) {
+        //send packet pickupItem
+        sendPickupItem({Entity::pickupItem().second.first, this->getId(), Entity::pickupItem().second.second});
+    }
 }
 
 void Player::_onSetPlayerRotation(protocol::SetPlayerRotation &pck)
