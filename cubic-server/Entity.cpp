@@ -137,34 +137,3 @@ void Entity::teleport(const Vector3<double> &pos)
         i->sendTeleportEntity(this->getId(), pos);
     }
 }
-
-std::pair<bool, std::pair<int32_t, int8_t>> Entity::pickupItem()
-{
-    auto collectorPosition = this->getPosition();
-    Vector3<double> pickupBoxH = {1, 1, 1};
-    Vector3<double> pickupBoxV = {0.5, 0.5, 0.5};
-    bool val = false;
-    std::pair<int32_t, int8_t> itemData(0, 0);
-
-    for (auto item : this->getDimension()->getEntities()) {
-        if (item->getType() == protocol::SpawnEntity::EntityType::Item && item->getId() != this->getId()) {
-            if (((collectorPosition.x - item->getPosition().x) <= pickupBoxH.x && (collectorPosition.x - item->getPosition().x) >= -pickupBoxH.x) &&
-                ((collectorPosition.y - item->getPosition().y) <= pickupBoxV.y && (collectorPosition.y - item->getPosition().y) >= -pickupBoxV.y) &&
-                ((collectorPosition.z - item->getPosition().z) <= pickupBoxH.z && (collectorPosition.z - item->getPosition().z) >= -pickupBoxH.z)) {
-                LINFO("There is an item to pickup at {}, {}, {}", (collectorPosition.x - item->getPosition().x), (collectorPosition.y - item->getPosition().y),(collectorPosition.z - item->getPosition().z));
-                itemData.first = item->getId();
-                itemData.second = getPickupItemFromEntity(*item).second;
-                val = true;
-            }
-        }
-    }
-    std::pair<bool, std::pair<int32_t, int8_t>> result (val, itemData);
-    return result;
-}
-
-std::pair<int32_t, int8_t> Entity::getPickupItemFromEntity(Entity &entity)
-{
-    auto item = entity.dynamicSharedFromThis<Item>();
-    auto val = std::make_pair(item->getItem().itemID, item->getItem().itemCount);
-    return val;
-}
