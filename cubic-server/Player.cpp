@@ -940,8 +940,9 @@ void Player::_onSetPlayerPosition(protocol::SetPlayerPosition &pck)
     onEvent(Server::getInstance()->getPluginManager(), onEntityMove, this, _pos, {pck.x, pck.feetY, pck.z});
     this->setPosition(pck.x, pck.feetY, pck.z, pck.onGround);
     if (Entity::pickupItem().first) {
-        //send packet pickupItem
         sendPickupItem({Entity::pickupItem().second.first, this->getId(), Entity::pickupItem().second.second});
+        this->getDimension()->removeEntity(Entity::pickupItem().second.first);
+        // this->_inventory->playerInventory().at(14) = protocol::Slot {true, 734, 1};
     }
 }
 
@@ -955,7 +956,6 @@ void Player::_onSetPlayerPositionAndRotation(protocol::SetPlayerPositionAndRotat
     this->setPosition(pck.x, pck.feetY, pck.z, pck.onGround);
     this->setRotation(pck.yaw, pck.pitch);
     if (Entity::pickupItem().first) {
-        //send packet pickupItem
         sendPickupItem({Entity::pickupItem().second.first, this->getId(), Entity::pickupItem().second.second});
     }
 }

@@ -151,11 +151,9 @@ std::pair<bool, std::pair<int32_t, int8_t>> Entity::pickupItem()
             if (((collectorPosition.x - item->getPosition().x) <= pickupBoxH.x && (collectorPosition.x - item->getPosition().x) >= -pickupBoxH.x) &&
                 ((collectorPosition.y - item->getPosition().y) <= pickupBoxV.y && (collectorPosition.y - item->getPosition().y) >= -pickupBoxV.y) &&
                 ((collectorPosition.z - item->getPosition().z) <= pickupBoxH.z && (collectorPosition.z - item->getPosition().z) >= -pickupBoxH.z)) {
-                // LINFO("There is an item to pickup at {}, {}, {}", (collectorPosition.x - item->getPosition().x), (collectorPosition.y -
-                // item->getPosition().y),(collectorPosition.z - item->getPosition().z));
+                LINFO("There is an item to pickup at {}, {}, {}", (collectorPosition.x - item->getPosition().x), (collectorPosition.y - item->getPosition().y),(collectorPosition.z - item->getPosition().z));
                 itemData.first = item->getId();
                 itemData.second = getPickupItemFromEntity(*item).second;
-                item->getDimension()->removeEntity(item->getId());
                 val = true;
             }
         }
