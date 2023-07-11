@@ -24,7 +24,7 @@ std::deque<Position> &BirchTree::getPosForTreeGeneration(void)
                 else {
                     if (block == Blocks::GrassBlock::toProtocol(Blocks::GrassBlock::Properties::Snowy::FALSE) || block == Blocks::Dirt::toProtocol()) {
                         if (_generator.getNoise(x + _chunk.getChunkPos().x * SECTION_WIDTH, y, z + _chunk.getChunkPos().z * SECTION_WIDTH).noise3D.density > 0 &&
-                            _generator.getNoise(x + _chunk.getChunkPos().x * SECTION_WIDTH, y, z + _chunk.getChunkPos().z * SECTION_WIDTH).noise2D.trees > 0.5 &&
+                            _generator.getNoise(x + _chunk.getChunkPos().x * SECTION_WIDTH, y, z + _chunk.getChunkPos().z * SECTION_WIDTH).noise2D.trees > 0.4 &&
                             _generator.getBiome(x + _chunk.getChunkPos().x * SECTION_WIDTH, y, z + _chunk.getChunkPos().z * SECTION_WIDTH)) {
                             _positions.emplace_back(x, y + 1, z);
                         }
@@ -87,7 +87,7 @@ const std::vector<generation::Generator::TreeBlock> BirchTree::getTree(const Pos
     for (int y = 0; y <= treeSize + 1; y++) {
         if (y <= treeSize)
             tree.emplace_back(generation::Generator::TreeBlock {{0, y, 0}, Blocks::BirchLog::toProtocol(Blocks::BirchLog::Properties::Axis::Y)});
-        if (y >= treeSize - 2 && y <= treeSize - 1) {
+        if (y == treeSize - 2) {
             for (int x = -2; x <= 2; x++) {
                 for (int z = -2; z <= 2; z++) {
                     if (x == 0 && z == 0)
@@ -100,7 +100,35 @@ const std::vector<generation::Generator::TreeBlock> BirchTree::getTree(const Pos
                 }
             }
         }
-        if (y >= treeSize) {
+        if (y == treeSize - 1) {
+            for (int x = -2; x <= 2; x++) {
+                for (int z = -2; z <= 2; z++) {
+                    if (x == 0 && z == 0 || x == -2 && z == -2 || x == 2 && z == 2 || x == -2 && z == 2 || x == 2 && z == -2)
+                        continue;
+                    tree.emplace_back(generation::Generator::TreeBlock {
+                        {x, y, z},
+                        Blocks::BirchLeaves::toProtocol(
+                            Blocks::BirchLeaves::Properties::Distance::ONE, Blocks::BirchLeaves::Properties::Persistent::FALSE, Blocks::BirchLeaves::Properties::Waterlogged::FALSE
+                        )});
+                }
+            }
+        }
+        if (y == treeSize) {
+            for (int x = -1; x <= 1; x++) {
+                for (int z = -1; z <= 1; z++) {
+                    if (x == 0 && z == 0 && y == treeSize)
+                        continue;
+                    // if (x * x == z * z && x != 0 && z != 0)
+                    //     continue;
+                    tree.emplace_back(generation::Generator::TreeBlock {
+                        {x, y, z},
+                        Blocks::BirchLeaves::toProtocol(
+                            Blocks::BirchLeaves::Properties::Distance::ONE, Blocks::BirchLeaves::Properties::Persistent::FALSE, Blocks::BirchLeaves::Properties::Waterlogged::FALSE
+                        )});
+                }
+            }
+        }
+        if (y == treeSize + 1) {
             for (int x = -1; x <= 1; x++) {
                 for (int z = -1; z <= 1; z++) {
                     if (x == 0 && z == 0 && y == treeSize)
