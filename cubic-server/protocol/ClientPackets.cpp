@@ -845,6 +845,7 @@ std::unique_ptr<std::vector<uint8_t>> protocol::createStopSound(const StopSound 
     finalize(*packet, payload, ClientPacketID::StopSound);
     return packet;
 }
+
 std::unique_ptr<std::vector<uint8_t>> protocol::createSystemChatMessage(const SystemChatMessage &in)
 {
     std::vector<uint8_t> payload;
@@ -856,21 +857,6 @@ std::unique_ptr<std::vector<uint8_t>> protocol::createSystemChatMessage(const Sy
     // clang-format on
     auto packet = std::make_unique<std::vector<uint8_t>>();
     finalize(*packet, payload, ClientPacketID::SystemChatMessage);
-    return packet;
-}
-
-std::unique_ptr<std::vector<uint8_t>> protocol::createPickupItem(const PickupItem &in)
-{
-    std::vector<uint8_t> payload;
-    // clang-format off
-    serialize(payload,
-        in.collectedEntityId, addVarInt,
-        in.collectorEntityId, addVarInt,
-        in.pickupItemCount, addVarInt
-    );
-    // clang-format on
-    auto packet = std::make_unique<std::vector<uint8_t>>();
-    finalize(*packet, payload, ClientPacketID::PickupItem);
     return packet;
 }
 

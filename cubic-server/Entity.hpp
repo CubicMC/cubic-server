@@ -8,7 +8,6 @@
 #include "types.hpp"
 #include "utility/SharedFromThis.hpp"
 #include <memory>
-#include <utility>
 
 class World;
 class WorldGroup;
