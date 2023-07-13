@@ -11,6 +11,8 @@
 #include "world_storage/ChunkColumn.hpp"
 #include "world_storage/Section.hpp"
 
+#define COUNTER 1
+
 using namespace generation::trees;
 
 std::deque<Position> &JungleTree::getPosForTreeGeneration(void)
@@ -83,7 +85,7 @@ void JungleTree::generateTree(UNUSED std::vector<world_storage::ChunkColumn *> n
 
 const std::vector<generation::Generator::TreeBlock> JungleTree::getTree(const Position &pos) const
 {
-    int counter = 0;
+    int counter = 1;
     std::vector<generation::Generator::TreeBlock> tree;
     const auto treeSize = _generator.getTreeSize(pos, _treeSize);
     for (int y = 0; y <= treeSize + 1; y++) {
@@ -106,8 +108,13 @@ const std::vector<generation::Generator::TreeBlock> JungleTree::getTree(const Po
         if (y == treeSize) {
             for (int x = -1; x <= 1; x++) {
                 for (int z = -1; z <= 1; z++) {
-                    if (x == 0 && z == 0 || (rand() % 4 == 0 && counter < MAX_CORNER_LEAVES_LAYER_TWO && (x == -1 && z == -1 || x == 1 && z == 1 || x == -1 && z == 1 || x == 1 && z == -1))) {
+                    int randomizer = rand() % 4 + 1;
+                    if (x == 0 && z == 0)
+                        continue;
+                    if (randomizer == 1 && counter < MAX_CORNER_LEAVES_LAYER_TWO && (x == -1 && z == -1 || x == 1 && z == 1 || x == -1 && z == 1 || x == 1 && z == -1)) {
+                        LINFO("RANDOMIZER : {}", randomizer);
                         counter += 1;
+                        LINFO("COUNTER : {}", counter);
                         continue;
                     }
                     tree.emplace_back(generation::Generator::TreeBlock {
@@ -119,7 +126,7 @@ const std::vector<generation::Generator::TreeBlock> JungleTree::getTree(const Po
                 }
             }
         }
-        if (y == treeSize + 1) {
+        if (y == treeSize - 4) {
             for (int x = -1; x <= 1; x++) {
                 for (int z = -1; z <= 1; z++) {
                     if (x * x == z * z && x != 0 && z != 0)
