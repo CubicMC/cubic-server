@@ -106,7 +106,7 @@ const std::vector<generation::Generator::TreeBlock> JungleTree::getTree(const Po
         if (y == treeSize) {
             for (int x = -1; x <= 1; x++) {
                 for (int z = -1; z <= 1; z++) {
-                    if (x == 0 && z == 0 || (rand() % 4 == 0 && counter < 3 && (x == -1 && z == -1 || x == 1 && z == 1 || x == -1 && z == 1 || x == 1 && z == -1))) {
+                    if (x == 0 && z == 0 || (rand() % 4 == 0 && counter < MAX_CORNER_LEAVES_LAYER_TWO && (x == -1 && z == -1 || x == 1 && z == 1 || x == -1 && z == 1 || x == 1 && z == -1))) {
                         counter += 1;
                         continue;
                     }
