@@ -11,8 +11,6 @@
 #include "world_storage/ChunkColumn.hpp"
 #include "world_storage/Section.hpp"
 
-#define COUNTER 1
-
 using namespace generation::trees;
 
 std::deque<Position> &JungleTree::getPosForTreeGeneration(void)
