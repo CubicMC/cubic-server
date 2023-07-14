@@ -11,8 +11,6 @@
 #include "world_storage/ChunkColumn.hpp"
 #include "world_storage/Section.hpp"
 
-#define COUNTER 1
-
 using namespace generation::trees;
 
 std::deque<Position> &JungleTree::getPosForTreeGeneration(void)
@@ -126,7 +124,7 @@ const std::vector<generation::Generator::TreeBlock> JungleTree::getTree(const Po
                 }
             }
         }
-        if (y == treeSize - 4) {
+        if (y == treeSize + 1) {
             for (int x = -1; x <= 1; x++) {
                 for (int z = -1; z <= 1; z++) {
                     if (x * x == z * z && x != 0 && z != 0)
