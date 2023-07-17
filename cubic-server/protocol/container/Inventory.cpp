@@ -80,25 +80,110 @@ const protocol::Slot &Inventory::at(int16_t index) const
         throw std::out_of_range("Index out of range");
 }
 
-void Inventory::onClick(std::shared_ptr<Player> player,  int16_t index, uint8_t buttonId, uint8_t mode, const std::vector<protocol::ClickContainer::SlotWithIndex> &updates)
+void Inventory::insert(protocol::Slot &slot)
+{
+    if (!slot.present)
+        return;
+
+    int8_t toInsert = slot.itemCount;
+
+    // Insert in existing slot
+    for (uint64_t i = 0; i < _hotbar.size(); i++) {
+        if (_hotbar.at(i) == slot && _hotbar.at(i).itemCount < 64) {
+            if (_hotbar.at(i).itemCount + toInsert > 64) {
+                toInsert -= 64 - _hotbar.at(i).itemCount;
+                _hotbar.at(i).itemCount = 64;
+            } else {
+                _hotbar.at(i).itemCount += toInsert;
+                return;
+            }
+        }
+    }
+
+    for (uint64_t i = 0; i < _playerInventory.size(); i++) {
+        if (_playerInventory.at(i) == slot && _playerInventory.at(i).itemCount < 64) {
+            if (_playerInventory.at(i).itemCount + toInsert > 64) {
+                toInsert -= 64 - _playerInventory.at(i).itemCount;
+                _playerInventory.at(i).itemCount = 64;
+            } else {
+                _playerInventory.at(i).itemCount += toInsert;
+                return;
+            }
+        }
+    }
+
+    // Insert in empty slot
+    for (uint64_t i = 0; i < _hotbar.size(); i++) {
+        if (!_hotbar.at(i).present) {
+            _hotbar.at(i) = slot;
+            return;
+        }
+    }
+
+    for (uint64_t i = 0; i < _playerInventory.size(); i++) {
+        if (!_playerInventory.at(i).present) {
+            _playerInventory.at(i) = slot;
+            return;
+        }
+    }
+}
+
+bool Inventory::canInsert(const protocol::Slot &slot)
+{
+    if (!slot.present)
+        return false;
+
+    int8_t toInsert = slot.itemCount;
+
+    for (uint64_t i = 0; i < _hotbar.size(); i++) {
+        if (!_hotbar.at(i).present)
+            return true;
+        if (_hotbar.at(i) == slot && _hotbar.at(i).itemCount < 64) {
+            if (_hotbar.at(i).itemCount + toInsert > 64) {
+                toInsert -= 64 - _hotbar.at(i).itemCount;
+                _hotbar.at(i).itemCount = 64;
+            } else {
+                _hotbar.at(i).itemCount += toInsert;
+                return true;
+            }
+        }
+    }
+
+    for (uint64_t i = 0; i < _playerInventory.size(); i++) {
+        if (!_playerInventory.at(i).present)
+            return true;
+        if (_playerInventory.at(i) == slot && _playerInventory.at(i).itemCount < 64) {
+            if (_playerInventory.at(i).itemCount + toInsert > 64) {
+                toInsert -= 64 - _playerInventory.at(i).itemCount;
+                _playerInventory.at(i).itemCount = 64;
+            } else {
+                _playerInventory.at(i).itemCount += toInsert;
+                return true;
+            }
+        }
+    }
+    return false;
+}
+
+void Inventory::onClick(std::shared_ptr<Player> player, int16_t index, uint8_t buttonId, uint8_t mode, const std::vector<protocol::ClickContainer::SlotWithIndex> &updates)
 {
     switch (mode) {
-        case ClickMode::ShiftClick:
-            if (index >= 9 && index < 36)
-                swapContainer(at(index), _hotbar);
-            else
-                swapContainer(at(index), _playerInventory);
-            break;
+    case ClickMode::ShiftClick:
+        if (index >= 9 && index < 36)
+            swapContainer(at(index), _hotbar);
+        else
+            swapContainer(at(index), _playerInventory);
+        break;
 
-        case ClickMode::Keys:
-            if (buttonId == 40)
-                std::swap(_offhand, at(index));
-            else
-                std::swap(_hotbar.at(buttonId), at(index));
-            break;
+    case ClickMode::Keys:
+        if (buttonId == 40)
+            std::swap(_offhand, at(index));
+        else
+            std::swap(_hotbar.at(buttonId), at(index));
+        break;
 
-        default:
-            Container::onClick(player, index, buttonId, mode, updates);
-            break;
+    default:
+        Container::onClick(player, index, buttonId, mode, updates);
+        break;
     }
 }
