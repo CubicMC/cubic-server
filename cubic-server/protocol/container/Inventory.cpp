@@ -94,6 +94,7 @@ void Inventory::insert(protocol::Slot &slot)
             } else {
                 _hotbar.at(i).itemCount += slot.itemCount;
                 slot.itemCount = 0;
+                slot.present = false;
                 return;
             }
         }
@@ -107,6 +108,7 @@ void Inventory::insert(protocol::Slot &slot)
             } else {
                 _playerInventory.at(i).itemCount += slot.itemCount;
                 slot.itemCount = 0;
+                slot.present = false;
                 return;
             }
         }
@@ -117,6 +119,7 @@ void Inventory::insert(protocol::Slot &slot)
         if (!_hotbar.at(i).present) {
             _hotbar.at(i) = slot;
             slot.itemCount = 0;
+            slot.present = false;
             return;
         }
     }
@@ -125,6 +128,7 @@ void Inventory::insert(protocol::Slot &slot)
         if (!_playerInventory.at(i).present) {
             _playerInventory.at(i) = slot;
             slot.itemCount = 0;
+            slot.present = false;
             return;
         }
     }
