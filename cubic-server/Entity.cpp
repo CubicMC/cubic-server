@@ -108,19 +108,11 @@ void Entity::setRotation(float yaw, float pitch)
     this->_rot.z = pitch * (256.0 / 360.0);
 }
 
-Vector3<double> &Entity::getPosition() { return _pos; }
-Vector2<uint8_t> &Entity::getRotation() { return _rot; }
-Vector3<double> &Entity::getLastPosition() { return _lastPos; }
-Vector2<uint8_t> &Entity::getLastRotation() { return _lastRot; }
+std::shared_ptr<WorldGroup> Entity::getWorldGroup() { return _dim->getWorld()->getWorldGroup(); }
+std::shared_ptr<World> Entity::getWorld() { return _dim->getWorld(); }
 
-std::shared_ptr<WorldGroup> Entity::getWorldGroup() const { return _dim->getWorld()->getWorldGroup(); }
-std::shared_ptr<World> Entity::getWorld() const { return _dim->getWorld(); }
-std::shared_ptr<Dimension> Entity::getDimension() const { return _dim; }
-int32_t Entity::getId() const { return _id; }
-const u128 &Entity::getUuid() const { return _uuid; }
-const Vector3<double> &Entity::getPosition() const { return _pos; }
-const Vector2<uint8_t> &Entity::getRotation() const { return _rot; }
-Vector2<float> Entity::getRotationDegree() const { return Vector2<float>((float) _rot.x / (256.0 / 360.0), (float) _rot.z / (256.0 / 360.0)); }
+std::shared_ptr<const WorldGroup> Entity::getWorldGroup() const { return _dim->getWorld()->getWorldGroup(); }
+std::shared_ptr<const World> Entity::getWorld() const { return _dim->getWorld(); }
 
 void Entity::teleport(const Vector3<double> &pos)
 {

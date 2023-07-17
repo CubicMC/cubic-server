@@ -374,7 +374,6 @@ inline std::string getEntityTypeName(EntityType type)
         return "minecraft:fishing_bobber";
     default:
         return "minecraft:unknown";
-        break;
     }
 }
 

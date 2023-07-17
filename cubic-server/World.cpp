@@ -57,30 +57,8 @@ bool World::isInitialized() const
     return true;
 }
 
-std::shared_ptr<WorldGroup> World::getWorldGroup() { return _worldGroup; }
-
-const std::shared_ptr<WorldGroup> World::getWorldGroup() const { return _worldGroup; }
-
-std::shared_ptr<Chat> World::getChat() { return _chat; }
-
-const std::shared_ptr<Chat> World::getChat() const { return _chat; }
-
-std::shared_ptr<Dimension> World::getDimension(const std::string_view &name) { return this->_dimensions.at(name); }
-
-const std::shared_ptr<Dimension> World::getDimension(const std::string_view &name) const { return this->_dimensions.at(name); }
-
-std::unordered_map<std::string_view, std::shared_ptr<Dimension>> &World::getDimensions() { return _dimensions; }
-
-const std::unordered_map<std::string_view, std::shared_ptr<Dimension>> &World::getDimensions() const { return _dimensions; }
-
-const world_storage::LevelData &World::getLevelData() const { return _levelData; }
-
-void World::setLevelData(const world_storage::LevelData &value) { _levelData = value; }
-
 void World::updateTime()
 {
-    std::shared_ptr<std::vector<uint8_t>> data;
-
     _age += 20;
     _time += 20;
     if (_time > 24000)
@@ -186,16 +164,6 @@ void World::sendPlayerInfoRemovePlayer(const Player *current)
     }
     LDEBUG("Sent player info to {}", current->getUsername());
 }
-
-thread_pool::PriorityThreadPool &World::getGenerationPool() { return _generationPool; }
-
-Seed World::getSeed() const { return _seed; }
-
-uint8_t World::getRenderDistance() const { return _renderDistance; }
-
-long World::getTime() const { return _time; }
-
-long World::getAge() const { return _age; }
 
 int World::addTime(int time)
 {

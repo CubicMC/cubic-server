@@ -67,7 +67,7 @@ void PluginManager::loadPlugin(std::string filepath)
     }
 }
 
-void PluginManager::load(void)
+void PluginManager::load()
 {
     LINFO("Loading plugins from {}...", this->_folder);
     if (!std::filesystem::is_directory(this->_folder))
@@ -84,7 +84,7 @@ void PluginManager::load(void)
     onEvent((*this), initialize);
 }
 
-void PluginManager::unload(void)
+void PluginManager::unload()
 {
     for (const auto &[_, plugin] : this->_plugins)
         dlclose(plugin);
@@ -92,10 +92,8 @@ void PluginManager::unload(void)
     this->_events.clear();
 }
 
-void PluginManager::reload(void)
+void PluginManager::reload()
 {
     this->unload();
     this->load();
 }
-
-std::shared_ptr<PluginInterface> PluginManager::getInterface() const { return this->_interface; }

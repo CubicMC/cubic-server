@@ -53,17 +53,17 @@ class Message {
 public:
     Message(
         const std::string &message = "", const chat::message::Style &style = {}, const chat::message::Options &options = {},
-        const std::shared_ptr<chat::message::event::OnClick> &clickEvent = nullptr, const std::shared_ptr<chat::message::event::OnHover> &hoverEvent = nullptr
+        const std::shared_ptr<const chat::message::event::OnClick> &clickEvent = nullptr, const std::shared_ptr<const chat::message::event::OnHover> &hoverEvent = nullptr
     );
 
     Message(
         const char message[], const chat::message::Style &style = {}, const chat::message::Options &options = {},
-        const std::shared_ptr<chat::message::event::OnClick> &clickEvent = nullptr, const std::shared_ptr<chat::message::event::OnHover> &hoverEvent = nullptr
+        const std::shared_ptr<const chat::message::event::OnClick> &clickEvent = nullptr, const std::shared_ptr<const chat::message::event::OnHover> &hoverEvent = nullptr
     );
     ~Message() = default;
 
-    const std::shared_ptr<chat::message::event::OnHover> &getHoverEvent() const;
-    const std::shared_ptr<chat::message::event::OnClick> &getClickEvent() const;
+    const std::shared_ptr<const chat::message::event::OnClick> &getClickEvent() const;
+    const std::shared_ptr<const chat::message::event::OnHover> &getHoverEvent() const;
 
     const std::string &getMessage() const;
     const chat::message::Style &getStyle() const;
@@ -104,14 +104,14 @@ public:
      *
      * @param event
      */
-    void hoverEvent(const std::shared_ptr<chat::message::event::OnHover> &event);
+    void hoverEvent(const std::shared_ptr<const chat::message::event::OnHover> &event);
 
     /**
      * @brief Set a new click event
      *
      * @param event
      */
-    void clickEvent(const std::shared_ptr<chat::message::event::OnClick> &event);
+    void clickEvent(const std::shared_ptr<const chat::message::event::OnClick> &event);
 
     /**
      * @brief Serialize the message to a json string
@@ -180,8 +180,8 @@ private:
     chat::message::Style _style;
     chat::message::Options _options;
     std::vector<Message> _extra;
-    std::shared_ptr<chat::message::event::OnClick> _clickEvent;
-    std::shared_ptr<chat::message::event::OnHover> _hoverEvent;
+    std::shared_ptr<const chat::message::event::OnClick> _clickEvent;
+    std::shared_ptr<const chat::message::event::OnHover> _hoverEvent;
 };
 } // namespace chat
 

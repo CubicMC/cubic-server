@@ -16,7 +16,7 @@ namespace chat::message::event {
 class EntityHover : public OnHover {
 public:
     EntityHover() = default;
-    EntityHover(Entity &entity):
+    EntityHover(const Entity &entity):
         _entity(entity) {};
 
     ~EntityHover() override = default;
@@ -26,7 +26,7 @@ public:
     static std::shared_ptr<EntityHover> fromJson(const nlohmann::json &json);
 
 private:
-    std::optional<std::reference_wrapper<Entity>> _entity;
+    std::optional<std::reference_wrapper<const Entity>> _entity;
 };
 } // namespace chat::message
 

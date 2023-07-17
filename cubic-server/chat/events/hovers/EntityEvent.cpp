@@ -1,8 +1,8 @@
 #include "EntityEvent.hpp"
 #include "Entity.hpp"
 #include "EntityType.hpp"
-#include "Server.hpp"
 #include "Player.hpp"
+#include "Server.hpp"
 #include <memory>
 
 std::shared_ptr<chat::message::event::EntityHover> chat::message::event::EntityHover::fromJson(UNUSED const nlohmann::json &json)
@@ -26,7 +26,7 @@ nlohmann::json chat::message::event::EntityHover::toJson() const
     response["contents"]["id"] = _entity->get().getUuid().toString();
     if (_entity.has_value()) {
         try {
-            auto &player = dynamic_cast<Player &>(_entity->get());
+            const auto &player = dynamic_cast<const Player &>(_entity->get());
             response["contents"]["name"] = player.getUsername();
         } catch (std::bad_cast &e) {}
     }

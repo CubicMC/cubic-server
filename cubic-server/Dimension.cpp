@@ -48,18 +48,6 @@ void Dimension::initialize()
     this->_processingThread = std::thread(&Dimension::_run, this);
 }
 
-bool Dimension::isInitialized() const { return _isInitialized; }
-
-std::shared_ptr<World> Dimension::getWorld() { return _world; }
-
-const std::shared_ptr<World> Dimension::getWorld() const { return _world; }
-
-std::counting_semaphore<1000> &Dimension::getDimensionLock() { return _dimensionLock; }
-
-std::vector<std::shared_ptr<Entity>> &Dimension::getEntities() { return _entities; }
-
-const std::vector<std::shared_ptr<Entity>> &Dimension::getEntities() const { return _entities; }
-
 std::shared_ptr<Entity> Dimension::getEntityByID(int32_t id)
 {
     std::lock_guard _(_entitiesMutex);
@@ -69,7 +57,7 @@ std::shared_ptr<Entity> Dimension::getEntityByID(int32_t id)
     throw std::runtime_error("Entity not found");
 }
 
-const std::shared_ptr<Entity> Dimension::getEntityByID(int32_t id) const
+std::shared_ptr<const Entity> Dimension::getEntityByID(int32_t id) const
 {
     std::lock_guard _(_entitiesMutex);
     for (auto &entity : _entities)
@@ -128,19 +116,15 @@ void Dimension::addPlayer(std::shared_ptr<Player> entity)
     _players.emplace_back(entity);
 }
 
-const world_storage::Level &Dimension::getLevel() const { return _level; }
-
-world_storage::Level &Dimension::getLevel() { return _level; }
-
 void Dimension::generateChunk(Position2D pos, world_storage::GenerationState goalState) { generateChunk(pos.x, pos.z, goalState); }
 
 void Dimension::generateChunk(UNUSED int x, UNUSED int z, UNUSED world_storage::GenerationState goalState) { }
 
-void Dimension::loadOrGenerateChunk(int x, int z, std::shared_ptr<Player> player)
+void Dimension::loadOrGenerateChunk(int x, int z, const std::shared_ptr<Player> player)
 {
     std::lock_guard<std::mutex> _(_loadingChunksMutex);
     if (this->_loadingChunks.contains({x, z})) {
-        if (std::find_if(this->_loadingChunks[{x, z}].players.begin(), this->_loadingChunks[{x, z}].players.end(), [player](const std::weak_ptr<Player> current_weak_player) {
+        if (std::find_if(this->_loadingChunks[{x, z}].players.begin(), this->_loadingChunks[{x, z}].players.end(), [player](const std::weak_ptr<const Player> current_weak_player) {
                 if (auto current_player = current_weak_player.lock())
                     return current_player->getId() == player->getId();
                 return false;
@@ -191,13 +175,9 @@ void Dimension::_run()
     }
 }
 
-std::vector<std::shared_ptr<Player>> &Dimension::getPlayers() { return _players; }
-
-const std::vector<std::shared_ptr<Player>> &Dimension::getPlayers() const { return _players; }
-
 bool Dimension::hasChunkLoaded(int x, int z) const { return this->_level.hasChunkColumn(x, z); }
 
-void Dimension::removePlayerFromLoadingChunk(const Position2D &pos, std::shared_ptr<Player> player)
+void Dimension::removePlayerFromLoadingChunk(const Position2D &pos, const std::shared_ptr<const Player> player)
 {
     std::lock_guard<std::mutex> _(_loadingChunksMutex);
     if (!this->_loadingChunks.contains(pos))
@@ -206,7 +186,7 @@ void Dimension::removePlayerFromLoadingChunk(const Position2D &pos, std::shared_
     this->_loadingChunks[pos].players.erase(
         std::remove_if(
             this->_loadingChunks[pos].players.begin(), this->_loadingChunks[pos].players.end(),
-            [player](const std::weak_ptr<Player> current_weak_player) {
+            [player](const std::weak_ptr<const Player> current_weak_player) {
                 if (auto current_player = current_weak_player.lock())
                     return current_player->getId() == player->getId();
                 return true;
@@ -252,7 +232,7 @@ void Dimension::spawnPlayer(Player &current)
     }
 }
 
-void Dimension::spawnEntity(std::shared_ptr<Entity> current)
+void Dimension::spawnEntity(const std::shared_ptr<const Entity> current)
 {
     std::lock_guard _(_entitiesMutex);
     for (auto player : _players) {

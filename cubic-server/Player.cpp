@@ -238,7 +238,7 @@ void Player::closeContainer(uint8_t id)
         return;
     }
 
-    auto it = std::find_if(_containers.begin(), _containers.end(), [id](const std::shared_ptr<protocol::container::Container> &container) {
+    auto it = std::find_if(_containers.begin(), _containers.end(), [id](const std::shared_ptr<const protocol::container::Container> &container) {
         return container->id() == id;
     });
     if (it == _containers.end())

@@ -184,19 +184,19 @@ struct SetContainerContent {
 std::unique_ptr<std::vector<uint8_t>> createSetContainerContent(const SetContainerContent &);
 
 struct SetContainerSlot {
-    SetContainerSlot(const std::shared_ptr<container::Container> &container, int8_t containerId, int16_t slot):
+    SetContainerSlot(const std::shared_ptr<const container::Container> &container, int8_t containerId, int16_t slot):
         container(container),
         containerId(containerId),
         slot(slot)
     {
     }
-    SetContainerSlot(const std::shared_ptr<container::Container> &container, int16_t slot):
+    SetContainerSlot(const std::shared_ptr<const container::Container> &container, int16_t slot):
         container(container),
         containerId(container->id()),
         slot(slot)
     {
     }
-    const std::shared_ptr<container::Container> container;
+    const std::shared_ptr<const container::Container> container;
     int8_t containerId;
     int16_t slot;
 };

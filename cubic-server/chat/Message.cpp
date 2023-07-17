@@ -1,12 +1,12 @@
 #include "Message.hpp"
 
-#include "ChatRegistry.hpp"
+// #include "ChatRegistry.hpp"
 #include <nlohmann/json.hpp>
 #include <optional>
 
 chat::Message::Message(
-    const std::string &message, const chat::message::Style &style, const chat::message::Options &options, const std::shared_ptr<chat::message::event::OnClick> &clickEvent,
-    const std::shared_ptr<chat::message::event::OnHover> &hoverEvent
+    const std::string &message, const chat::message::Style &style, const chat::message::Options &options, const std::shared_ptr<const chat::message::event::OnClick> &clickEvent,
+    const std::shared_ptr<const chat::message::event::OnHover> &hoverEvent
 ):
     _message(message),
     _style(style),
@@ -17,8 +17,8 @@ chat::Message::Message(
 }
 
 chat::Message::Message(
-    const char message[], const chat::message::Style &style, const chat::message::Options &options, const std::shared_ptr<chat::message::event::OnClick> &clickEvent,
-    const std::shared_ptr<chat::message::event::OnHover> &hoverEvent
+    const char message[], const chat::message::Style &style, const chat::message::Options &options, const std::shared_ptr<const chat::message::event::OnClick> &clickEvent,
+    const std::shared_ptr<const chat::message::event::OnHover> &hoverEvent
 ):
     _message(message),
     _style(style),
@@ -130,16 +130,16 @@ chat::Message chat::Message::fromJson(const nlohmann::json &json)
 }
 
 // Getters
-const std::shared_ptr<chat::message::event::OnClick> &chat::Message::getClickEvent() const { return _clickEvent; }
-const std::shared_ptr<chat::message::event::OnHover> &chat::Message::getHoverEvent() const { return _hoverEvent; }
+const std::shared_ptr<const chat::message::event::OnClick> &chat::Message::getClickEvent() const { return _clickEvent; }
+const std::shared_ptr<const chat::message::event::OnHover> &chat::Message::getHoverEvent() const { return _hoverEvent; }
 const std::string &chat::Message::getMessage() const { return this->_message; }
 const chat::message::Style &chat::Message::getStyle() const { return this->_style; }
 const chat::message::Options &chat::Message::getOptions() const { return this->_options; }
 const std::vector<chat::Message> &chat::Message::getExtra() const { return _extra; }
 
 // Getters (mutable)
-void chat::Message::clickEvent(const std::shared_ptr<chat::message::event::OnClick> &event) { _clickEvent = event; }
-void chat::Message::hoverEvent(const std::shared_ptr<chat::message::event::OnHover> &event) { _hoverEvent = event; }
+void chat::Message::clickEvent(const std::shared_ptr<const chat::message::event::OnClick> &event) { _clickEvent = event; }
+void chat::Message::hoverEvent(const std::shared_ptr<const chat::message::event::OnHover> &event) { _hoverEvent = event; }
 std::string &chat::Message::message() { return this->_message; }
 chat::message::Style &chat::Message::style() { return this->_style; }
 chat::message::Options &chat::Message::options() { return this->_options; }
