@@ -8,29 +8,6 @@
 
 using Container = protocol::container::Container;
 
-bool Container::canInsert(const protocol::Slot &slot)
-{
-    if (!slot.present)
-        return false;
-
-    int8_t toInsert = slot.itemCount;
-
-    for (uint64_t i = 0; i < size(); i++) {
-        if (!at(i).present)
-            return true;
-        if (at(i) == slot && at(i).itemCount < 64) {
-            if (at(i).itemCount + toInsert > 64) {
-                toInsert -= 64 - at(i).itemCount;
-                at(i).itemCount = 64;
-            } else {
-                at(i).itemCount += toInsert;
-                return true;
-            }
-        }
-    }
-    return false;
-}
-
 void Container::close(std::shared_ptr<Player> player)
 {
     if (_cursor.present) {

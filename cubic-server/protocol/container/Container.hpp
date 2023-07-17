@@ -52,8 +52,6 @@ public:
      */
     virtual void insert(protocol::Slot &slot) = 0;
 
-    NODISCARD virtual bool canInsert(const protocol::Slot &slot);
-
     protocol::Slot &operator[](int16_t index) { return at(index); }
     const protocol::Slot &operator[](int16_t index) const { return at(index); }
     constexpr protocol::Slot &cursor() { return _cursor; }
