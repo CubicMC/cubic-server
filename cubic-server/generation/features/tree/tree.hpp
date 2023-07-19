@@ -23,6 +23,12 @@ public:
     virtual std::deque<Position> &filterTreeGrowSpace() = 0;
     virtual void generateTree(std::vector<world_storage::ChunkColumn *>) = 0;
 
+    const void buildTree(const int treeSize, std::vector<generation::Generator::TreeBlock> &tree, const BlockId &leaf, const BlockId &log) const;
+    const void topLayer(std::vector<generation::Generator::TreeBlock> &tree, int y, const BlockId &leaf) const;
+    const void secondLayer(std::vector<generation::Generator::TreeBlock> &tree, int y, const BlockId &leaf) const;
+    const void lowerLayers(std::vector<generation::Generator::TreeBlock> &tree, int y, const BlockId &leaf) const;
+
+
 protected:
     virtual const std::vector<generation::Generator::TreeBlock> getTree(const Position &pos) const = 0;
     virtual const std::vector<generation::Generator::TreeBlock> getTree(Generator::positionType x, Generator::positionType y, Generator::positionType z) const = 0;

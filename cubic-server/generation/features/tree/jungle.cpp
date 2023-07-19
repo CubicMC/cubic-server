@@ -83,62 +83,15 @@ void JungleTree::generateTree(UNUSED std::vector<world_storage::ChunkColumn *> n
 
 const std::vector<generation::Generator::TreeBlock> JungleTree::getTree(const Position &pos) const
 {
-    int counter = 1;
     std::vector<generation::Generator::TreeBlock> tree;
     const auto treeSize = _generator.getTreeSize(pos, _treeSize);
-    for (int y = 0; y <= treeSize + 1; y++) {
-        if (y <= treeSize)
-            tree.emplace_back(generation::Generator::TreeBlock {{0, y, 0}, Blocks::JungleLog::toProtocol(Blocks::JungleLog::Properties::Axis::Y)});
-        if (y == treeSize - 1 || y == treeSize - 2) {
-            for (int x = -2; x <= 2; x++) {
-                for (int z = -2; z <= 2; z++) {
-                    if (x == 0 && z == 0 || (rand() % 4 == 0 && (x == -2 && z == -2 || x == 2 && z == 2 || x == -2 && z == 2 || x == 2 && z == -2)))
-                        continue;
-                    tree.emplace_back(generation::Generator::TreeBlock {
-                        {x, y, z},
-                        Blocks::JungleLeaves::toProtocol(
-                            Blocks::JungleLeaves::Properties::Distance::ONE, Blocks::JungleLeaves::Properties::Persistent::FALSE,
-                            Blocks::JungleLeaves::Properties::Waterlogged::FALSE
-                        )});
-                }
-            }
-        }
-        if (y == treeSize) {
-            for (int x = -1; x <= 1; x++) {
-                for (int z = -1; z <= 1; z++) {
-                    int randomizer = rand() % 4 + 1;
-                    if (x == 0 && z == 0)
-                        continue;
-                    if (randomizer == 1 && counter < MAX_CORNER_LEAVES_LAYER_TWO && (x == -1 && z == -1 || x == 1 && z == 1 || x == -1 && z == 1 || x == 1 && z == -1)) {
-                        LINFO("RANDOMIZER : {}", randomizer);
-                        counter += 1;
-                        LINFO("COUNTER : {}", counter);
-                        continue;
-                    }
-                    tree.emplace_back(generation::Generator::TreeBlock {
-                        {x, y, z},
-                        Blocks::JungleLeaves::toProtocol(
-                            Blocks::JungleLeaves::Properties::Distance::ONE, Blocks::JungleLeaves::Properties::Persistent::FALSE,
-                            Blocks::JungleLeaves::Properties::Waterlogged::FALSE
-                        )});
-                }
-            }
-        }
-        if (y == treeSize + 1) {
-            for (int x = -1; x <= 1; x++) {
-                for (int z = -1; z <= 1; z++) {
-                    if (x * x == z * z && x != 0 && z != 0)
-                        continue;
-                    tree.emplace_back(generation::Generator::TreeBlock {
-                        {x, y, z},
-                        Blocks::JungleLeaves::toProtocol(
-                            Blocks::JungleLeaves::Properties::Distance::ONE, Blocks::JungleLeaves::Properties::Persistent::FALSE,
-                            Blocks::JungleLeaves::Properties::Waterlogged::FALSE
-                        )});
-                }
-            }
-        }
-    }
+    Tree::buildTree(
+        treeSize, tree,
+        Blocks::JungleLeaves::toProtocol(
+            Blocks::JungleLeaves::Properties::Distance::ONE, Blocks::JungleLeaves::Properties::Persistent::FALSE, Blocks::JungleLeaves::Properties::Waterlogged::FALSE
+        ),
+        Blocks::JungleLog::toProtocol(Blocks::JungleLog::Properties::Axis::Y)
+    );
     return tree;
 }
 

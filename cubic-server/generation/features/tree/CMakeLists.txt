@@ -1,4 +1,5 @@
 target_sources (${CMAKE_PROJECT_NAME} PRIVATE
+    tree.cpp
     tree.hpp
     oak.hpp
     oak.cpp

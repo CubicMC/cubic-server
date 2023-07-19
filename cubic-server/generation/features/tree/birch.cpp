@@ -83,62 +83,15 @@ void BirchTree::generateTree(UNUSED std::vector<world_storage::ChunkColumn *> ne
 
 const std::vector<generation::Generator::TreeBlock> BirchTree::getTree(const Position &pos) const
 {
-    int counter = 1;
     std::vector<generation::Generator::TreeBlock> tree;
     const auto treeSize = _generator.getTreeSize(pos, _treeSize);
-    for (int y = 0; y <= treeSize + 1; y++) {
-        if (y <= treeSize)
-            tree.emplace_back(generation::Generator::TreeBlock {{0, y, 0}, Blocks::BirchLog::toProtocol(Blocks::BirchLog::Properties::Axis::Y)});
-        if (y == treeSize - 1 || y == treeSize - 2) {
-            for (int x = -2; x <= 2; x++) {
-                for (int z = -2; z <= 2; z++) {
-                    if (x == 0 && z == 0 || (rand() % 4 == 0 && (x == -2 && z == -2 || x == 2 && z == 2 || x == -2 && z == 2 || x == 2 && z == -2)))
-                        continue;
-                    tree.emplace_back(generation::Generator::TreeBlock {
-                        {x, y, z},
-                        Blocks::BirchLeaves::toProtocol(
-                            Blocks::BirchLeaves::Properties::Distance::ONE, Blocks::BirchLeaves::Properties::Persistent::FALSE,
-                            Blocks::BirchLeaves::Properties::Waterlogged::FALSE
-                        )});
-                }
-            }
-        }
-        if (y == treeSize) {
-            for (int x = -1; x <= 1; x++) {
-                for (int z = -1; z <= 1; z++) {
-                    int randomizer = rand() % 4 + 1;
-                    if (x == 0 && z == 0)
-                        continue;
-                    if (randomizer == 1 && counter < MAX_CORNER_LEAVES_LAYER_TWO && (x == -1 && z == -1 || x == 1 && z == 1 || x == -1 && z == 1 || x == 1 && z == -1)) {
-                        LINFO("RANDOMIZER : {}", randomizer);
-                        counter += 1;
-                        LINFO("COUNTER : {}", counter);
-                        continue;
-                    }
-                    tree.emplace_back(generation::Generator::TreeBlock {
-                        {x, y, z},
-                        Blocks::BirchLeaves::toProtocol(
-                            Blocks::BirchLeaves::Properties::Distance::ONE, Blocks::BirchLeaves::Properties::Persistent::FALSE,
-                            Blocks::BirchLeaves::Properties::Waterlogged::FALSE
-                        )});
-                }
-            }
-        }
-        if (y == treeSize + 1) {
-            for (int x = -1; x <= 1; x++) {
-                for (int z = -1; z <= 1; z++) {
-                    if (x * x == z * z && x != 0 && z != 0)
-                        continue;
-                    tree.emplace_back(generation::Generator::TreeBlock {
-                        {x, y, z},
-                        Blocks::BirchLeaves::toProtocol(
-                            Blocks::BirchLeaves::Properties::Distance::ONE, Blocks::BirchLeaves::Properties::Persistent::FALSE,
-                            Blocks::BirchLeaves::Properties::Waterlogged::FALSE
-                        )});
-                }
-            }
-        }
-    }
+    Tree::buildTree(
+        treeSize, tree,
+        Blocks::BirchLeaves::toProtocol(
+            Blocks::BirchLeaves::Properties::Distance::ONE, Blocks::BirchLeaves::Properties::Persistent::FALSE, Blocks::BirchLeaves::Properties::Waterlogged::FALSE
+        ),
+        Blocks::BirchLog::toProtocol(Blocks::BirchLog::Properties::Axis::Y)
+    );
     return tree;
 }
 

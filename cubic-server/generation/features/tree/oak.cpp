@@ -1,4 +1,5 @@
 #include "oak.hpp"
+#include "tree.hpp"
 
 #include <algorithm>
 #include <vector>
@@ -84,38 +85,13 @@ const std::vector<generation::Generator::TreeBlock> OakTree::getTree(const Posit
 {
     std::vector<generation::Generator::TreeBlock> tree;
     const auto treeSize = _generator.getTreeSize(pos, _treeSize);
-    for (int y = 0; y <= treeSize + 1; y++) {
-        if (y <= treeSize)
-            tree.emplace_back(generation::Generator::TreeBlock {{0, y, 0}, Blocks::OakLog::toProtocol(Blocks::OakLog::Properties::Axis::Y)});
-        if (y >= treeSize - 2 && y <= treeSize - 1) {
-            for (int x = -2; x <= 2; x++) {
-                for (int z = -2; z <= 2; z++) {
-                    if (x == 0 && z == 0)
-                        continue;
-                    tree.emplace_back(generation::Generator::TreeBlock {
-                        {x, y, z},
-                        Blocks::OakLeaves::toProtocol(
-                            Blocks::OakLeaves::Properties::Distance::ONE, Blocks::OakLeaves::Properties::Persistent::FALSE, Blocks::OakLeaves::Properties::Waterlogged::FALSE
-                        )});
-                }
-            }
-        }
-        if (y >= treeSize) {
-            for (int x = -1; x <= 1; x++) {
-                for (int z = -1; z <= 1; z++) {
-                    if (x == 0 && z == 0 && y == treeSize)
-                        continue;
-                    if (x * x == z * z && x != 0 && z != 0)
-                        continue;
-                    tree.emplace_back(generation::Generator::TreeBlock {
-                        {x, y, z},
-                        Blocks::OakLeaves::toProtocol(
-                            Blocks::OakLeaves::Properties::Distance::ONE, Blocks::OakLeaves::Properties::Persistent::FALSE, Blocks::OakLeaves::Properties::Waterlogged::FALSE
-                        )});
-                }
-            }
-        }
-    }
+    Tree::buildTree(
+        treeSize, tree,
+        Blocks::OakLeaves::toProtocol(
+            Blocks::OakLeaves::Properties::Distance::ONE, Blocks::OakLeaves::Properties::Persistent::FALSE, Blocks::OakLeaves::Properties::Waterlogged::FALSE
+        ),
+        Blocks::OakLog::toProtocol(Blocks::OakLog::Properties::Axis::Y)
+    );
     return tree;
 }
 
