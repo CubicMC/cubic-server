@@ -9,7 +9,7 @@
 #include "types.hpp"
 #include "world_storage/ChunkColumn.hpp"
 
-constexpr int MAX_CORNER_LEAVES_LAYER_TWO = 2;
+constexpr int MAX_CORNER_LEAVES_LAYER_TWO = 3;
 
 namespace generation::trees {
 class Tree {
