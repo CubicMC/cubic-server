@@ -4,7 +4,9 @@
 #include <cstdlib>
 #include <vector>
 
+#include "Dimension.hpp"
 #include "Server.hpp"
+#include "World.hpp"
 #include "generation/generator.hpp"
 #include "logging/logging.hpp"
 #include "types.hpp"
@@ -13,34 +15,36 @@
 
 using namespace generation::trees;
 
+const void Tree::setRandomizer(const Position &pos)
+{
+    if (pos.x % 2 == 0 && pos.z % 2 == 1)
+        _randomizer = (_chunk.getDimension()->getWorld()->getSeed() % pos.x) % 2;
+    else if (pos.x % 2 == 0 && pos.z % 2 == 0)
+        _randomizer = (_chunk.getDimension()->getWorld()->getSeed() % pos.z) % 2;
+    else
+        _randomizer = (_chunk.getDimension()->getWorld()->getSeed() % pos.y) % 2;
+}
+
 const void Tree::lowerLayers(std::vector<generation::Generator::TreeBlock> &tree, int y, const BlockId &leaf) const
 {
     for (int x = -2; x <= 2; x++) {
         for (int z = -2; z <= 2; z++) {
-            if (x == 0 && z == 0 || (rand() % 4 == 0 && (x == -2 && z == -2 || x == 2 && z == 2 || x == -2 && z == 2 || x == 2 && z == -2)))
+            if (x == 0 && z == 0 || (_randomizer == 0 && (x == -2 && z == -2 || x == 2 && z == 2 || x == -2 && z == 2 || x == 2 && z == -2)))
                 continue;
-            tree.emplace_back(generation::Generator::TreeBlock {
-                {x, y, z},
-                leaf});
+            tree.emplace_back(generation::Generator::TreeBlock {{x, y, z}, leaf});
         }
     }
 }
 
 const void Tree::secondLayer(std::vector<generation::Generator::TreeBlock> &tree, int y, const BlockId &leaf) const
 {
-    int counter = 1;
-    for (int x = -1; x <= 1; x++) {
+    for (int x = -1, counter = 1; x <= 1; x++) {
         for (int z = -1; z <= 1; z++) {
-            int randomizer = rand() % 4 + 1;
-            if (x == 0 && z == 0)
+            if (x == 0 && z == 0 || counter > MAX_CORNER_LEAVES_LAYER_TWO)
                 continue;
-            if (randomizer == 1 && counter < MAX_CORNER_LEAVES_LAYER_TWO && (x == -1 && z == -1 || x == 1 && z == 1 || x == -1 && z == 1 || x == 1 && z == -1)) {
+            if (_randomizer == 0 && (x == -1 && z == -1 || x == 1 && z == 1 || x == -1 && z == 1 || x == 1 && z == -1))
                 counter += 1;
-                continue;
-            }
-            tree.emplace_back(generation::Generator::TreeBlock {
-                {x, y, z},
-                leaf});
+            tree.emplace_back(generation::Generator::TreeBlock {{x, y, z}, leaf});
         }
     }
 }
@@ -51,9 +55,7 @@ const void Tree::topLayer(std::vector<generation::Generator::TreeBlock> &tree, i
         for (int z = -1; z <= 1; z++) {
             if (x * x == z * z && x != 0 && z != 0)
                 continue;
-            tree.emplace_back(generation::Generator::TreeBlock {
-                {x, y, z},
-                leaf});
+            tree.emplace_back(generation::Generator::TreeBlock {{x, y, z}, leaf});
         }
     }
 }
