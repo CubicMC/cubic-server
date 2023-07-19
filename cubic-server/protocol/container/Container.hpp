@@ -43,13 +43,22 @@ public:
     virtual constexpr const protocol::Slot &at(int16_t index) const = 0;
     virtual constexpr inline uint64_t size() const = 0;
 
+    /**
+     * @brief Insert the given slot in the container
+     * If the slot is already present, the item count will be added to the existing slot
+     * this will modify the slot to reflect what is left after the insertion
+     *
+     * @param slot
+     */
+    virtual void insert(protocol::Slot &slot) = 0;
+
     protocol::Slot &operator[](int16_t index) { return at(index); }
     const protocol::Slot &operator[](int16_t index) const { return at(index); }
     constexpr protocol::Slot &cursor() { return _cursor; }
     constexpr void setCariedItemIndex(int16_t index) { _cariedItemIndex = index; }
 
     virtual void onClick(std::shared_ptr<Player> player, int16_t index, uint8_t buttonId, uint8_t mode, const std::vector<protocol::ClickContainer::SlotWithIndex> &updates);
-    virtual void onButtonClick(UNUSED std::shared_ptr<Player> player, UNUSED uint8_t buttonId) { };
+    virtual void onButtonClick(UNUSED std::shared_ptr<Player> player, UNUSED uint8_t buttonId) {};
     virtual void close(UNUSED std::shared_ptr<Player> player);
 
     NODISCARD constexpr inline int32_t id() const { return _id; }
