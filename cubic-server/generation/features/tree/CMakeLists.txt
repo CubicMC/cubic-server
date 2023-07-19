@@ -4,4 +4,6 @@ target_sources (${CMAKE_PROJECT_NAME} PRIVATE
     oak.cpp
     birch.hpp
     birch.cpp
+    jungle.hpp
+    jungle.cpp
 )
