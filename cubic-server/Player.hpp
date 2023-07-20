@@ -127,6 +127,7 @@ public:
     void sendDisplayObjective(const protocol::DisplayObjective &packet);
     void sendUpdateScore(const protocol::UpdateScore &packet);
     void sendUpdateTeams(const protocol::UpdateTeams &packet);    
+    bool takesFalldmg(void);
 
 private:
     void _onConfirmTeleportation(protocol::ConfirmTeleportation &pck);

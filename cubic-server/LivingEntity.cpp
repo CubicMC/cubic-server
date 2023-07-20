@@ -1,5 +1,6 @@
 #include "LivingEntity.hpp"
 
+#include "generation/generator.hpp"
 #include "Dimension.hpp"
 #include "Player.hpp"
 #include "Server.hpp"
@@ -7,23 +8,44 @@
 #include "events/CancelEvents.hpp"
 #include "PluginManager.hpp"
 
+
 /*
- * @brief Detect whether the entity is not immune to fall damage
+ * @brief Detect the block softness, return multiplicator
  *
- * @param TBD
+ * @param blk The block to check
  */
-bool LivingEntity::takesFalldmg()
+double LivingEntity::getBlockSoftness(BlockId blk)
 {
+    static const std::vector<std::string> bImmunes = {
+        "ladder", "vine", "scaffolding", "bubble column", "lava", "cobweb", "slime block", "honey block"
+    };
+
+    return 1;
+}
+
+/*
+ * @brief Detect whether the entity should take fall damage, return multiplicator
+ *
+ * @param env The environment that the entity is in
+ */
+double LivingEntity::getFalldmgEnvironmentFactor(void)
+{
+    static const std::vector<std::string> mImmunes = {
+        "blaze", "dragon", "ghast", "jockey", "magma cube", "phantom", "vex", "wither", "shulker", // hostile
+        "bat", "bee", "chicken", "cat", "iron golem", "snow golem", "ocelot", "parrot" // passive
+    };
     // method class dimension: return block from relative position %chunk_sz
-    // round(this->_pos());
-    return !(// TODO for Player:: only
-            // !isGamemode("creative") &&
-            // TODO check if entity landed in water
-            // !isInWater() &&
-            // TODO waiting for potion effect
+    // BlockId blk0 = generation::Generator::getBlock(round(this->_pos.x), round(this->_pos.y), round(this->_pos.z));
+    // std::vector<BlockId> blkAroundEntity = {blk[0], blk[1], blk[2]};
+
+    return  // TODO detect block under, make list of soft blocks
+            // getBlockSoftness(bAroundEntity[2]) *
+            !(// TODO check if entity landed in water
+            // !(isInWater(bAroundEntity[0]) || isInWater(bAroundEntity[1]) || isInWater(bAroundEntity[2])) &&
+            // TODO waiting for potion effects to be implemented
             // !this->hasEffect(PotionEffect::SlowFalling) &&
-            // TODO detect block under, make list of soft blocks
-            // !isSoft(blockUnder) &&
+            // TODO is mob type immune to fall damage
+            // std::find(mImmunes.begin(), mImmunes.end(), this->mobType) == mImmunes.end() &&
             !this->_flyingWithElytra);
 }
 
@@ -32,15 +54,28 @@ bool LivingEntity::takesFalldmg()
  *
  * @param height The height level from which the entity fell
  */
-void LivingEntity::falldamage(const double &height)
+void LivingEntity::applyFalldamage(const double &height)
 {
-    int fallBlkDistance = ceil(height - this->_pos.y); // nb of blocks fallen
+    int fallDamage = ceil(height - this->_pos.y); // nb of blocks fallen
+    static const std::vector<std::string> mHalfDmg = {
+        "camel", "donkey", "horse", "mule", "skeleton horse", "skeleton horseman", "zombie horse"
+    };
 
-    if (fallBlkDistance >= this->_health + 3.5) { // making sure death is infliged
+    fallDamage -= 3; // mobs don't take damage if they fall 3 blocks or less
+    if (fallDamage <= 0)
+        return;
+    if (fallDamage >= this->_health + 0.5) { // making sure death is infliged if fall damage is too high
         this->damage(999);
         return;
     }
-    this->damage(fallBlkDistance);
+//    if (std::find(mHalfDmg.begin(), mHalfDmg.end(), this->mobType) != mHalfDmg.end())
+//        fallDamage /= 2;
+//    else if (this->mobType == "llama")
+//        fallDamage = (fallDamage - 3) / 2;
+//    else if (this->mobType == "goat" || this->mobType == "frog" || this->mobType == "fox")
+//        fallDamage -= (5 + 5 * this->mobType == "goat");
+//    else
+    this->damage(fallDamage < 0 ? 0 : fallDamage);
 }
 
 /*

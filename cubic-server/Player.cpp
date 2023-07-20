@@ -1346,3 +1346,9 @@ void Player::teleport(const Vector3<double> &pos)
     LDEBUG("Synchronize player position");
     Entity::teleport(pos);
 }
+
+bool Player::takesFalldmg(void)
+{
+    return _gamemode == player_attributes::Gamemode::Survival || _gamemode == player_attributes::Gamemode::Adventure
+        || LivingEntity::getFalldmgEnvironmentFactor() <= 0;
+}
