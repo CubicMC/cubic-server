@@ -4,3 +4,4 @@ target_sources (${CMAKE_PROJECT_NAME} PRIVATE
 )
 
 add_subdirectory (commands)
+add_subdirectory (selectors)

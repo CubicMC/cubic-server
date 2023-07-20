@@ -83,7 +83,7 @@ void Entity::forceSetPosition(const Vector3<double> &pos)
 
 void Entity::forceSetPosition(double x, double y, double z) { this->forceSetPosition({x, y, z}); }
 
-void Entity::setRotation(const Vector2<uint8_t> &rot) { _rot = _rot; }
+void Entity::setRotation(const Vector2<uint8_t> &rot) { _rot = rot; }
 
 void Entity::setRotation(uint8_t x, uint8_t y) { this->setRotation({x, y}); }
 
