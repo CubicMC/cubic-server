@@ -7,6 +7,7 @@
 #include "LivingEntity.hpp"
 #include "ai/ai.hpp"
 #include "concept.hpp"
+#include "entities/Entity.hpp"
 
 class Mob : public LivingEntity {
 public:
@@ -15,6 +16,15 @@ public:
         _leftHanded(leftHanded),
         _aggressive(aggressive)
     {
+    }
+
+    void tick() override
+    {
+        for (auto &ai : _ais) {
+            if (ai->brain())
+                break;
+        }
+        Entity::tick();
     }
 
     template<isBaseOf<ai::AI> AI, typename... Args>
