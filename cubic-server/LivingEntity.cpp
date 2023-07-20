@@ -52,7 +52,7 @@ double LivingEntity::getFallDmgEnvironmentFactor(Blocks::GlobalPalette palette)
     if (std::find(mobImmune.begin(), mobImmune.end(), this->_type) != mobImmune.end())
         return 0.0;
     return getBlockSoftness(palette, blkUnder) *
-            !(// TODO is entity sitting? boat, saddled entity...
+            (// TODO is entity sitting? in a boat, riding a saddled entity...
             // !this->isSitting() &&
             // TODO waiting for potion effects to be implemented
             // !this->hasEffect(PotionEffect::SlowFalling) &&
