@@ -17,14 +17,15 @@ public:
     virtual bool see() = 0;
     virtual void think() = 0;
     virtual void act() = 0;
-    virtual void brain()
+    virtual bool brain()
     {
         if (!see())
-            return;
+            return false;
         if (_path.empty())
             think();
         else
             act();
+        return true;
     }
 
 protected:
