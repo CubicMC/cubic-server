@@ -5,6 +5,9 @@
 #include "Server.hpp"
 #include "World.hpp"
 #include "WorldGroup.hpp"
+#include "entities/Chicken.hpp"
+
+#include "logging/logging.hpp"
 
 SoundSystem::SoundSystem(const WorldGroup &group):
     _group(group)
@@ -30,4 +33,10 @@ void SoundSystem::tick()
             }
         }
     }
+    LINFO("Get dim for spawn chicken");
+    auto dim = _group.getWorld("default")->getDimension("overworld");
+    LINFO("make entity chicken");
+    auto chicken = dim->makeEntity<Chicken>();
+    LINFO("spawn entity chicken");
+    dim->spawnEntity(chicken);
 }
