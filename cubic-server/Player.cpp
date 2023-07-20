@@ -132,11 +132,11 @@ void Player::_tickPosition()
         teleport({_pos.x, -58, _pos.z});
 }
 
-void Player::synchronize() {
+void Player::synchronize()
+{
     // TODO: synchronize further data (for example other entities)
     this->sendSynchronizePlayerPosition();
 }
-
 
 std::weak_ptr<Client> Player::getClient() const { return _cli; }
 
@@ -519,7 +519,7 @@ void Player::sendSynchronizePlayerPosition(void)
         0,
         0,
         false,
-        });
+    });
     client->doWrite(std::move(pck));
     LDEBUG("Synchronized player position");
 }
@@ -940,9 +940,7 @@ void Player::_onSetPlayerPosition(protocol::SetPlayerPosition &pck)
     onEvent(Server::getInstance()->getPluginManager(), onEntityMove, this, _pos, {pck.x, pck.feetY, pck.z});
     this->setPosition(pck.x, pck.feetY, pck.z, pck.onGround);
     if (Entity::pickupItem().first) {
-        sendPickupItem({Entity::pickupItem().second.first, this->getId(), Entity::pickupItem().second.second});
-        this->getDimension()->removeEntity(Entity::pickupItem().second.first);
-        // this->_inventory->playerInventory().at(14) = protocol::Slot {true, 734, 1};
+        sendPickupItem({Entity::pickupItem().second->getId(), this->getId(), Entity::getPickupItemFromEntity(Entity::pickupItem().second).second});
     }
 }
 
@@ -956,7 +954,11 @@ void Player::_onSetPlayerPositionAndRotation(protocol::SetPlayerPositionAndRotat
     this->setPosition(pck.x, pck.feetY, pck.z, pck.onGround);
     this->setRotation(pck.yaw, pck.pitch);
     if (Entity::pickupItem().first) {
-        sendPickupItem({Entity::pickupItem().second.first, this->getId(), Entity::pickupItem().second.second});
+        sendPickupItem({Entity::pickupItem().second->getId(), this->getId(), Entity::getPickupItemFromEntity(Entity::pickupItem().second).second});
+        auto slotItem =
+            protocol::Slot {true, Entity::getPickupItemFromEntity(Entity::pickupItem().second).first, Entity::getPickupItemFromEntity(Entity::pickupItem().second).second};
+        this->_inventory->insert(slotItem);
+        this->getDimension()->removeEntity(Entity::pickupItem().second->getId());
     }
 }
 

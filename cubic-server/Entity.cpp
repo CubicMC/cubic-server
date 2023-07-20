@@ -138,33 +138,30 @@ void Entity::teleport(const Vector3<double> &pos)
     }
 }
 
-std::pair<bool, std::pair<int32_t, int8_t>> Entity::pickupItem()
+std::pair<bool, std::shared_ptr<Entity>> Entity::pickupItem()
 {
     auto collectorPosition = this->getPosition();
     Vector3<double> pickupBoxH = {1, 1, 1};
     Vector3<double> pickupBoxV = {0.5, 0.5, 0.5};
     bool val = false;
-    std::pair<int32_t, int8_t> itemData(0, 0);
+    std::shared_ptr<Entity> itemData;
 
     for (auto item : this->getDimension()->getEntities()) {
         if (item->getType() == protocol::SpawnEntity::EntityType::Item && item->getId() != this->getId()) {
             if (((collectorPosition.x - item->getPosition().x) <= pickupBoxH.x && (collectorPosition.x - item->getPosition().x) >= -pickupBoxH.x) &&
                 ((collectorPosition.y - item->getPosition().y) <= pickupBoxV.y && (collectorPosition.y - item->getPosition().y) >= -pickupBoxV.y) &&
                 ((collectorPosition.z - item->getPosition().z) <= pickupBoxH.z && (collectorPosition.z - item->getPosition().z) >= -pickupBoxH.z)) {
-                LINFO("There is an item to pickup at {}, {}, {}", (collectorPosition.x - item->getPosition().x), (collectorPosition.y - item->getPosition().y),(collectorPosition.z - item->getPosition().z));
-                itemData.first = item->getId();
-                itemData.second = getPickupItemFromEntity(*item).second;
+                // LINFO("There is an item to pickup at {}, {}, {}", (collectorPosition.x - item->getPosition().x), (collectorPosition.y - item->getPosition().y),(collectorPosition.z - item->getPosition().z));
+                itemData = item;
                 val = true;
             }
         }
     }
-    std::pair<bool, std::pair<int32_t, int8_t>> result (val, itemData);
-    return result;
+    return {val, itemData};
 }
 
-std::pair<int32_t, int8_t> Entity::getPickupItemFromEntity(Entity &entity)
+std::pair<int32_t, int8_t> Entity::getPickupItemFromEntity(std::shared_ptr<Entity> entity)
 {
-    auto item = entity.dynamicSharedFromThis<Item>();
-    auto val = std::make_pair(item->getItem().itemID, item->getItem().itemCount);
-    return val;
+    auto item = entity->dynamicSharedFromThis<Item>();
+    return {item->getItem().itemID, item->getItem().itemCount};
 }

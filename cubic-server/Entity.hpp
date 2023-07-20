@@ -87,11 +87,11 @@ public:
 
     // Check if there is an item to pickup within the entity pickup box
     // (1 block on each side, 0.5 block above & below)
-    virtual std::pair<bool, std::pair<int32_t, int8_t>> pickupItem();
+    std::pair<bool, std::shared_ptr<Entity>> pickupItem();
 
     // Return the type of the item and the number of item to pick up
     // from the slot
-    virtual std::pair<int32_t, int8_t> getPickupItemFromEntity(Entity &item);
+    virtual std::pair<int32_t, int8_t> getPickupItemFromEntity(std::shared_ptr<Entity> item);
 
 protected:
     std::shared_ptr<Dimension> _dim;
