@@ -38,7 +38,7 @@ typedef protocol::SpawnEntity::EntityType EType;
  *
  * @param dim The dimension that the entity is in
  */
-double LivingEntity::getFalldmgEnvironmentFactor(void)
+double LivingEntity::getFallDmgEnvironmentFactor(void)
 {
     static const std::list<EType> mobImmune = {
         EType::Blaze, EType::EnderDragon, EType::Ghast, EType::MagmaCube,
@@ -65,27 +65,24 @@ double LivingEntity::getFalldmgEnvironmentFactor(void)
  *
  * @param height The height level from which the entity fell
  */
-void LivingEntity::applyFalldamage(const double &height)
+void LivingEntity::applyFallDamage(const double &height)
 {
     int fallDamage = ceil(height - this->_pos.y); // nb of blocks fallen
-    static const std::vector<std::string> mHalfDmg = {
-        "camel", "donkey", "horse", "mule", "skeleton horse", "skeleton horseman", "zombie horse"
+    static const std::vector<EType> mobHalfDmg = {
+        EType::Camel, EType::Donkey, EType::Horse, EType::Mule, EType::SkeletonHorse, EType::ZombieHorse
     };
 
     fallDamage -= 3; // mobs don't take damage if they fall 3 blocks or less
     if (fallDamage <= 0)
         return;
-    if (fallDamage >= this->_health + 0.5) { // making sure death is infliged if fall damage is too high
-        this->damage(999);
-        return;
-    }
-//    if (std::find(mHalfDmg.begin(), mHalfDmg.end(), this->mobType) != mHalfDmg.end())
-//        fallDamage /= 2;
-//    else if (this->mobType == "llama")
-//        fallDamage = (fallDamage - 3) / 2;
-//    else if (this->mobType == "goat" || this->mobType == "frog" || this->mobType == "fox")
-//        fallDamage -= (5 + 5 * this->mobType == "goat");
-//    else
+    if (std::find(mobHalfDmg.begin(), mobHalfDmg.end(), this->_type) != mobHalfDmg.end())
+        fallDamage /= 2;
+    else if (this->_type == EType::Llama) // llamas take damage from 6 blocks or more
+        fallDamage = (fallDamage - 3) / 2;
+    else if (this->_type == EType::Goat || this->_type == EType::Frog || this->_type == EType::Fox)
+        fallDamage -= (5 + 5 * (this->_type == EType::Goat));
+    if (fallDamage >= this->_health + 0.5) // making sure death is infliged if fall damage is too high
+        fallDamage = 999;
     this->damage(fallDamage < 0 ? 0 : fallDamage);
 }
 

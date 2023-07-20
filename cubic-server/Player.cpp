@@ -1347,8 +1347,8 @@ void Player::teleport(const Vector3<double> &pos)
     Entity::teleport(pos);
 }
 
-bool Player::takesFalldmg(void)
+bool Player::takesFalldmg(void) // is player vulnerable to fall damage?
 {
-    return _gamemode == player_attributes::Gamemode::Survival || _gamemode == player_attributes::Gamemode::Adventure
-        || LivingEntity::getFalldmgEnvironmentFactor() <= 0;
+    return (_gamemode == player_attributes::Gamemode::Survival || _gamemode == player_attributes::Gamemode::Adventure)
+        && LivingEntity::getFalldmgEnvironmentFactor() <= 0;
 }
