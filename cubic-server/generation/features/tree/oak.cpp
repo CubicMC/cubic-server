@@ -41,7 +41,7 @@ std::deque<Position> &OakTree::getPosForTreeGeneration(void)
 std::deque<Position> &OakTree::filterTreeGrowSpace()
 {
     std::erase_if(_positions, [this](const Position &pos) {
-        for (int y = 0; y <= _generator.getTreeSize(pos, {4, 6}); y++) {
+        for (int y = 0; y <= _generator.getTreeSize(pos, _treeSize); y++) {
             auto block = _chunk.getBlock({pos.x, pos.y + y, pos.z});
             if (block != Blocks::Air::toProtocol())
                 return true;
