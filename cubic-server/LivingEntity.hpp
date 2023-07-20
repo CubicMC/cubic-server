@@ -3,6 +3,7 @@
 
 #include "Entity.hpp"
 #include "options.hpp"
+#include "protocol_id_converter/blockStates.hpp"
 
 constexpr float KNOCKBACK_DEFAULT_FORCE = 2500.0f;
 
@@ -16,7 +17,7 @@ public:
     }
     ~LivingEntity() override = default;
 
-    virtual double getBlockSoftness(BlockId blk);
+    virtual double getBlockSoftness(Blocks::GlobalPalette palette, const BlockId &blkId);
     virtual double getFalldmgEnvironmentFactor(void);
     virtual void applyFalldamage(const double &height);
     virtual void attack(const Vector3<double> &source);

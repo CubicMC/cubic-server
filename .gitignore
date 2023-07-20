@@ -44,3 +44,7 @@ build*
 *.kdev4
 world
 world2
+
+# Convenience
+COMPILE.sh
+Makefile

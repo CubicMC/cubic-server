@@ -1,6 +1,7 @@
 #include "LivingEntity.hpp"
 
 #include "generation/generator.hpp"
+#include "protocol/ClientPackets.hpp"
 #include "Dimension.hpp"
 #include "Player.hpp"
 #include "Server.hpp"
@@ -8,45 +9,55 @@
 #include "events/CancelEvents.hpp"
 #include "PluginManager.hpp"
 
-
 /*
  * @brief Detect the block softness, return multiplicator
  *
- * @param blk The block to check
+ * @param palette The palette of the dimension that the entity is in
+ * @param blkId   The block to check
  */
-double LivingEntity::getBlockSoftness(BlockId blk)
+double LivingEntity::getBlockSoftness(Blocks::GlobalPalette palette, const BlockId &blkId)
 {
-    static const std::vector<std::string> bImmunes = {
-        "ladder", "vine", "scaffolding", "bubble column", "lava", "cobweb", "slime block", "honey block"
+    std::string blk = palette.fromProtocolIdToBlock(blkId).name;
+    static const std::list<std::string> blkImmune = {
+        "ladder", "vine", "bubble_column", "water", "lava", "cobweb", "slime_block", "honey_block"
     };
-
-    return 1;
+    if (std::find(blkImmune.begin(), blkImmune.end(), blk) != blkImmune.end())
+        return 0.0;
+    if (blk == "scaffolding" && this->_crouching)
+        return 0.0;
+    if (blk == "hay_block")
+        return 0.2;
+    if (blk != "bedrock" && blk.find("bed") != std::string::npos)
+        return 0.5;
+    return 1.0;
 }
 
+typedef protocol::SpawnEntity::EntityType EType;
 /*
  * @brief Detect whether the entity should take fall damage, return multiplicator
  *
- * @param env The environment that the entity is in
+ * @param dim The dimension that the entity is in
  */
 double LivingEntity::getFalldmgEnvironmentFactor(void)
 {
-    static const std::vector<std::string> mImmunes = {
-        "blaze", "dragon", "ghast", "jockey", "magma cube", "phantom", "vex", "wither", "shulker", // hostile
-        "bat", "bee", "chicken", "cat", "iron golem", "snow golem", "ocelot", "parrot" // passive
+    static const std::list<EType> mobImmune = {
+        EType::Blaze, EType::EnderDragon, EType::Ghast, EType::MagmaCube,
+        EType::Phantom, EType::Vex, EType::Wither, EType::Shulker, // hostile
+        EType::Bat, EType::Bee, EType::Chicken, EType::Cat, EType::IronGolem,
+        EType::SnowGolem, EType::Ocelot, EType::Parrot, // passive
     };
     // method class dimension: return block from relative position %chunk_sz
-    // BlockId blk0 = generation::Generator::getBlock(round(this->_pos.x), round(this->_pos.y), round(this->_pos.z));
-    // std::vector<BlockId> blkAroundEntity = {blk[0], blk[1], blk[2]};
+    BlockId blkUnder = 0; // TODO = generation::Generator::getBlock(
+    //     round(this->_pos.x), round(this->_pos.y - 2), round(this->_pos.z));
 
-    return  // TODO detect block under, make list of soft blocks
-            // getBlockSoftness(bAroundEntity[2]) *
-            !(// TODO check if entity landed in water
-            // !(isInWater(bAroundEntity[0]) || isInWater(bAroundEntity[1]) || isInWater(bAroundEntity[2])) &&
+    if (std::find(mobImmune.begin(), mobImmune.end(), this->_type) != mobImmune.end())
+        return 0.0;
+    return // getBlockSoftness(???, blkUnder) *
+            !(// TODO is entity sitting? boat, saddled entity...
+            // !this->isSitting() &&
             // TODO waiting for potion effects to be implemented
             // !this->hasEffect(PotionEffect::SlowFalling) &&
-            // TODO is mob type immune to fall damage
-            // std::find(mImmunes.begin(), mImmunes.end(), this->mobType) == mImmunes.end() &&
-            !this->_flyingWithElytra);
+            !this->_flyingWithElytra); // does not handle kinetic collision
 }
 
 /*
