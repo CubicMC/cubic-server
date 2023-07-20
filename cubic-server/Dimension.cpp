@@ -239,7 +239,7 @@ void Dimension::spawnEntity(const std::shared_ptr<const Entity> current)
         LDEBUG("spawn entity with id: {}", current->getId());
         player->sendSpawnEntity(
             {current->getId(),
-             {(uint64_t) current->getId(), (uint64_t) current->getId()},
+             current->getUuid(),
              current->getType(),
              current->getPosition().x,
              current->getPosition().y,
