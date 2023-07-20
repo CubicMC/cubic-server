@@ -1,6 +1,7 @@
 #include "wandering.hpp"
 #include "entities/Entity.hpp"
 #include "math/Vector3.hpp"
+#include "logging/logging.hpp"
 
 namespace ai {
 Wandering::Wandering(Entity &entity):
@@ -34,7 +35,7 @@ void Wandering::think()
 void Wandering::act()
 {
     auto pos = _path.front();
-    this->_entity.teleport(pos);
+    this->_entity.setPosition(pos, true);
     _path.pop();
 }
 } // namespace ai
