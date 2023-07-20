@@ -1,7 +1,6 @@
 #include "LivingEntity.hpp"
 
-#include "generation/generator.hpp"
-#include "protocol/ClientPackets.hpp"
+//#include "protocol/ClientPackets.hpp"
 #include "Dimension.hpp"
 #include "Player.hpp"
 #include "Server.hpp"
@@ -36,9 +35,9 @@ typedef protocol::SpawnEntity::EntityType EType;
 /*
  * @brief Detect whether the entity should take fall damage, return multiplicator
  *
- * @param dim The dimension that the entity is in
+ * @param palette The block palette needed to identify the block under the entity
  */
-double LivingEntity::getFallDmgEnvironmentFactor(void)
+double LivingEntity::getFallDmgEnvironmentFactor(Blocks::GlobalPalette palette)
 {
     static const std::list<EType> mobImmune = {
         EType::Blaze, EType::EnderDragon, EType::Ghast, EType::MagmaCube,
@@ -46,13 +45,13 @@ double LivingEntity::getFallDmgEnvironmentFactor(void)
         EType::Bat, EType::Bee, EType::Chicken, EType::Cat, EType::IronGolem,
         EType::SnowGolem, EType::Ocelot, EType::Parrot, // passive
     };
-    // method class dimension: return block from relative position %chunk_sz
-    BlockId blkUnder = 0; // TODO = generation::Generator::getBlock(
-    //     round(this->_pos.x), round(this->_pos.y - 2), round(this->_pos.z));
+    BlockId blkUnder = _dim->getChunk(this->_pos.x, this->_pos.z).getBlock(
+        {(int) this->_pos.x % 16, (int) (this->_pos.y - 2) % 16, (int) this->_pos.z % 16}
+    );
 
     if (std::find(mobImmune.begin(), mobImmune.end(), this->_type) != mobImmune.end())
         return 0.0;
-    return // getBlockSoftness(???, blkUnder) *
+    return getBlockSoftness(palette, blkUnder) *
             !(// TODO is entity sitting? boat, saddled entity...
             // !this->isSitting() &&
             // TODO waiting for potion effects to be implemented

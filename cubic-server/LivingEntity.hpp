@@ -18,7 +18,7 @@ public:
     ~LivingEntity() override = default;
 
     virtual double getBlockSoftness(Blocks::GlobalPalette palette, const BlockId &blkId);
-    virtual double getFallDmgEnvironmentFactor(void);
+    virtual double getFallDmgEnvironmentFactor(Blocks::GlobalPalette palette);
     virtual void applyFallDamage(const double &height);
     virtual void attack(const Vector3<double> &source);
     virtual void damage(float damage);

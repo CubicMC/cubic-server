@@ -119,7 +119,7 @@ public:
     void sendUpdateRecipiesBook(const protocol::UpdateRecipesBook &packet);
     void sendInitializeWorldBorder(const protocol::InitializeWorldBorder &packet);
     void sendSetDefaultSpawnPosition(const protocol::SetDefaultSpawnPosition &packet);
-    void sendSetEntityMetadata(const protocol::SetEntityMetadata &packet); // TODO: mourrir
+    void sendSetEntityMetadata(const protocol::SetEntityMetadata &packet); // TODO: mourir
     void sendUpdateAttributes(const protocol::UpdateAttributes &packet);
     void sendUpdateAdvancements(const protocol::UpdateAdvancements &packet);
     void sendSetExperience(const protocol::SetExperience &packet);
