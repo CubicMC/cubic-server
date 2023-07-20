@@ -940,7 +940,7 @@ void Player::_onSetPlayerPosition(protocol::SetPlayerPosition &pck)
     onEvent(Server::getInstance()->getPluginManager(), onEntityMove, this, _pos, {pck.x, pck.feetY, pck.z});
     this->setPosition(pck.x, pck.feetY, pck.z, pck.onGround);
     if (Entity::pickupItem().first) {
-        sendPickupItem({Entity::pickupItem().second->getId(), this->getId(), Entity::getPickupItemFromEntity(Entity::pickupItem().second).second});
+        this->sendPickupItem({Entity::pickupItem().second->getId(), this->getId(), Entity::getPickupItemFromEntity(Entity::pickupItem().second).second});
     }
 }
 
@@ -954,10 +954,11 @@ void Player::_onSetPlayerPositionAndRotation(protocol::SetPlayerPositionAndRotat
     this->setPosition(pck.x, pck.feetY, pck.z, pck.onGround);
     this->setRotation(pck.yaw, pck.pitch);
     if (Entity::pickupItem().first) {
-        sendPickupItem({Entity::pickupItem().second->getId(), this->getId(), Entity::getPickupItemFromEntity(Entity::pickupItem().second).second});
+        this->sendPickupItem({Entity::pickupItem().second->getId(), this->getId(), Entity::getPickupItemFromEntity(Entity::pickupItem().second).second});
         auto slotItem =
             protocol::Slot {true, Entity::getPickupItemFromEntity(Entity::pickupItem().second).first, Entity::getPickupItemFromEntity(Entity::pickupItem().second).second};
         this->_inventory->insert(slotItem);
+        this->sendSetContainerContent({_inventory});
         this->getDimension()->removeEntity(Entity::pickupItem().second->getId());
     }
 }
