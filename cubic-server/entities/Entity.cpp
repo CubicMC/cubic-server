@@ -151,6 +151,53 @@ const std::shared_ptr<Entity> Entity::pickupItem()
     return nullptr;
 }
 
+void Entity::tick()
+{
+    this->tickPosition();
+}
+
+void Entity::tickPosition()
+{
+    bool updatePos = false;
+    bool updateRot = false;
+    int16_t deltaX = 0;
+    int16_t deltaY = 0;
+    int16_t deltaZ = 0;
+
+    if (_pos != _lastPos) {
+        updatePos = true;
+        deltaX = static_cast<int16_t>((this->_pos.x * 32.0 - this->_lastPos.x * 32.0) * 128.0);
+        deltaY = static_cast<int16_t>((this->_pos.y * 32.0 - this->_lastPos.y * 32.0) * 128.0);
+        deltaZ = static_cast<int16_t>((this->_pos.z * 32.0 - this->_lastPos.z * 32.0) * 128.0);
+        _lastPos = _pos;
+    }
+    if (_rot != _lastRot) {
+        updateRot = true;
+        _lastRot = _rot;
+    }
+    if (updatePos && updateRot) {
+        for (auto i : this->getDimension()->getPlayers()) {
+            if (i->getId() == this->getId())
+                continue;
+            i->sendUpdateEntityPositionAndRotation({this->getId(), deltaX, deltaY, deltaZ, this->_rot.x, this->_rot.z, true});
+            i->sendHeadRotation({this->getId(), _rot.x});
+        }
+    } else if (updatePos && !updateRot) {
+        for (auto i : this->getDimension()->getPlayers()) {
+            if (i->getId() == this->getId())
+                continue;
+            i->sendUpdateEntityPosition({this->getId(), deltaX, deltaY, deltaZ, true});
+        }
+    } else if (!updatePos && updateRot) {
+        for (auto i : this->getDimension()->getPlayers()) {
+            if (i->getId() == this->getId())
+                continue;
+            i->sendUpdateEntityRotation({this->getId(), this->_rot.x, this->_rot.z, true});
+            i->sendHeadRotation({this->getId(), _rot.x});
+        }
+    }
+}
+
 void Entity::appendMetadataPacket(std::vector<uint8_t> &data) const
 {
     using namespace protocol::entity_metadata;

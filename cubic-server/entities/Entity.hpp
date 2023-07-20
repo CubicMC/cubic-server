@@ -63,7 +63,7 @@ public:
         Vector2<uint8_t> lastRot = {0, 0});
     // clang-format on
     virtual ~Entity() {};
-    virtual void tick() = 0;
+    virtual void tick();
     virtual void setDimension(std::shared_ptr<Dimension> dim);
     virtual void setPosition(const Vector3<double> &pos, bool on_ground);
     virtual void setPosition(double x, double y, double z, bool on_ground);
@@ -92,6 +92,7 @@ public:
     // Drop an item when necessary (death of the entity, broken block, ...)
     // The dropped item is determined by the loot tables
     virtual void dropItem(UNUSED const Vector3<double> &pos) {};
+    virtual void tickPosition();
 
     // Check if there is an item to pickup within the entity pickup box
     // (1 block on each side, 0.5 block above & below)
