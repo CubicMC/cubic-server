@@ -143,8 +143,6 @@ std::pair<bool, std::shared_ptr<Entity>> Entity::pickupItem()
     auto collectorPosition = this->getPosition();
     Vector3<double> pickupBoxH = {1, 1, 1};
     Vector3<double> pickupBoxV = {0.5, 0.5, 0.5};
-    bool val = false;
-    std::shared_ptr<Entity> itemData;
 
     for (auto item : this->getDimension()->getEntities()) {
         if (item->getType() == protocol::SpawnEntity::EntityType::Item && item->getId() != this->getId()) {
@@ -152,12 +150,10 @@ std::pair<bool, std::shared_ptr<Entity>> Entity::pickupItem()
                 ((collectorPosition.y - item->getPosition().y) <= pickupBoxV.y && (collectorPosition.y - item->getPosition().y) >= -pickupBoxV.y) &&
                 ((collectorPosition.z - item->getPosition().z) <= pickupBoxH.z && (collectorPosition.z - item->getPosition().z) >= -pickupBoxH.z)) {
                 // LINFO("There is an item to pickup at {}, {}, {}", (collectorPosition.x - item->getPosition().x), (collectorPosition.y - item->getPosition().y),(collectorPosition.z - item->getPosition().z));
-                itemData = item;
-                val = true;
+                return {true, item};
             }
         }
     }
-    return {val, itemData};
 }
 
 std::pair<int32_t, int8_t> Entity::getPickupItemFromEntity(std::shared_ptr<Entity> entity)
