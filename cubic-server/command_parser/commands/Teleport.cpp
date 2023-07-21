@@ -51,9 +51,11 @@ static void execute(const std::vector<std::string> &args, Player *invoker)
 
     if (isImplicitTeleportee)
         toTeleport.push_back(*invoker);
-    else if (isSelector(args.at(0)))
-        return; // TODO(huntears): Handle selectors
-    else {
+    else if (isSelector(args.at(0))) {
+        if (!invoker)
+            return; // TODO(huntears): Handle selectors in console
+        fillSelector(args.at(0), toTeleport, invoker->getDimension()->getEntities(), invoker->getDimension()->getPlayers(), invoker);
+    } else {
         for (auto &[_, client] : Server::getInstance()->getClients()) {
             if (client->getPlayer() && client->getPlayer()->getUsername() == args.at(0)) {
                 toTeleport.push_back(*client->getPlayer());
@@ -63,32 +65,33 @@ static void execute(const std::vector<std::string> &args, Player *invoker)
     }
 
     if (!isPositionDestination) {
+        Player *endPoint = nullptr;
         if (isSelector(entityDest)) {
             if (!isSingleSelector(entityDest))
                 return; // TODO(huntears): Error message
-            // TODO(huntears): Handle single selectors
+            if (!invoker)
+                return; // TODO(huntears): Handle selectors in console
+            fillSingleSelector(args.at(0), *endPoint, invoker->getDimension()->getEntities(), invoker->getDimension()->getPlayers(), invoker);
         } else {
-            // TODO(huntears): Handle tp to other player
-            Player *endPoint = nullptr;
             for (auto &[_, client] : Server::getInstance()->getClients()) {
                 if (client->getPlayer() && client->getPlayer()->getUsername() == entityDest) {
                     endPoint = client->getPlayer().get();
                     break;
                 }
             }
-            if (endPoint == nullptr)
-                return; // TODO(huntears): Error message
-            for (Entity &moving : toTeleport) {
-                auto finalPos = endPoint->getPosition();
-                moving.teleport(finalPos);
-                if (moving.getType() == protocol::SpawnEntity::EntityType::Player) {
-                    auto &player = (Player &) moving;
-                    auto toSend = std::format("Teleported {} to {}", player.getUsername(), endPoint->getUsername());
-                    if (invoker)
-                        invoker->getDimension()->getWorld()->getChat()->sendSystemMessage(toSend, *invoker);
-                    else
-                        LINFO(toSend);
-                }
+        }
+        if (endPoint == nullptr)
+            return; // TODO(huntears): Error message
+        for (Entity &moving : toTeleport) {
+            auto finalPos = endPoint->getPosition();
+            moving.teleport(finalPos);
+            if (moving.getType() == protocol::SpawnEntity::EntityType::Player) {
+                auto &player = (Player &) moving;
+                auto toSend = fmt::format("Teleported {} to {}", player.getUsername(), endPoint->getUsername());
+                if (invoker)
+                    invoker->getDimension()->getWorld()->getChat()->sendSystemMessage(toSend, *invoker);
+                else
+                    LINFO(toSend);
             }
         }
     } else {
@@ -123,7 +126,7 @@ static void execute(const std::vector<std::string> &args, Player *invoker)
             moving.teleport(finalPos);
             if (moving.getType() == protocol::SpawnEntity::EntityType::Player) {
                 auto &player = (Player &) moving;
-                auto toSend = std::format("Teleported {} to {}", player.getUsername(), finalPos.toString());
+                auto toSend = fmt::format("Teleported {} to {}", player.getUsername(), finalPos.toString());
                 if (invoker)
                     invoker->getDimension()->getWorld()->getChat()->sendSystemMessage(toSend, *invoker);
                 else
