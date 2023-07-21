@@ -89,9 +89,8 @@ public:
     // (1 block on each side, 0.5 block above & below)
     std::pair<bool, std::shared_ptr<Entity>> pickupItem();
 
-    // Return the type of the item and the number of item to pick up
-    // from the slot
-    virtual std::pair<int32_t, int8_t> getPickupItemFromEntity(std::shared_ptr<Entity> item);
+    // Return the item from the entity
+    virtual const protocol::Slot &getPickupItemFromEntity(std::shared_ptr<Entity> item);
 
 protected:
     std::shared_ptr<Dimension> _dim;

@@ -156,8 +156,8 @@ std::pair<bool, std::shared_ptr<Entity>> Entity::pickupItem()
     }
 }
 
-std::pair<int32_t, int8_t> Entity::getPickupItemFromEntity(std::shared_ptr<Entity> entity)
+const protocol::Slot &Entity::getPickupItemFromEntity(std::shared_ptr<Entity> entity)
 {
-    auto item = entity->dynamicSharedFromThis<Item>();
-    return {item->getItem().itemID, item->getItem().itemCount};
+    auto item = std::dynamic_pointer_cast<Item>(entity);
+    return item->getItem();
 }
