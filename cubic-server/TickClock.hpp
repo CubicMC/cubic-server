@@ -17,6 +17,7 @@ public:
 
     void setTickRate(uint16_t tickRate);
     uint16_t tickRate() const;
+    uint16_t getTick(void);
 
     void setCallback(std::function<void()> callback);
     const std::function<void()> &callback() const;

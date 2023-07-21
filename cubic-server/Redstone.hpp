@@ -1,3 +1,6 @@
+#include "Player.hpp"
+#include "TickClock.hpp"
+
 namespace Redstone {
     namespace Activated {
         class Piston {
@@ -5,8 +8,8 @@ namespace Redstone {
             Piston(bool ext, bool bud);
             ~Piston(void);
 
-            virtual void push(void);
-            virtual void retract(void);
+            virtual void extend(void);
+            virtual void contract(void);
 
         private:
             bool _extended;
@@ -17,25 +20,38 @@ namespace Redstone {
     namespace Activators {
         class Lever {
         public:
-            Lever(void);
+            enum Facing {
+                Floor,
+                Ceiling,
+                North,
+                South,
+                West,
+                East
+            };
+
+            Lever(std::shared_ptr<Dimension> dim, Vector3<double> pos, Facing facing);
             ~Lever(void);
 
-            virtual void activate(void);
-            virtual void deactivate(void);
+            virtual void press(void);
+            virtual void unpress(void);
 
+            std::shared_ptr<Dimension> _dim;
+            Vector3<double> _pos;
+            Facing _facing;
             bool _powered;
         };
 
         class Button : Lever {
         public:
-            Button(bool isWooden);
+            Button(std::shared_ptr<Dimension> dim, Vector3<double> pos, Facing facing, bool isWooden);
             ~Button();
 
-            virtual void activate(void)   override;
-            virtual void deactivate(void) override;
+            virtual void press(void)   override;
+            virtual void unpress(void) override;
 
             bool _duration;
             bool _isWooden;
+            TickClock _clock;
         };
     }
 

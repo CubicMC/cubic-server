@@ -2,20 +2,20 @@
 
 using namespace Redstone::Activated;
 
-void Piston::retract(void)
+void Piston::contract(void)
 {
-    // TODO handle event retract
+    // TODO handle event contract
     this->_extended = false;
-    // TODO make retract noise
+    // TODO make contract noise (863)
 }
 
-void Piston::push(void)
+void Piston::extend(void)
 {
-    if (0) // TODO push denied = there are 15 blocks in front of the piston
+    if (0) // TODO extend denied = there are 15 blocks in front of the piston
         return;
-    // TODO handle event push
+    // TODO handle event extend
     this->_extended = true;
-    // TODO make push noise
+    // TODO make extend noise (864)
 }
 
 Piston::Piston(bool ext, bool bud):
@@ -23,8 +23,9 @@ Piston::Piston(bool ext, bool bud):
     _budded(bud)
 {
     if (_extended)
-        this->push();
-    // TODO make noise upon activation
+        this->extend();
+    if (_budded)
+        ; // TODO handle event bud
 }
 
 Piston::~Piston(void) {}

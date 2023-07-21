@@ -46,3 +46,5 @@ uint16_t TickClock::tickRate() const { return _tickRate; }
 void TickClock::setCallback(std::function<void()> callback) { _callback = callback; }
 
 const std::function<void()> &TickClock::callback() const { return _callback; }
+
+uint16_t TickClock::getTick(void) { return _tick; }

@@ -22,6 +22,9 @@ target_sources (${CMAKE_PROJECT_NAME} PRIVATE
     SoundSystem.hpp
     SoundSystem.cpp
     concept.hpp
+    RedstoneActivated.cpp
+    RedstoneActivators.cpp
+    Redstone.hpp
     TickClock.hpp
     TickClock.cpp
     CommandLine.hpp
