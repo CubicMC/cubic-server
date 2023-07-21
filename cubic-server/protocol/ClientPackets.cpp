@@ -547,6 +547,21 @@ std::unique_ptr<std::vector<uint8_t>> protocol::createPlayerChatMessage(const Pl
     return packet;
 }
 
+std::unique_ptr<std::vector<uint8_t>> protocol::createCombatDeath(const CombatDeath &in)
+{
+    std::vector<uint8_t> payload;
+    // clang-format off
+    serialize(payload,
+        in.playerId, addVarInt,
+        in.killerId, addInt,
+        in.message, addChat
+    );
+    // clang-format on
+    auto packet = std::make_unique<std::vector<uint8_t>>();
+    finalize(*packet, payload, ClientPacketID::CombatDeath);
+    return packet;
+}
+
 std::unique_ptr<std::vector<uint8_t>> protocol::createPlayerInfoRemove(const PlayerInfoRemove &in)
 {
     std::vector<uint8_t> payload;
@@ -670,6 +685,32 @@ std::unique_ptr<std::vector<uint8_t>> protocol::createRemoveEntities(const Remov
     // clang-format on
     auto packet = std::make_unique<std::vector<uint8_t>>();
     finalize(*packet, payload, ClientPacketID::RemoveEntities);
+    return packet;
+}
+
+std::unique_ptr<std::vector<uint8_t>> protocol::createRespawn(const Respawn &in)
+{
+    std::vector<uint8_t> payload;
+
+    serialize(payload,
+        in.dimensionType, addString,
+        in.dimensionName, addString,
+        in.hashedSeed, addLong,
+        in.gamemode, addByte,
+        in.previousGamemode, addByte,
+        in.isDebug, addBoolean,
+        in.isFlat, addBoolean,
+        in.copyMetadata, addBoolean
+    );
+    if (in.hasDeathLocation) {
+        serialize(payload,
+            in.hasDeathLocation, addBoolean,
+            in.deathDimensionName, addString,
+            in.deathLocation, addPosition
+        );
+    }
+    auto packet = std::make_unique<std::vector<uint8_t>>();
+    finalize(*packet, payload, ClientPacketID::Respawn);
     return packet;
 }
 

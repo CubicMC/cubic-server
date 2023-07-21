@@ -62,6 +62,7 @@ public:
     void setOperator(const bool isOp);
     void setKeepAliveId(long id);
     void updatePlayerInfo(const protocol::PlayerInfoUpdate &data);
+    void kill() override;
     void playerPickupItem();
 
     template<isBaseOf<protocol::container::Container> Container, typename... Args>
@@ -122,6 +123,7 @@ public:
     void sendSwingArm(bool mainHand, int32_t swingerId);
     void sendTeleportEntity(int32_t id, const Vector3<double> &pos, const Vector2<uint8_t> &rot);
     void sendRemoveEntities(const std::vector<int32_t> &entities);
+    void sendRespawn(const protocol::Respawn &data);
     void sendUpdateEntityPosition(const protocol::UpdateEntityPosition &data);
     void sendUpdateEntityPositionAndRotation(const protocol::UpdateEntityPositionRotation &data);
     void sendUpdateEntityRotation(const protocol::UpdateEntityRotation &data);
@@ -156,6 +158,7 @@ public:
     void sendDisplayObjective(const protocol::DisplayObjective &packet);
     void sendUpdateScore(const protocol::UpdateScore &packet);
     void sendUpdateTeams(const protocol::UpdateTeams &packet);
+    void sendCombatDeath(const protocol::CombatDeath &packet);
     void sendPickupItem(const protocol::PickupItem &packet);
 
 private:
@@ -218,6 +221,7 @@ private:
     void _unloadChunk(int32_t x, int32_t z);
     void _foodTick();
     void _eat();
+    void _respawn();
 
     std::weak_ptr<Client> _cli;
     std::string _username;

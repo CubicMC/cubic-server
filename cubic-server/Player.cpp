@@ -576,6 +576,14 @@ void Player::sendRemoveEntities(const std::vector<int32_t> &entities)
     N_LDEBUG("Sent a Remove Entities packet");
 }
 
+void Player::sendRespawn(const protocol::Respawn &packet)
+{
+    GET_CLIENT();
+    auto pck = protocol::createRespawn(packet);
+    client->doWrite(std::move(pck));
+    N_LDEBUG("Sent a Respawn packet");
+}
+
 void Player::sendSwingArm(bool mainHand, int32_t swingerId)
 {
     sendEntityAnimation(mainHand ? protocol::EntityAnimation::ID::SwingMainArm : protocol::EntityAnimation::ID::SwingOffHand, swingerId);
@@ -766,6 +774,14 @@ void Player::sendUpdateTeams(const protocol::UpdateTeams &packet)
     LDEBUG("Sent update teams packet");
 }
 
+void Player::sendCombatDeath(const protocol::CombatDeath &packet)
+{
+    GET_CLIENT();
+    auto pck = protocol::createCombatDeath(packet);
+    client->doWrite(std::move(pck));
+    LDEBUG("Sent combat death packet");
+}
+
 void Player::sendPickupItem(const protocol::PickupItem &packet)
 {
     GET_CLIENT();
@@ -805,7 +821,15 @@ void Player::_onChatCommand(protocol::ChatCommand &pck)
     command_parser::parseCommand(pck.command, this);
 }
 
-void Player::_onClientCommand(UNUSED protocol::ClientCommand &pck) { N_LDEBUG("Got a Client Command"); }
+void Player::_onClientCommand(UNUSED protocol::ClientCommand &pck) {
+    N_LDEBUG("Got a Client Command");
+
+    if (pck.actionId == protocol::ClientCommand::ActionID::PerformRespawn) {
+        this->_respawn();
+    } else {
+        // TODO : send player statistics
+    }
+}
 
 void Player::_onClientInformation(protocol::ClientInformation &pck)
 {
@@ -1415,6 +1439,31 @@ void Player::teleport(const Vector3<double> &pos)
     Entity::teleport(pos);
 }
 
+void Player::_respawn()
+{
+    this->sendRespawn({
+        "minecraft:overworld", // Dimension
+        "overworld", // World name
+        0, // Hashed seed
+        this->_gamemode, // Gamemode
+        this->_gamemode, // Previous gamemode
+        0, // Is debug
+        0, // Is flat
+        0, // Copy metadata
+        false // Has death location (need dimension name which we don't have yet)
+    });
+}
+
+void Player::kill()
+{
+    LivingEntity::kill();
+
+    this->sendCombatDeath({
+        this->_id, // Player id
+        0, // Killer Entity id (0 for now because we don't know him)
+        "You suck." // Message
+    });
+}
 bool Player::isInRenderDistance(UNUSED const Vector2<double> &pos) const { return true; }
 
 void Player::sendEntityMetadata(const Entity &entity)

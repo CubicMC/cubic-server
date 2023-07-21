@@ -38,6 +38,9 @@ void LivingEntity::damage(float damage)
     if (canceled)
         return;
     _health -= damage;
+    if (_health <= 0) {
+        this->kill();
+    }
     broadcastMetadata();
     LDEBUG("entity type {} with id {} took damage {}, health is now {}", this->_type, this->_id, damage, _health);
 }
@@ -66,6 +69,15 @@ void LivingEntity::knockback(const Vector3<double> &source, float force)
         player->sendEntityVelocity({_id, static_cast<int16_t>(kb.x), static_cast<int16_t>(kb.y), static_cast<int16_t>(kb.z)});
         player->sendEntityAnimation(protocol::EntityAnimation::ID::TakeDamage, _id);
     }
+}
+
+/*
+ * @brief Kill the entity
+ */
+void LivingEntity::kill()
+{
+    // TODO : think about how to deal with death later
+    _health = 0;
 }
 
 void LivingEntity::setHealth(float health) { _health = health; }
