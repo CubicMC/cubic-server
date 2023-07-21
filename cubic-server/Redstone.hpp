@@ -28,6 +28,12 @@ namespace Redstone {
                 West,
                 East
             };
+            enum Connection {
+                CNorth,
+                CSouth,
+                CWest,
+                CEast
+            };
 
             Lever(std::shared_ptr<Dimension> dim, Vector3<double> pos, Facing facing);
             ~Lever(void);
@@ -55,11 +61,12 @@ namespace Redstone {
         };
     }
 
-    class RedstoneCircuit {
+    class RedstoneWire {
     public:
-        RedstoneCircuit(void);
-        ~RedstoneCircuit(void);
+        RedstoneWire(uint8_t power, std::vector<bool> connected = {false, false, false, false});
+        ~RedstoneWire(void);
 
-        int power;
+        uint8_t _power;
+        std::vector<bool> _connected;
     };
 }
