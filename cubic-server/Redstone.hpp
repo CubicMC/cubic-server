@@ -1,4 +1,4 @@
-namespace Redsone {
+namespace Redstone {
     namespace Activated {
         class Piston {
         public:
@@ -23,19 +23,27 @@ namespace Redsone {
             virtual void activate(void);
             virtual void deactivate(void);
 
-            bool _activated;
+            bool _powered;
         };
 
         class Button : Lever {
         public:
-            Button(std::string material);
+            Button(bool isWooden);
             ~Button();
 
             virtual void activate(void)   override;
             virtual void deactivate(void) override;
 
             bool _duration;
-            std::string _material;
+            bool _isWooden;
         };
     }
+
+    class RedstoneCircuit {
+    public:
+        RedstoneCircuit(void);
+        ~RedstoneCircuit(void);
+
+        int power;
+    };
 }

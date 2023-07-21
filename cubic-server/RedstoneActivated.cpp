@@ -1,6 +1,6 @@
 #include "Redstone.hpp"
 
-using namespace Redsone::Activated;
+using namespace Redstone::Activated;
 
 void Piston::retract(void)
 {
