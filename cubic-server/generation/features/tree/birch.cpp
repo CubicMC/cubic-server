@@ -1,7 +1,7 @@
-#include "oak.hpp"
-#include "tree.hpp"
+#include "birch.hpp"
 
 #include <algorithm>
+#include <cstdlib>
 #include <vector>
 
 #include "Server.hpp"
@@ -13,7 +13,7 @@
 
 using namespace generation::trees;
 
-std::deque<Position> &OakTree::getPosForTreeGeneration(void)
+std::deque<Position> &BirchTree::getPosForTreeGeneration(void)
 {
     using namespace world_storage;
     for (int z = 0; z < SECTION_WIDTH; z++) {
@@ -38,7 +38,7 @@ std::deque<Position> &OakTree::getPosForTreeGeneration(void)
     return _positions;
 }
 
-std::deque<Position> &OakTree::filterTreeGrowSpace()
+std::deque<Position> &BirchTree::filterTreeGrowSpace()
 {
     std::erase_if(_positions, [this](const Position &pos) {
         for (int y = 0; y <= _generator.getTreeSize(pos, {4, 6}); y++) {
@@ -52,7 +52,7 @@ std::deque<Position> &OakTree::filterTreeGrowSpace()
                     if (pos.x + x < 0 || pos.x + x >= world_storage::SECTION_WIDTH || pos.z + z < 0 || pos.z + z >= world_storage::SECTION_WIDTH)
                         return true; // has to continue if we enable the generation of leaves outside the current chunk
                     auto block = _chunk.getBlock({pos.x + x, pos.y + y, pos.z + z});
-                    if (block == Blocks::OakLog::toProtocol(Blocks::OakLog::Properties::Axis::Y))
+                    if (block == Blocks::BirchLog::toProtocol(Blocks::BirchLog::Properties::Axis::Y))
                         return true;
                 }
             }
@@ -62,7 +62,7 @@ std::deque<Position> &OakTree::filterTreeGrowSpace()
     return _positions;
 }
 
-void OakTree::generateTree(UNUSED std::vector<world_storage::ChunkColumn *> neighbours)
+void BirchTree::generateTree(UNUSED std::vector<world_storage::ChunkColumn *> neighbours)
 {
     const auto &treeEmplacement = _positions.front();
     setRandomizer(treeEmplacement);
@@ -75,28 +75,28 @@ void OakTree::generateTree(UNUSED std::vector<world_storage::ChunkColumn *> neig
             treeEmplacement.z + block.pos.z >= world_storage::SECTION_WIDTH)
             continue;
         if (_chunk.getBlock({treeEmplacement.x + block.pos.x, treeEmplacement.y + block.pos.y, treeEmplacement.z + block.pos.z}) ==
-            Blocks::OakLog::toProtocol(Blocks::OakLog::Properties::Axis::Y))
+            Blocks::BirchLog::toProtocol(Blocks::BirchLog::Properties::Axis::Y))
             continue;
         _chunk.updateBlock({treeEmplacement.x + block.pos.x, treeEmplacement.y + block.pos.y, treeEmplacement.z + block.pos.z}, block.block);
     }
     _positions.pop_front();
 }
 
-const std::vector<generation::Generator::TreeBlock> OakTree::getTree(const Position &pos) const
+const std::vector<generation::Generator::TreeBlock> BirchTree::getTree(const Position &pos) const
 {
     std::vector<generation::Generator::TreeBlock> tree;
     const auto treeSize = _generator.getTreeSize(pos, _treeSize);
     Tree::buildTree(
         treeSize, tree,
-        Blocks::OakLeaves::toProtocol(
-            Blocks::OakLeaves::Properties::Distance::ONE, Blocks::OakLeaves::Properties::Persistent::FALSE, Blocks::OakLeaves::Properties::Waterlogged::FALSE
+        Blocks::BirchLeaves::toProtocol(
+            Blocks::BirchLeaves::Properties::Distance::ONE, Blocks::BirchLeaves::Properties::Persistent::FALSE, Blocks::BirchLeaves::Properties::Waterlogged::FALSE
         ),
-        Blocks::OakLog::toProtocol(Blocks::OakLog::Properties::Axis::Y)
+        Blocks::BirchLog::toProtocol(Blocks::BirchLog::Properties::Axis::Y)
     );
     return tree;
 }
 
-const std::vector<generation::Generator::TreeBlock> OakTree::getTree(Generator::positionType x, Generator::positionType y, Generator::positionType z) const
+const std::vector<generation::Generator::TreeBlock> BirchTree::getTree(Generator::positionType x, Generator::positionType y, Generator::positionType z) const
 {
     return getTree({x, y, z});
 }
