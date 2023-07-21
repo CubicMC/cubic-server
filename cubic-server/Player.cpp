@@ -933,15 +933,27 @@ void Player::_onKeepAliveResponse(protocol::KeepAliveResponse &pck)
 
 void Player::_onLockDifficulty(UNUSED protocol::LockDifficulty &pck) { N_LDEBUG("Got a Lock Difficulty"); }
 
+void Player::playerPickupItem()
+{
+    auto item = Entity::pickupItem();
+    if (item.first) {
+        this->sendPickupItem({item.second->getId(), this->getId(), Entity::getPickupItemFromEntity(item.second).second});
+        auto slotItem =
+            protocol::Slot {true, Entity::getPickupItemFromEntity(Entity::pickupItem().second).first, Entity::getPickupItemFromEntity(Entity::pickupItem().second).second};
+        this->_inventory->insert(slotItem);
+        this->sendSetContainerContent({_inventory});
+        this->getDimension()->removeEntity(Entity::pickupItem().second->getId());
+    }
+}
+
 void Player::_onSetPlayerPosition(protocol::SetPlayerPosition &pck)
 {
     N_LDEBUG("Got a Set Player Position ({}, {}, {})", pck.x, pck.feetY, pck.z);
     // TODO: Validate the position
     onEvent(Server::getInstance()->getPluginManager(), onEntityMove, this, _pos, {pck.x, pck.feetY, pck.z});
     this->setPosition(pck.x, pck.feetY, pck.z, pck.onGround);
-    if (Entity::pickupItem().first) {
-        this->sendPickupItem({Entity::pickupItem().second->getId(), this->getId(), Entity::getPickupItemFromEntity(Entity::pickupItem().second).second});
-    }
+    auto item = Entity::pickupItem();
+    playerPickupItem();
 }
 
 void Player::_onSetPlayerPositionAndRotation(protocol::SetPlayerPositionAndRotation &pck)
@@ -953,14 +965,7 @@ void Player::_onSetPlayerPositionAndRotation(protocol::SetPlayerPositionAndRotat
     onEvent(Server::getInstance()->getPluginManager(), onEntityRotate, this, {_rot.x, _rot.z, 0}, {(uint8_t) pck.yaw, (uint8_t) pck.pitch, 0});
     this->setPosition(pck.x, pck.feetY, pck.z, pck.onGround);
     this->setRotation(pck.yaw, pck.pitch);
-    if (Entity::pickupItem().first) {
-        this->sendPickupItem({Entity::pickupItem().second->getId(), this->getId(), Entity::getPickupItemFromEntity(Entity::pickupItem().second).second});
-        auto slotItem =
-            protocol::Slot {true, Entity::getPickupItemFromEntity(Entity::pickupItem().second).first, Entity::getPickupItemFromEntity(Entity::pickupItem().second).second};
-        this->_inventory->insert(slotItem);
-        this->sendSetContainerContent({_inventory});
-        this->getDimension()->removeEntity(Entity::pickupItem().second->getId());
-    }
+    playerPickupItem();
 }
 
 void Player::_onSetPlayerRotation(protocol::SetPlayerRotation &pck)
