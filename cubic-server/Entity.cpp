@@ -138,7 +138,7 @@ void Entity::teleport(const Vector3<double> &pos)
     }
 }
 
-std::pair<bool, std::shared_ptr<Entity>> Entity::pickupItem()
+const std::shared_ptr<Entity> Entity::pickupItem()
 {
     auto collectorPosition = this->getPosition();
     Vector3<double> pickupBoxH = {1, 1, 1};
@@ -149,15 +149,11 @@ std::pair<bool, std::shared_ptr<Entity>> Entity::pickupItem()
             if (((collectorPosition.x - item->getPosition().x) <= pickupBoxH.x && (collectorPosition.x - item->getPosition().x) >= -pickupBoxH.x) &&
                 ((collectorPosition.y - item->getPosition().y) <= pickupBoxV.y && (collectorPosition.y - item->getPosition().y) >= -pickupBoxV.y) &&
                 ((collectorPosition.z - item->getPosition().z) <= pickupBoxH.z && (collectorPosition.z - item->getPosition().z) >= -pickupBoxH.z)) {
-                // LINFO("There is an item to pickup at {}, {}, {}", (collectorPosition.x - item->getPosition().x), (collectorPosition.y - item->getPosition().y),(collectorPosition.z - item->getPosition().z));
-                return {true, item};
+                // LINFO("There is an item to pickup at {}, {}, {}", (collectorPosition.x - item->getPosition().x), (collectorPosition.y -
+                // item->getPosition().y),(collectorPosition.z - item->getPosition().z));
+                return item;
             }
         }
     }
-}
-
-const protocol::Slot &Entity::getPickupItemFromEntity(std::shared_ptr<Entity> entity)
-{
-    auto item = std::dynamic_pointer_cast<Item>(entity);
-    return item->getItem();
+    return nullptr;
 }

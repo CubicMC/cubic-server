@@ -936,13 +936,13 @@ void Player::_onLockDifficulty(UNUSED protocol::LockDifficulty &pck) { N_LDEBUG(
 void Player::playerPickupItem()
 {
     auto entity = Entity::pickupItem();
-    if (entity.first) {
-        auto item = Entity::getPickupItemFromEntity(entity.second);
+    if (entity != nullptr) {
+        auto item = std::dynamic_pointer_cast<Item>(entity)->getItem();
         auto slotItem = protocol::Slot {true, item.itemID, item.itemCount};
-        this->sendPickupItem({entity.second->getId(), this->getId(), item.itemCount});
+        this->sendPickupItem({entity->getId(), this->getId(), item.itemCount});
         this->_inventory->insert(slotItem);
         this->sendSetContainerContent({_inventory});
-        this->getDimension()->removeEntity(entity.second->getId());
+        this->getDimension()->removeEntity(entity->getId());
     }
 }
 

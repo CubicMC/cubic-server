@@ -87,10 +87,7 @@ public:
 
     // Check if there is an item to pickup within the entity pickup box
     // (1 block on each side, 0.5 block above & below)
-    std::pair<bool, std::shared_ptr<Entity>> pickupItem();
-
-    // Return the item from the entity
-    virtual const protocol::Slot &getPickupItemFromEntity(std::shared_ptr<Entity> item);
+    const std::shared_ptr<Entity> pickupItem();
 
 protected:
     std::shared_ptr<Dimension> _dim;
