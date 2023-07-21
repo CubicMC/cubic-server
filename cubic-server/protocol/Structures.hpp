@@ -26,7 +26,6 @@ inline void Slot::reset()
     itemCount = 0; /* nbt = nbt::Compound(); */
 }
 
-
 void Slot::swap(protocol::Slot &other)
 {
     if (this->itemID == other.itemID && this->itemID != 0) {

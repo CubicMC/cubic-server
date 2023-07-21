@@ -132,11 +132,11 @@ void Player::_tickPosition()
         teleport({_pos.x, -58, _pos.z});
 }
 
-void Player::synchronize() {
+void Player::synchronize()
+{
     // TODO: synchronize further data (for example other entities)
     this->sendSynchronizePlayerPosition();
 }
-
 
 std::weak_ptr<Client> Player::getClient() const { return _cli; }
 
@@ -519,7 +519,7 @@ void Player::sendSynchronizePlayerPosition(void)
         0,
         0,
         false,
-        });
+    });
     client->doWrite(std::move(pck));
     LDEBUG("Synchronized player position");
 }

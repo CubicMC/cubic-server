@@ -1,11 +1,11 @@
 #include "WorldGroup.hpp"
 
 #include "Chat.hpp"
+#include "Dimension.hpp"
 #include "Server.hpp"
 #include "SoundSystem.hpp"
 #include "World.hpp"
 #include "logging/logging.hpp"
-#include "Dimension.hpp"
 #include "scoreboard/Scoreboard.hpp"
 
 WorldGroup::WorldGroup(std::shared_ptr<Chat> chat):
@@ -63,7 +63,6 @@ std::unordered_map<std::string_view, std::shared_ptr<World>> &WorldGroup::getWor
 const std::unordered_map<std::string_view, std::shared_ptr<World>> &WorldGroup::getWorlds() const { return this->_worlds; }
 
 Scoreboard::Scoreboard &WorldGroup::getScoreboard(void) { return (this->_scoreboard); }
-
 
 // void WorldGroup::initialize()
 //{

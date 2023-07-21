@@ -55,7 +55,8 @@ Entity::Entity(std::shared_ptr<Dimension> dim,
 }
 // clang-format on
 
-void Entity::setDimension(std::shared_ptr<Dimension> dim) {
+void Entity::setDimension(std::shared_ptr<Dimension> dim)
+{
     Player *player = dynamic_cast<Player *>(this);
 
     // if entity is a player
@@ -65,7 +66,7 @@ void Entity::setDimension(std::shared_ptr<Dimension> dim) {
             this->getDimension() == dim || // different previous dimension or
             this->getWorld() == dim->getWorld() || // different previous world or
             this->getWorldGroup() == dim->getWorld()->getWorldGroup()) { // different previous worldgroup
-                dim->getWorld()->getWorldGroup()->getScoreboard().sendScoreboardStatus(*player);
+            dim->getWorld()->getWorldGroup()->getScoreboard().sendScoreboardStatus(*player);
         }
     }
     _dim = dim;
@@ -87,7 +88,8 @@ void Entity::setRotation(const Vector2<uint8_t> &rot) { _rot = rot; }
 
 void Entity::setRotation(uint8_t x, uint8_t y) { this->setRotation({x, y}); }
 
-void Entity::setRotation(float yaw, float pitch) {
+void Entity::setRotation(float yaw, float pitch)
+{
     while (yaw < 0) {
         yaw += 360;
     }
@@ -114,10 +116,7 @@ Vector2<uint8_t> &Entity::getRotation() { return _rot; }
 
 const Vector2<uint8_t> &Entity::getRotation() const { return _rot; }
 
-Vector2<float> Entity::getRotationDegree() const {
-    return Vector2<float>((float)_rot.x / (256.0 / 360.0), (float)_rot.z / (256.0 / 360.0));
-}
-
+Vector2<float> Entity::getRotationDegree() const { return Vector2<float>((float) _rot.x / (256.0 / 360.0), (float) _rot.z / (256.0 / 360.0)); }
 
 Vector3<double> &Entity::getLastPosition() { return _lastPos; }
 

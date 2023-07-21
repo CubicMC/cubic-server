@@ -9,13 +9,13 @@
 #include <spdlog/spdlog.h>
 #include <string>
 
+#include <spdlog/cfg/env.h>
 #include <spdlog/common.h>
 #include <spdlog/details/registry.h>
 #include <spdlog/logger.h>
 #include <spdlog/sinks/basic_file_sink.h>
 #include <spdlog/sinks/daily_file_sink.h>
 #include <spdlog/sinks/stdout_color_sinks.h>
-#include <spdlog/cfg/env.h>
 
 #include "Sinks.hpp"
 
