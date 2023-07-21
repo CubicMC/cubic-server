@@ -105,7 +105,7 @@ public:
     constexpr std::array<Section, NB_OF_SECTIONS> &getSections() { return _sections; }
     constexpr const std::array<Section, NB_OF_SECTIONS> &getSections() const { return _sections; }
 
-    const std::shared_ptr<Dimension> getDimension() const { return _dimension; }
+    const std::shared_ptr<const Dimension> getDimension() const { return _dimension; }
 
     int64_t getTick();
     void setTick(int64_t tick);
