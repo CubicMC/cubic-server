@@ -939,10 +939,10 @@ void Player::playerPickupItem()
     if (item.first) {
         this->sendPickupItem({item.second->getId(), this->getId(), Entity::getPickupItemFromEntity(item.second).second});
         auto slotItem =
-            protocol::Slot {true, Entity::getPickupItemFromEntity(Entity::pickupItem().second).first, Entity::getPickupItemFromEntity(Entity::pickupItem().second).second};
+            protocol::Slot {true, Entity::getPickupItemFromEntity(item.second).first, Entity::getPickupItemFromEntity(item.second).second};
         this->_inventory->insert(slotItem);
         this->sendSetContainerContent({_inventory});
-        this->getDimension()->removeEntity(Entity::pickupItem().second->getId());
+        this->getDimension()->removeEntity(item.second->getId());
     }
 }
 
@@ -952,7 +952,6 @@ void Player::_onSetPlayerPosition(protocol::SetPlayerPosition &pck)
     // TODO: Validate the position
     onEvent(Server::getInstance()->getPluginManager(), onEntityMove, this, _pos, {pck.x, pck.feetY, pck.z});
     this->setPosition(pck.x, pck.feetY, pck.z, pck.onGround);
-    auto item = Entity::pickupItem();
     playerPickupItem();
 }
 
