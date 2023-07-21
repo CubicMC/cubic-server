@@ -2,8 +2,9 @@
 #define CUBICSERVER_MATH_VECTOR3_HPP
 
 #include <cmath>
-#include <format>
 #include <iostream>
+
+#include <logging/logging.hpp>
 
 template<typename T>
 class Vector3 {
@@ -180,7 +181,7 @@ public:
 
     constexpr bool operator!=(const T &other) const noexcept { return this->x != other || this->y != other || this->z != other; }
 
-    constexpr std::string toString() const { return std::format("({:.3f} {:.3f} {:.3f})", x, y, z); }
+    constexpr std::string toString() const { return fmt::format("({:.3f} {:.3f} {:.3f})", x, y, z); }
 
     T x;
     T y;
