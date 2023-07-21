@@ -935,14 +935,14 @@ void Player::_onLockDifficulty(UNUSED protocol::LockDifficulty &pck) { N_LDEBUG(
 
 void Player::playerPickupItem()
 {
-    auto item = Entity::pickupItem();
-    if (item.first) {
-        this->sendPickupItem({item.second->getId(), this->getId(), Entity::getPickupItemFromEntity(item.second).second});
-        auto slotItem =
-            protocol::Slot {true, Entity::getPickupItemFromEntity(item.second).first, Entity::getPickupItemFromEntity(item.second).second};
+    auto entity = Entity::pickupItem();
+    if (entity.first) {
+        auto item = Entity::getPickupItemFromEntity(entity.second);
+        auto slotItem = protocol::Slot {true, item.itemID, item.itemCount};
+        this->sendPickupItem({entity.second->getId(), this->getId(), item.itemCount});
         this->_inventory->insert(slotItem);
         this->sendSetContainerContent({_inventory});
-        this->getDimension()->removeEntity(item.second->getId());
+        this->getDimension()->removeEntity(entity.second->getId());
     }
 }
 
