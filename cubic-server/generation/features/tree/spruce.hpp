@@ -4,6 +4,8 @@
 #include "generation/generator.hpp"
 #include "tree.hpp"
 
+constexpr int MAX_SIZE_LEAVES_LAYER_SPRUCE = 3;
+
 namespace generation::trees {
 class SpruceTree : public Tree {
 public:
