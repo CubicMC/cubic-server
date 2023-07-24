@@ -75,6 +75,7 @@ enum class ClientPacketID : int32_t {
     SoundEffect = 0x5E,
     StopSound = 0x5F,
     SystemChatMessage = 0x60,
+    PickupItem = 0x63,
     TeleportEntity = 0x64,
     UpdateAdvancements = 0x65,
     UpdateAttributes = 0x66,
@@ -746,6 +747,14 @@ struct SystemChatMessage {
     bool overlay;
 };
 std::unique_ptr<std::vector<uint8_t>> createSystemChatMessage(const SystemChatMessage &);
+
+struct PickupItem {
+    int32_t collectedEntityId;
+    int32_t collectorEntityId;
+    int32_t pickupItemCount;
+
+};
+std::unique_ptr<std::vector<uint8_t>> createPickupItem(const PickupItem &);
 
 struct EntityVelocity {
     int32_t entityId;

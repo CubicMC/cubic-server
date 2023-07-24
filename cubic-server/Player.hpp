@@ -65,6 +65,7 @@ public:
     void setOperator(const bool isOp);
     void setKeepAliveId(long id);
     void updatePlayerInfo(const protocol::PlayerInfoUpdate &data);
+    void playerPickupItem();
 
     template<isBaseOf<protocol::container::Container> Container, typename... Args>
     std::shared_ptr<Container> openContainer(Args &...);
@@ -133,6 +134,7 @@ public:
     void sendDisplayObjective(const protocol::DisplayObjective &packet);
     void sendUpdateScore(const protocol::UpdateScore &packet);
     void sendUpdateTeams(const protocol::UpdateTeams &packet);
+    void sendPickupItem(const protocol::PickupItem &packet);
 
 private:
     void _onConfirmTeleportation(protocol::ConfirmTeleportation &pck);

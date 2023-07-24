@@ -132,11 +132,11 @@ void Player::_tickPosition()
         teleport({_pos.x, -58, _pos.z});
 }
 
-void Player::synchronize() {
+void Player::synchronize()
+{
     // TODO: synchronize further data (for example other entities)
     this->sendSynchronizePlayerPosition();
 }
-
 
 std::weak_ptr<Client> Player::getClient() const { return _cli; }
 
@@ -519,7 +519,7 @@ void Player::sendSynchronizePlayerPosition(void)
         0,
         0,
         false,
-        });
+    });
     client->doWrite(std::move(pck));
     LDEBUG("Synchronized player position");
 }
@@ -785,6 +785,14 @@ void Player::sendUpdateTeams(const protocol::UpdateTeams &packet)
     LDEBUG("Sent update teams packet");
 }
 
+void Player::sendPickupItem(const protocol::PickupItem &packet)
+{
+    GET_CLIENT();
+    auto pck = protocol::createPickupItem(packet);
+    client->doWrite(std::move(pck));
+    LDEBUG("Sent pickup item packet");
+}
+
 #pragma endregion
 #pragma region ServerBound
 
@@ -925,12 +933,26 @@ void Player::_onKeepAliveResponse(protocol::KeepAliveResponse &pck)
 
 void Player::_onLockDifficulty(UNUSED protocol::LockDifficulty &pck) { N_LDEBUG("Got a Lock Difficulty"); }
 
+void Player::playerPickupItem()
+{
+    auto entity = Entity::pickupItem();
+    if (entity != nullptr) {
+        auto item = std::dynamic_pointer_cast<Item>(entity)->getItem();
+        auto slotItem = protocol::Slot {true, item.itemID, item.itemCount};
+        this->sendPickupItem({entity->getId(), this->getId(), item.itemCount});
+        this->_inventory->insert(slotItem);
+        this->sendSetContainerContent({_inventory});
+        this->getDimension()->removeEntity(entity->getId());
+    }
+}
+
 void Player::_onSetPlayerPosition(protocol::SetPlayerPosition &pck)
 {
     N_LDEBUG("Got a Set Player Position ({}, {}, {})", pck.x, pck.feetY, pck.z);
     // TODO: Validate the position
     onEvent(Server::getInstance()->getPluginManager(), onEntityMove, this, _pos, {pck.x, pck.feetY, pck.z});
     this->setPosition(pck.x, pck.feetY, pck.z, pck.onGround);
+    playerPickupItem();
 }
 
 void Player::_onSetPlayerPositionAndRotation(protocol::SetPlayerPositionAndRotation &pck)
@@ -942,6 +964,7 @@ void Player::_onSetPlayerPositionAndRotation(protocol::SetPlayerPositionAndRotat
     onEvent(Server::getInstance()->getPluginManager(), onEntityRotate, this, {_rot.x, _rot.z, 0}, {(uint8_t) pck.yaw, (uint8_t) pck.pitch, 0});
     this->setPosition(pck.x, pck.feetY, pck.z, pck.onGround);
     this->setRotation(pck.yaw, pck.pitch);
+    playerPickupItem();
 }
 
 void Player::_onSetPlayerRotation(protocol::SetPlayerRotation &pck)

@@ -1,11 +1,16 @@
 #include "Entity.hpp"
+#include "Item.hpp"
 
 #include "Dimension.hpp"
 #include "Player.hpp"
 #include "Server.hpp"
 #include "World.hpp"
 #include "WorldGroup.hpp"
+#include "logging/logging.hpp"
+#include "math/Vector3.hpp"
 #include "options.hpp"
+#include <memory>
+#include <utility>
 
 // clang-format off
 Entity::Entity(std::shared_ptr<Dimension> dim,
@@ -55,7 +60,8 @@ Entity::Entity(std::shared_ptr<Dimension> dim,
 }
 // clang-format on
 
-void Entity::setDimension(std::shared_ptr<Dimension> dim) {
+void Entity::setDimension(std::shared_ptr<Dimension> dim)
+{
     Player *player = dynamic_cast<Player *>(this);
 
     // if entity is a player
@@ -65,7 +71,7 @@ void Entity::setDimension(std::shared_ptr<Dimension> dim) {
             this->getDimension() == dim || // different previous dimension or
             this->getWorld() == dim->getWorld() || // different previous world or
             this->getWorldGroup() == dim->getWorld()->getWorldGroup()) { // different previous worldgroup
-                dim->getWorld()->getWorldGroup()->getScoreboard().sendScoreboardStatus(*player);
+            dim->getWorld()->getWorldGroup()->getScoreboard().sendScoreboardStatus(*player);
         }
     }
     _dim = dim;
@@ -87,7 +93,8 @@ void Entity::setRotation(const Vector2<uint8_t> &rot) { _rot = _rot; }
 
 void Entity::setRotation(uint8_t x, uint8_t y) { this->setRotation({x, y}); }
 
-void Entity::setRotation(float yaw, float pitch) {
+void Entity::setRotation(float yaw, float pitch)
+{
     while (yaw < 0) {
         yaw += 360;
     }
@@ -114,10 +121,7 @@ Vector2<uint8_t> &Entity::getRotation() { return _rot; }
 
 const Vector2<uint8_t> &Entity::getRotation() const { return _rot; }
 
-Vector2<float> Entity::getRotationDegree() const {
-    return Vector2<float>((float)_rot.x / (256.0 / 360.0), (float)_rot.z / (256.0 / 360.0));
-}
-
+Vector2<float> Entity::getRotationDegree() const { return Vector2<float>((float) _rot.x / (256.0 / 360.0), (float) _rot.z / (256.0 / 360.0)); }
 
 Vector3<double> &Entity::getLastPosition() { return _lastPos; }
 
@@ -132,4 +136,24 @@ void Entity::teleport(const Vector3<double> &pos)
             continue;
         i->sendTeleportEntity(this->getId(), pos);
     }
+}
+
+const std::shared_ptr<Entity> Entity::pickupItem()
+{
+    auto collectorPosition = this->getPosition();
+    Vector3<double> pickupBoxH = {1, 1, 1};
+    Vector3<double> pickupBoxV = {0.5, 0.5, 0.5};
+
+    for (auto item : this->getDimension()->getEntities()) {
+        if (item->getType() == protocol::SpawnEntity::EntityType::Item && item->getId() != this->getId()) {
+            if (((collectorPosition.x - item->getPosition().x) <= pickupBoxH.x && (collectorPosition.x - item->getPosition().x) >= -pickupBoxH.x) &&
+                ((collectorPosition.y - item->getPosition().y) <= pickupBoxV.y && (collectorPosition.y - item->getPosition().y) >= -pickupBoxV.y) &&
+                ((collectorPosition.z - item->getPosition().z) <= pickupBoxH.z && (collectorPosition.z - item->getPosition().z) >= -pickupBoxH.z)) {
+                // LINFO("There is an item to pickup at {}, {}, {}", (collectorPosition.x - item->getPosition().x), (collectorPosition.y -
+                // item->getPosition().y),(collectorPosition.z - item->getPosition().z));
+                return item;
+            }
+        }
+    }
+    return nullptr;
 }

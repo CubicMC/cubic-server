@@ -8,6 +8,7 @@
 #include "types.hpp"
 #include "utility/SharedFromThis.hpp"
 #include <memory>
+#include <utility>
 
 class World;
 class WorldGroup;
@@ -83,6 +84,10 @@ public:
     // Drop an item when necessary (death of the entity, broken block, ...)
     // The dropped item is determined by the loot tables
     virtual void dropItem(UNUSED const Vector3<double> &pos) {};
+
+    // Check if there is an item to pickup within the entity pickup box
+    // (1 block on each side, 0.5 block above & below)
+    const std::shared_ptr<Entity> pickupItem();
 
 protected:
     std::shared_ptr<Dimension> _dim;
