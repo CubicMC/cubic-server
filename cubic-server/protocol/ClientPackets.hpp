@@ -8,11 +8,11 @@
 
 #include "PlayerAttributes.hpp"
 #include "Structures.hpp"
+#include "chat/Message.hpp"
 #include "common.hpp"
 #include "protocol/container/Container.hpp"
 #include "types.hpp"
 #include "world_storage/ChunkColumn.hpp"
-#include "chat/Message.hpp"
 
 namespace protocol {
 
@@ -308,10 +308,18 @@ struct SetContainerContent {
 std::unique_ptr<std::vector<uint8_t>> createSetContainerContent(const SetContainerContent &);
 
 struct SetContainerSlot {
-    SetContainerSlot(const std::shared_ptr<container::Container> &container, int8_t containerId, int16_t slot)
-        : container(container), containerId(containerId), slot(slot) {}
-    SetContainerSlot(const std::shared_ptr<container::Container> &container, int16_t slot)
-        : container(container), containerId(container->id()), slot(slot) {}
+    SetContainerSlot(const std::shared_ptr<container::Container> &container, int8_t containerId, int16_t slot):
+        container(container),
+        containerId(containerId),
+        slot(slot)
+    {
+    }
+    SetContainerSlot(const std::shared_ptr<container::Container> &container, int16_t slot):
+        container(container),
+        containerId(container->id()),
+        slot(slot)
+    {
+    }
     const std::shared_ptr<container::Container> container;
     int8_t containerId;
     int16_t slot;

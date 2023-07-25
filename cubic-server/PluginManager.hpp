@@ -1,8 +1,8 @@
 #ifndef CUBICSERVER_PLUGINMANAGER_HPP
 #define CUBICSERVER_PLUGINMANAGER_HPP
 
-#include <memory>
 #include <cstdint>
+#include <memory>
 #include <string>
 #include <unordered_map>
 #include <variant>

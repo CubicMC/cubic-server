@@ -32,14 +32,8 @@ public:
         explicit T() = default;                                             \
         ~T() = default;                                                     \
                                                                             \
-        std::string_view name() const override                              \
-        {                                                                   \
-            return N;                                                       \
-        }                                                                   \
-        static std::string_view staticName()                                \
-        {                                                                   \
-            return N;                                                       \
-        }                                                                   \
+        std::string_view name() const override { return N; }                \
+        static std::string_view staticName() { return N; }                  \
                                                                             \
         T##Element &addEntry() override                                     \
         {                                                                   \

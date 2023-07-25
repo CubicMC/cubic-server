@@ -24,6 +24,7 @@
 #include "WorldGroup.hpp"
 #include "command_parser/commands/Gamemode.hpp"
 #include "command_parser/commands/InventoryDump.hpp"
+#include "command_parser/commands/Teleport.hpp"
 #include "default/DefaultWorldGroup.hpp"
 #include "logging/logging.hpp"
 #include "registry/Biome.hpp"
@@ -50,7 +51,7 @@ Server::Server():
     // _motd = _config.getMotd();
     // _enforceWhitelist = _config.getEnforceWhitelist();
 
-    _commands.reserve(25);
+    _commands.reserve(27);
     _commands.emplace_back(std::make_unique<command_parser::Help>());
     _commands.emplace_back(std::make_unique<command_parser::QuestionMark>());
     _commands.emplace_back(std::make_unique<command_parser::Stop>());
@@ -76,6 +77,8 @@ Server::Server():
     _commands.emplace_back(std::make_unique<command_parser::Loot>());
     _commands.emplace_back(std::make_unique<command_parser::Gamemode>());
     _commands.emplace_back(std::make_unique<command_parser::InventoryDump>());
+    _commands.emplace_back(std::make_unique<command_parser::Tp>());
+    _commands.emplace_back(std::make_unique<command_parser::Teleport>());
 }
 
 Server::~Server() { }

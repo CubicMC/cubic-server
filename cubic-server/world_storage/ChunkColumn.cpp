@@ -23,7 +23,7 @@
         // _dimension->getLevel().chunkColumnsMutex.lock();                                                                          \
         // chunkMap.at(_chunkPos + pos2D)._generationLock.lock();                                                                    \
         // neighbours.push_back(&chunkMap.at(_chunkPos + pos2D));*/                                                                  \
-    }                                                                                                                                \
+    }
 
 #define GET_NEIGHBOURS()                                           \
     std::vector<ChunkColumn *> neighbours;                         \

@@ -2,10 +2,10 @@
 
 #include "Dimension.hpp"
 #include "Player.hpp"
-#include "Server.hpp"
-#include "events/Events.hpp"
-#include "events/CancelEvents.hpp"
 #include "PluginManager.hpp"
+#include "Server.hpp"
+#include "events/CancelEvents.hpp"
+#include "events/Events.hpp"
 
 /*
  * @brief Attack the entity

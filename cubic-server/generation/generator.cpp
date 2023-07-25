@@ -39,7 +39,7 @@ generation::Generator::GenerationNoise generation::Generator::getNoise(positionT
     // noise.noise2D.erosion = _noiseMaker.octave2D_11(_x, _z, octaves);
     // noise.noise2D.peaksAndValley = _noiseMaker.octave2D_11(_x, _z, octaves);
     noise.noise2D.weirdness = _noiseMaker.octave2D_11(_x, _z, octaves);
-    noise.noise2D.trees = _noiseMaker.octave2D_11(x*0.5, z*0.5, 1);
+    noise.noise2D.trees = _noiseMaker.octave2D_11(x * 0.5, z * 0.5, 1);
 
     _noiseCache[x][z].first = noise.noise2D;
     noise.noise3D = _noiseCache[x][z].second[y];

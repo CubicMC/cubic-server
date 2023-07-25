@@ -214,7 +214,7 @@ void Team::setColor(Color color) noexcept
 
 void Team::sendUpdateTeam(void) const
 {
-    uint8_t friendlyFlags = (0b00000000 | this->_seeFriendlyInvisibles  << 1) | this->_allowFriendlyFire;
+    uint8_t friendlyFlags = (0b00000000 | this->_seeFriendlyInvisibles << 1) | this->_allowFriendlyFire;
 
     const protocol::UpdateTeams update {
         this->_name,

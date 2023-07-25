@@ -9,8 +9,8 @@
 #include <vector>
 
 #include "Palette.hpp"
-#include "generation/generator.hpp"
 #include "Section.hpp"
+#include "generation/generator.hpp"
 #include "nbt.hpp"
 #include "protocol/Structures.hpp"
 #include "protocol/common.hpp"
@@ -151,7 +151,7 @@ private:
     void _generateTopLayerModification(generation::Generator &generator);
 
 private:
-    private:
+private:
     std::array<Section, NB_OF_SECTIONS> _sections;
     // std::array<uint8_t, (NB_OF_PLAYABLE_SECTIONS + 2) * SECTION_3D_SIZE> _skyLights;
     // std::array<uint8_t, (NB_OF_PLAYABLE_SECTIONS + 2) * SECTION_3D_SIZE> _blockLights;
