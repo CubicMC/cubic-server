@@ -760,7 +760,6 @@ struct PickupItem {
     int32_t collectedEntityId;
     int32_t collectorEntityId;
     int32_t pickupItemCount;
-
 };
 std::unique_ptr<std::vector<uint8_t>> createPickupItem(const PickupItem &);
 
