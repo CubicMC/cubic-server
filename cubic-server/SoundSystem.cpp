@@ -33,9 +33,15 @@ void SoundSystem::tick()
             }
         }
     }
-    LINFO("Get dim for spawn chicken");
+
     auto dim = _group.getWorld("default")->getDimension("overworld");
-    LINFO("make entity chicken");
+    int chickenCount = 0;
+    for (auto entity : dim->getEntities()) {
+        if (entity->getType() == EntityType::Chicken)
+            chickenCount++;
+    }
+    if (chickenCount > 0)
+        return;
     auto chicken = dim->makeEntity<Chicken>();
     LINFO("spawn entity chicken");
     dim->spawnEntity(chicken);
