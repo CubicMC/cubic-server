@@ -1,19 +1,18 @@
 #include "Chicken.hpp"
 #include "Dimension.hpp"
+#include "Server.hpp"
 #include "entities/Item.hpp"
 #include "entities/Mob.hpp"
+#include "logging/logging.hpp"
+#include "utility/PseudoRandomGenerator.hpp"
 #include <cstdint>
 #include <random>
-#include "Server.hpp"
-#include "logging/logging.hpp"
 
 Chicken::Chicken(std::shared_ptr<Dimension> dim, u128 uuid, float health, float maxHealth, bool leftHanded, bool aggressive):
     Mob(dim, EntityType::Chicken, uuid, health, maxHealth, leftHanded, aggressive)
 {
-    std::random_device rd;
-    std::mt19937 gen(rd());
-    std::uniform_int_distribution<uint16_t> dist(6000, 12000);
-    auto time = dist(gen);
+    auto time = utility::PseudoRandomGenerator::getInstance()->generateNumber(6000, 12000);
+    // auto time = 500;
     LINFO("Chicken will drop egg in {} ticks", time);
     _layEgg.setTickRate(time);
     _layEgg.setCallback(std::bind(&Chicken::layEgg, this));
@@ -24,14 +23,11 @@ Chicken::Chicken(std::shared_ptr<Dimension> dim, u128 uuid, float health, float 
 
 void Chicken::layEgg()
 {
-    std::random_device rd;
-    std::mt19937 gen(rd());
-    std::uniform_int_distribution<uint16_t> dist(6000, 12000);
-    _layEgg.setTickRate(dist(gen));
-    auto piegg = ITEM_CONVERTER.fromItemToProtocolId("minecraft:egg");
-    LINFO("protocol id = {}, and this protocol id is equal to : {}", piegg, ITEM_CONVERTER.fromProtocolIdToItem(piegg));
-    this->getDimension()->makeEntity<Item>(protocol::Slot {true, 721, 1})->dropItem({_pos.x, _pos.y, _pos.z});
-    return;
+    auto time = utility::PseudoRandomGenerator::getInstance()->generateNumber(6000, 12000);
+    LINFO("Chicken will drop egg in {} ticks", time);
+    _layEgg.setTickRate(time);
+    _dim->makeEntity<Item>(protocol::Slot {true, ITEM_CONVERTER.fromItemToProtocolId("minecraft:egg"), 1})->dropItem({_pos.x, _pos.y + 1, _pos.z});
+    LINFO("Chicken dropped egg at x: {}, y: {}, z: {}", _pos.x, _pos.y + 1, _pos.z);
 }
 
 void Chicken::tick()

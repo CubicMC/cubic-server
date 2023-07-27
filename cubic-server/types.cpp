@@ -1,4 +1,5 @@
 #include "types.hpp"
+#include "utility/PseudoRandomGenerator.hpp"
 #include <iterator>
 #include <random>
 
@@ -34,10 +35,10 @@ u128 u128::fromShortString(const std::string &str)
 
 u128 u128::random()
 {
-    static std::random_device rd;
-    static std::mt19937_64 gen(rd());
-    std::uniform_int_distribution<uint64_t> dis(0, 0xffffffffffffffff);
-    return u128({dis(gen), dis(gen)});
+    return u128(
+        {utility::PseudoRandomGenerator::getInstance()->generateNumber<long unsigned int>(0, 0xffffffffffffffff),
+         utility::PseudoRandomGenerator::getInstance()->generateNumber<long unsigned int>(0, 0xffffffffffffffff)}
+    );
 }
 
 Position::valueType Position::manhattanDistance(const Position &other) const { return std::abs(x - other.x) + std::abs(y - other.y) + std::abs(z - other.z); }
