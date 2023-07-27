@@ -140,8 +140,8 @@ protected:
     virtual void _run();
 
 public:
-    mutable std::mutex _playersMutex;
-    mutable std::mutex _entitiesMutex;
+    mutable std::recursive_mutex _playersMutex;
+    mutable std::recursive_mutex _entitiesMutex;
     mutable std::mutex _loadingChunksMutex;
 
 protected:
