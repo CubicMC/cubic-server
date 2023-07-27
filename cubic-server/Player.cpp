@@ -134,8 +134,8 @@ void Player::_tickPosition()
 
 void Player::synchronize()
 {
+    return;
     // TODO: synchronize further data (for example other entities)
-    this->sendSynchronizePlayerPosition();
 }
 
 std::weak_ptr<Client> Player::getClient() const { return _cli; }
@@ -601,10 +601,10 @@ void Player::sendEntityAnimation(protocol::EntityAnimation::ID animId, int32_t e
     N_LDEBUG("Sent an Entity Animation packet");
 }
 
-void Player::sendTeleportEntity(int32_t id, const Vector3<double> &pos)
+void Player::sendTeleportEntity(int32_t id, const Vector3<double> &pos, const Vector2<uint8_t> &rot)
 {
     GET_CLIENT();
-    auto pck = protocol::createTeleportEntity({id, pos.x, pos.y, pos.z, _rot.x, _rot.z, false});
+    auto pck = protocol::createTeleportEntity({id, pos.x, pos.y, pos.z, rot.x, rot.z, false});
     client->doWrite(std::move(pck));
     N_LDEBUG("Sent a Teleport Entity");
 }
@@ -1294,7 +1294,6 @@ void Player::_continueLoginSequence()
     //     player->_synchronizePostion({0, -58, 0});
     // this->_player->sendChunkAndLightUpdate(0, 0);
     getDimension()->spawnPlayer(*this);
-    this->teleport({8.5, 100, 8.5}); // TODO: change that to player_attributes::DEFAULT_SPAWN_POINT
 
     // send scoreboard status (objectives and teams)
     _dim->getWorld()->getWorldGroup()->getScoreboard().sendScoreboardStatus(*this);

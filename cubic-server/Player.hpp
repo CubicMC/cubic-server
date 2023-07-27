@@ -97,7 +97,7 @@ public:
     void sendSynchronizePlayerPosition(const protocol::SynchronizePlayerPosition &data);
     void sendSynchronizePlayerPosition(void);
     void sendSwingArm(bool mainHand, int32_t swingerId);
-    void sendTeleportEntity(int32_t id, const Vector3<double> &pos);
+    void sendTeleportEntity(int32_t id, const Vector3<double> &pos, const Vector2<uint8_t> &rot);
     void sendRemoveEntities(const std::vector<int32_t> &entities);
     void sendUpdateEntityPosition(const protocol::UpdateEntityPosition &data);
     void sendUpdateEntityPositionAndRotation(const protocol::UpdateEntityPositionRotation &data);
