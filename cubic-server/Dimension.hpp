@@ -123,6 +123,7 @@ public:
      *
      * @param x int32_t
      * @param z int32_t
+     * @param player std::shared_ptr<Player>
      */
     virtual void loadOrGenerateChunk(int x, int z, const std::shared_ptr<Player> player);
 
