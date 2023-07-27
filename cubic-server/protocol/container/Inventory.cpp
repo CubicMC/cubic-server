@@ -169,6 +169,7 @@ void Inventory::onClick(std::shared_ptr<Player> player, int16_t index, uint8_t b
 {
     switch (mode) {
     case ClickMode::ShiftClick:
+        if (index >= 9 && index < 36)
             swapContainer(at(index), _hotbar);
         else
             swapContainer(at(index), _playerInventory);
