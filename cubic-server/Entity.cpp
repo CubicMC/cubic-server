@@ -134,7 +134,7 @@ void Entity::teleport(const Vector3<double> &pos)
     for (auto i : this->getDimension()->getPlayers()) {
         if (i->getId() == this->getId())
             continue;
-        i->sendTeleportEntity(this->getId(), pos);
+        i->sendTeleportEntity(this->getId(), pos, {0, 0});
     }
 }
 
