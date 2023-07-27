@@ -27,7 +27,6 @@ public:
      * @brief Used to send a system message to a player from the server
      *
      * @param message
-     * @param from
      * @param to
      * @param overlay A normal message will be displayed in the chat, an overlay message will be displayed in the middle of the screen
      */
