@@ -1,7 +1,7 @@
 #include "wandering.hpp"
 #include "entities/Entity.hpp"
-#include "math/Vector3.hpp"
 #include "logging/logging.hpp"
+#include "math/Vector3.hpp"
 
 namespace ai {
 Wandering::Wandering(Entity &entity):
@@ -25,7 +25,7 @@ void Wandering::think()
     double b = pos.z - m * pos.x;
     // get the x and z values for the next position
     for (int i = 1; i <= 40; i++) {
-        double x = pos.x + i/40.0;
+        double x = pos.x + i / 40.0;
         double z = m * x + b;
         // set the next position
         this->_path.push({x, pos.y, z});

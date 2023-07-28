@@ -13,6 +13,8 @@
 #include "WorldGroup.hpp"
 #include "blocks.hpp"
 #include "command_parser/CommandParser.hpp"
+#include "entities/Entity.hpp"
+#include "entities/Item.hpp"
 #include "events/CancelEvents.hpp"
 #include "items/foodItems.hpp"
 #include "logging/logging.hpp"
