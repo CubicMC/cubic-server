@@ -1,9 +1,9 @@
 #include "Dimension.hpp"
 
-#include "entities/Entity.hpp"
 #include "Player.hpp"
 #include "Server.hpp"
 #include "World.hpp"
+#include "entities/Entity.hpp"
 #include "logging/logging.hpp"
 #include "math/Vector3.hpp"
 #include "protocol/ClientPackets.hpp"
@@ -237,22 +237,21 @@ void Dimension::spawnEntity(const std::shared_ptr<const Entity> current)
     std::lock_guard _(_entitiesMutex);
     for (auto player : _players) {
         LDEBUG("spawn entity with id: {}", current->getId());
-        player->sendSpawnEntity(
-            {current->getId(),
-             current->getUuid(),
-             current->getType(),
-             current->getPosition().x,
-             current->getPosition().y,
-             current->getPosition().z,
-             0,
-             0,
-             0,
-             0,
-             16,
-             0,
-             0}
-        );
-        player->sendEntityMetadata(*current);
+        player->sendSpawnEntity({
+            current->getId(), // Entity ID
+            current->getUuid(), // Entity UUID
+            current->getType(), // Entity Type
+            current->getPosition().x, // Entity Position X
+            current->getPosition().y, // Entity Position Y
+            current->getPosition().z, // Entity Position Z
+            0, // Entity Pitch
+            0, // Entity Yaw
+            0, // Entity Head Yaw
+            0, // Entity data
+            16, // Entity Velocity X
+            0, // Entity Velocity Y
+            0 // Entity Velocity Z
+        });
     }
 }
 

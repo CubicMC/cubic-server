@@ -28,7 +28,7 @@ public:
     }
 
     template<isBaseOf<ai::AI> AI, typename... Args>
-    void attachAI(Args && ... args)
+    void attachAI(Args &&...args)
     {
         _ais.emplace_back(std::make_unique<AI>(*this, std::forward<Args>(args)...));
     }

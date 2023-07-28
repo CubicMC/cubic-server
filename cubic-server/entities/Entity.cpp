@@ -15,7 +15,6 @@
 #include <memory>
 #include <optional>
 #include <utility>
-#include "types.hpp"
 
 // clang-format off
 Entity::Entity(std::shared_ptr<Dimension> dim,
@@ -151,10 +150,7 @@ const std::shared_ptr<Entity> Entity::pickupItem()
     return nullptr;
 }
 
-void Entity::tick()
-{
-    this->tickPosition();
-}
+void Entity::tick() { this->tickPosition(); }
 
 void Entity::tickPosition()
 {

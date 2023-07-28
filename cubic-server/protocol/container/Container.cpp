@@ -1,8 +1,8 @@
 #include "Container.hpp"
 #include "Dimension.hpp"
-#include "entities/Item.hpp"
 #include "Player.hpp"
 #include "PlayerAttributes.hpp"
+#include "entities/Item.hpp"
 #include "logging/logging.hpp"
 #include "protocol/Structures.hpp"
 
