@@ -14,9 +14,9 @@
 #include "world_storage/Section.hpp"
 #include <cstdint>
 
-void command_parser::DumpChunk::autocomplete(UNUSED std::vector<std::string> &args, UNUSED std::shared_ptr<Player> invoker) const { return; }
+void command_parser::DumpChunk::autocomplete(UNUSED std::vector<std::string> &args, UNUSED Player *invoker) const { return; }
 
-void command_parser::DumpChunk::execute(std::vector<std::string> &args, std::shared_ptr<Player> invoker) const
+void command_parser::DumpChunk::execute(std::vector<std::string> &args, Player *invoker) const
 {
     if (args.size() != 2 && !invoker) {
         LDEBUG("Usage: /dumpChunk <x> <z>");
@@ -214,7 +214,7 @@ void command_parser::DumpChunk::execute(std::vector<std::string> &args, std::sha
     invoker->getDimension()->getWorld()->getChat()->sendSystemMessage("Done", *invoker);
 }
 
-void command_parser::DumpChunk::help(UNUSED std::vector<std::string> &args, std::shared_ptr<Player> invoker) const
+void command_parser::DumpChunk::help(UNUSED std::vector<std::string> &args, Player *invoker) const
 {
     if (invoker) {
         // invoker->sendMessage("Usage: /dumpchunk <x> <z>");

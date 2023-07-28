@@ -4,9 +4,9 @@
 #include "loot_tables/LootTables.hpp"
 #include "loot_tables/context/Empty.hpp"
 
-void command_parser::Loot::autocomplete(UNUSED std::vector<std::string> &args, UNUSED std::shared_ptr<Player> invoker) const { }
+void command_parser::Loot::autocomplete(UNUSED std::vector<std::string> &args, UNUSED Player *invoker) const { }
 
-void command_parser::Loot::execute(std::vector<std::string> &args, UNUSED std::shared_ptr<Player> invoker) const
+void command_parser::Loot::execute(std::vector<std::string> &args, UNUSED Player *invoker) const
 {
     if (args.size() != 2) {
         //        Server::getInstance()->getLootTableSystem().snitchTables();
@@ -24,4 +24,4 @@ void command_parser::Loot::execute(std::vector<std::string> &args, UNUSED std::s
     }
 }
 
-void command_parser::Loot::help(UNUSED std::vector<std::string> &args, UNUSED std::shared_ptr<Player> invoker) const { LINFO(this->_help); }
+void command_parser::Loot::help(UNUSED std::vector<std::string> &args, UNUSED Player *invoker) const { LINFO(this->_help); }

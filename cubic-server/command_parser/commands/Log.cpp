@@ -4,7 +4,7 @@
 #include "logging/Sinks.hpp"
 #include "logging/logging.hpp"
 
-void command_parser::Log::autocomplete(UNUSED std::vector<std::string> &args, std::shared_ptr<Player> invoker) const
+void command_parser::Log::autocomplete(UNUSED std::vector<std::string> &args, Player *invoker) const
 {
     if (invoker)
         return;
@@ -12,7 +12,7 @@ void command_parser::Log::autocomplete(UNUSED std::vector<std::string> &args, st
         LINFO("autocomplete log");
 }
 
-void command_parser::Log::execute(std::vector<std::string> &args, UNUSED std::shared_ptr<Player> invoker) const
+void command_parser::Log::execute(std::vector<std::string> &args, UNUSED Player *invoker) const
 {
     if (args.size() < 1) {
         LDEBUG("Usage : /log [logger_name] type");
@@ -37,7 +37,7 @@ void command_parser::Log::execute(std::vector<std::string> &args, UNUSED std::sh
     LWARN("Set level of all logger to {}", args[0]);
 }
 
-void command_parser::Log::help(UNUSED std::vector<std::string> &args, std::shared_ptr<Player> invoker) const
+void command_parser::Log::help(UNUSED std::vector<std::string> &args, Player *invoker) const
 {
     if (!invoker)
         LINFO("/log [logger_name] type");

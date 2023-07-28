@@ -10,7 +10,7 @@
 #include "chat/events/clicks/CopyToClipboard.hpp"
 #include "logging/logging.hpp"
 
-void command_parser::Seed::autocomplete(UNUSED std::vector<std::string> &args, std::shared_ptr<Player> invoker) const
+void command_parser::Seed::autocomplete(UNUSED std::vector<std::string> &args, Player *invoker) const
 {
     if (invoker)
         return;
@@ -18,7 +18,7 @@ void command_parser::Seed::autocomplete(UNUSED std::vector<std::string> &args, s
         LINFO("autocomplete seed");
 }
 
-void command_parser::Seed::execute(UNUSED std::vector<std::string> &args, std::shared_ptr<Player> invoker) const
+void command_parser::Seed::execute(UNUSED std::vector<std::string> &args, Player *invoker) const
 {
     auto seed = std::to_string(Server::getInstance()->getWorldGroup("default")->getWorld("default")->getSeed());
     auto message = chat::Message("Seed: [");
@@ -36,16 +36,16 @@ void command_parser::Seed::execute(UNUSED std::vector<std::string> &args, std::s
 
     if (invoker) {
         if (invoker->isOperator())
-            invoker->getDimension()->getWorld()->getChat()->sendSystemMessage(message, invoker);
+            invoker->getDimension()->getWorld()->getChat()->sendSystemMessage(message, *invoker);
     } else
         LINFO(seed);
 }
 
-void command_parser::Seed::help(UNUSED std::vector<std::string> &args, std::shared_ptr<Player> invoker) const
+void command_parser::Seed::help(UNUSED std::vector<std::string> &args, Player *invoker) const
 {
     if (invoker) {
         if (invoker->isOperator())
-            invoker->getDimension()->getWorld()->getChat()->sendSystemMessage("/seed", invoker);
+            invoker->getDimension()->getWorld()->getChat()->sendSystemMessage("/seed", *invoker);
     } else
         LINFO("/seed");
 }

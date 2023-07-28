@@ -7,7 +7,7 @@
 /*
     objectives
 */
-void command_parser::Objectives::autocomplete(UNUSED std::vector<std::string> &args, std::shared_ptr<Player> invoker) const
+void command_parser::Objectives::autocomplete(UNUSED std::vector<std::string> &args, Player *invoker) const
 {
     if (invoker)
         return;
@@ -15,7 +15,7 @@ void command_parser::Objectives::autocomplete(UNUSED std::vector<std::string> &a
         LINFO("autocomplete addobjective");
 }
 
-void command_parser::Objectives::execute(UNUSED std::vector<std::string> &args, UNUSED std::shared_ptr<Player> invoker) const
+void command_parser::Objectives::execute(UNUSED std::vector<std::string> &args, UNUSED Player *invoker) const
 {
     for (auto &[name, worldgroup] : Server::getInstance()->getWorldGroups()) {
         LINFO("in worldgroup {}:", name);
@@ -28,7 +28,7 @@ void command_parser::Objectives::execute(UNUSED std::vector<std::string> &args, 
     }
 }
 
-void command_parser::Objectives::help(UNUSED std::vector<std::string> &args, std::shared_ptr<Player> invoker) const
+void command_parser::Objectives::help(UNUSED std::vector<std::string> &args, Player *invoker) const
 {
     (void) invoker;
     LINFO("help addobjective");
@@ -37,7 +37,7 @@ void command_parser::Objectives::help(UNUSED std::vector<std::string> &args, std
 /*
     addobjective
 */
-void command_parser::AddObjective::autocomplete(UNUSED std::vector<std::string> &args, std::shared_ptr<Player> invoker) const
+void command_parser::AddObjective::autocomplete(UNUSED std::vector<std::string> &args, Player *invoker) const
 {
     if (invoker)
         return;
@@ -45,14 +45,14 @@ void command_parser::AddObjective::autocomplete(UNUSED std::vector<std::string> 
         LINFO("autocomplete addobjective");
 }
 
-void command_parser::AddObjective::execute(std::vector<std::string> &args, UNUSED std::shared_ptr<Player> invoker) const
+void command_parser::AddObjective::execute(std::vector<std::string> &args, UNUSED Player *invoker) const
 {
     for (auto &[_, worldgroup] : Server::getInstance()->getWorldGroups()) {
         worldgroup->getScoreboard().addObjective(args[0], "dummy");
     }
 }
 
-void command_parser::AddObjective::help(UNUSED std::vector<std::string> &args, std::shared_ptr<Player> invoker) const
+void command_parser::AddObjective::help(UNUSED std::vector<std::string> &args, Player *invoker) const
 {
     (void) invoker;
     LINFO("help addobjective");
@@ -61,7 +61,7 @@ void command_parser::AddObjective::help(UNUSED std::vector<std::string> &args, s
 /*
     setscore
 */
-void command_parser::SetScore::autocomplete(UNUSED std::vector<std::string> &args, std::shared_ptr<Player> invoker) const
+void command_parser::SetScore::autocomplete(UNUSED std::vector<std::string> &args, Player *invoker) const
 {
     if (invoker)
         return;
@@ -69,7 +69,7 @@ void command_parser::SetScore::autocomplete(UNUSED std::vector<std::string> &arg
         LINFO("autocomplete setscore");
 }
 
-void command_parser::SetScore::execute(std::vector<std::string> &args, UNUSED std::shared_ptr<Player> invoker) const
+void command_parser::SetScore::execute(std::vector<std::string> &args, UNUSED Player *invoker) const
 {
     if (args.size() < 3)
         return;
@@ -79,7 +79,7 @@ void command_parser::SetScore::execute(std::vector<std::string> &args, UNUSED st
     }
 }
 
-void command_parser::SetScore::help(UNUSED std::vector<std::string> &args, std::shared_ptr<Player> invoker) const
+void command_parser::SetScore::help(UNUSED std::vector<std::string> &args, Player *invoker) const
 {
     (void) invoker;
     LINFO("help setscore");
@@ -88,7 +88,7 @@ void command_parser::SetScore::help(UNUSED std::vector<std::string> &args, std::
 /*
     removescore
 */
-void command_parser::RemoveScore::autocomplete(UNUSED std::vector<std::string> &args, std::shared_ptr<Player> invoker) const
+void command_parser::RemoveScore::autocomplete(UNUSED std::vector<std::string> &args, Player *invoker) const
 {
     if (invoker)
         return;
@@ -96,7 +96,7 @@ void command_parser::RemoveScore::autocomplete(UNUSED std::vector<std::string> &
         LINFO("autocomplete removescore");
 }
 
-void command_parser::RemoveScore::execute(std::vector<std::string> &args, UNUSED std::shared_ptr<Player> invoker) const
+void command_parser::RemoveScore::execute(std::vector<std::string> &args, UNUSED Player *invoker) const
 {
     if (args.size() < 2)
         return;
@@ -106,7 +106,7 @@ void command_parser::RemoveScore::execute(std::vector<std::string> &args, UNUSED
     }
 }
 
-void command_parser::RemoveScore::help(UNUSED std::vector<std::string> &args, std::shared_ptr<Player> invoker) const
+void command_parser::RemoveScore::help(UNUSED std::vector<std::string> &args, Player *invoker) const
 {
     (void) invoker;
     LINFO("help removescore");
@@ -115,13 +115,13 @@ void command_parser::RemoveScore::help(UNUSED std::vector<std::string> &args, st
 /*
     displayobjective
 */
-void command_parser::DisplayObjective::help(UNUSED std::vector<std::string> &args, std::shared_ptr<Player> invoker) const
+void command_parser::DisplayObjective::help(UNUSED std::vector<std::string> &args, Player *invoker) const
 {
     (void) invoker;
     LINFO("help displayobjective");
 }
 
-void command_parser::DisplayObjective::execute(std::vector<std::string> &args, UNUSED std::shared_ptr<Player> invoker) const
+void command_parser::DisplayObjective::execute(std::vector<std::string> &args, UNUSED Player *invoker) const
 {
     if (args.size() < 1)
         return;
@@ -136,7 +136,7 @@ void command_parser::DisplayObjective::execute(std::vector<std::string> &args, U
     }
 }
 
-void command_parser::DisplayObjective::autocomplete(UNUSED std::vector<std::string> &args, std::shared_ptr<Player> invoker) const
+void command_parser::DisplayObjective::autocomplete(UNUSED std::vector<std::string> &args, Player *invoker) const
 {
     if (invoker)
         return;
@@ -147,7 +147,7 @@ void command_parser::DisplayObjective::autocomplete(UNUSED std::vector<std::stri
 /*
     removeobjective
 */
-void command_parser::RemoveObjective::autocomplete(UNUSED std::vector<std::string> &args, std::shared_ptr<Player> invoker) const
+void command_parser::RemoveObjective::autocomplete(UNUSED std::vector<std::string> &args, Player *invoker) const
 {
     if (invoker)
         return;
@@ -155,14 +155,14 @@ void command_parser::RemoveObjective::autocomplete(UNUSED std::vector<std::strin
         LINFO("autocomplete removeobjective");
 }
 
-void command_parser::RemoveObjective::execute(std::vector<std::string> &args, UNUSED std::shared_ptr<Player> invoker) const
+void command_parser::RemoveObjective::execute(std::vector<std::string> &args, UNUSED Player *invoker) const
 {
     for (auto &[_, worldgroup] : Server::getInstance()->getWorldGroups()) {
         worldgroup->getScoreboard().removeObjective(args[0]);
     }
 }
 
-void command_parser::RemoveObjective::help(UNUSED std::vector<std::string> &args, std::shared_ptr<Player> invoker) const
+void command_parser::RemoveObjective::help(UNUSED std::vector<std::string> &args, Player *invoker) const
 {
     (void) invoker;
     LINFO("help removeobjective");
@@ -171,7 +171,7 @@ void command_parser::RemoveObjective::help(UNUSED std::vector<std::string> &args
 /*
     teams
 */
-void command_parser::Teams::autocomplete(UNUSED std::vector<std::string> &args, std::shared_ptr<Player> invoker) const
+void command_parser::Teams::autocomplete(UNUSED std::vector<std::string> &args, Player *invoker) const
 {
     if (invoker)
         return;
@@ -179,7 +179,7 @@ void command_parser::Teams::autocomplete(UNUSED std::vector<std::string> &args, 
         LINFO("autocomplete addobjective");
 }
 
-void command_parser::Teams::execute(UNUSED std::vector<std::string> &args, UNUSED std::shared_ptr<Player> invoker) const
+void command_parser::Teams::execute(UNUSED std::vector<std::string> &args, UNUSED Player *invoker) const
 {
     for (auto &[name, worldgroup] : Server::getInstance()->getWorldGroups()) {
         LINFO("in worldgroup {}:", name);
@@ -192,7 +192,7 @@ void command_parser::Teams::execute(UNUSED std::vector<std::string> &args, UNUSE
     }
 }
 
-void command_parser::Teams::help(UNUSED std::vector<std::string> &args, std::shared_ptr<Player> invoker) const
+void command_parser::Teams::help(UNUSED std::vector<std::string> &args, Player *invoker) const
 {
     (void) invoker;
     LINFO("help addobjective");
@@ -201,7 +201,7 @@ void command_parser::Teams::help(UNUSED std::vector<std::string> &args, std::sha
 /*
     addteam
 */
-void command_parser::AddTeam::autocomplete(UNUSED std::vector<std::string> &args, std::shared_ptr<Player> invoker) const
+void command_parser::AddTeam::autocomplete(UNUSED std::vector<std::string> &args, Player *invoker) const
 {
     if (invoker)
         return;
@@ -209,7 +209,7 @@ void command_parser::AddTeam::autocomplete(UNUSED std::vector<std::string> &args
         LINFO("autocomplete addteam");
 }
 
-void command_parser::AddTeam::execute(std::vector<std::string> &args, UNUSED std::shared_ptr<Player> invoker) const
+void command_parser::AddTeam::execute(std::vector<std::string> &args, UNUSED Player *invoker) const
 {
     if (args.size() < 1)
         return;
@@ -218,7 +218,7 @@ void command_parser::AddTeam::execute(std::vector<std::string> &args, UNUSED std
     }
 }
 
-void command_parser::AddTeam::help(UNUSED std::vector<std::string> &args, std::shared_ptr<Player> invoker) const
+void command_parser::AddTeam::help(UNUSED std::vector<std::string> &args, Player *invoker) const
 {
     (void) invoker;
     LINFO("help jointeam");
@@ -227,7 +227,7 @@ void command_parser::AddTeam::help(UNUSED std::vector<std::string> &args, std::s
 /*
     addteam
 */
-void command_parser::ModifyTeam::autocomplete(UNUSED std::vector<std::string> &args, std::shared_ptr<Player> invoker) const
+void command_parser::ModifyTeam::autocomplete(UNUSED std::vector<std::string> &args, Player *invoker) const
 {
     if (invoker)
         return;
@@ -235,7 +235,7 @@ void command_parser::ModifyTeam::autocomplete(UNUSED std::vector<std::string> &a
         LINFO("autocomplete modifyteam");
 }
 
-void command_parser::ModifyTeam::execute(std::vector<std::string> &args, UNUSED std::shared_ptr<Player> invoker) const
+void command_parser::ModifyTeam::execute(std::vector<std::string> &args, UNUSED Player *invoker) const
 {
     if (args.size() < 2)
         return;
@@ -245,7 +245,7 @@ void command_parser::ModifyTeam::execute(std::vector<std::string> &args, UNUSED 
     }
 }
 
-void command_parser::ModifyTeam::help(UNUSED std::vector<std::string> &args, std::shared_ptr<Player> invoker) const
+void command_parser::ModifyTeam::help(UNUSED std::vector<std::string> &args, Player *invoker) const
 {
     (void) invoker;
     LINFO("help modifyteam");
@@ -254,7 +254,7 @@ void command_parser::ModifyTeam::help(UNUSED std::vector<std::string> &args, std
 /*
     jointeam
 */
-void command_parser::JoinTeam::autocomplete(UNUSED std::vector<std::string> &args, std::shared_ptr<Player> invoker) const
+void command_parser::JoinTeam::autocomplete(UNUSED std::vector<std::string> &args, Player *invoker) const
 {
     if (invoker)
         return;
@@ -262,7 +262,7 @@ void command_parser::JoinTeam::autocomplete(UNUSED std::vector<std::string> &arg
         LINFO("autocomplete jointeam");
 }
 
-void command_parser::JoinTeam::execute(std::vector<std::string> &args, UNUSED std::shared_ptr<Player> invoker) const
+void command_parser::JoinTeam::execute(std::vector<std::string> &args, UNUSED Player *invoker) const
 {
     if (args.size() < 2)
         return;
@@ -271,7 +271,7 @@ void command_parser::JoinTeam::execute(std::vector<std::string> &args, UNUSED st
     }
 }
 
-void command_parser::JoinTeam::help(UNUSED std::vector<std::string> &args, std::shared_ptr<Player> invoker) const
+void command_parser::JoinTeam::help(UNUSED std::vector<std::string> &args, Player *invoker) const
 {
     (void) invoker;
     LINFO("help jointeam");
@@ -280,7 +280,7 @@ void command_parser::JoinTeam::help(UNUSED std::vector<std::string> &args, std::
 /*
     leaveteam
 */
-void command_parser::LeaveTeam::autocomplete(UNUSED std::vector<std::string> &args, std::shared_ptr<Player> invoker) const
+void command_parser::LeaveTeam::autocomplete(UNUSED std::vector<std::string> &args, Player *invoker) const
 {
     if (invoker)
         return;
@@ -288,7 +288,7 @@ void command_parser::LeaveTeam::autocomplete(UNUSED std::vector<std::string> &ar
         LINFO("autocomplete leaveteam");
 }
 
-void command_parser::LeaveTeam::execute(std::vector<std::string> &args, UNUSED std::shared_ptr<Player> invoker) const
+void command_parser::LeaveTeam::execute(std::vector<std::string> &args, UNUSED Player *invoker) const
 {
     if (args.size() < 2)
         return;
@@ -297,7 +297,7 @@ void command_parser::LeaveTeam::execute(std::vector<std::string> &args, UNUSED s
     }
 }
 
-void command_parser::LeaveTeam::help(UNUSED std::vector<std::string> &args, std::shared_ptr<Player> invoker) const
+void command_parser::LeaveTeam::help(UNUSED std::vector<std::string> &args, Player *invoker) const
 {
     (void) invoker;
     LINFO("help leaveteam");
@@ -306,7 +306,7 @@ void command_parser::LeaveTeam::help(UNUSED std::vector<std::string> &args, std:
 /*
     removeteam
 */
-void command_parser::RemoveTeam::autocomplete(UNUSED std::vector<std::string> &args, std::shared_ptr<Player> invoker) const
+void command_parser::RemoveTeam::autocomplete(UNUSED std::vector<std::string> &args, Player *invoker) const
 {
     if (invoker)
         return;
@@ -314,7 +314,7 @@ void command_parser::RemoveTeam::autocomplete(UNUSED std::vector<std::string> &a
         LINFO("autocomplete removeteam");
 }
 
-void command_parser::RemoveTeam::execute(std::vector<std::string> &args, UNUSED std::shared_ptr<Player> invoker) const
+void command_parser::RemoveTeam::execute(std::vector<std::string> &args, UNUSED Player *invoker) const
 {
     if (args.size() < 1)
         return;
@@ -323,7 +323,7 @@ void command_parser::RemoveTeam::execute(std::vector<std::string> &args, UNUSED 
     }
 }
 
-void command_parser::RemoveTeam::help(UNUSED std::vector<std::string> &args, std::shared_ptr<Player> invoker) const
+void command_parser::RemoveTeam::help(UNUSED std::vector<std::string> &args, Player *invoker) const
 {
     (void) invoker;
     LINFO("help removeteam");

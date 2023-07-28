@@ -1,7 +1,7 @@
 #include <memory>
 #include <vector>
 
-#include "Entity.hpp"
+#include "entities/Entity.hpp"
 #include "Player.hpp"
 #include "selectors.hpp"
 

@@ -7,7 +7,7 @@
 #include "World.hpp"
 #include "logging/logging.hpp"
 
-void command_parser::QuestionMark::autocomplete(UNUSED std::vector<std::string> &args, std::shared_ptr<Player> invoker) const
+void command_parser::QuestionMark::autocomplete(UNUSED std::vector<std::string> &args, Player *invoker) const
 {
     if (invoker)
         return;
@@ -15,13 +15,13 @@ void command_parser::QuestionMark::autocomplete(UNUSED std::vector<std::string> 
         LINFO("autocomplete help");
 }
 
-void command_parser::QuestionMark::execute(std::vector<std::string> &args, std::shared_ptr<Player> invoker) const
+void command_parser::QuestionMark::execute(std::vector<std::string> &args, Player *invoker) const
 {
     if (args.empty()) {
         if (invoker) {
             for (auto &&command : Server::getInstance()->getCommands()) {
                 if (invoker->isOperator())
-                    invoker->getDimension()->getWorld()->getChat()->sendSystemMessage(command->_help, invoker);
+                    invoker->getDimension()->getWorld()->getChat()->sendSystemMessage(command->_help, *invoker);
             }
         } else {
             for (auto &&command : Server::getInstance()->getCommands())
@@ -35,18 +35,18 @@ void command_parser::QuestionMark::execute(std::vector<std::string> &args, std::
             }
         }
         if (invoker) {
-            invoker->getDimension()->getWorld()->getChat()->sendSystemMessage("Unknown command or insufficient permissions", invoker);
+            invoker->getDimension()->getWorld()->getChat()->sendSystemMessage("Unknown command or insufficient permissions", *invoker);
         } else {
             LINFO("Unknown command or insufficient permissions");
         }
     }
 }
 
-void command_parser::QuestionMark::help(UNUSED std::vector<std::string> &args, std::shared_ptr<Player> invoker) const
+void command_parser::QuestionMark::help(UNUSED std::vector<std::string> &args, Player *invoker) const
 {
     if (invoker) {
         if (invoker->isOperator())
-            invoker->getDimension()->getWorld()->getChat()->sendSystemMessage("/? [<command>]", invoker);
+            invoker->getDimension()->getWorld()->getChat()->sendSystemMessage("/? [<command>]", *invoker);
     } else
         LINFO("/help [<command>]");
 }

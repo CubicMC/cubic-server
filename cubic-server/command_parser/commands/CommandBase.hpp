@@ -17,9 +17,9 @@ struct CommandBase {
     }
     virtual ~CommandBase() = default;
 
-    virtual void autocomplete(std::vector<std::string> &args, std::shared_ptr<Player> invoker) const = 0;
-    virtual void execute(std::vector<std::string> &args, std::shared_ptr<Player> invoker) const = 0;
-    virtual void help(std::vector<std::string> &args, std::shared_ptr<Player> invoker) const = 0;
+    virtual void autocomplete(std::vector<std::string> &args, Player *invoker) const = 0;
+    virtual void execute(std::vector<std::string> &args, Player * invoker) const = 0;
+    virtual void help(std::vector<std::string> &args, Player * invoker) const = 0;
 
     const std::string _name;
     const std::string _help;

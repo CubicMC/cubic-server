@@ -4,7 +4,7 @@
 #include <vector>
 
 #include "Dimension.hpp"
-#include "Entity.hpp"
+#include "entities/Entity.hpp"
 #include "Player.hpp"
 #include "Server.hpp"
 #include "Teleport.hpp"
