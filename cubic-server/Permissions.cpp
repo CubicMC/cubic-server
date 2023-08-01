@@ -44,14 +44,13 @@ void Permissions::addOperator(const std::string &name)
 
     // searches for the player with the right name
     Server *server = Server::getInstance();
-    std::shared_ptr<Player> selectedPlayer = nullptr;
 
     for (auto [_, worldGroup] : server->getWorldGroups()) {
         for (auto [_, world] : worldGroup->getWorlds()) {
             for (auto [_, dim] : world->getDimensions()) {
                 for (auto player : dim->getPlayers()) {
                     if (player->getUsername() == name)
-                        selectedPlayer.swap(player);
+                        player->setOperator(true);
                 }
             }
         }
@@ -59,11 +58,6 @@ void Permissions::addOperator(const std::string &name)
 
     // adds operator to the set
     this->_operatorSet.insert(name);
-
-    if (selectedPlayer) { // player is connected
-        // set players own operator variable for rapid access
-        selectedPlayer->setOperator(true);
-    }
 }
 
 bool Permissions::removeOperator(const std::string &name)
@@ -74,14 +68,12 @@ bool Permissions::removeOperator(const std::string &name)
     // searches for the player with the right name
     Server *server = Server::getInstance();
 
-    std::shared_ptr<Player> selectedPlayer = nullptr;
-
     for (auto [_, worldGroup] : server->getWorldGroups()) {
         for (auto [_, world] : worldGroup->getWorlds()) {
             for (auto [_, dim] : world->getDimensions()) {
                 for (auto player : dim->getPlayers()) {
                     if (player->getUsername() == name)
-                        selectedPlayer.swap(player);
+                        player->setOperator(false);
                 }
             }
         }
@@ -90,10 +82,6 @@ bool Permissions::removeOperator(const std::string &name)
     // remove operator from the set
     this->_operatorSet.erase(name);
 
-    if (selectedPlayer) { // operator is connected
-        // set players own operator variable for rapid access
-        selectedPlayer->setOperator(false);
-    }
     return true;
     // returned true if operator successfuly removed, false otherwise
 }

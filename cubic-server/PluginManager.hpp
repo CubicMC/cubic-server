@@ -56,7 +56,8 @@ public:
     void reload();
     void unload();
 
-    std::shared_ptr<PluginInterface> getInterface() const;
+    std::shared_ptr<const PluginInterface> getInterface() const { return this->_interface; }
+    std::shared_ptr<PluginInterface> getInterface() { return this->_interface; }
 
     std::unordered_map<std::string, std::vector<EventType::AllTypes>> _events;
 

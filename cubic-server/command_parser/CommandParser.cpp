@@ -12,6 +12,9 @@ void command_parser::parseCommand(std::string &command, Player *invoker)
     std::vector<std::string> args;
     size_t pos = command.find(' ');
 
+    if (command.empty())
+        return;
+
     while (pos != std::string::npos) {
         args.push_back(command.substr(0, pos));
         command = command.substr(pos + 1);

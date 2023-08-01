@@ -26,6 +26,7 @@ struct u128 {
     void swapEndianness();
 
     static u128 fromShortString(const std::string &str);
+    static u128 random();
 };
 
 typedef int64_t Seed;
@@ -50,6 +51,14 @@ struct Position {
     valueType x;
     valueType y;
     valueType z;
+
+    constexpr Position() = default;
+    constexpr Position(valueType x, valueType y, valueType z):
+        x(x),
+        y(y),
+        z(z)
+    {
+    }
 
     constexpr Position operator*(valueType i) const;
     constexpr Position operator*(const Position &other) const;

@@ -18,7 +18,7 @@ namespace Condition {
 class Condition {
 public:
     Condition(void);
-    ~Condition() = default;
+    virtual ~Condition() = default;
 
     // condition must be validated, if not overloaded, call setValitity(true) to validate
     bool isValid(void) const noexcept;

@@ -1,5 +1,6 @@
 #include "types.hpp"
 #include <iterator>
+#include <random>
 
 std::string u128::toString() const
 {
@@ -29,4 +30,12 @@ u128 u128::fromShortString(const std::string &str)
     std::string first = std::string(str.begin(), it);
     std::string second = std::string(it, str.end());
     return u128({std::stoull(first, 0, 16), std::stoull(second, 0, 16)});
+}
+
+u128 u128::random()
+{
+    static std::random_device rd;
+    static std::mt19937_64 gen(rd());
+    std::uniform_int_distribution<uint64_t> dis(0, 0xffffffffffffffff);
+    return u128({dis(gen), dis(gen)});
 }

@@ -83,7 +83,7 @@ public:
     void disconnect(const chat::Message &reason = "Disconnected");
 
     std::shared_ptr<Player> getPlayer();
-    const std::shared_ptr<Player> getPlayer() const;
+    std::shared_ptr<const Player> getPlayer() const;
     inline size_t getID() const { return _clientID; };
     inline boost::asio::ip::tcp::socket &getSocket() { return _socket; }
 

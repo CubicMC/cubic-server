@@ -1,6 +1,7 @@
 #ifndef CUBICSERVER_ENTITY_HPP
 #define CUBICSERVER_ENTITY_HPP
 
+#include "EntityType.hpp"
 #include "math/Vector2.hpp"
 #include "math/Vector3.hpp"
 #include "options.hpp"
@@ -36,7 +37,8 @@ public:
     // Subject to change
     // clang-format off
     Entity(std::shared_ptr<Dimension> dim,
-        protocol::SpawnEntity::EntityType type,
+        EntityType type,
+        u128 uuid = u128::random(),
         bool onFire = false,
         bool crouching = false,
         bool sprinting = false,
@@ -64,20 +66,22 @@ public:
     virtual void forceSetPosition(const Vector3<double> &pos);
     virtual void forceSetPosition(double x, double y, double z);
     virtual void setRotation(const Vector2<uint8_t> &rot);
-    virtual void setRotation(uint8_t x, uint8_t y);
+    virtual void setRotation(uint8_t yaw, uint8_t pitch);
     virtual void setRotation(float yaw, float pitch);
-    NODISCARD virtual std::shared_ptr<Dimension> getDimension() const;
-    NODISCARD virtual std::shared_ptr<World> getWorld() const;
-    NODISCARD virtual std::shared_ptr<WorldGroup> getWorldGroup() const;
-    NODISCARD virtual int32_t getId() const;
-    NODISCARD virtual Vector3<double> &getPosition();
-    NODISCARD virtual const Vector3<double> &getPosition() const;
-    NODISCARD virtual Vector2<uint8_t> &getRotation();
-    NODISCARD virtual const Vector2<uint8_t> &getRotation() const;
-    NODISCARD virtual Vector2<float> getRotationDegree() const;
-    NODISCARD virtual Vector3<double> &getLastPosition();
-    NODISCARD virtual Vector2<uint8_t> &getLastRotation();
-    NODISCARD virtual protocol::SpawnEntity::EntityType getType() const { return _type; }
+
+    NODISCARD virtual std::shared_ptr<Dimension> getDimension() { return _dim; }
+    NODISCARD virtual std::shared_ptr<World> getWorld();
+    NODISCARD virtual std::shared_ptr<WorldGroup> getWorldGroup();
+
+    NODISCARD virtual const u128 &getUuid() const { return _uuid; }
+    NODISCARD virtual std::shared_ptr<const Dimension> getDimension() const { return _dim; }
+    NODISCARD virtual std::shared_ptr<const World> getWorld() const;
+    NODISCARD virtual std::shared_ptr<const WorldGroup> getWorldGroup() const;
+    NODISCARD virtual int32_t getId() const { return _id; }
+    NODISCARD virtual const Vector3<double> &getPosition() const { return _pos; }
+    NODISCARD virtual const Vector2<uint8_t> &getRotation() const { return _rot; }
+    NODISCARD virtual const Vector2<float> getRotationDegree() const { return {(float) _rot.x / (256.0f / 360.0f), (float) _rot.z / (256.0f / 360.0f)}; }
+    NODISCARD virtual EntityType getType() const { return _type; }
 
     virtual void teleport(const Vector3<double> &pos);
 
@@ -107,11 +111,12 @@ protected:
     Pose _pose;
     int16_t _tickFrozenInPowderedSnow;
     int32_t _id;
+    u128 _uuid;
     Vector3<double> _pos;
     Vector2<uint8_t> _rot;
     Vector3<double> _lastPos;
     Vector2<uint8_t> _lastRot;
-    protocol::SpawnEntity::EntityType _type;
+    EntityType _type;
 };
 
 #endif // CUBICSERVER_ENTITY_HPP

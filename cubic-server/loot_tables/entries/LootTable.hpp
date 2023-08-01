@@ -2,13 +2,14 @@
 #define CUBIC_SERVER_LOOT_TABLES_ENTRIES_LOOTTABLE_HPP
 
 #include "Entry.hpp"
+#include "loot_tables/LootTable.hpp"
 
 namespace LootTable {
 namespace Entry {
 class LootTableEntry : public Entry {
 public:
     LootTableEntry(const nlohmann::json &entry);
-    LootTableEntry() = default;
+    ~LootTableEntry() = default;
 
     bool poll(LootTablePoll &poll, LootContext *context) const override;
 

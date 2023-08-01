@@ -39,8 +39,8 @@ Server::Server():
     _running(false),
     // _sockfd(-1),
     _config(),
-    _toSend(1024),
-    _pluginManager(this)
+    _pluginManager(this),
+    _toSend(1024)
 {
     // _config.load("./config.yml");
     // _config.parse("./config.yml");

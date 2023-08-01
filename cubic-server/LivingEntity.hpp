@@ -2,19 +2,20 @@
 #define CUBICSERVER_LIVINGENTITY_HPP
 
 #include "Entity.hpp"
+#include "EntityType.hpp"
 #include "options.hpp"
 
 constexpr float KNOCKBACK_DEFAULT_FORCE = 2500.0f;
 
 class LivingEntity : public Entity {
 public:
-    LivingEntity(std::shared_ptr<Dimension> dim, protocol::SpawnEntity::EntityType type, float health = 20, float maxHealth = 20):
-        Entity(dim, type),
+    LivingEntity(std::shared_ptr<Dimension> dim, EntityType type, u128 uuid, float health = 20, float maxHealth = 20):
+        Entity(dim, type, uuid),
         _health(health),
         _maxHealth(maxHealth)
     {
     }
-    ~LivingEntity() override = default;
+    virtual ~LivingEntity() override = default;
 
     virtual void attack(const Vector3<double> &source);
     virtual void damage(float damage);

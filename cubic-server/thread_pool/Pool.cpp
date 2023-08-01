@@ -18,7 +18,7 @@ thread_pool::Pool::~Pool() { this->stop(); }
 void thread_pool::Pool::cancel(Task::Id id)
 {
     this->_queueMutex.lock();
-    auto task = std::find_if(this->_tasks.begin(), this->_tasks.end(), [id](const std::shared_ptr<Task> &task) {
+    auto task = std::find_if(this->_tasks.begin(), this->_tasks.end(), [id](const std::shared_ptr<const Task> &task) {
         return task->id() == id;
     });
     if (task != this->_tasks.end())

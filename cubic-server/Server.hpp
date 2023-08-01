@@ -80,37 +80,30 @@ public:
         return &srv;
     }
 
-    // Random thingy
-public:
-    Permissions permissions;
-    NODISCARD inline RSAEncryptionHandler &getPrivateKey() { return _rsaKey; }
+    NODISCARD const std::unordered_map<size_t, std::shared_ptr<Client>> &getClients() const { return _clients; }
+    NODISCARD std::shared_ptr<const WorldGroup> getWorldGroup(const std::string_view &name) const { return this->_worldGroups.at(name); }
+    NODISCARD const std::unordered_map<std::string_view, std::shared_ptr<WorldGroup>> &getWorldGroups() const { return _worldGroups; }
+    NODISCARD const std::vector<std::unique_ptr<CommandBase>> &getCommands() const { return _commands; }
+    NODISCARD bool isRunning() const { return _running; }
+    NODISCARD const Blocks::GlobalPalette &getGlobalPalette() const { return _globalPalette; }
+    NODISCARD const Items::ItemConverter &getItemConverter() const { return _itemConverter; }
 
-    // Const getters
-public:
-    const std::unordered_map<size_t, std::shared_ptr<Client>> &getClients() const { return _clients; }
-    const std::shared_ptr<const WorldGroup> getWorldGroup(const std::string_view &name) const { return this->_worldGroups.at(name); }
-    const std::vector<std::unique_ptr<CommandBase>> &getCommands() const { return _commands; }
-    bool isRunning() const { return _running; }
-    const Blocks::GlobalPalette &getGlobalPalette() const { return _globalPalette; }
-    const Items::ItemConverter &getItemConverter() const { return _itemConverter; }
-    const registry::MasterRegistry &getRegistry() const noexcept { return _registry; }
-    const std::unordered_map<std::string_view, std::shared_ptr<WorldGroup>> &getWorldGroups() const { return _worldGroups; }
-
-    // Getters
-public:
-    std::shared_ptr<WorldGroup> getWorldGroup(const std::string_view &name) { return this->_worldGroups.at(name); }
-    registry::MasterRegistry &getRegistry() noexcept { return _registry; }
-    ScoreboardSystem &getScoreboardSystem() { return _scoreboardSystem; }
-    LootTables &getLootTableSystem() noexcept { return _lootTables; }
-    std::unordered_map<std::string_view, std::shared_ptr<WorldGroup>> &getWorldGroups() { return _worldGroups; }
-    PluginManager &getPluginManager() noexcept { return _pluginManager; }
-    Recipes &getRecipeSystem() noexcept { return _recipes; }
+    NODISCARD registry::MasterRegistry &getRegistry() noexcept { return _registry; }
+    NODISCARD std::shared_ptr<WorldGroup> getWorldGroup(const std::string_view &name) { return this->_worldGroups.at(name); }
+    NODISCARD std::unordered_map<std::string_view, std::shared_ptr<WorldGroup>> &getWorldGroups() { return _worldGroups; }
+    NODISCARD PluginManager &getPluginManager() noexcept { return _pluginManager; }
+    NODISCARD Recipes &getRecipeSystem() noexcept { return _recipes; }
+    NODISCARD ScoreboardSystem &getScoreboardSystem() { return _scoreboardSystem; }
+    NODISCARD LootTables &getLootTableSystem() noexcept { return _lootTables; }
+    NODISCARD RSAEncryptionHandler &getPrivateKey() { return _rsaKey; }
 
     // Network
 public:
     void sendData(size_t clientID, std::unique_ptr<std::vector<uint8_t>> &&data);
     void triggerClientCleanup(size_t clientID = -1);
     void addCommand(std::unique_ptr<CommandBase> command);
+
+    Permissions permissions;
 
 private:
     Server();

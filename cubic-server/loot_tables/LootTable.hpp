@@ -13,11 +13,11 @@
 #include "functions/Function.hpp"
 
 namespace LootTable {
-/*
-  Loot table poll is the result of a poll on a loot table
-  It holds every item generated
-  TODO: handling item tags and NBT
-*/
+/**
+ * Loot table poll is the result of a poll on a loot table
+ * It holds every item generated
+ * TODO: handling item tags and NBT
+ */
 class LootTablePoll {
 public:
     LootTablePoll() = default;
@@ -35,9 +35,9 @@ private:
 
 class LootContext;
 
-/*
-  Loot table class, invalid tables will be dropped
-*/
+/**
+ * Loot table class, invalid tables will be dropped
+ */
 class LootTable {
 public:
     LootTable(const nlohmann::json &table);

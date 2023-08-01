@@ -8,7 +8,7 @@
 class Item : public Entity {
 public:
     Item(std::shared_ptr<Dimension> dim, protocol::Slot slot):
-        Entity(dim, protocol::SpawnEntity::EntityType::Item),
+        Entity(dim, EntityType::Item),
         _slot(slot)
     {
     }

@@ -13,7 +13,7 @@ namespace Entry {
 class Item : public Entry {
 public:
     Item(const nlohmann::json &entry);
-    Item() = default;
+    ~Item() = default;
 
     bool poll(LootTablePoll &poll, LootContext *context) const override;
 

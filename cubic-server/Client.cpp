@@ -61,6 +61,8 @@ Client::~Client()
         if (chunkReq.second == Player::ChunkState::Loading)
             this->_player->getDimension()->removePlayerFromLoadingChunk(chunkReq.first, this->_player);
     }
+    chat::Message disconnectMsg = chat::Message::fromTranslationKey<chat::message::TranslationKey::MultiplayerPlayerLeft>(*_player);
+    this->_player->getWorld()->getChat()->sendSystemMessage(disconnectMsg, *_player->getWorldGroup());
     // if (_thread.joinable())
     // _thread.join();
     // _thread.detach();
@@ -298,7 +300,7 @@ void Client::_onStatusRequest(UNUSED protocol::StatusRequest &pck)
     json["players"]["max"] = conf["max-players"].as<int32_t>();
     {
         std::lock_guard _(srv->clientsMutex);
-        json["players"]["online"] = std::count_if(cli.begin(), cli.end(), [](std::pair<size_t, std::shared_ptr<Client>> each) {
+        json["players"]["online"] = std::count_if(cli.begin(), cli.end(), [](std::pair<size_t, const std::shared_ptr<const Client>> each) {
             return each.second->getStatus() == protocol::ClientStatus::Play;
         });
     }
@@ -514,4 +516,4 @@ void Client::_loginSequence(const protocol::LoginSuccess &pck)
 
 std::shared_ptr<Player> Client::getPlayer() { return _player; }
 
-const std::shared_ptr<Player> Client::getPlayer() const { return _player; }
+std::shared_ptr<const Player> Client::getPlayer() const { return _player; }

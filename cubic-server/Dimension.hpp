@@ -34,31 +34,34 @@ public:
     virtual void tick();
     virtual void stop();
 
-    NODISCARD virtual bool isInitialized() const;
-    NODISCARD virtual std::shared_ptr<World> getWorld();
-    NODISCARD virtual const std::shared_ptr<World> getWorld() const;
-    NODISCARD virtual std::counting_semaphore<SEMAPHORE_MAX> &getDimensionLock();
-    NODISCARD virtual std::vector<std::shared_ptr<Player>> &getPlayers();
-    NODISCARD virtual std::vector<std::shared_ptr<Entity>> &getEntities();
-    NODISCARD virtual const std::vector<std::shared_ptr<Player>> &getPlayers() const;
-    NODISCARD virtual const std::vector<std::shared_ptr<Entity>> &getEntities() const;
+    NODISCARD virtual bool isInitialized() const { return _isInitialized; }
+
+    NODISCARD virtual std::shared_ptr<World> getWorld() { return _world; }
+    NODISCARD virtual std::counting_semaphore<SEMAPHORE_MAX> &getDimensionLock() { return _dimensionLock; }
+    NODISCARD virtual std::vector<std::shared_ptr<Player>> &getPlayers() { return _players; }
+    NODISCARD virtual std::vector<std::shared_ptr<Entity>> &getEntities() { return _entities; }
     NODISCARD virtual std::shared_ptr<Entity> getEntityByID(int32_t id);
-    NODISCARD virtual const std::shared_ptr<Entity> getEntityByID(int32_t id) const;
+    NODISCARD world_storage::Level &getLevel() { return _level; }
+
+    NODISCARD virtual std::shared_ptr<const World> getWorld() const { return _world; }
+    NODISCARD virtual const std::vector<std::shared_ptr<Player>> &getPlayers() const { return _players; }
+    NODISCARD virtual const std::vector<std::shared_ptr<Entity>> &getEntities() const { return _entities; }
+    NODISCARD virtual std::shared_ptr<const Entity> getEntityByID(int32_t id) const;
+    NODISCARD const world_storage::Level &getLevel() const { return _level; }
 
     virtual void removeEntity(int32_t entity_id);
     virtual void removePlayer(int32_t entity_id);
     virtual void addEntity(std::shared_ptr<Entity> entity);
     virtual void addPlayer(std::shared_ptr<Player> player);
 
-    const world_storage::Level &getLevel() const;
-    world_storage::Level &getLevel();
     virtual void generateChunk(Position2D pos, world_storage::GenerationState goalState = world_storage::GenerationState::READY);
     virtual void generateChunk(int x, int z, world_storage::GenerationState goalState = world_storage::GenerationState::READY);
     virtual void updateBlock(Position position, int32_t id);
     void addEntityMetadata(const protocol::SetEntityMetadata &metadata);
     void updateEntityAttributes(const protocol::UpdateAttributes &attributes);
     virtual void spawnPlayer(Player &player);
-    virtual void spawnEntity(std::shared_ptr<Entity> entity);
+    virtual void spawnEntity(const std::shared_ptr<const Entity> entity);
+
     template<isBaseOf<Entity> T, typename... Args>
     std::shared_ptr<T> makeEntity(Args &&...);
 
@@ -87,7 +90,7 @@ public:
      * @param pos Position2D
      * @param player Player *
      */
-    virtual void removePlayerFromLoadingChunk(const Position2D &pos, std::shared_ptr<Player> player);
+    virtual void removePlayerFromLoadingChunk(const Position2D &pos, const std::shared_ptr<const Player> player);
 
     /**
      * @brief Get a loaded chunk
@@ -121,7 +124,7 @@ public:
      * @param x int32_t
      * @param z int32_t
      */
-    virtual void loadOrGenerateChunk(int x, int z, std::shared_ptr<Player> player);
+    virtual void loadOrGenerateChunk(int x, int z, const std::shared_ptr<Player> player);
 
     /**
      * @brief Get the dimension type

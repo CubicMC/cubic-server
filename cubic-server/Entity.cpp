@@ -9,12 +9,14 @@
 #include "logging/logging.hpp"
 #include "math/Vector3.hpp"
 #include "options.hpp"
+#include "types.hpp"
 #include <memory>
 #include <utility>
 
 // clang-format off
 Entity::Entity(std::shared_ptr<Dimension> dim,
-    protocol::SpawnEntity::EntityType type,
+    EntityType type,
+    u128 uuid,
     bool onFire,
     bool crouching,
     bool sprinting,
@@ -37,6 +39,7 @@ Entity::Entity(std::shared_ptr<Dimension> dim,
 {
     static std::atomic<int32_t> currentID = 0;
 
+    _uuid = uuid;
     _onFire = onFire;
     _crouching = crouching;
     _sprinting = sprinting;
@@ -105,27 +108,11 @@ void Entity::setRotation(float yaw, float pitch)
     this->_rot.z = pitch * (256.0 / 360.0);
 }
 
-std::shared_ptr<Dimension> Entity::getDimension() const { return _dim; }
+std::shared_ptr<WorldGroup> Entity::getWorldGroup() { return _dim->getWorld()->getWorldGroup(); }
+std::shared_ptr<World> Entity::getWorld() { return _dim->getWorld(); }
 
-std::shared_ptr<World> Entity::getWorld() const { return _dim->getWorld(); }
-
-std::shared_ptr<WorldGroup> Entity::getWorldGroup() const { return _dim->getWorld()->getWorldGroup(); }
-
-int32_t Entity::getId() const { return _id; }
-
-Vector3<double> &Entity::getPosition() { return _pos; }
-
-const Vector3<double> &Entity::getPosition() const { return _pos; }
-
-Vector2<uint8_t> &Entity::getRotation() { return _rot; }
-
-const Vector2<uint8_t> &Entity::getRotation() const { return _rot; }
-
-Vector2<float> Entity::getRotationDegree() const { return Vector2<float>((float) _rot.x / (256.0 / 360.0), (float) _rot.z / (256.0 / 360.0)); }
-
-Vector3<double> &Entity::getLastPosition() { return _lastPos; }
-
-Vector2<uint8_t> &Entity::getLastRotation() { return _lastRot; }
+std::shared_ptr<const WorldGroup> Entity::getWorldGroup() const { return _dim->getWorld()->getWorldGroup(); }
+std::shared_ptr<const World> Entity::getWorld() const { return _dim->getWorld(); }
 
 void Entity::teleport(const Vector3<double> &pos)
 {
@@ -145,7 +132,7 @@ const std::shared_ptr<Entity> Entity::pickupItem()
     Vector3<double> pickupBoxV = {0.5, 0.5, 0.5};
 
     for (auto item : this->getDimension()->getEntities()) {
-        if (item->getType() == protocol::SpawnEntity::EntityType::Item && item->getId() != this->getId()) {
+        if (item->getType() == EntityType::Item && item->getId() != this->getId()) {
             if (((collectorPosition.x - item->getPosition().x) <= pickupBoxH.x && (collectorPosition.x - item->getPosition().x) >= -pickupBoxH.x) &&
                 ((collectorPosition.y - item->getPosition().y) <= pickupBoxV.y && (collectorPosition.y - item->getPosition().y) >= -pickupBoxV.y) &&
                 ((collectorPosition.z - item->getPosition().z) <= pickupBoxH.z && (collectorPosition.z - item->getPosition().z) >= -pickupBoxH.z)) {

@@ -15,42 +15,47 @@ option(ARM "Build for ARM" OFF)
 message(STATUS "Debugging network: ${DEBUG_NETWORK}")
 message(STATUS "Building without GUI: ${NO_GUI}")
 message(STATUS "Linking statically: ${STATIC_LINK}")
-
-if(DEBUG_NETWORK)
-    add_compile_definitions(DEBUG_NETWORK)
-endif()
+message(STATUS "Building with Google Test: ${GTEST}")
+message(STATUS "Building for ARM: ${ARM}")
 
 if (USE_CLANG)
-    set(CMAKE_CXX_COMPILER /usr/bin/clang++)
-    set(CMAKE_C_COMPILER /usr/bin/clang)
+    find_program(CLANG_EXECUTABLE clang REQUIRED)
+    set(CMAKE_CXX_COMPILER ${CLANG_EXECUTABLE}++)
+    set(CMAKE_C_COMPILER ${CLANG_EXECUTABLE})
 endif()
 
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-option(DEBUG_NETWORK "Print network messages" OFF)
 if(DEBUG_NETWORK)
     add_compile_definitions(DEBUG_NETWORK)
+endif()
+
+if (CMAKE_CXX_COMPILER_ID MATCHES "Clang" OR CMAKE_CXX_COMPILER_ID MATCHES "GNU")
+    set(CMAKE_EXE_LINKER_FLAGS_INIT "-rdynamic")
 endif()
 
 # This must be set before the project command
 set(CMAKE_USER_MAKE_RULES_OVERRIDE_CXX ${CMAKE_CURRENT_SOURCE_DIR}/cxx_flag_overrides.cmake)
 set(CMAKE_USER_MAKE_RULES_OVERRIDE_C ${CMAKE_CURRENT_SOURCE_DIR}/c_flag_overrides.cmake)
 
-project(CubicServer VERSION 0.1.0 LANGUAGES CXX C)
+project(CubicServer VERSION 0.2.0 LANGUAGES CXX C)
+
+message(STATUS "System Architecture: ${CMAKE_SYSTEM_PROCESSOR}")
+
+# This is needed for the aarch64 architecture
+# And this can't be in the cxx_flag_overrides.cmake file because the file needs
+# to be included before the project command
+# And the variable CMAKE_SYSTEM_PROCESSOR is only set after the project command
+if (CMAKE_SYSTEM_PROCESSOR MATCHES "aarch64")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -ldl")
+endif()
 
 set(MINECRAFT_VERSION "1.19.3")
 
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 include(CheckIPOSupported)
-
-# if debug mode is enabled, add -g3 flag
-if (CMAKE_BUILD_TYPE MATCHES Debug)
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g3 -rdynamic")
-endif()#include "Plu
-
-set(CMAKE_CXX_FLAGS "-rdynamic")
 
 if (CMAKE_BUILD_TYPE MATCHES Release)
     check_ipo_supported(RESULT ipo_supported OUTPUT ipo_error)
@@ -64,6 +69,9 @@ endif()
 # Disable building of mbedtls programs
 set(ENABLE_PROGRAMS OFF CACHE BOOL "" FORCE)
 set(ENABLE_TESTING OFF CACHE BOOL "" FORCE)
+
+# Fix mbedtls errors on warnings
+set(MBEDTLS_FATAL_WARNINGS OFF CACHE BOOL "" FORCE)
 
 set(FETCHCONTENT_QUIET OFF)
 
@@ -105,7 +113,7 @@ FetchContent_Declare(
 FetchContent_Declare(
     nbt
     GIT_REPOSITORY https://github.com/CubicMC/libnbt.git
-    GIT_TAG v1.0.1
+    GIT_TAG v1.0.2
     GIT_PROGRESS TRUE
     GIT_SHALLOW TRUE
 )
@@ -147,7 +155,6 @@ FetchContent_MakeAvailable(
 # Fix spdlog warnings
 get_target_property(spdlog_include spdlog INTERFACE_INCLUDE_DIRECTORIES)
 target_include_directories(spdlog SYSTEM INTERFACE ${spdlog_include})
-target_compile_options(spdlog PUBLIC -Wno-array-bounds -Wno-stringop-overflow)
 
 # Fix yaml-cpp warnings
 get_target_property(yaml_cpp_include yaml-cpp INTERFACE_INCLUDE_DIRECTORIES)

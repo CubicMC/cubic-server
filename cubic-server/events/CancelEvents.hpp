@@ -3,7 +3,7 @@
 
 #include "Events.hpp"
 
-class Position;
+struct Position;
 
 namespace Event {
 void cancelPlayerChat(Player *player, Chat *chat, std::string message);

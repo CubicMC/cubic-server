@@ -21,7 +21,7 @@ public:
      * @param message
      * @param from
      */
-    void sendPlayerMessage(const chat::Message &message, const Player &from);
+    void sendPlayerMessage(const chat::Message &message, Player &from);
 
     /**
      * @brief Used to send a system message to a player from the server
@@ -62,7 +62,7 @@ public:
      * @param message
      * @param from
      */
-    void sendSayMessage(const chat::Message &message, const Player &from);
+    void sendSayMessage(const chat::Message &message, Player &from);
 
     /**
      * @brief Used to send a whisper message to a player
@@ -79,7 +79,7 @@ public:
      * @param message
      * @param sender
      */
-    void sendTeamMessage(const chat::Message &message, const Player &sender);
+    void sendTeamMessage(const chat::Message &message, Player &sender);
 
     /**
      * @brief What is this? ²
@@ -94,12 +94,12 @@ public:
      * @param from
      * @param selector
      */
-    void sendTellrawMessage(const chat::Message &message, const Player &from, const std::string &selector);
+    void sendTellrawMessage(const chat::Message &message, Player &from, const std::string &selector);
 
 private:
-    void _sendMessage(const chat::Message &message, const Player &from, Player &to, const chat::message::Type &type);
-    void _sendMessage(const chat::Message &message, const Player &from, const WorldGroup &, const chat::message::Type &type);
-    void _sendMessage(const chat::Message &message, const Player &from, const std::vector<std::reference_wrapper<Player>> &, const chat::message::Type &type);
+    void _sendMessage(const chat::Message &message, Player &from, Player &to, const chat::message::Type &type);
+    void _sendMessage(const chat::Message &message, Player &from, const WorldGroup &, const chat::message::Type &type);
+    void _sendMessage(const chat::Message &message, Player &from, const std::vector<std::reference_wrapper<Player>> &, const chat::message::Type &type);
 
     //! I am using the packet System Chat Message, but to send a system message the wiki says to use the packet Disguised Chat Message
     void _sendSystem(const chat::Message &message, const WorldGroup &worldGroup, bool overlay = false);

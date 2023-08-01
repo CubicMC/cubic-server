@@ -1,3 +1,4 @@
+#include "chat/events/hovers/ItemEvent.hpp"
 #include "Item.hpp"
 
 std::shared_ptr<chat::message::event::ItemHover> chat::message::event::ItemHover::fromJson(const nlohmann::json &json)

@@ -5,9 +5,7 @@ set(BOOST_ENABLE_CMAKE ON)
 
 find_package(Boost ${BOOST_VERSION} COMPONENTS system container)
 
-if (Boost_FOUND)
-    message(STATUS "Boost found, using system version ${Boost_VERSION}")
-else()
+if (NOT Boost_FOUND)
     message(STATUS "Boost not found, downloading...")
     # Build only the required boost libraries
     list(APPEND BOOST_REQD_SUBMODULES

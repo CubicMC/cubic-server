@@ -44,9 +44,7 @@ public:
 
     std::weak_ptr<Client> getClient() const;
     const std::string &getUsername() const;
-    const u128 &getUuid() const;
     uint16_t getHeldItem() const;
-    const std::string &getUuidString() const;
     player_attributes::Gamemode getGamemode() const;
     const protocol::ClientInformation::ChatVisibility &getChatVisibility() const;
     long keepAliveId() const;
@@ -200,8 +198,6 @@ private:
 
     std::weak_ptr<Client> _cli;
     std::string _username;
-    std::string _uuidString;
-    u128 _uuid;
     long _keepAliveId;
     uint8_t _keepAliveIgnored;
     int16_t _heldItem;

@@ -54,21 +54,6 @@ void WorldGroup::stop()
         world->stop();
 }
 
-std::shared_ptr<Chat> WorldGroup::getChat() const { return _chat; }
-
-std::shared_ptr<World> WorldGroup::getWorld(const std::string_view &name) const { return this->_worlds.at(name); }
-
-std::unordered_map<std::string_view, std::shared_ptr<World>> &WorldGroup::getWorlds() { return this->_worlds; }
-
-const std::unordered_map<std::string_view, std::shared_ptr<World>> &WorldGroup::getWorlds() const { return this->_worlds; }
-
-Scoreboard::Scoreboard &WorldGroup::getScoreboard(void) { return (this->_scoreboard); }
-
-// void WorldGroup::initialize()
-//{
-//     LWARN("Initialized empty world group");
-// }
-
 bool WorldGroup::isInitialized() const
 {
     for (auto &[_, world] : _worlds)

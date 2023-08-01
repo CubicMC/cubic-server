@@ -6,6 +6,7 @@
 #include <string>
 #include <vector>
 
+#include "EntityType.hpp"
 #include "PlayerAttributes.hpp"
 #include "Structures.hpp"
 #include "chat/Message.hpp"
@@ -116,132 +117,7 @@ std::unique_ptr<std::vector<uint8_t>> createPingResponse(const PingResponse &);
 struct SpawnEntity {
     int32_t entityId;
     u128 entityUuid;
-    enum class EntityType : int32_t {
-        Allay = 0,
-        AreaEffectCloud = 1,
-        ArmorStand = 2,
-        Arrow = 3,
-        Axolotl = 4,
-        Bat = 5,
-        Bee = 6,
-        Blaze = 7,
-        // BlockDisplay = 8,
-        Boat = 8,
-        ChestBoat = 9,
-        Cat = 10,
-        Camel = 11, // update_1_20
-        CaveSpider = 12,
-        Chicken = 13,
-        Cod = 14,
-        Cow = 15,
-        Creeper = 16,
-        Dolphin = 17,
-        Donkey = 18,
-        DragonFireball = 19,
-        Drowned = 20,
-        ElderGuardian = 21,
-        EndCrystal = 22,
-        EnderDragon = 23,
-        Enderman = 24,
-        Endermite = 25,
-        Evoker = 26,
-        EvokerFangs = 27,
-        ExperienceOrb = 28, // SpawnExperienceOrb
-        EyeOfEnder = 29,
-        FallingBlock = 30,
-        FireworkRocket = 31,
-        Fox = 32,
-        Frog = 33,
-        Ghast = 34,
-        Giant = 35,
-        GlowItemFrame = 36,
-        GlowSquid = 37,
-        Goat = 38,
-        Guardian = 39,
-        Hoglin = 40,
-        Horse = 41,
-        Husk = 42,
-        Illusioner = 43,
-        IronGolem = 44,
-        Item = 45,
-        ItemFrame = 46,
-        Fireball = 47,
-        LeashKnot = 48,
-        LightningBolt = 49,
-        Llama = 50,
-        LlamaSpit = 51,
-        MagmaCube = 52,
-        // Interaction = 52,  // 1.19.4
-        Marker = 53, // Not spawnable
-        Minecart = 54,
-        ChestMinecart = 55,
-        // ItemDisplay = 55,  // 1.19.4
-        CommandBlockMinecart = 56,
-        FurnaceMinecart = 57,
-        HopperMinecart = 58,
-        SpawnerMinecart = 59,
-        TntMinecart = 60,
-        Mule = 61,
-        Mooshroom = 62,
-        Ocelot = 63,
-        Painting = 64,
-        Panda = 65,
-        Parrot = 66,
-        Phantom = 67,
-        Pig = 68,
-        Piglin = 69,
-        PiglinBrute = 70,
-        Pillager = 71,
-        PolarBear = 72,
-        Tnt = 73,
-        Pufferfish = 74,
-        Rabbit = 75,
-        Ravager = 76,
-        Salmon = 77,
-        Sheep = 78,
-        Shulker = 79,
-        ShulkerBullet = 80,
-        Silverfish = 81,
-        Skeleton = 82,
-        SkeletonHorse = 83,
-        Slime = 84,
-        SmallFireball = 85,
-        SnowGolem = 86,
-        Snowball = 87,
-        SpectralArrow = 88,
-        Spider = 89,
-        Squid = 90,
-        // Sniffer = 90,         // update_1_20
-        Stray = 91,
-        Strider = 92,
-        Tadpole = 93,
-        Egg = 94,
-        EnderPearl = 95,
-        ExperienceBottle = 96,
-        Potion = 97,
-        Trident = 98,
-        TraderLlama = 99,
-        // TextDisplay = 100,   // 1.19.4
-        TropicalFish = 100,
-        Turtle = 101,
-        Vex = 102,
-        Villager = 103,
-        Vindicaton = 104,
-        WanderingTrader = 105,
-        Warden = 106,
-        Witch = 107,
-        Wither = 108,
-        WitherSkeleton = 109,
-        WitherSkull = 110,
-        Wolf = 111,
-        Zoglin = 112,
-        Zombie = 113,
-        ZombieHorse = 114,
-        ZombieVillager = 115,
-        ZombifiedPiglin = 116,
-        Player = 117, // SpawnPlayer
-        FishingBobber = 118,
-    } type;
+    EntityType type;
     double x;
     double y;
     double z;
@@ -308,19 +184,19 @@ struct SetContainerContent {
 std::unique_ptr<std::vector<uint8_t>> createSetContainerContent(const SetContainerContent &);
 
 struct SetContainerSlot {
-    SetContainerSlot(const std::shared_ptr<container::Container> &container, int8_t containerId, int16_t slot):
+    SetContainerSlot(const std::shared_ptr<const container::Container> &container, int8_t containerId, int16_t slot):
         container(container),
         containerId(containerId),
         slot(slot)
     {
     }
-    SetContainerSlot(const std::shared_ptr<container::Container> &container, int16_t slot):
+    SetContainerSlot(const std::shared_ptr<const container::Container> &container, int16_t slot):
         container(container),
         containerId(container->id()),
         slot(slot)
     {
     }
-    const std::shared_ptr<container::Container> container;
+    const std::shared_ptr<const container::Container> container;
     int8_t containerId;
     int16_t slot;
 };
