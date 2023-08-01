@@ -28,7 +28,8 @@ nlohmann::json chat::message::event::EntityHover::toJson() const
         try {
             const auto &player = dynamic_cast<const Player &>(_entity->get());
             response["contents"]["name"] = player.getUsername();
-        } catch (std::bad_cast &e) {}
+        } catch (std::bad_cast &e) {
+        }
     }
     // TODO: Implement entity
 

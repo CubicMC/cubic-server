@@ -74,7 +74,7 @@ public:
     NODISCARD virtual std::shared_ptr<WorldGroup> getWorldGroup();
 
     NODISCARD virtual const u128 &getUuid() const { return _uuid; }
-    NODISCARD virtual std::shared_ptr<const Dimension> getDimension() const { return _dim;}
+    NODISCARD virtual std::shared_ptr<const Dimension> getDimension() const { return _dim; }
     NODISCARD virtual std::shared_ptr<const World> getWorld() const;
     NODISCARD virtual std::shared_ptr<const WorldGroup> getWorldGroup() const;
     NODISCARD virtual int32_t getId() const { return _id; }
