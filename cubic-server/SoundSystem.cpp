@@ -34,7 +34,7 @@ void SoundSystem::tick()
         }
     }
 
-    auto dim = _group.getWorld("default")->getDimension("overworld");
+    auto dim = const_cast<WorldGroup &>(_group).getWorld("default")->getDimension("overworld");
     int chickenCount = 0;
     for (auto entity : dim->getEntities()) {
         if (entity->getType() == EntityType::Chicken)
