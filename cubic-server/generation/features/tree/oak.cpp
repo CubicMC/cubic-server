@@ -41,12 +41,12 @@ std::deque<Position> &OakTree::getPosForTreeGeneration(void)
 std::deque<Position> &OakTree::filterTreeGrowSpace()
 {
     std::erase_if(_positions, [this](const Position &pos) {
-        for (int y = 0; y <= _generator.getTreeSize(pos, {4, 6}); y++) {
+        for (int y = 0; y <= _generator.getTreeSize(pos, _treeSize); y++) {
             auto block = _chunk.getBlock({pos.x, pos.y + y, pos.z});
             if (block != Blocks::Air::toProtocol())
                 return true;
-            for (int x = -2; x <= 2; x++) {
-                for (int z = -2; z <= 2; z++) {
+            for (int x = -MAX_SIZE_LEAVES_LAYER; x <= MAX_SIZE_LEAVES_LAYER; x++) {
+                for (int z = -MAX_SIZE_LEAVES_LAYER; z <= MAX_SIZE_LEAVES_LAYER; z++) {
                     if (x == 0 && z == 0)
                         continue;
                     if (pos.x + x < 0 || pos.x + x >= world_storage::SECTION_WIDTH || pos.z + z < 0 || pos.z + z >= world_storage::SECTION_WIDTH)

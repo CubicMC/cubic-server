@@ -85,16 +85,16 @@ void Inventory::insert(protocol::Slot &slot)
     if (!slot.present)
         return;
 
+    int8_t toInsert = slot.itemCount;
+
     // Insert in existing slot
     for (uint64_t i = 0; i < _hotbar.size(); i++) {
         if (_hotbar.at(i) == slot && _hotbar.at(i).itemCount < 64) {
-            if (_hotbar.at(i).itemCount + slot.itemCount > 64) {
-                slot.itemCount -= 64 - _hotbar.at(i).itemCount;
+            if (_hotbar.at(i).itemCount + toInsert > 64) {
+                toInsert -= 64 - _hotbar.at(i).itemCount;
                 _hotbar.at(i).itemCount = 64;
             } else {
-                _hotbar.at(i).itemCount += slot.itemCount;
-                slot.itemCount = 0;
-                slot.present = false;
+                _hotbar.at(i).itemCount += toInsert;
                 return;
             }
         }
@@ -102,13 +102,11 @@ void Inventory::insert(protocol::Slot &slot)
 
     for (uint64_t i = 0; i < _playerInventory.size(); i++) {
         if (_playerInventory.at(i) == slot && _playerInventory.at(i).itemCount < 64) {
-            if (_playerInventory.at(i).itemCount + slot.itemCount > 64) {
-                slot.itemCount -= 64 - _playerInventory.at(i).itemCount;
+            if (_playerInventory.at(i).itemCount + toInsert > 64) {
+                toInsert -= 64 - _playerInventory.at(i).itemCount;
                 _playerInventory.at(i).itemCount = 64;
             } else {
-                _playerInventory.at(i).itemCount += slot.itemCount;
-                slot.itemCount = 0;
-                slot.present = false;
+                _playerInventory.at(i).itemCount += toInsert;
                 return;
             }
         }
@@ -118,8 +116,6 @@ void Inventory::insert(protocol::Slot &slot)
     for (uint64_t i = 0; i < _hotbar.size(); i++) {
         if (!_hotbar.at(i).present) {
             _hotbar.at(i) = slot;
-            slot.itemCount = 0;
-            slot.present = false;
             return;
         }
     }
@@ -127,11 +123,46 @@ void Inventory::insert(protocol::Slot &slot)
     for (uint64_t i = 0; i < _playerInventory.size(); i++) {
         if (!_playerInventory.at(i).present) {
             _playerInventory.at(i) = slot;
-            slot.itemCount = 0;
-            slot.present = false;
             return;
         }
     }
+}
+
+bool Inventory::canInsert(const protocol::Slot &slot)
+{
+    if (!slot.present)
+        return false;
+
+    int8_t toInsert = slot.itemCount;
+
+    for (uint64_t i = 0; i < _hotbar.size(); i++) {
+        if (!_hotbar.at(i).present)
+            return true;
+        if (_hotbar.at(i) == slot && _hotbar.at(i).itemCount < 64) {
+            if (_hotbar.at(i).itemCount + toInsert > 64) {
+                toInsert -= 64 - _hotbar.at(i).itemCount;
+                _hotbar.at(i).itemCount = 64;
+            } else {
+                _hotbar.at(i).itemCount += toInsert;
+                return true;
+            }
+        }
+    }
+
+    for (uint64_t i = 0; i < _playerInventory.size(); i++) {
+        if (!_playerInventory.at(i).present)
+            return true;
+        if (_playerInventory.at(i) == slot && _playerInventory.at(i).itemCount < 64) {
+            if (_playerInventory.at(i).itemCount + toInsert > 64) {
+                toInsert -= 64 - _playerInventory.at(i).itemCount;
+                _playerInventory.at(i).itemCount = 64;
+            } else {
+                _playerInventory.at(i).itemCount += toInsert;
+                return true;
+            }
+        }
+    }
+    return false;
 }
 
 void Inventory::onClick(std::shared_ptr<Player> player, int16_t index, uint8_t buttonId, uint8_t mode, const std::vector<protocol::ClickContainer::SlotWithIndex> &updates)

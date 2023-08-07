@@ -10,6 +10,7 @@
 #include "world_storage/ChunkColumn.hpp"
 
 constexpr int MAX_CORNER_LEAVES_LAYER_TWO = 3;
+constexpr int MAX_SIZE_LEAVES_LAYER = 2;
 
 namespace generation::trees {
 class Tree {
