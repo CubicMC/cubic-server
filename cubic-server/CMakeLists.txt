@@ -38,6 +38,7 @@ target_sources (${CMAKE_PROJECT_NAME} PRIVATE
     Permissions.cpp
     types.hpp
     types.cpp
+    PluginInterface.cpp
     PluginInterface.hpp
     PluginManager.hpp
     PluginManager.cpp

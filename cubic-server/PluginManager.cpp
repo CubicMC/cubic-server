@@ -11,7 +11,7 @@ PluginManager::PluginManager(Server *server, const std::string &folder):
     _interface(std::make_shared<PluginInterface>()),
     _folder(folder)
 {
-    this->_interface->load(server);
+    _interface->load(server);
 }
 
 PluginManager::~PluginManager() { this->unload(); }
