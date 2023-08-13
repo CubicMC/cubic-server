@@ -39,7 +39,7 @@ endif()
 set(CMAKE_USER_MAKE_RULES_OVERRIDE_CXX ${CMAKE_CURRENT_SOURCE_DIR}/cxx_flag_overrides.cmake)
 set(CMAKE_USER_MAKE_RULES_OVERRIDE_C ${CMAKE_CURRENT_SOURCE_DIR}/c_flag_overrides.cmake)
 
-project(CubicServer VERSION 0.2.0 LANGUAGES CXX C)
+project(CubicServer VERSION 0.3.0 LANGUAGES CXX C)
 
 message(STATUS "System Architecture: ${CMAKE_SYSTEM_PROCESSOR}")
 
@@ -134,13 +134,6 @@ FetchContent_Declare(
     GIT_SHALLOW TRUE
 )
 
-FetchContent_Declare(
-    plugin-interface
-    GIT_REPOSITORY https://github.com/CubicMC/plugin-interface.git
-    GIT_PROGRESS TRUE
-    GIT_SHALLOW TRUE
-)
-
 FetchContent_MakeAvailable(
     yaml-cpp
     json
@@ -149,7 +142,6 @@ FetchContent_MakeAvailable(
     nbt
     spdlog
     mbedtls
-    plugin-interface
 )
 
 # Fix spdlog warnings
@@ -184,6 +176,7 @@ if(GTEST) # if the flag GTEST is true
     set(ENABLE_TESTING ON CACHE BOOL "" FORCE)
     enable_testing()
 endif()
+
 
 find_package(Threads REQUIRED)
 find_package(CURL REQUIRED)
@@ -241,7 +234,6 @@ target_link_libraries (${CMAKE_PROJECT_NAME} PRIVATE
     $<$<NOT:$<BOOL:${Boost_FOUND}>>:Boost::system>
     $<$<NOT:$<BOOL:${Boost_FOUND}>>:Boost::lockfree>
     $<$<NOT:$<BOOL:${Boost_FOUND}>>:Boost::circular_buffer>
-    plugin-interface
 )
 
 if (CMAKE_BUILD_TYPE MATCHES RELWITHDEBINFO)
