@@ -62,7 +62,7 @@ std::deque<Position> &SpruceTree::filterTreeGrowSpace()
     return _positions;
 }
 
-const void SpruceTree::bigLayer(std::vector<generation::Generator::FeatureBlock> &tree, int y, const BlockId &leaf, const BlockId &log) const
+void SpruceTree::bigLayer(std::vector<generation::Generator::FeatureBlock> &tree, int y, const BlockId &leaf, const BlockId &log) const
 {
     for (int x = -2; x <= 2; x++) {
         for (int z = -2; z <= 2; z++) {
@@ -75,7 +75,7 @@ const void SpruceTree::bigLayer(std::vector<generation::Generator::FeatureBlock>
     }
 }
 
-const void SpruceTree::biggerLayer(std::vector<generation::Generator::FeatureBlock> &tree, int y, const BlockId &leaf, const BlockId &log) const
+void SpruceTree::biggerLayer(std::vector<generation::Generator::FeatureBlock> &tree, int y, const BlockId &leaf, const BlockId &log) const
 {
     for (int x = -3; x <= 3; x++) {
         for (int z = -3; z <= 3; z++) {
@@ -88,7 +88,7 @@ const void SpruceTree::biggerLayer(std::vector<generation::Generator::FeatureBlo
     }
 }
 
-const void SpruceTree::starLayer(std::vector<generation::Generator::FeatureBlock> &tree, int y, const BlockId &leaf, const BlockId &log) const
+void SpruceTree::starLayer(std::vector<generation::Generator::FeatureBlock> &tree, int y, const BlockId &leaf, const BlockId &log) const
 {
     for (int x = -1; x <= 1; x++) {
         for (int z = -1; z <= 1; z++) {
@@ -101,7 +101,7 @@ const void SpruceTree::starLayer(std::vector<generation::Generator::FeatureBlock
     }
 }
 
-const void SpruceTree::repetitivePattern(std::vector<generation::Generator::FeatureBlock> &tree, int y, const BlockId &leaf, const BlockId &log, int treeSize) const
+void SpruceTree::repetitivePattern(std::vector<generation::Generator::FeatureBlock> &tree, int y, const BlockId &leaf, const BlockId &log, int treeSize) const
 {
     for (int i = y, counter = 0; i >= (y - 3) && i > 0; i--, counter++) {
         if (counter % 2 == 0)
@@ -111,7 +111,7 @@ const void SpruceTree::repetitivePattern(std::vector<generation::Generator::Feat
     }
 }
 
-const void SpruceTree::bottomLeaves(std::vector<generation::Generator::FeatureBlock> &tree, int y, const BlockId &leaf, const BlockId &log) const
+void SpruceTree::bottomLeaves(std::vector<generation::Generator::FeatureBlock> &tree, int y, const BlockId &leaf, const BlockId &log) const
 {
     if (_randomizer % 2 == 0)
         starLayer(tree, y, leaf, log);
@@ -119,7 +119,7 @@ const void SpruceTree::bottomLeaves(std::vector<generation::Generator::FeatureBl
         biggerLayer(tree, y, leaf, log);
 }
 
-const void SpruceTree::topStarLayers(std::vector<generation::Generator::FeatureBlock> &tree, int y, const BlockId &leaf, const BlockId &log) const
+void SpruceTree::topStarLayers(std::vector<generation::Generator::FeatureBlock> &tree, int y, const BlockId &leaf, const BlockId &log) const
 {
     for (int x = -1; x <= 1; x++) {
         for (int z = -1; z <= 1; z++) {
@@ -140,7 +140,7 @@ const void SpruceTree::topStarLayers(std::vector<generation::Generator::FeatureB
     }
 }
 
-const void SpruceTree::buildTree(const int treeSize, std::vector<generation::Generator::FeatureBlock> &tree, const BlockId &leaf, const BlockId &log) const
+void SpruceTree::buildTree(const int treeSize, std::vector<generation::Generator::FeatureBlock> &tree, const BlockId &leaf, const BlockId &log) const
 {
     for (int y = 0; y <= treeSize + 1; y++) {
         // deciding of the leaves layout - 3 top layers

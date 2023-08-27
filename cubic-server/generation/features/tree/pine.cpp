@@ -62,7 +62,7 @@ std::deque<Position> &PineTree::filterTreeGrowSpace()
     return _positions;
 }
 
-const void PineTree::layerWithoutCorner(std::vector<generation::Generator::FeatureBlock> &tree, int y, const BlockId &leaf, const BlockId &log, int layerSize) const
+void PineTree::layerWithoutCorner(std::vector<generation::Generator::FeatureBlock> &tree, int y, const BlockId &leaf, const BlockId &log, int layerSize) const
 {
     for (int x = -layerSize; x <= layerSize; x++) {
         for (int z = -layerSize; z <= layerSize; z++) {
@@ -75,19 +75,19 @@ const void PineTree::layerWithoutCorner(std::vector<generation::Generator::Featu
     }
 }
 
-const void PineTree::topLayers(std::vector<generation::Generator::FeatureBlock> &tree, int y, const BlockId &leaf) const
+void PineTree::topLayers(std::vector<generation::Generator::FeatureBlock> &tree, int y, const BlockId &leaf) const
 {
     tree.emplace_back(generation::Generator::FeatureBlock {{0, y + 1, 0}, leaf});
     layerWithoutCorner(tree, y, leaf, leaf, 1);
 }
 
-const void PineTree::makeLongPine(std::vector<generation::Generator::FeatureBlock> &tree, int y, const BlockId &leaf, const BlockId &log) const
+void PineTree::makeLongPine(std::vector<generation::Generator::FeatureBlock> &tree, int y, const BlockId &leaf, const BlockId &log) const
 {
     layerWithoutCorner(tree, y, leaf, log, 1);
     layerWithoutCorner(tree, y - 1, leaf, log, 1);
 }
 
-const void PineTree::makeMushroomPine(const int treeSize, std::vector<generation::Generator::FeatureBlock> &tree, int y, const BlockId &leaf, const BlockId &log) const
+void PineTree::makeMushroomPine(const int treeSize, std::vector<generation::Generator::FeatureBlock> &tree, int y, const BlockId &leaf, const BlockId &log) const
 {
     if (_randomizer % 2 == 0) {
         layerWithoutCorner(tree, y, leaf, log, 2);
@@ -99,7 +99,7 @@ const void PineTree::makeMushroomPine(const int treeSize, std::vector<generation
     }
 }
 
-const void PineTree::buildTree(const int treeSize, std::vector<generation::Generator::FeatureBlock> &tree, const BlockId &leaf, const BlockId &log) const
+void PineTree::buildTree(const int treeSize, std::vector<generation::Generator::FeatureBlock> &tree, const BlockId &leaf, const BlockId &log) const
 {
     for (int y = 0; y <= treeSize + 1; y++) {
         // Top leaf & top star on top of the trunk

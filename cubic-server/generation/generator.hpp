@@ -47,8 +47,11 @@ public:
     } TreeSize;
 
 public:
-    Generator(Seed seed);
+    Generator(Seed seed):
+        _noiseMaker(seed) {};
     virtual ~Generator() = default;
+
+    void setRandomizer(const Position &pos);
 
     virtual BlockId getBlock(positionType x, positionType y, positionType z) = 0;
     virtual BlockId getBlock(const Position &pos) = 0;
@@ -74,6 +77,7 @@ protected:
                 GenerationNoise2D, std::unordered_map<positionType, GenerationNoise3D> // y
                 >>>
         _noiseCache;
+    int _randomizer;
 };
 }
 

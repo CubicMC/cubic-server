@@ -15,18 +15,7 @@
 
 using namespace generation::trees;
 
-const void Tree::setRandomizer(const Position &pos)
-{
-    if (pos.x % 2 == 0 && pos.z % 2 != 0)
-        _randomizer = abs((_chunk.getDimension()->getWorld()->getSeed() % pos.y) % 5);
-    else if (pos.x % 2 != 0 && pos.z % 2 == 0)
-        _randomizer = abs((_chunk.getDimension()->getWorld()->getSeed() % pos.z) % 5);
-    else
-        _randomizer = abs((_chunk.getDimension()->getWorld()->getSeed() % pos.x) % 5);
-    // LINFO("RANDOMIZER : {}", _randomizer);
-}
-
-const void Tree::lowerLayers(std::vector<generation::Generator::FeatureBlock> &tree, int y, const BlockId &leaf) const
+void Tree::lowerLayers(std::vector<generation::Generator::FeatureBlock> &tree, int y, const BlockId &leaf) const
 {
     for (int x = -2, counter = 2; x <= 2; x++) {
         for (int z = -2; z <= 2; z++) {
@@ -40,7 +29,7 @@ const void Tree::lowerLayers(std::vector<generation::Generator::FeatureBlock> &t
     }
 }
 
-const void Tree::secondLayer(std::vector<generation::Generator::FeatureBlock> &tree, int y, const BlockId &leaf) const
+void Tree::secondLayer(std::vector<generation::Generator::FeatureBlock> &tree, int y, const BlockId &leaf) const
 {
     for (int x = -1, counter = 0; x <= 1; x++) {
         for (int z = -1; z <= 1; z++) {
@@ -61,7 +50,7 @@ const void Tree::secondLayer(std::vector<generation::Generator::FeatureBlock> &t
     }
 }
 
-const void Tree::topLayer(std::vector<generation::Generator::FeatureBlock> &tree, int y, const BlockId &leaf) const
+void Tree::topLayer(std::vector<generation::Generator::FeatureBlock> &tree, int y, const BlockId &leaf) const
 {
     for (int x = -1; x <= 1; x++) {
         for (int z = -1; z <= 1; z++) {
@@ -73,7 +62,7 @@ const void Tree::topLayer(std::vector<generation::Generator::FeatureBlock> &tree
     }
 }
 
-const void Tree::buildTree(const int treeSize, std::vector<generation::Generator::FeatureBlock> &tree, const BlockId &leaf, const BlockId &log) const
+void Tree::buildTree(const int treeSize, std::vector<generation::Generator::FeatureBlock> &tree, const BlockId &leaf, const BlockId &log) const
 {
     for (int y = 0; y <= treeSize + 1; y++) {
         // trunck generation
