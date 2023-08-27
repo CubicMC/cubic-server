@@ -49,7 +49,8 @@ public:
 
 public:
     Generator(Seed seed):
-        _noiseMaker(seed) {};
+        _noiseMaker(seed),
+        _seed(seed) {};
     virtual ~Generator() = default;
 
     void setRandomizer(const Position &pos);
@@ -60,7 +61,7 @@ public:
     virtual BiomeId getBiome(positionType x, positionType y, positionType z) = 0;
     virtual BiomeId getBiome(const Position &pos) = 0;
 
-    virtual GenerationNoise getNoise(positionType x, positionType y, positionType z, double frequency = 0.03, uint8_t octaves = 3);
+    virtual GenerationNoise getNoise(positionType x, positionType y, positionType z, double frequency = 0.02, uint8_t octaves = 3);
 
     virtual int getTreeSize(positionType x, positionType y, positionType z, const TreeSize &treeSize) = 0;
     virtual int getTreeSize(const Position &pos, const TreeSize &treeSize) = 0;
@@ -80,6 +81,7 @@ protected:
                 >>>
         _noiseCache;
     int _randomizer;
+    const Seed _seed;
 };
 }
 

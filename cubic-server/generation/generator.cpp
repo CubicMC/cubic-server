@@ -35,7 +35,7 @@ generation::Generator::GenerationNoise generation::Generator::getNoise(positionT
     // noise.noise2D.peaksAndValley = _noiseMaker.octave2D_11(_x, _z, octaves);
     noise.noise2D.weirdness = _noiseMaker.octave2D_11(_x, _z, octaves);
     noise.noise2D.trees = _noiseMaker.octave2D_11(x * 0.5, z * 0.5, 1);
-    noise.noise2D.rocks = _noiseMaker.octave2D_11(x * 0.6, z * 0.6, 1);
+    noise.noise2D.rocks = _noiseMaker.octave2D_11(x * 0.4, z * 0.4, 1);
 
     _noiseCache[x][z].first = noise.noise2D;
     noise.noise3D = _noiseCache[x][z].second[y];
@@ -45,12 +45,11 @@ generation::Generator::GenerationNoise generation::Generator::getNoise(positionT
 
 void generation::Generator::setRandomizer(const Position &pos)
 {
-    Seed seed;
     if (pos.x % 2 == 0 && pos.z % 2 != 0)
-        _randomizer = std::abs((seed % pos.y) % 5);
+        _randomizer = std::abs((_seed % pos.y) % 5);
     else if (pos.x % 2 != 0 && pos.z % 2 == 0)
-        _randomizer = std::abs((seed % pos.z) % 5);
+        _randomizer = std::abs((_seed % pos.z) % 5);
     else
-        _randomizer = std::abs((seed % pos.x) % 5);
+        _randomizer = std::abs((_seed % pos.x) % 5);
     // LINFO("RANDOMIZER : {}", _randomizer);
 }
