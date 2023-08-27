@@ -40,16 +40,14 @@ std::deque<Position> &ForestRock::filterRockOverlap()
     std::erase_if(_positions, [this](const Position &pos) {
         for (int y = 0; y <= _generator.getTreeSize(pos, {4, 6}); y++) {
             auto block = _chunk.getBlock({pos.x, pos.y + y, pos.z});
-            if (block != Blocks::Air::toProtocol())
-                return true;
-            for (int x = -2; x <= 2; x++) {
-                for (int z = -2; z <= 2; z++) {
+            for (int x = -MAX_SIZE_ROCK; x <= MAX_SIZE_ROCK; x++) {
+                for (int z = -MAX_SIZE_ROCK; z <= MAX_SIZE_ROCK; z++) {
                     if (x == 0 && z == 0)
                         continue;
                     if (pos.x + x < 0 || pos.x + x >= world_storage::SECTION_WIDTH || pos.z + z < 0 || pos.z + z >= world_storage::SECTION_WIDTH)
                         return true; // has to continue if we enable the generation of leaves outside the current chunk
                     auto block = _chunk.getBlock({pos.x + x, pos.y + y, pos.z + z});
-                    if (block == Blocks::OakLog::toProtocol(Blocks::OakLog::Properties::Axis::Y))
+                    if (block == Blocks::MossyCobblestone::toProtocol())
                         return true;
                 }
             }

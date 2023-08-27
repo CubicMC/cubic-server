@@ -11,6 +11,8 @@
 
 using namespace generation;
 
+constexpr int MAX_SIZE_ROCK = 4;
+
 class ForestRock {
 public:
     ForestRock(world_storage::ChunkColumn &chunk, Generator &generator):
