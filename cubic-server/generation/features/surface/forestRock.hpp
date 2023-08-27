@@ -28,7 +28,6 @@ public:
 private:
     const std::vector<Generator::FeatureBlock> getRock(const Position &pos) const;
     const std::vector<Generator::FeatureBlock> getRock(Generator::positionType x, Generator::positionType y, Generator::positionType z) const;
-    void setRandomizer(const Position &pos);
 
     world_storage::ChunkColumn &_chunk;
     generation::Generator &_generator;

@@ -89,7 +89,7 @@ void PineTree::makeLongPine(std::vector<generation::Generator::FeatureBlock> &tr
 
 void PineTree::makeMushroomPine(const int treeSize, std::vector<generation::Generator::FeatureBlock> &tree, int y, const BlockId &leaf, const BlockId &log) const
 {
-    if (_randomizer % 2 == 0) {
+    if (_generator.getRandomizer() % 2 == 0) {
         layerWithoutCorner(tree, y, leaf, log, 2);
         layerWithoutCorner(tree, y - 1, leaf, log, 1);
     } else {
@@ -110,7 +110,7 @@ void PineTree::buildTree(const int treeSize, std::vector<generation::Generator::
         // Add the other layers
         if (y == treeSize) {
             // I think this will have to change - setting the proportion of each variant
-            if (_randomizer != abs(treeSize % 2)) {
+            if (_generator.getRandomizer() != abs(treeSize % 2)) {
                 makeLongPine(tree, y, leaf, log);
             } else {
                 makeMushroomPine(treeSize, tree, y, leaf, log);
@@ -127,7 +127,7 @@ void PineTree::buildTree(const int treeSize, std::vector<generation::Generator::
 void PineTree::generateTree(UNUSED std::vector<world_storage::ChunkColumn *> neighbours)
 {
     const auto &treeEmplacement = _positions.front();
-    setRandomizer(treeEmplacement);
+    _generator.setRandomizer(treeEmplacement);
     auto tree = getTree(
         treeEmplacement.x + this->_chunk.getChunkPos().x * world_storage::SECTION_WIDTH, treeEmplacement.y,
         treeEmplacement.z + this->_chunk.getChunkPos().z * world_storage::SECTION_WIDTH

@@ -65,7 +65,7 @@ std::deque<Position> &BirchTree::filterTreeGrowSpace()
 void BirchTree::generateTree(UNUSED std::vector<world_storage::ChunkColumn *> neighbours)
 {
     const auto &treeEmplacement = _positions.front();
-    setRandomizer(treeEmplacement);
+    _generator.setRandomizer(treeEmplacement);
     auto tree = getTree(
         treeEmplacement.x + this->_chunk.getChunkPos().x * world_storage::SECTION_WIDTH, treeEmplacement.y,
         treeEmplacement.z + this->_chunk.getChunkPos().z * world_storage::SECTION_WIDTH

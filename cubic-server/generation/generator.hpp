@@ -52,6 +52,7 @@ public:
     virtual ~Generator() = default;
 
     void setRandomizer(const Position &pos);
+    int getRandomizer() { return _randomizer; };
 
     virtual BlockId getBlock(positionType x, positionType y, positionType z) = 0;
     virtual BlockId getBlock(const Position &pos) = 0;

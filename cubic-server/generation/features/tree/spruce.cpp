@@ -113,7 +113,7 @@ void SpruceTree::repetitivePattern(std::vector<generation::Generator::FeatureBlo
 
 void SpruceTree::bottomLeaves(std::vector<generation::Generator::FeatureBlock> &tree, int y, const BlockId &leaf, const BlockId &log) const
 {
-    if (_randomizer % 2 == 0)
+    if (_generator.getRandomizer() % 2 == 0)
         starLayer(tree, y, leaf, log);
     else
         biggerLayer(tree, y, leaf, log);
@@ -125,10 +125,10 @@ void SpruceTree::topStarLayers(std::vector<generation::Generator::FeatureBlock> 
         for (int z = -1; z <= 1; z++) {
             if (x == 0 && z == 0) {
                 // Placing the top leaf; if no leaf, air
-                if (_randomizer != y % 2)
+                if (_generator.getRandomizer() != y % 2)
                     tree.emplace_back(generation::Generator::FeatureBlock {{x, y + 2, z}, leaf});
                 // Placing the bottom leaf; if no leaf, a log
-                if (_randomizer % 2 != 0)
+                if (_generator.getRandomizer() % 2 != 0)
                     tree.emplace_back(generation::Generator::FeatureBlock {{x, y, z}, leaf});
                 else
                     tree.emplace_back(generation::Generator::FeatureBlock {{x, y, z}, log});
@@ -173,7 +173,7 @@ void SpruceTree::buildTree(const int treeSize, std::vector<generation::Generator
 void SpruceTree::generateTree(UNUSED std::vector<world_storage::ChunkColumn *> neighbours)
 {
     const auto &treeEmplacement = _positions.front();
-    setRandomizer(treeEmplacement);
+    _generator.setRandomizer(treeEmplacement);
     auto tree = getTree(
         treeEmplacement.x + this->_chunk.getChunkPos().x * world_storage::SECTION_WIDTH, treeEmplacement.y,
         treeEmplacement.z + this->_chunk.getChunkPos().z * world_storage::SECTION_WIDTH

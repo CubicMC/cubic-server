@@ -20,7 +20,7 @@ void Tree::lowerLayers(std::vector<generation::Generator::FeatureBlock> &tree, i
     for (int x = -2, counter = 2; x <= 2; x++) {
         for (int z = -2; z <= 2; z++) {
             // between 0 & 4 leaves in the corners
-            if (x == 0 && z == 0 || ((_randomizer != abs(y - counter) || _randomizer == counter) && abs(x * z) == 4)) {
+            if (x == 0 && z == 0 || ((_generator.getRandomizer() != abs(y - counter) || _generator.getRandomizer() == counter) && abs(x * z) == 4)) {
                 counter++;
                 continue;
             }
@@ -35,7 +35,7 @@ void Tree::secondLayer(std::vector<generation::Generator::FeatureBlock> &tree, i
         for (int z = -1; z <= 1; z++) {
             // between 1 & 3 leaves in the corners
             if (x != 0 && z != 0 && counter <= MAX_CORNER_LEAVES_LAYER_TWO) {
-                if (_randomizer == abs(counter + x)) {
+                if (_generator.getRandomizer() == abs(counter + x)) {
                     counter++;
                     continue;
                 }

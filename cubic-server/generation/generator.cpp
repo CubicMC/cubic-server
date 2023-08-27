@@ -1,17 +1,6 @@
 #include "generator.hpp"
 #include "generation/overworld.hpp"
 
-void Tree::setRandomizer(const Position &pos)
-{
-    if (pos.x % 2 == 0 && pos.z % 2 != 0)
-        _randomizer = abs((_chunk.getDimension()->getWorld()->getSeed() % pos.y) % 5);
-    else if (pos.x % 2 != 0 && pos.z % 2 == 0)
-        _randomizer = abs((_chunk.getDimension()->getWorld()->getSeed() % pos.z) % 5);
-    else
-        _randomizer = abs((_chunk.getDimension()->getWorld()->getSeed() % pos.x) % 5);
-    // LINFO("RANDOMIZER : {}", _randomizer);
-}
-
 bool generation::Generator::isCached(positionType x, positionType y, positionType z) { return isCached2D(x, z) && _noiseCache[x][z].second.contains(y); }
 
 bool generation::Generator::isCached2D(positionType x, positionType z) { return _noiseCache.contains(x) && _noiseCache[x].contains(z); }
@@ -51,4 +40,16 @@ generation::Generator::GenerationNoise generation::Generator::getNoise(positionT
     noise.noise3D = _noiseCache[x][z].second[y];
 
     return noise;
+}
+
+void generation::Generator::setRandomizer(const Position &pos)
+{
+    Seed seed;
+    if (pos.x % 2 == 0 && pos.z % 2 != 0)
+        _randomizer = std::abs((seed % pos.y) % 5);
+    else if (pos.x % 2 != 0 && pos.z % 2 == 0)
+        _randomizer = std::abs((seed % pos.z) % 5);
+    else
+        _randomizer = std::abs((seed % pos.x) % 5);
+    // LINFO("RANDOMIZER : {}", _randomizer);
 }
