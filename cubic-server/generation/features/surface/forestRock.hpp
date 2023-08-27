@@ -29,6 +29,9 @@ private:
     const std::vector<Generator::FeatureBlock> getRock(const Position &pos) const;
     const std::vector<Generator::FeatureBlock> getRock(Generator::positionType x, Generator::positionType y, Generator::positionType z) const;
 
+    void starLayer(std::vector<generation::Generator::FeatureBlock> &rock, int y, const BlockId &mossy) const;
+    void fullLayer(std::vector<generation::Generator::FeatureBlock> &rock, int y, const BlockId &mossy) const;
+
     world_storage::ChunkColumn &_chunk;
     generation::Generator &_generator;
     std::deque<Position> _positions;
