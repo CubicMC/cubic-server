@@ -5,6 +5,7 @@
 #include "World.hpp"
 #include "blocks.hpp"
 #include "generation/features/tree/oak.hpp"
+#include "generation/features/tree/spruce.hpp"
 #include "generation/overworld.hpp"
 #include "logging/logging.hpp"
 #include "nbt.hpp"
@@ -549,7 +550,7 @@ void ChunkColumn::_generateVegetalDecoration(generation::Generator &generator)
 {
     std::lock_guard<std::mutex> _(this->_generationLock);
     // GET_NEIGHBOURS() // does not work for now (dead lock)
-    generation::trees::OakTree oakTree(*this, generator);
+    generation::trees::SpruceTree oakTree(*this, generator);
     oakTree.getPosForTreeGeneration();
     while (!oakTree.filterTreeGrowSpace().empty())
         oakTree.generateTree(std::vector<world_storage::ChunkColumn *>());
