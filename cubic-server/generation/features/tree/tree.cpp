@@ -26,7 +26,7 @@ const void Tree::setRandomizer(const Position &pos)
     // LINFO("RANDOMIZER : {}", _randomizer);
 }
 
-const void Tree::lowerLayers(std::vector<generation::Generator::TreeBlock> &tree, int y, const BlockId &leaf) const
+const void Tree::lowerLayers(std::vector<generation::Generator::FeatureBlock> &tree, int y, const BlockId &leaf) const
 {
     for (int x = -2, counter = 2; x <= 2; x++) {
         for (int z = -2; z <= 2; z++) {
@@ -35,12 +35,12 @@ const void Tree::lowerLayers(std::vector<generation::Generator::TreeBlock> &tree
                 counter++;
                 continue;
             }
-            tree.emplace_back(generation::Generator::TreeBlock {{x, y, z}, leaf});
+            tree.emplace_back(generation::Generator::FeatureBlock {{x, y, z}, leaf});
         }
     }
 }
 
-const void Tree::secondLayer(std::vector<generation::Generator::TreeBlock> &tree, int y, const BlockId &leaf) const
+const void Tree::secondLayer(std::vector<generation::Generator::FeatureBlock> &tree, int y, const BlockId &leaf) const
 {
     for (int x = -1, counter = 0; x <= 1; x++) {
         for (int z = -1; z <= 1; z++) {
@@ -56,29 +56,29 @@ const void Tree::secondLayer(std::vector<generation::Generator::TreeBlock> &tree
                 continue;
             if (x == 0 && z == 0)
                 continue;
-            tree.emplace_back(generation::Generator::TreeBlock {{x, y, z}, leaf});
+            tree.emplace_back(generation::Generator::FeatureBlock {{x, y, z}, leaf});
         }
     }
 }
 
-const void Tree::topLayer(std::vector<generation::Generator::TreeBlock> &tree, int y, const BlockId &leaf) const
+const void Tree::topLayer(std::vector<generation::Generator::FeatureBlock> &tree, int y, const BlockId &leaf) const
 {
     for (int x = -1; x <= 1; x++) {
         for (int z = -1; z <= 1; z++) {
             // no leaves in the corners
             if (x * x == z * z && x != 0 && z != 0)
                 continue;
-            tree.emplace_back(generation::Generator::TreeBlock {{x, y, z}, leaf});
+            tree.emplace_back(generation::Generator::FeatureBlock {{x, y, z}, leaf});
         }
     }
 }
 
-const void Tree::buildTree(const int treeSize, std::vector<generation::Generator::TreeBlock> &tree, const BlockId &leaf, const BlockId &log) const
+const void Tree::buildTree(const int treeSize, std::vector<generation::Generator::FeatureBlock> &tree, const BlockId &leaf, const BlockId &log) const
 {
     for (int y = 0; y <= treeSize + 1; y++) {
         // trunck generation
         if (y <= treeSize)
-            tree.emplace_back(generation::Generator::TreeBlock {{0, y, 0}, log});
+            tree.emplace_back(generation::Generator::FeatureBlock {{0, y, 0}, log});
 
         // // deciding of the leaves layout - layer 3 & 4
         if (y == treeSize - 1 || y == treeSize - 2) {

@@ -84,9 +84,9 @@ void JungleTree::generateTree(UNUSED std::vector<world_storage::ChunkColumn *> n
     _positions.pop_front();
 }
 
-const std::vector<generation::Generator::TreeBlock> JungleTree::getTree(const Position &pos) const
+const std::vector<generation::Generator::FeatureBlock> JungleTree::getTree(const Position &pos) const
 {
-    std::vector<generation::Generator::TreeBlock> tree;
+    std::vector<generation::Generator::FeatureBlock> tree;
     const auto treeSize = _generator.getTreeSize(pos, _treeSize);
     Tree::buildTree(
         treeSize, tree,
@@ -98,7 +98,7 @@ const std::vector<generation::Generator::TreeBlock> JungleTree::getTree(const Po
     return tree;
 }
 
-const std::vector<generation::Generator::TreeBlock> JungleTree::getTree(Generator::positionType x, Generator::positionType y, Generator::positionType z) const
+const std::vector<generation::Generator::FeatureBlock> JungleTree::getTree(Generator::positionType x, Generator::positionType y, Generator::positionType z) const
 {
     return getTree({x, y, z});
 }

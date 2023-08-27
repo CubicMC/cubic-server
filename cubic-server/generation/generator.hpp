@@ -39,7 +39,7 @@ public:
     typedef struct {
         Position pos;
         BlockId block;
-    } TreeBlock;
+    } FeatureBlock;
 
     typedef struct {
         int sizeMin;

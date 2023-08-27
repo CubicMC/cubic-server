@@ -24,8 +24,9 @@ public:
     void generateRock(std::vector<world_storage::ChunkColumn *>);
 
 private:
-    const std::vector<Generator::TreeBlock> getRock(const Position &pos) const;
-    const std::vector<Generator::TreeBlock> getRock(Generator::positionType x, Generator::positionType y, Generator::positionType z) const;
+    const std::vector<Generator::FeatureBlock> getRock(const Position &pos) const;
+    const std::vector<Generator::FeatureBlock> getRock(Generator::positionType x, Generator::positionType y, Generator::positionType z) const;
+    const void setRandomizer(const Position &pos);
 
     world_storage::ChunkColumn &_chunk;
     generation::Generator &_generator;

@@ -81,22 +81,22 @@ void OakTree::generateTree(UNUSED std::vector<world_storage::ChunkColumn *> neig
     }
     _positions.pop_front();
 }
-
-const std::vector<generation::Generator::TreeBlock> OakTree::getTree(const Position &pos) const
+const FeatureBlock std::vector<generation::GeneratorFeatureBlockck> OakTree::getTree(const Position &pos) const
 {
-    std::vector<generation::Generator::TreeBlock> tree;
+    std::vector<generation::Generator::FeatureBlock> tree;
     const auto treeSize = _generator.getTreeSize(pos, _treeSize);
     Tree::buildTree(
-        treeSize, tree,
+        FeatureBlock treeSize, tree,
         Blocks::OakLeaves::toProtocol(
             Blocks::OakLeaves::Properties::Distance::ONE, Blocks::OakLeaves::Properties::Persistent::FALSE, Blocks::OakLeaves::Properties::Waterlogged::FALSE
         ),
         Blocks::OakLog::toProtocol(Blocks::OakLog::Properties::Axis::Y)
     );
-    return tree;
+    FeatureBlock return tree;
 }
 
-const std::vector<generation::Generator::TreeBlock> OakTree::getTree(Generator::positionType x, Generator::positionType y, Generator::positionType z) const
+const std::vector<generation::Generator::FeatureBlock> OakTree::getTree(Generator::positionType x, Generator::positionType y, Generator::positionType z) const
 {
     return getTree({x, y, z});
 }
+FeatureBlockFeatureBlock
