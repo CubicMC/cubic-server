@@ -17,12 +17,12 @@ std::deque<Position> &ForestRock::getPosForRockGeneration(void)
         for (int x = 0; x < SECTION_WIDTH; x++) {
             for (int y = CHUNK_HEIGHT_MAX - 5; CHUNK_HEIGHT_MIN <= y; y--) {
                 auto block = _chunk.getBlock({x, y, z});
-                if (block == Blocks::Air::toProtocol())
+                if (block == Blocks::Air::toProtocol() || block == Blocks::SpruceLog::toProtocol(Blocks::SpruceLog::Properties::Axis::Y))
                     continue;
                 else {
                     if (block == Blocks::GrassBlock::toProtocol(Blocks::GrassBlock::Properties::Snowy::FALSE) || block == Blocks::Dirt::toProtocol()) {
                         if (_generator.getNoise(x + _chunk.getChunkPos().x * SECTION_WIDTH, y, z + _chunk.getChunkPos().z * SECTION_WIDTH).noise3D.density > 0 &&
-                            _generator.getNoise(x + _chunk.getChunkPos().x * SECTION_WIDTH, y, z + _chunk.getChunkPos().z * SECTION_WIDTH).noise2D.rocks > 0.5 &&
+                            _generator.getNoise(x + _chunk.getChunkPos().x * SECTION_WIDTH, y, z + _chunk.getChunkPos().z * SECTION_WIDTH).noise2D.rocks > 0.2 &&
                             _generator.getBiome(x + _chunk.getChunkPos().x * SECTION_WIDTH, y, z + _chunk.getChunkPos().z * SECTION_WIDTH)) {
                             _positions.emplace_back(x, y + 1, z);
                         }
@@ -45,7 +45,7 @@ std::deque<Position> &ForestRock::filterRockOverlap()
                     if (x == 0 && z == 0)
                         continue;
                     if (pos.x + x < 0 || pos.x + x >= world_storage::SECTION_WIDTH || pos.z + z < 0 || pos.z + z >= world_storage::SECTION_WIDTH)
-                        return true; // has to continue if we enable the generation of leaves outside the current chunk
+                        return true; // has to continue if we enable the generation of rocks accross chunks
                     auto block = _chunk.getBlock({pos.x + x, pos.y + y, pos.z + z});
                     if (block == Blocks::MossyCobblestone::toProtocol())
                         return true;
@@ -70,8 +70,8 @@ void ForestRock::generateRock(std::vector<world_storage::ChunkColumn *>)
             rockEmplacement.z + block.pos.z >= world_storage::SECTION_WIDTH)
             continue;
         // the following if may change/disappear
-        if (_chunk.getBlock({rockEmplacement.x + block.pos.x, rockEmplacement.y + block.pos.y, rockEmplacement.z + block.pos.z}) == Blocks::MossyCobblestone::toProtocol())
-            continue;
+        // if (_chunk.getBlock({rockEmplacement.x + block.pos.x, rockEmplacement.y + block.pos.y, rockEmplacement.z + block.pos.z}) == Blocks::MossyCobblestone::toProtocol())
+        //     continue;
         _chunk.updateBlock({rockEmplacement.x + block.pos.x, rockEmplacement.y + block.pos.y, rockEmplacement.z + block.pos.z}, block.block);
     }
     _positions.pop_front();
@@ -82,7 +82,7 @@ void ForestRock::starLayer(std::vector<generation::Generator::FeatureBlock> &roc
     for (int x = -1; x <= 1; x++) {
         for (int z = -1; z <= 1; z++) {
             // no rock in the corners
-            if (x != 0 && z != 0)
+            if (abs(x) == 1 && abs(z) == 1)
                 continue;
             rock.emplace_back(generation::Generator::FeatureBlock {{x, y, z}, mossy});
         }
@@ -102,7 +102,7 @@ const std::vector<generation::Generator::FeatureBlock> ForestRock::getRock(const
 {
     std::vector<generation::Generator::FeatureBlock> rock;
     const auto rockSize = MAX_SIZE_ROCK - 1;
-    for (int y = 0; y <= rockSize + 1; y++) {
+    for (int y = 0; y < rockSize; y++) {
         starLayer(rock, y, Blocks::MossyCobblestone::toProtocol());
         fullLayer(rock, y, Blocks::MossyCobblestone::toProtocol());
         starLayer(rock, y, Blocks::MossyCobblestone::toProtocol());

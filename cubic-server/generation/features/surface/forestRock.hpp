@@ -11,7 +11,7 @@
 
 using namespace generation;
 
-constexpr int MAX_SIZE_ROCK = 4;
+constexpr int MAX_SIZE_ROCK = 3;
 
 class ForestRock {
 public:
