@@ -35,7 +35,7 @@ generation::Generator::GenerationNoise generation::Generator::getNoise(positionT
     // noise.noise2D.peaksAndValley = _noiseMaker.octave2D_11(_x, _z, octaves);
     noise.noise2D.weirdness = _noiseMaker.octave2D_11(_x, _z, octaves);
     noise.noise2D.trees = _noiseMaker.octave2D_11(x * 0.5, z * 0.5, 1);
-    noise.noise2D.rocks = _noiseMaker.octave2D_11(x * 0.4, z * 0.4, 1);
+    noise.noise2D.rocks = _noiseMaker.octave2D_11(x * 0.7, z * 0.4, 1);
 
     _noiseCache[x][z].first = noise.noise2D;
     noise.noise3D = _noiseCache[x][z].second[y];
@@ -43,6 +43,7 @@ generation::Generator::GenerationNoise generation::Generator::getNoise(positionT
     return noise;
 }
 
+// Set a randomizer number to a value between 0 & 4, based on the seed & the position of the feature
 void generation::Generator::setRandomizer(const Position &pos)
 {
     if (pos.x % 2 == 0 && pos.z % 2 != 0)
