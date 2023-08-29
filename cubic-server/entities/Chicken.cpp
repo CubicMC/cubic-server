@@ -12,22 +12,21 @@ Chicken::Chicken(std::shared_ptr<Dimension> dim, u128 uuid, float health, float 
     Mob(dim, EntityType::Chicken, uuid, health, maxHealth, leftHanded, aggressive)
 {
     auto time = utility::PseudoRandomGenerator::getInstance()->generateNumber(6000, 12000);
-    // auto time = 500;
-    LINFO("Chicken will drop egg in {} ticks", time);
+    LDEBUG("Chicken will drop egg in {} ticks", time);
     _layEgg.setTickRate(time);
     _layEgg.setCallback(std::bind(&Chicken::layEgg, this));
     _layEgg.start();
-    // attachAI<ai::Wandering>();
-    this->setPosition({8.5, 100, 8.5}, false);
+    attachAI<ai::Wandering>();
+    this->forceSetPosition({8.5, 100, 8.5});
 }
 
 void Chicken::layEgg()
 {
     auto time = utility::PseudoRandomGenerator::getInstance()->generateNumber(6000, 12000);
-    LINFO("Chicken will drop egg in {} ticks", time);
+    LDEBUG("Chicken will drop egg in {} ticks", time);
     _layEgg.setTickRate(time);
     _dim->makeEntity<Item>(protocol::Slot {true, ITEM_CONVERTER.fromItemToProtocolId("minecraft:egg"), 1})->dropItem({_pos.x, _pos.y + 1, _pos.z});
-    LINFO("Chicken dropped egg at x: {}, y: {}, z: {}", _pos.x, _pos.y + 1, _pos.z);
+    LDEBUG("Chicken dropped egg at x: {}, y: {}, z: {}", _pos.x, _pos.y + 1, _pos.z);
 }
 
 void Chicken::tick()
