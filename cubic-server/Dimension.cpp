@@ -248,7 +248,7 @@ void Dimension::spawnEntity(const std::shared_ptr<const Entity> current)
             0, // Entity Yaw
             0, // Entity Head Yaw
             0, // Entity data
-            16, // Entity Velocity X
+            0, // Entity Velocity X
             0, // Entity Velocity Y
             0 // Entity Velocity Z
         });
