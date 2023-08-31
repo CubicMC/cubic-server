@@ -24,10 +24,10 @@ MinecraftVersion="1.19.3"
 ServerVersion="0.3.0-beta"
 OperatingSystem="GNULinux"
 
-if [ $OSTYPE == "linux-gnu" ]; then
-    OperatingSystem="GNULinux"
-else
+if ldd /bin/ls | grep -oq musl; then
     OperatingSystem="MUSLLinux"
+else
+    OperatingSystem="GNULinux"
 fi
 
 while true; do
@@ -104,6 +104,7 @@ else
     rm registries-$MinecraftVersion.json.sha256
 
     wget https://github.com/CubicMC/cubic-server/releases/download/$ServerVersion/CubicServer_x86-64_${OperatingSystem}_$ServerVersion
+    chmod +x CubicServer_x86-64_${OperatingSystem}_$ServerVersion
     mkdir -p assets
     tar xf loot_tables.tar.gz --directory=assets/
     tar xf recipes.tar.gz --directory=assets/
