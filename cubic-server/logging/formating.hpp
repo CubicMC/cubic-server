@@ -32,4 +32,9 @@ struct fmt::formatter<Position2D> : fmt::formatter<std::string> {
     auto format(const Position2D &conf, format_context &ctx) -> decltype(ctx.out()) { return fmt::format_to(ctx.out(), "({}, {})", conf.x, conf.z); }
 };
 
+template<typename T>
+struct fmt::formatter<Vector3<T>> : fmt::formatter<std::string> {
+    auto format(const Vector3<T> &conf, format_context &ctx) -> decltype(ctx.out()) { return fmt::format_to(ctx.out(), "({:.3f} {:.3f} {:.3f})", conf.x, conf.y, conf.z); }
+};
+
 #endif // LOGGING_FORMATING_HPP

@@ -6,6 +6,9 @@
 #include "Server.hpp"
 #include "events/CancelEvents.hpp"
 #include "events/Events.hpp"
+#include "protocol/ClientPackets.hpp"
+#include "protocol/metadata.hpp"
+#include <optional>
 
 /*
  * @brief Attack the entity
@@ -68,3 +71,37 @@ void LivingEntity::setHealth(float health) { _health = health; }
 float &LivingEntity::getHealth() { return _health; }
 
 const float &LivingEntity::getHealth() const { return _health; }
+
+void LivingEntity::appendMetadataPacket(std::vector<uint8_t> &data) const
+{
+    Entity::appendMetadataPacket(data);
+
+    using namespace protocol::entity_metadata;
+
+    // Hand state flags
+    uint8_t flag = 0;
+    if (_handState.isHandActive)
+        flag |= 0x01;
+    flag |= (uint8_t) _handState.activeHand;
+    if (_handState.isInRiptideSpinAttack)
+        flag |= 0x04;
+    addMByte(data, 8, flag);
+
+    // Health
+    addMFloat(data, 9, _health);
+
+    // Potion effect color
+    addMVarInt(data, 10, _potionEffectColor);
+
+    // Is potion effect ambient
+    addMBoolean(data, 11, _isPotionEffectAmbient);
+
+    // Num Arrows in entity
+    addMVarInt(data, 12, _numArrowsInEntity);
+
+    // Num Bee Stingers in entity
+    addMVarInt(data, 13, _numBeeStingerInEntity);
+
+    // Location of the bed the entity is currently sleeping in
+    addMOptPosition(data, 14, _isSleeping ? std::optional<Position>(_posBedSleeping) : std::nullopt);
+}
