@@ -11,5 +11,5 @@ void Item::dropItem(const Vector3<double> &pos)
     this->setPosition(pos, false);
     // _dim->addEntity(shared_from_this());
     _dim->spawnEntity(shared_from_this());
-    _dim->addEntityMetadata({_id, {{8, protocol::SetEntityMetadata::EntityMetadata::Type::Slot, _slot}}});
+    // _dim->addEntityMetadata({_id, {{8, protocol::SetEntityMetadata::EntityMetadata::Type::Slot, _slot}}});
 }

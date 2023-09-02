@@ -15,24 +15,24 @@ class World;
 class WorldGroup;
 class Dimension;
 
-class Entity : public utility::SharedFromThis<Entity> {
-    enum class Pose {
-        Standing,
-        FallFlying,
-        Sleeping,
-        Swimming,
-        SpinAttack,
-        Sneaking,
-        LongJumping,
-        Dying,
-        Croaking,
-        UsingTongue,
-        Roaring,
-        Sniffing,
-        Emerging,
-        Digging
-    };
+enum class Pose {
+    Standing,
+    FallFlying,
+    Sleeping,
+    Swimming,
+    SpinAttack,
+    Sneaking,
+    LongJumping,
+    Dying,
+    Croaking,
+    UsingTongue,
+    Roaring,
+    Sniffing,
+    Emerging,
+    Digging
+};
 
+class Entity : public utility::SharedFromThis<Entity> {
 public:
     // Subject to change
     // clang-format off
@@ -92,6 +92,15 @@ public:
     // Check if there is an item to pickup within the entity pickup box
     // (1 block on each side, 0.5 block above & below)
     const std::shared_ptr<Entity> pickupItem();
+
+    /**
+     * @brief Executes a function for each of the players in render distance
+     *
+     * @param executor The function to execute on the player
+     */
+    void foreachInRangePlayers(std::function<void(Player &)> executor) const;
+
+    virtual void appendMetadataPacket(std::vector<uint8_t> &data) const;
 
 protected:
     std::shared_ptr<Dimension> _dim;

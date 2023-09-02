@@ -1,6 +1,7 @@
 #ifndef CUBICSERVER_TYPES_HPP
 #define CUBICSERVER_TYPES_HPP
 
+#include "math/Vector3.hpp"
 #include <cstdint>
 #include <iomanip>
 #include <iostream>
@@ -39,11 +40,13 @@ typedef int32_t ItemId;
 // https://wiki.vg/index.php?title=Protocol&oldid=17753#Custom_Sound_Effect
 // https://wiki.vg/index.php?title=Protocol&oldid=17753#Sound_Effect
 // I think I should move this outside the protocol, but where ? '-'
-struct FloatingPosition {
-    double x;
-    double z;
-    double y;
-};
+// struct FloatingPosition {
+//     double x;
+//     double z;
+//     double y;
+// };
+
+typedef Vector3<double> FloatingPosition;
 
 struct Position {
     typedef int64_t valueType;

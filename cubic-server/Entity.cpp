@@ -6,11 +6,14 @@
 #include "Server.hpp"
 #include "World.hpp"
 #include "WorldGroup.hpp"
+#include "chat/Message.hpp"
 #include "logging/logging.hpp"
 #include "math/Vector3.hpp"
 #include "options.hpp"
+#include "protocol/metadata.hpp"
 #include "types.hpp"
 #include <memory>
+#include <optional>
 #include <utility>
 
 // clang-format off
@@ -143,4 +146,61 @@ const std::shared_ptr<Entity> Entity::pickupItem()
         }
     }
     return nullptr;
+}
+
+void Entity::foreachInRangePlayers(std::function<void(Player &)> executor) const
+{
+    const auto pos = Vector2<double>(_pos);
+
+    for (auto player : _dim->getPlayers()) {
+        if (!player->isInRenderDistance(pos))
+            continue;
+        executor(*player);
+    }
+}
+
+void Entity::appendMetadataPacket(std::vector<uint8_t> &data) const
+{
+    using namespace protocol::entity_metadata;
+    // Flags
+    uint8_t flag = 0;
+    if (_onFire)
+        flag |= 0x01;
+    if (_crouching)
+        flag |= 0x02;
+    if (_sprinting)
+        flag |= 0x08;
+    if (_swimming)
+        flag |= 0x10;
+    if (_invisible)
+        flag |= 0x20;
+    if (_glowing)
+        flag |= 0x40;
+    if (_flyingWithElytra)
+        flag |= 0x80;
+    addMByte(data, 0, flag);
+
+    // Air ticks
+    addMVarInt(data, 1, _airTicks);
+
+    // Custom name
+    if (_customName == "")
+        addMOptChat(data, 2, std::nullopt);
+    else
+        addMOptChat(data, 2, chat::Message(_customName));
+
+    // Is custom name visible
+    addMBoolean(data, 3, _customNameVisible);
+
+    // Is silent
+    addMBoolean(data, 4, _silent);
+
+    // Has no gravity
+    addMBoolean(data, 5, _noGravity);
+
+    // Pose
+    addMPose(data, 6, _pose);
+
+    // Ticks frozen in snow
+    addMVarInt(data, 7, _tickFrozenInPowderedSnow);
 }

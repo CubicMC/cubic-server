@@ -57,7 +57,6 @@ public:
     virtual void generateChunk(Position2D pos, world_storage::GenerationState goalState = world_storage::GenerationState::READY);
     virtual void generateChunk(int x, int z, world_storage::GenerationState goalState = world_storage::GenerationState::READY);
     virtual void updateBlock(Position position, int32_t id);
-    void addEntityMetadata(const protocol::SetEntityMetadata &metadata);
     void updateEntityAttributes(const protocol::UpdateAttributes &attributes);
     virtual void spawnPlayer(Player &player);
     virtual void spawnEntity(const std::shared_ptr<const Entity> entity);

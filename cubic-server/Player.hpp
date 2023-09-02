@@ -51,7 +51,6 @@ public:
     uint8_t keepAliveIgnored() const;
     bool isOperator() const;
     NODISCARD const std::vector<protocol::PlayerProperty> &getProperties() const;
-    void sendSkinLayers(int32_t entityID);
     std::shared_ptr<const protocol::container::Inventory> getInventory() const { return _inventory; };
 
 public:
@@ -68,6 +67,20 @@ public:
     template<isBaseOf<protocol::container::Container> Container, typename... Args>
     std::shared_ptr<Container> openContainer(Args &...);
     void closeContainer(uint8_t id);
+
+    void sendEntityMetadata(Entity &entity);
+
+    /**
+     * @brief Checks if a given position is in the render distance
+     *
+     * @todo Returns only true, needs to be implemented
+     * @param pos The position to check if in render distance
+     * @return true The position is in the render distance
+     * @return false The position is not in the render distance
+     */
+    bool isInRenderDistance(const Vector2<double> &pos) const;
+
+    void appendMetadataPacket(std::vector<uint8_t> &data) const override;
 
 public:
     /**
@@ -124,7 +137,6 @@ public:
     void sendUpdateRecipiesBook(const protocol::UpdateRecipesBook &packet);
     void sendInitializeWorldBorder(const protocol::InitializeWorldBorder &packet);
     void sendSetDefaultSpawnPosition(const protocol::SetDefaultSpawnPosition &packet);
-    void sendSetEntityMetadata(const protocol::SetEntityMetadata &packet); // TODO: mourrir
     void sendUpdateAttributes(const protocol::UpdateAttributes &packet);
     void sendUpdateAdvancements(const protocol::UpdateAdvancements &packet);
     void sendSetExperience(const protocol::SetExperience &packet);
@@ -223,6 +235,23 @@ private:
     bool _isOperator;
     bool _isSprinting;
     bool _isJumping;
+
+    // metadata
+    float _additionalHearts;
+    int32_t _score;
+    struct {
+        bool capeEnabled;
+        bool jacketEnabled;
+        bool leftSleeveEnabled;
+        bool rightSleeveEnabled;
+        bool leftPantsEnabled;
+        bool rightPantsEnabled;
+        bool hatEnabled;
+    } _skinParts;
+    enum class MainHand : uint8_t {
+        Left = 0,
+        Right = 1,
+    } _mainHand;
 };
 
 template<isBaseOf<protocol::container::Container> Container, typename... Args>

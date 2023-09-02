@@ -125,7 +125,7 @@ static void execute(const std::vector<std::string> &args, Player *invoker)
             moving.teleport(finalPos);
             if (moving.getType() == EntityType::Player) {
                 auto &player = (Player &) moving;
-                auto toSend = fmt::format("Teleported {} to {}", player.getUsername(), finalPos.toString());
+                auto toSend = fmt::format("Teleported {} to {}", player.getUsername(), finalPos);
                 if (invoker)
                     invoker->getDimension()->getWorld()->getChat()->sendSystemMessage(toSend, *invoker);
                 else
