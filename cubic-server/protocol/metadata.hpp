@@ -13,6 +13,10 @@ enum class Pose;
 
 namespace protocol::entity_metadata {
 
+/**
+ * @brief Defines all the types used in metadata serialization
+ *
+ */
 enum class Type : int32_t {
     Byte = 0,
     VarInt = 1,
@@ -40,12 +44,67 @@ enum class Type : int32_t {
     PaintingVariant = 23,
 };
 
+/**
+ * @brief Adds a byte to a buffer with the metadata headers
+ *
+ * @param data The output buffer to add to
+ * @param index The index of the metadata field for the given entity
+ * @param value The value to set
+ */
 void addMByte(std::vector<uint8_t> &data, uint8_t index, uint8_t value);
+
+/**
+ * @brief Adds a VarInt to a buffer with the metadata headers
+ *
+ * @param data The output buffer to add to
+ * @param index The index of the metadata field for the given entity
+ * @param value The value to set
+ */
 void addMVarInt(std::vector<uint8_t> &data, uint8_t index, int32_t value);
+
+/**
+ * @brief Adds an optional Chat to a buffer with the metadata headers
+ *
+ * @param data The output buffer to add to
+ * @param index The index of the metadata field for the given entity
+ * @param value The value to set
+ */
 void addMOptChat(std::vector<uint8_t> &data, uint8_t index, const std::optional<chat::Message> &value);
+
+/**
+ * @brief Adds a boolean to a buffer with the metadata headers
+ *
+ * @param data The output buffer to add to
+ * @param index The index of the metadata field for the given entity
+ * @param value The value to set
+ */
 void addMBoolean(std::vector<uint8_t> &data, uint8_t index, bool value);
+
+/**
+ * @brief Adds a Pose to a buffer with the metadata headers
+ *
+ * @param data The output buffer to add to
+ * @param index The index of the metadata field for the given entity
+ * @param value The value to set
+ */
 void addMPose(std::vector<uint8_t> &data, uint8_t index, Pose value);
+
+/**
+ * @brief Adds a float to a buffer with the metadata headers
+ *
+ * @param data The output buffer to add to
+ * @param index The index of the metadata field for the given entity
+ * @param value The value to set
+ */
 void addMFloat(std::vector<uint8_t> &data, uint8_t index, float value);
+
+/**
+ * @brief Adds an optional Position to a buffer with the metadata headers
+ *
+ * @param data The output buffer to add to
+ * @param index The index of the metadata field for the given entity
+ * @param value The value to set
+ */
 void addMOptPosition(std::vector<uint8_t> &data, uint8_t index, const std::optional<Position> &value);
 
 }

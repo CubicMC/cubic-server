@@ -68,6 +68,11 @@ public:
     std::shared_ptr<Container> openContainer(Args &...);
     void closeContainer(uint8_t id);
 
+    /**
+     * @brief Sends the metadata of the given entity
+     *
+     * @param entity The entity to send the metadata of
+     */
     void sendEntityMetadata(Entity &entity);
 
     /**
@@ -80,6 +85,11 @@ public:
      */
     bool isInRenderDistance(const Vector2<double> &pos) const;
 
+    /**
+     * @brief Adds serialized metadata to an output buffer
+     *
+     * @param data The output buffer
+     */
     void appendMetadataPacket(std::vector<uint8_t> &data) const override;
 
 public:

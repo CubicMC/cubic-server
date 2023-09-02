@@ -15,6 +15,10 @@ class World;
 class WorldGroup;
 class Dimension;
 
+/**
+ * @brief Defines the different states an entity can have
+ *
+ */
 enum class Pose {
     Standing,
     FallFlying,
@@ -94,12 +98,10 @@ public:
     const std::shared_ptr<Entity> pickupItem();
 
     /**
-     * @brief Executes a function for each of the players in render distance
+     * @brief Adds serialized metadata to an output buffer
      *
-     * @param executor The function to execute on the player
+     * @param data The output buffer
      */
-    void foreachInRangePlayers(std::function<void(Player &)> executor) const;
-
     virtual void appendMetadataPacket(std::vector<uint8_t> &data) const;
 
 protected:
