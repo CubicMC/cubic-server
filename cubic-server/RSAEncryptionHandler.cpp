@@ -50,6 +50,7 @@ std::vector<uint8_t> RSAEncryptionHandler::getPublicKey()
     int length = mbedtls_pk_write_pubkey_der(&key, (unsigned char *) buf, sizeof(buf));
     if (length < 0)
         throw std::runtime_error("Could not get public key from private key");
+    mbedtls_pk_free(&key);
     return std::vector<uint8_t>(buf + sizeof(buf) - length, buf + sizeof(buf));
 }
 
