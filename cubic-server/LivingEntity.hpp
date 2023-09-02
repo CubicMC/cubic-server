@@ -34,6 +34,11 @@ public:
     NODISCARD virtual float &getHealth();
     NODISCARD virtual const float &getHealth() const;
 
+    /**
+     * @brief Adds serialized metadata to an output buffer
+     *
+     * @param data The output buffer
+     */
     virtual void appendMetadataPacket(std::vector<uint8_t> &data) const override;
 
 protected:

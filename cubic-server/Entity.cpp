@@ -148,17 +148,6 @@ const std::shared_ptr<Entity> Entity::pickupItem()
     return nullptr;
 }
 
-void Entity::foreachInRangePlayers(std::function<void(Player &)> executor) const
-{
-    const auto pos = Vector2<double>(_pos);
-
-    for (auto player : _dim->getPlayers()) {
-        if (!player->isInRenderDistance(pos))
-            continue;
-        executor(*player);
-    }
-}
-
 void Entity::appendMetadataPacket(std::vector<uint8_t> &data) const
 {
     using namespace protocol::entity_metadata;
