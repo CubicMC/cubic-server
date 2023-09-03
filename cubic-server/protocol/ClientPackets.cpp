@@ -1,6 +1,8 @@
 #include "ClientPackets.hpp"
 
+#include "Entity.hpp"
 #include "PacketUtils.hpp"
+#include "logging/logging.hpp"
 #include "protocol/serialization/addPrimaryType.hpp"
 #include "serialization/add.hpp"
 #include <memory>
@@ -763,18 +765,12 @@ std::unique_ptr<std::vector<uint8_t>> protocol::createDisplayObjective(const Dis
     return packet;
 }
 
-std::unique_ptr<std::vector<uint8_t>> protocol::createSetEntityMetadata(const SetEntityMetadata &in)
+std::unique_ptr<std::vector<uint8_t>> protocol::createSetEntityMetadata(const Entity &entity)
 {
     std::vector<uint8_t> payload;
-    // clang-format off
-    serialize(payload,
-        in.entityId, addVarInt,
-        in.metadata[0].index, addByte,
-        in.metadata[0].type, addVarInt,
-        in.metadata[0].slot, addSlot,
-        0xff, addByte
-    );
-    // clang-format on
+    serialize(payload, entity.getId(), addVarInt);
+    entity.appendMetadataPacket(payload);
+    payload.push_back(0xff);
     auto packet = std::make_unique<std::vector<uint8_t>>();
     finalize(*packet, payload, ClientPacketID::SetEntityMetadata);
     return packet;

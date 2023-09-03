@@ -15,24 +15,28 @@ class World;
 class WorldGroup;
 class Dimension;
 
-class Entity : public utility::SharedFromThis<Entity> {
-    enum class Pose {
-        Standing,
-        FallFlying,
-        Sleeping,
-        Swimming,
-        SpinAttack,
-        Sneaking,
-        LongJumping,
-        Dying,
-        Croaking,
-        UsingTongue,
-        Roaring,
-        Sniffing,
-        Emerging,
-        Digging
-    };
+/**
+ * @brief Defines the different states an entity can have
+ *
+ */
+enum class Pose {
+    Standing,
+    FallFlying,
+    Sleeping,
+    Swimming,
+    SpinAttack,
+    Sneaking,
+    LongJumping,
+    Dying,
+    Croaking,
+    UsingTongue,
+    Roaring,
+    Sniffing,
+    Emerging,
+    Digging
+};
 
+class Entity : public utility::SharedFromThis<Entity> {
 public:
     // Subject to change
     // clang-format off
@@ -93,11 +97,32 @@ public:
     // (1 block on each side, 0.5 block above & below)
     const std::shared_ptr<Entity> pickupItem();
 
+    /**
+     * @brief Adds serialized metadata to an output buffer
+     *
+     * @param data The output buffer
+     */
+    virtual void appendMetadataPacket(std::vector<uint8_t> &data) const;
+
+    /**
+     * @brief Specify when an entity crouches and sneaks
+     *
+     * @param value If the entity crouches and sneaks
+     */
+    void setCrouching(bool value);
+
+    void setSprinting(bool value);
+
+    /**
+     * @brief Broadcasts this entity's metadata to all nearby players
+     *
+     */
+    void broadcastMetadata() const;
+
 protected:
     std::shared_ptr<Dimension> _dim;
     bool _onFire;
     bool _crouching;
-    // bool _unused; (previously used for _riding)
     bool _sprinting;
     bool _swimming;
     bool _invisible;

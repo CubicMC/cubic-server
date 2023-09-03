@@ -227,8 +227,8 @@ void Dimension::spawnPlayer(Player &current)
             LDEBUG("send spawn player to {}", current.getUsername());
             //}
         }
-        player->sendSkinLayers(current_id);
-        current.sendSkinLayers(player->getId());
+        player->sendEntityMetadata(current);
+        current.sendEntityMetadata(*player);
     }
 }
 
@@ -252,6 +252,7 @@ void Dimension::spawnEntity(const std::shared_ptr<const Entity> current)
              0,
              0}
         );
+        player->sendEntityMetadata(*current);
     }
 }
 
@@ -280,14 +281,6 @@ void Dimension::updateEntityAttributes(const protocol::UpdateAttributes &attribu
     std::lock_guard _(_entitiesMutex);
     for (auto player : _players) {
         player->sendUpdateAttributes(attributes);
-    }
-}
-
-void Dimension::addEntityMetadata(const protocol::SetEntityMetadata &metadata)
-{
-    std::lock_guard _(_entitiesMutex);
-    for (auto player : _players) {
-        player->sendSetEntityMetadata(metadata);
     }
 }
 

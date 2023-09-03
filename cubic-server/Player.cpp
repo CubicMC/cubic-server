@@ -5,6 +5,7 @@
 #include "Dimension.hpp"
 #include "Entity.hpp"
 #include "Item.hpp"
+#include "LivingEntity.hpp"
 #include "PlayerAttributes.hpp"
 #include "PluginManager.hpp"
 #include "Server.hpp"
@@ -21,6 +22,7 @@
 #include "protocol/common.hpp"
 #include "protocol/container/Container.hpp"
 #include "protocol/container/Inventory.hpp"
+#include "protocol/metadata.hpp"
 #include "protocol/serialization/addPrimaryType.hpp"
 #include "world_storage/Level.hpp"
 #include <algorithm>
@@ -28,6 +30,7 @@
 #include <memory>
 #include <mutex>
 #include <stdexcept>
+#include <vector>
 
 #define GET_CLIENT()                 \
     auto client = this->_cli.lock(); \
@@ -51,7 +54,11 @@ Player::Player(std::weak_ptr<Client> cli, std::shared_ptr<Dimension> dim, u128 u
     _chatVisibility(protocol::ClientInformation::ChatVisibility::Enabled),
     _isFlying(true), // TODO: Take this from the saved data
     _isSprinting(false),
-    _isJumping(false)
+    _isJumping(false),
+    _additionalHearts(0),
+    _score(0),
+    _skinParts(true, true, true, true, true, true, true),
+    _mainHand(MainHand::Right)
 {
     _keepAliveClock.start();
     _heldItem = 0;
@@ -155,23 +162,6 @@ NODISCARD const std::vector<protocol::PlayerProperty> &Player::getProperties() c
     if (client == nullptr)
         return def;
     return client->getProperties();
-}
-
-void Player::sendSkinLayers(int32_t entityID)
-{
-    GET_CLIENT();
-    auto data = std::vector<uint8_t>();
-    // data->push_back(5);
-    // data->push_back(0x4e);
-    protocol::addVarInt(data, entityID);
-    data.push_back(17);
-    data.push_back(0);
-    data.push_back(0xff);
-    data.push_back(0xff);
-    auto result = std::make_unique<std::vector<uint8_t>>();
-    protocol::finalize(*result, data, (protocol::ClientPacketID) 0x4e);
-    client->doWrite(std::move(result));
-    N_LDEBUG("Sent skin layers");
 }
 
 void Player::disconnect(const chat::Message &reason)
@@ -711,14 +701,6 @@ void Player::sendSetDefaultSpawnPosition(const protocol::SetDefaultSpawnPosition
     N_LDEBUG("Sent set default spawn position packet");
 }
 
-void Player::sendSetEntityMetadata(const protocol::SetEntityMetadata &packet)
-{
-    GET_CLIENT();
-    auto pck = protocol::createSetEntityMetadata(packet);
-    client->doWrite(std::move(pck));
-    LDEBUG("Sent set entity metadata packet");
-}
-
 void Player::sendUpdateAttributes(const protocol::UpdateAttributes &packet)
 {
     GET_CLIENT();
@@ -1042,11 +1024,22 @@ void Player::_onPlayerAction(protocol::PlayerAction &pck)
 void Player::_onPlayerCommand(protocol::PlayerCommand &pck)
 {
     N_LDEBUG("Got a Player Command");
-    if (pck.actionId == protocol::PlayerCommand::ActionId::StartSprinting) {
-        _isSprinting = true;
-    }
-    if (pck.actionId == protocol::PlayerCommand::ActionId::StopSprinting) {
-        _isSprinting = false;
+
+    switch (pck.actionId) {
+    case (protocol::PlayerCommand::ActionId::StartSprinting):
+        setSprinting(true);
+        break;
+    case (protocol::PlayerCommand::ActionId::StopSprinting):
+        setSprinting(false);
+        break;
+    case (protocol::PlayerCommand::ActionId::StartSneaking):
+        setCrouching(true);
+        break;
+    case (protocol::PlayerCommand::ActionId::StopSneaking):
+        setCrouching(false);
+        break;
+    default:
+        break;
     }
 }
 
@@ -1392,4 +1385,53 @@ void Player::teleport(const Vector3<double> &pos)
     this->sendSynchronizePosition(pos);
     LDEBUG("Synchronize player position");
     Entity::teleport(pos);
+}
+
+bool Player::isInRenderDistance(UNUSED const Vector2<double> &pos) const { return true; }
+
+void Player::sendEntityMetadata(const Entity &entity)
+{
+    GET_CLIENT();
+    auto pck = protocol::createSetEntityMetadata(entity);
+    client->doWrite(std::move(pck));
+    N_LDEBUG("Sent change difficulty packet");
+}
+
+void Player::appendMetadataPacket(std::vector<uint8_t> &data) const
+{
+    LivingEntity::appendMetadataPacket(data);
+
+    using namespace protocol::entity_metadata;
+
+    // Additional hearts
+    addMFloat(data, 15, _additionalHearts);
+
+    // Score
+    addMVarInt(data, 16, _score);
+
+    // Skin parts
+    uint8_t flag = 0;
+    if (_skinParts.capeEnabled)
+        flag |= 0x01;
+    if (_skinParts.jacketEnabled)
+        flag |= 0x02;
+    if (_skinParts.leftSleeveEnabled)
+        flag |= 0x04;
+    if (_skinParts.rightSleeveEnabled)
+        flag |= 0x08;
+    if (_skinParts.leftPantsEnabled)
+        flag |= 0x10;
+    if (_skinParts.rightPantsEnabled)
+        flag |= 0x20;
+    if (_skinParts.hatEnabled)
+        flag |= 0x40;
+    addMByte(data, 17, flag);
+
+    // Main hand
+    addMByte(data, 18, (uint8_t) _mainHand);
+
+    // TODO(huntears): Handle parrots on shoulders here (Way later xd)
+    // Left shoulder
+
+    // Right shoulder
 }

@@ -4,8 +4,6 @@
 #include <cmath>
 #include <iostream>
 
-#include <logging/logging.hpp>
-
 template<typename T>
 class Vector3 {
 public:
@@ -180,8 +178,6 @@ public:
     constexpr bool operator!=(const Vector3 &other) const noexcept { return this->x != other.x || this->y != other.y || this->z != other.z; }
 
     constexpr bool operator!=(const T &other) const noexcept { return this->x != other || this->y != other || this->z != other; }
-
-    constexpr std::string toString() const { return fmt::format("({:.3f} {:.3f} {:.3f})", x, y, z); }
 
     T x;
     T y;
