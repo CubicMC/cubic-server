@@ -203,7 +203,11 @@ void Entity::setCrouching(bool value)
     _pose = value ? Pose::Sneaking : Pose::Standing;
     if (!needRefresh)
         return;
-    // TODO(huntears): Move that to a broadcast function
+    broadcastMetadata();
+}
+
+void Entity::broadcastMetadata() const
+{
     for (auto player : _dim->getPlayers()) {
         if (!player->isInRenderDistance(_pos))
             continue;

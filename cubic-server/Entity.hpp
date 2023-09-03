@@ -104,7 +104,18 @@ public:
      */
     virtual void appendMetadataPacket(std::vector<uint8_t> &data) const;
 
+    /**
+     * @brief Specify when an entity crouches and sneaks
+     *
+     * @param value If the entity crouches and sneaks
+     */
     void setCrouching(bool value);
+
+    /**
+     * @brief Broadcasts this entity's metadata to all nearby players
+     *
+     */
+    void broadcastMetadata() const;
 
 protected:
     std::shared_ptr<Dimension> _dim;
