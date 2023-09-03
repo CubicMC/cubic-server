@@ -193,3 +193,20 @@ void Entity::appendMetadataPacket(std::vector<uint8_t> &data) const
     // Ticks frozen in snow
     addMVarInt(data, 7, _tickFrozenInPowderedSnow);
 }
+
+void Entity::setCrouching(bool value)
+{
+    bool needRefresh = _crouching != value;
+
+    _crouching = value;
+    // TODO(huntears): Support other poses
+    _pose = value ? Pose::Sneaking : Pose::Standing;
+    if (!needRefresh)
+        return;
+    // TODO(huntears): Move that to a broadcast function
+    for (auto player : _dim->getPlayers()) {
+        if (!player->isInRenderDistance(_pos))
+            continue;
+        player->sendEntityMetadata(*this);
+    }
+}

@@ -1024,11 +1024,22 @@ void Player::_onPlayerAction(protocol::PlayerAction &pck)
 void Player::_onPlayerCommand(protocol::PlayerCommand &pck)
 {
     N_LDEBUG("Got a Player Command");
-    if (pck.actionId == protocol::PlayerCommand::ActionId::StartSprinting) {
+
+    switch (pck.actionId) {
+    case (protocol::PlayerCommand::ActionId::StartSprinting):
         _isSprinting = true;
-    }
-    if (pck.actionId == protocol::PlayerCommand::ActionId::StopSprinting) {
+        break;
+    case (protocol::PlayerCommand::ActionId::StopSprinting):
         _isSprinting = false;
+        break;
+    case (protocol::PlayerCommand::ActionId::StartSneaking):
+        setCrouching(true);
+        break;
+    case (protocol::PlayerCommand::ActionId::StopSneaking):
+        setCrouching(false);
+        break;
+    default:
+        break;
     }
 }
 
