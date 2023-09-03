@@ -1027,10 +1027,10 @@ void Player::_onPlayerCommand(protocol::PlayerCommand &pck)
 
     switch (pck.actionId) {
     case (protocol::PlayerCommand::ActionId::StartSprinting):
-        _isSprinting = true;
+        setSprinting(true);
         break;
     case (protocol::PlayerCommand::ActionId::StopSprinting):
-        _isSprinting = false;
+        setSprinting(false);
         break;
     case (protocol::PlayerCommand::ActionId::StartSneaking):
         setCrouching(true);
