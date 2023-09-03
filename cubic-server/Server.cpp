@@ -228,6 +228,8 @@ void Server::_writeLoop()
             boost::asio::write(client->getSocket(), boost::asio::buffer(data.data->data(), data.data->size()), ec);
             // TODO(huntears): Handle errors properly xd
             if (ec) {
+                client->disconnect("Network error");
+                delete data.data;
                 LERROR(ec.what());
                 continue;
             }
