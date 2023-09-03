@@ -104,6 +104,8 @@ public:
      */
     virtual void appendMetadataPacket(std::vector<uint8_t> &data) const;
 
+    void setCrouching(bool value);
+
 protected:
     std::shared_ptr<Dimension> _dim;
     bool _onFire;
