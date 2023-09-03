@@ -206,6 +206,16 @@ void Entity::setCrouching(bool value)
     broadcastMetadata();
 }
 
+void Entity::setSprinting(bool value)
+{
+    bool needRefresh = _sprinting != value;
+
+    _sprinting = value;
+    if (!needRefresh)
+        return;
+    broadcastMetadata();
+}
+
 void Entity::broadcastMetadata() const
 {
     for (auto player : _dim->getPlayers()) {

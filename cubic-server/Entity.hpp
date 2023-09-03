@@ -111,6 +111,8 @@ public:
      */
     void setCrouching(bool value);
 
+    void setSprinting(bool value);
+
     /**
      * @brief Broadcasts this entity's metadata to all nearby players
      *
@@ -121,7 +123,6 @@ protected:
     std::shared_ptr<Dimension> _dim;
     bool _onFire;
     bool _crouching;
-    // bool _unused; (previously used for _riding)
     bool _sprinting;
     bool _swimming;
     bool _invisible;
