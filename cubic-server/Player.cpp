@@ -1378,7 +1378,7 @@ void Player::teleport(const Vector3<double> &pos)
 
 bool Player::isInRenderDistance(UNUSED const Vector2<double> &pos) const { return true; }
 
-void Player::sendEntityMetadata(Entity &entity)
+void Player::sendEntityMetadata(const Entity &entity)
 {
     GET_CLIENT();
     auto pck = protocol::createSetEntityMetadata(entity);

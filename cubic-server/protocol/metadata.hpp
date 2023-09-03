@@ -7,6 +7,7 @@
 
 #include "Chat.hpp"
 #include "chat/Message.hpp"
+#include "protocol/Structures.hpp"
 
 class Position;
 enum class Pose;
@@ -106,6 +107,15 @@ void addMFloat(std::vector<uint8_t> &data, uint8_t index, float value);
  * @param value The value to set
  */
 void addMOptPosition(std::vector<uint8_t> &data, uint8_t index, const std::optional<Position> &value);
+
+/**
+ * @brief Adds a Slot to a buffer with the metadata headers
+ *
+ * @param data The output buffer to add to
+ * @param index The index of the metadata field for the given entity
+ * @param value The value to set
+ */
+void addMSlot(std::vector<uint8_t> &data, uint8_t index, const Slot &value);
 
 }
 

@@ -54,4 +54,10 @@ void addMOptPosition(std::vector<uint8_t> &data, uint8_t index, const std::optio
         addPosition(data, *value);
 }
 
+void addMSlot(std::vector<uint8_t> &data, uint8_t index, const Slot &value)
+{
+    METADATA_HEADER(Slot);
+    addSlot(data, value);
+}
+
 }
