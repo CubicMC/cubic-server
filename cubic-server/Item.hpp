@@ -18,6 +18,13 @@ public:
     void dropItem(const Vector3<double> &pos) override;
     const protocol::Slot &getItem() const { return _slot; };
 
+    /**
+     * @brief Adds serialized metadata to an output buffer
+     *
+     * @param data The output buffer
+     */
+    void appendMetadataPacket(std::vector<uint8_t> &data) const override;
+
 private:
     protocol::Slot _slot;
 };

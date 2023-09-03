@@ -252,6 +252,7 @@ void Dimension::spawnEntity(const std::shared_ptr<const Entity> current)
              0,
              0}
         );
+        player->sendEntityMetadata(*current);
     }
 }
 

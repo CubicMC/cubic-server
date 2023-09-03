@@ -73,7 +73,7 @@ public:
      *
      * @param entity The entity to send the metadata of
      */
-    void sendEntityMetadata(Entity &entity);
+    void sendEntityMetadata(const Entity &entity);
 
     /**
      * @brief Checks if a given position is in the render distance

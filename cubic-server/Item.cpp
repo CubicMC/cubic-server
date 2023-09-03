@@ -2,6 +2,7 @@
 #include "Dimension.hpp"
 #include "logging/logging.hpp"
 #include "protocol/ClientPackets.hpp"
+#include "protocol/metadata.hpp"
 
 void Item::tick() { }
 
@@ -11,5 +12,13 @@ void Item::dropItem(const Vector3<double> &pos)
     this->setPosition(pos, false);
     // _dim->addEntity(shared_from_this());
     _dim->spawnEntity(shared_from_this());
-    // _dim->addEntityMetadata({_id, {{8, protocol::SetEntityMetadata::EntityMetadata::Type::Slot, _slot}}});
+}
+
+void Item::appendMetadataPacket(std::vector<uint8_t> &data) const
+{
+    Entity::appendMetadataPacket(data);
+
+    using namespace protocol::entity_metadata;
+
+    addMSlot(data, 8, _slot);
 }
