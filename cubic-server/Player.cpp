@@ -3,9 +3,6 @@
 #include "Chat.hpp"
 #include "Client.hpp"
 #include "Dimension.hpp"
-#include "entities/Entity.hpp"
-#include "entities/Item.hpp"
-#include "entities/LivingEntity.hpp"
 #include "PlayerAttributes.hpp"
 #include "PluginManager.hpp"
 #include "Server.hpp"
@@ -15,6 +12,7 @@
 #include "command_parser/CommandParser.hpp"
 #include "entities/Entity.hpp"
 #include "entities/Item.hpp"
+#include "entities/LivingEntity.hpp"
 #include "events/CancelEvents.hpp"
 #include "items/foodItems.hpp"
 #include "logging/logging.hpp"
@@ -28,6 +26,7 @@
 #include "protocol/serialization/addPrimaryType.hpp"
 #include "types.hpp"
 #include "world_storage/Level.hpp"
+
 #include <algorithm>
 #include <cstdint>
 #include <memory>
