@@ -62,12 +62,49 @@ public:
         Vector3<double> lastPos = {0, 0, 0},
         Vector2<uint8_t> lastRot = {0, 0});
     // clang-format on
+    /**
+     * @brief Destroy the Entity object
+     */
     virtual ~Entity() {};
+    /**
+     * @brief Called every tick to update the entity
+     */
     virtual void tick();
+    /**
+     * @brief Set the Dimension of the entity
+     *
+     * @param dim The new dimension
+     */
     virtual void setDimension(std::shared_ptr<Dimension> dim);
+    /**
+     * @brief Set the position of the entity
+     *
+     * @param pos The new position
+     * @param on_ground If the entity is on the ground
+     */
     virtual void setPosition(const Vector3<double> &pos, bool on_ground);
+    /**
+     * @brief Set the position of the entity
+     *
+     * @param x The new x position
+     * @param y The new y position
+     * @param z The new z position
+     * @param on_ground If the entity is on the ground
+     */
     virtual void setPosition(double x, double y, double z, bool on_ground);
+    /**
+     * @brief Set the position and the last position of the entity
+     *
+     * @param pos The new position
+     */
     virtual void forceSetPosition(const Vector3<double> &pos);
+    /**
+     * @brief Set the position and the last position of the entity
+     *
+     * @param x The new x position
+     * @param y The new y position
+     * @param z The new z position
+     */
     virtual void forceSetPosition(double x, double y, double z);
     virtual void setRotation(const Vector2<uint8_t> &rot);
     virtual void setRotation(uint8_t yaw, uint8_t pitch);

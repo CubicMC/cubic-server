@@ -34,6 +34,7 @@ void SoundSystem::tick()
         }
     }
 
+    // Spawn a chicken if there is none
     auto dim = const_cast<WorldGroup &>(_group).getWorld("default")->getDimension("overworld");
     int chickenCount = 0;
     for (auto entity : dim->getEntities()) {

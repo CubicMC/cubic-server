@@ -9,8 +9,24 @@ public:
     Wandering(Entity &);
     ~Wandering();
 
+    /**
+     * @brief Always return true
+     *
+     * @return true
+     * @return false
+     */
     bool see() override;
+
+    /**
+     * @brief Create a path to a random position
+     *
+     */
     void think() override;
+
+    /**
+     * @brief Move the entity to the next position
+     *
+     */
     void act() override;
 };
 } // namespace ai
