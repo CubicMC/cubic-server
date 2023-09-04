@@ -4,6 +4,10 @@
 #include "ai.hpp"
 
 namespace ai {
+
+/**
+ * @brief The AI that make the entity wander around
+ */
 class Wandering : public AI {
 public:
     Wandering(Entity &);

@@ -18,6 +18,9 @@ public:
     {
     }
 
+    /**
+     * @brief Called every tick to update the entity and its AIs (if any)
+     */
     void tick() override
     {
         for (auto &ai : _ais) {
@@ -27,6 +30,13 @@ public:
         Entity::tick();
     }
 
+    /**
+     * @brief Attaches an AI to the mob
+     *
+     * @tparam AI The AI type to attach
+     * @tparam Args The arguments to pass to the AI's constructor
+     * @param args The arguments to pass to the AI's constructor
+     */
     template<isBaseOf<ai::AI> AI, typename... Args>
     void attachAI(Args &&...args)
     {

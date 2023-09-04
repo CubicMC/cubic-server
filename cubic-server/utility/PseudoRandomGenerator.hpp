@@ -8,12 +8,31 @@
 #include <type_traits>
 
 namespace utility {
+
+/**
+ * @brief A thread-safe pseudo-random templated number generator
+ */
 class PseudoRandomGenerator {
 public:
     PseudoRandomGenerator();
     ~PseudoRandomGenerator();
+
+    /**
+     * @brief Generate a random number between min and max
+     *
+     * @tparam T The type of the number to generate
+     * @param min The minimum value
+     * @param max The maximum value
+     * @return T The generated number
+     */
     template<typename T>
     T generateNumber(T, T);
+
+    /**
+     * @brief Get the Instance object
+     *
+     * @return PseudoRandomGenerator*
+     */
     static PseudoRandomGenerator *getInstance()
     {
         static PseudoRandomGenerator prg;

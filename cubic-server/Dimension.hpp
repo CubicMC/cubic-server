@@ -135,6 +135,12 @@ public:
     virtual void lockLoadingChunksMutex() { _loadingChunksMutex.lock(); };
     virtual void unlockLoadingChunksMutex() { _loadingChunksMutex.unlock(); };
 
+    /**
+     * @brief Get the BlockID of a block in the dimension
+     *
+     * @param pos The position of the block
+     * @return BlockId The block ID
+     */
     virtual BlockId getBlock(const Position &pos) const { return getLevel().getChunkColumnFromBlockPos(pos.x, pos.z).getBlock(pos); }
 
 protected:

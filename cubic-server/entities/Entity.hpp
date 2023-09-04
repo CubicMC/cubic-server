@@ -127,8 +127,12 @@ public:
     virtual void teleport(const Vector3<double> &pos);
 
     // Drop an item when necessary (death of the entity, broken block, ...)
-    // The dropped item is determined by the loot tables
+    // The dropped item is determined by the loot tables // TODO that's not true but should be
     virtual void dropItem(UNUSED const Vector3<double> &pos) {};
+
+    /**
+     * @brief Used to update the position of an entity for all players
+     */
     virtual void tickPosition();
 
     // Check if there is an item to pickup within the entity pickup box
