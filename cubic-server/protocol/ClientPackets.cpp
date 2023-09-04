@@ -554,7 +554,7 @@ std::unique_ptr<std::vector<uint8_t>> protocol::createCombatDeath(const CombatDe
     serialize(payload,
         in.playerId, addVarInt,
         in.killerId, addInt,
-        in.message, addChat
+        in.message.serialize(), addChat
     );
     // clang-format on
     auto packet = std::make_unique<std::vector<uint8_t>>();
@@ -700,11 +700,11 @@ std::unique_ptr<std::vector<uint8_t>> protocol::createRespawn(const Respawn &in)
         in.previousGamemode, addByte,
         in.isDebug, addBoolean,
         in.isFlat, addBoolean,
-        in.copyMetadata, addBoolean
+        in.copyMetadata, addBoolean,
+        in.hasDeathLocation, addBoolean
     );
     if (in.hasDeathLocation) {
         serialize(payload,
-            in.hasDeathLocation, addBoolean,
             in.deathDimensionName, addString,
             in.deathLocation, addPosition
         );

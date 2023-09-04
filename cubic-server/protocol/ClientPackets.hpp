@@ -433,7 +433,7 @@ std::unique_ptr<std::vector<uint8_t>> createPlayerChatMessage(const PlayerChatMe
 struct CombatDeath {
     int32_t playerId;
     int32_t killerId;
-    std::string message;
+    chat::Message message;
 };
 std::unique_ptr<std::vector<uint8_t>> createCombatDeath(const CombatDeath &);
 
