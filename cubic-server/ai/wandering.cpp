@@ -1,7 +1,10 @@
 #include "wandering.hpp"
+#include "Dimension.hpp"
 #include "entities/Entity.hpp"
 #include "logging/logging.hpp"
 #include "math/Vector3.hpp"
+#include "utility/PseudoRandomGenerator.hpp"
+#include "world_storage/Level.hpp"
 
 namespace ai {
 Wandering::Wandering(Entity &entity):
@@ -15,21 +18,34 @@ bool Wandering::see() { return true; }
 
 void Wandering::think()
 {
-    Vector3<double> pos = this->_entity.getPosition();
-    Vector3<double> finalPos = {pos.x + 1, pos.y, pos.z - 1};
+    Vector3<double> actualPos = this->_entity.getPosition();
+
+    int x = utility::PseudoRandomGenerator::getInstance()->generateNumber(-9, 9);
+    int z = utility::PseudoRandomGenerator::getInstance()->generateNumber(-9, 9);
+
+    Vector3<double> finalPos = {actualPos.x + x, actualPos.y, actualPos.z + z};
+
+    if (!_entity.getDimension()->hasChunkLoaded(transformBlockPosToChunkPos(finalPos.x), transformBlockPosToChunkPos(finalPos.z)))
+        return;
+    if (_entity.getDimension()->getBlock({int(finalPos.x), int(finalPos.y) - 1, int(finalPos.z)}) == 0 ||
+        _entity.getDimension()->getBlock({int(finalPos.x), int(finalPos.y), int(finalPos.z)}) != 0)
+        return;
+
     // get the straight line equation between the two points
-    // z = mx + b
     // m = (z2 - z1) / (x2 - x1)
     // b = z1 - mx1
-    double m = (finalPos.z - pos.z) / (finalPos.x - pos.x);
-    double b = pos.z - m * pos.x;
+    // z = mx + b
+    double m = (finalPos.z - actualPos.z) / (finalPos.x - actualPos.x);
+    double b = actualPos.z - m * actualPos.x;
     // get the x and z values for the next position
-    for (int i = 1; i <= 40; i++) {
-        double x = pos.x + i / 40.0;
+    auto distance = actualPos.distance(finalPos);
+    for (int i = 1; i <= distance * 10; i++) {
+        double x = actualPos.x + ((finalPos.x - actualPos.x) / (distance * 10)) * i;
         double z = m * x + b;
         // set the next position
-        this->_path.push({x, pos.y, z});
+        this->_path.push({x, actualPos.y, z});
     }
+    this->_path.push(finalPos);
 }
 
 void Wandering::act()
