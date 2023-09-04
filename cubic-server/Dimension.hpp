@@ -101,7 +101,6 @@ public:
      * @return world_storage::ChunkColumn&
      */
     virtual world_storage::ChunkColumn &getChunk(int x, int z);
-
     virtual const world_storage::ChunkColumn &getChunk(int x, int z) const;
 
     /**
@@ -135,6 +134,8 @@ public:
 
     virtual void lockLoadingChunksMutex() { _loadingChunksMutex.lock(); };
     virtual void unlockLoadingChunksMutex() { _loadingChunksMutex.unlock(); };
+
+    virtual BlockId getBlock(const Position &pos) const { return getLevel().getChunkColumnFromBlockPos(pos.x, pos.z).getBlock(pos); }
 
 protected:
     virtual void _run();
