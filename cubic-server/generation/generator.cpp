@@ -1,11 +1,6 @@
 #include "generator.hpp"
 #include "generation/overworld.hpp"
 
-generation::Generator::Generator(Seed seed):
-    _noiseMaker(seed)
-{
-}
-
 bool generation::Generator::isCached(positionType x, positionType y, positionType z) { return isCached2D(x, z) && _noiseCache[x][z].second.contains(y); }
 
 bool generation::Generator::isCached2D(positionType x, positionType z) { return _noiseCache.contains(x) && _noiseCache[x].contains(z); }
@@ -45,4 +40,25 @@ generation::Generator::GenerationNoise generation::Generator::getNoise(positionT
     noise.noise3D = _noiseCache[x][z].second[y];
 
     return noise;
+}
+
+// Set a randomizer number to a value between 0 & 4, based on the seed & the position of a block
+void generation::Generator::setRandomizer(const Position &pos)
+{
+    if (pos.y == 0 && pos.x != 0)
+        _randomizer = std::abs((_seed % pos.x) % 5);
+    else if (pos.x == 0 && pos.z != 0)
+        _randomizer = std::abs((_seed % pos.z) % 5);
+    else if (pos.z == 0 && pos.y != 0)
+        _randomizer = std::abs((_seed % pos.y) % 5);
+
+    if (pos.x != 0 && pos.y != 0 && pos.z != 0) {
+        if (pos.x % 2 == 0 && pos.z % 2 != 0)
+            _randomizer = std::abs((_seed % pos.y) % 5);
+        else if (pos.x % 2 != 0 && pos.z % 2 == 0)
+            _randomizer = std::abs((_seed % pos.z) % 5);
+        else
+            _randomizer = std::abs((_seed % pos.x) % 5);
+    }
+    // LINFO("RANDOMIZER : {}", _randomizer);
 }
