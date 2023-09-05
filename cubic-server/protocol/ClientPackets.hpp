@@ -24,6 +24,7 @@ enum class ClientPacketID : int32_t {
     DisconnectLogin = 0x00,
     EncryptionRequest = 0x01,
     LoginSuccess = 0x02,
+    SetCompression = 0x03,
 
     // Status State
     Status = 0x00,
@@ -104,6 +105,8 @@ struct LoginSuccess {
     std::vector<PlayerProperty> properties;
 };
 std::unique_ptr<std::vector<uint8_t>> createLoginSuccess(const LoginSuccess &);
+
+std::unique_ptr<std::vector<uint8_t>> createSetCompression(int32_t compressionTreshold);
 
 struct StatusResponse {
     std::string payload;

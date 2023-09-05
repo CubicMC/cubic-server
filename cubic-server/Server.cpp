@@ -51,7 +51,6 @@ Server::Server():
     // _motd = _config.getMotd();
     // _enforceWhitelist = _config.getEnforceWhitelist();
 
-    _commands.reserve(27);
     _commands.emplace_back(std::make_unique<command_parser::Help>());
     _commands.emplace_back(std::make_unique<command_parser::QuestionMark>());
     _commands.emplace_back(std::make_unique<command_parser::Stop>());

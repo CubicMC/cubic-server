@@ -78,6 +78,7 @@ public:
     void sendLoginSuccess(const protocol::LoginSuccess &packet);
     void sendLoginPlay(void);
     void sendEncryptionRequest(void);
+    void sendSetCompression();
 
     // Disconnect the client
     void disconnect(const chat::Message &reason = "Disconnected");
@@ -100,6 +101,7 @@ private:
     void _loginSequence(const protocol::LoginSuccess &packet);
     bool _handleOnline(const std::array<uint8_t, 16> &key);
     NODISCARD inline const std::vector<protocol::PlayerProperty> &getProperties() const { return _resPck.properties; }
+    NODISCARD inline bool isCompressed() const { return _isCompressed; }
 
 private:
     std::atomic<bool> _isRunning;
@@ -118,6 +120,7 @@ private:
     bool _isEncrypted;
     EASEncryptionHandler _encryption;
     protocol::LoginSuccess _resPck;
+    bool _isCompressed;
 };
 
 #endif // CUBICSERVER_CLIENT_HPP

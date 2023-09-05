@@ -1,3 +1,5 @@
+#include <boost/archive/binary_iarchive.hpp>
+#include <boost/iostreams/filtering_stream.hpp>
 #include <boost/system/detail/error_category.hpp>
 #include <boost/system/detail/error_code.hpp>
 #include <cstdint>
@@ -12,6 +14,7 @@
 #include <sys/types.h>
 #include <thread>
 #include <unistd.h>
+#include <zlib.h>
 
 #include "Client.hpp"
 #include "PlayerAttributes.hpp"
@@ -28,6 +31,7 @@
 #include "nlohmann/json.hpp"
 #include "protocol/ClientPackets.hpp"
 #include "protocol/ServerPackets.hpp"
+#include "protocol/serialization/addPrimaryType.hpp"
 #include "protocol/serialization/popPrimaryType.hpp"
 #include "types.hpp"
 
@@ -41,7 +45,8 @@ Client::Client(tcp::socket &&socket, size_t clientID):
     _player(nullptr),
     _socket(std::move(socket)),
     _clientID(clientID),
-    _isEncrypted(false)
+    _isEncrypted(false),
+    _isCompressed(false)
 {
     LDEBUG("Creating client");
 }
@@ -90,8 +95,64 @@ void Client::doRead()
     // Server::getInstance()->triggerClientCleanup(_clientID);
 }
 
+static void add_buffer_to_vector(std::vector<uint8_t> &vector, const uint8_t *buffer, size_t length)
+{
+    for (size_t character_index = 0; character_index < length; character_index++) {
+        char current_character = buffer[character_index];
+        vector.push_back(current_character);
+    }
+}
+
+static int compress_vector(const std::vector<uint8_t> &source, std::vector<uint8_t> &destination)
+{
+    unsigned long source_length = source.size();
+    size_t destination_length = compressBound(source_length);
+
+    uint8_t *destination_data = (uint8_t *) malloc(destination_length);
+    if (destination_data == nullptr) {
+        return Z_MEM_ERROR;
+    }
+
+    Bytef *source_data = (Bytef *) source.data();
+    int return_value = compress2((Bytef *) destination_data, &destination_length, source_data, source_length, CONFIG["compression-level"].as<int>());
+    add_buffer_to_vector(destination, destination_data, destination_length);
+    free(destination_data);
+    return return_value;
+}
+
+static void compressPacket(std::vector<uint8_t> &in, std::vector<uint8_t> &out)
+{
+    // Don't compress if the packet is too small
+    if (in.size() < COMPRESSION_THRESHOLD) {
+        uint8_t *at = in.data();
+        int32_t size = protocol::popVarInt(at, in.data() + in.size() - 1);
+        protocol::addVarInt(out, size + 1);
+        protocol::addVarInt(out, 0);
+        out.insert(out.end(), at, in.data() + in.size());
+        return;
+    }
+    uint8_t *at = in.data();
+    int32_t size = protocol::popVarInt(at, in.data() + in.size() - 1);
+    std::vector<uint8_t> compressedData;
+    LWARN("COMPRESSING RIGHT NOW!!!");
+    int compressReturn = compress_vector(std::vector<uint8_t>(at, in.data() + in.size() - 1), compressedData);
+    assert(compressReturn != Z_MEM_ERROR);
+    protocol::addVarInt(out, compressedData.size() + (at - in.data()));
+    protocol::addVarInt(out, size);
+    out.insert(out.end(), compressedData.begin(), compressedData.end());
+    LWARN("COMPRESSED!!! {} -> {}", in.size(), out.size());
+}
+
 void Client::doWrite(std::unique_ptr<std::vector<uint8_t>> &&data)
 {
+    if (_isCompressed) {
+        auto toSend = std::make_unique<std::vector<uint8_t>>();
+        compressPacket(*data, *toSend);
+        if (_isEncrypted)
+            _encryption.encrypt(*toSend);
+        Server::getInstance()->sendData(_clientID, std::move(toSend));
+        return;
+    }
     if (_isEncrypted)
         _encryption.encrypt(*data);
     Server::getInstance()->sendData(_clientID, std::move(data));
@@ -203,6 +264,66 @@ void Client::handleParsedClientPacket(std::unique_ptr<protocol::BaseServerPacket
     N_LERROR("Unhandled packet: {} in status {}", packetID, _status); // TODO: Properly handle the unknown packet
 }
 
+// TODO(huntears): Optimize this HOLY SHIT
+static bool gzipInflate(const std::vector<uint8_t> &compressedBytes, std::vector<uint8_t> &uncompressedBytes, uint32_t size)
+{
+    unsigned full_length = size;
+    unsigned half_length = size / 2;
+
+    unsigned uncompLength = full_length;
+    char *uncomp = (char *) calloc(sizeof(char), uncompLength);
+
+    z_stream strm;
+    strm.next_in = (Bytef *) compressedBytes.data();
+    strm.avail_in = size;
+    strm.total_out = 0;
+    strm.zalloc = Z_NULL;
+    strm.zfree = Z_NULL;
+
+    bool done = false;
+
+    if (inflateInit2(&strm, (16 + MAX_WBITS)) != Z_OK) {
+        free(uncomp);
+        return false;
+    }
+
+    while (!done) {
+        // If our output buffer is too small
+        if (strm.total_out >= uncompLength) {
+            // Increase size of output buffer
+            char *uncomp2 = (char *) calloc(sizeof(char), uncompLength + half_length);
+            memcpy(uncomp2, uncomp, uncompLength);
+            uncompLength += half_length;
+            free(uncomp);
+            uncomp = uncomp2;
+        }
+
+        strm.next_out = (Bytef *) (uncomp + strm.total_out);
+        strm.avail_out = uncompLength - strm.total_out;
+
+        // Inflate another chunk.
+        int err = inflate(&strm, Z_SYNC_FLUSH);
+        if (err == Z_STREAM_END)
+            done = true;
+        else if (err != Z_OK) {
+            break;
+        }
+    }
+
+    if (inflateEnd(&strm) != Z_OK) {
+        free(uncomp);
+        return false;
+    }
+
+    for (size_t i = 0; i < strm.total_out; ++i) {
+        uncompressedBytes.push_back(uncomp[i]);
+    }
+    LERROR("strm.total_out {}, uncompressedByte.size() {}, size {}", strm.total_out, uncompressedBytes.size(), size);
+    // uncompressedBytes.insert(uncompressedBytes.begin(), uncomp, uncomp + strm.total_out);
+    free(uncomp);
+    return true;
+}
+
 void Client::_handlePacket()
 {
     auto &data = _recvBuffer;
@@ -225,7 +346,29 @@ void Client::_handlePacket()
         } catch (const protocol::PacketEOF &_) {
             break; // Not enough data in buffer to parse the length of the packet
         }
+
         const uint8_t *startPayload = at;
+
+        std::vector<uint8_t> uncompressedData;
+        if (_isCompressed) {
+            int32_t uncompressedLength = protocol::popVarInt(at, eof);
+            if (uncompressedLength == 0)
+                goto packetNotCompressed;
+            if (!gzipInflate(std::vector<uint8_t>(at, eof + 1), uncompressedData, length))
+                assert(0);
+
+            at = uncompressedData.data();
+            eof = uncompressedData.data() + uncompressedData.size() - 1;
+            // TODO(huntears): Change that after testing
+            if ((size_t) uncompressedLength != uncompressedData.size()) {
+                LERROR("{} != {}", uncompressedLength, uncompressedData.size());
+                assert(0);
+            }
+            assert((size_t) uncompressedLength == uncompressedData.size());
+            LWARN("PTDR CA MARCHE");
+        }
+    packetNotCompressed:
+
         bool error = false;
         // Handle the packet if the length is there
         const auto packetId = static_cast<protocol::ServerPacketsID>(protocol::popVarInt(at, eof));
@@ -504,10 +647,20 @@ void Client::disconnect(const chat::Message &reason)
     N_LDEBUG("Sent a disconnect login packet");
 }
 
+void Client::sendSetCompression()
+{
+    auto pck = protocol::createSetCompression(COMPRESSION_THRESHOLD);
+    doWrite(std::move(pck));
+    _isCompressed = true;
+    N_LDEBUG("Send a set compression packet");
+    LWARN("Send a set compression packet");
+}
+
 void Client::_loginSequence(const protocol::LoginSuccess &pck)
 {
-    // Encryption request
     // Set Compression
+    if (Server::getInstance()->isCompressed())
+        this->sendSetCompression();
     this->sendLoginSuccess(pck);
     this->switchToPlayState(pck.uuid, pck.username);
     this->sendLoginPlay();
