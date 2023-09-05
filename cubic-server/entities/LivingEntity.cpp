@@ -8,7 +8,14 @@
 #include "events/Events.hpp"
 #include "protocol/ClientPackets.hpp"
 #include "protocol/metadata.hpp"
+#include "math/Vector3.hpp"
 #include <optional>
+
+
+void LivingEntity::tick()
+{
+    this->gravity();
+}
 
 /*
  * @brief Attack the entity
@@ -65,6 +72,25 @@ void LivingEntity::knockback(const Vector3<double> &source, float force)
     for (auto player : _dim->getPlayers()) {
         player->sendEntityVelocity({_id, static_cast<int16_t>(kb.x), static_cast<int16_t>(kb.y), static_cast<int16_t>(kb.z)});
         player->sendEntityAnimation(protocol::EntityAnimation::ID::TakeDamage, _id);
+    }
+}
+
+/*
+ * @brief Apply gravity to the entity
+ *
+ * @param gravity The intensity of the gravity (default: 1)
+ */
+void LivingEntity::gravity(float gravity, float drag)
+{
+    _velocity.y = _velocity.y * drag - gravity * drag;
+
+    for (auto player : _dim->getPlayers()) {
+        player->sendEntityVelocity({
+            _id,
+            static_cast<int16_t>(_velocity.x * 8000),
+            static_cast<int16_t>(_velocity.y * 8000),
+            static_cast<int16_t>(_velocity.z * 8000),
+        });
     }
 }
 
