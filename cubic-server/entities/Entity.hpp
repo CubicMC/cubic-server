@@ -127,7 +127,7 @@ public:
     virtual void teleport(const Vector3<double> &pos);
 
     // Drop an item when necessary (death of the entity, broken block, ...)
-    // The dropped item is determined by the loot tables // TODO that's not true but should be
+    // @todo The dropped item is determined by the loot tables. Actually that's not true
     virtual void dropItem(UNUSED const Vector3<double> &pos) {};
 
     /**

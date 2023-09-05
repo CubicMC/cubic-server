@@ -252,6 +252,7 @@ void Dimension::spawnEntity(const std::shared_ptr<const Entity> current)
             0, // Entity Velocity Y
             0 // Entity Velocity Z
         });
+        player->sendEntityMetadata(*current);
     }
 }
 
