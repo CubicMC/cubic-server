@@ -452,8 +452,7 @@ void ChunkColumn::_generateRawGeneration(generation::Generator &generator)
                             updateBlock({x, y, (z + 1) % SECTION_WIDTH}, Blocks::Bedrock::toProtocol());
                         if ((abs(pos.z) % 2 != 0 || abs(pos.x) % 2 != 0) || x == z) {
                             updateBlock({x, 2 + CHUNK_HEIGHT_MIN, (z + 1) % SECTION_WIDTH}, Blocks::Bedrock::toProtocol());
-                        }
-                        else if ((abs(pos.z) != abs(pos.x) + x && abs(pos.z % 4) != z % 2) && pos.y % 2 != 0) {
+                        } else if ((abs(pos.z) != abs(pos.x) + x && abs(pos.z % 4) != z % 2) && pos.y % 2 != 0) {
                             updateBlock({(x + 5) % SECTION_WIDTH, 3 + CHUNK_HEIGHT_MIN, (z - 3) % SECTION_WIDTH}, Blocks::Bedrock::toProtocol());
                             updateBlock({x, y, (z + 2) % SECTION_WIDTH}, Blocks::Bedrock::toProtocol());
                         }
