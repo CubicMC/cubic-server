@@ -2,5 +2,13 @@
 	"name": "CubicServer's dev container",
 	"build": {
 		"dockerfile": "Dockerfile"
+	},
+	"customizations": {
+		"vscode": {
+			"extensions": [
+				"llvm-vs-code-extensions.vscode-clangd",
+				"Misodee.vscode-nbt"
+			]
+		}
 	}
 }
