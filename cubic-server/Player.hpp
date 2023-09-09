@@ -110,9 +110,9 @@ public:
     void sendSystemChatMessage(const protocol::SystemChatMessage &packet);
     void sendWorldEvent(const protocol::WorldEvent &packet);
     void playSoundEffect(SoundsList sound, FloatingPosition position, SoundCategory category = SoundCategory::Master);
-    void playSoundEffect(SoundEventId sound, FloatingPosition position, SoundCategory category = SoundCategory::Master);
+    void playSoundEffect(const protocol::SoundEffect &packet);
     void playSoundEffect(SoundsList sound, const Entity &entity, SoundCategory category = SoundCategory::Master);
-    void playSoundEffect(SoundEventId sound, const Entity &entity, SoundCategory category = SoundCategory::Master);
+    void playSoundEffect(const protocol::EntitySoundEffect &packet);
     // Was deleted in 1.19.3 (this function is an artifact of 1.19 minecraft version)
     // void playCustomSound(std::string sound, FloatingPosition position, SoundCategory category = SoundCategory::Master);
     void stopSound(uint8_t flags = 0, SoundCategory category = SoundCategory::Ambient, std::string sound = "");

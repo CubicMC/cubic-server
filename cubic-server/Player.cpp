@@ -254,17 +254,10 @@ void Player::playSoundEffect(SoundsList sound, FloatingPosition position, SoundC
     N_LDEBUG("Sent a sound effect packet");
 }
 
-void Player::playSoundEffect(SoundEventId sound, FloatingPosition position, SoundCategory category)
+void Player::playSoundEffect(const protocol::SoundEffect &packet)
 {
     GET_CLIENT();
-    auto pck = protocol::createSoundEffect({
-        (int32_t) sound, (int32_t) category,
-        // https://wiki.vg/Data_types#Fixed-point_numbers
-        static_cast<int32_t>(position.x * 32.0), static_cast<int32_t>(position.y * 32.0), static_cast<int32_t>(position.z * 32.0),
-        0.5, // TODO: get the right volume
-        1.0, // TODO: get the right pitch
-        0 // TODO: get the right seed
-    });
+    auto pck = protocol::createSoundEffect(packet);
     client->doWrite(std::move(pck));
     N_LDEBUG("Sent a sound effect packet");
 }
@@ -282,15 +275,10 @@ void Player::playSoundEffect(SoundsList sound, const Entity &entity, SoundCatego
     N_LDEBUG("Sent a entity sound effect packet");
 }
 
-void Player::playSoundEffect(SoundEventId sound, const Entity &entity, SoundCategory category)
+void Player::playSoundEffect(const protocol::EntitySoundEffect &packet)
 {
     GET_CLIENT();
-    auto pck = protocol::createEntitySoundEffect({
-        (int32_t) sound, (int32_t) category, entity.getId(),
-        1.0, // TODO: get the right volume
-        1.0, // TODO: get the right pitch
-        1 // TODO: get the right seed
-    });
+    auto pck = protocol::createEntitySoundEffect(packet);
     client->doWrite(std::move(pck));
     N_LDEBUG("Sent a entity sound effect packet");
 }

@@ -40,7 +40,7 @@ enum class ClientPacketID : int32_t {
     SetContainerContent = 0x10,
     SetContainerSlot = 0x12,
     PluginMessage = 0x15,
-    // CustomSoundEffect = 0x16, TODO: This is removed in the last revision of wiki.vg
+    // CustomSoundEffect = 0x16, This has been removed since 1.19.3
     DisconnectPlay = 0x17,
     EntityEvent = 0x19,
     UnloadChunk = 0x1b,
@@ -210,17 +210,18 @@ struct PluginMessageResponse {
 };
 std::unique_ptr<std::vector<uint8_t>> createPluginMessageResponse(const PluginMessageResponse &);
 
-struct CustomSoundEffect {
-    std::string name;
-    int32_t category;
-    int32_t x;
-    int32_t y;
-    int32_t z;
-    float volume;
-    float pitch;
-    long seed;
-};
-std::unique_ptr<std::vector<uint8_t>> createCustomSoundEffect(const CustomSoundEffect &);
+// This has been removed since 1.19.3
+// struct CustomSoundEffect {
+//     std::string name;
+//     int32_t category;
+//     int32_t x;
+//     int32_t y;
+//     int32_t z;
+//     float volume;
+//     float pitch;
+//     long seed;
+// };
+// std::unique_ptr<std::vector<uint8_t>> createCustomSoundEffect(const CustomSoundEffect &);
 
 std::unique_ptr<std::vector<uint8_t>> createPlayDisconnect(const Disconnect &);
 
@@ -561,7 +562,31 @@ struct UpdateTime {
 std::unique_ptr<std::vector<uint8_t>> createUpdateTime(const UpdateTime &);
 
 struct EntitySoundEffect {
+    EntitySoundEffect(int32_t soundId, int32_t category, int32_t entityId, float volume, float pitch, long seed):
+        soundId(soundId + 1), // see https://wiki.vg/index.php?title=Protocol&oldid=18067#Entity_Sound_Effect
+        category(category),
+        entityId(entityId),
+        volume(volume),
+        pitch(pitch),
+        seed(seed)
+    {
+    }
+    EntitySoundEffect(std::string soundName, bool hasFixedRange, float range, int32_t category, int32_t entityId, float volume, float pitch):
+        soundId(0), // see https://wiki.vg/index.php?title=Protocol&oldid=18067#Entity_Sound_Effect
+        soundName(soundName),
+        hasFixedRange(hasFixedRange),
+        range(range),
+        category(category),
+        entityId(entityId),
+        volume(volume),
+        pitch(pitch),
+        seed(0)
+    {
+    }
     int32_t soundId;
+    std::string soundName;
+    bool hasFixedRange;
+    float range;
     int32_t category;
     int32_t entityId;
     float volume;
@@ -571,7 +596,35 @@ struct EntitySoundEffect {
 std::unique_ptr<std::vector<uint8_t>> createEntitySoundEffect(const EntitySoundEffect &);
 
 struct SoundEffect {
+    SoundEffect(int32_t soundId, int32_t category, int32_t x, int32_t y, int32_t z, float volume, float pitch, long seed):
+        soundId(soundId + 1), // see https://wiki.vg/index.php?title=Protocol&oldid=18067#Entity_Sound_Effect
+        category(category),
+        x(x),
+        y(y),
+        z(z),
+        volume(volume),
+        pitch(pitch),
+        seed(seed)
+    {
+    }
+    SoundEffect(std::string soundName, bool hasFixedRange, float range, int32_t category, int32_t x, int32_t y, int32_t z, float volume, float pitch, long seed):
+        soundId(0), // see https://wiki.vg/index.php?title=Protocol&oldid=18067#Entity_Sound_Effect
+        soundName(soundName),
+        hasFixedRange(hasFixedRange),
+        range(range),
+        category(category),
+        x(x),
+        y(y),
+        z(z),
+        volume(volume),
+        pitch(pitch),
+        seed(seed)
+    {
+    }
     int32_t soundId;
+    std::string soundName;
+    bool hasFixedRange;
+    float range;
     int32_t category;
     int32_t x;
     int32_t y;

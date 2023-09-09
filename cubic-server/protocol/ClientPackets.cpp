@@ -258,26 +258,26 @@ std::unique_ptr<std::vector<uint8_t>> protocol::createPluginMessageResponse(cons
     return packet;
 }
 
-std::unique_ptr<std::vector<uint8_t>> protocol::createCustomSoundEffect(UNUSED const CustomSoundEffect &in)
-{
-    return std::make_unique<std::vector<uint8_t>>();
-    /*
-    std::vector<uint8_t> payload;
-    serialize(payload,
-        in.name, addIdentifier,
-        in.category, addVarInt,
-        in.x, addInt,
-        in.y, addInt,
-        in.z, addInt,
-        in.volume, addFloat,
-        in.pitch, addFloat,
-        in.seed, addLong
-    );
-    auto packet = std::make_unique<std::vector<uint8_t>>();
-    finalize(*packet, payload, (int32_t) ClientPacketID::CustomSoundEffect);
-    return packet;
-    */
-}
+// std::unique_ptr<std::vector<uint8_t>> protocol::createCustomSoundEffect(UNUSED const CustomSoundEffect &in)
+// {
+//     return std::make_unique<std::vector<uint8_t>>();
+//     /*
+//     std::vector<uint8_t> payload;
+//     serialize(payload,
+//         in.name, addIdentifier,
+//         in.category, addVarInt,
+//         in.x, addInt,
+//         in.y, addInt,
+//         in.z, addInt,
+//         in.volume, addFloat,
+//         in.pitch, addFloat,
+//         in.seed, addLong
+//     );
+//     auto packet = std::make_unique<std::vector<uint8_t>>();
+//     finalize(*packet, payload, (int32_t) ClientPacketID::CustomSoundEffect);
+//     return packet;
+//     */
+// }
 
 std::unique_ptr<std::vector<uint8_t>> protocol::createPlayDisconnect(const Disconnect &in)
 {
@@ -794,8 +794,14 @@ std::unique_ptr<std::vector<uint8_t>> protocol::createEntitySoundEffect(const En
 {
     std::vector<uint8_t> payload;
     // clang-format off
+    serialize(payload, in.soundId, addVarInt);
+    if (in.soundId == 0)
+        serialize(payload,
+            in.soundName, addIdentifier,
+            in.hasFixedRange, addBoolean,
+            in.range, addFloat
+        );
     serialize(payload,
-        in.soundId, addVarInt,
         in.category, addVarInt,
         in.entityId, addVarInt,
         in.volume, addFloat,
@@ -812,8 +818,14 @@ std::unique_ptr<std::vector<uint8_t>> protocol::createSoundEffect(const SoundEff
 {
     std::vector<uint8_t> payload;
     // clang-format off
+    serialize(payload, in.soundId, addVarInt);
+    if (in.soundId == 0)
+        serialize(payload,
+            in.soundName, addIdentifier,
+            in.hasFixedRange, addBoolean,
+            in.range, addFloat
+        );
     serialize(payload,
-        in.soundId, addVarInt,
         in.category, addVarInt,
         in.x, addInt,
         in.y, addInt,
