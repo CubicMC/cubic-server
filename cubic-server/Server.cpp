@@ -97,12 +97,16 @@ void Server::launch(const configuration::ConfigHandler &config)
     registry::setupDefaultsChat(chatRegistry);
 
     // Initialize the global palette
-    _globalPalette.initialize(std::string("blocks-") + MC_VERSION + ".json");
-    LINFO("GlobalPalette initialized");
+    if (_globalPalette.initialize(std::string("blocks-") + MC_VERSION + ".json"))
+        LINFO("GlobalPalette initialized");
 
     // Initialize the item converter
-    _itemConverter.initialize(std::string("registries-") + MC_VERSION + ".json");
-    LINFO("ItemConverter initialized");
+    if (_itemConverter.initialize(std::string("registries-") + MC_VERSION + ".json"))
+        LINFO("ItemConverter initialized");
+
+    // Initialize the sound event converter
+    if (_soundEventConverter.initialize(std::string("registries-") + MC_VERSION + ".json"))
+        LINFO("SoundEventConverter initialized");
 
     // Initialize loot tables
     _lootTables.initialize();

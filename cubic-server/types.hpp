@@ -35,6 +35,7 @@ typedef int64_t Seed;
 typedef int32_t BlockId;
 typedef uint8_t BiomeId;
 typedef int32_t ItemId;
+typedef int32_t SoundEventId;
 
 // https://wiki.vg/Data_types#Fixed-point_numbers
 // https://wiki.vg/index.php?title=Protocol&oldid=17753#Custom_Sound_Effect

@@ -2,6 +2,7 @@
 
 #include "Dimension.hpp"
 #include "Player.hpp"
+#include "Server.hpp"
 #include "World.hpp"
 #include "WorldGroup.hpp"
 
@@ -21,7 +22,7 @@ void SoundSystem::tick()
     for (auto [_, world] : _group.getWorlds()) {
         for (auto [_, dim] : world->getDimensions()) {
             for (auto player : dim->getPlayers()) {
-                player->playSoundEffect(SoundsList::block_bell_use, *player, SoundCategory::Ambient);
+                player->playSoundEffect(SOUND_EVENT_CONVERTER.fromSoundEventToProtocolId("minecraft:block.bell.use"), *player, SoundCategory::Ambient);
             }
         }
     }

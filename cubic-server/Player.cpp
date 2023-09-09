@@ -24,6 +24,7 @@
 #include "protocol/container/Inventory.hpp"
 #include "protocol/metadata.hpp"
 #include "protocol/serialization/addPrimaryType.hpp"
+#include "types.hpp"
 #include "world_storage/Level.hpp"
 #include <algorithm>
 #include <cstdint>
@@ -253,6 +254,21 @@ void Player::playSoundEffect(SoundsList sound, FloatingPosition position, SoundC
     N_LDEBUG("Sent a sound effect packet");
 }
 
+void Player::playSoundEffect(SoundEventId sound, FloatingPosition position, SoundCategory category)
+{
+    GET_CLIENT();
+    auto pck = protocol::createSoundEffect({
+        (int32_t) sound, (int32_t) category,
+        // https://wiki.vg/Data_types#Fixed-point_numbers
+        static_cast<int32_t>(position.x * 32.0), static_cast<int32_t>(position.y * 32.0), static_cast<int32_t>(position.z * 32.0),
+        0.5, // TODO: get the right volume
+        1.0, // TODO: get the right pitch
+        0 // TODO: get the right seed
+    });
+    client->doWrite(std::move(pck));
+    N_LDEBUG("Sent a sound effect packet");
+}
+
 void Player::playSoundEffect(SoundsList sound, const Entity &entity, SoundCategory category)
 {
     GET_CLIENT();
@@ -266,20 +282,33 @@ void Player::playSoundEffect(SoundsList sound, const Entity &entity, SoundCatego
     N_LDEBUG("Sent a entity sound effect packet");
 }
 
-void Player::playCustomSound(std::string sound, FloatingPosition position, SoundCategory category)
+void Player::playSoundEffect(SoundEventId sound, const Entity &entity, SoundCategory category)
 {
     GET_CLIENT();
-    auto pck = protocol::createCustomSoundEffect({
-        sound, (int32_t) category,
-        // https://wiki.vg/Data_types#Fixed-point_numbers
-        static_cast<int32_t>(position.x * 32.0), static_cast<int32_t>(position.y * 32.0), static_cast<int32_t>(position.z * 32.0),
-        0.5, // TODO: get the right volume
+    auto pck = protocol::createEntitySoundEffect({
+        (int32_t) sound, (int32_t) category, entity.getId(),
+        1.0, // TODO: get the right volume
         1.0, // TODO: get the right pitch
-        0 // TODO: get the right seed
+        1 // TODO: get the right seed
     });
     client->doWrite(std::move(pck));
-    N_LDEBUG("Sent a custom sound effect packet");
+    N_LDEBUG("Sent a entity sound effect packet");
 }
+
+// void Player::playCustomSound(std::string sound, FloatingPosition position, SoundCategory category)
+// {
+//     GET_CLIENT();
+//     auto pck = protocol::createCustomSoundEffect({
+//         sound, (int32_t) category,
+//         // https://wiki.vg/Data_types#Fixed-point_numbers
+//         static_cast<int32_t>(position.x * 32.0), static_cast<int32_t>(position.y * 32.0), static_cast<int32_t>(position.z * 32.0),
+//         0.5, // TODO: get the right volume
+//         1.0, // TODO: get the right pitch
+//         0 // TODO: get the right seed
+//     });
+//     client->doWrite(std::move(pck));
+//     N_LDEBUG("Sent a custom sound effect packet");
+// }
 
 void Player::stopSound(uint8_t flags, SoundCategory category, std::string sound)
 {
