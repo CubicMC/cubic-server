@@ -1,8 +1,10 @@
 #include "wandering.hpp"
 #include "Dimension.hpp"
+#include "Server.hpp"
 #include "entities/Entity.hpp"
 #include "logging/logging.hpp"
 #include "math/Vector3.hpp"
+#include "blocks.hpp"
 #include "utility/PseudoRandomGenerator.hpp"
 #include "world_storage/Level.hpp"
 
@@ -27,9 +29,20 @@ void Wandering::think()
 
     if (!_entity.getDimension()->hasChunkLoaded(transformBlockPosToChunkPos(finalPos.x), transformBlockPosToChunkPos(finalPos.z)))
         return;
-    if (_entity.getDimension()->getBlock({int(finalPos.x), int(finalPos.y) - 1, int(finalPos.z)}) == 0 ||
-        _entity.getDimension()->getBlock({int(finalPos.x), int(finalPos.y), int(finalPos.z)}) != 0)
+    if (_entity.getDimension()->getBlock({int(finalPos.x), int(finalPos.y) - 1, int(finalPos.z)}) == Blocks::Air::toProtocol() ||
+        _entity.getDimension()->getBlock({int(finalPos.x), int(finalPos.y), int(finalPos.z)}) != Blocks::Air::toProtocol())
         return;
+
+    _entity.getDimension()->updateBlock({int(finalPos.x), int(finalPos.y), int(finalPos.z)}, Blocks::Bedrock::toProtocol());
+
+    LINFO(Vector3<double>{finalPos.x, finalPos.y - 1, finalPos.z});
+    LINFO(GLOBAL_PALETTE.fromProtocolIdToBlock(_entity.getDimension()->getBlock({int(finalPos.x), int(finalPos.y) - 1, int(finalPos.z)})).name);
+    LINFO(_entity.getDimension()->getBlock({int(finalPos.x), int(finalPos.y) - 1, int(finalPos.z)}) == Blocks::Air::toProtocol());
+    LINFO(finalPos);
+    LINFO(GLOBAL_PALETTE.fromProtocolIdToBlock(_entity.getDimension()->getBlock({int(finalPos.x), int(finalPos.y), int(finalPos.z)})).name);
+    LINFO(_entity.getDimension()->getBlock({int(finalPos.x), int(finalPos.y), int(finalPos.z)}) != Blocks::Air::toProtocol());
+    LINFO("total of conditions {}", _entity.getDimension()->getBlock({int(finalPos.x), int(finalPos.y) - 1, int(finalPos.z)}) == Blocks::Air::toProtocol() ||
+        _entity.getDimension()->getBlock({int(finalPos.x), int(finalPos.y), int(finalPos.z)}) != Blocks::Air::toProtocol());
 
     // get the straight line equation between the two points
     // m = (z2 - z1) / (x2 - x1)
