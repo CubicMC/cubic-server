@@ -53,7 +53,6 @@ Player::Player(std::weak_ptr<Client> cli, std::shared_ptr<Dimension> dim, u128 u
     _foodExhaustionLevel(0.0f), // TODO: Take this from the saved data
     _chatVisibility(protocol::ClientInformation::ChatVisibility::Enabled),
     _isFlying(true), // TODO: Take this from the saved data
-    _isSprinting(false),
     _isJumping(false),
     _additionalHearts(0),
     _score(0),
@@ -198,10 +197,10 @@ void Player::setPosition(const Vector3<double> &pos, bool onGround)
         _isFlying = true;
     }
 
-    if (_isSprinting && !_isFlying)
+    if (_sprinting && !_isFlying)
         _foodExhaustionLevel += oldPos2d.distance(newPos2d) * player_attributes::FOOD_EXHAUSTION_SPRINTING_MULTIPLIER;
     if (_isJumping) {
-        _foodExhaustionLevel += _isSprinting ? player_attributes::FOOD_EXHAUSTION_SPRINTING_JUMP : player_attributes::FOOD_EXHAUSTION_JUMP;
+        _foodExhaustionLevel += _sprinting ? player_attributes::FOOD_EXHAUSTION_SPRINTING_JUMP : player_attributes::FOOD_EXHAUSTION_JUMP;
         _isJumping = false;
     }
 

@@ -243,7 +243,6 @@ private:
     protocol::ClientInformation::ChatVisibility _chatVisibility;
     bool _isFlying;
     bool _isOperator;
-    bool _isSprinting;
     bool _isJumping;
 
     // metadata
