@@ -22,21 +22,58 @@ public:
     {
     }
 
+    /**
+     * Filters all the positions where rocks can generate
+     *
+     */
     std::deque<Position> &getPosForRockGeneration();
+
+    /**
+     * Filters the previous kept positions to avoid rocks to
+     * overlap between themselves too much
+     */
     std::deque<Position> &filterRockOverlap();
+
+    /**
+     * Generates a rock by calling the building functions
+     * where a rock can generate
+     */
     void generateRock(std::vector<world_storage::ChunkColumn *>);
 
 private:
+    /**
+     * Randomize the maximum size a rock can take and build
+     * the rock before returning it
+     * @param pos The position of the feature (here, a rock)
+     */
     const std::vector<Generator::FeatureBlock> getRock(const Position &pos) const;
 
+    /**
+     * Randomize the format of the rocks that are generated
+     * @param rock The rock to be generated
+     * @param rockSize The maximum size the rock can take
+     * @param pos The position of the feature (here, a rock)
+     */
     void buildDiversifiedRocks(std::vector<generation::Generator::FeatureBlock> &rock, const int rockSize, const Position &pos) const;
     void starLayer(std::vector<generation::Generator::FeatureBlock> &rock, int y, const BlockId &mossy) const;
     void fullLayer(std::vector<generation::Generator::FeatureBlock> &rock, int y, const BlockId &mossy) const;
     void placeBits(std::vector<generation::Generator::FeatureBlock> &rock, const BlockId &mossy, const int rockSize, const Position &pos) const;
     void placeTinyBits(std::vector<generation::Generator::FeatureBlock> &rock, const BlockId &mossy, const Position &pos) const;
 
+    /**
+     * The chunks where to generate rocks
+     */
     world_storage::ChunkColumn &_chunk;
+
+    /**
+     * The generator, which provides the noise maps
+     */
     generation::Generator &_generator;
+
+    /**
+     * The positions where a rock can generate, initialized first
+     * in getPosForRockGeneration(), then in filterRockOverlap()
+     */
     std::deque<Position> _positions;
 };
 
