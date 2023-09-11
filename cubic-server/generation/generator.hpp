@@ -52,6 +52,10 @@ public:
         _seed(seed) {};
     virtual ~Generator() = default;
 
+    /**
+     * Set a randomizer number to a value between 0 & 4, based on the seed & the position of a block
+     * @param pos The position of a block
+     */
     void setRandomizer(const Position &pos);
     int getRandomizer() { return _randomizer; };
 
@@ -59,6 +63,10 @@ public:
     virtual BlockId getBlock(const Position &pos) = 0;
     virtual BiomeId getBiome(positionType x, positionType y, positionType z) = 0;
     virtual BiomeId getBiome(const Position &pos) = 0;
+
+    /**
+     * Generates noise and diverse noise maps for the generation
+     */
     virtual GenerationNoise getNoise(positionType x, positionType y, positionType z, double frequency = 0.02, uint8_t octaves = 3);
     virtual int getTreeSize(positionType x, positionType y, positionType z, const TreeSize &treeSize) = 0;
     virtual int getTreeSize(const Position &pos, const TreeSize &treeSize) = 0;
@@ -77,7 +85,16 @@ protected:
                 GenerationNoise2D, std::unordered_map<positionType, GenerationNoise3D> // y
                 >>>
         _noiseCache;
+
+    /**
+     * A randomizer, based on the seed & the position of a block,
+     * set in 'setRandomizer(const Position &pos)'
+     */
     int _randomizer;
+
+    /**
+     * The world's seed
+     */
     const Seed _seed;
 };
 }

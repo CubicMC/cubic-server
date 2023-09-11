@@ -42,7 +42,6 @@ generation::Generator::GenerationNoise generation::Generator::getNoise(positionT
     return noise;
 }
 
-// Set a randomizer number to a value between 0 & 4, based on the seed & the position of a block
 void generation::Generator::setRandomizer(const Position &pos)
 {
     if (pos.y == 0 && pos.x != 0)
