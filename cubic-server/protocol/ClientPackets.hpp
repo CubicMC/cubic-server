@@ -40,7 +40,6 @@ enum class ClientPacketID : int32_t {
     SetContainerContent = 0x10,
     SetContainerSlot = 0x12,
     PluginMessage = 0x15,
-    // CustomSoundEffect = 0x16, This has been removed since 1.19.3
     DisconnectPlay = 0x17,
     EntityEvent = 0x19,
     UnloadChunk = 0x1b,
@@ -209,19 +208,6 @@ struct PluginMessageResponse {
     std::vector<uint8_t> data;
 };
 std::unique_ptr<std::vector<uint8_t>> createPluginMessageResponse(const PluginMessageResponse &);
-
-// This has been removed since 1.19.3
-// struct CustomSoundEffect {
-//     std::string name;
-//     int32_t category;
-//     int32_t x;
-//     int32_t y;
-//     int32_t z;
-//     float volume;
-//     float pitch;
-//     long seed;
-// };
-// std::unique_ptr<std::vector<uint8_t>> createCustomSoundEffect(const CustomSoundEffect &);
 
 std::unique_ptr<std::vector<uint8_t>> createPlayDisconnect(const Disconnect &);
 

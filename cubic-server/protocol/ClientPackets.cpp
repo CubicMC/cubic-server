@@ -258,27 +258,6 @@ std::unique_ptr<std::vector<uint8_t>> protocol::createPluginMessageResponse(cons
     return packet;
 }
 
-// std::unique_ptr<std::vector<uint8_t>> protocol::createCustomSoundEffect(UNUSED const CustomSoundEffect &in)
-// {
-//     return std::make_unique<std::vector<uint8_t>>();
-//     /*
-//     std::vector<uint8_t> payload;
-//     serialize(payload,
-//         in.name, addIdentifier,
-//         in.category, addVarInt,
-//         in.x, addInt,
-//         in.y, addInt,
-//         in.z, addInt,
-//         in.volume, addFloat,
-//         in.pitch, addFloat,
-//         in.seed, addLong
-//     );
-//     auto packet = std::make_unique<std::vector<uint8_t>>();
-//     finalize(*packet, payload, (int32_t) ClientPacketID::CustomSoundEffect);
-//     return packet;
-//     */
-// }
-
 std::unique_ptr<std::vector<uint8_t>> protocol::createPlayDisconnect(const Disconnect &in)
 {
     std::vector<uint8_t> payload;

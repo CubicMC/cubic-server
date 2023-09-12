@@ -283,21 +283,6 @@ void Player::playSoundEffect(const protocol::EntitySoundEffect &packet)
     N_LDEBUG("Sent a entity sound effect packet");
 }
 
-// void Player::playCustomSound(std::string sound, FloatingPosition position, SoundCategory category)
-// {
-//     GET_CLIENT();
-//     auto pck = protocol::createCustomSoundEffect({
-//         sound, (int32_t) category,
-//         // https://wiki.vg/Data_types#Fixed-point_numbers
-//         static_cast<int32_t>(position.x * 32.0), static_cast<int32_t>(position.y * 32.0), static_cast<int32_t>(position.z * 32.0),
-//         0.5, // TODO: get the right volume
-//         1.0, // TODO: get the right pitch
-//         0 // TODO: get the right seed
-//     });
-//     client->doWrite(std::move(pck));
-//     N_LDEBUG("Sent a custom sound effect packet");
-// }
-
 void Player::stopSound(uint8_t flags, SoundCategory category, std::string sound)
 {
     GET_CLIENT();
