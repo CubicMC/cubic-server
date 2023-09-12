@@ -99,14 +99,26 @@ void Server::launch(const configuration::ConfigHandler &config)
     // Initialize the global palette
     if (_globalPalette.initialize(std::string("blocks-") + MC_VERSION + ".json"))
         LINFO("GlobalPalette initialized");
+    else {
+        LFATAL("GlobalPalette failed to initialize");
+        exit(1);
+    }
 
     // Initialize the item converter
     if (_itemConverter.initialize(std::string("registries-") + MC_VERSION + ".json"))
         LINFO("ItemConverter initialized");
+    else {
+        LFATAL("ItemConverter failed to initialize");
+        exit(1);
+    }
 
     // Initialize the sound event converter
     if (_soundEventConverter.initialize(std::string("registries-") + MC_VERSION + ".json"))
         LINFO("SoundEventConverter initialized");
+    else {
+        LFATAL("SoundEventConverter failed to initialize");
+        exit(1);
+    }
 
     // Initialize loot tables
     _lootTables.initialize();
