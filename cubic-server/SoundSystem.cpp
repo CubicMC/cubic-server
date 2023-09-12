@@ -18,7 +18,6 @@ void SoundSystem::tick()
     if (_sinceLastSE <= 20 * 20)
         return;
     _sinceLastSE = 0;
-    // return; // TODO(huntears): Handle sound properly
     for (auto [_, world] : _group.getWorlds()) {
         for (auto [_, dim] : world->getDimensions()) {
             for (auto player : dim->getPlayers()) {
