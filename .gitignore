@@ -1,3 +1,7 @@
+# Compilation
+Makefile
+COMPILE.sh
+
 # Prerequisites
 *.d
 
