@@ -2,6 +2,38 @@
 #include "TickClock.hpp"
 
 namespace Redstone {
+    class RedstoneItem {
+    public:
+        RedstoneItem(std::shared_ptr<Dimension> dim, Vector3<double> pos);
+        ~RedstoneItem(void);
+
+        std::shared_ptr<Dimension> _dim;
+        Vector3<double> _pos;
+    };
+
+    class RedstoneWire : RedstoneItem {
+    public:
+        enum Connection {
+            CNorth,
+            CSouth,
+            CWest,
+            CEast
+        };
+
+        RedstoneWire(std::shared_ptr<Dimension> dim, Vector3<double> pos, uint8_t power, std::vector<bool> connected = {false, false, false, false});
+        ~RedstoneWire(void);
+
+        void feedPower(int xOffset, int yOffset, int zOffset, int powerToFeed);
+        void feedPower(int powerToFeed);
+
+        private:
+            std::shared_ptr<Dimension> _dim;
+            Vector3<double> _pos;
+            uint8_t _power;
+            std::vector<std::vector<int>> _connectedBlocks;
+            std::vector<bool> _connected;
+    };
+
     namespace Activated {
         enum Facing {
             Floor,
@@ -12,7 +44,7 @@ namespace Redstone {
             East
         };
 
-        class Piston {
+        class Piston : RedstoneItem {
         public:
             Piston(std::shared_ptr<Dimension> dim, Vector3<double> pos, Facing facing, bool ext, bool bud);
             ~Piston(void);
@@ -21,16 +53,14 @@ namespace Redstone {
             virtual void contract(void);
 
         private:
-            std::shared_ptr<Dimension> _dim;
-            Vector3<double> _pos;
-            Facing _facing,
+            Facing _facing;
             bool _extended;
             bool _budded;
         };
     }
 
     namespace Activators {
-        class Lever {
+        class Lever : public Redstone::RedstoneItem {
         public:
             enum Facing {
                 Floor,
@@ -65,8 +95,6 @@ namespace Redstone {
             void feedPower(int xOffset, int yOffset, int zOffset, bool giving);
             void feedPower(bool giving);
 
-            std::shared_ptr<Dimension> _dim;
-            Vector3<double> _pos;
             Facing _facing;
             std::vector<std::vector<int>> _connectedBlocks;
             bool _powered;
@@ -98,26 +126,4 @@ namespace Redstone {
             TickClock _clock;
         };
     }
-
-    class RedstoneWire {
-    public:
-        enum Connection {
-            CNorth,
-            CSouth,
-            CWest,
-            CEast
-        };
-
-        RedstoneWire(uint8_t power, std::vector<bool> connected = {false, false, false, false});
-        ~RedstoneWire(void);
-
-        void feedPower(int xOffset, int yOffset, int zOffset, int powerToFeed);
-        void feedPower(int powerToFeed);
-
-        std::shared_ptr<Dimension> _dim;
-        Vector3<double> _pos;
-        uint8_t _power;
-        std::vector<std::vector<int>> _connectedBlocks;
-        std::vector<bool> _connected;
-    };
 }

@@ -119,8 +119,7 @@ void Lever::feedPower(bool giving)
 }
 
 Lever::Lever(std::shared_ptr<Dimension> dim, Vector3<double> pos, Facing facing):
-    _dim(dim),
-    _pos(pos),
+    Redstone::RedstoneItem(dim, pos),
     _facing(facing),
     _powered(false)
 {
@@ -158,11 +157,12 @@ void RedstoneWire::feedPower(int xOffset, int yOffset, int zOffset, int powerToF
 //        + Vector3<double>(xOffset, yOffset, zOffset))->power(powerToFeed);
 }
 
-RedstoneWire::RedstoneWire(uint8_t power, std::vector<bool> connected):
+RedstoneWire::RedstoneWire(std::shared_ptr<Dimension> dim, Vector3<double> pos, uint8_t power, std::vector<bool> connected):
+    Redstone::RedstoneItem(dim, pos),
     _power(power),
     _connected(connected)
 {
-    static std::vector<std::vector<int>> possibleConnections = {
+    static const std::vector<std::vector<int>> possibleConnections = { // {up, level, down}
         { 1,  1,  0}, { 1,  0,  0}, { 1, -1,  0}, // 3 adjacent blocks, facing north
         {-1,  1,  0}, {-1,  0,  0}, {-1, -1,  0}, // 3 adjacent blocks, facing south
         { 0,  1,  1}, { 0,  0,  1}, { 0, -1,  1}, // 3 adjacent blocks, facing west
@@ -175,22 +175,40 @@ RedstoneWire::RedstoneWire(uint8_t power, std::vector<bool> connected):
         "wooden_pressure_plate", "stone_pressure_plate", "heavy_weighted_pressure_plate", "light_weighted_pressure_plate",
     };
 
-    _connectedBlocks = {{ 1,  0,  0}, // north
-                        {-1,  0,  0}, // south
-                        { 0,  0,  1}, // west
-                        { 0,  0, -1}};// east
+    _connectedBlocks = {
+        { 1,  0,  0}, // north
+        {-1,  0,  0}, // south
+        { 0,  0,  1}, // west
+        { 0,  0, -1}, // east
+    };
     for (std::vector<int> blk : possibleConnections) {
-        // TODO temporarily silented because getBlock is capricious
-//        if (std::find(conTo.begin(), conTo.end(), this->_dim->getChunk(this->_pos)->getBlock(this->_pos + Vector3<double>(blk[0], blk[1], blk[2])).name) != conTo.end()) {
-                    _connectedBlocks.push_back({blk[0], blk[1], blk[2]});
-                    this->_connected[blk[0] ==  1 ? Connection::CNorth
-                                   : blk[0] == -1 ? Connection::CSouth
-                                   : blk[2] ==  1 ? Connection::CWest
-                                   : /****EAST****/ Connection::CEast] = true;
-        }
-//    }
+        // TODO temporarily silented because Dimension is capricious
+        if ((blk[1] == 1 // can't connect to an upward block if there is a block above
+//          && this->_dim->getChunk(this->_pos)->getBlock(this->_pos + Vector3<double>(0, 1, 0)) != "air" // TODO air... or "transparent" blocks)
+        ) || (blk[1] == -1 // can't connect to a down ward block if there is a block at the same level as the wire
+//           && this->_dim->getChunk(this->_pos)->getBlock(this->_pos + Vector3<double>(blk[1], 0, blk[2])) != "air" // TODO air... or "transparent" blocks)
+        ))
+            continue;
+//        if (std::find(conTo.begin(), conTo.end(), this->_dim->getChunk(Position2D(this->_pos.x, this->_pos.z))->
+//            getBlock(this->_pos + Vector3<double>(blk[0], blk[1], blk[2])).name) != conTo.end()) {
+                _connectedBlocks.push_back({blk[0], blk[1], blk[2]});
+                this->_connected[blk[0] ==  1 ? Connection::CNorth
+                               : blk[0] == -1 ? Connection::CSouth
+                               : blk[2] ==  1 ? Connection::CWest
+                               : /****EAST****/ Connection::CEast] = true;
+//        }
+    }
+    // TODO problem: a new connected wire won't inherit the power of the previous one
+    //      how to do that without going cyclic?...
     // TODO v awaiting BlockId::power();
     this->feedPower(_power - 1);
     // TODO change texture according to this->_connected: 4-way, line, corner, triple
 }
 RedstoneWire::~RedstoneWire(void) {}
+
+/***************** BASE *****************/
+RedstoneItem::RedstoneItem(std::shared_ptr<Dimension> dim, Vector3<double> pos):
+    _dim(dim),
+    _pos(pos)
+{}
+RedstoneItem::~RedstoneItem(void) {}
