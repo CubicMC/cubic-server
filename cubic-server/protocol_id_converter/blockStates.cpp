@@ -10,11 +10,11 @@
 #include "logging/logging.hpp"
 #include "types.hpp"
 
-void Blocks::GlobalPalette::initialize(const std::string &path)
+bool Blocks::GlobalPalette::initialize(const std::string &path)
 {
     if (!std::filesystem::exists(path)) {
         LERROR("File {} not found !", path);
-        return;
+        return false;
     }
     nlohmann::json file = nlohmann::json::parse(std::ifstream(path));
     for (auto block : file.items()) {
@@ -44,7 +44,7 @@ void Blocks::GlobalPalette::initialize(const std::string &path)
         });
         if (defaultState == block.value()["states"].end()) {
             LERROR("Default state not found for block {}", block.key());
-            return;
+            return false;
         }
         if (defaultState.value().contains("properties")) {
             for (auto property : defaultState.value()["properties"].items())
@@ -52,6 +52,7 @@ void Blocks::GlobalPalette::initialize(const std::string &path)
         }
         this->_blocks.push_back(b);
     }
+    return true;
 }
 
 BlockId Blocks::GlobalPalette::fromBlockToProtocolId(const std::string &blockName) const

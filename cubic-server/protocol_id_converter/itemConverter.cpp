@@ -7,11 +7,11 @@
 
 #include "logging/logging.hpp"
 
-void Items::ItemConverter::initialize(const std::string &path)
+bool Items::ItemConverter::initialize(const std::string &path)
 {
     if (!std::filesystem::exists(path)) {
         LERROR("File {} not found !", path);
-        return;
+        return false;
     }
     nlohmann::json file = nlohmann::json::parse(std::ifstream(path));
     for (auto item : file["minecraft:item"]["entries"].items()) {
@@ -20,6 +20,7 @@ void Items::ItemConverter::initialize(const std::string &path)
         i.protocolId = item.value()["protocol_id"];
         this->_items.push_back(i);
     }
+    return true;
 }
 
 ItemId Items::ItemConverter::fromItemToProtocolId(const std::string &name) const
