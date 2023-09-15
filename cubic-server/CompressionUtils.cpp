@@ -31,7 +31,6 @@ int compressVector(const std::vector<uint8_t> &source, std::vector<uint8_t> &des
     return return_value;
 }
 
-// TODO(huntears): Optimize this HOLY SHIT
 bool decompressVector(const std::vector<uint8_t> &compressedBytes, std::vector<uint8_t> &uncompressedBytes, uint32_t size)
 {
     unsigned full_length = size;
