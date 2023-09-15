@@ -22,6 +22,10 @@
 
 #define PCK_CALLBACK(type) __PCK_CALLBACK_PRIM(type, this)
 
+#define __PCK_CALLBACK_EMPTY_PRIM(type, object) return object->_on##type()
+
+#define PCK_CALLBACK_EMPTY(type) __PCK_CALLBACK_EMPTY_PRIM(type, this)
+
 #define __PCK_CALLBACK_PLAY(type) __PCK_CALLBACK_PRIM(type, _player)
 
 #define PCK_CALLBACK_PLAY(type) \
@@ -94,7 +98,7 @@ private:
     void _tryFlushAllSendData();
     // void _sendData(std::vector<uint8_t> &data);
     void _onHandshake(protocol::Handshake &pck);
-    void _onStatusRequest(protocol::StatusRequest &pck);
+    void _onStatusRequest();
     void _onLoginStart(protocol::LoginStart &pck);
     void _onPingRequest(protocol::PingRequest &pck);
     void _onEncryptionResponse(protocol::EncryptionResponse &pck);
