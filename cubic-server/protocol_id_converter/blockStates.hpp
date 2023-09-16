@@ -50,6 +50,7 @@ class GlobalPalette {
 public:
     GlobalPalette() {};
     ~GlobalPalette() {};
+
     /**
      * @brief Convert a block to a protocol id
      * @param block The block to convert
@@ -57,17 +58,20 @@ public:
      */
     BlockId fromBlockToProtocolId(Block &block) const;
     BlockId fromBlockToProtocolId(const std::string &block) const;
+
     /**
      * @brief Convert a protocol id to a block
      * @param id The protocol id to convert
      * @return The block corresponding to the protocol id
      */
     Block fromProtocolIdToBlock(BlockId id) const;
+
     /**
      * @brief Initialize the global palette with the blocks from the given json file
      * @param path The path to the json file
+     * @return bool True if the initialization was successful, false otherwise
      */
-    void initialize(const std::string &path = "blocks.json");
+    bool initialize(const std::string &path = "blocks.json");
 
 private:
     std::vector<InternalBlock> _blocks; // The internal blocks
