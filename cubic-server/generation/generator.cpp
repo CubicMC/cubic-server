@@ -43,14 +43,22 @@ generation::Generator::GenerationNoise generation::Generator::getNoise(positionT
     return noise;
 }
 
-// Set a randomizer number to a value between 0 & 4, based on the seed & the position of the feature
 void generation::Generator::setRandomizer(const Position &pos)
 {
-    if (pos.x % 2 == 0 && pos.z % 2 != 0)
-        _randomizer = std::abs((_seed % pos.y) % 5);
-    else if (pos.x % 2 != 0 && pos.z % 2 == 0)
-        _randomizer = std::abs((_seed % pos.z) % 5);
-    else
+    if (pos.y == 0 && pos.x != 0)
         _randomizer = std::abs((_seed % pos.x) % 5);
+    else if (pos.x == 0 && pos.z != 0)
+        _randomizer = std::abs((_seed % pos.z) % 5);
+    else if (pos.z == 0 && pos.y != 0)
+        _randomizer = std::abs((_seed % pos.y) % 5);
+
+    if (pos.x != 0 && pos.y != 0 && pos.z != 0) {
+        if (pos.x % 2 == 0 && pos.z % 2 != 0)
+            _randomizer = std::abs((_seed % pos.y) % 5);
+        else if (pos.x % 2 != 0 && pos.z % 2 == 0)
+            _randomizer = std::abs((_seed % pos.z) % 5);
+        else
+            _randomizer = std::abs((_seed % pos.x) % 5);
+    }
     // LINFO("RANDOMIZER : {}", _randomizer);
 }
