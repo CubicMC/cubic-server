@@ -1,8 +1,12 @@
 #ifndef CUBICSERVER_MATH_VECTOR3_HPP
 #define CUBICSERVER_MATH_VECTOR3_HPP
 
+// #include "types.hpp"
 #include <cmath>
+#include <cstdint>
 #include <iostream>
+
+struct Position;
 
 template<typename T>
 class Vector3 {
@@ -182,6 +186,8 @@ public:
     T x;
     T y;
     T z;
+
+    constexpr operator Position() const noexcept;
 };
 
 template<typename T>
