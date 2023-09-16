@@ -70,7 +70,8 @@ void SpruceTree::bigLayer(std::vector<generation::Generator::FeatureBlock> &tree
             if (abs(x) == 2 && abs(z) == 2)
                 continue;
             tree.emplace_back(generation::Generator::FeatureBlock {{0, y, 0}, log});
-            tree.emplace_back(generation::Generator::FeatureBlock {{x, y, z}, leaf});
+            // tree.emplace_back(generation::Generator::FeatureBlock {{x, y, z}, leaf});
+            Tree::placeLeaf(tree, generation::Generator::FeatureBlock {{x, y, z}, leaf});
         }
     }
 }
@@ -83,7 +84,8 @@ void SpruceTree::biggerLayer(std::vector<generation::Generator::FeatureBlock> &t
             if (abs(x) == 3 && abs(z) == 3)
                 continue;
             tree.emplace_back(generation::Generator::FeatureBlock {{0, y, 0}, log});
-            tree.emplace_back(generation::Generator::FeatureBlock {{x, y, z}, leaf});
+            // tree.emplace_back(generation::Generator::FeatureBlock {{x, y, z}, leaf});
+            Tree::placeLeaf(tree, generation::Generator::FeatureBlock {{x, y, z}, leaf});
         }
     }
 }
@@ -96,7 +98,8 @@ void SpruceTree::starLayer(std::vector<generation::Generator::FeatureBlock> &tre
             if (x != 0 && z != 0)
                 continue;
             tree.emplace_back(generation::Generator::FeatureBlock {{0, y, 0}, log});
-            tree.emplace_back(generation::Generator::FeatureBlock {{x, y, z}, leaf});
+            // tree.emplace_back(generation::Generator::FeatureBlock {{x, y, z}, leaf});
+            Tree::placeLeaf(tree, generation::Generator::FeatureBlock {{x, y, z}, leaf});
         }
     }
 }
@@ -126,16 +129,19 @@ void SpruceTree::topStarLayers(std::vector<generation::Generator::FeatureBlock> 
             if (x == 0 && z == 0) {
                 // Placing the top leaf; if no leaf, air
                 if (_generator.getRandomizer() != y % 2)
-                    tree.emplace_back(generation::Generator::FeatureBlock {{x, y + 2, z}, leaf});
+                    // tree.emplace_back(generation::Generator::FeatureBlock {{x, y + 2, z}, leaf});
+                    Tree::placeLeaf(tree, generation::Generator::FeatureBlock {{x, y + 2, z}, leaf});
                 // Placing the bottom leaf; if no leaf, a log
                 if (_generator.getRandomizer() % 2 != 0)
-                    tree.emplace_back(generation::Generator::FeatureBlock {{x, y, z}, leaf});
+                    // tree.emplace_back(generation::Generator::FeatureBlock {{x, y, z}, leaf});
+                    Tree::placeLeaf(tree, generation::Generator::FeatureBlock {{x, y, z}, leaf});
                 else
                     tree.emplace_back(generation::Generator::FeatureBlock {{x, y, z}, log});
             }
             if (x != 0 && z != 0)
                 continue;
-            tree.emplace_back(generation::Generator::FeatureBlock {{x, y + 1, z}, leaf});
+            // tree.emplace_back(generation::Generator::FeatureBlock {{x, y + 1, z}, leaf});
+            Tree::placeLeaf(tree, generation::Generator::FeatureBlock {{x, y + 1, z}, leaf});
         }
     }
 }
