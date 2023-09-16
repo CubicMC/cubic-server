@@ -436,13 +436,32 @@ void ChunkColumn::_generateRawGeneration(generation::Generator &generator)
         }
     }
     // generate bedrock
-    // int64_t state = (((this->_chunkPos.x * 0x4F9939F508L + this->_chunkPos.z * 0x1EF1565BD5L) ^ 0x5DEECE66DL) * 0x9D89DAE4D6C29D9L + 0x1844E300013E5B56L) & 0xFFFFFFFFFFFFL;
     for (int x = 0; x < SECTION_WIDTH; x++) {
         for (int z = 0; z < SECTION_WIDTH; z++) {
-            updateBlock({x, 0 + CHUNK_HEIGHT_MIN, z}, Blocks::Bedrock::toProtocol()); // bedrock
-            // if (4 <= (state >> 17) % 5)
-            //     updateBlock({x, 1 + CHUNK_HEIGHT_MIN, z}, Blocks::Bedrock::toProtocol()); // bedrock
-            // state = ((state * 0x530F32EB772C5F11L + 0x89712D3873C4CD04L) * 0x9D89DAE4D6C29D9L + 0x1844E300013E5B56L) & 0xFFFFFFFFFFFFL;
+            updateBlock({x, 0 + CHUNK_HEIGHT_MIN, z}, Blocks::Bedrock::toProtocol()); // last bedrock layer
+            for (int y = 1 + CHUNK_HEIGHT_MIN; y <= 4 + CHUNK_HEIGHT_MIN; y++) {
+                Position pos = {x + this->_chunkPos.x * SECTION_WIDTH, y, z + this->_chunkPos.z * SECTION_WIDTH};
+                generator.setRandomizer(pos);
+                auto block = generator.getBlock(pos);
+                if (generator.getRandomizer() != 0) {
+                    if (block == Blocks::Air::toProtocol() || (abs(pos.x % 8) >= abs(pos.z % 4) && pos.y % 2 != 0)) {
+                        if (abs(pos.x) % 3 != abs(pos.z % 5)) {
+                            updateBlock({x, 1 + CHUNK_HEIGHT_MIN, z}, Blocks::Bedrock::toProtocol());
+                            updateBlock({(x - 2) % SECTION_WIDTH, 1 + CHUNK_HEIGHT_MIN, (z + 1) % SECTION_WIDTH}, Blocks::Bedrock::toProtocol());
+                        } else if ((abs(pos.z - x) % generator.getRandomizer() != 0 || abs(pos.x - z) % 2 != 0) && abs(pos.y) % 4 != abs(z - x) % 8 && pos.y % 2 == 0)
+                            updateBlock({x, y, (z + 1) % SECTION_WIDTH}, Blocks::Bedrock::toProtocol());
+                        if ((abs(pos.z) % 2 != 0 || abs(pos.x) % 2 != 0) || x == z) {
+                            updateBlock({x, 2 + CHUNK_HEIGHT_MIN, (z + 1) % SECTION_WIDTH}, Blocks::Bedrock::toProtocol());
+                        } else if ((abs(pos.z) != abs(pos.x) + x && abs(pos.z % 4) != z % 2) && pos.y % 2 != 0) {
+                            updateBlock({(x + 5) % SECTION_WIDTH, 3 + CHUNK_HEIGHT_MIN, (z - 3) % SECTION_WIDTH}, Blocks::Bedrock::toProtocol());
+                            updateBlock({x, y, (z + 2) % SECTION_WIDTH}, Blocks::Bedrock::toProtocol());
+                        }
+                    } else {
+                        if (abs(pos.x) % 3 != 0 && (generator.getRandomizer() == z % 5 && abs(pos.z) % 3 == 2) && abs(pos.y) % 2 == 0)
+                            updateBlock({x, y, z}, Blocks::Bedrock::toProtocol());
+                    }
+                }
+            }
         }
     }
     // generate biomes
