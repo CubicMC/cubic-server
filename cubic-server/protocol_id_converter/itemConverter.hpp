@@ -21,23 +21,27 @@ class ItemConverter {
 public:
     ItemConverter() {};
     ~ItemConverter() {};
+
     /**
      * @brief Convert an item name to a protocol id
      * @param name The name of the item
      * @return ItemId The protocol id of the item
      */
     ItemId fromItemToProtocolId(const std::string &name) const;
+
     /**
      * @brief Convert a protocol id to an item name
      * @param id The protocol id to convert
      * @return std::string The name of the item
      */
     std::string fromProtocolIdToItem(ItemId id) const;
+
     /**
      * @brief Initialize the item converter with the items from the given json file
      * @param path The path to the json file
+     * @return bool True if the initialization was successful, false otherwise
      */
-    void initialize(const std::string &path = "registries.json");
+    bool initialize(const std::string &path = "registries.json");
 
 private:
     std::vector<InternalItem> _items; // The internal representation of the items
