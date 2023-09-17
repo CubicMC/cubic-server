@@ -52,7 +52,7 @@ auto initArgs(int argc, const char *const argv[])
         .help("sets the compression level for outbound packets (0-9, 9 best compression)")
         .valueFromConfig("network", "compression-level")
         .valueFromEnvironmentVariable("CBSRV_COMPRESSION_LEVEL")
-        .defaultValue(1)
+        .defaultValue(6)
         .inRange(0, 9)
         .required();
 
