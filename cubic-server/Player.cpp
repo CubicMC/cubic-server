@@ -16,6 +16,7 @@
 #include "events/CancelEvents.hpp"
 #include "items/foodItems.hpp"
 #include "logging/logging.hpp"
+#include "nbt.h"
 #include "protocol/ClientPackets.hpp"
 #include "protocol/PacketUtils.hpp"
 #include "protocol/ServerPackets.hpp"
@@ -71,6 +72,22 @@ Player::Player(std::weak_ptr<Client> cli, std::shared_ptr<Dimension> dim, u128 u
     this->setOperator(Server::getInstance()->permissions.isOperator(username));
     this->_inventory->playerInventory().at(12) = protocol::Slot {true, 734, 42};
     this->_inventory->playerInventory().at(13) = protocol::Slot {true, 1, 12};
+
+    // TODO: This is for a nbt like this one : {display:[{Name:"§a§lCubic"}]}
+    // Please send help :dead:
+
+    // auto display = nbt_new_tag_compound();
+    // auto nameList = nbt_new_tag_list(NBT_TYPE_COMPOUND);
+    // auto nameCompound = nbt_new_tag_compound();
+    // auto name = nbt_new_tag_string("§a§lCubic", sizeof("§a§lCubic"));
+    // nbt_set_tag_name(name, "text", sizeof("text"));
+    // nbt_tag_compound_append(nameCompound, name);
+    // nbt_tag_list_append(nameList, nameCompound);
+    // nbt_set_tag_name(nameList, "Name", sizeof("Name"));
+    // nbt_set_tag_name(display, "display", sizeof("display"));
+    // nbt_tag_compound_append(display, nameList);
+
+    // this->_inventory->playerInventory().at(14) = protocol::Slot {true, 1, 12, display};
 }
 
 Player::~Player()

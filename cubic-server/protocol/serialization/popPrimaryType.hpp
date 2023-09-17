@@ -13,6 +13,10 @@
 #include <string>
 #include <vector>
 
+#include <nbt.h>
+#include <utility>
+
+#include "nbt.hpp"
 #include "protocol/ParseExceptions.hpp"
 #include "protocol/Structures.hpp"
 #include "protocol/common.hpp"
@@ -215,6 +219,26 @@ constexpr std::string popChat(uint8_t *&at, uint8_t *eof) { return popString(at,
 // {
 // }
 
+static inline size_t _readMem(void *pck, uint8_t *data, size_t size)
+{
+    auto packet = static_cast<std::pair<uint8_t *, uint8_t *> *>(pck);
+    if (packet->first > packet->second)
+        return 0;
+    const auto max = ((size_t) packet->second) - ((size_t) packet->first) + 1;
+    size_t toCopy = std::min(max, size);
+    memcpy(data, packet->first, toCopy);
+    packet->first += toCopy;
+    return toCopy;
+}
+
+// TODO: Nbt, nothing to see here. I could but why should I ?
+inline nbt_tag_t *popNbt(uint8_t *&at, uint8_t *eof)
+{
+    std::pair<uint8_t *, uint8_t *> packet = std::make_pair(at, eof);
+    nbt_reader_t reader = {_readMem, &packet};
+    return nbt_parse(reader, NBT_PARSE_FLAG_USE_ZLIB);
+}
+
 constexpr Slot popSlot(uint8_t *&at, uint8_t *eof)
 {
     Slot slot;
@@ -222,17 +246,11 @@ constexpr Slot popSlot(uint8_t *&at, uint8_t *eof)
     if (slot.present) {
         slot.itemID = popVarInt(at, eof);
         slot.itemCount = popByte(at, eof);
-        // TODO
-        // slot.nbt = popNbt(at, eof);
-        popByte(at, eof); // Fix for nbt
+        slot.nbt = popNbt(at, eof);
+        // popByte(at, eof); // Fix for nbt
     }
     return slot;
 }
-
-// TODO: Nbt, nothing to see here. I could but why should I ?
-// constexpr NBT popNBT(uint8_t *&at, uint8_t *eof)
-// {
-// }
 
 constexpr u128 popUUID(uint8_t *&at, uint8_t *eof)
 {
