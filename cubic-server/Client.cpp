@@ -99,7 +99,7 @@ void Client::doRead()
 static void compressPacket(std::vector<uint8_t> &in, std::vector<uint8_t> &out)
 {
     // Don't compress if the packet is too small
-    if (in.size() < COMPRESSION_THRESHOLD) {
+    if (in.size() < (size_t) CONFIG["compression-threshold"].as<int32_t>()) {
         uint8_t *at = in.data();
         int32_t size = protocol::popVarInt(at, in.data() + in.size() - 1);
         protocol::addVarInt(out, size + 1);
@@ -564,7 +564,7 @@ void Client::disconnect(const chat::Message &reason)
 
 void Client::sendSetCompression()
 {
-    auto pck = protocol::createSetCompression(COMPRESSION_THRESHOLD);
+    auto pck = protocol::createSetCompression(CONFIG["compression-threshold"].as<int32_t>());
     doWrite(std::move(pck));
     _isCompressed = true;
     N_LDEBUG("Send a set compression packet");

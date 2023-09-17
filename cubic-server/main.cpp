@@ -56,6 +56,14 @@ auto initArgs(int argc, const char *const argv[])
         .inRange(0, 9)
         .required();
 
+    program.add("compression-threshold")
+        .help("Minimum of bytes in a packet before compressing it")
+        .valueFromConfig("network", "compression-threshold")
+        .valueFromEnvironmentVariable("CBSRV_COMPRESSION_THRESHOLD")
+        .defaultValue(256)
+        .inRange(0, std::numeric_limits<int32_t>::max())
+        .required();
+
     program.add("max-players")
         .help("sets the maximum number of players")
         .valueFromConfig("general", "max_players")
