@@ -41,6 +41,29 @@ auto initArgs(int argc, const char *const argv[])
         .defaultValue(25565)
         .required();
 
+    program.add("compression")
+        .help("enables compression of the protocol")
+        .valueFromConfig("network", "compression")
+        .valueFromEnvironmentVariable("CBSRV_COMPRESSION")
+        .defaultValue(true)
+        .required();
+
+    program.add("compression-level")
+        .help("sets the zlib compression level for outbound packets (0-9, 9 best compression)")
+        .valueFromConfig("network", "compression-level")
+        .valueFromEnvironmentVariable("CBSRV_COMPRESSION_LEVEL")
+        .defaultValue(6)
+        .inRange(0, 9)
+        .required();
+
+    program.add("compression-threshold")
+        .help("Minimum of bytes in a packet before compressing it")
+        .valueFromConfig("network", "compression-threshold")
+        .valueFromEnvironmentVariable("CBSRV_COMPRESSION_THRESHOLD")
+        .defaultValue(256)
+        .inRange(0, std::numeric_limits<int32_t>::max())
+        .required();
+
     program.add("max-players")
         .help("sets the maximum number of players")
         .valueFromConfig("general", "max_players")
@@ -117,12 +140,12 @@ auto initArgs(int argc, const char *const argv[])
         .defaultValue(10);
 
     program.add("online-mode")
-        .help("Enable client/server encryption and only accepts legitimate accounts")
-        .valueFromConfig("general", "online-mode")
+        .help("[EXPERIMENTAL] Enable client/server encryption and only accepts legitimate accounts")
+        .valueFromConfig("experimental", "online-mode")
         .valueFromEnvironmentVariable("CBSRV_ONLINE_MODE")
         .valueFromArgument("--online-mode")
         .possibleValues(false, true)
-        .defaultValue(true);
+        .defaultValue(false);
 
     program.add("gamemode")
         .help("Default gamemode")

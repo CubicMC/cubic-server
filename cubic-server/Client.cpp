@@ -1,3 +1,5 @@
+#include <boost/archive/binary_iarchive.hpp>
+#include <boost/iostreams/filtering_stream.hpp>
 #include <boost/system/detail/error_category.hpp>
 #include <boost/system/detail/error_code.hpp>
 #include <cstdint>
@@ -12,12 +14,14 @@
 #include <sys/types.h>
 #include <thread>
 #include <unistd.h>
+#include <zlib.h>
 
 #include "Client.hpp"
 #include "PlayerAttributes.hpp"
 #include "nbt.hpp"
 
 #include "Checksum.hpp"
+#include "CompressionUtils.hpp"
 #include "Dimension.hpp"
 #include "Player.hpp"
 #include "Server.hpp"
@@ -28,6 +32,7 @@
 #include "nlohmann/json.hpp"
 #include "protocol/ClientPackets.hpp"
 #include "protocol/ServerPackets.hpp"
+#include "protocol/serialization/addPrimaryType.hpp"
 #include "protocol/serialization/popPrimaryType.hpp"
 #include "types.hpp"
 
@@ -41,7 +46,8 @@ Client::Client(tcp::socket &&socket, size_t clientID):
     _player(nullptr),
     _socket(std::move(socket)),
     _clientID(clientID),
-    _isEncrypted(false)
+    _isEncrypted(false),
+    _isCompressed(false)
 {
     LDEBUG("Creating client");
 }
@@ -90,8 +96,38 @@ void Client::doRead()
     // Server::getInstance()->triggerClientCleanup(_clientID);
 }
 
+static void compressPacket(std::vector<uint8_t> &in, std::vector<uint8_t> &out)
+{
+    // Don't compress if the packet is too small
+    if (in.size() < (size_t) CONFIG["compression-threshold"].as<int32_t>()) {
+        uint8_t *at = in.data();
+        int32_t size = protocol::popVarInt(at, in.data() + in.size() - 1);
+        protocol::addVarInt(out, size + 1);
+        protocol::addVarInt(out, 0);
+        out.insert(out.end(), at, in.data() + in.size());
+        return;
+    }
+    uint8_t *at = in.data();
+    int32_t size = protocol::popVarInt(at, in.data() + in.size() - 1);
+    std::vector<uint8_t> compressedData;
+    int compressReturn = compressVector(std::vector<uint8_t>(at, in.data() + in.size()), compressedData);
+    if (compressReturn != Z_OK)
+        abort(); // If we get here, we have a big problem
+    protocol::addVarInt(out, compressedData.size() + (uint64_t) (at - in.data()));
+    protocol::addVarInt(out, size);
+    out.insert(out.end(), compressedData.begin(), compressedData.end());
+}
+
 void Client::doWrite(std::unique_ptr<std::vector<uint8_t>> &&data)
 {
+    if (_isCompressed) {
+        auto toSend = std::make_unique<std::vector<uint8_t>>();
+        compressPacket(*data, *toSend);
+        if (_isEncrypted)
+            _encryption.encrypt(*toSend);
+        Server::getInstance()->sendData(_clientID, std::move(toSend));
+        return;
+    }
     if (_isEncrypted)
         _encryption.encrypt(*data);
     Server::getInstance()->sendData(_clientID, std::move(data));
@@ -125,7 +161,7 @@ void Client::handleParsedClientPacket(std::unique_ptr<protocol::BaseServerPacket
     case ClientStatus::Status:
         switch (packetID) {
         case ServerPacketsID::StatusRequest:
-            PCK_CALLBACK(StatusRequest);
+            PCK_CALLBACK_EMPTY(StatusRequest);
         case ServerPacketsID::PingRequest:
             PCK_CALLBACK(PingRequest);
         default:
@@ -212,7 +248,7 @@ void Client::_handlePacket()
         if (bufferLength == 0)
             break;
         uint8_t *at = data.data();
-        uint8_t *eof = at + bufferLength;
+        uint8_t *eof = at + bufferLength - 1;
         int32_t length = 0;
         try {
             length = protocol::popVarInt(at, eof);
@@ -225,7 +261,29 @@ void Client::_handlePacket()
         } catch (const protocol::PacketEOF &_) {
             break; // Not enough data in buffer to parse the length of the packet
         }
+
         const uint8_t *startPayload = at;
+
+        std::vector<uint8_t> uncompressedData;
+        if (_isCompressed) {
+            int32_t uncompressedLength = protocol::popVarInt(at, eof);
+            if (uncompressedLength == 0)
+                goto packetNotCompressed;
+            if (decompressVector(std::vector<uint8_t>(at, eof + 1), uncompressedData, uncompressedLength)) {
+                LERROR("Failed to decompress client packet!");
+                this->disconnect("Badly formed compressed packet!");
+                return;
+            }
+            if ((size_t) uncompressedLength != uncompressedData.size()) {
+                LERROR("{} != {}", uncompressedLength, uncompressedData.size());
+                this->disconnect("Bad packet compression metadata!");
+                return;
+            }
+            at = uncompressedData.data();
+            eof = uncompressedData.data() + uncompressedData.size() - 1;
+        }
+    packetNotCompressed:
+
         bool error = false;
         // Handle the packet if the length is there
         const auto packetId = static_cast<protocol::ServerPacketsID>(protocol::popVarInt(at, eof));
@@ -244,7 +302,7 @@ void Client::_handlePacket()
         case protocol::ClientStatus::Play:
             GET_PARSER(Play);
         }
-        std::vector<uint8_t> toParse(data.begin() + (at - data.data()), data.end());
+        std::vector<uint8_t> toParse(at, eof + 1);
         data.erase(data.begin(), data.begin() + (startPayload - data.data()) + length);
         if (error) {
             N_LWARN("Unhandled packet: {} in status {}", packetId, _status);
@@ -272,7 +330,7 @@ void Client::_onHandshake(protocol::Handshake &pck)
         this->setStatus(protocol::ClientStatus::Login);
 }
 
-void Client::_onStatusRequest(UNUSED protocol::StatusRequest &pck)
+void Client::_onStatusRequest()
 {
     N_LDEBUG("Got a status request");
 
@@ -504,10 +562,19 @@ void Client::disconnect(const chat::Message &reason)
     N_LDEBUG("Sent a disconnect login packet");
 }
 
+void Client::sendSetCompression()
+{
+    auto pck = protocol::createSetCompression(CONFIG["compression-threshold"].as<int32_t>());
+    doWrite(std::move(pck));
+    _isCompressed = true;
+    N_LDEBUG("Send a set compression packet");
+}
+
 void Client::_loginSequence(const protocol::LoginSuccess &pck)
 {
-    // Encryption request
     // Set Compression
+    if (Server::getInstance()->isCompressed())
+        this->sendSetCompression();
     this->sendLoginSuccess(pck);
     this->switchToPlayState(pck.uuid, pck.username);
     this->sendLoginPlay();

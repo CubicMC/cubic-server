@@ -153,6 +153,9 @@ private:
     std::thread _writeThread;
 
     RSAEncryptionHandler _rsaKey;
+
+public:
+    NODISCARD inline bool isCompressed() const { return _config["compression"].as<bool>(); }
 };
 
 #endif // CUBICSERVER_SERVER_HPP

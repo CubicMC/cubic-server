@@ -50,6 +50,8 @@ target_sources (${CMAKE_PROJECT_NAME} PRIVATE
     RSAEncryptionHandler.hpp
     Checksum.cpp
     Checksum.hpp
+    CompressionUtils.cpp
+    CompressionUtils.hpp
 )
 
 file(MAKE_DIRECTORY ${CMAKE_BINARY_DIR}/plugins)

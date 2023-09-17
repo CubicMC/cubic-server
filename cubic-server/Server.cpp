@@ -51,7 +51,6 @@ Server::Server():
     // _motd = _config.getMotd();
     // _enforceWhitelist = _config.getEnforceWhitelist();
 
-    _commands.reserve(27);
     _commands.emplace_back(std::make_unique<command_parser::Help>());
     _commands.emplace_back(std::make_unique<command_parser::QuestionMark>());
     _commands.emplace_back(std::make_unique<command_parser::Stop>());
@@ -228,6 +227,8 @@ void Server::_writeLoop()
             boost::asio::write(client->getSocket(), boost::asio::buffer(data.data->data(), data.data->size()), ec);
             // TODO(huntears): Handle errors properly xd
             if (ec) {
+                client->disconnect("Network error");
+                delete data.data;
                 LERROR(ec.what());
                 continue;
             }

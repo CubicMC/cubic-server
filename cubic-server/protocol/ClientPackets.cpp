@@ -68,6 +68,19 @@ std::unique_ptr<std::vector<uint8_t>> protocol::createLoginSuccess(const LoginSu
     return packet;
 }
 
+std::unique_ptr<std::vector<uint8_t>> protocol::createSetCompression(int32_t compressionTreshold)
+{
+    std::vector<uint8_t> payload;
+    // clang-format off
+    serialize(payload,
+        compressionTreshold, addVarInt
+    );
+    // clang-format on
+    auto packet = std::make_unique<std::vector<uint8_t>>();
+    finalize(*packet, payload, ClientPacketID::SetCompression);
+    return packet;
+}
+
 std::unique_ptr<std::vector<uint8_t>> protocol::createStatusResponse(const StatusResponse &in)
 {
     std::vector<uint8_t> payload;
