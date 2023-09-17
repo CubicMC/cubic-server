@@ -187,6 +187,11 @@ public:
     T y;
     T z;
 
+    /**
+     * @brief Convert a Vector3 to a Position
+     *
+     * @return Position
+     */
     constexpr operator Position() const noexcept;
 };
 
