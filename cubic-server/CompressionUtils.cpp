@@ -1,5 +1,6 @@
 #include <cstddef>
 #include <cstdint>
+#include <cstdlib>
 #include <unistd.h>
 #include <vector>
 #include <zlib.h>
@@ -23,60 +24,12 @@ int compressVector(const std::vector<uint8_t> &source, std::vector<uint8_t> &des
     return return_value;
 }
 
-bool decompressVector(const std::vector<uint8_t> &compressedBytes, std::vector<uint8_t> &uncompressedBytes, uint32_t size)
+int decompressVector(const std::vector<uint8_t> &compressedBytes, std::vector<uint8_t> &uncompressedBytes, uint32_t size)
 {
-    unsigned full_length = size;
-    unsigned half_length = size / 2;
-
-    unsigned uncompLength = full_length;
-    char *uncomp = (char *) calloc(sizeof(char), uncompLength);
-
-    z_stream strm;
-    strm.next_in = (Bytef *) compressedBytes.data();
-    strm.avail_in = size;
-    strm.total_out = 0;
-    strm.zalloc = Z_NULL;
-    strm.zfree = Z_NULL;
-
-    bool done = false;
-
-    if (inflateInit2(&strm, (16 + MAX_WBITS)) != Z_OK) {
-        free(uncomp);
-        return false;
-    }
-
-    while (!done) {
-        // If our output buffer is too small
-        if (strm.total_out >= uncompLength) {
-            // Increase size of output buffer
-            char *uncomp2 = (char *) calloc(sizeof(char), uncompLength + half_length);
-            memcpy(uncomp2, uncomp, uncompLength);
-            uncompLength += half_length;
-            free(uncomp);
-            uncomp = uncomp2;
-        }
-
-        strm.next_out = (Bytef *) (uncomp + strm.total_out);
-        strm.avail_out = uncompLength - strm.total_out;
-
-        // Inflate another chunk.
-        int err = inflate(&strm, Z_SYNC_FLUSH);
-        if (err == Z_STREAM_END)
-            done = true;
-        else if (err != Z_OK) {
-            break;
-        }
-    }
-
-    if (inflateEnd(&strm) != Z_OK) {
-        free(uncomp);
-        return false;
-    }
-
-    for (size_t i = 0; i < strm.total_out; ++i) {
-        uncompressedBytes.push_back(uncomp[i]);
-    }
-    // uncompressedBytes.insert(uncompressedBytes.begin(), uncomp, uncomp + strm.total_out);
-    free(uncomp);
-    return true;
+    Bytef *dest = (Bytef *) malloc(sizeof(char) * size);
+    uLongf maxSize = size;
+    int return_value = uncompress(dest, &maxSize, (const Bytef *) compressedBytes.data(), (uLong) compressedBytes.size());
+    uncompressedBytes.insert(uncompressedBytes.end(), dest, dest + maxSize);
+    free(dest);
+    return return_value;
 }

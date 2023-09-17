@@ -110,9 +110,10 @@ static void compressPacket(std::vector<uint8_t> &in, std::vector<uint8_t> &out)
     uint8_t *at = in.data();
     int32_t size = protocol::popVarInt(at, in.data() + in.size() - 1);
     std::vector<uint8_t> compressedData;
-    int compressReturn = compressVector(std::vector<uint8_t>(at, in.data() + in.size() - 1), compressedData);
-    assert(compressReturn != Z_MEM_ERROR);
-    protocol::addVarInt(out, compressedData.size() + (at - in.data()));
+    int compressReturn = compressVector(std::vector<uint8_t>(at, in.data() + in.size()), compressedData);
+    if (compressReturn != Z_OK)
+        abort(); // If we get here, we have a big problem
+    protocol::addVarInt(out, compressedData.size() + (uint64_t) (at - in.data()));
     protocol::addVarInt(out, size);
     out.insert(out.end(), compressedData.begin(), compressedData.end());
 }
@@ -247,7 +248,7 @@ void Client::_handlePacket()
         if (bufferLength == 0)
             break;
         uint8_t *at = data.data();
-        uint8_t *eof = at + bufferLength;
+        uint8_t *eof = at + bufferLength - 1;
         int32_t length = 0;
         try {
             length = protocol::popVarInt(at, eof);
@@ -268,7 +269,7 @@ void Client::_handlePacket()
             int32_t uncompressedLength = protocol::popVarInt(at, eof);
             if (uncompressedLength == 0)
                 goto packetNotCompressed;
-            if (!decompressVector(std::vector<uint8_t>(at, eof + 1), uncompressedData, length)) {
+            if (decompressVector(std::vector<uint8_t>(at, eof + 1), uncompressedData, uncompressedLength)) {
                 LERROR("Failed to decompress client packet!");
                 this->disconnect("Badly formed compressed packet!");
                 return;
@@ -301,7 +302,7 @@ void Client::_handlePacket()
         case protocol::ClientStatus::Play:
             GET_PARSER(Play);
         }
-        std::vector<uint8_t> toParse(data.begin() + (at - data.data()), data.end());
+        std::vector<uint8_t> toParse(at, eof + 1);
         data.erase(data.begin(), data.begin() + (startPayload - data.data()) + length);
         if (error) {
             N_LWARN("Unhandled packet: {} in status {}", packetId, _status);

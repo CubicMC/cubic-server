@@ -20,10 +20,9 @@ int compressVector(const std::vector<uint8_t> &source, std::vector<uint8_t> &des
  * @param compressedBytes Vector to decompress
  * @param uncompressedBytes Destination vector with decompressed data
  * @param size The size of the destination vector to expect
- * @return true Decompression suceeded
- * @return false Something bad happened
+ * @return int Whatever zlib return when uncompressing
  * @todo Needs to be heavily optimized, so much weird code
  */
-bool decompressVector(const std::vector<uint8_t> &compressedBytes, std::vector<uint8_t> &uncompressedBytes, uint32_t size);
+int decompressVector(const std::vector<uint8_t> &compressedBytes, std::vector<uint8_t> &uncompressedBytes, uint32_t size);
 
 #endif // COMPRESSION_UTILS_HPP_
