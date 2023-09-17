@@ -12,6 +12,7 @@
 #include <vector>
 
 #include "concept.hpp"
+#include "nbt.h"
 #include "protocol/ParseExceptions.hpp"
 #include "protocol/Structures.hpp"
 #include "types.hpp"
