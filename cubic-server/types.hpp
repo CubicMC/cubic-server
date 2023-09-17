@@ -88,7 +88,10 @@ struct Position {
     constexpr bool operator<=(valueType i) const;
 
     template<typename T>
-    constexpr operator Vector3<T>() const { return Vector3<T> {static_cast<T>(x), static_cast<T>(y), static_cast<T>(z)}; }
+    constexpr operator Vector3<T>() const
+    {
+        return Vector3<T> {static_cast<T>(x), static_cast<T>(y), static_cast<T>(z)};
+    }
 
     valueType manhattanDistance(const Position &other) const;
 };
