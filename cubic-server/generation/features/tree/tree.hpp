@@ -33,6 +33,14 @@ protected:
     void secondLayer(std::vector<generation::Generator::FeatureBlock> &tree, int y, const BlockId &leaf) const;
     void lowerLayers(std::vector<generation::Generator::FeatureBlock> &tree, int y, const BlockId &leaf) const;
 
+    /**
+     * @brief Place a leaf block in the tree vector with the correct distance to a log block
+     *
+     * @param tree The tree vector
+     * @param block The leaf block to place
+     */
+    void placeLeaf(std::vector<generation::Generator::FeatureBlock> &tree, generation::Generator::FeatureBlock block) const;
+
     world_storage::ChunkColumn &_chunk;
     generation::Generator &_generator;
     std::deque<Position> _positions;

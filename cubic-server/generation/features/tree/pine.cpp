@@ -70,14 +70,16 @@ void PineTree::layerWithoutCorner(std::vector<generation::Generator::FeatureBloc
             if (abs(x) == layerSize && abs(z) == layerSize)
                 continue;
             tree.emplace_back(generation::Generator::FeatureBlock {{0, y, 0}, log});
-            tree.emplace_back(generation::Generator::FeatureBlock {{x, y, z}, leaf});
+            // tree.emplace_back(generation::Generator::FeatureBlock {{x, y, z}, leaf});
+            Tree::placeLeaf(tree, generation::Generator::FeatureBlock {{x, y, z}, leaf});
         }
     }
 }
 
 void PineTree::topLayers(std::vector<generation::Generator::FeatureBlock> &tree, int y, const BlockId &leaf) const
 {
-    tree.emplace_back(generation::Generator::FeatureBlock {{0, y + 1, 0}, leaf});
+    // tree.emplace_back(generation::Generator::FeatureBlock {{0, y + 1, 0}, leaf});
+    Tree::placeLeaf(tree, generation::Generator::FeatureBlock {{0, y + 1, 0}, leaf});
     layerWithoutCorner(tree, y, leaf, leaf, 1);
 }
 

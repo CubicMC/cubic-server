@@ -39,3 +39,5 @@ u128 u128::random()
     std::uniform_int_distribution<uint64_t> dis(0, 0xffffffffffffffff);
     return u128({dis(gen), dis(gen)});
 }
+
+Position::valueType Position::manhattanDistance(const Position &other) const { return std::abs(x - other.x) + std::abs(y - other.y) + std::abs(z - other.z); }

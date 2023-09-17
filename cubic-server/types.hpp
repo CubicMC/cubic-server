@@ -86,6 +86,26 @@ struct Position {
 
     constexpr bool operator>=(valueType i) const;
     constexpr bool operator<=(valueType i) const;
+
+    /**
+     * @brief Converts the position to a Vector3
+     *
+     * @tparam T The type of the Vector3
+     * @return constexpr Vector3<T> The converted position
+     */
+    template<typename T>
+    constexpr operator Vector3<T>() const
+    {
+        return Vector3<T> {static_cast<T>(x), static_cast<T>(y), static_cast<T>(z)};
+    }
+
+    /**
+     * @brief Returns the manhattan distance between two positions
+     *
+     * @param other The other position
+     * @return valueType The manhattan distance
+     */
+    valueType manhattanDistance(const Position &other) const;
 };
 
 struct Position2D {
