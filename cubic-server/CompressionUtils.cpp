@@ -6,14 +6,6 @@
 
 #include "Server.hpp"
 
-static void add_buffer_to_vector(std::vector<uint8_t> &vector, const uint8_t *buffer, size_t length)
-{
-    for (size_t character_index = 0; character_index < length; character_index++) {
-        char current_character = buffer[character_index];
-        vector.push_back(current_character);
-    }
-}
-
 int compressVector(const std::vector<uint8_t> &source, std::vector<uint8_t> &destination)
 {
     unsigned long source_length = source.size();
@@ -26,7 +18,7 @@ int compressVector(const std::vector<uint8_t> &source, std::vector<uint8_t> &des
 
     Bytef *source_data = (Bytef *) source.data();
     int return_value = compress2((Bytef *) destination_data, &destination_length, source_data, source_length, CONFIG["compression-level"].as<int>());
-    add_buffer_to_vector(destination, destination_data, destination_length);
+    destination.insert(destination.end(), destination_data, destination_data + destination_length);
     free(destination_data);
     return return_value;
 }
