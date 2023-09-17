@@ -1,8 +1,8 @@
 #include <memory>
 #include <vector>
 
-#include "Entity.hpp"
 #include "Player.hpp"
+#include "entities/Entity.hpp"
 #include "selectors.hpp"
 
 void fillSelector(

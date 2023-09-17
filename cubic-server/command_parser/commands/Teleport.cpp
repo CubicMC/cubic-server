@@ -4,12 +4,12 @@
 #include <vector>
 
 #include "Dimension.hpp"
-#include "Entity.hpp"
 #include "Player.hpp"
 #include "Server.hpp"
 #include "Teleport.hpp"
 #include "World.hpp"
 #include "command_parser/selectors/selectors.hpp"
+#include "entities/Entity.hpp"
 #include "protocol/ClientPackets.hpp"
 
 constexpr char TELEPORT_HELP[] = "/teleport (<location>|<destination>|<targets>)";

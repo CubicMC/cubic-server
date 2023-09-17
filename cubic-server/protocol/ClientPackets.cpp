@@ -1,7 +1,7 @@
 #include "ClientPackets.hpp"
 
-#include "Entity.hpp"
 #include "PacketUtils.hpp"
+#include "entities/Entity.hpp"
 #include "logging/logging.hpp"
 #include "protocol/serialization/addPrimaryType.hpp"
 #include "serialization/add.hpp"

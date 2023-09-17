@@ -6,11 +6,11 @@
 #include <string>
 #include <vector>
 
-#include "EntityType.hpp"
 #include "PlayerAttributes.hpp"
 #include "Structures.hpp"
 #include "chat/Message.hpp"
 #include "common.hpp"
+#include "entities/EntityType.hpp"
 #include "protocol/container/Container.hpp"
 #include "types.hpp"
 #include "world_storage/ChunkColumn.hpp"

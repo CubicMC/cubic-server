@@ -78,7 +78,7 @@ void PluginManager::load()
             loadPlugin(filepath.path().string());
         }
     }
-    LINFO("Loaded plugins");
+    LINFO("Plugins loaded");
 
     using namespace EventKey;
     onEvent((*this), initialize);

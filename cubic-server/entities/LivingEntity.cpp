@@ -38,6 +38,7 @@ void LivingEntity::damage(float damage)
     if (canceled)
         return;
     _health -= damage;
+    LDEBUG("entity type {} with id {} took damage {}, health is now {}", this->_type, this->_id, damage, _health);
 }
 
 /*

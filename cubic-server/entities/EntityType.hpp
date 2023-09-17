@@ -1,5 +1,5 @@
-#ifndef CUBICSERVER_ENTITY_TYPE_HPP
-#define CUBICSERVER_ENTITY_TYPE_HPP
+#ifndef CUBICSERVER_ENTITIES_ENTITY_TYPE_HPP
+#define CUBICSERVER_ENTITIES_ENTITY_TYPE_HPP
 
 #include <cstdint>
 #include <string>
@@ -377,4 +377,4 @@ inline std::string getEntityTypeName(EntityType type)
     }
 }
 
-#endif // CUBICSERVER_ENTITY_TYPE_HPP
+#endif // CUBICSERVER_ENTITIES_ENTITY_TYPE_HPP

@@ -1,5 +1,5 @@
 #include "metadata.hpp"
-#include "Entity.hpp"
+#include "entities/Entity.hpp"
 #include "protocol/serialization/addPrimaryType.hpp"
 
 #define METADATA_HEADER(type) \

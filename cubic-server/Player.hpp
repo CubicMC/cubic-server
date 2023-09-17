@@ -2,13 +2,13 @@
 #define CUBICSERVER_PLAYER_HPP
 
 #include "Chat.hpp"
-#include "Entity.hpp"
-#include "LivingEntity.hpp"
 #include "PlayerAttributes.hpp"
 #include "SoundList.hpp"
 #include "TickClock.hpp"
 #include "chat/Message.hpp"
 #include "concept.hpp"
+#include "entities/Entity.hpp"
+#include "entities/LivingEntity.hpp"
 #include "math/Vector3.hpp"
 #include "protocol/ClientPackets.hpp"
 #include "protocol/ServerPackets.hpp"
@@ -212,7 +212,6 @@ private:
 
 private:
     void _processKeepAlive();
-    void _tickPosition();
     void _updateRenderedChunks(const Position2D &oldChunkPos, const Position2D &newChunkPos);
     void _continueLoginSequence();
     void _unloadChunk(int32_t x, int32_t z);

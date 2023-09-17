@@ -3,9 +3,6 @@
 #include "Chat.hpp"
 #include "Client.hpp"
 #include "Dimension.hpp"
-#include "Entity.hpp"
-#include "Item.hpp"
-#include "LivingEntity.hpp"
 #include "PlayerAttributes.hpp"
 #include "PluginManager.hpp"
 #include "Server.hpp"
@@ -13,6 +10,9 @@
 #include "WorldGroup.hpp"
 #include "blocks.hpp"
 #include "command_parser/CommandParser.hpp"
+#include "entities/Entity.hpp"
+#include "entities/Item.hpp"
+#include "entities/LivingEntity.hpp"
 #include "events/CancelEvents.hpp"
 #include "items/foodItems.hpp"
 #include "logging/logging.hpp"
@@ -26,6 +26,7 @@
 #include "protocol/serialization/addPrimaryType.hpp"
 #include "types.hpp"
 #include "world_storage/Level.hpp"
+
 #include <algorithm>
 #include <cstdint>
 #include <memory>
@@ -85,51 +86,9 @@ void Player::tick()
     _keepAliveClock.tick();
     _synchronizeClock.tick();
 
-    _tickPosition();
     _foodTick();
-}
 
-void Player::_tickPosition()
-{
-    bool updatePos = false;
-    bool updateRot = false;
-    int16_t deltaX = 0;
-    int16_t deltaY = 0;
-    int16_t deltaZ = 0;
-
-    if (_pos != _lastPos) {
-        updatePos = true;
-        deltaX = static_cast<int16_t>((this->_pos.x * 32.0 - this->_lastPos.x * 32.0) * 128.0);
-        deltaY = static_cast<int16_t>((this->_pos.y * 32.0 - this->_lastPos.y * 32.0) * 128.0);
-        deltaZ = static_cast<int16_t>((this->_pos.z * 32.0 - this->_lastPos.z * 32.0) * 128.0);
-        _lastPos = _pos;
-    }
-    if (_rot != _lastRot) {
-        updateRot = true;
-        _lastRot = _rot;
-    }
-    if (updatePos && updateRot) {
-        for (auto i : this->getDimension()->getPlayers()) {
-            if (i->getId() == this->getId())
-                continue;
-            i->sendUpdateEntityPositionAndRotation({this->getId(), deltaX, deltaY, deltaZ, this->_rot.x, this->_rot.z, true});
-            i->sendHeadRotation({this->getId(), _rot.x});
-        }
-    } else if (updatePos) {
-        for (auto i : this->getDimension()->getPlayers()) {
-            if (i->getId() == this->getId())
-                continue;
-            i->sendUpdateEntityPosition({this->getId(), deltaX, deltaY, deltaZ, true});
-        }
-    } else if (updateRot) {
-        for (auto i : this->getDimension()->getPlayers()) {
-            if (i->getId() == this->getId())
-                continue;
-            i->sendUpdateEntityRotation({this->getId(), this->_rot.x, this->_rot.z, true});
-            i->sendHeadRotation({this->getId(), _rot.x});
-        }
-    }
-
+    Entity::tick();
     if (_pos.y < -100) // TODO: Change that
         teleport({_pos.x, -58, _pos.z});
 }
