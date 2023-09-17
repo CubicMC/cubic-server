@@ -4,7 +4,9 @@
 #include "Server.hpp"
 #include "World.hpp"
 #include "blocks.hpp"
+#include "generation/features/surface/forestRock.hpp"
 #include "generation/features/tree/oak.hpp"
+#include "generation/features/tree/spruce.hpp"
 #include "generation/overworld.hpp"
 #include "logging/logging.hpp"
 #include "nbt.hpp"
@@ -572,6 +574,18 @@ void ChunkColumn::_generateVegetalDecoration(generation::Generator &generator)
     oakTree.getPosForTreeGeneration();
     while (!oakTree.filterTreeGrowSpace().empty())
         oakTree.generateTree(std::vector<world_storage::ChunkColumn *>());
+
+    // Un-comment this for LE KAYOU & comment the 4 preceding lines
+
+    // generation::trees::SpruceTree spruceTree(*this, generator);
+    // spruceTree.getPosForTreeGeneration();
+    // while (!spruceTree.filterTreeGrowSpace().empty())
+    //     spruceTree.generateTree(std::vector<world_storage::ChunkColumn *>());
+    //
+    // ForestRock rock(*this, generator);
+    // rock.getPosForRockGeneration();
+    // while (!rock.filterRockOverlap().empty())
+    //     rock.generateRock(std::vector<world_storage::ChunkColumn *>());
 
     // RELEASE_NEIGHBOURS()
     _currentState = GenerationState::VEGETAL_DECORATION;

@@ -65,7 +65,7 @@ std::deque<Position> &OakTree::filterTreeGrowSpace()
 void OakTree::generateTree(UNUSED std::vector<world_storage::ChunkColumn *> neighbours)
 {
     const auto &treeEmplacement = _positions.front();
-    setRandomizer(treeEmplacement);
+    _generator.setRandomizer(treeEmplacement);
     auto tree = getTree(
         treeEmplacement.x + this->_chunk.getChunkPos().x * world_storage::SECTION_WIDTH, treeEmplacement.y,
         treeEmplacement.z + this->_chunk.getChunkPos().z * world_storage::SECTION_WIDTH
@@ -81,10 +81,9 @@ void OakTree::generateTree(UNUSED std::vector<world_storage::ChunkColumn *> neig
     }
     _positions.pop_front();
 }
-
-const std::vector<generation::Generator::TreeBlock> OakTree::getTree(const Position &pos) const
+const std::vector<generation::Generator::FeatureBlock> OakTree::getTree(const Position &pos) const
 {
-    std::vector<generation::Generator::TreeBlock> tree;
+    std::vector<generation::Generator::FeatureBlock> tree;
     const auto treeSize = _generator.getTreeSize(pos, _treeSize);
     Tree::buildTree(
         treeSize, tree,
@@ -96,7 +95,7 @@ const std::vector<generation::Generator::TreeBlock> OakTree::getTree(const Posit
     return tree;
 }
 
-const std::vector<generation::Generator::TreeBlock> OakTree::getTree(Generator::positionType x, Generator::positionType y, Generator::positionType z) const
+const std::vector<generation::Generator::FeatureBlock> OakTree::getTree(Generator::positionType x, Generator::positionType y, Generator::positionType z) const
 {
     return getTree({x, y, z});
 }

@@ -20,6 +20,7 @@ public:
         double peaksAndValley;
         double weirdness;
         double trees;
+        double rocks;
     } GenerationNoise2D;
 
     typedef struct {
@@ -39,7 +40,7 @@ public:
     typedef struct {
         Position pos;
         BlockId block;
-    } TreeBlock;
+    } FeatureBlock;
 
     typedef struct {
         int sizeMin;
@@ -85,7 +86,6 @@ protected:
                 GenerationNoise2D, std::unordered_map<positionType, GenerationNoise3D> // y
                 >>>
         _noiseCache;
-
     /**
      * A randomizer, based on the seed & the position of a block,
      * set in 'setRandomizer(const Position &pos)'

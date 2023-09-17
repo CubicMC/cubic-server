@@ -19,14 +19,14 @@ public:
     void generateTree(std::vector<world_storage::ChunkColumn *>) override;
 
 private:
-    const std::vector<Generator::TreeBlock> getTree(const Position &pos) const override;
-    const std::vector<Generator::TreeBlock> getTree(Generator::positionType x, Generator::positionType y, Generator::positionType z) const override;
+    const std::vector<Generator::FeatureBlock> getTree(const Position &pos) const override;
+    const std::vector<Generator::FeatureBlock> getTree(Generator::positionType x, Generator::positionType y, Generator::positionType z) const override;
 
-    const void buildTree(const int treeSize, std::vector<generation::Generator::TreeBlock> &tree, const BlockId &leaf, const BlockId &log) const;
-    const void topLayers(std::vector<generation::Generator::TreeBlock> &tree, int y, const BlockId &leaf) const;
-    const void layerWithoutCorner(std::vector<generation::Generator::TreeBlock> &tree, int y, const BlockId &leaf, const BlockId &log, int layerSize) const;
-    const void makeLongPine(std::vector<generation::Generator::TreeBlock> &tree, int y, const BlockId &leaf, const BlockId &log) const;
-    const void makeMushroomPine(const int treeSize, std::vector<generation::Generator::TreeBlock> &tree, int y, const BlockId &leaf, const BlockId &log) const;
+    void buildTree(const int treeSize, std::vector<generation::Generator::FeatureBlock> &tree, const BlockId &leaf, const BlockId &log) const;
+    void topLayers(std::vector<generation::Generator::FeatureBlock> &tree, int y, const BlockId &leaf) const;
+    void layerWithoutCorner(std::vector<generation::Generator::FeatureBlock> &tree, int y, const BlockId &leaf, const BlockId &log, int layerSize) const;
+    void makeLongPine(std::vector<generation::Generator::FeatureBlock> &tree, int y, const BlockId &leaf, const BlockId &log) const;
+    void makeMushroomPine(const int treeSize, std::vector<generation::Generator::FeatureBlock> &tree, int y, const BlockId &leaf, const BlockId &log) const;
 
     generation::Generator::TreeSize _treeSize = {6, 10};
 };

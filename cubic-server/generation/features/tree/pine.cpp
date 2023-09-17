@@ -62,34 +62,34 @@ std::deque<Position> &PineTree::filterTreeGrowSpace()
     return _positions;
 }
 
-const void PineTree::layerWithoutCorner(std::vector<generation::Generator::TreeBlock> &tree, int y, const BlockId &leaf, const BlockId &log, int layerSize) const
+void PineTree::layerWithoutCorner(std::vector<generation::Generator::FeatureBlock> &tree, int y, const BlockId &leaf, const BlockId &log, int layerSize) const
 {
     for (int x = -layerSize; x <= layerSize; x++) {
         for (int z = -layerSize; z <= layerSize; z++) {
             // no leaves in the corners
             if (abs(x) == layerSize && abs(z) == layerSize)
                 continue;
-            tree.emplace_back(generation::Generator::TreeBlock {{0, y, 0}, log});
-            tree.emplace_back(generation::Generator::TreeBlock {{x, y, z}, leaf});
+            tree.emplace_back(generation::Generator::FeatureBlock {{0, y, 0}, log});
+            tree.emplace_back(generation::Generator::FeatureBlock {{x, y, z}, leaf});
         }
     }
 }
 
-const void PineTree::topLayers(std::vector<generation::Generator::TreeBlock> &tree, int y, const BlockId &leaf) const
+void PineTree::topLayers(std::vector<generation::Generator::FeatureBlock> &tree, int y, const BlockId &leaf) const
 {
-    tree.emplace_back(generation::Generator::TreeBlock {{0, y + 1, 0}, leaf});
+    tree.emplace_back(generation::Generator::FeatureBlock {{0, y + 1, 0}, leaf});
     layerWithoutCorner(tree, y, leaf, leaf, 1);
 }
 
-const void PineTree::makeLongPine(std::vector<generation::Generator::TreeBlock> &tree, int y, const BlockId &leaf, const BlockId &log) const
+void PineTree::makeLongPine(std::vector<generation::Generator::FeatureBlock> &tree, int y, const BlockId &leaf, const BlockId &log) const
 {
     layerWithoutCorner(tree, y, leaf, log, 1);
     layerWithoutCorner(tree, y - 1, leaf, log, 1);
 }
 
-const void PineTree::makeMushroomPine(const int treeSize, std::vector<generation::Generator::TreeBlock> &tree, int y, const BlockId &leaf, const BlockId &log) const
+void PineTree::makeMushroomPine(const int treeSize, std::vector<generation::Generator::FeatureBlock> &tree, int y, const BlockId &leaf, const BlockId &log) const
 {
-    if (_randomizer % 2 == 0) {
+    if (_generator.getRandomizer() % 2 == 0) {
         layerWithoutCorner(tree, y, leaf, log, 2);
         layerWithoutCorner(tree, y - 1, leaf, log, 1);
     } else {
@@ -99,7 +99,7 @@ const void PineTree::makeMushroomPine(const int treeSize, std::vector<generation
     }
 }
 
-const void PineTree::buildTree(const int treeSize, std::vector<generation::Generator::TreeBlock> &tree, const BlockId &leaf, const BlockId &log) const
+void PineTree::buildTree(const int treeSize, std::vector<generation::Generator::FeatureBlock> &tree, const BlockId &leaf, const BlockId &log) const
 {
     for (int y = 0; y <= treeSize + 1; y++) {
         // Top leaf & top star on top of the trunk
@@ -110,7 +110,7 @@ const void PineTree::buildTree(const int treeSize, std::vector<generation::Gener
         // Add the other layers
         if (y == treeSize) {
             // I think this will have to change - setting the proportion of each variant
-            if (_randomizer != abs(treeSize % 2)) {
+            if (_generator.getRandomizer() != abs(treeSize % 2)) {
                 makeLongPine(tree, y, leaf, log);
             } else {
                 makeMushroomPine(treeSize, tree, y, leaf, log);
@@ -119,7 +119,7 @@ const void PineTree::buildTree(const int treeSize, std::vector<generation::Gener
 
         // trunk block generation
         if (y <= treeSize) {
-            tree.emplace_back(generation::Generator::TreeBlock {{0, y, 0}, log});
+            tree.emplace_back(generation::Generator::FeatureBlock {{0, y, 0}, log});
         }
     }
 }
@@ -127,7 +127,7 @@ const void PineTree::buildTree(const int treeSize, std::vector<generation::Gener
 void PineTree::generateTree(UNUSED std::vector<world_storage::ChunkColumn *> neighbours)
 {
     const auto &treeEmplacement = _positions.front();
-    setRandomizer(treeEmplacement);
+    _generator.setRandomizer(treeEmplacement);
     auto tree = getTree(
         treeEmplacement.x + this->_chunk.getChunkPos().x * world_storage::SECTION_WIDTH, treeEmplacement.y,
         treeEmplacement.z + this->_chunk.getChunkPos().z * world_storage::SECTION_WIDTH
@@ -144,9 +144,9 @@ void PineTree::generateTree(UNUSED std::vector<world_storage::ChunkColumn *> nei
     _positions.pop_front();
 }
 
-const std::vector<generation::Generator::TreeBlock> PineTree::getTree(const Position &pos) const
+const std::vector<generation::Generator::FeatureBlock> PineTree::getTree(const Position &pos) const
 {
-    std::vector<generation::Generator::TreeBlock> tree;
+    std::vector<generation::Generator::FeatureBlock> tree;
     const auto treeSize = _generator.getTreeSize(pos, _treeSize);
     PineTree::buildTree(
         treeSize, tree,
@@ -158,7 +158,7 @@ const std::vector<generation::Generator::TreeBlock> PineTree::getTree(const Posi
     return tree;
 }
 
-const std::vector<generation::Generator::TreeBlock> PineTree::getTree(Generator::positionType x, Generator::positionType y, Generator::positionType z) const
+const std::vector<generation::Generator::FeatureBlock> PineTree::getTree(Generator::positionType x, Generator::positionType y, Generator::positionType z) const
 {
     return getTree({x, y, z});
 }
