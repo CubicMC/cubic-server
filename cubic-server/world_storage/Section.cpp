@@ -1,6 +1,7 @@
 #include "Section.hpp"
 #include "logging/logging.hpp"
 #include "types.hpp"
+#include "utility/PseudoRandomGenerator.hpp"
 #include <cstdint>
 #include <stdexcept>
 
@@ -199,3 +200,17 @@ uint8_t world_storage::Section::getBlockLight(const Position &pos) const
 }
 
 uint8_t world_storage::Section::getBlockLight(uint64_t idx) const { return this->_blockLight.get(idx); }
+
+void world_storage::Section::processRandomTick(uint32_t rts, Position2D chunkPos)
+{
+    auto *rgen = utility::PseudoRandomGenerator::getInstance();
+    for (uint32_t i = 0; i < rts; i++) {
+        auto index = rgen->generateNumber(0, SECTION_3D_SIZE - 1);
+        _processBlockRandomTick(index, chunkPos);
+    }
+}
+
+void world_storage::Section::_processBlockRandomTick(uint32_t blockIndex, Position2D chunkPos)
+{
+    // @todo Add the randomtick events here (Grass/fire spreading, crops growth, etc...)
+}

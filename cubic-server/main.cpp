@@ -2,6 +2,7 @@
 #include <csignal>
 #include <cstring>
 #include <iostream>
+#include <limits>
 #include <thread>
 
 #include "CommandLine.hpp"
@@ -160,6 +161,14 @@ auto initArgs(int argc, const char *const argv[])
         .valueFromEnvironmentVariable("CBSRV_WORLD_BORDER")
         .valueFromArgument("--world-border")
         .defaultValue(10000);
+
+    program.add("randomtickspeed")
+        .help("Set the randomtickspeed")
+        .valueFromConfig("gamerule", "randomtickspeed")
+        .valueFromEnvironmentVariable("CBSRV_RANDOMTICKSPEED")
+        .valueFromArgument("--randomtickspeed")
+        .defaultValue(3)
+        .inRange(0, std::numeric_limits<int32_t>::max());
     // clang-format on
 
     try {

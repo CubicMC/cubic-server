@@ -28,6 +28,15 @@ void Dimension::tick()
     for (auto ent : _entities) {
         ent->tick();
     }
+    uint32_t rts = CONFIG["randomtickspeed"].as<uint32_t>();
+    if (rts != 0) {
+        for (auto &[pos, chunk] : _level.getChunkColumns()) {
+            // @todo Test if a chunk is within simulation distance of a player
+            if (!chunk.isReady())
+                continue;
+            chunk.processRandomTick(rts);
+        }
+    }
 }
 
 void Dimension::stop()
