@@ -212,5 +212,5 @@ void world_storage::Section::processRandomTick(uint32_t rts, Position2D chunkPos
 
 void world_storage::Section::_processBlockRandomTick(uint32_t blockIndex, Position2D chunkPos)
 {
-    // @todo Add the randomtick events here (Grass/fire spreading, crops growth, etc...)
+    // TODO(huntears): Add the randomtick events here (Grass/fire spreading, crops growth, etc...)
 }
