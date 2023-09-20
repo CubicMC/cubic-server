@@ -14,7 +14,7 @@
 
 void LivingEntity::tick()
 {
-    this->gravity();
+    this->applyGravity();
 }
 
 /*
@@ -80,9 +80,8 @@ void LivingEntity::knockback(const Vector3<double> &source, float force)
  *
  * @param gravity The intensity of the gravity (default: 1)
  */
-void LivingEntity::gravity(float gravity, float drag)
-{
-    _velocity.y = _velocity.y * drag - gravity * drag;
+void LivingEntity::applyGravity(float gravity, float drag) {
+    _velocity.y = this->computeGravity(gravity, drag);
 
     for (auto player : _dim->getPlayers()) {
         player->sendEntityVelocity({
@@ -92,6 +91,15 @@ void LivingEntity::gravity(float gravity, float drag)
             static_cast<int16_t>(_velocity.z * 8000),
         });
     }
+}
+
+/*
+ * @brief Compute gravity for the entity
+ *
+ * @param gravity The intensity of the gravity (default: 1)
+ */
+double LivingEntity::computeGravity(float gravity, float drag) {
+    return _velocity.y * drag - gravity * drag;
 }
 
 void LivingEntity::setHealth(float health) { _health = health; }

@@ -30,7 +30,9 @@ public:
     virtual void attack(const Vector3<double> &source);
     virtual void damage(float damage);
     virtual void knockback(const Vector3<double> &source = Vector3<double>(0, 0, 0), float force = KNOCKBACK_DEFAULT_FORCE);
-    virtual void gravity(float gravity = 0.0784, float drag = 0.98);
+
+    virtual void applyGravity(float gravity = 0.0784, float drag = 0.98);
+    virtual double computeGravity(float gravity = 0.0784, float drag = 0.98);
 
     virtual void setHealth(float health);
 
