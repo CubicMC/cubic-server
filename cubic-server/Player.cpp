@@ -821,7 +821,7 @@ void Player::_onChatCommand(protocol::ChatCommand &pck)
     command_parser::parseCommand(pck.command, this);
 }
 
-void Player::_onClientCommand(UNUSED protocol::ClientCommand &pck)
+void Player::_onClientCommand(protocol::ClientCommand &pck)
 {
     N_LDEBUG("Got a Client Command");
 
@@ -1454,7 +1454,7 @@ void Player::_respawn()
         false // Has death location (need dimension name which we don't have yet)
     });
 
-    for (auto &player : this->_dim->getPlayers()) {
+    for (auto player : this->_dim->getPlayers()) {
         if (player->getId() == this->getId())
             continue;
         player->sendUpdateEntityPosition({

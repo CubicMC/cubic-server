@@ -435,6 +435,11 @@ struct CombatDeath {
     int32_t killerId;
     chat::Message message;
 };
+/**
+* @brief Create a combat death packet
+*
+* @param in The combat death packet
+*/
 std::unique_ptr<std::vector<uint8_t>> createCombatDeath(const CombatDeath &);
 
 struct PlayerInfoRemove {
@@ -530,6 +535,11 @@ struct Respawn {
     std::string deathDimensionName;
     Position deathLocation;
 };
+/**
+ * @brief Create a respawn packet
+ *
+ * @param in The respawn packet
+ */
 std::unique_ptr<std::vector<uint8_t>> createRespawn(const Respawn &in);
 
 struct HeadRotation {
@@ -714,7 +724,9 @@ struct UpdateTeams {
         DarkGreen = 2,
         DarkAqua = 3,
         DarkRed = 4,
-        DarkPurple = 5,
+        DarkPurple = 5,/*
+ * @brief Kill the entity
+ */
         Gold = 6,
         Gray = 7,
         DarkGray = 8,

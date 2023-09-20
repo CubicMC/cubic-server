@@ -71,9 +71,6 @@ void LivingEntity::knockback(const Vector3<double> &source, float force)
     }
 }
 
-/*
- * @brief Kill the entity
- */
 void LivingEntity::kill()
 {
     // TODO : think about how to deal with death later
