@@ -48,6 +48,11 @@ void Dimension::initialize()
     this->_processingThread = std::thread(&Dimension::_run, this);
 }
 
+void Dimension::save(const std::string &folder)
+{
+    this->_level.save(folder);
+}
+
 bool Dimension::isInitialized() const { return _isInitialized; }
 
 std::shared_ptr<World> Dimension::getWorld() { return _world; }

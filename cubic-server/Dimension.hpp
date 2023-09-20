@@ -33,6 +33,7 @@ public:
     virtual void initialize();
     virtual void tick();
     virtual void stop();
+    virtual void save(const std::string &folder) = 0;
 
     NODISCARD virtual bool isInitialized() const;
     NODISCARD virtual std::shared_ptr<World> getWorld();

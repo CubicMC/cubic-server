@@ -60,7 +60,9 @@ void World::save()
         for (auto player : dim.second->getPlayers()) {
             player->save(this->_folder);
         }
+        dim.second->save(this->_folder);
     }
+
 }
 
 bool World::isInitialized() const

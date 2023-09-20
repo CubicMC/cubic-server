@@ -1,4 +1,5 @@
 #include "TheEnd.hpp"
+#include "logging/logging.hpp"
 
 void TheEnd::tick()
 {
@@ -17,4 +18,10 @@ void TheEnd::initialize()
 {
     Dimension::initialize();
     this->_isInitialized = true;
+}
+
+void TheEnd::save(const std::string &folder)
+{
+    Dimension::save(folder + "/DIM1");
+    LINFO("Save - TheEnd");
 }

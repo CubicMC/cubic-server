@@ -14,6 +14,7 @@ public:
 
     void tick() override;
     void initialize() override;
+    void save(const std::string &folder) override;
 };
 
 #endif // CUBICSERVER_DEFAULT_THEEND_HPP

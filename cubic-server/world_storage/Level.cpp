@@ -1,7 +1,10 @@
 #include "Level.hpp"
 #include "logging/logging.hpp"
+#include "types.hpp"
 #include "world_storage/ChunkColumn.hpp"
 #include <mutex>
+#include <unordered_map>
+#include <vector>
 
 namespace world_storage {
 
@@ -76,6 +79,15 @@ void Level::clear()
 {
     std::lock_guard<std::mutex> _(this->chunkColumnsMutex);
     _chunkColumns.clear();
+}
+
+void Level::save(const std::string &folder)
+{
+    auto chunks = this->getChunkColumns();
+    std::unordered_map<Position2D, std::vector<ChunkColumn &>> regions;
+    
+    std::lock_guard _(this->_chunkColumnsMutex);
+    
 }
 
 } // namespace world_storage

@@ -64,6 +64,13 @@ void Overworld::stop()
     this->_worldGenFuture.wait();
 }
 
+void Overworld::save(const std::string &folder)
+{
+    Dimension::save(folder);
+    LINFO("Save - Overworld");
+    // Put the saving code specific for this dimension here
+}
+
 void Overworld::generateChunk(int x, int z, world_storage::GenerationState goalState)
 {
     auto world = std::dynamic_pointer_cast<DefaultWorld>(_world);

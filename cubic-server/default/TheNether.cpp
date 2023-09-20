@@ -1,4 +1,5 @@
 #include "TheNether.hpp"
+#include "logging/logging.hpp"
 
 void TheNether::initialize()
 {
@@ -17,4 +18,10 @@ void TheNether::tick()
     //    LDEBUG("Tick - TheNether");
 
     // auto endProcessing = std::chrono::system_clock::now();
+}
+
+void TheNether::save(const std::string &folder)
+{
+    Dimension::save(folder + "/DIM-1");
+    LINFO("Save - TheNether");
 }

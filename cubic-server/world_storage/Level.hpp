@@ -45,6 +45,7 @@ public:
     const std::unordered_map<Position2D, ChunkColumn> &getChunkColumns() const;
     std::unordered_map<Position2D, ChunkColumn> &getChunkColumns();
 
+    void save(const std::string &folder);
     void clear();
 
     mutable std::mutex chunkColumnsMutex;

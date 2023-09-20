@@ -18,6 +18,7 @@ public:
     void tick() override;
     void initialize() override;
     void stop() override;
+    void save(const std::string &folder) override;
     void generateChunk(int x, int z, world_storage::GenerationState goalState = world_storage::GenerationState::READY) override;
 
 private:
