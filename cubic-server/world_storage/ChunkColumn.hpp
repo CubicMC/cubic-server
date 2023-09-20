@@ -127,6 +127,13 @@ public:
 
     void generate(GenerationState goalState = GenerationState::READY);
 
+    /**
+     * @brief Process a random tick on the chunk
+     *
+     * @param rts The value of randomtickspeed
+     */
+    void processRandomTick(uint32_t rts);
+
     friend class Persistence;
 
 private:

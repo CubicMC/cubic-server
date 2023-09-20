@@ -599,4 +599,11 @@ void ChunkColumn::_generateTopLayerModification(UNUSED generation::Generator &ge
     _currentState = GenerationState::TOP_LAYER_MODIFICATION;
 }
 
+void ChunkColumn::processRandomTick(uint32_t rts)
+{
+    for (auto &section : _sections) {
+        section.processRandomTick(rts, _chunkPos);
+    }
+}
+
 } // namespace world_storage

@@ -97,8 +97,24 @@ public:
     void recalculateSkyLight();
     void recalculateBlockLight();
 
+    /**
+     * @brief Process a random tick on a section
+     *
+     * @param rts The value of randomtickspeed
+     * @param chunkPos The position of the chunk the section is in
+     */
+    void processRandomTick(uint32_t rts, Position2D chunkPos);
+
 private:
     void _reCalculatePalette();
+
+    /**
+     * @brief Process a random tick on a block
+     *
+     * @param blockIndex The block index on the BlockStorage
+     * @param chunkPos The position of the chunk the section is in
+     */
+    void _processBlockRandomTick(uint32_t blockIndex, Position2D chunkPos);
 
 private:
     BlockStorage _blocks;
