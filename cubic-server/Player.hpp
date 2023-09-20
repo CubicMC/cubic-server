@@ -244,6 +244,9 @@ private:
     int _foodTickTimer;
     float _foodExhaustionLevel;
 
+    // Respawn
+    Vector3<double> _respawnPoint;
+
     // player status
     protocol::ClientInformation::ChatVisibility _chatVisibility;
     bool _isFlying;

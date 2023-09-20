@@ -1453,6 +1453,18 @@ void Player::_respawn()
         0, // Copy metadata
         false // Has death location (need dimension name which we don't have yet)
     });
+
+    for (auto &player : this->_dim->getPlayers()) {
+        if (player->getId() == this->getId())
+            continue;
+        player->sendUpdateEntityPosition({
+        this->_id, // Entity id
+        static_cast<int16_t>(this->_respawnPoint.x), // X
+        static_cast<int16_t>(this->_respawnPoint.y), // Y
+        static_cast<int16_t>(this->_respawnPoint.z), // Z
+        true // On ground
+        });
+    }
 }
 
 void Player::kill()
