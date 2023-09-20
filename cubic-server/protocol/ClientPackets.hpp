@@ -436,10 +436,10 @@ struct CombatDeath {
     chat::Message message;
 };
 /**
-* @brief Create a combat death packet
-*
-* @param in The combat death packet
-*/
+ * @brief Create a combat death packet
+ *
+ * @param in The combat death packet
+ */
 std::unique_ptr<std::vector<uint8_t>> createCombatDeath(const CombatDeath &);
 
 struct PlayerInfoRemove {
@@ -724,9 +724,7 @@ struct UpdateTeams {
         DarkGreen = 2,
         DarkAqua = 3,
         DarkRed = 4,
-        DarkPurple = 5,/*
- * @brief Kill the entity
- */
+        DarkPurple = 5,
         Gold = 6,
         Gray = 7,
         DarkGray = 8,

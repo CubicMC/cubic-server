@@ -1454,9 +1454,9 @@ void Player::_respawn()
         true, // Has death location
         this->_dim->getDimensionName(), // Dimension name
         {
-            static_cast<long>(this->_pos.x),
-            static_cast<long>(this->_pos.y),
-            static_cast<long>(this->_pos.z)
+            static_cast<long>(this->_pos.x), // death X
+            static_cast<long>(this->_pos.y), // death Y
+            static_cast<long>(this->_pos.z) // death Z
             }, // Position
     });
 

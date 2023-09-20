@@ -150,7 +150,6 @@ public:
      */
     [[nodiscard]] virtual std::string getDimensionName() const = 0;
 
-
     virtual void lockLoadingChunksMutex() { _loadingChunksMutex.lock(); };
     virtual void unlockLoadingChunksMutex() { _loadingChunksMutex.unlock(); };
 

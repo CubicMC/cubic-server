@@ -29,8 +29,8 @@ public:
     virtual void attack(const Vector3<double> &source, const int32_t &sourceId = 0);
     virtual void damage(float damage, const int32_t &sourceId = 0);
     virtual void knockback(const Vector3<double> &source = Vector3<double>(0, 0, 0), float force = KNOCKBACK_DEFAULT_FORCE);
-   
-    /*
+
+    /**
      * @brief Kill the entity
      */
     virtual void kill(const int32_t &killerId = 0);
