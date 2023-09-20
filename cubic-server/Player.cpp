@@ -821,7 +821,8 @@ void Player::_onChatCommand(protocol::ChatCommand &pck)
     command_parser::parseCommand(pck.command, this);
 }
 
-void Player::_onClientCommand(UNUSED protocol::ClientCommand &pck) {
+void Player::_onClientCommand(UNUSED protocol::ClientCommand &pck)
+{
     N_LDEBUG("Got a Client Command");
 
     if (pck.actionId == protocol::ClientCommand::ActionID::PerformRespawn) {

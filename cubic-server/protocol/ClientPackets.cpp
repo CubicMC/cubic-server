@@ -692,6 +692,7 @@ std::unique_ptr<std::vector<uint8_t>> protocol::createRespawn(const Respawn &in)
 {
     std::vector<uint8_t> payload;
 
+    // clang-format off
     serialize(payload,
         in.dimensionType, addString,
         in.dimensionName, addString,
@@ -703,11 +704,14 @@ std::unique_ptr<std::vector<uint8_t>> protocol::createRespawn(const Respawn &in)
         in.copyMetadata, addBoolean,
         in.hasDeathLocation, addBoolean
     );
+    // clang-format on
     if (in.hasDeathLocation) {
+        // clang-format off
         serialize(payload,
             in.deathDimensionName, addString,
             in.deathLocation, addPosition
         );
+        // clang-format on
     }
     auto packet = std::make_unique<std::vector<uint8_t>>();
     finalize(*packet, payload, ClientPacketID::Respawn);
