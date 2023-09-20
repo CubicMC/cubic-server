@@ -136,6 +136,21 @@ public:
      */
     [[nodiscard]] virtual world_storage::DimensionType getDimensionType() const { return _dimensionType; }
 
+    /**
+     * @brief Get the dimension type
+     *
+     * @return std::string dimension type
+     */
+    [[nodiscard]] virtual std::string getDimensionTypeName() const = 0;
+
+    /**
+     * @brief Get the dimension name
+     *
+     * @return std::string dimension name
+     */
+    [[nodiscard]] virtual std::string getDimensionName() const = 0;
+
+
     virtual void lockLoadingChunksMutex() { _loadingChunksMutex.lock(); };
     virtual void unlockLoadingChunksMutex() { _loadingChunksMutex.unlock(); };
 

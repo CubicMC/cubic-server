@@ -16,6 +16,10 @@ public:
     void initialize() override;
     void spawnPlayer(Player &player) override;
     void removePlayer(int32_t entity_id) override;
+
+    std::string getDimensionTypeName () const override { return "minecraft:the_nether"; }
+    std::string getDimensionName () const override { return "the_nether"; }
+
 };
 
 #endif // CUBICSERVER_DEFAULT_THENETHER_HPP

@@ -22,6 +22,9 @@ public:
     void spawnPlayer(Player &player) override;
     void removePlayer(int32_t entity_id) override;
 
+    std::string getDimensionTypeName () const override { return "minecraft:overworld"; }
+    std::string getDimensionName () const override { return "overworld"; }
+
 private:
     std::future<void> _worldGenFuture;
 };
