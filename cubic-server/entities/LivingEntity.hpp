@@ -25,9 +25,12 @@ public:
     }
     virtual ~LivingEntity() override = default;
 
+    void tick() override;
+
     virtual void attack(const Vector3<double> &source);
     virtual void damage(float damage);
     virtual void knockback(const Vector3<double> &source = Vector3<double>(0, 0, 0), float force = KNOCKBACK_DEFAULT_FORCE);
+    virtual void gravity(float gravity = 0.0784, float drag = 0.98);
 
     virtual void setHealth(float health);
 
@@ -44,6 +47,7 @@ public:
 protected:
     float _health;
     float _maxHealth;
+    Vector3<double> _velocity;
 
     struct HandState {
         bool isHandActive;
