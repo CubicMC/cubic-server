@@ -4,6 +4,7 @@
 #include "Entity.hpp"
 #include "EntityType.hpp"
 #include "options.hpp"
+#include <cstdint>
 #include <optional>
 
 constexpr float KNOCKBACK_DEFAULT_FORCE = 2500.0f;
@@ -25,14 +26,14 @@ public:
     }
     virtual ~LivingEntity() override = default;
 
-    virtual void attack(const Vector3<double> &source);
-    virtual void damage(float damage);
+    virtual void attack(const Vector3<double> &source, const int32_t &sourceId = 0);
+    virtual void damage(float damage, const int32_t &sourceId = 0);
     virtual void knockback(const Vector3<double> &source = Vector3<double>(0, 0, 0), float force = KNOCKBACK_DEFAULT_FORCE);
    
     /*
      * @brief Kill the entity
      */
-    virtual void kill();
+    virtual void kill(const int32_t &killerId = 0);
 
     virtual void setHealth(float health);
 

@@ -6,6 +6,7 @@
 #include "Server.hpp"
 #include "events/CancelEvents.hpp"
 #include "events/Events.hpp"
+#include "options.hpp"
 #include "protocol/ClientPackets.hpp"
 #include "protocol/metadata.hpp"
 #include <optional>
@@ -16,11 +17,11 @@
  * @param damage The damage to deal
  * @param source The source of the damage
  */
-void LivingEntity::attack(const Vector3<double> &source)
+void LivingEntity::attack(const Vector3<double> &source, const int32_t &sourceId)
 {
     //  TODO : think about how to deal with damage calculation later
     onEvent(Server::getInstance()->getPluginManager(), onEntityDamage, this, 1.0f);
-    this->damage(1);
+    this->damage(1, sourceId);
     this->knockback(source);
 }
 
@@ -29,7 +30,7 @@ void LivingEntity::attack(const Vector3<double> &source)
  *
  * @param damage The damage to deal
  */
-void LivingEntity::damage(float damage)
+void LivingEntity::damage(float damage, const int32_t &sourceId)
 {
     bool canceled = false;
 
@@ -39,7 +40,7 @@ void LivingEntity::damage(float damage)
         return;
     _health -= damage;
     if (_health <= 0) {
-        this->kill();
+        this->kill(sourceId);
     }
     broadcastMetadata();
     LDEBUG("entity type {} with id {} took damage {}, health is now {}", this->_type, this->_id, damage, _health);
@@ -71,7 +72,7 @@ void LivingEntity::knockback(const Vector3<double> &source, float force)
     }
 }
 
-void LivingEntity::kill()
+void LivingEntity::kill(UNUSED const int32_t &killerId)
 {
     // TODO : think about how to deal with death later
     _health = 0;

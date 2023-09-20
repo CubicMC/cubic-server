@@ -1443,15 +1443,21 @@ void Player::teleport(const Vector3<double> &pos)
 void Player::_respawn()
 {
     this->sendRespawn({
-        "minecraft:overworld", // Dimension
-        "overworld", // World name
+        this->_dim->getDimensionTypeName(), // Dimension Type
+        this->_dim->getDimensionName(), // Dimension name
         0, // Hashed seed
         this->_gamemode, // Gamemode
         this->_gamemode, // Previous gamemode
         0, // Is debug
         0, // Is flat
         0, // Copy metadata
-        false // Has death location (need dimension name which we don't have yet)
+        true, // Has death location
+        this->_dim->getDimensionName(), // Dimension name
+        {
+            static_cast<long>(this->_pos.x),
+            static_cast<long>(this->_pos.y),
+            static_cast<long>(this->_pos.z)
+            }, // Position
     });
 
     for (auto player : this->_dim->getPlayers()) {
@@ -1467,14 +1473,14 @@ void Player::_respawn()
     }
 }
 
-void Player::kill()
+void Player::kill(const int32_t &killerId)
 {
-    LivingEntity::kill();
+    LivingEntity::kill(killerId);
 
     this->sendCombatDeath({
         this->_id, // Player id
-        0, // Killer Entity id (0 for now because we don't know him)
-        "You suck." // Message
+        killerId, // Killer Entity id (0 for now because we don't know him)
+        "a better death message :)" // Message
     });
 }
 bool Player::isInRenderDistance(UNUSED const Vector2<double> &pos) const { return true; }

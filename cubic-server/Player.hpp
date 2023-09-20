@@ -62,7 +62,7 @@ public:
     void setOperator(const bool isOp);
     void setKeepAliveId(long id);
     void updatePlayerInfo(const protocol::PlayerInfoUpdate &data);
-    void kill() override;
+    void kill(const int32_t &killerId) override;
     void playerPickupItem();
 
     template<isBaseOf<protocol::container::Container> Container, typename... Args>
