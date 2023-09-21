@@ -41,7 +41,7 @@ void SoundSystem::tick()
         if (entity->getType() == EntityType::Chicken)
             chickenCount++;
     }
-    if (chickenCount > 0)
+    if (chickenCount > 5)
         return;
     auto chicken = dim->makeEntity<Chicken>();
     LINFO("spawn entity chicken");

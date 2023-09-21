@@ -28,6 +28,7 @@ public:
                 break;
         }
         Entity::tick();
+        LivingEntity::tick();
     }
 
     /**
