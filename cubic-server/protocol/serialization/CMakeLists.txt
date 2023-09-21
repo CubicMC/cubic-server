@@ -11,6 +11,7 @@ if (GTEST)
     add_executable(
         serialization_test
         typeSerialization_unittest.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/../../nbt.c
     )
 
     target_link_libraries(
@@ -18,12 +19,14 @@ if (GTEST)
         GTest::gtest_main
         rapidcheck
         rapidcheck_gtest
+        z
     )
 
     target_include_directories(
         serialization_test
         PRIVATE
         ${CMAKE_CURRENT_SOURCE_DIR}/../../
+        ${nbt_SOURCE_DIR}
     )
 
     include(GoogleTest)
