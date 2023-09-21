@@ -62,6 +62,12 @@ public:
     void setOperator(const bool isOp);
     void setKeepAliveId(long id);
     void updatePlayerInfo(const protocol::PlayerInfoUpdate &data);
+
+    /**
+     * @brief Kill the player
+     *
+     * @param killerId The id of the entity that killed it
+     */
     void kill(const int32_t &killerId) override;
     void playerPickupItem();
 
@@ -123,6 +129,12 @@ public:
     void sendSwingArm(bool mainHand, int32_t swingerId);
     void sendTeleportEntity(int32_t id, const Vector3<double> &pos, const Vector2<uint8_t> &rot);
     void sendRemoveEntities(const std::vector<int32_t> &entities);
+
+    /**
+     * @brief Send a respawn packet to the player
+     *
+     * @param data The data to send
+     */
     void sendRespawn(const protocol::Respawn &data);
     void sendUpdateEntityPosition(const protocol::UpdateEntityPosition &data);
     void sendUpdateEntityPositionAndRotation(const protocol::UpdateEntityPositionRotation &data);
@@ -158,6 +170,12 @@ public:
     void sendDisplayObjective(const protocol::DisplayObjective &packet);
     void sendUpdateScore(const protocol::UpdateScore &packet);
     void sendUpdateTeams(const protocol::UpdateTeams &packet);
+
+    /**
+     * @brief Send a CombatDeath packet to the pkayer
+     *
+     * @param packet The data to send
+     */
     void sendCombatDeath(const protocol::CombatDeath &packet);
     void sendPickupItem(const protocol::PickupItem &packet);
 
@@ -244,7 +262,6 @@ private:
     int _foodTickTimer;
     float _foodExhaustionLevel;
 
-    // Respawn
     Vector3<double> _respawnPoint;
 
     // player status

@@ -1457,7 +1457,7 @@ void Player::_respawn()
             static_cast<long>(this->_pos.x), // death X
             static_cast<long>(this->_pos.y), // death Y
             static_cast<long>(this->_pos.z) // death Z
-            }, // Position
+        }, // Position
     });
 
     for (auto player : this->_dim->getPlayers()) {
@@ -1479,8 +1479,8 @@ void Player::kill(const int32_t &killerId)
 
     this->sendCombatDeath({
         this->_id, // Player id
-        killerId, // Killer Entity id (0 for now because we don't know him)
-        "a better death message :)" // Message
+        killerId, // Killer Entity id
+        "You died :(" // Message
     });
 }
 bool Player::isInRenderDistance(UNUSED const Vector2<double> &pos) const { return true; }

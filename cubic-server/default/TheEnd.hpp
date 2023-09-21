@@ -17,8 +17,8 @@ public:
     void spawnPlayer(Player &player) override;
     void removePlayer(int32_t entity_id) override;
 
-    std::string getDimensionTypeName() const override { return "minecraft:the_end"; }
-    std::string getDimensionName() const override { return "the_end"; }
+    const std::string &getDimensionTypeName() const override { return "minecraft:the_end"; }
+    const std::string &getDimensionName() const override { return "the_end"; }
 };
 
 #endif // CUBICSERVER_DEFAULT_THEEND_HPP
