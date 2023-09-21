@@ -236,7 +236,7 @@ inline nbt_tag_t *popNbt(uint8_t *&at, uint8_t *eof)
 {
     std::pair<uint8_t *, uint8_t *> packet = std::make_pair(at, eof);
     nbt_reader_t reader = {_readMem, &packet};
-    return nbt_parse(reader, NBT_PARSE_FLAG_USE_ZLIB);
+    return nbt_parse(reader, NBT_PARSE_FLAG_USE_RAW);
 }
 
 constexpr Slot popSlot(uint8_t *&at, uint8_t *eof)
@@ -247,7 +247,6 @@ constexpr Slot popSlot(uint8_t *&at, uint8_t *eof)
         slot.itemID = popVarInt(at, eof);
         slot.itemCount = popByte(at, eof);
         slot.nbt = popNbt(at, eof);
-        // popByte(at, eof); // Fix for nbt
     }
     return slot;
 }
