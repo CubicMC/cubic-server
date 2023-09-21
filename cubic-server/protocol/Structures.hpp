@@ -3,20 +3,21 @@
 
 #include <cstdint>
 
-#include "nbt.h"
 #include "nbt.hpp"
+#include <nbt.h>
 
 namespace protocol {
 struct Slot {
     constexpr ~Slot()
     {
-        if (this->present && this->nbt)
-            nbt_free_tag(this->nbt);
+        // Lol can't do that because we can copy the slot, fml
+        // if (this->present && this->nbt != nullptr)
+        //     nbt_free_tag(this->nbt);
     }
     bool present = false;
     int32_t itemID = 0;
     int8_t itemCount = 0;
-    nbt_tag_t *nbt;
+    nbt_tag_t *nbt = nullptr;
     inline void reset();
     inline void swap(Slot &other);
     inline void swap(Slot &other, int8_t count);

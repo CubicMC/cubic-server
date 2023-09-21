@@ -73,21 +73,19 @@ Player::Player(std::weak_ptr<Client> cli, std::shared_ptr<Dimension> dim, u128 u
     this->_inventory->playerInventory().at(12) = protocol::Slot {true, 734, 42};
     this->_inventory->playerInventory().at(13) = protocol::Slot {true, 1, 12};
 
-    // TODO: This is for a nbt like this one : {display:[{Name:"§a§lCubic"}]}
-    // Please send help :dead:
+    // {display:{Name:'[{"text":"Cubic","italic":false}]'}}
+    constexpr std::string_view NAME = "[{\"text\":\"Cubic\",\"italic\":false}]";
+    constexpr std::string_view NAME_TAG = "Name";
+    constexpr std::string_view DISPLAY_TAG = "display";
+    auto root = nbt_new_tag_compound();
+    auto display = nbt_new_tag_compound();
+    auto name = nbt_new_tag_string(NAME.data(), NAME.size());
+    nbt_set_tag_name(name, NAME_TAG.data(), NAME_TAG.size());
+    nbt_set_tag_name(display, DISPLAY_TAG.data(), DISPLAY_TAG.size());
+    nbt_tag_compound_append(display, name);
+    nbt_tag_compound_append(root, display);
 
-    // auto display = nbt_new_tag_compound();
-    // auto nameList = nbt_new_tag_list(NBT_TYPE_COMPOUND);
-    // auto nameCompound = nbt_new_tag_compound();
-    // auto name = nbt_new_tag_string("§a§lCubic", sizeof("§a§lCubic"));
-    // nbt_set_tag_name(name, "text", sizeof("text"));
-    // nbt_tag_compound_append(nameCompound, name);
-    // nbt_tag_list_append(nameList, nameCompound);
-    // nbt_set_tag_name(nameList, "Name", sizeof("Name"));
-    // nbt_set_tag_name(display, "display", sizeof("display"));
-    // nbt_tag_compound_append(display, nameList);
-
-    // this->_inventory->playerInventory().at(14) = protocol::Slot {true, 1, 12, display};
+    this->_inventory->playerInventory().at(14) = protocol::Slot {true, 1, 12, root};
 }
 
 Player::~Player()
