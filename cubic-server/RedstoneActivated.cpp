@@ -4,22 +4,24 @@ using namespace Redstone::Activated;
 
 void Piston::contract(void)
 {
-    Position pos = this->_pos + Position({1,0,0});
+    Position chunkPos = { this->_pos.x % 16, this->_pos.y % 16, this->_pos.z % 16 };
+    Position pos = chunkPos + Position({1,0,0});
 
-    this->_dim->getLevel().getChunkColumnFromBlockPos(Position2D(pos.x, pos.z)).updateBlock(this->_pos, 0); // air
+    this->_dim->getLevel().getChunkColumnFromBlockPos(Position2D(pos.x, pos.z)).updateBlock(chunkPos, 0); // air
     this->_extended = false;
     // TODO make contract noise (863)
 }
 
 void Piston::extend(void)
 {
-    Position pos = this->_pos + Position({1,0,0});
+    Position chunkPos = { this->_pos.x % 16, this->_pos.y % 16, this->_pos.z % 16 };
+    Position pos = chunkPos + Position({1,0,0});
 
     if (0) // TODO extend denied = there are 15 blocks in front of the piston
         return;
-    this->_dim->getLevel().getChunkColumnFromBlockPos(Position2D(this->_pos.x, this->_pos.z)).updateBlock(this->_pos,
-        this->_dim->getLevel().getChunkColumnFromBlockPos(Position2D(this->_pos.x, this->_pos.z)).getBlock(this->_pos)); // pushed block
-    this->_dim->getLevel().getChunkColumnFromBlockPos(Position2D(pos.x, pos.z)).updateBlock(this->_pos, 34); // piston head
+    this->_dim->getLevel().getChunkColumnFromBlockPos(Position2D(chunkPos.x, chunkPos.z)).updateBlock(chunkPos,
+        this->_dim->getLevel().getChunkColumnFromBlockPos(Position2D(chunkPos.x, chunkPos.z)).getBlock(pos)); // pushed block
+    this->_dim->getLevel().getChunkColumnFromBlockPos(Position2D(pos.x, pos.z)).updateBlock(chunkPos, 34); // piston head
     this->_extended = true;
     // TODO make extend noise (864)
 }

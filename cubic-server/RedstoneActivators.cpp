@@ -107,7 +107,7 @@ void Lever::feedPower(int xOffset, int yOffset, int zOffset, bool giving)
     Position pos = this->_pos + Position({xOffset + 1, yOffset, zOffset});
 
     // TODO awaiting BlockId::power();
-//    this->_dim->getLevel().getChunkColumnFromBlockPos(Position2D(pos.x, pos.z)).getBlock(pos)->power(giving ? 15 : 0);
+//    this->_dim->getLevel().getChunkColumnFromBlockPos(Position2D(pos.x % 16, pos.z % 16)).getBlock(pos)->power(giving ? 15 : 0);
 }
 void Lever::feedPower(bool giving)
 {
@@ -152,7 +152,7 @@ void RedstoneWire::feedPower(int xOffset, int yOffset, int zOffset, int powerToF
     Position pos = this->_pos + Position(xOffset, yOffset, zOffset);
 
     // TODO awaiting BlockId::power();
-//    this->_dim->getLevel().getChunkColumnFromBlockPos(pos.x, pos.z).getBlock(this->_pos).power(powerToFeed);
+//    this->_dim->getLevel().getChunkColumnFromBlockPos(pos.x % 16, pos.z % 16).getBlock(this->_pos).power(powerToFeed);
 }
 
 RedstoneWire::RedstoneWire(std::shared_ptr<Dimension> dim, Position pos, uint8_t power, std::vector<bool> connected):
@@ -179,15 +179,15 @@ RedstoneWire::RedstoneWire(std::shared_ptr<Dimension> dim, Position pos, uint8_t
         { 0,  0,  1}, // west
         { 0,  0, -1}, // east
     };
-    Position posLevel, posAdj;
+    Position posLevel, posAdj, chunkPos = { this->_pos.x % 16, this->_pos.y % 16, this->_pos.z % 16 };
     for (std::vector<int> blk : possibleConnections) {
-        posLevel = this->_pos + Position({blk[1], 0, blk[2]});
-        posAdj   = this->_pos + Position({blk[0], blk[1], blk[2]});
+        posLevel = chunkPos + Position({blk[1], 0, blk[2]});
+        posAdj   = chunkPos + Position({blk[0], blk[1], blk[2]});
 
         if ((blk[1] == 1 // can't connect to an upward block if there is a block above
-          && std::to_string(this->_dim->getLevel().getChunkColumnFromBlockPos(Position2D(this->_pos.x, this->_pos.z)).getBlock(this->_pos)) != "air" // TODO air... or "transparent" blocks)
+          && std::to_string(this->_dim->getLevel().getChunkColumnFromBlockPos(Position2D(chunkPos.x, chunkPos.z % 16)).getBlock(chunkPos)) != "air" // TODO air... or "transparent" blocks)
         ) || (blk[1] == -1 // can't connect to a down ward block if there is a block at the same level as the wire
-          && std::to_string(this->_dim->getLevel().getChunkColumnFromBlockPos(Position2D(this->_pos.x, this->_pos.z)).getBlock(posLevel)) != "air" // TODO air... or "transparent" blocks)
+          && std::to_string(this->_dim->getLevel().getChunkColumnFromBlockPos(Position2D(chunkPos.x, chunkPos.z % 16)).getBlock(posLevel)) != "air" // TODO air... or "transparent" blocks)
         ))
             continue;
         if (std::find(conTo.begin(), conTo.end(), std::to_string((int) (this->_dim->getChunk(Position2D(this->_pos.x, this->_pos.z)).
