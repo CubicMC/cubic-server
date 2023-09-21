@@ -13,7 +13,7 @@
 #include <string>
 #include <vector>
 
-#include <nbt.h>
+#include "nbt.h"
 #include <utility>
 
 #include "nbt.hpp"

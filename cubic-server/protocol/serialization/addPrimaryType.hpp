@@ -12,11 +12,11 @@
 #include <vector>
 
 #include "concept.hpp"
+#include "nbt.h"
 #include "protocol/ParseExceptions.hpp"
 #include "protocol/Structures.hpp"
 #include "types.hpp"
 #include "world_storage/DynamicStorage.hpp"
-#include <nbt.h>
 
 namespace protocol {
 constexpr void addByte(std::vector<uint8_t> &out, const uint8_t &data) { out.push_back(data); }
