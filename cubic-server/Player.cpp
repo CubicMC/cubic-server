@@ -1442,6 +1442,7 @@ void Player::teleport(const Vector3<double> &pos)
 
 void Player::_respawn()
 {
+    _health = 20;
     this->sendRespawn({
         this->_dim->getDimensionTypeName(), // Dimension Type
         this->_dim->getDimensionName(), // Dimension name
