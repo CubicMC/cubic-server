@@ -12,7 +12,6 @@ void PressurePlate::unpress(void)
         this->unpress();
         this->_clock.stop();
     }
-    // TODO awaiting BlockId::power();
     this->feedPower(false);
     this->_powered = false;
     if (this->_isWooden)
@@ -25,7 +24,6 @@ void PressurePlate::press(void)
 {
     // note: a powered pressure plate is equivalent to having:
     //       a redstone block in lieu of the pressure plate + a redstone block in lieu of the attached block
-    // TODO awaiting BlockId::power();
     this->feedPower(true);
     this->_powered = true;
     if (this->_isWooden)
@@ -35,7 +33,7 @@ void PressurePlate::press(void)
         ;// TODO make activation noise (1112)
 }
 
-PressurePlate::PressurePlate(std::shared_ptr<Dimension> dim, Vector3<double> pos, bool isWooden):
+PressurePlate::PressurePlate(std::shared_ptr<Dimension> dim, Position pos, bool isWooden):
     Lever(dim, pos, Facing::Floor),
     _isWooden(isWooden),
     _duration(isWooden ? 15 : 10) // ticks
@@ -53,7 +51,6 @@ PressurePlate::~PressurePlate(void) {}
 
 void Button::unpress(void)
 {
-    // TODO awaiting BlockId::power();
     this->feedPower(false);
     this->_powered = false;
     if (this->_isWooden)
@@ -66,7 +63,6 @@ void Button::press(void)
 {
     // note: a powered button is equivalent to having:
     //       a redstone block in lieu of the button + a redstone block in lieu of the attached block
-    // TODO awaiting BlockId::power();
     this->feedPower(true);
     this->_powered = true;
     this->_clock.start();
@@ -81,7 +77,7 @@ void Button::press(void)
     }
 }
 
-Button::Button(std::shared_ptr<Dimension> dim, Vector3<double> pos, Facing facing, bool isWooden):
+Button::Button(std::shared_ptr<Dimension> dim, Position pos, Facing facing, bool isWooden):
     Lever(dim, pos, facing),
     _isWooden(isWooden),
     _duration(isWooden ? 15 : 10) // ticks
@@ -108,9 +104,10 @@ Button::~Button(void) {}
 
 void Lever::feedPower(int xOffset, int yOffset, int zOffset, bool giving)
 {
+    Position pos = this->_pos + Position({xOffset + 1, yOffset, zOffset});
+
     // TODO awaiting BlockId::power();
-//    this->_dim->getChunk(this->_pos)->getBlock(this->_pos
-//        + Vector3<double>(xOffset, yOffset, zOffset))->power(giving ? 15 : 0);
+//    this->_dim->getLevel().getChunkColumnFromBlockPos(Position2D(pos.x, pos.z)).getBlock(pos)->power(giving ? 15 : 0);
 }
 void Lever::feedPower(bool giving)
 {
@@ -118,7 +115,7 @@ void Lever::feedPower(bool giving)
         this->feedPower(blk[0], blk[1], blk[2], giving);
 }
 
-Lever::Lever(std::shared_ptr<Dimension> dim, Vector3<double> pos, Facing facing):
+Lever::Lever(std::shared_ptr<Dimension> dim, Position pos, Facing facing):
     Redstone::RedstoneItem(dim, pos),
     _facing(facing),
     _powered(false)
@@ -152,12 +149,13 @@ void RedstoneWire::feedPower(int powerToFeed)
 }
 void RedstoneWire::feedPower(int xOffset, int yOffset, int zOffset, int powerToFeed)
 {
+    Position pos = this->_pos + Position(xOffset, yOffset, zOffset);
+
     // TODO awaiting BlockId::power();
-//    this->_dim->getChunk(this->_pos)->getBlock(this->_pos
-//        + Vector3<double>(xOffset, yOffset, zOffset))->power(powerToFeed);
+//    this->_dim->getLevel().getChunkColumnFromBlockPos(pos.x, pos.z).getBlock(this->_pos).power(powerToFeed);
 }
 
-RedstoneWire::RedstoneWire(std::shared_ptr<Dimension> dim, Vector3<double> pos, uint8_t power, std::vector<bool> connected):
+RedstoneWire::RedstoneWire(std::shared_ptr<Dimension> dim, Position pos, uint8_t power, std::vector<bool> connected):
     Redstone::RedstoneItem(dim, pos),
     _power(power),
     _connected(connected)
@@ -181,33 +179,35 @@ RedstoneWire::RedstoneWire(std::shared_ptr<Dimension> dim, Vector3<double> pos, 
         { 0,  0,  1}, // west
         { 0,  0, -1}, // east
     };
+    Position posLevel, posAdj;
     for (std::vector<int> blk : possibleConnections) {
-        // TODO temporarily silented because Dimension is capricious
+        posLevel = this->_pos + Position({blk[1], 0, blk[2]});
+        posAdj   = this->_pos + Position({blk[0], blk[1], blk[2]});
+
         if ((blk[1] == 1 // can't connect to an upward block if there is a block above
-//          && this->_dim->getChunk(this->_pos)->getBlock(this->_pos + Vector3<double>(0, 1, 0)) != "air" // TODO air... or "transparent" blocks)
+          && std::to_string(this->_dim->getLevel().getChunkColumnFromBlockPos(Position2D(this->_pos.x, this->_pos.z)).getBlock(this->_pos)) != "air" // TODO air... or "transparent" blocks)
         ) || (blk[1] == -1 // can't connect to a down ward block if there is a block at the same level as the wire
-//           && this->_dim->getChunk(this->_pos)->getBlock(this->_pos + Vector3<double>(blk[1], 0, blk[2])) != "air" // TODO air... or "transparent" blocks)
+          && std::to_string(this->_dim->getLevel().getChunkColumnFromBlockPos(Position2D(this->_pos.x, this->_pos.z)).getBlock(posLevel)) != "air" // TODO air... or "transparent" blocks)
         ))
             continue;
-//        if (std::find(conTo.begin(), conTo.end(), this->_dim->getChunk(Position2D(this->_pos.x, this->_pos.z))->
-//            getBlock(this->_pos + Vector3<double>(blk[0], blk[1], blk[2])).name) != conTo.end()) {
+        if (std::find(conTo.begin(), conTo.end(), std::to_string((int) (this->_dim->getChunk(Position2D(this->_pos.x, this->_pos.z)).
+            getBlock(posAdj)))) != conTo.end()) {
                 _connectedBlocks.push_back({blk[0], blk[1], blk[2]});
                 this->_connected[blk[0] ==  1 ? Connection::CNorth
                                : blk[0] == -1 ? Connection::CSouth
                                : blk[2] ==  1 ? Connection::CWest
                                : /****EAST****/ Connection::CEast] = true;
-//        }
+        }
     }
     // TODO problem: a new connected wire won't inherit the power of the previous one
     //      how to do that without going cyclic?...
-    // TODO v awaiting BlockId::power();
     this->feedPower(_power - 1);
     // TODO change texture according to this->_connected: 4-way, line, corner, triple
 }
 RedstoneWire::~RedstoneWire(void) {}
 
 /***************** BASE *****************/
-RedstoneItem::RedstoneItem(std::shared_ptr<Dimension> dim, Vector3<double> pos):
+RedstoneItem::RedstoneItem(std::shared_ptr<Dimension> dim, Position pos):
     _dim(dim),
     _pos(pos)
 {}

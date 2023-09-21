@@ -1,14 +1,15 @@
 #include "Player.hpp"
+#include "Dimension.hpp"
 #include "TickClock.hpp"
 
 namespace Redstone {
     class RedstoneItem {
     public:
-        RedstoneItem(std::shared_ptr<Dimension> dim, Vector3<double> pos);
+        RedstoneItem(std::shared_ptr<Dimension> dim, Position pos);
         ~RedstoneItem(void);
 
         std::shared_ptr<Dimension> _dim;
-        Vector3<double> _pos;
+        Position _pos;
     };
 
     class RedstoneWire : RedstoneItem {
@@ -20,7 +21,7 @@ namespace Redstone {
             CEast
         };
 
-        RedstoneWire(std::shared_ptr<Dimension> dim, Vector3<double> pos, uint8_t power, std::vector<bool> connected = {false, false, false, false});
+        RedstoneWire(std::shared_ptr<Dimension> dim, Position pos, uint8_t power, std::vector<bool> connected = {false, false, false, false});
         ~RedstoneWire(void);
 
         void feedPower(int xOffset, int yOffset, int zOffset, int powerToFeed);
@@ -28,7 +29,7 @@ namespace Redstone {
 
         private:
             std::shared_ptr<Dimension> _dim;
-            Vector3<double> _pos;
+            Position _pos;
             uint8_t _power;
             std::vector<std::vector<int>> _connectedBlocks;
             std::vector<bool> _connected;
@@ -46,7 +47,7 @@ namespace Redstone {
 
         class Piston : RedstoneItem {
         public:
-            Piston(std::shared_ptr<Dimension> dim, Vector3<double> pos, Facing facing, bool ext, bool bud);
+            Piston(std::shared_ptr<Dimension> dim, Position pos, Facing facing, bool ext, bool bud);
             ~Piston(void);
 
             virtual void extend(void);
@@ -77,7 +78,7 @@ namespace Redstone {
                 CEast
             };
 
-            Lever(std::shared_ptr<Dimension> dim, Vector3<double> pos, Facing facing);
+            Lever(std::shared_ptr<Dimension> dim, Position pos, Facing facing);
             ~Lever(void);
 
             virtual void press(void) {
@@ -102,7 +103,7 @@ namespace Redstone {
 
         class Button : Lever {
         public:
-            Button(std::shared_ptr<Dimension> dim, Vector3<double> pos, Facing facing, bool isWooden);
+            Button(std::shared_ptr<Dimension> dim, Position pos, Facing facing, bool isWooden);
             ~Button();
 
             void press(void)   override;
@@ -115,7 +116,7 @@ namespace Redstone {
 
         class PressurePlate : Lever {
         public:
-            PressurePlate(std::shared_ptr<Dimension> dim, Vector3<double> pos, bool isWooden);
+            PressurePlate(std::shared_ptr<Dimension> dim, Position pos, bool isWooden);
             ~PressurePlate();
 
             void press(void)   override;
