@@ -3,8 +3,8 @@
 
 #include <cstdint>
 
+#include "nbt.h"
 #include "nbt.hpp"
-#include <nbt.h>
 
 namespace protocol {
 struct Slot {
