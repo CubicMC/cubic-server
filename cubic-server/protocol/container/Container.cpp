@@ -87,6 +87,10 @@ void Container::onClick(std::shared_ptr<Player> player, int16_t index, uint8_t b
         break;
 
     case ClickMode::DropButton:
+        // We need this because of a bug in the client
+        // The client sends a drop packet when you click outside of the inventory instead of a click packet
+        if (index == -999)
+            break;
         if (_cursor.present)
             break;
         if (!at(index).present)
