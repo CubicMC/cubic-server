@@ -2,7 +2,7 @@
 
 using namespace Redstone::Activated;
 
-void Piston::contract(void)
+void Piston::retract(void)
 {
     Position chunkPos = { this->_pos.x % 16, this->_pos.y % 16, this->_pos.z % 16 };
     Position pos = chunkPos + Position({1,0,0});
