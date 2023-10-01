@@ -180,6 +180,7 @@ endif()
 
 find_package(Threads REQUIRED)
 find_package(CURL REQUIRED)
+find_package(ZLIB REQUIRED)
 find_package(PkgConfig REQUIRED)
 pkg_check_modules(GTKMM gtkmm-3.0)
 
