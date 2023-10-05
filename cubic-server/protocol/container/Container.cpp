@@ -5,8 +5,15 @@
 #include "entities/Item.hpp"
 #include "logging/logging.hpp"
 #include "protocol/Structures.hpp"
+#include <nbt.h>
 
 using Container = protocol::container::Container;
+
+Container::~Container()
+{
+    if (_cursor.nbt != nullptr)
+        nbt_free_tag(_cursor.nbt);
+}
 
 bool Container::canInsert(const protocol::Slot &slot)
 {

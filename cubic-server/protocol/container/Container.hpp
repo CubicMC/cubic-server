@@ -37,7 +37,7 @@ public:
     {
     }
 
-    virtual ~Container() = default;
+    virtual ~Container();
 
     virtual constexpr protocol::Slot &at(int16_t index) = 0;
     virtual constexpr const protocol::Slot &at(int16_t index) const = 0;
