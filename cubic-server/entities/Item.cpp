@@ -15,7 +15,7 @@ void Item::tick()
 void Item::dropItem(const Vector3<double> &pos)
 {
     LDEBUG("Item created at (x: {}, y: {}, z: {}) with entity id {} and item id {}", pos.x, pos.y, pos.z, _id, _slot.itemID);
-    this->setPosition(pos, false);
+    this->forceSetPosition(pos);
     this->_nbTicksBeforePickable = 40; // When dropped by player, dolphin or fox. Else it is 10 ticks
     // _dim->addEntity(shared_from_this());
     _dim->spawnEntity(shared_from_this());
