@@ -9,7 +9,8 @@ class Item : public Entity {
 public:
     Item(std::shared_ptr<Dimension> dim, protocol::Slot slot):
         Entity(dim, EntityType::Item),
-        _slot(slot)
+        _slot(slot),
+        _nbTicksBeforePickable(0)
     {
     }
     ~Item() { }
@@ -25,8 +26,11 @@ public:
      */
     void appendMetadataPacket(std::vector<uint8_t> &data) const override;
 
+    inline bool isPickable() { return _nbTicksBeforePickable == 0; }
+
 private:
     protocol::Slot _slot;
+    size_t _nbTicksBeforePickable;
 };
 
 #endif // CUBICSERVER_ENTITIES_ITEM_HPP
