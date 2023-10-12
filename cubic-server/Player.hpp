@@ -102,6 +102,7 @@ public:
     void sendPlayerInfoUpdate(const protocol::PlayerInfoUpdate &data);
     void sendPlayerInfoRemove(const protocol::PlayerInfoRemove &data);
     void sendSpawnEntity(const protocol::SpawnEntity &data);
+    void sendSpawnEntity(const Entity &data);
     void sendSpawnPlayer(const protocol::SpawnPlayer &data);
     void sendEntityVelocity(const protocol::EntityVelocity &data);
     void sendHealth(void);

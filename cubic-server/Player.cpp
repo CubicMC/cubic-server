@@ -309,6 +309,29 @@ void Player::sendSpawnEntity(const protocol::SpawnEntity &data)
     N_LDEBUG("Sent a Spawn Entity packet");
 }
 
+void Player::sendSpawnEntity(const Entity &data)
+{
+    GET_CLIENT();
+    auto pck = protocol::createSpawnEntity({
+        data.getId(), // Entity ID
+        data.getUuid(), // Entity UUID
+        data.getType(), // Entity Type
+        data.getPosition().x, // Entity Position X
+        data.getPosition().y, // Entity Position Y
+        data.getPosition().z, // Entity Position Z
+        0, // Entity Pitch
+        0, // Entity Yaw
+        0, // Entity Head Yaw
+        0, // Entity data
+        0, // Entity Velocity X
+        0, // Entity Velocity Y
+        0 // Entity Velocity Z
+    });
+    client->doWrite(std::move(pck));
+
+    N_LDEBUG("Sent a Spawn Entity packet");
+}
+
 void Player::sendSpawnPlayer(const protocol::SpawnPlayer &data)
 {
     GET_CLIENT();
