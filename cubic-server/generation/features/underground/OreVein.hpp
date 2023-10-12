@@ -61,12 +61,9 @@ constexpr int BLOB_SPAWN_SIZE_INFESTED_STONE = 9;
  * index.
  *
  */
-constexpr std::array<int, 65> MAX_NB_OF_BLOCKS = {
-    0,   0,   0,   4,   5,   8,   9,   10,  10,  13,  16,  17,  23,
-    24,  24,  29,  32,  37,  46,  52,  52,  60,  68,  68,  74,  82,
-    94,  104, 106, 120, 128, 135, 149, 160, 180, 190, 204, 212, 228,
-    246, 262, 276, 292, 308, 324, 344, 360, 381, 403, 429, 452, 480,
-    500, 530, 558, 584, 616, 634, 664, 694, 730, 760, 790, 826, 864};
+constexpr std::array<int, 65> MAX_NB_OF_BLOCKS = {0,   0,   0,   4,   5,   8,   9,   10,  10,  13,  16,  17,  23,  24,  24,  29,  32,  37,  46,  52,  52,  60,
+                                                  68,  68,  74,  82,  94,  104, 106, 120, 128, 135, 149, 160, 180, 190, 204, 212, 228, 246, 262, 276, 292, 308,
+                                                  324, 344, 360, 381, 403, 429, 452, 480, 500, 530, 558, 584, 616, 634, 664, 694, 730, 760, 790, 826, 864};
 
 /* Ore distribution type */
 enum class GenerationType {
@@ -75,7 +72,8 @@ enum class GenerationType {
 };
 
 /* When meeting certain condition, this define the skipping rate.
-If the blob is exposed to air, then it has this chance of being skipped instead. */
+ * If the blob is exposed to air, then it has this chance of being skipped instead.
+ */
 constexpr std::array<double, 4> SkipRate = {0, 0.5, 0.7, 1};
 
 class OreVein {
