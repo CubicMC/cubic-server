@@ -4,6 +4,7 @@
 #include "Server.hpp"
 #include "World.hpp"
 #include "entities/Entity.hpp"
+#include "entities/EntityType.hpp"
 #include "logging/logging.hpp"
 #include "math/Vector3.hpp"
 #include "protocol/ClientPackets.hpp"
@@ -258,7 +259,7 @@ void Dimension::spawnPlayer(Player &current)
     {
         std::lock_guard _(_entitiesMutex);
         for (auto ent : _entities) {
-            if (ent->getId() == current_id)
+            if (ent->getType() == EntityType::Player)
                 continue;
             current.sendSpawnEntity(*ent);
             current.sendEntityMetadata(*ent);
