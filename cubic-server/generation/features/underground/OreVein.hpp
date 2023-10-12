@@ -11,7 +11,7 @@
 using namespace generation;
 
 /**
- * @brief An ORE BLOB is an ellipsoidal cluster of blocks. In the overworld,
+ * @file An ORE BLOB is an ellipsoidal cluster of blocks. In the overworld,
  * underground deposits of dirt and gravel are generated in this form, followed
  * by the more precious ores. They can form only in stone, deepslate, andesite,
  * diorite, granite and tuff. Two or more ores can form next to each other and
@@ -25,13 +25,13 @@ using namespace generation;
 
 // clang-format off
 /* Ore blob spawn size for soft decoration blocks */
-constexpr int BLOB_SPAWN_SIZE_SOFT_BLOCK = 33; /* Soft block : can be broken by hand or with a shovel */
+constexpr int BLOB_SPAWN_SIZE_SOFT_BLOCK = 33; /**< Soft block : can be broken by hand or with a shovel */
 constexpr int BLOB_SPAWN_SIZE_DIRT = 33;
 constexpr int BLOB_SPAWN_SIZE_CLAY = 33;
 constexpr int BLOB_SPAWN_SIZE_GRAVEL = 33;
 
 /* Ore blob spawn size for hard decoration blocks */
-constexpr int BLOB_SPAWN_SIZE_HARD_BLOCK = 64; /* Hard block : can only be broken with a pickaxe */
+constexpr int BLOB_SPAWN_SIZE_HARD_BLOCK = 64; /**< Hard block : can only be broken with a pickaxe */
 constexpr int BLOB_SPAWN_SIZE_ANDESITE = 64;
 constexpr int BLOB_SPAWN_SIZE_DIORITE = 64;
 constexpr int BLOB_SPAWN_SIZE_GRANITE = 64;
@@ -42,13 +42,13 @@ constexpr int BLOB_SPAWN_SIZE_COAL = 17;
 constexpr int BLOB_SPAWN_SIZE_IRON_UNIFORM = 4;
 constexpr int BLOB_SPAWN_SIZE_IRON_TRIANGLE = 9;
 constexpr int BLOB_SPAWN_SIZE_COPPER = 10;
-constexpr int BLOB_SPAWN_SIZE_COPPER_DRIPSTONE = 20; /* Only in Dripstone Caves biome */
+constexpr int BLOB_SPAWN_SIZE_COPPER_DRIPSTONE = 20; /**< Only in Dripstone Caves biome */
 constexpr int BLOB_SPAWN_SIZE_REDSTONE = 8;
 constexpr int BLOB_SPAWN_SIZE_LAPIS = 7;
 constexpr int BLOB_SPAWN_SIZE_GOLD = 9;
-constexpr int BLOB_SPAWN_SIZE_DIAMOND_HALF_EXPOSED = 4; /* If it is exposed to air then it has 1/2 chance of being skipped */
-constexpr int BLOB_SPAWN_SIZE_DIAMOND_HIDDEN = 8; /* If it is exposed to air then it is skipped */
-constexpr int BLOB_SPAWN_SIZE_DIAMOND_BARELY_EXPOSED = 12; /* If it is exposed to air then it has 70% chance of being skipped */
+constexpr int BLOB_SPAWN_SIZE_DIAMOND_HALF_EXPOSED = 4; /**< If it is exposed to air then it has 1/2 chance of being skipped */
+constexpr int BLOB_SPAWN_SIZE_DIAMOND_HIDDEN = 8; /**< If it is exposed to air then it is skipped */
+constexpr int BLOB_SPAWN_SIZE_DIAMOND_BARELY_EXPOSED = 12; /**< If it is exposed to air then it has 70% chance of being skipped */
 constexpr int BLOB_SPAWN_SIZE_EMERALD = 3;
 
 constexpr int BLOB_SPAWN_SIZE_INFESTED_STONE = 9;
@@ -67,8 +67,8 @@ constexpr std::array<int, 65> MAX_NB_OF_BLOCKS = {0,   0,   0,   4,   5,   8,   
 
 /* Ore distribution type */
 enum class GenerationType {
-    UNIFORM, /* Uniform distribution have all ores spread in same frequency at any height */
-    TRIANGLE /* Triangle generate ores more frequently in center height */
+    UNIFORM, /**< Uniform distribution have all ores spread in same frequency at any height */
+    TRIANGLE /**< Triangle generate ores more frequently in center height */
 };
 
 /* When meeting certain condition, this define the skipping rate.
