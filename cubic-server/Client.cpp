@@ -1,3 +1,4 @@
+#include <algorithm>
 #include <boost/system/detail/error_category.hpp>
 #include <boost/system/detail/error_code.hpp>
 #include <cstdint>
@@ -385,6 +386,13 @@ void Client::_onLoginStart(protocol::LoginStart &pck)
         return;
     } else if (Server::getInstance()->isWhitelistEnabled() && !Server::getInstance()->getWhitelist().isPlayerWhitelisted(resPck.uuid, resPck.username).first) {
         this->disconnect("You are not whitelisted on this server.");
+        return;
+    } else if (std::find_if(Server::getInstance()->getClients().begin(), Server::getInstance()->getClients().end(), [resPck](auto &each) {
+                   if (each.second->_player == nullptr)
+                       return false;
+                   return each.second->getPlayer()->getUuid() == resPck.uuid;
+               }) != Server::getInstance()->getClients().end()) {
+        this->disconnect("You are already connected to this server or someone already has the same UUID as you.");
         return;
     }
     if (CONFIG["online-mode"].as<bool>()) {
