@@ -25,7 +25,7 @@ void Chicken::layEgg()
     auto time = utility::PseudoRandomGenerator::getInstance()->generateNumber(6000, 12000);
     LDEBUG("Chicken will drop egg in {} ticks", time);
     _layEgg.setTickRate(time);
-    _dim->makeEntity<Item>(protocol::Slot {true, ITEM_CONVERTER.fromItemToProtocolId("minecraft:egg"), 1})->dropItem({_pos.x, _pos.y + 1, _pos.z});
+    _dim->makeEntity<Item>(protocol::Slot {true, ITEM_CONVERTER.fromItemToProtocolId("minecraft:egg"), 1})->dropItem({_pos.x, _pos.y + 1, _pos.z}, false);
     LDEBUG("Chicken dropped egg at x: {}, y: {}, z: {}", _pos.x, _pos.y + 1, _pos.z);
 }
 

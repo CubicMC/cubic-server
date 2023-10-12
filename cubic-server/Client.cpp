@@ -351,7 +351,7 @@ void Client::_onStatusRequest()
         return;
     }
 
-    json["version"]["name"] = MC_VERSION;
+    json["version"]["name"] = MC_VERSION_BRANDING;
     json["version"]["protocol"] = MC_PROTOCOL;
     json["players"]["max"] = conf["max-players"].as<int32_t>();
     {

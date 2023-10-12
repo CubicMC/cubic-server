@@ -56,7 +56,6 @@ Player::Player(std::weak_ptr<Client> cli, std::shared_ptr<Dimension> dim, u128 u
     _foodExhaustionLevel(0.0f), // TODO: Take this from the saved data
     _chatVisibility(protocol::ClientInformation::ChatVisibility::Enabled),
     _isFlying(true), // TODO: Take this from the saved data
-    _isSprinting(false),
     _isJumping(false),
     _additionalHearts(0),
     _score(0),
@@ -173,10 +172,10 @@ void Player::setPosition(const Vector3<double> &pos, bool onGround)
         _isFlying = true;
     }
 
-    if (_isSprinting && !_isFlying)
+    if (_sprinting && !_isFlying)
         _foodExhaustionLevel += oldPos2d.distance(newPos2d) * player_attributes::FOOD_EXHAUSTION_SPRINTING_MULTIPLIER;
     if (_isJumping) {
-        _foodExhaustionLevel += _isSprinting ? player_attributes::FOOD_EXHAUSTION_SPRINTING_JUMP : player_attributes::FOOD_EXHAUSTION_JUMP;
+        _foodExhaustionLevel += _sprinting ? player_attributes::FOOD_EXHAUSTION_SPRINTING_JUMP : player_attributes::FOOD_EXHAUSTION_JUMP;
         _isJumping = false;
     }
 
@@ -320,6 +319,29 @@ void Player::sendSpawnEntity(const protocol::SpawnEntity &data)
 {
     GET_CLIENT();
     auto pck = protocol::createSpawnEntity(data);
+    client->doWrite(std::move(pck));
+
+    N_LDEBUG("Sent a Spawn Entity packet");
+}
+
+void Player::sendSpawnEntity(const Entity &data)
+{
+    GET_CLIENT();
+    auto pck = protocol::createSpawnEntity({
+        data.getId(), // Entity ID
+        data.getUuid(), // Entity UUID
+        data.getType(), // Entity Type
+        data.getPosition().x, // Entity Position X
+        data.getPosition().y, // Entity Position Y
+        data.getPosition().z, // Entity Position Z
+        0, // Entity Pitch
+        0, // Entity Yaw
+        0, // Entity Head Yaw
+        0, // Entity data
+        0, // Entity Velocity X
+        0, // Entity Velocity Y
+        0 // Entity Velocity Z
+    });
     client->doWrite(std::move(pck));
 
     N_LDEBUG("Sent a Spawn Entity packet");
@@ -961,18 +983,19 @@ void Player::_onPlayerAction(protocol::PlayerAction &pck)
         break;
     case protocol::PlayerAction::Status::CancelledDigging:
         break;
-    case protocol::PlayerAction::Status::FinishedDigging:
+    case protocol::PlayerAction::Status::FinishedDigging: {
         onEventCancelable(Server::getInstance()->getPluginManager(), onBlockDestroy, canceled, 0, tmp);
         if (canceled) {
             Event::cancelBlockDestroy(this, this->getDimension()->getLevel().getChunkColumnFromBlockPos(pck.location.x, pck.location.z).getBlock(pck.location), pck.location);
             return;
         }
+        int id = ITEM_CONVERTER.fromItemToProtocolId(GLOBAL_PALETTE.fromProtocolIdToBlock(this->getDimension()->getBlock(pck.location)).name);
         this->getDimension()->updateBlock(pck.location, 0);
         _foodExhaustionLevel += 0.005;
-        // TODO: change the 721 magic value with the loot tables (for instance it's a acaccia boat)
-        _dim->makeEntity<Item>(protocol::Slot {true, 721, 1})
+        _dim->makeEntity<Item>(protocol::Slot {true, id, 1})
             ->dropItem({static_cast<double>(pck.location.x) + 0.5, static_cast<double>(pck.location.y), static_cast<double>(pck.location.z) + 0.5});
         break;
+    }
     case protocol::PlayerAction::Status::DropItemStack:
         getDimension()->makeEntity<Item>(_inventory->hotbar().at(this->_heldItem))->dropItem(this->getPosition());
         _inventory->hotbar().at(this->_heldItem).reset();

@@ -40,7 +40,7 @@ inline uint8_t getAbilitiesByGamemode(Gamemode gm)
     case Gamemode::Survival:
         return 0;
     case Gamemode::Creative:
-        return Invulnerable | Flying | AllowFlying | CreativeMode;
+        return Invulnerable | AllowFlying | CreativeMode;
     case Gamemode::Adventure:
         return 0;
     case Gamemode::Spectator:
