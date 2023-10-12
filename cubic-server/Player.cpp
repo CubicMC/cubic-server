@@ -945,18 +945,19 @@ void Player::_onPlayerAction(protocol::PlayerAction &pck)
         break;
     case protocol::PlayerAction::Status::CancelledDigging:
         break;
-    case protocol::PlayerAction::Status::FinishedDigging:
+    case protocol::PlayerAction::Status::FinishedDigging: {
         onEventCancelable(Server::getInstance()->getPluginManager(), onBlockDestroy, canceled, 0, tmp);
         if (canceled) {
             Event::cancelBlockDestroy(this, this->getDimension()->getLevel().getChunkColumnFromBlockPos(pck.location.x, pck.location.z).getBlock(pck.location), pck.location);
             return;
         }
+        int id = ITEM_CONVERTER.fromItemToProtocolId(GLOBAL_PALETTE.fromProtocolIdToBlock(this->getDimension()->getBlock(pck.location)).name);
         this->getDimension()->updateBlock(pck.location, 0);
         _foodExhaustionLevel += 0.005;
-        // TODO: change the 721 magic value with the loot tables (for instance it's a acaccia boat)
-        _dim->makeEntity<Item>(protocol::Slot {true, 721, 1})
+        _dim->makeEntity<Item>(protocol::Slot {true, id, 1})
             ->dropItem({static_cast<double>(pck.location.x) + 0.5, static_cast<double>(pck.location.y), static_cast<double>(pck.location.z) + 0.5});
         break;
+    }
     case protocol::PlayerAction::Status::DropItemStack:
         getDimension()->makeEntity<Item>(_inventory->hotbar().at(this->_heldItem))->dropItem(this->getPosition());
         _inventory->hotbar().at(this->_heldItem).reset();
