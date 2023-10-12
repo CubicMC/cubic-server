@@ -44,6 +44,7 @@
 #include "registry/MasterRegistry.hpp"
 
 constexpr char MC_VERSION[] = "1.19.3";
+constexpr char MC_VERSION_BRANDING[] = "CubicServer 1.19.3";
 constexpr uint16_t MC_PROTOCOL = 761;
 constexpr uint16_t MS_PER_TICK = 50;
 
