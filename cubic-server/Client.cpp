@@ -376,7 +376,7 @@ void Client::_onLoginStart(protocol::LoginStart &pck)
     N_LDEBUG("Got a Login Start");
     protocol::LoginSuccess resPck;
 
-    resPck.uuid = pck.hasPlayerUuid ? pck.playerUuid : u128 {std::hash<std::string> {}("OfflinePlayer:"), std::hash<std::string> {}(pck.name)};
+    resPck.uuid = pck.hasPlayerUuid ? pck.playerUuid : u128::fromOfflinePlayerName(pck.name);
     resPck.username = pck.name;
     resPck.properties = {}; // TODO: figure out what to put there
 
