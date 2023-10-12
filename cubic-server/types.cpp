@@ -1,6 +1,8 @@
 #include "types.hpp"
 #include "utility/PseudoRandomGenerator.hpp"
+#include <cstdint>
 #include <iterator>
+#include <mbedtls/md5.h>
 #include <random>
 
 std::string u128::toString() const
@@ -40,5 +42,21 @@ u128 u128::random()
          utility::PseudoRandomGenerator::getInstance()->generateNumber<long unsigned int>(0, 0xffffffffffffffff)}
     );
 }
+
+u128 u128::fromOfflinePlayerName(const std::string &name)
+{
+    std::string playername = "OfflinePlayer:" + name;
+    unsigned char result[16];
+    uint64_t most = 0;
+    mbedtls_md5((const unsigned char *) playername.c_str(), playername.size(), result);
+    uint64_t least = 0;
+    for (int i = 0; i < 8; i++)
+        most = (most << 8) | result[i];
+    for (int i = 8; i < 16; i++)
+        least = (least << 8) | result[i];
+    return {most, least};
+}
+
+bool u128::operator==(const u128 &other) const { return this->most == other.most && this->least == other.least; }
 
 Position::valueType Position::manhattanDistance(const Position &other) const { return std::abs(x - other.x) + std::abs(y - other.y) + std::abs(z - other.z); }
