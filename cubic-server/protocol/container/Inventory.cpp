@@ -4,28 +4,6 @@
 
 using Inventory = protocol::container::Inventory;
 
-Inventory::~Inventory()
-{
-    for (auto &slot : _craftingGrid) {
-        if (slot.nbt != nullptr)
-            nbt_free_tag(slot.nbt);
-    }
-    for (auto &slot : _playerInventory) {
-        if (slot.nbt != nullptr)
-            nbt_free_tag(slot.nbt);
-    }
-    for (auto &slot : _hotbar) {
-        if (slot.nbt != nullptr)
-            nbt_free_tag(slot.nbt);
-    }
-    for (auto &slot : _armor) {
-        if (slot.nbt != nullptr)
-            nbt_free_tag(slot.nbt);
-    }
-    if (_offhand.nbt != nullptr)
-        nbt_free_tag(_offhand.nbt);
-}
-
 template<size_t N>
 static void swapContainer(protocol::Slot &slot, std::array<protocol::Slot, N> &container)
 {
@@ -33,9 +11,7 @@ static void swapContainer(protocol::Slot &slot, std::array<protocol::Slot, N> &c
         if (containerSlot == slot) {
             containerSlot.itemCount += slot.itemCount;
             if (containerSlot.itemCount <= 64) {
-                slot.present = false;
-                slot.itemID = 0;
-                slot.itemCount = 0;
+                slot.reset();
                 return;
             }
             slot.itemCount = containerSlot.itemCount - 64;
@@ -45,9 +21,7 @@ static void swapContainer(protocol::Slot &slot, std::array<protocol::Slot, N> &c
     for (auto &containerSlot : container) {
         if (!containerSlot.present) {
             containerSlot = slot;
-            slot.present = false;
-            slot.itemID = 0;
-            slot.itemCount = 0;
+            slot.reset();
             return;
         }
     }

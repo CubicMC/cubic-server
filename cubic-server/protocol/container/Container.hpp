@@ -32,12 +32,12 @@ public:
         _type(type),
         _state(State::Normal),
         _title(std::move(title)),
-        _cursor({false}),
+        _cursor(false),
         _cariedItemIndex(0)
     {
     }
 
-    virtual ~Container();
+    virtual ~Container() = default;
 
     virtual constexpr protocol::Slot &at(int16_t index) = 0;
     virtual constexpr const protocol::Slot &at(int16_t index) const = 0;

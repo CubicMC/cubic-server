@@ -10,10 +10,55 @@ namespace protocol {
 struct Slot {
     constexpr ~Slot()
     {
-        // Lol can't do that because we can copy the slot, fml
-        // if (this->present && this->nbt != nullptr)
-        //     nbt_free_tag(this->nbt);
+        if (this->nbt != nullptr)
+            nbt_free_tag(this->nbt);
     }
+
+    constexpr Slot(bool present = false, int32_t itemID = 0, int8_t itemCount = 0, nbt_tag_t *nbt = nullptr):
+        present(present),
+        itemID(itemID),
+        itemCount(itemCount),
+        nbt(nbt)
+    {
+    }
+
+    Slot(const Slot &other):
+        present(other.present),
+        itemID(other.itemID),
+        itemCount(other.itemCount),
+        nbt(nbt_copy_tag(other.nbt))
+    {
+    }
+    Slot &operator=(const Slot &other)
+    {
+        this->present = other.present;
+        this->itemID = other.itemID;
+        this->itemCount = other.itemCount;
+        this->nbt = nbt_copy_tag(other.nbt);
+        return *this;
+    }
+    // constexpr Slot(Slot &&other) noexcept = default;
+    // constexpr Slot &operator=(Slot &&other) noexcept = default;
+    constexpr Slot(Slot &&other) noexcept:
+        present(other.present),
+        itemID(other.itemID),
+        itemCount(other.itemCount),
+        nbt(other.nbt)
+    {
+        other.nbt = nullptr;
+    }
+    constexpr Slot &operator=(Slot &&other) noexcept
+    {
+        if (this == &other)
+            return *this;
+        this->present = other.present;
+        this->itemID = other.itemID;
+        this->itemCount = other.itemCount;
+        this->nbt = other.nbt;
+        other.nbt = nullptr;
+        return *this;
+    }
+
     bool present = false;
     int32_t itemID = 0;
     int8_t itemCount = 0;
@@ -23,13 +68,15 @@ struct Slot {
     inline void swap(Slot &other, int8_t count);
 };
 
-inline bool operator==(const Slot &lhs, const Slot &rhs) { return lhs.present == rhs.present && lhs.itemID == rhs.itemID /* && lhs.nbt == rhs.nbt */; }
+inline bool operator==(const Slot &lhs, const Slot &rhs) { return lhs.present == rhs.present && lhs.itemID == rhs.itemID && nbt_compare_tags(lhs.nbt, rhs.nbt); }
 
 inline void Slot::reset()
 {
     present = false;
     itemID = 0;
-    itemCount = 0; /* nbt = nbt::Compound(); */
+    itemCount = 0;
+    nbt_free_tag(nbt);
+    nbt = nullptr;
 }
 
 void Slot::swap(protocol::Slot &other)

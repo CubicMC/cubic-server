@@ -1,4 +1,5 @@
 #include "addPrimaryType.hpp"
+#include "nbt.hpp"
 #include "popPrimaryType.hpp"
 #include "protocol/Structures.hpp"
 #include <cstdint>
@@ -153,8 +154,6 @@ TEST(Serialization_Testing, SlotChecker)
     ASSERT_EQ(slot.itemCount, parsed.itemCount);
     ASSERT_EQ(slot.itemID, parsed.itemID);
     // ASSERT_EQ(*slot.nbt, *parsed.nbt);
-    nbt_free_tag(slot.nbt);
-    nbt_free_tag(parsed.nbt);
 }
 
 RC_GTEST_PROP(Serialization_Testing, UUIDChecker, (uint64_t most, uint64_t least))

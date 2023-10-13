@@ -17,7 +17,7 @@ namespace protocol::container {
 class Inventory : public Container {
 public:
     explicit Inventory();
-    virtual ~Inventory();
+    virtual ~Inventory() = default;
 
     protocol::Slot &at(int16_t index) override;
     const protocol::Slot &at(int16_t index) const override;

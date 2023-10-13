@@ -70,8 +70,8 @@ Player::Player(std::weak_ptr<Client> cli, std::shared_ptr<Dimension> dim, u128 u
     this->setHealth(20);
 
     this->setOperator(Server::getInstance()->permissions.isOperator(username));
-    this->_inventory->playerInventory().at(12) = protocol::Slot {true, 734, 42};
-    this->_inventory->playerInventory().at(13) = protocol::Slot {true, 1, 12};
+    this->_inventory->playerInventory().at(12) = protocol::Slot(true, 734, 42);
+    this->_inventory->playerInventory().at(13) = protocol::Slot(true, 1, 12);
 
     // {display:{Name:'[{"text":"Cubic","italic":false}]'}}
     constexpr std::string_view NAME = "[{\"text\":\"Cubic\",\"italic\":false}]";
@@ -85,7 +85,7 @@ Player::Player(std::weak_ptr<Client> cli, std::shared_ptr<Dimension> dim, u128 u
     nbt_tag_compound_append(display, name);
     nbt_tag_compound_append(root, display);
 
-    this->_inventory->playerInventory().at(14) = protocol::Slot {true, 1, 12, root};
+    this->_inventory->playerInventory().at(14) = protocol::Slot(true, 1, 12, root);
 }
 
 Player::~Player()
@@ -809,6 +809,8 @@ void Player::_onClickContainer(protocol::ClickContainer &pck)
             return true;
         return false;
     });
+    if (it == _containers.end())
+        return;
     (*it)->onClick(dynamicSharedFromThis<Player>(), pck.slot, pck.button, pck.mode, pck.arrayOfSlots);
 }
 
@@ -1053,8 +1055,6 @@ void Player::_onSetCreativeModeSlot(protocol::SetCreativeModeSlot &pck)
 {
     N_LDEBUG("Got a Set Creative Mode Slot");
     if (_gamemode != player_attributes::Gamemode::Creative) {
-        if (pck.clickedItem.nbt != nullptr)
-            nbt_free_tag(pck.clickedItem.nbt);
         return;
     }
     this->_inventory->at(pck.slot) = pck.clickedItem;

@@ -19,7 +19,7 @@ constexpr ClickContainer::SlotWithIndex popSlotWithIndex(uint8_t *&at, uint8_t *
 {
     ClickContainer::SlotWithIndex slotWithIndex;
     slotWithIndex.slotNumber = popShort(at, eof);
-    slotWithIndex.slotData = popSlot(at, eof);
+    slotWithIndex.slotData = std::move(popSlot(at, eof));
     return slotWithIndex;
 }
 } // namespace protocol
