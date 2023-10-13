@@ -78,10 +78,13 @@ constexpr std::array<double, 4> SkipRate = {0, 0.5, 0.7, 1};
 
 class OreVein {
 public:
-    OreVein(world_storage::ChunkColumn &chunk):
-        _chunk(chunk)
+    OreVein(world_storage::ChunkColumn &chunk, Generator &generator):
+        _chunk(chunk),
+        _generator(generator)
     {
     }
+
+    std::deque<Position> &computeTriangleDistribution(const int spawnSize, const int minY, const int maxY, const int x, const int y, const int z);
 
     /**
      * @brief Define all the positions where a blob can generate
@@ -90,10 +93,13 @@ public:
      * @param spawnSize Blob spawn size (according to the value defined above)
      * @param minY Minimum height for the blob to generate
      * @param maxY Maximum height for the blob to generate
+     * @param skipRate The skip rate of the blob
+     * @param spawnTries A number of times the blob is allowed to try to generate
      * @return a deque holding all the positions where a blob can generate
      *
      */
-    std::deque<Position> &defineAllBlobPositions(const GenerationType generationType, const int spawnSize, const int minY, const int maxY);
+    std::deque<Position> &
+    defineAllBlobPositions(const GenerationType generationType, const int spawnSize, const int minY, const int maxY, const double skipRate, const double spawnTries);
 
     /**
      * @brief Generate an ore blob.
@@ -117,6 +123,12 @@ public:
 private:
     /* The chunks where to generate the feature */
     world_storage::ChunkColumn &_chunk;
+
+    /* A reference towards the generator, mostly to access the randomizer */
+    generation::Generator &_generator;
+
+    /* The deque containing all the possible positions for a blob to generate */
+    std::deque<Position> _positions;
 };
 
 #endif // CUBICSERVER_GENERATION_FEATURES_UNDERGROUND_ORE_VEIN_HPP
