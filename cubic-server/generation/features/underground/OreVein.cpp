@@ -89,4 +89,3 @@ OreVein::defineAllBlobPositions(const GenerationType generationType, const int s
     }
     return _positions;
 }
-
