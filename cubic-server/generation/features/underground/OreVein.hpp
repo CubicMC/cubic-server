@@ -84,7 +84,18 @@ public:
     {
     }
 
-    std::deque<Position> &computeTriangleDistribution(const int spawnSize, const int minY, const int maxY, const int x, const int y, const int z);
+    /**
+     * @brief Define all the positions where a blob can generate for the triangle distribution
+     *
+     * @param spawnSize Blob spawn size (according to the value defined above)
+     * @param spawnTries A number of times the blob is allowed to try to generate
+     * @param minY Minimum height for the blob to generate
+     * @param maxY Maximum height for the blob to generate
+     * @param skipRate The skip rate of the blob
+     * @return a deque holding all the positions where a blob can generate for the triangle distribution
+     *
+     */
+    std::deque<Position> &computeTriangleDistribution(const int spawnSize, const double spawnTries, const int minY, const int maxY, const double skipRate);
 
     /**
      * @brief Define all the positions where a blob can generate
