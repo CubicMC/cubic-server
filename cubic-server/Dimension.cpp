@@ -76,7 +76,8 @@ std::shared_ptr<Entity> Dimension::getEntityByID(int32_t id)
     for (auto &entity : _entities)
         if (entity->getId() == id)
             return entity;
-    throw std::runtime_error("Entity not found");
+    LERROR("Entity not found");
+    return nullptr;
 }
 
 std::shared_ptr<const Entity> Dimension::getEntityByID(int32_t id) const
@@ -85,7 +86,8 @@ std::shared_ptr<const Entity> Dimension::getEntityByID(int32_t id) const
     for (auto &entity : _entities)
         if (entity->getId() == id)
             return entity;
-    throw std::runtime_error("Entity not found");
+    LERROR("Entity not found");
+    return nullptr;
 }
 
 void Dimension::removeEntity(int32_t entity_id)
