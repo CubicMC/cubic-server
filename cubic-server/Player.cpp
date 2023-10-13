@@ -55,6 +55,7 @@ Player::Player(std::weak_ptr<Client> cli, std::shared_ptr<Dimension> dim, u128 u
     _foodSaturationLevel(player_attributes::DEFAULT_FOOD_SATURATION_LEVEL), // TODO: Take this from the saved data
     _foodTickTimer(0), // TODO: Take this from the saved data
     _foodExhaustionLevel(0.0f), // TODO: Take this from the saved data
+    _respawnPoint(0, 120, 0),
     _chatVisibility(protocol::ClientInformation::ChatVisibility::Enabled),
     _isFlying(true), // TODO: Take this from the saved data
     _isJumping(false),
@@ -1461,29 +1462,24 @@ void Player::_respawn()
         }, // Position
     });
 
-    // Reset the health to the max
+    // Reset the health to the max (the packet is sent after)
     _health = 20;
-    this->sendHealth();
 
     // Synchronize the player position
     this->sendSynchronizePlayerPosition();
 
-    // Update the player's position for all the other players
+    this->_pose = Pose::Standing;
+
     for (auto player : this->_dim->getPlayers()) {
         if (player->getId() == this->getId())
             continue;
-        player->sendUpdateEntityPosition({
-            this->_id, // Entity id
-            static_cast<int16_t>(this->_respawnPoint.x), // X
-            static_cast<int16_t>(this->_respawnPoint.y), // Y
-            static_cast<int16_t>(this->_respawnPoint.z), // Z
-            true // On ground
-        });
+        player->sendEntityMetadata(*this);
     }
 }
 
 void Player::kill(const int32_t &killerId)
 {
+    this->sendHealth();
     LivingEntity::kill(killerId);
 
     this->sendCombatDeath({
@@ -1492,6 +1488,7 @@ void Player::kill(const int32_t &killerId)
         "You died :(" // Message
     });
 }
+
 bool Player::isInRenderDistance(UNUSED const Vector2<double> &pos) const { return true; }
 
 void Player::sendEntityMetadata(const Entity &entity)

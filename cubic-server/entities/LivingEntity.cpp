@@ -4,6 +4,7 @@
 #include "Player.hpp"
 #include "PluginManager.hpp"
 #include "Server.hpp"
+#include "entities/Entity.hpp"
 #include "events/CancelEvents.hpp"
 #include "events/Events.hpp"
 #include "options.hpp"
@@ -19,6 +20,8 @@
  */
 void LivingEntity::attack(const Vector3<double> &source, const int32_t &sourceId)
 {
+    if (_health <= 0)
+        return;
     //  TODO : think about how to deal with damage calculation later
     onEvent(Server::getInstance()->getPluginManager(), onEntityDamage, this, 1.0f);
     this->damage(1, sourceId);
@@ -76,6 +79,15 @@ void LivingEntity::kill(UNUSED const int32_t &killerId)
 {
     // TODO : think about how to deal with death later
     _health = 0;
+
+    // send entity death pose to connected players
+    this->_pose = Pose::Dying;
+
+    for (auto player : this->getDimension()->getPlayers()) {
+        if (player->getId() == this->getId())
+            continue;
+        player->sendEntityMetadata(*this);
+    }
 }
 
 void LivingEntity::setHealth(float health) { _health = health; }

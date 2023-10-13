@@ -694,8 +694,8 @@ std::unique_ptr<std::vector<uint8_t>> protocol::createRespawn(const Respawn &in)
 
     // clang-format off
     serialize(payload,
-        in.dimensionType, addString,
-        in.dimensionName, addString,
+        in.dimensionType, addIdentifier,
+        in.dimensionName, addIdentifier,
         in.hashedSeed, addLong,
         in.gamemode, addByte,
         in.previousGamemode, addByte,
@@ -708,7 +708,7 @@ std::unique_ptr<std::vector<uint8_t>> protocol::createRespawn(const Respawn &in)
     if (in.hasDeathLocation) {
         // clang-format off
         serialize(payload,
-            in.deathDimensionName, addString,
+            in.deathDimensionName, addIdentifier,
             in.deathLocation, addPosition
         );
         // clang-format on
