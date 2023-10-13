@@ -1247,7 +1247,7 @@ void Player::_continueLoginSequence()
     this->sendSetContainerContent({_inventory});
 
     // TODO: set entity metadata
-    // this->sendEntityMetadata({this->_id, {}});
+    this->sendEntityMetadata(*this);
 
     // TODO: send the player's attributes
     this->sendUpdateAttributes({this->getId(), {}});
