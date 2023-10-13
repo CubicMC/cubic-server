@@ -28,6 +28,8 @@ struct u128 {
 
     static u128 fromShortString(const std::string &str);
     static u128 random();
+    static u128 fromOfflinePlayerName(const std::string &name);
+    bool operator==(const u128 &other) const;
 };
 
 typedef int64_t Seed;
