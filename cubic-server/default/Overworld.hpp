@@ -2,6 +2,7 @@
 #define CUBICSERVER_DEFAULT_OVERWORLD_HPP
 
 #include <future>
+#include <string>
 
 #include "Dimension.hpp"
 #include "default/DefaultWorld.hpp"
@@ -22,8 +23,8 @@ public:
     void spawnPlayer(Player &player) override;
     void removePlayer(int32_t entity_id) override;
 
-    const std::string &getDimensionTypeName() const override { return "minecraft:overworld"; }
-    const std::string &getDimensionName() const override { return "overworld"; }
+    const std::string getDimensionTypeName() const override { return "minecraft:overworld"; }
+    const std::string getDimensionName() const override { return "overworld"; }
 
 private:
     std::future<void> _worldGenFuture;

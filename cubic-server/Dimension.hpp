@@ -141,14 +141,14 @@ public:
      *
      * @return std::string dimension type
      */
-    [[nodiscard]] virtual const std::string &getDimensionTypeName() const = 0;
+    [[nodiscard]] virtual const std::string getDimensionTypeName() const = 0;
 
     /**
      * @brief Get the dimension name
      *
      * @return std::string dimension name
      */
-    [[nodiscard]] virtual const std::string &getDimensionName() const = 0;
+    [[nodiscard]] virtual const std::string getDimensionName() const = 0;
 
     virtual void lockLoadingChunksMutex() { _loadingChunksMutex.lock(); };
     virtual void unlockLoadingChunksMutex() { _loadingChunksMutex.unlock(); };

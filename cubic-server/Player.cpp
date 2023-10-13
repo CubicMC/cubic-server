@@ -1442,7 +1442,7 @@ void Player::teleport(const Vector3<double> &pos)
 
 void Player::_respawn()
 {
-    _health = 20;
+    // Perform the respawn
     this->sendRespawn({
         this->_dim->getDimensionTypeName(), // Dimension Type
         this->_dim->getDimensionName(), // Dimension name
@@ -1461,6 +1461,14 @@ void Player::_respawn()
         }, // Position
     });
 
+    // Reset the health to the max
+    _health = 20;
+    this->sendHealth();
+
+    // Synchronize the player position
+    this->sendSynchronizePlayerPosition();
+
+    // Update the player's position for all the other players
     for (auto player : this->_dim->getPlayers()) {
         if (player->getId() == this->getId())
             continue;
