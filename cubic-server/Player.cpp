@@ -850,6 +850,10 @@ void Player::_onInteract(protocol::Interact &pck)
 {
     auto target = dynamic_pointer_cast<LivingEntity>(_dim->getEntityByID(pck.entityId));
     auto player = dynamic_pointer_cast<Player>(target);
+    if (target == nullptr) {
+        N_LERROR("Got a Interact with an invalid target");
+        return;
+    }
 
     switch (pck.type) {
     case protocol::Interact::Type::Interact:
@@ -1243,7 +1247,7 @@ void Player::_continueLoginSequence()
     this->sendSetContainerContent({_inventory});
 
     // TODO: set entity metadata
-    // this->sendEntityMetadata({this->_id, {}});
+    this->sendEntityMetadata(*this);
 
     // TODO: send the player's attributes
     this->sendUpdateAttributes({this->getId(), {}});
