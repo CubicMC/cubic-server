@@ -1,5 +1,8 @@
 #include "addPrimaryType.hpp"
+#include "nbt.h"
+#include "nbt.hpp"
 #include "popPrimaryType.hpp"
+#include "protocol/Structures.hpp"
 #include <cstdint>
 #include <gtest/gtest.h>
 #include <rapidcheck/gtest.h>
@@ -130,7 +133,20 @@ RC_GTEST_PROP(Serialization_Testing, ChatChecker, (std::string value))
 
 TEST(Serialization_Testing, SlotChecker)
 {
-    protocol::Slot slot {true, 1, 32};
+    // NBT
+    constexpr std::string_view NAME = "[{\"text\":\"Cubic\",\"italic\":false}]";
+    constexpr std::string_view NAME_TAG = "Name";
+    constexpr std::string_view DISPLAY_TAG = "display";
+    auto root = nbt_new_tag_compound();
+    auto display = nbt_new_tag_compound();
+    auto name = nbt_new_tag_string(NAME.data(), NAME.size());
+    nbt_set_tag_name(name, NAME_TAG.data(), NAME_TAG.size());
+    nbt_set_tag_name(display, DISPLAY_TAG.data(), DISPLAY_TAG.size());
+    nbt_tag_compound_append(display, name);
+    nbt_tag_compound_append(root, display);
+
+    protocol::Slot slot {true, 1, 32, root};
+
     std::vector<uint8_t> out;
     protocol::addSlot(out, slot);
     auto at = out.data();
@@ -138,6 +154,8 @@ TEST(Serialization_Testing, SlotChecker)
     ASSERT_EQ(slot.present, parsed.present);
     ASSERT_EQ(slot.itemCount, parsed.itemCount);
     ASSERT_EQ(slot.itemID, parsed.itemID);
+    ASSERT_TRUE(nbt_compare_tags(slot.nbt, parsed.nbt));
+    ASSERT_EQ(slot, parsed);
 }
 
 RC_GTEST_PROP(Serialization_Testing, UUIDChecker, (uint64_t most, uint64_t least))

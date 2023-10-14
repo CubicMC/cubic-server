@@ -11,9 +11,7 @@ static void swapContainer(protocol::Slot &slot, std::array<protocol::Slot, N> &c
         if (containerSlot == slot) {
             containerSlot.itemCount += slot.itemCount;
             if (containerSlot.itemCount <= 64) {
-                slot.present = false;
-                slot.itemID = 0;
-                slot.itemCount = 0;
+                slot.reset();
                 return;
             }
             slot.itemCount = containerSlot.itemCount - 64;
@@ -23,9 +21,7 @@ static void swapContainer(protocol::Slot &slot, std::array<protocol::Slot, N> &c
     for (auto &containerSlot : container) {
         if (!containerSlot.present) {
             containerSlot = slot;
-            slot.present = false;
-            slot.itemID = 0;
-            slot.itemCount = 0;
+            slot.reset();
             return;
         }
     }

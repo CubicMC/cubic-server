@@ -12,6 +12,7 @@
 #include <vector>
 
 #include "concept.hpp"
+#include "nbt.h"
 #include "protocol/ParseExceptions.hpp"
 #include "protocol/Structures.hpp"
 #include "types.hpp"
@@ -143,22 +144,40 @@ constexpr void addChat(std::vector<uint8_t> &out, const std::string &data) { _ad
 // {
 // }
 
-constexpr void addSlot(std::vector<uint8_t> &out, const Slot &data)
+inline size_t _nbtWriter(void *userData, uint8_t *data, size_t size)
 {
-    addBoolean(out, data.present);
-    if (data.present) {
-        addVarInt(out, data.itemID);
-        addByte(out, data.itemCount);
-        // addNBT(out, data.nbt);
-        // TODO: Send a NBT_TAG_END, implement NBT
+    auto out = static_cast<std::vector<uint8_t> *>(userData);
+    for (size_t i = 0; i < size; i++)
+        out->push_back(data[i]);
+    // out->insert(out->end(), data, data + size);
+    return size;
+}
+
+inline void addNBT(std::vector<uint8_t> &out, nbt_tag_t *tag)
+{
+    if (tag == nullptr) {
         addByte(out, 0);
+        return;
     }
+    nbt_writer_t writer {_nbtWriter, &out};
+    nbt_write(writer, tag, NBT_WRITE_FLAG_USE_RAW);
 }
 
 template<isBaseOf<nbt::Base> T>
 constexpr void addNBT(std::vector<uint8_t> &out, const T &data)
 {
     data.serialize(out);
+}
+
+constexpr void addSlot(std::vector<uint8_t> &out, const Slot &data)
+{
+    addBoolean(out, data.present);
+    if (data.present) {
+        addVarInt(out, data.itemID);
+        addByte(out, data.itemCount);
+        addNBT(out, data.nbt);
+        // addByte(out, 0);
+    }
 }
 
 constexpr void addIdentifier(std::vector<uint8_t> &out, const std::string &data) { addString(out, data); }
