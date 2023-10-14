@@ -18,7 +18,6 @@
 #include "nbt.hpp"
 #include <utility>
 
-#include "nbt.hpp"
 #include "protocol/ParseExceptions.hpp"
 #include "protocol/Structures.hpp"
 #include "protocol/common.hpp"
@@ -242,9 +241,7 @@ inline nbt_tag_t *popNbt(uint8_t *&at, uint8_t *eof)
     }
     auto savedAt = at;
     auto t = nbt::parse(savedAt, eof);
-    auto diff = (savedAt - at);
-    std::cout << "diff: " << diff << std::endl;
-    std::pair<uint8_t **, uint8_t *> packet = std::make_pair(&at, at + diff);
+    std::pair<uint8_t **, uint8_t *> packet = std::make_pair(&at, at + (savedAt - at));
     nbt_reader_t reader = {_readMem, &packet};
     return nbt_parse(reader, NBT_PARSE_FLAG_USE_RAW);
 }
