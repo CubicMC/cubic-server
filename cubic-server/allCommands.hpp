@@ -10,4 +10,5 @@
 #include "command_parser/commands/Scoreboard.hpp"
 #include "command_parser/commands/Seed.hpp"
 #include "command_parser/commands/Stop.hpp"
+#include "command_parser/commands/Teleport.hpp"
 #include "command_parser/commands/Time.hpp"

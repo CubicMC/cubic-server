@@ -1,3 +1,4 @@
+#include <algorithm>
 #include <boost/system/detail/error_category.hpp>
 #include <boost/system/detail/error_code.hpp>
 #include <cstdint>
@@ -351,7 +352,7 @@ void Client::_onStatusRequest()
         return;
     }
 
-    json["version"]["name"] = MC_VERSION;
+    json["version"]["name"] = MC_VERSION_BRANDING;
     json["version"]["protocol"] = MC_PROTOCOL;
     json["players"]["max"] = conf["max-players"].as<int32_t>();
     {
@@ -376,7 +377,7 @@ void Client::_onLoginStart(protocol::LoginStart &pck)
     N_LDEBUG("Got a Login Start");
     protocol::LoginSuccess resPck;
 
-    resPck.uuid = pck.hasPlayerUuid ? pck.playerUuid : u128 {std::hash<std::string> {}("OfflinePlayer:"), std::hash<std::string> {}(pck.name)};
+    resPck.uuid = pck.hasPlayerUuid ? pck.playerUuid : u128::fromOfflinePlayerName(pck.name);
     resPck.username = pck.name;
     resPck.properties = {}; // TODO: figure out what to put there
 
@@ -385,6 +386,13 @@ void Client::_onLoginStart(protocol::LoginStart &pck)
         return;
     } else if (Server::getInstance()->isWhitelistEnabled() && !Server::getInstance()->getWhitelist().isPlayerWhitelisted(resPck.uuid, resPck.username).first) {
         this->disconnect("You are not whitelisted on this server.");
+        return;
+    } else if (std::find_if(Server::getInstance()->getClients().begin(), Server::getInstance()->getClients().end(), [resPck](auto &each) {
+                   if (each.second->_player == nullptr)
+                       return false;
+                   return each.second->getPlayer()->getUuid() == resPck.uuid;
+               }) != Server::getInstance()->getClients().end()) {
+        this->disconnect("You are already connected to this server or someone already has the same UUID as you.");
         return;
     }
     if (CONFIG["online-mode"].as<bool>()) {

@@ -137,7 +137,7 @@ const std::shared_ptr<Entity> Entity::pickupItem()
     Vector3<double> pickupBoxV = {0.5, 0.5, 0.5};
 
     for (auto item : this->getDimension()->getEntities()) {
-        if (item->getType() == EntityType::Item && item->getId() != this->getId()) {
+        if (item->getType() == EntityType::Item && item->getId() != this->getId() && std::static_pointer_cast<Item>(item)->isPickable()) {
             if (((collectorPosition.x - item->getPosition().x) <= pickupBoxH.x && (collectorPosition.x - item->getPosition().x) >= -pickupBoxH.x) &&
                 ((collectorPosition.y - item->getPosition().y) <= pickupBoxV.y && (collectorPosition.y - item->getPosition().y) >= -pickupBoxV.y) &&
                 ((collectorPosition.z - item->getPosition().z) <= pickupBoxH.z && (collectorPosition.z - item->getPosition().z) >= -pickupBoxH.z)) {

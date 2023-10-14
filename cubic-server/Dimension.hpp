@@ -149,11 +149,13 @@ protected:
 public:
     mutable std::recursive_mutex _playersMutex;
     mutable std::recursive_mutex _entitiesMutex;
+    mutable std::recursive_mutex _newEntitiesMutex;
     mutable std::mutex _loadingChunksMutex;
 
 protected:
     std::counting_semaphore<SEMAPHORE_MAX> _dimensionLock;
     std::vector<std::shared_ptr<Entity>> _entities;
+    std::vector<std::shared_ptr<Entity>> _newEntities;
     std::vector<std::shared_ptr<Player>> _players;
     std::shared_ptr<World> _world;
     std::mutex _processingMutex;

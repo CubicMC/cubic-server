@@ -134,7 +134,7 @@ public:
 
     // Drop an item when necessary (death of the entity, broken block, ...)
     // @todo The dropped item is determined by the loot tables. Actually that's not true
-    virtual void dropItem(UNUSED const Vector3<double> &pos) {};
+    virtual void dropItem(UNUSED const Vector3<double> &pos, UNUSED bool isDroppedWillingly = true) {};
 
     /**
      * @brief Used to update the position of an entity for all players

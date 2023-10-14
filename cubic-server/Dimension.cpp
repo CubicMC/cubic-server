@@ -4,6 +4,7 @@
 #include "Server.hpp"
 #include "World.hpp"
 #include "entities/Entity.hpp"
+#include "entities/EntityType.hpp"
 #include "logging/logging.hpp"
 #include "math/Vector3.hpp"
 #include "protocol/ClientPackets.hpp"
@@ -24,9 +25,11 @@ Dimension::Dimension(std::shared_ptr<World> world, world_storage::DimensionType 
 
 void Dimension::tick()
 {
-    std::lock_guard _(_entitiesMutex);
-    for (auto ent : _entities) {
-        ent->tick();
+    {
+        std::lock_guard _(_entitiesMutex);
+        for (auto ent : _entities) {
+            ent->tick();
+        }
     }
     uint32_t rts = CONFIG["randomtickspeed"].as<uint32_t>();
     if (rts != 0) {
@@ -35,6 +38,16 @@ void Dimension::tick()
             if (!chunk.isReady())
                 continue;
             chunk.processRandomTick(rts);
+        }
+    }
+    {
+        std::unique_lock a(_entitiesMutex, std::defer_lock);
+        std::unique_lock b(_newEntitiesMutex, std::defer_lock);
+        std::lock(a, b);
+
+        if (_newEntities.size() != 0) {
+            _entities.insert(_entities.end(), _newEntities.begin(), _newEntities.end());
+            _newEntities.clear();
         }
     }
 }
@@ -63,7 +76,8 @@ std::shared_ptr<Entity> Dimension::getEntityByID(int32_t id)
     for (auto &entity : _entities)
         if (entity->getId() == id)
             return entity;
-    throw std::runtime_error("Entity not found");
+    LERROR("Entity not found");
+    return nullptr;
 }
 
 std::shared_ptr<const Entity> Dimension::getEntityByID(int32_t id) const
@@ -72,7 +86,8 @@ std::shared_ptr<const Entity> Dimension::getEntityByID(int32_t id) const
     for (auto &entity : _entities)
         if (entity->getId() == id)
             return entity;
-    throw std::runtime_error("Entity not found");
+    LERROR("Entity not found");
+    return nullptr;
 }
 
 void Dimension::removeEntity(int32_t entity_id)
@@ -115,8 +130,8 @@ void Dimension::removePlayer(int32_t entity_id)
 
 void Dimension::addEntity(std::shared_ptr<Entity> entity)
 {
-    std::lock_guard _(_entitiesMutex);
-    _entities.emplace_back(entity);
+    std::lock_guard _(_newEntitiesMutex);
+    _newEntities.emplace_back(entity);
 }
 
 void Dimension::addPlayer(std::shared_ptr<Player> entity)
@@ -220,24 +235,37 @@ const world_storage::ChunkColumn &Dimension::getChunk(const Position2D &pos) con
 void Dimension::spawnPlayer(Player &current)
 {
     auto current_id = current.getId();
-    std::lock_guard _(_playersMutex);
-    for (auto player : _players) {
-        LDEBUG("player is: {}", player->getUsername());
-        LDEBUG("current is: {}", current.getUsername());
-        // if (current->getPos().distance(player->getPos()) <= 12) {
-        if (player->getId() != current_id) {
-            player->sendSpawnPlayer(
-                {current_id, current.getUuid(), current.getPosition().x, current.getPosition().y, current.getPosition().z, current.getRotation().x, current.getRotation().z}
-            );
-            LDEBUG("send spawn player to {}", player->getUsername());
-            current.sendSpawnPlayer(
-                {player->getId(), player->getUuid(), player->getPosition().x, player->getPosition().y, player->getPosition().z, player->getRotation().x, player->getRotation().z}
-            );
-            LDEBUG("send spawn player to {}", current.getUsername());
-            //}
+    {
+
+        std::lock_guard _(_playersMutex);
+        for (auto player : _players) {
+            LDEBUG("player is: {}", player->getUsername());
+            LDEBUG("current is: {}", current.getUsername());
+            // if (current->getPos().distance(player->getPos()) <= 12) {
+            if (player->getId() != current_id) {
+                player->sendSpawnPlayer(
+                    {current_id, current.getUuid(), current.getPosition().x, current.getPosition().y, current.getPosition().z, current.getRotation().x, current.getRotation().z}
+                );
+                LDEBUG("send spawn player to {}", player->getUsername());
+                current.sendSpawnPlayer(
+                    {player->getId(), player->getUuid(), player->getPosition().x, player->getPosition().y, player->getPosition().z, player->getRotation().x,
+                     player->getRotation().z}
+                );
+                LDEBUG("send spawn player to {}", current.getUsername());
+                //}
+            }
+            player->sendEntityMetadata(current);
+            current.sendEntityMetadata(*player);
         }
-        player->sendEntityMetadata(current);
-        current.sendEntityMetadata(*player);
+    }
+    {
+        std::lock_guard _(_entitiesMutex);
+        for (auto ent : _entities) {
+            if (ent->getType() == EntityType::Player)
+                continue;
+            current.sendSpawnEntity(*ent);
+            current.sendEntityMetadata(*ent);
+        }
     }
 }
 
