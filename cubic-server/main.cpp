@@ -169,6 +169,30 @@ auto initArgs(int argc, const char *const argv[])
         .valueFromArgument("--randomtickspeed")
         .defaultValue(3)
         .inRange(0, std::numeric_limits<int32_t>::max());
+
+    program.add("monitoring-prometheus-enable")
+        .help("Enable prometheus data exporting")
+        .valueFromConfig("monitoring", "prometheus", "enable")
+        .valueFromEnvironmentVariable("CBSRV_MONITORING_PROMETHEUS_ENABLE")
+        .defaultValue(false);
+
+    program.add("http-ip")
+        .help("The ip the http server will bind to")
+        .valueFromConfig("http", "ip")
+        .valueFromEnvironmentVariable("CBSRV_HTTP_IP")
+        .defaultValue("0.0.0.0");
+
+    program.add("http-port")
+        .help("The port the http server will listen on")
+        .valueFromConfig("http", "port")
+        .valueFromEnvironmentVariable("CBSRV_HTTP_PORT")
+        .defaultValue(8080);
+
+    program.add("http-enable")
+        .help("Enable the built-in http server")
+        .valueFromConfig("http", "enable")
+        .valueFromEnvironmentVariable("CBSRV_HTTP_ENABLE")
+        .defaultValue(false);
     // clang-format on
 
     try {
