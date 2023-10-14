@@ -220,7 +220,7 @@ constexpr std::string popChat(uint8_t *&at, uint8_t *eof) { return popString(at,
 // {
 // }
 
-static inline size_t _readMem(void *pck, uint8_t *data, size_t size)
+inline size_t _readMem(void *pck, uint8_t *data, size_t size)
 {
     auto packet = static_cast<std::pair<uint8_t **, uint8_t *> *>(pck);
     if (*packet->first >= packet->second)
