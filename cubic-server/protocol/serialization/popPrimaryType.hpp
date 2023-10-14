@@ -226,7 +226,7 @@ static inline size_t _readMem(void *pck, uint8_t *data, size_t size)
     auto packet = static_cast<std::pair<uint8_t **, uint8_t *> *>(pck);
     if (*packet->first >= packet->second)
         return 0;
-    const auto max = ((size_t) packet->second) - ((size_t) *packet->first) + 1;
+    const auto max = ((size_t) packet->second) - ((size_t) *packet->first);
     size_t toCopy = std::min(max, size);
     memcpy(data, *packet->first, toCopy);
     *packet->first += toCopy;
@@ -236,7 +236,7 @@ static inline size_t _readMem(void *pck, uint8_t *data, size_t size)
 // TODO: Nbt, nothing to see here. I could but why should I ?
 inline nbt_tag_t *popNbt(uint8_t *&at, uint8_t *eof)
 {
-    if (*at == 0) {
+    if (*at == (uint8_t) nbt::TagType::End) {
         at++;
         return nullptr;
     }
@@ -244,7 +244,7 @@ inline nbt_tag_t *popNbt(uint8_t *&at, uint8_t *eof)
     auto t = nbt::parse(savedAt, eof);
     auto diff = (savedAt - at);
     std::cout << "diff: " << diff << std::endl;
-    std::pair<uint8_t **, uint8_t *> packet = std::make_pair(&at, at - diff);
+    std::pair<uint8_t **, uint8_t *> packet = std::make_pair(&at, at + diff);
     nbt_reader_t reader = {_readMem, &packet};
     return nbt_parse(reader, NBT_PARSE_FLAG_USE_RAW);
 }

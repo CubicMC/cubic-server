@@ -98,6 +98,7 @@ static size_t _readMem(void *ud, uint8_t *d, size_t s)
     _userData *u = (_userData *) ud;
     if (u->start > u->end)
         return 0;
+    // TODO(huntears) Check this +1 because this is strange uwu
     const auto max = ((size_t) u->end) - ((size_t) u->start) + 1;
     const auto toCopy = std::min(max, s);
     memcpy(d, u->start, toCopy);
