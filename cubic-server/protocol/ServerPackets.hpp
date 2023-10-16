@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "PlayerAttributes.hpp"
+#include "nbt.h"
 #include "protocol/Structures.hpp"
 #include "types.hpp"
 

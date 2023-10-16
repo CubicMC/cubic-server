@@ -5,6 +5,7 @@
 #include "entities/Item.hpp"
 #include "logging/logging.hpp"
 #include "protocol/Structures.hpp"
+#include <nbt.h>
 
 using Container = protocol::container::Container;
 
@@ -140,7 +141,7 @@ void Container::onClick(std::shared_ptr<Player> player, int16_t index, uint8_t b
 
             for (auto update : updates) {
                 if (at(update.slotNumber).present) {
-                    if (at(update.slotNumber).itemID == _cursor.itemID && at(update.slotNumber).itemCount < 64) {
+                    if (at(update.slotNumber) == _cursor && at(update.slotNumber).itemCount < 64) {
                         at(update.slotNumber).itemCount += addedStack;
                         if (at(update.slotNumber).itemCount > 64) {
                             rest += at(update.slotNumber).itemCount - 64;

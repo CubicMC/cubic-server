@@ -16,6 +16,7 @@
 #include "events/CancelEvents.hpp"
 #include "items/foodItems.hpp"
 #include "logging/logging.hpp"
+#include "nbt.h"
 #include "protocol/ClientPackets.hpp"
 #include "protocol/PacketUtils.hpp"
 #include "protocol/ServerPackets.hpp"
@@ -68,8 +69,22 @@ Player::Player(std::weak_ptr<Client> cli, std::shared_ptr<Dimension> dim, u128 u
     this->setHealth(20);
 
     this->setOperator(Server::getInstance()->permissions.isOperator(username));
-    this->_inventory->playerInventory().at(12) = protocol::Slot {true, 734, 42};
-    this->_inventory->playerInventory().at(13) = protocol::Slot {true, 1, 12};
+    this->_inventory->playerInventory().at(12) = protocol::Slot(true, 734, 42);
+    this->_inventory->playerInventory().at(13) = protocol::Slot(true, 1, 12);
+
+    // {display:{Name:'[{"text":"Cubic","italic":false}]'}}
+    constexpr std::string_view NAME = "[{\"text\":\"Cubic\",\"italic\":false}]";
+    constexpr std::string_view NAME_TAG = "Name";
+    constexpr std::string_view DISPLAY_TAG = "display";
+    auto root = nbt_new_tag_compound();
+    auto display = nbt_new_tag_compound();
+    auto name = nbt_new_tag_string(NAME.data(), NAME.size());
+    nbt_set_tag_name(name, NAME_TAG.data(), NAME_TAG.size());
+    nbt_set_tag_name(display, DISPLAY_TAG.data(), DISPLAY_TAG.size());
+    nbt_tag_compound_append(display, name);
+    nbt_tag_compound_append(root, display);
+
+    this->_inventory->playerInventory().at(14) = protocol::Slot(true, 1, 12, root);
 }
 
 Player::~Player()
@@ -816,6 +831,8 @@ void Player::_onClickContainer(protocol::ClickContainer &pck)
             return true;
         return false;
     });
+    if (it == _containers.end())
+        return;
     (*it)->onClick(dynamicSharedFromThis<Player>(), pck.slot, pck.button, pck.mode, pck.arrayOfSlots);
 }
 
@@ -850,6 +867,10 @@ void Player::_onInteract(protocol::Interact &pck)
 {
     auto target = dynamic_pointer_cast<LivingEntity>(_dim->getEntityByID(pck.entityId));
     auto player = dynamic_pointer_cast<Player>(target);
+    if (target == nullptr) {
+        N_LERROR("Got a Interact with an invalid target");
+        return;
+    }
 
     switch (pck.type) {
     case protocol::Interact::Type::Interact:
@@ -1060,8 +1081,9 @@ void Player::_onProgramCommandBlockMinecart(UNUSED protocol::ProgramCommandBlock
 void Player::_onSetCreativeModeSlot(protocol::SetCreativeModeSlot &pck)
 {
     N_LDEBUG("Got a Set Creative Mode Slot");
-    if (_gamemode != player_attributes::Gamemode::Creative)
+    if (_gamemode != player_attributes::Gamemode::Creative) {
         return;
+    }
     this->_inventory->at(pck.slot) = pck.clickedItem;
 }
 
@@ -1243,7 +1265,7 @@ void Player::_continueLoginSequence()
     this->sendSetContainerContent({_inventory});
 
     // TODO: set entity metadata
-    // this->sendEntityMetadata({this->_id, {}});
+    this->sendEntityMetadata(*this);
 
     // TODO: send the player's attributes
     this->sendUpdateAttributes({this->getId(), {}});
