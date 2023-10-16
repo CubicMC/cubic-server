@@ -11,6 +11,8 @@ if (GTEST)
     add_executable(
         serialization_test
         typeSerialization_unittest.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/../../nbt.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/../../nbt.hpp
         ${CMAKE_CURRENT_SOURCE_DIR}/../../nbt.c
     )
 
