@@ -1,4 +1,0 @@
-[
-	{"name":"minecraft:normal","value":"normal,flat,large_biomes,amplified,single_biome_surface"},
-	{"name":"minecraft:extended","value":"#normal,debug_all_block_states"}
-]

@@ -1,36 +1,4 @@
-#include <vector>
-
-static const std::vector<std::string> tagsDamage = {
-	"#is_explosion",
-	"arrow,trident,mob_projectile,fireball,wither_skull",
-	"out_of_world",
-	"magic",
-	"magic,thorns,#is_explosion",
-	"on_fire",
-	"on_fire,in_wall,cramming,drown,fly_into_wall,generic,wither,dragon_breath,freeze,starve,fall,stalagmite,magic,indirect_magic,out_of_world,sonic_boom,generic_kill,outside_border",
-	"empty",
-	"starve",
-	"sonic_boom",
-	"out_of_world,generic_kill",
-	"out_of_world,generic_kill",
-	"#bypasses_armor,falling_anvil,falling_stalactite",
-	"falling_anvil,falling_block,falling_stalactite",
-	"in_fire",
-	"drown",
-	"fireworks,explosion,player_explosion,bad_respawn_point",
-	"fall,stalagmite",
-	"in_fire,on_fire,lava,hot_floor,unattributed_fireball,fireball",
-	"freeze",
-	"lightning_bolt",
-	"arrow,trident,mob_projectile,unattributed_fireball,fireball,wither_skull,thrown",
-	"mob_attack_no_aggro",
-	"drown",
-	"explosion,player_explosion,bad_respawn_point",
-	"magic,indirect_magic,sonic_boom,thorns",
-	"drown",
-};
-
-enum class Damage {
+enum class TagsDamage {
 	ALWAYS_HURTS_ENDER_DRAGONS,
 	ALWAYS_KILLS_ARMOR_STANDS,
 	ALWAYS_MOST_SIGNIFICANT_FALL,

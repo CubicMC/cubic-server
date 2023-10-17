@@ -1,28 +1,4 @@
-#include <vector>
-
-static const std::vector<std::string> tagsStructures = {
-	"swamp_hut",
-	"swamp_hut",
-	"#ocean_ruin,#shipwreck",
-	"stronghold",
-	"mineshaft,mineshaft_mesa",
-	"ocean_ruin_cold,ocean_ruin_warm",
-	"village_desert",
-	"jungle_pyramid",
-	"monument",
-	"village_plains",
-	"village_savanna",
-	"village_snowy",
-	"swamp_hut",
-	"village_taiga",
-	"buried_treasure",
-	"mansion",
-	"ruined_portal_desert,ruined_portal_jungle,ruined_portal_mountain,ruined_portal_nether,ruined_portal_ocean,ruined_portal,ruined_portal_swamp",
-	"shipwreck,shipwreck_beached",
-	"village_plains,village_desert,village_savanna,village_snowy,village_taiga",
-};
-
-enum class Structures {
+enum class TagsStructures {
 	CATS_SPAWN_AS_BLACK,
 	CATS_SPAWN_IN,
 	DOLPHIN_LOCATED,
