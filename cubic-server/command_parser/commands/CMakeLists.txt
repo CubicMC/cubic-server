@@ -28,4 +28,6 @@ target_sources (${CMAKE_PROJECT_NAME} PRIVATE
     Scoreboard.hpp
     Teleport.cpp
     Teleport.hpp
+    Tps.cpp
+    Tps.hpp
 )
