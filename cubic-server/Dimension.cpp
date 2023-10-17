@@ -15,11 +15,23 @@
 #include <thread>
 
 Dimension::Dimension(std::shared_ptr<World> world, world_storage::DimensionType dimensionType):
-    _dimensionLock(std::counting_semaphore<1000>(0)),
+    _playersMutex(),
+    _entitiesMutex(),
+    _newEntitiesMutex(),
+    _loadingChunksMutex(),
+    _dimensionLock(std::counting_semaphore<SEMAPHORE_MAX>(0)),
+    _entities({}),
+    _newEntities({}),
+    _players({}),
     _world(world),
+    _processingMutex(),
     _isInitialized(false),
     _isRunning(false),
-    _dimensionType(dimensionType)
+    _level(),
+    _loadingChunks({}),
+    _processingThread(),
+    _dimensionType(dimensionType),
+    _tps({0, 0, 0})
 {
 }
 

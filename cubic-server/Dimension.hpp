@@ -143,6 +143,13 @@ public:
      */
     virtual BlockId getBlock(const Position &pos) const { return getLevel().getChunkColumnFromBlockPos(pos.x, pos.z).getBlock(pos); }
 
+    /**
+     * @brief Get the tps of the dimension
+     *
+     * @return Tps&
+     */
+    virtual const Tps &getTps() { return _tps; }
+
 protected:
     virtual void _run();
 
@@ -165,6 +172,7 @@ protected:
     std::unordered_map<Position2D, ChunkRequest> _loadingChunks;
     std::thread _processingThread;
     world_storage::DimensionType _dimensionType;
+    Tps _tps;
 };
 
 template<isBaseOf<Entity> T, typename... Args>
