@@ -65,6 +65,13 @@ public:
     */
     virtual void setTime(int time);
 
+    /**
+     * @brief Get the tps of the world
+     *
+     * @return Tps&
+     */
+    virtual const Tps &getTps() { return _tps; }
+
 protected:
     std::shared_ptr<Chat> _chat;
     std::shared_ptr<WorldGroup> _worldGroup;
@@ -74,10 +81,11 @@ protected:
     uint8_t _renderDistance;
     world_storage::LevelData _levelData;
     TickClock _timeUpdateClock;
-    Seed _seed;
+    const Seed _seed;
     thread_pool::PriorityThreadPool _generationPool;
     world_storage::WorldType _worldType;
     std::string _folder;
+    Tps _tps;
 };
 
 #endif // CUBICSERVER_WORLD_HPP

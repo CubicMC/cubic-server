@@ -8,18 +8,21 @@
 #include <cstdint>
 
 World::World(std::shared_ptr<WorldGroup> worldGroup, world_storage::WorldType worldType, std::string folder):
+    _chat(worldGroup->getChat()),
     _worldGroup(worldGroup),
+    _dimensions({}),
     _age(0),
     _time(0),
     _renderDistance(CONFIG["render-distance"].as<uint8_t>()),
+    _levelData(),
     _timeUpdateClock(20, std::bind(&World::updateTime, this)), // 1 second for time updates
+    _seed(CONFIG["seed"].as<int64_t>()),
     _generationPool(CONFIG["num-gen-thread"].as<uint16_t>(), "WorldGen"),
     _worldType(worldType),
-    _folder(folder)
+    _folder(folder),
+    _tps({0, 0, 0})
 {
     _timeUpdateClock.start();
-    _seed = CONFIG["seed"].as<int64_t>();
-    _chat = worldGroup->getChat();
 }
 
 void World::tick()
