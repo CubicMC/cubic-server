@@ -89,3 +89,8 @@ OreVein::defineAllBlobPositions(const GenerationType generationType, const int s
     }
     return _positions;
 }
+
+void OreVein::createBlob(const BlockId &blockID, const GenerationType generationType, const int spawnSize, const Position &pos) const
+{
+    auto nbOfBlocksInBlob = utility::PseudoRandomGenerator::getInstance()->generateNumber(1, MAX_NB_OF_BLOCKS[spawnSize]);
+}
