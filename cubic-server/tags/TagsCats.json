@@ -1,0 +1,4 @@
+[
+	{"name":"minecraft:default_spawns","value":"tabby,black,red,siamese,british_shorthair,calico,persian,ragdoll,white,jellie"},
+	{"name":"minecraft:full_moon_spawns","value":"#default_spawns,all_black"}
+]

@@ -1,0 +1,4 @@
+[
+	{"name":"minecraft:load","value":"load"},
+	{"name":"minecraft:tick","value":"tick"}
+]

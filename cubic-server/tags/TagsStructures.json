@@ -1,0 +1,21 @@
+[
+	{"name":"minecraft:cats_spawn_as_black","value":"swamp_hut"},
+	{"name":"minecraft:cats_spawn_in","value":"swamp_hut"},
+	{"name":"minecraft:dolphin_located","value":"#ocean_ruin,#shipwreck"},
+	{"name":"minecraft:eye_of_ender_located","value":"stronghold"},
+	{"name":"minecraft:mineshaft","value":"mineshaft,mineshaft_mesa"},
+	{"name":"minecraft:ocean_ruin","value":"ocean_ruin_cold,ocean_ruin_warm"},
+	{"name":"minecraft:on_desert_village_maps","value":"village_desert"},
+	{"name":"minecraft:on_jungle_explorer_maps","value":"jungle_pyramid"},
+	{"name":"minecraft:on_ocean_explorer_maps","value":"monument"},
+	{"name":"minecraft:on_plains_village_maps","value":"village_plains"},
+	{"name":"minecraft:on_savanna_village_maps","value":"village_savanna"},
+	{"name":"minecraft:on_snowy_village_maps","value":"village_snowy"},
+	{"name":"minecraft:on_swamp_explorer_maps","value":"swamp_hut"},
+	{"name":"minecraft:on_taiga_village_maps","value":"village_taiga"},
+	{"name":"minecraft:on_treasure_maps","value":"buried_treasure"},
+	{"name":"minecraft:on_woodland_explorer_maps","value":"mansion"},
+	{"name":"minecraft:ruined_portal","value":"ruined_portal_desert,ruined_portal_jungle,ruined_portal_mountain,ruined_portal_nether,ruined_portal_ocean,ruined_portal,ruined_portal_swamp"},
+	{"name":"minecraft:shipwreck","value":"shipwreck,shipwreck_beached"},
+	{"name":"minecraft:village","value":"village_plains,village_desert,village_savanna,village_snowy,village_taiga"}
+]
