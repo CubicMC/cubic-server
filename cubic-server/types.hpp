@@ -212,4 +212,11 @@ struct std::hash<Position2D> {
     }
 };
 
+struct Tps {
+    float oneMinTps;
+    float fiveMinTps;
+    float fifteenMinTps;
+    const std::string toString() const;
+};
+
 #endif // CUBICSERVER_TYPES_HPP
