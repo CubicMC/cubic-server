@@ -12,3 +12,4 @@
 #include "command_parser/commands/Stop.hpp"
 #include "command_parser/commands/Teleport.hpp"
 #include "command_parser/commands/Time.hpp"
+#include "command_parser/commands/Tps.hpp"
