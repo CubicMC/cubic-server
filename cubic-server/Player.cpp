@@ -43,6 +43,7 @@ Player::Player(std::weak_ptr<Client> cli, std::shared_ptr<Dimension> dim, u128 u
     _keepAliveIgnored(0),
     _gamemode(player_attributes::gamemodeFromString(CONFIG["gamemode"].as<std::string>())),
     _keepAliveClock(200, std::bind(&Player::_processKeepAlive, this)), // 5 seconds for keep-alives
+    _jumpFrom(0),
     _inventory(std::make_shared<protocol::container::Inventory>()),
     _foodLevel(player_attributes::MAX_FOOD_LEVEL - 4), // TODO: Take this from the saved data
     _foodSaturationLevel(player_attributes::DEFAULT_FOOD_SATURATION_LEVEL), // TODO: Take this from the saved data
@@ -196,6 +197,7 @@ void Player::setKeepAliveIgnored(uint8_t ign) { _keepAliveIgnored = ign; }
 
 uint8_t Player::keepAliveIgnored() const { return _keepAliveIgnored; }
 
+void Player::setJumpFromHeight(double h) { _jumpFrom = h; }
 void Player::setPosition(const Vector3<double> &pos, bool onGround)
 {
     auto newChunkPos = Position2D(transformBlockPosToChunkPos(pos.x), transformBlockPosToChunkPos(pos.z));
@@ -203,11 +205,15 @@ void Player::setPosition(const Vector3<double> &pos, bool onGround)
     auto oldPos2d = Vector2<double>(_pos.x, _pos.z);
     auto newPos2d = Vector2<double>(pos.x, pos.z);
 
-    if (onGround && _isFlying)
+    if (onGround && _isFlying) {
         _isFlying = false;
+        _isJumping = true;
+        applyFallDamage(_jumpFrom);
+    }
     if (!onGround && !_isJumping && !_isFlying && ((pos.y + (-world_storage::CHUNK_HEIGHT_MIN)) - (_pos.y + (-world_storage::CHUNK_HEIGHT_MIN)) > 0)) {
         _isJumping = true;
         _isFlying = true;
+        setJumpFromHeight(pos.y);
     }
 
     if (_isSprinting && !_isFlying)
@@ -215,6 +221,7 @@ void Player::setPosition(const Vector3<double> &pos, bool onGround)
     if (_isJumping) {
         _foodExhaustionLevel += _isSprinting ? player_attributes::FOOD_EXHAUSTION_SPRINTING_JUMP : player_attributes::FOOD_EXHAUSTION_JUMP;
         _isJumping = false;
+        setJumpFromHeight(pos.y);
     }
 
     Entity::setPosition(pos, onGround);
@@ -1347,6 +1354,22 @@ void Player::teleport(const Vector3<double> &pos)
     Entity::teleport(pos);
 }
 
+/*
+ * @brief Inflict damage to the player
+ *
+ * @param damage The damage to deal
+ */
+void Player::damage(float damage)
+{
+    bool canceled = false;
+
+    onEventCancelable(Server::getInstance()->getPluginManager(), onEntityDamage, canceled, this, damage);
+
+    if (canceled)
+        return;
+    _health -= damage;
+    sendHealth();
+}
 bool Player::takesFalldmg(void) // is player vulnerable to fall damage?
 {
     return _gamemode == player_attributes::Gamemode::Survival || _gamemode == player_attributes::Gamemode::Adventure;

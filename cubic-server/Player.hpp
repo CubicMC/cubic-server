@@ -65,6 +65,7 @@ public:
     void setOperator(const bool isOp);
     void setKeepAliveId(long id);
     void updatePlayerInfo(const protocol::PlayerInfoUpdate &data);
+    void damage(float damage) override;
 
     template<isBaseOf<protocol::container::Container> Container, typename... Args>
     std::shared_ptr<Container> openContainer(Args &...);
@@ -127,6 +128,7 @@ public:
     void sendDisplayObjective(const protocol::DisplayObjective &packet);
     void sendUpdateScore(const protocol::UpdateScore &packet);
     void sendUpdateTeams(const protocol::UpdateTeams &packet);
+    void setJumpFromHeight(double height);
     bool takesFalldmg(void);
 
 private:
@@ -202,6 +204,9 @@ private:
     TickClock _keepAliveClock;
     std::unordered_map<Position2D, ChunkState> _chunks;
     mutable std::mutex _chunksMutex;
+
+    // Fall damage
+    double _jumpFrom;
 
     // Inventory
     std::shared_ptr<protocol::container::Inventory> _inventory;

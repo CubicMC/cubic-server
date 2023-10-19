@@ -82,7 +82,7 @@ void LivingEntity::applyFallDamage(const double &height)
         fallDamage -= (5 + 5 * (this->_type == EType::Goat));
     if (fallDamage >= this->_health + 0.5) // making sure death is infliged if fall damage is too high
         fallDamage = 999;
-    this->damage(fallDamage < 0 ? 0 : fallDamage);
+    this->damage(fallDamage < 0 ? 0 : fallDamage); // override, sendHealth & broadcastMetadata
 }
 
 /*
