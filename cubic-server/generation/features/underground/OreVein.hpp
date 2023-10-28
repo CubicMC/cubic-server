@@ -116,17 +116,17 @@ public:
      * @brief Generate an ore blob.
      *
      * @param blockID The ID of the block to compose the blob
-     * @param generationType UNIFORM or TRIANGLE
      * @param spawnSize Blob spawn size (according to the value defined above)
      * @param pos The position of the blob
+     * @return a vector holding all the blocks
      *
      */
-    void createBlob(const BlockId &blockID, const GenerationType generationType, const int spawnSize, const Position &pos) const;
+    const std::vector<generation::Generator::FeatureBlock> createBlob(const BlockId &blockID, const int spawnSize, const Position &pos) const;
 
     /**
      * @brief Generates a blob at each defined position
      *
-     * @param ChuckColumn description
+     * @param ChuckColumn The chunks where to generate the blobs
      *
      */
     void generateBlobs(std::vector<world_storage::ChunkColumn *>);
