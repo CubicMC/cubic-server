@@ -12,6 +12,7 @@
 #include "protocol/ClientPackets.hpp"
 #include "world_storage/ChunkColumn.hpp"
 #include "world_storage/Level.hpp"
+#include <boost/circular_buffer.hpp>
 
 // TODO(huntears): Fix whatever this is
 constexpr int SEMAPHORE_MAX = 1000;
@@ -146,9 +147,9 @@ public:
     /**
      * @brief Get the tps of the dimension
      *
-     * @return Tps&
+     * @return Tps
      */
-    virtual const Tps &getTps() { return _tps; }
+    virtual const Tps getTps();
 
 protected:
     virtual void _run();
@@ -172,7 +173,7 @@ protected:
     std::unordered_map<Position2D, ChunkRequest> _loadingChunks;
     std::thread _processingThread;
     world_storage::DimensionType _dimensionType;
-    Tps _tps;
+    boost::circular_buffer<float> _circularBufferTps;
 };
 
 template<isBaseOf<Entity> T, typename... Args>
