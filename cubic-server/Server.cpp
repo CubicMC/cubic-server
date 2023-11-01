@@ -26,6 +26,7 @@
 #include "command_parser/commands/Gamemode.hpp"
 #include "command_parser/commands/InventoryDump.hpp"
 #include "command_parser/commands/Teleport.hpp"
+#include "command_parser/commands/Tps.hpp"
 #include "default/DefaultWorldGroup.hpp"
 #include "logging/logging.hpp"
 #include "registry/Biome.hpp"
@@ -69,6 +70,7 @@ Server::Server():
     _commands.emplace_back(std::make_unique<command_parser::InventoryDump>());
     _commands.emplace_back(std::make_unique<command_parser::Tp>());
     _commands.emplace_back(std::make_unique<command_parser::Teleport>());
+    _commands.emplace_back(std::make_unique<command_parser::Tps>());
 }
 
 Server::~Server() { }

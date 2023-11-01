@@ -31,12 +31,13 @@ Dimension::Dimension(std::shared_ptr<World> world, world_storage::DimensionType 
     _loadingChunks({}),
     _processingThread(),
     _dimensionType(dimensionType),
-    _tps({0, 0, 0})
+    _circularBufferTps(18000)
 {
 }
 
 void Dimension::tick()
 {
+    auto startTime = std::chrono::system_clock::now();
     {
         std::lock_guard _(_entitiesMutex);
         for (auto ent : _entities) {
@@ -62,6 +63,9 @@ void Dimension::tick()
             _newEntities.clear();
         }
     }
+    auto endTime = std::chrono::system_clock::now();
+    auto compute_time = endTime - startTime;
+    _circularBufferTps.push_back(std::chrono::duration_cast<std::chrono::milliseconds>(compute_time).count());
 }
 
 void Dimension::stop()
@@ -343,4 +347,28 @@ void Dimension::sendChunkToPlayers(int x, int z)
         }
     }
     this->_loadingChunks.erase({x, z});
+}
+
+const Tps Dimension::getTps()
+{
+    Tps tps {0, 0, 0};
+    auto buffer_size = _circularBufferTps.size();
+    auto buffer_end = _circularBufferTps.end() - 1;
+
+    if (buffer_size < 20 * 60 - 1) {
+        tps.oneMinTps = tps.fiveMinTps = tps.fifteenMinTps = (std::accumulate(buffer_end - buffer_size, buffer_end, 0.0f) / buffer_size) * 20;
+        return tps;
+    }
+    tps.oneMinTps = (std::accumulate(buffer_end - 20 * 60, buffer_end, 0.0f) / (20 * 60)) * 20;
+    if (buffer_size < 20 * 60 * 5 - 1) {
+        tps.fiveMinTps = tps.fifteenMinTps = (std::accumulate(buffer_end - buffer_size, buffer_end, 0.0f) / buffer_size) * 20;
+        return tps;
+    }
+    tps.fiveMinTps = (std::accumulate(buffer_end - 20 * 60 * 5, buffer_end, 0.0f) / (20 * 60 * 5)) * 20;
+    if (buffer_size < 20 * 60 * 15 - 1) {
+        tps.fifteenMinTps = (std::accumulate(buffer_end - buffer_size, buffer_end, 0.0f) / buffer_size) * 20;
+        return tps;
+    }
+    tps.fifteenMinTps = (std::accumulate(buffer_end - 20 * 60 * 15, buffer_end, 0.0f) / (20 * 60 * 15)) * 20;
+    return tps;
 }
