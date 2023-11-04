@@ -174,25 +174,9 @@ auto initArgs(int argc, const char *const argv[])
         .help("Enable prometheus data exporting")
         .valueFromConfig("monitoring", "prometheus", "enable")
         .valueFromEnvironmentVariable("CBSRV_MONITORING_PROMETHEUS_ENABLE")
-        .defaultValue(false);
-
-    program.add("http-ip")
-        .help("The ip the http server will bind to")
-        .valueFromConfig("http", "ip")
-        .valueFromEnvironmentVariable("CBSRV_HTTP_IP")
-        .defaultValue("0.0.0.0");
-
-    program.add("http-port")
-        .help("The port the http server will listen on")
-        .valueFromConfig("http", "port")
-        .valueFromEnvironmentVariable("CBSRV_HTTP_PORT")
-        .defaultValue(8080);
-
-    program.add("http-enable")
-        .help("Enable the built-in http server")
-        .valueFromConfig("http", "enable")
-        .valueFromEnvironmentVariable("CBSRV_HTTP_ENABLE")
-        .defaultValue(false);
+        .valueFromArgument("--monitoring-prometheus-enable")
+        .defaultValue(false)
+        .implicit();
     // clang-format on
 
     try {

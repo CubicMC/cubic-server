@@ -43,6 +43,10 @@
 
 #include "registry/MasterRegistry.hpp"
 
+#if PROMETHEUS_SUPPORT == 1
+#include "PrometheusExporter.hpp"
+#endif
+
 constexpr char MC_VERSION[] = "1.19.3";
 constexpr char MC_VERSION_BRANDING[] = "CubicServer 1.19.3";
 constexpr uint16_t MC_PROTOCOL = 761;
@@ -155,8 +159,13 @@ private:
 
     RSAEncryptionHandler _rsaKey;
 
-    // http stuff
-    std::thread _httpThread;
+#if PROMETHEUS_SUPPORT == 1
+    std::unique_ptr<PrometheusExporter> _prometheusExporter;
+
+public:
+    NODISCARD inline const PrometheusExporter &getPrometheusExporter() const { return *_prometheusExporter; }
+    NODISCARD inline PrometheusExporter &getPrometheusExporter() { return *_prometheusExporter; }
+#endif
 
 public:
     NODISCARD inline bool isCompressed() const { return _config["compression"].as<bool>(); }
