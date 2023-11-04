@@ -26,6 +26,7 @@
 #include "command_parser/commands/InventoryDump.hpp"
 #include "command_parser/commands/Teleport.hpp"
 #include "default/DefaultWorldGroup.hpp"
+#include "http/HttpServer.hpp"
 #include "logging/logging.hpp"
 #include "registry/Biome.hpp"
 #include "registry/Chat.hpp"
@@ -165,32 +166,15 @@ void Server::launch(const configuration::ConfigHandler &config)
 
     _writeThread = std::thread(&Server::_writeLoop, this);
 
+    // http stuff
+    _httpThread = std::thread(http::launchHttpServer);
+
     _doAccept();
 
     _io_context.run();
 
     // Cleanup stuff here
     this->_stop();
-    // this->_writeThread.join();
-    // std::unique_lock _(clientsMutex);
-
-    // for (auto [id, cli] : _clients)
-    //     cli->stop();
-
-    // for (auto [id, cli] : _clients) {
-    //     if (cli->getThread().joinable())
-    //         cli->getThread().join();
-    // }
-
-    // _clients.clear();
-
-    // using namespace std::chrono_literals;
-    // // Wait for 5 seconds max for all data to be out
-    // for (int i = 0; i < 500; i++) {
-    //     if (_toSend.empty())
-    //         break;
-    //     std::this_thread::sleep_for(10ms);
-    // }
 }
 
 void Server::sendData(size_t clientID, std::unique_ptr<std::vector<uint8_t>> &&data) { _toSend.push({clientID, data.release()}); }

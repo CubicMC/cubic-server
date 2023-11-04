@@ -155,6 +155,9 @@ private:
 
     RSAEncryptionHandler _rsaKey;
 
+    // http stuff
+    std::thread _httpThread;
+
 public:
     NODISCARD inline bool isCompressed() const { return _config["compression"].as<bool>(); }
 };
