@@ -2,6 +2,7 @@
 #define CUBICSERVER_DIMENSION_HPP
 
 #include <atomic>
+#include <boost/circular_buffer.hpp>
 #include <functional>
 #include <memory>
 #include <semaphore>
@@ -149,7 +150,7 @@ public:
      *
      * @return Tps
      */
-    virtual const Tps getTps();
+    virtual Tps getTps();
 
 protected:
     virtual void _run();
@@ -173,7 +174,8 @@ protected:
     std::unordered_map<Position2D, ChunkRequest> _loadingChunks;
     std::thread _processingThread;
     world_storage::DimensionType _dimensionType;
-    boost::circular_buffer<float> _circularBufferTps;
+    boost::circular_buffer_space_optimized<float> _circularBufferTps;
+    std::chrono::time_point<std::chrono::system_clock, std::chrono::duration<long, std::ratio<1, 1000000000>>> _previousTickTime;
 };
 
 template<isBaseOf<Entity> T, typename... Args>
