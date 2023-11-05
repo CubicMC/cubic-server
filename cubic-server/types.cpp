@@ -60,7 +60,7 @@ bool u128::operator==(const u128 &other) const { return this->most == other.most
 
 Position::valueType Position::manhattanDistance(const Position &other) const { return std::abs(x - other.x) + std::abs(y - other.y) + std::abs(z - other.z); }
 
-const std::string Tps::toString() const
+std::string Tps::toString() const
 {
     std::stringstream sstr;
     sstr << "Tps: " << this->oneMinTps << " " << this->fiveMinTps << " " << this->fifteenMinTps;

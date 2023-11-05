@@ -9,6 +9,7 @@
 #include "math/Vector3.hpp"
 #include "protocol/ClientPackets.hpp"
 #include "types.hpp"
+#include <chrono>
 #include <cstdint>
 #include <memory>
 #include <mutex>
@@ -31,13 +32,13 @@ Dimension::Dimension(std::shared_ptr<World> world, world_storage::DimensionType 
     _loadingChunks({}),
     _processingThread(),
     _dimensionType(dimensionType),
-    _circularBufferTps(18000)
+    _circularBufferTps(18000),
+    _previousTickTime(std::chrono::high_resolution_clock::now())
 {
 }
 
 void Dimension::tick()
 {
-    auto startTime = std::chrono::system_clock::now();
     {
         std::lock_guard _(_entitiesMutex);
         for (auto ent : _entities) {
@@ -63,9 +64,11 @@ void Dimension::tick()
             _newEntities.clear();
         }
     }
-    auto endTime = std::chrono::system_clock::now();
-    auto compute_time = endTime - startTime;
-    _circularBufferTps.push_back(std::chrono::duration_cast<std::chrono::milliseconds>(compute_time).count());
+    auto endTime = std::chrono::high_resolution_clock::now();
+    auto compute_time = endTime - _previousTickTime;
+    _previousTickTime = endTime;
+    float compute_time_micro = (float) std::chrono::duration_cast<std::chrono::microseconds>(compute_time).count();
+    _circularBufferTps.push_back(compute_time_micro);
 }
 
 void Dimension::stop()
@@ -349,26 +352,26 @@ void Dimension::sendChunkToPlayers(int x, int z)
     this->_loadingChunks.erase({x, z});
 }
 
-const Tps Dimension::getTps()
+Tps Dimension::getTps()
 {
     Tps tps {0, 0, 0};
     auto buffer_size = _circularBufferTps.size();
-    auto buffer_end = _circularBufferTps.end() - 1;
+    auto buffer_end = _circularBufferTps.end();
 
     if (buffer_size < 20 * 60 - 1) {
-        tps.oneMinTps = tps.fiveMinTps = tps.fifteenMinTps = (std::accumulate(buffer_end - buffer_size, buffer_end, 0.0f) / buffer_size) * 20;
+        tps.oneMinTps = tps.fiveMinTps = tps.fifteenMinTps = 1.0f / ((std::accumulate(buffer_end - buffer_size, buffer_end, 0.0f) / (float) buffer_size) / 1000000.0f);
         return tps;
     }
-    tps.oneMinTps = (std::accumulate(buffer_end - 20 * 60, buffer_end, 0.0f) / (20 * 60)) * 20;
+    tps.oneMinTps = 1.0f / ((std::accumulate(buffer_end - 20 * 60, buffer_end, 0.0f) / (float) (20 * 60)) / 1000000.0f);
     if (buffer_size < 20 * 60 * 5 - 1) {
-        tps.fiveMinTps = tps.fifteenMinTps = (std::accumulate(buffer_end - buffer_size, buffer_end, 0.0f) / buffer_size) * 20;
+        tps.fiveMinTps = tps.fifteenMinTps = 1.0f / ((std::accumulate(buffer_end - buffer_size, buffer_end, 0.0f) / (float) buffer_size) / 1000000.0f);
         return tps;
     }
-    tps.fiveMinTps = (std::accumulate(buffer_end - 20 * 60 * 5, buffer_end, 0.0f) / (20 * 60 * 5)) * 20;
+    tps.fiveMinTps = 1.0f / ((std::accumulate(buffer_end - 20 * 60 * 5, buffer_end, 0.0f) / (float) (20 * 60 * 5)) / 1000000.0f);
     if (buffer_size < 20 * 60 * 15 - 1) {
-        tps.fifteenMinTps = (std::accumulate(buffer_end - buffer_size, buffer_end, 0.0f) / buffer_size) * 20;
+        tps.fifteenMinTps = 1.0f / ((std::accumulate(buffer_end - buffer_size, buffer_end, 0.0f) / (float) buffer_size) / 1000000.0f);
         return tps;
     }
-    tps.fifteenMinTps = (std::accumulate(buffer_end - 20 * 60 * 15, buffer_end, 0.0f) / (20 * 60 * 15)) * 20;
+    tps.fifteenMinTps = 1.0f / ((std::accumulate(buffer_end - 20 * 60 * 15, buffer_end, 0.0f) / (float) (20 * 60 * 15)) / 1000000.0f);
     return tps;
 }
