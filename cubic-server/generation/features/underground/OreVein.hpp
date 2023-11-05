@@ -118,18 +118,25 @@ public:
      * @param blockID The ID of the block to compose the blob
      * @param spawnSize Blob spawn size (according to the value defined above)
      * @param pos The position of the blob
-     * @return a vector holding all the blocks
      *
      */
-    const std::vector<generation::Generator::FeatureBlock> createBlob(const BlockId &blockID, const int spawnSize, const Position &pos) const;
+    void createBlob(const BlockId &blockID, const int spawnSize, const Position &pos) const;
 
     /**
-     * @brief Generates a blob at each defined position
-     *
-     * @param ChuckColumn The chunks where to generate the blobs
+     * @brief Generates all the blobs of the world
      *
      */
-    void generateBlobs(std::vector<world_storage::ChunkColumn *>);
+    void generateBlobs();
+
+protected:
+    void generateIronBlobs();
+    void generateRedstoneBlobs();
+    void generateDiamondBlobs();
+    void generateCoalBlobs();
+    void generateEmeraldBlobs();
+    void generateCopperBlobs();
+    void generateLapisBlobs();
+    void generateGoldBlobs();
 
 private:
     /* The chunks where to generate the feature */
