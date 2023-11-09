@@ -6,6 +6,7 @@
 #include "WorldGroup.hpp"
 #include "logging/logging.hpp"
 #include <cstdint>
+#include <vector>
 
 World::World(std::shared_ptr<WorldGroup> worldGroup, world_storage::WorldType worldType, std::string folder):
     _chat(worldGroup->getChat()),
@@ -19,8 +20,7 @@ World::World(std::shared_ptr<WorldGroup> worldGroup, world_storage::WorldType wo
     _seed(CONFIG["seed"].as<int64_t>()),
     _generationPool(CONFIG["num-gen-thread"].as<uint16_t>(), "WorldGen"),
     _worldType(worldType),
-    _folder(folder),
-    _tps({0, 0, 0})
+    _folder(folder)
 {
     _timeUpdateClock.start();
 }
@@ -186,4 +186,12 @@ void World::setTime(int time)
 {
     if (time >= 0)
         _time = time;
+}
+
+std::vector<std::pair<std::string, Tps>> World::getTps() const
+{
+    std::vector<std::pair<std::string, Tps>> tps;
+    for (const auto &[name, dim] : _dimensions)
+        tps.emplace_back(name, dim->getTps());
+    return tps;
 }
