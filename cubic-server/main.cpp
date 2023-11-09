@@ -177,6 +177,20 @@ auto initArgs(int argc, const char *const argv[])
         .valueFromArgument("--monitoring-prometheus-enable")
         .defaultValue(false)
         .implicit();
+
+    program.add("monitoring-prometheus-ip")
+        .help("Prometheus IP")
+        .valueFromConfig("monitoring", "prometheus", "ip")
+        .valueFromEnvironmentVariable("CBSRV_MONITORING_PROMETHEUS_IP")
+        .valueFromArgument("--monitoring-prometheus-ip")
+        .defaultValue("0.0.0.0");
+
+    program.add("monitoring-prometheus-port")
+        .help("Prometheus port")
+        .valueFromConfig("monitoring", "prometheus", "port")
+        .valueFromEnvironmentVariable("CBSRV_MONITORING_PROMETHEUS_PORT")
+        .valueFromArgument("--monitoring-prometheus-port")
+        .defaultValue("8080");
     // clang-format on
 
     try {

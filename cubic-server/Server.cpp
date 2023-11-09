@@ -158,7 +158,8 @@ void Server::launch(const configuration::ConfigHandler &config)
 
 #if PROMETHEUS_SUPPORT == 1
     if (CONFIG["monitoring-prometheus-enable"].as<bool>()) {
-        _prometheusExporter = std::make_unique<PrometheusExporter>("0.0.0.0:4242");
+        _prometheusExporter =
+            std::make_unique<PrometheusExporter>(CONFIG["monitoring-prometheus-ip"].as<std::string>() + std::string(":") + CONFIG["monitoring-prometheus-port"].as<std::string>());
         _prometheusExporter->registerMetrics();
         _prometheusExporterOn = true;
     }
