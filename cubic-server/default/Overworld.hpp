@@ -19,6 +19,8 @@ public:
     void initialize() override;
     void stop() override;
     void generateChunk(int x, int z, world_storage::GenerationState goalState = world_storage::GenerationState::READY) override;
+    void spawnPlayer(Player &player) override;
+    void removePlayer(int32_t entity_id) override;
 
 private:
     std::future<void> _worldGenFuture;
