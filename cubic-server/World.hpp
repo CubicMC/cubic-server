@@ -66,11 +66,10 @@ public:
     virtual void setTime(int time);
 
     /**
-     * @brief Get the tps of the world
-     *
-     * @return Tps&
+     * @brief Get the tps of all dimensions
+     * @return a vector of pairs of dimension name and their tps
      */
-    virtual const Tps &getTps() { return _tps; }
+    virtual std::vector<std::pair<std::string, Tps>> getTps() const;
 
 protected:
     std::shared_ptr<Chat> _chat;
@@ -85,7 +84,6 @@ protected:
     thread_pool::PriorityThreadPool _generationPool;
     world_storage::WorldType _worldType;
     std::string _folder;
-    Tps _tps;
 };
 
 #endif // CUBICSERVER_WORLD_HPP
