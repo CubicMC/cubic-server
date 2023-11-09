@@ -362,24 +362,34 @@ void Dimension::sendChunkToPlayers(int x, int z)
 
 Tps Dimension::getTps()
 {
-    Tps tps {0, 0, 0};
-    auto buffer_size = _circularBufferTps.size();
-    auto buffer_end = _circularBufferTps.end();
+    constexpr int TICK_PER_MINUTE = 20 * 60;
+    constexpr int TICKS_FOR_FIVE_MINUTES = TICK_PER_MINUTE * 5;
+    constexpr int TICKS_FOR_FIFTEEN_MINUTES = TICK_PER_MINUTE * 15;
+    constexpr float MICROSECS_IN_ONE_SEC = 1000000.0f;
 
-    if (buffer_size < 20 * 60 - 1) {
-        tps.oneMinTps = tps.fiveMinTps = tps.fifteenMinTps = 1.0f / ((std::accumulate(buffer_end - buffer_size, buffer_end, 0.0f) / (float) buffer_size) / 1000000.0f);
+    const auto &buffer_size = _circularBufferTps.size();
+    const auto &buffer_end = _circularBufferTps.end();
+    const float tpsOnFullBuffer = 1.0f / ((std::accumulate(buffer_end - buffer_size, buffer_end, 0.0f) / (float) buffer_size) / MICROSECS_IN_ONE_SEC);
+    Tps tps {0, 0, 0};
+
+    auto tpsCalculation = [buffer_end](const int tick_number) {
+        return 1.0f / ((std::accumulate(buffer_end - tick_number, buffer_end, 0.0f) / (float) (tick_number)) / MICROSECS_IN_ONE_SEC);
+    };
+
+    if (buffer_size < TICK_PER_MINUTE - 1) {
+        tps.oneMinTps = tps.fiveMinTps = tps.fifteenMinTps = tpsOnFullBuffer;
         return tps;
     }
-    tps.oneMinTps = 1.0f / ((std::accumulate(buffer_end - 20 * 60, buffer_end, 0.0f) / (float) (20 * 60)) / 1000000.0f);
-    if (buffer_size < 20 * 60 * 5 - 1) {
-        tps.fiveMinTps = tps.fifteenMinTps = 1.0f / ((std::accumulate(buffer_end - buffer_size, buffer_end, 0.0f) / (float) buffer_size) / 1000000.0f);
+    tps.oneMinTps = tpsCalculation(TICK_PER_MINUTE);
+    if (buffer_size < TICKS_FOR_FIVE_MINUTES - 1) {
+        tps.fiveMinTps = tps.fifteenMinTps = tpsOnFullBuffer;
         return tps;
     }
-    tps.fiveMinTps = 1.0f / ((std::accumulate(buffer_end - 20 * 60 * 5, buffer_end, 0.0f) / (float) (20 * 60 * 5)) / 1000000.0f);
-    if (buffer_size < 20 * 60 * 15 - 1) {
-        tps.fifteenMinTps = 1.0f / ((std::accumulate(buffer_end - buffer_size, buffer_end, 0.0f) / (float) buffer_size) / 1000000.0f);
+    tps.fiveMinTps = tpsCalculation(TICKS_FOR_FIVE_MINUTES);
+    if (buffer_size < TICKS_FOR_FIFTEEN_MINUTES - 1) {
+        tps.fifteenMinTps = tpsOnFullBuffer;
         return tps;
     }
-    tps.fifteenMinTps = 1.0f / ((std::accumulate(buffer_end - 20 * 60 * 15, buffer_end, 0.0f) / (float) (20 * 60 * 15)) / 1000000.0f);
+    tps.fifteenMinTps = tpsCalculation(TICKS_FOR_FIFTEEN_MINUTES);
     return tps;
 }
