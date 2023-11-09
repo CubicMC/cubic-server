@@ -1,6 +1,8 @@
 #include <memory>
 
 #include <prometheus/counter.h>
+#include <prometheus/gauge.h>
+#include <prometheus/info.h>
 #include <prometheus/registry.h>
 
 #include "PrometheusExporter.hpp"
@@ -16,18 +18,33 @@ void PrometheusExporter::registerMetrics()
 {
     _registry = std::make_shared<prometheus::Registry>();
 
-    // Just an example of what you can put here
-    // To add anything else to the metrics follow the readme of prometheus-cpp:
-    // https://github.com/jupp0r/prometheus-cpp/blob/master/README.md
     // clang-format off
     auto &packet_counter = prometheus::BuildCounter()
         .Name("observed_packets_total")
         .Help("Number of observed packets")
         .Register(*_registry);
     // clang-format on
-
     _packet_rx_counter = &packet_counter.Add({{"direction", "rx"}});
     _packet_tx_counter = &packet_counter.Add({{"direction", "tx"}});
+
+    // clang-format off
+    auto& version_info = prometheus::BuildInfo()
+        .Name("versions")
+        .Help("Static info about the server")
+        .Register(*_registry);
+    // clang-format on
+    _version_info = &version_info.Add({{PROGRAM_NAME, PROGRAM_VERSION}});
+
+    // clang-format off
+    auto &player_gauge = prometheus::BuildGauge()
+        .Name("player_count")
+        .Help("Number of players connected")
+        .Register(*_registry);
+    // clang-format on
+    _player_global_gauge = &player_gauge.Add({{"dimension", "global"}});
+    _player_overworld_gauge = &player_gauge.Add({{"dimension", "overworld"}});
+    _player_nether_gauge = &player_gauge.Add({{"dimension", "nether"}});
+    _player_end_gauge = &player_gauge.Add({{"dimension", "end"}});
 
     _exposer.RegisterCollectable(_registry);
 

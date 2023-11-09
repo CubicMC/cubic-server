@@ -1,4 +1,5 @@
 #include "TheNether.hpp"
+#include "Server.hpp"
 
 void TheNether::initialize()
 {
@@ -17,4 +18,16 @@ void TheNether::tick()
     //    LDEBUG("Tick - TheNether");
 
     // auto endProcessing = std::chrono::system_clock::now();
+}
+
+void TheNether::removePlayer(int32_t entity_id)
+{
+    Dimension::removePlayer(entity_id);
+    PEXP(decrementPlayerCountNether);
+}
+
+void TheNether::spawnPlayer(Player &player)
+{
+    Dimension::spawnPlayer(player);
+    PEXP(incrementPlayerCountNether);
 }
