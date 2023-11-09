@@ -148,6 +148,7 @@ void Client::handleParsedClientPacket(std::unique_ptr<protocol::BaseServerPacket
 {
     using namespace protocol;
 
+    PEXP(incrementPacketRxCounter);
     switch (_status) {
     case ClientStatus::Initial:
         switch (packetID) {

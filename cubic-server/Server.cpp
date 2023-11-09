@@ -156,10 +156,13 @@ void Server::launch(const configuration::ConfigHandler &config)
 
     _writeThread = std::thread(&Server::_writeLoop, this);
 
+#if PROMETHEUS_SUPPORT == 1
     if (CONFIG["monitoring-prometheus-enable"].as<bool>()) {
         _prometheusExporter = std::make_unique<PrometheusExporter>("0.0.0.0:4242");
         _prometheusExporter->registerMetrics();
+        _prometheusExporterOn = true;
     }
+#endif
 
     _doAccept();
 
@@ -201,6 +204,7 @@ void Server::_writeLoop()
             }
             boost::system::error_code ec;
             boost::asio::write(client->getSocket(), boost::asio::buffer(data.data->data(), data.data->size()), ec);
+            PEXP(incrementPacketTxCounter);
             // TODO(huntears): Handle errors properly xd
             if (ec) {
                 client->disconnect("Network error");

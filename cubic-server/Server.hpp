@@ -57,6 +57,19 @@ constexpr uint16_t MS_PER_TICK = 50;
 #define SOUND_EVENT_CONVERTER Server::getInstance()->getSoundEventConverter()
 #define CONFIG Server::getInstance()->getConfig()
 
+#if PROMETHEUS_SUPPORT == 1
+#define PROMETHEUS Server::getInstance()->getPrometheusExporter()
+#define PEXP(method)                                   \
+    if (Server::getInstance()->prometheusExporterOn()) \
+        Server::getInstance()->getPrometheusExporter().method();
+#define PEXPP(method, ...)                             \
+    if (Server::getInstance()->prometheusExporterOn()) \
+        Server::getInstance()->getPrometheusExporter().method(__VA_ARGS__);
+#else
+#define PEXP(method)
+#define PEXPP(method, ...)
+#endif
+
 class Client;
 class WorldGroup;
 
@@ -161,10 +174,12 @@ private:
 
 #if PROMETHEUS_SUPPORT == 1
     std::unique_ptr<PrometheusExporter> _prometheusExporter;
+    bool _prometheusExporterOn;
 
 public:
     NODISCARD inline const PrometheusExporter &getPrometheusExporter() const { return *_prometheusExporter; }
     NODISCARD inline PrometheusExporter &getPrometheusExporter() { return *_prometheusExporter; }
+    bool prometheusExporterOn() const noexcept { return _prometheusExporterOn; }
 #endif
 
 public:
