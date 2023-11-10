@@ -429,15 +429,15 @@ void ChunkColumn::_generateRawGeneration(generation::Generator &generator)
 {
     std::lock_guard<std::mutex> _(this->_generationLock);
     // generate blocks
-    // for (int y = CHUNK_HEIGHT_MIN; y < CHUNK_HEIGHT_MAX; y++) {
-    //     for (int z = 0; z < SECTION_WIDTH; z++) {
-    //         for (int x = 0; x < SECTION_WIDTH; x++) {
-    //             auto block = generator.getBlock(x + this->_chunkPos.x * SECTION_WIDTH, y, z + this->_chunkPos.z * SECTION_WIDTH);
-    //             // if (block != Blocks::Air::toProtocol())
-    //             updateBlock({x, y, z}, block);
-    //         }
-    //     }
-    // }
+    for (int y = CHUNK_HEIGHT_MIN; y < CHUNK_HEIGHT_MAX; y++) {
+        for (int z = 0; z < SECTION_WIDTH; z++) {
+            for (int x = 0; x < SECTION_WIDTH; x++) {
+                auto block = generator.getBlock(x + this->_chunkPos.x * SECTION_WIDTH, y, z + this->_chunkPos.z * SECTION_WIDTH);
+                // if (block != Blocks::Air::toProtocol())
+                updateBlock({x, y, z}, block);
+            }
+        }
+    }
     // generate bedrock
     for (int x = 0; x < SECTION_WIDTH; x++) {
         for (int z = 0; z < SECTION_WIDTH; z++) {
@@ -482,7 +482,7 @@ void ChunkColumn::_generateRawGeneration(generation::Generator &generator)
 void ChunkColumn::_generateLakes(UNUSED generation::Generator &generator)
 {
     std::lock_guard<std::mutex> _(this->_generationLock);
-    int waterLevel = 86;
+    // int waterLevel = 86;
 
     // TODO: improve this to fill caves
     // generate water
