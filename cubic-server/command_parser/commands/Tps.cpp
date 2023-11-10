@@ -20,7 +20,7 @@ void Tps::autocomplete(UNUSED std::vector<std::string> &args, Player *invoker) c
         LINFO("autocomplete time");
 }
 
-void Tps::execute(UNUSED std::vector<std::string> &args, Player *invoker) const
+void Tps::execute(std::vector<std::string> &args, Player *invoker) const
 {
     switch (args.size()) {
     case 0: {

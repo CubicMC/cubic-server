@@ -66,3 +66,10 @@ std::string Tps::toString() const
     sstr << "Tps: " << this->oneMinTps << " " << this->fiveMinTps << " " << this->fifteenMinTps;
     return sstr.str();
 }
+
+std::string MSPTInfos::toString() const
+{
+    std::stringstream sstr;
+    sstr << "MSPTInfos: " << this->min << " " << this->mean << " " << this->max;
+    return sstr.str();
+}

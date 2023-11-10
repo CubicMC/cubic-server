@@ -4,6 +4,7 @@
 #include "command_parser/commands/Help.hpp"
 #include "command_parser/commands/Log.hpp"
 #include "command_parser/commands/Loot.hpp"
+#include "command_parser/commands/MSPT.hpp"
 #include "command_parser/commands/Op.hpp"
 #include "command_parser/commands/QuestionMark.hpp"
 #include "command_parser/commands/Reload.hpp"

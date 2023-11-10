@@ -15,7 +15,7 @@
 namespace command_parser {
 struct Tps : public CommandBase {
     Tps():
-        CommandBase("tps", "/tps [<dimension name>]", false)
+        CommandBase("tps", "/tps (dimension name)", false)
     {
     }
 

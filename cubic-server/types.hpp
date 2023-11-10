@@ -219,4 +219,11 @@ struct Tps {
     std::string toString() const;
 };
 
+struct MSPTInfos {
+    float mean;
+    float min;
+    float max;
+    std::string toString() const;
+};
+
 #endif // CUBICSERVER_TYPES_HPP
