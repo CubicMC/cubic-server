@@ -9,7 +9,7 @@
 #include "chat/Message.hpp"
 #include "protocol/Structures.hpp"
 
-class Position;
+struct Position;
 enum class Pose;
 
 namespace protocol::entity_metadata {

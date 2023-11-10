@@ -11,12 +11,14 @@ option(NO_GUI "Build without GUI" OFF)
 option(STATIC_LINK "Link the binary statically" OFF)
 option(GTEST "Build with Google Test" OFF)
 option(ARM "Build for ARM" OFF)
+option(PROMETHEUS "Build with Prometheus support" ON)
 
 message(STATUS "Debugging network: ${DEBUG_NETWORK}")
 message(STATUS "Building without GUI: ${NO_GUI}")
 message(STATUS "Linking statically: ${STATIC_LINK}")
 message(STATUS "Building with Google Test: ${GTEST}")
 message(STATUS "Building for ARM: ${ARM}")
+message(STATUS "Building with Prometheus support: ${PROMETHEUS}")
 
 if (USE_CLANG)
     find_program(CLANG_EXECUTABLE clang REQUIRED)
@@ -152,6 +154,20 @@ target_include_directories(spdlog SYSTEM INTERFACE ${spdlog_include})
 get_target_property(yaml_cpp_include yaml-cpp INTERFACE_INCLUDE_DIRECTORIES)
 target_include_directories(yaml-cpp SYSTEM INTERFACE ${yaml_cpp_include})
 
+if(PROMETHEUS)
+    FetchContent_Declare(
+        prometheus-cpp
+        GIT_REPOSITORY https://github.com/jupp0r/prometheus-cpp.git
+        GIT_TAG v1.1.0
+        GIT_PROGRESS TRUE
+        GIT_SHALLOW TRUE
+    )
+
+    FetchContent_MakeAvailable(
+        prometheus-cpp
+    )
+endif()
+
 if(GTEST) # if the flag GTEST is true
     FetchContent_Declare(
         googletest
@@ -195,6 +211,7 @@ target_compile_definitions(${CMAKE_PROJECT_NAME} PRIVATE
     PROGRAM_VERSION="${CMAKE_PROJECT_VERSION}"
     MINECRAFT_VERSION="${MINECRAFT_VERSION}"
     GUI_UNAVAILABLE=$<BOOL:${NO_GUI}>
+    PROMETHEUS_SUPPORT=$<BOOL:${PROMETHEUS}>
 )
 
 if (STATIC_LINK)
@@ -236,6 +253,10 @@ target_link_libraries (${CMAKE_PROJECT_NAME} PRIVATE
     $<$<NOT:$<BOOL:${Boost_FOUND}>>:Boost::lockfree>
     $<$<NOT:$<BOOL:${Boost_FOUND}>>:Boost::circular_buffer>
 )
+
+if (PROMETHEUS)
+target_link_libraries (${CMAKE_PROJECT_NAME} PRIVATE prometheus-cpp::pull)
+endif ()
 
 if (CMAKE_BUILD_TYPE MATCHES RELWITHDEBINFO)
     target_link_libraries (${CMAKE_PROJECT_NAME} PRIVATE

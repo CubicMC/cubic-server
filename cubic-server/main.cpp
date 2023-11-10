@@ -169,6 +169,28 @@ auto initArgs(int argc, const char *const argv[])
         .valueFromArgument("--randomtickspeed")
         .defaultValue(3)
         .inRange(0, std::numeric_limits<int32_t>::max());
+
+    program.add("monitoring-prometheus-enable")
+        .help("Enable prometheus data exporting")
+        .valueFromConfig("monitoring", "prometheus", "enable")
+        .valueFromEnvironmentVariable("CBSRV_MONITORING_PROMETHEUS_ENABLE")
+        .valueFromArgument("--monitoring-prometheus-enable")
+        .defaultValue(false)
+        .implicit();
+
+    program.add("monitoring-prometheus-ip")
+        .help("Prometheus IP")
+        .valueFromConfig("monitoring", "prometheus", "ip")
+        .valueFromEnvironmentVariable("CBSRV_MONITORING_PROMETHEUS_IP")
+        .valueFromArgument("--monitoring-prometheus-ip")
+        .defaultValue("0.0.0.0");
+
+    program.add("monitoring-prometheus-port")
+        .help("Prometheus port")
+        .valueFromConfig("monitoring", "prometheus", "port")
+        .valueFromEnvironmentVariable("CBSRV_MONITORING_PROMETHEUS_PORT")
+        .valueFromArgument("--monitoring-prometheus-port")
+        .defaultValue("8080");
     // clang-format on
 
     try {

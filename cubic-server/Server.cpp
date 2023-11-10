@@ -14,6 +14,7 @@
 
 #include <mbedtls/rsa.h>
 
+#include "PrometheusExporter.hpp"
 #include "Server.hpp"
 #include "World.hpp"
 
@@ -37,20 +38,10 @@ using boost::asio::ip::tcp;
 
 Server::Server():
     _running(false),
-    // _sockfd(-1),
     _config(),
     _pluginManager(this),
     _toSend(1024)
 {
-    // _config.load("./config.yml");
-    // _config.parse("./config.yml");
-    // _config.parse(2, (const char * const *){"./CubicServer", "--nogui"});
-    // _host = _config.getIP();
-    // _port = _config.getPort();
-    // _maxPlayer = _config.getMaxPlayers();
-    // _motd = _config.getMotd();
-    // _enforceWhitelist = _config.getEnforceWhitelist();
-
     _commands.emplace_back(std::make_unique<command_parser::Help>());
     _commands.emplace_back(std::make_unique<command_parser::QuestionMark>());
     _commands.emplace_back(std::make_unique<command_parser::Stop>());
@@ -165,32 +156,21 @@ void Server::launch(const configuration::ConfigHandler &config)
 
     _writeThread = std::thread(&Server::_writeLoop, this);
 
+#if PROMETHEUS_SUPPORT == 1
+    if (CONFIG["monitoring-prometheus-enable"].as<bool>()) {
+        _prometheusExporter =
+            std::make_unique<PrometheusExporter>(CONFIG["monitoring-prometheus-ip"].as<std::string>() + std::string(":") + CONFIG["monitoring-prometheus-port"].as<std::string>());
+        _prometheusExporter->registerMetrics();
+        _prometheusExporterOn = true;
+    }
+#endif
+
     _doAccept();
 
     _io_context.run();
 
     // Cleanup stuff here
     this->_stop();
-    // this->_writeThread.join();
-    // std::unique_lock _(clientsMutex);
-
-    // for (auto [id, cli] : _clients)
-    //     cli->stop();
-
-    // for (auto [id, cli] : _clients) {
-    //     if (cli->getThread().joinable())
-    //         cli->getThread().join();
-    // }
-
-    // _clients.clear();
-
-    // using namespace std::chrono_literals;
-    // // Wait for 5 seconds max for all data to be out
-    // for (int i = 0; i < 500; i++) {
-    //     if (_toSend.empty())
-    //         break;
-    //     std::this_thread::sleep_for(10ms);
-    // }
 }
 
 void Server::sendData(size_t clientID, std::unique_ptr<std::vector<uint8_t>> &&data) { _toSend.push({clientID, data.release()}); }
@@ -225,6 +205,7 @@ void Server::_writeLoop()
             }
             boost::system::error_code ec;
             boost::asio::write(client->getSocket(), boost::asio::buffer(data.data->data(), data.data->size()), ec);
+            PEXP(incrementPacketTxCounter);
             // TODO(huntears): Handle errors properly xd
             if (ec) {
                 client->disconnect("Network error");
@@ -245,15 +226,6 @@ void Server::triggerClientCleanup(size_t clientID)
         _clients.erase(clientID);
         return;
     }
-    // boost::lockfree::queue<size_t> toDelete(_clients.size());
-    // for (auto [id, cli] : _clients) {
-    //     if (!cli) {
-    //         _clients.erase(id);
-    //     } else if (cli->isDisconnected()) {
-    //         cli->getThread().join();
-    //         _clients.erase(id);
-    //     }
-    // }
     std::erase_if(_clients, [](const auto augh) {
         if (augh.second->isDisconnected()) {
             if (augh.second->getThread().joinable())
@@ -268,17 +240,6 @@ void Server::addCommand(std::unique_ptr<CommandBase> command) { this->_commands.
 
 void Server::_doAccept()
 {
-    // while (_running) {
-    //     boost::system::error_code ec;
-    //     tcp::socket socket(_io_context);
-
-    //     _acceptor->accept(socket, ec);
-    //     if (!ec) {
-    //         std::shared_ptr<Client> _cli(new Client(std::move(socket), currentClientID));
-    //         _clients.emplace(currentClientID++, _cli);
-    //         _cli->run();
-    //     }
-    // }
     tcp::socket *socket = new tcp::socket(_io_context);
 
     _acceptor->async_accept(*socket, [socket, this](const boost::system::error_code &error) {
@@ -290,10 +251,6 @@ void Server::_doAccept()
         }
         delete socket;
         if (this->_running) {
-            // for (auto [id, cli] : _clients) {
-            //     if (!cli || cli->isDisconnected()) // Somehow they can already be freed before we get here...
-            //         _clients.erase(id);
-            // }
             this->_doAccept();
         }
     });

@@ -47,6 +47,13 @@ target_sources (${CMAKE_PROJECT_NAME} PRIVATE
     CompressionUtils.hpp
 )
 
+if(PROMETHEUS)
+target_sources (${CMAKE_PROJECT_NAME} PRIVATE
+    PrometheusExporter.cpp
+    PrometheusExporter.hpp
+)
+endif()
+
 file(MAKE_DIRECTORY ${CMAKE_BINARY_DIR}/plugins)
 
 if (GTEST)
