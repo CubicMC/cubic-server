@@ -10,6 +10,40 @@
 #include "chat/Message.hpp"
 #include "logging/logging.hpp"
 
+void worldTPSMessage(Player *invoker)
+{
+    if (invoker) {
+        auto msg = chat::Message("Dimension Tps: 1min 5min 15min");
+        msg.style().italic = true;
+        invoker->getDimension()->getWorld()->getChat()->sendSystemMessage(msg, *invoker);
+        for (const auto &each : invoker->getDimension()->getWorld()->getTps()) {
+            auto msg = chat::Message(each.first + " " + each.second.toString());
+            msg.style().italic = true;
+            invoker->getDimension()->getWorld()->getChat()->sendSystemMessage(msg, *invoker);
+        }
+    } else {
+        LINFO("Dimension Tps: 1min 5min 15min");
+        for (const auto &each : Server::getInstance()->getWorldGroup("default")->getWorld("default")->getTps())
+            LINFO(each.first + " " + each.second.toString());
+    }
+}
+
+void dimensionTPSMessage(std::vector<std::string> &args, Player *invoker)
+{
+    if (auto search = Server::getInstance()->getWorldGroup("default")->getWorld("default")->getDimensions().find(args[0]);
+        search != Server::getInstance()->getWorldGroup("default")->getWorld("default")->getDimensions().end()) {
+        if (invoker)
+            invoker->getDimension()->getWorld()->getChat()->sendSystemMessage(chat::Message(args[0] + " " + search->second->getTps().toString(), {false, true}), *invoker);
+        else
+            LINFO(args[0] + " " + search->second->getTps().toString());
+    } else {
+        if (invoker)
+            invoker->getDimension()->getWorld()->getChat()->sendSystemMessage("Dimension " + args[0] + " not found", *invoker);
+        else
+            LINFO("Dimension {} not found", args[0]);
+    }
+}
+
 namespace command_parser {
 
 void Tps::autocomplete(UNUSED std::vector<std::string> &args, Player *invoker) const
@@ -22,41 +56,12 @@ void Tps::autocomplete(UNUSED std::vector<std::string> &args, Player *invoker) c
 
 void Tps::execute(std::vector<std::string> &args, Player *invoker) const
 {
-    switch (args.size()) {
-    case 0: {
-        if (invoker) {
-            auto msg = chat::Message("Dimension Tps: 1min 5min 15min");
-            msg.style().italic = true;
-            invoker->getDimension()->getWorld()->getChat()->sendSystemMessage(msg, *invoker);
-            for (const auto &each : invoker->getDimension()->getWorld()->getTps()) {
-                auto msg = chat::Message(each.first + " " + each.second.toString());
-                msg.style().italic = true;
-                invoker->getDimension()->getWorld()->getChat()->sendSystemMessage(msg, *invoker);
-            }
-        } else {
-            LINFO("Dimension Tps: 1min 5min 15min");
-            for (const auto &each : Server::getInstance()->getWorldGroup("default")->getWorld("default")->getTps())
-                LINFO(each.first + " " + each.second.toString());
-        }
-        break;
-    }
-    case 1:
-        if (auto search = Server::getInstance()->getWorldGroup("default")->getWorld("default")->getDimensions().find(args[0]);
-            search != Server::getInstance()->getWorldGroup("default")->getWorld("default")->getDimensions().end()) {
-            if (invoker)
-                invoker->getDimension()->getWorld()->getChat()->sendSystemMessage(chat::Message(args[0] + " " + search->second->getTps().toString(), {false, true}), *invoker);
-            else
-                LINFO(args[0] + " " + search->second->getTps().toString());
-        } else {
-            if (invoker)
-                invoker->getDimension()->getWorld()->getChat()->sendSystemMessage("Dimension " + args[0] + " not found", *invoker);
-            else
-                LINFO("Dimension {} not found", args[0]);
-        }
-        break;
-    default:
+    if (args.size() == 0) {
+        worldTPSMessage(invoker);
+    } else if (args.size() == 1) {
+        dimensionTPSMessage(args, invoker);
+    } else {
         this->help(args, invoker);
-        break;
     }
 }
 

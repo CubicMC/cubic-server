@@ -32,9 +32,9 @@ Dimension::Dimension(std::shared_ptr<World> world, world_storage::DimensionType 
     _loadingChunks({}),
     _processingThread(),
     _dimensionType(dimensionType),
-    _circularBufferTps(18000),
+    _circularBufferTps(TICKS_FOR_FIFTEEN_MINUTES),
     _previousTickTime(std::chrono::high_resolution_clock::now()),
-    _circularBufferMSPT(18000)
+    _circularBufferMSPT(TICKS_FOR_FIFTEEN_MINUTES)
 {
 }
 
@@ -367,8 +367,8 @@ void Dimension::sendChunkToPlayers(int x, int z)
 
 Tps Dimension::getTps() const
 {
-    const auto &buffer_size = _circularBufferTps.size();
-    const auto &buffer_end = _circularBufferTps.end();
+    const auto buffer_size = _circularBufferTps.size();
+    const auto buffer_end = _circularBufferTps.end();
     const auto tpsCalculation = [buffer_end](const int tick_number) {
         return 1.0f / ((std::accumulate(buffer_end - tick_number, buffer_end, 0.0f) / (float) (tick_number)) / MICROSECS_IN_ONE_SEC);
     };
@@ -396,8 +396,8 @@ Tps Dimension::getTps() const
 
 MSPTInfos Dimension::getMSPTInfos() const
 {
-    const auto &buffer_begin = _circularBufferMSPT.begin();
-    const auto &buffer_end = _circularBufferMSPT.end();
+    const auto buffer_begin = _circularBufferMSPT.begin();
+    const auto buffer_end = _circularBufferMSPT.end();
     // clang-format off
     return {
         *std::min_element(buffer_begin, buffer_end) / MILLIS_IN_ONE_SEC,
