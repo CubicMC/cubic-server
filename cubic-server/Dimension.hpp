@@ -150,7 +150,7 @@ public:
     mutable std::recursive_mutex _playersMutex;
     mutable std::recursive_mutex _entitiesMutex;
     mutable std::recursive_mutex _newEntitiesMutex;
-    mutable std::mutex _loadingChunksMutex;
+    mutable std::recursive_mutex _loadingChunksMutex;
 
 protected:
     std::counting_semaphore<SEMAPHORE_MAX> _dimensionLock;
