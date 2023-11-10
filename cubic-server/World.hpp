@@ -71,6 +71,12 @@ public:
      */
     virtual std::vector<std::pair<std::string, Tps>> getTps() const;
 
+    /**
+     * @brief Get the mspt of all dimensions
+     * @return a vector of pairs of dimension name and their mspt
+     */
+    virtual std::vector<std::pair<std::string, MSPTInfos>> getMSPTInfos() const;
+
 protected:
     std::shared_ptr<Chat> _chat;
     std::shared_ptr<WorldGroup> _worldGroup;

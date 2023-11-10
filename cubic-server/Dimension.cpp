@@ -33,12 +33,14 @@ Dimension::Dimension(std::shared_ptr<World> world, world_storage::DimensionType 
     _processingThread(),
     _dimensionType(dimensionType),
     _circularBufferTps(18000),
-    _previousTickTime(std::chrono::high_resolution_clock::now())
+    _previousTickTime(std::chrono::high_resolution_clock::now()),
+    _circularBufferMSPT(18000)
 {
 }
 
 void Dimension::tick()
 {
+    auto startTickTime = std::chrono::high_resolution_clock::now();
     {
         std::lock_guard _(_entitiesMutex);
         for (auto ent : _entities) {
@@ -66,9 +68,12 @@ void Dimension::tick()
     }
     auto endTime = std::chrono::high_resolution_clock::now();
     auto compute_time = endTime - _previousTickTime;
+    auto msptTime = endTime - startTickTime;
     _previousTickTime = endTime;
     float compute_time_micro = (float) std::chrono::duration_cast<std::chrono::microseconds>(compute_time).count();
+    float msptTime_micro = (float) std::chrono::duration_cast<std::chrono::microseconds>(msptTime).count();
     _circularBufferTps.push_back(compute_time_micro);
+    _circularBufferMSPT.push_back(msptTime_micro);
 }
 
 void Dimension::stop()
@@ -352,21 +357,16 @@ void Dimension::sendChunkToPlayers(int x, int z)
     this->_loadingChunks.erase({x, z});
 }
 
-Tps Dimension::getTps()
+Tps Dimension::getTps() const
 {
-    constexpr int TICK_PER_MINUTE = 20 * 60;
-    constexpr int TICKS_FOR_FIVE_MINUTES = TICK_PER_MINUTE * 5;
-    constexpr int TICKS_FOR_FIFTEEN_MINUTES = TICK_PER_MINUTE * 15;
-    constexpr float MICROSECS_IN_ONE_SEC = 1000000.0f;
-
     const auto &buffer_size = _circularBufferTps.size();
     const auto &buffer_end = _circularBufferTps.end();
-    const float tpsOnFullBuffer = 1.0f / ((std::accumulate(buffer_end - buffer_size, buffer_end, 0.0f) / (float) buffer_size) / MICROSECS_IN_ONE_SEC);
-    Tps tps {0, 0, 0};
-
-    auto tpsCalculation = [buffer_end](const int tick_number) {
+    const auto tpsCalculation = [buffer_end](const int tick_number) {
         return 1.0f / ((std::accumulate(buffer_end - tick_number, buffer_end, 0.0f) / (float) (tick_number)) / MICROSECS_IN_ONE_SEC);
     };
+    const float tpsOnFullBuffer = tpsCalculation(buffer_size);
+
+    Tps tps {0, 0, 0};
 
     if (buffer_size < TICK_PER_MINUTE - 1) {
         tps.oneMinTps = tps.fiveMinTps = tps.fifteenMinTps = tpsOnFullBuffer;
@@ -384,4 +384,17 @@ Tps Dimension::getTps()
     }
     tps.fifteenMinTps = tpsCalculation(TICKS_FOR_FIFTEEN_MINUTES);
     return tps;
+}
+
+MSPTInfos Dimension::getMSPTInfos() const
+{
+    const auto &buffer_begin = _circularBufferMSPT.begin();
+    const auto &buffer_end = _circularBufferMSPT.end();
+    // clang-format off
+    return {
+        *std::min_element(buffer_begin, buffer_end) / MILLIS_IN_ONE_SEC,
+        (std::accumulate(buffer_begin, buffer_end, 0.0f) / float(_circularBufferMSPT.size())) / MILLIS_IN_ONE_SEC,
+        *std::max_element(buffer_begin, buffer_end) / MILLIS_IN_ONE_SEC
+    };
+    // clang-format on
 }

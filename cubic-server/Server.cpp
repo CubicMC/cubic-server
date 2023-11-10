@@ -71,6 +71,7 @@ Server::Server():
     _commands.emplace_back(std::make_unique<command_parser::Tp>());
     _commands.emplace_back(std::make_unique<command_parser::Teleport>());
     _commands.emplace_back(std::make_unique<command_parser::Tps>());
+    _commands.emplace_back(std::make_unique<command_parser::MSPT>());
 }
 
 Server::~Server() { }

@@ -30,4 +30,6 @@ target_sources (${CMAKE_PROJECT_NAME} PRIVATE
     Teleport.hpp
     Tps.cpp
     Tps.hpp
+    MSPT.cpp
+    MSPT.hpp
 )

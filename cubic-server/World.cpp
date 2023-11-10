@@ -5,6 +5,7 @@
 #include "Server.hpp"
 #include "WorldGroup.hpp"
 #include "logging/logging.hpp"
+#include "types.hpp"
 #include <cstdint>
 #include <vector>
 
@@ -194,4 +195,12 @@ std::vector<std::pair<std::string, Tps>> World::getTps() const
     for (const auto &[name, dim] : _dimensions)
         tps.emplace_back(name, dim->getTps());
     return tps;
+}
+
+std::vector<std::pair<std::string, MSPTInfos>> World::getMSPTInfos() const
+{
+    std::vector<std::pair<std::string, MSPTInfos>> msptInfos;
+    for (const auto &[name, dim] : _dimensions)
+        msptInfos.emplace_back(name, dim->getMSPTInfos());
+    return msptInfos;
 }
