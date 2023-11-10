@@ -95,7 +95,7 @@ public:
      * @return a deque holding all the positions where a blob can generate for the triangle distribution
      *
      */
-    std::deque<Position> &computeTriangleDistribution(const int spawnSize, const double spawnTries, const int minY, const int maxY, const double skipRate);
+    std::deque<Position> computeTriangleDistribution(const int spawnSize, const double spawnTries, const int minY, const int maxY, const double skipRate);
 
     /**
      * @brief Define all the positions where a blob can generate
@@ -109,7 +109,7 @@ public:
      * @return a deque holding all the positions where a blob can generate
      *
      */
-    std::deque<Position> &
+    std::deque<Position>
     defineAllBlobPositions(const GenerationType generationType, const int spawnSize, const int minY, const int maxY, const double skipRate, const double spawnTries);
 
     /**
