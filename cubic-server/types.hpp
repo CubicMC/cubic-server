@@ -220,8 +220,8 @@ struct Tps {
 };
 
 struct MSPTInfos {
-    float mean;
     float min;
+    float mean;
     float max;
     std::string toString() const;
 };
