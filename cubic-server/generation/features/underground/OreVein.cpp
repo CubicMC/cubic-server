@@ -30,8 +30,7 @@ std::deque<Position> OreVein::computeTriangleDistribution(const int spawnSize, c
                         spawnTryAtY--;
                         if (spawnTryAtY > spawnTries) {
                             positions.emplace_back(x, y, z);
-                            x < z ? x = x + MAX_NB_OF_BLOCKS[spawnSize]
-                                : z = z + MAX_NB_OF_BLOCKS[spawnSize];
+                            x < z ? x = x + MAX_NB_OF_BLOCKS[spawnSize] : z = z + MAX_NB_OF_BLOCKS[spawnSize];
                             y = y + (spawnSize * 3);
                         }
                     }
@@ -47,8 +46,7 @@ std::deque<Position> OreVein::computeTriangleDistribution(const int spawnSize, c
                         spawnTryAtY++;
                         if (spawnTryAtY < spawnTries) {
                             positions.emplace_back(x, y, z);
-                            x < z ? x = x + MAX_NB_OF_BLOCKS[spawnSize]
-                                : z = z + MAX_NB_OF_BLOCKS[spawnSize];
+                            x < z ? x = x + MAX_NB_OF_BLOCKS[spawnSize] : z = z + MAX_NB_OF_BLOCKS[spawnSize];
                             y = y + (spawnSize * 3);
                         }
                     }
@@ -72,8 +70,7 @@ OreVein::defineAllBlobPositions(const GenerationType generationType, const int s
                     // skip rate
                     if (block == Blocks::Stone::toProtocol()) {
                         positions.emplace_back(x, y, z);
-                        x < z ? x = x + MAX_NB_OF_BLOCKS[spawnSize]
-                              : z = z + MAX_NB_OF_BLOCKS[spawnSize];
+                        x < z ? x = x + MAX_NB_OF_BLOCKS[spawnSize] : z = z + MAX_NB_OF_BLOCKS[spawnSize];
                         y = y + (spawnSize * 3);
                     }
                 }
