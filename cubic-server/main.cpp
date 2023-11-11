@@ -141,12 +141,12 @@ auto initArgs(int argc, const char *const argv[])
         .defaultValue(10);
 
     program.add("online-mode")
-        .help("[EXPERIMENTAL] Enable client/server encryption and only accepts legitimate accounts")
-        .valueFromConfig("experimental", "online-mode")
+        .help("Enable client/server encryption and only accepts legitimate accounts")
+        .valueFromConfig("general", "online-mode")
         .valueFromEnvironmentVariable("CBSRV_ONLINE_MODE")
         .valueFromArgument("--online-mode")
         .possibleValues(false, true)
-        .defaultValue(false);
+        .defaultValue(true);
 
     program.add("gamemode")
         .help("Default gamemode")
