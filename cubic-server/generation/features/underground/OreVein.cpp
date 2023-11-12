@@ -12,43 +12,70 @@
 #include "world_storage/ChunkColumn.hpp"
 #include "world_storage/Section.hpp"
 
+bool OreVein::isSkippedWhenAirExposed(Position pos, const int spawnSize, const double skipRate)
+{
+    for (int x = pos.x; x < pos.x + spawnSize; x++) {
+        for (int y = pos.y; y < pos.y + spawnSize; y++) {
+            for (int z = pos.z; z < pos.z + spawnSize; z++) {
+                auto block = _chunk.getBlock({x, y, z});
+                if (block == Blocks::Air::toProtocol() && skipRate == 1) {
+                    return true;
+                } else if (block == Blocks::Air::toProtocol() && skipRate > 0 && (utility::PseudoRandomGenerator::getInstance()->generateNumber(0, 10) < skipRate * 10)) {
+                    return true;
+                }
+            }
+        }
+    }
+    return false;
+}
+
+std::deque<Position> OreVein::addPositions(const double spawnTries, const int minY, const int maxY, const int spawnSize, const double skipRate, const int spawnRate)
+{
+    using namespace world_storage;
+    std::deque<Position> positions;
+
+    for (int spawnTry = spawnTries; spawnTry > 0;) {
+        for (int z = utility::PseudoRandomGenerator::getInstance()->generateNumber(0, SECTION_WIDTH / 2); z < SECTION_WIDTH; z++) {
+            for (int x = utility::PseudoRandomGenerator::getInstance()->generateNumber(0, SECTION_WIDTH / 2); x < SECTION_WIDTH; x++) {
+                int y = utility::PseudoRandomGenerator::getInstance()->generateNumber(minY, maxY);
+                auto block = _chunk.getBlock({x, y, z});
+                if (block == Blocks::Stone::toProtocol() && !isSkippedWhenAirExposed({x, y, z}, spawnSize, skipRate) && y > CHUNK_HEIGHT_MIN &&
+                    (utility::PseudoRandomGenerator::getInstance()->generateNumber(0, 100) < spawnRate)) {
+                    positions.emplace_back(x, y, z);
+                    spawnTry--;
+                    x < z ? x = x + MAX_NB_OF_BLOCKS[spawnSize] % SECTION_WIDTH : z = z + MAX_NB_OF_BLOCKS[spawnSize] % SECTION_WIDTH;
+                }
+            }
+        }
+    }
+    return positions;
+}
+
 std::deque<Position> OreVein::computeTriangleDistribution(const int spawnSize, const double spawnTries, const int minY, const int maxY, const double skipRate)
 {
     using namespace world_storage;
     std::deque<Position> positions;
-    const int midVal = (maxY - minY) / 2;
-    double spawnTryAtY = 0;
+    int positiveMinY = minY + abs(minY);
+    int positiveMaxY = maxY + abs(minY);
+    int midVal = (positiveMaxY - positiveMinY) / 2;
+    double spawnRate = 0;
 
-    for (int y = minY; y < maxY; y = y + (utility::PseudoRandomGenerator::getInstance()->generateNumber(3, 8))) {
-        if (y < midVal) {
-            spawnTryAtY = (spawnTries / (midVal - minY)) * y + spawnTries;
-            for (int z = utility::PseudoRandomGenerator::getInstance()->generateNumber(0, 6); z < SECTION_WIDTH; z++) {
-                for (int x = utility::PseudoRandomGenerator::getInstance()->generateNumber(0, 6); x < SECTION_WIDTH; x++) {
-                    auto block = _chunk.getBlock({x, y, z});
-                    // skip rate
-                    if (block == Blocks::Stone::toProtocol()) {
-                        spawnTryAtY--;
-                        if (spawnTryAtY > spawnTries) {
-                            positions.emplace_back(x, y, z);
-                            x < z ? x = x + MAX_NB_OF_BLOCKS[spawnSize] : z = z + MAX_NB_OF_BLOCKS[spawnSize];
-                            y = y + (spawnSize * 3);
-                        }
+    for (int spawnTry = spawnTries; spawnTry > 0;) {
+        for (int z = utility::PseudoRandomGenerator::getInstance()->generateNumber(0, SECTION_WIDTH / 2); z < SECTION_WIDTH; z++) {
+            for (int x = utility::PseudoRandomGenerator::getInstance()->generateNumber(0, SECTION_WIDTH / 2); x < SECTION_WIDTH; x++) {
+                int y = utility::PseudoRandomGenerator::getInstance()->generateNumber(positiveMinY, positiveMaxY);
+                if ((y - abs(minY)) > CHUNK_HEIGHT_MIN && (y - abs(minY)) < CHUNK_HEIGHT_MAX) {
+                    auto block = _chunk.getBlock({x, (y - abs(minY)), z});
+                    if (y < midVal) {
+                        spawnRate = -((spawnTries * y) / midVal) + spawnTries;
+                    } else {
+                        spawnRate = ((spawnTries * y) / midVal) - spawnTries;
                     }
-                }
-            }
-        } else {
-            spawnTryAtY = -(spawnTries / (maxY - midVal)) * y + spawnTries;
-            for (int z = utility::PseudoRandomGenerator::getInstance()->generateNumber(0, 6); z < SECTION_WIDTH; z++) {
-                for (int x = utility::PseudoRandomGenerator::getInstance()->generateNumber(0, 6); x < SECTION_WIDTH; x++) {
-                    auto block = _chunk.getBlock({x, y, z});
-                    // skip rate
-                    if (block == Blocks::Stone::toProtocol()) {
-                        spawnTryAtY++;
-                        if (spawnTryAtY < spawnTries) {
-                            positions.emplace_back(x, y, z);
-                            x < z ? x = x + MAX_NB_OF_BLOCKS[spawnSize] : z = z + MAX_NB_OF_BLOCKS[spawnSize];
-                            y = y + (spawnSize * 3);
-                        }
+                    if (block == Blocks::Stone::toProtocol() && !isSkippedWhenAirExposed({x, (y - abs(minY)), z}, spawnSize, skipRate) &&
+                        (utility::PseudoRandomGenerator::getInstance()->generateNumber(0.0, spawnTries) < spawnRate)) {
+                        positions.emplace_back(x, y - abs(minY), z);
+                        spawnTry--;
+                        x < z ? x = x + MAX_NB_OF_BLOCKS[spawnSize] : z = z + MAX_NB_OF_BLOCKS[spawnSize];
                     }
                 }
             }
@@ -62,20 +89,9 @@ OreVein::defineAllBlobPositions(const GenerationType generationType, const int s
 {
     using namespace world_storage;
     std::deque<Position> positions;
+
     if (generationType == GenerationType::UNIFORM) {
-        for (int y = minY, spawnTry = spawnTries; y < maxY && spawnTry > 0; y++, spawnTry--) {
-            for (int z = utility::PseudoRandomGenerator::getInstance()->generateNumber(0, 8); z < SECTION_WIDTH; z++) {
-                for (int x = utility::PseudoRandomGenerator::getInstance()->generateNumber(0, 8); x < SECTION_WIDTH; x++) {
-                    auto block = _chunk.getBlock({x, y, z});
-                    // skip rate
-                    if (block == Blocks::Stone::toProtocol()) {
-                        positions.emplace_back(x, y, z);
-                        x < z ? x = x + MAX_NB_OF_BLOCKS[spawnSize] : z = z + MAX_NB_OF_BLOCKS[spawnSize];
-                        y = y + (spawnSize * 3);
-                    }
-                }
-            }
-        }
+        positions = addPositions(spawnTries, minY, maxY, spawnSize, skipRate, UNIFORM_SPAWN_RATE);
     } else if (generationType == GenerationType::TRIANGLE) {
         positions = computeTriangleDistribution(spawnSize, spawnTries, minY, maxY, skipRate);
     }
@@ -84,21 +100,23 @@ OreVein::defineAllBlobPositions(const GenerationType generationType, const int s
 
 void OreVein::createBlob(const BlockId &blockID, const int spawnSize, const Position &pos) const
 {
-    auto nbOfBlocksInBlob = utility::PseudoRandomGenerator::getInstance()->generateNumber((spawnSize < 3 ? 0 : MAX_NB_OF_BLOCKS[spawnSize - 3]), MAX_NB_OF_BLOCKS[spawnSize]);
+    auto nbOfBlocksInBlob = utility::PseudoRandomGenerator::getInstance()->generateNumber(0, MAX_NB_OF_BLOCKS[spawnSize]);
     int m = pos.x + spawnSize; /**< Longitudinal spread of the blob */
     int n = pos.z + spawnSize; /**< Latitudinal spread of the blob */
-    int p = pos.y - spawnSize; /**< Altitudinal spread of the blob */
+    int p = pos.y + spawnSize; /**< Altitudinal spread of the blob */
     int r = spawnSize / 2; /**< Radius of the blob */
     int customSkipRate;
     int nb = 0;
 
-    for (int y = p; y < pos.y; y++) {
+    for (int y = pos.y; y < p && nb < nbOfBlocksInBlob; y++) {
         for (int x = pos.x; x < m; x++) {
             for (int z = pos.z; z < n; z++) {
-                customSkipRate = (((m / 2) - x) ^ 2) + (((p / 2) - y) ^ 2) + (((n / 2) - z) ^ 2);
+                customSkipRate =
+                    abs(((((m / 2) - x) % world_storage::SECTION_WIDTH) ^ 2) + ((((p / 2) - y) % world_storage::SECTION_WIDTH) ^ 2) +
+                        ((((n / 2) - z) % world_storage::SECTION_WIDTH) ^ 2) % world_storage::SECTION_WIDTH);
                 auto block = _chunk.getBlock({x, y, z});
-                if ((x - pos.x < r && z - pos.z < r) && r / 2 > customSkipRate && nb < nbOfBlocksInBlob && block != Blocks::Air::toProtocol() &&
-                    (utility::PseudoRandomGenerator::getInstance()->generateNumber(0, 5) <= abs((x - pos.x) % 5))) {
+                if ((x - pos.x < r && z - pos.z < r) && r / 2 > customSkipRate && nb < nbOfBlocksInBlob &&
+                    (block != Blocks::Air::toProtocol() && block != Blocks::Bedrock::toProtocol()) && y > world_storage::CHUNK_HEIGHT_MIN) {
                     _chunk.updateBlock({x, y, z}, blockID);
                     nb++;
                 }
@@ -124,7 +142,7 @@ void OreVein::generateIronBlobs()
 
 void OreVein::generateRedstoneBlobs()
 {
-    std::deque<Position> posTriangle = defineAllBlobPositions(GenerationType::TRIANGLE, BLOB_SPAWN_SIZE_REDSTONE, -64, -32, 0, 8);
+    std::deque<Position> posTriangle = defineAllBlobPositions(GenerationType::TRIANGLE, BLOB_SPAWN_SIZE_REDSTONE, -96, -32, 0, 8);
     std::deque<Position> posUniform = defineAllBlobPositions(GenerationType::UNIFORM, BLOB_SPAWN_SIZE_REDSTONE, -64, 15, 0, 4);
 
     while (!posTriangle.empty()) {
@@ -139,20 +157,20 @@ void OreVein::generateRedstoneBlobs()
 
 void OreVein::generateDiamondBlobs()
 {
-    std::deque<Position> posTriangleOne = defineAllBlobPositions(GenerationType::TRIANGLE, BLOB_SPAWN_SIZE_DIAMOND_BARELY_EXPOSED, -64, 16, 0.7, (1 / 9));
-    std::deque<Position> posTriangleTwo = defineAllBlobPositions(GenerationType::TRIANGLE, BLOB_SPAWN_SIZE_DIAMOND_HALF_EXPOSED, -64, 16, 0.5, 7);
-    std::deque<Position> posTriangleThree = defineAllBlobPositions(GenerationType::TRIANGLE, BLOB_SPAWN_SIZE_DIAMOND_HIDDEN, -64, 16, 1, 4);
+    std::deque<Position> posTriangleOne = defineAllBlobPositions(GenerationType::TRIANGLE, BLOB_SPAWN_SIZE_DIAMOND_BARELY_EXPOSED, -144, 16, 0.7, (1 / 9));
+    std::deque<Position> posTriangleTwo = defineAllBlobPositions(GenerationType::TRIANGLE, BLOB_SPAWN_SIZE_DIAMOND_HALF_EXPOSED, -144, 16, 0.5, 7);
+    std::deque<Position> posTriangleThree = defineAllBlobPositions(GenerationType::TRIANGLE, BLOB_SPAWN_SIZE_DIAMOND_HIDDEN, -144, 16, 1, 4);
 
     while (!posTriangleOne.empty()) {
-        createBlob(Blocks::DiamondOre::toProtocol(), BLOB_SPAWN_SIZE_REDSTONE, posTriangleOne.back());
+        createBlob(Blocks::DiamondOre::toProtocol(), BLOB_SPAWN_SIZE_DIAMOND_BARELY_EXPOSED, posTriangleOne.back());
         posTriangleOne.pop_back();
     }
     while (!posTriangleTwo.empty()) {
-        createBlob(Blocks::DiamondOre::toProtocol(), BLOB_SPAWN_SIZE_REDSTONE, posTriangleTwo.back());
+        createBlob(Blocks::DiamondOre::toProtocol(), BLOB_SPAWN_SIZE_DIAMOND_HALF_EXPOSED, posTriangleTwo.back());
         posTriangleTwo.pop_back();
     }
     while (!posTriangleThree.empty()) {
-        createBlob(Blocks::DiamondOre::toProtocol(), BLOB_SPAWN_SIZE_REDSTONE, posTriangleThree.back());
+        createBlob(Blocks::DiamondOre::toProtocol(), BLOB_SPAWN_SIZE_DIAMOND_HIDDEN, posTriangleThree.back());
         posTriangleThree.pop_back();
     }
 }
@@ -227,7 +245,7 @@ void OreVein::generateBlobs()
     generateIronBlobs();
     generateRedstoneBlobs();
     generateDiamondBlobs();
-    generateCoalBlobs();
+    // generateCoalBlobs(); TODO: Debug because buggy
     // generateEmeraldBlobs(); only in mountains biome
     generateCopperBlobs();
     generateLapisBlobs();

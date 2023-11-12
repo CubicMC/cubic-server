@@ -52,6 +52,8 @@ constexpr int BLOB_SPAWN_SIZE_DIAMOND_BARELY_EXPOSED = 12; /**< If it is exposed
 constexpr int BLOB_SPAWN_SIZE_EMERALD = 3;
 
 constexpr int BLOB_SPAWN_SIZE_INFESTED_STONE = 9;
+
+constexpr int UNIFORM_SPAWN_RATE = 100;
 // clang-format on
 
 /**
@@ -111,6 +113,17 @@ public:
      */
     std::deque<Position>
     defineAllBlobPositions(const GenerationType generationType, const int spawnSize, const int minY, const int maxY, const double skipRate, const double spawnTries);
+
+    std::deque<Position> addPositions(const double spawnTries, const int minY, const int maxY, const int spawnSize, const double skipRate, const int spawnRate);
+
+    /**
+     * @brief Skip the position if the ore is exposed to air
+     *
+     * @param pos The position of the blob
+     * @param spawnSize Blob spawn size (according to the value defined above)
+     * @param skipRate The skip rate of the blob
+     */
+    bool isSkippedWhenAirExposed(Position pos, const int spawnSize, const double skipRate);
 
     /**
      * @brief Generate an ore blob.
