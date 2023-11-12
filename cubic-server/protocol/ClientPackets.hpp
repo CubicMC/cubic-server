@@ -5,6 +5,7 @@
 #include <memory>
 #include <string>
 #include <vector>
+#include <utility>
 
 #include "PlayerAttributes.hpp"
 #include "Structures.hpp"
@@ -68,6 +69,7 @@ enum class ClientPacketID : int32_t {
     DisplayObjective = 0x4d,
     SetEntityMetadata = 0x4e,
     EntityVelocity = 0x50,
+    SetEquipment = 0x51,
     SetExperience = 0x52,
     Health = 0x53,
     UpdateObjective = 0x54,
@@ -651,6 +653,20 @@ struct EntityVelocity {
     int16_t velocityZ;
 };
 std::unique_ptr<std::vector<uint8_t>> createEntityVelocity(const EntityVelocity &);
+
+struct SetEquipment {
+    int32_t entityId;
+    enum class EquipmentPosition : int8_t {
+        MainHand = 0,
+        OffHand = 1,
+        ArmorSlotBoots = 2,
+        ArmorSlotLegs = 3,
+        ArmorSlotChest = 4,
+        ArmorSlotHelmet = 5,
+    };
+    std::vector<std::pair<EquipmentPosition, Slot>> equipment;
+};
+std::unique_ptr<std::vector<uint8_t>> createSetEquipment(const SetEquipment &);
 
 struct SetExperience {
     float experienceBar;
