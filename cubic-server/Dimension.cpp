@@ -170,7 +170,6 @@ void Dimension::loadOrGenerateChunk(int x, int z, const std::shared_ptr<Player> 
             return static_cast<int>(std::ceil(current_min));
         },
         [this, x, z] {
-            std::lock_guard _(_loadingChunksMutex);
             // TODO: load chunk from disk if it exists
             this->generateChunk(x, z);
 
@@ -326,6 +325,14 @@ void Dimension::sendChunkToPlayers(int x, int z)
 {
     // This send the chunk to the players that are loading it
     std::lock_guard _(_loadingChunksMutex);
+
+    // This if should not be needed normally but somehow 2 jobs get the same
+    // chunk to process and try to send it to the players at the same time
+    // which will literally segfault the whole stuff.
+    // TODO(huntears): Fix that freaking threadpool :(
+    if (!this->_loadingChunks.contains({x, z}))
+        return;
+
     for (auto weak_player : this->_loadingChunks[{x, z}].players) {
         if (auto player = weak_player.lock()) {
             player->sendChunkAndLightUpdate(this->_level.getChunkColumn(x, z));
