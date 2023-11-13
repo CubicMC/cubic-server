@@ -35,9 +35,9 @@
 #include <stdexcept>
 #include <vector>
 
-#define GET_CLIENT()                 \
-    auto client = this->_cli.lock(); \
-    if (client == nullptr)           \
+#define GET_CLIENT()                   \
+    auto client = this -> _cli.lock(); \
+    if (client == nullptr)             \
     return
 
 Player::Player(std::weak_ptr<Client> cli, std::shared_ptr<Dimension> dim, u128 uuid, const std::string &username):
@@ -202,28 +202,27 @@ void Player::updateEquipment(bool mainHand, bool offHand, bool boots, bool leggi
     protocol::SetEquipment equip;
 
     equip.entityId = this->getId();
-    
+
     if (mainHand)
         equip.equipment.push_back(std::make_pair(protocol::SetEquipment::EquipmentPosition::MainHand, this->_inventory->hotbar().at(this->_heldItem)));
-/*
-    if (offHand)
-        equip.equipment.push_back(std::make_pair(protocol::SetEquipment::EquipmentPosition::OffHand, this->_inventory->offhand()));
-    if (boots)
-        equip.equipment.push_back(std::make_pair(protocol::SetEquipment::EquipmentPosition::ArmorSlotBoots, this->_inventory->armor().at(0)));
-    if (leggings)
-        equip.equipment.push_back(std::make_pair(protocol::SetEquipment::EquipmentPosition::ArmorSlotLegs, this->_inventory->armor().at(1)));
-    if (chestplate)
-        equip.equipment.push_back(std::make_pair(protocol::SetEquipment::EquipmentPosition::ArmorSlotChest, this->_inventory->armor().at(2)));
-    if (helmet)
-        equip.equipment.push_back(std::make_pair(protocol::SetEquipment::EquipmentPosition::ArmorSlotHelmet, this->_inventory->armor().at(3)));
-*/
+    /*
+        if (offHand)
+            equip.equipment.push_back(std::make_pair(protocol::SetEquipment::EquipmentPosition::OffHand, this->_inventory->offhand()));
+        if (boots)
+            equip.equipment.push_back(std::make_pair(protocol::SetEquipment::EquipmentPosition::ArmorSlotBoots, this->_inventory->armor().at(0)));
+        if (leggings)
+            equip.equipment.push_back(std::make_pair(protocol::SetEquipment::EquipmentPosition::ArmorSlotLegs, this->_inventory->armor().at(1)));
+        if (chestplate)
+            equip.equipment.push_back(std::make_pair(protocol::SetEquipment::EquipmentPosition::ArmorSlotChest, this->_inventory->armor().at(2)));
+        if (helmet)
+            equip.equipment.push_back(std::make_pair(protocol::SetEquipment::EquipmentPosition::ArmorSlotHelmet, this->_inventory->armor().at(3)));
+    */
 
     for (const auto &player : this->getDimension()->getPlayers()) {
         if (player->getId() != this->getId())
             player->sendSetEquipment(equip);
     }
 }
-
 
 void Player::closeContainer(uint8_t id)
 {
@@ -1442,7 +1441,6 @@ void Player::_eat()
         // update item in hand for other players
         this->updateEquipment(true, false, false, false, false, false);
     }
-
 }
 
 void Player::teleport(const Vector3<double> &pos)

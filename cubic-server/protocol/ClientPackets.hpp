@@ -4,8 +4,8 @@
 #include <cstdint>
 #include <memory>
 #include <string>
-#include <vector>
 #include <utility>
+#include <vector>
 
 #include "PlayerAttributes.hpp"
 #include "Structures.hpp"

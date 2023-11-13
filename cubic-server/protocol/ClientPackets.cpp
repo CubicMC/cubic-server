@@ -894,9 +894,7 @@ std::unique_ptr<std::vector<uint8_t>> protocol::createSetEquipment(const SetEqui
 {
     std::vector<uint8_t> payload;
 
-    serialize(payload,
-        in.entityId, addVarInt
-    );
+    serialize(payload, in.entityId, addVarInt);
     for (const auto &it : in.equipment) {
         // clang-format off
         serialize(payload,
