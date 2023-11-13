@@ -194,7 +194,8 @@ void Scoreboard::sendAddTeam(const Team::Team &team) const
         team.getColor(),
         team.getPrefix(),
         team.getSuffix(),
-        {}};
+        {}
+    };
     for (const auto &[_, world] : this->_worldGroup.getWorlds()) {
         for (const auto &[_, dimension] : world->getDimensions()) {
             for (const auto &player : dimension->getPlayers()) {
@@ -262,7 +263,8 @@ void Scoreboard::sendScoreboardStatus(Player &player) const
             team->getColor(),
             team->getPrefix(),
             team->getSuffix(),
-            members};
+            members
+        };
         player.sendUpdateTeams(update);
     }
 }

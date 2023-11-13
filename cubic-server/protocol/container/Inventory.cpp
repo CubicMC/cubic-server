@@ -1,7 +1,7 @@
 #include "Inventory.hpp"
+#include "Player.hpp"
 #include "protocol/container/Container.hpp"
 #include <variant>
-#include "Player.hpp"
 
 using Inventory = protocol::container::Inventory;
 
