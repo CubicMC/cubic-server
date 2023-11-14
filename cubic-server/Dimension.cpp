@@ -146,7 +146,7 @@ void Dimension::generateChunk(UNUSED int x, UNUSED int z, UNUSED world_storage::
 
 void Dimension::loadOrGenerateChunk(int x, int z, const std::shared_ptr<Player> player)
 {
-    std::lock_guard<std::mutex> _(_loadingChunksMutex);
+    std::lock_guard _(_loadingChunksMutex);
     if (this->_loadingChunks.contains({x, z})) {
         if (std::find_if(this->_loadingChunks[{x, z}].players.begin(), this->_loadingChunks[{x, z}].players.end(), [player](const std::weak_ptr<const Player> current_weak_player) {
                 if (auto current_player = current_weak_player.lock())
@@ -203,7 +203,7 @@ bool Dimension::hasChunkLoaded(int x, int z) const { return this->_level.hasChun
 
 void Dimension::removePlayerFromLoadingChunk(const Position2D &pos, const std::shared_ptr<const Player> player)
 {
-    std::lock_guard<std::mutex> _(_loadingChunksMutex);
+    std::lock_guard _(_loadingChunksMutex);
     if (!this->_loadingChunks.contains(pos))
         return;
 
@@ -324,7 +324,15 @@ void Dimension::updateEntityAttributes(const protocol::UpdateAttributes &attribu
 void Dimension::sendChunkToPlayers(int x, int z)
 {
     // This send the chunk to the players that are loading it
-    std::lock_guard<std::mutex> _(_loadingChunksMutex);
+    std::lock_guard _(_loadingChunksMutex);
+
+    // This if should not be needed normally but somehow 2 jobs get the same
+    // chunk to process and try to send it to the players at the same time
+    // which will literally segfault the whole stuff.
+    // TODO(huntears): Fix that freaking threadpool :(
+    if (!this->_loadingChunks.contains({x, z}))
+        return;
+
     for (auto weak_player : this->_loadingChunks[{x, z}].players) {
         if (auto player = weak_player.lock()) {
             player->sendChunkAndLightUpdate(this->_level.getChunkColumn(x, z));
