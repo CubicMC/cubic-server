@@ -32,9 +32,9 @@ Dimension::Dimension(std::shared_ptr<World> world, world_storage::DimensionType 
     _loadingChunks({}),
     _processingThread(),
     _dimensionType(dimensionType),
-    _circularBufferTps(TICKS_FOR_FIFTEEN_MINUTES),
+    _circularBufferTps((TICK_PER_MINUTE * 15)),
     _previousTickTime(std::chrono::high_resolution_clock::now()),
-    _circularBufferMSPT(TICKS_FOR_FIFTEEN_MINUTES)
+    _circularBufferMSPT((TICK_PER_MINUTE * 15))
 {
 }
 
@@ -381,21 +381,23 @@ Tps Dimension::getTps() const
         return tps;
     }
     tps.oneMinTps = tpsCalculation(TICK_PER_MINUTE);
-    if (buffer_size < TICKS_FOR_FIVE_MINUTES - 1) {
+    if (buffer_size < (TICK_PER_MINUTE * 5) - 1) {
         tps.fiveMinTps = tps.fifteenMinTps = tpsOnFullBuffer;
         return tps;
     }
-    tps.fiveMinTps = tpsCalculation(TICKS_FOR_FIVE_MINUTES);
-    if (buffer_size < TICKS_FOR_FIFTEEN_MINUTES - 1) {
+    tps.fiveMinTps = tpsCalculation((TICK_PER_MINUTE * 5));
+    if (buffer_size < (TICK_PER_MINUTE * 15) - 1) {
         tps.fifteenMinTps = tpsOnFullBuffer;
         return tps;
     }
-    tps.fifteenMinTps = tpsCalculation(TICKS_FOR_FIFTEEN_MINUTES);
+    tps.fifteenMinTps = tpsCalculation((TICK_PER_MINUTE * 15));
     return tps;
 }
 
 MSPTInfos Dimension::getMSPTInfos() const
 {
+    if (_circularBufferMSPT.empty())
+        return {0, 0, 0};
     const auto buffer_begin = _circularBufferMSPT.begin();
     const auto buffer_end = _circularBufferMSPT.end();
     // clang-format off
