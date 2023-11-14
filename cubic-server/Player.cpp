@@ -1465,6 +1465,8 @@ void Player::_respawn()
     // Reset the health to the max (the packet is sent after)
     _health = 20;
 
+    this->forceSetPosition(this->_respawnPoint);
+
     // Synchronize the player position
     this->sendSynchronizePlayerPosition();
 
