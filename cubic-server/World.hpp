@@ -90,6 +90,8 @@ protected:
     thread_pool::PriorityThreadPool _generationPool;
     world_storage::WorldType _worldType;
     std::string _folder;
+    TickClock _publishTpsClock;
+    TickClock _publishMsptClock;
 };
 
 #endif // CUBICSERVER_WORLD_HPP

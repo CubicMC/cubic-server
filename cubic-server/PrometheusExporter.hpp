@@ -82,6 +82,46 @@ public:
         if (_ready)
             _player_end_gauge->Decrement();
     }
+    void setTpsGlobal(double tps)
+    {
+        if (_ready)
+            _tps_global_gauge->Set(tps);
+    }
+    void setTpsOverworld(double tps)
+    {
+        if (_ready)
+            _tps_overworld_gauge->Set(tps);
+    }
+    void setTpsNether(double tps)
+    {
+        if (_ready)
+            _tps_nether_gauge->Set(tps);
+    }
+    void setTpsEnd(double tps)
+    {
+        if (_ready)
+            _tps_end_gauge->Set(tps);
+    }
+    void setMsptGlobal(double mspt)
+    {
+        if (_ready)
+            _mspt_global_gauge->Set(mspt);
+    }
+    void setMsptOverworld(double mspt)
+    {
+        if (_ready)
+            _mspt_overworld_gauge->Set(mspt);
+    }
+    void setMsptNether(double mspt)
+    {
+        if (_ready)
+            _mspt_nether_gauge->Set(mspt);
+    }
+    void setMsptEnd(double mspt)
+    {
+        if (_ready)
+            _mspt_end_gauge->Set(mspt);
+    }
 
 private:
     prometheus::Exposer _exposer;
@@ -96,6 +136,16 @@ private:
     prometheus::Gauge *_player_overworld_gauge;
     prometheus::Gauge *_player_nether_gauge;
     prometheus::Gauge *_player_end_gauge;
+
+    prometheus::Gauge *_tps_global_gauge;
+    prometheus::Gauge *_tps_overworld_gauge;
+    prometheus::Gauge *_tps_nether_gauge;
+    prometheus::Gauge *_tps_end_gauge;
+
+    prometheus::Gauge *_mspt_global_gauge;
+    prometheus::Gauge *_mspt_overworld_gauge;
+    prometheus::Gauge *_mspt_nether_gauge;
+    prometheus::Gauge *_mspt_end_gauge;
 
     std::atomic<bool> _ready;
 };

@@ -17,8 +17,6 @@
 // TODO(huntears): Fix whatever this is
 constexpr int SEMAPHORE_MAX = 1000;
 constexpr int TICK_PER_MINUTE = 20 * 60;
-constexpr int TICKS_FOR_FIVE_MINUTES = TICK_PER_MINUTE * 5;
-constexpr int TICKS_FOR_FIFTEEN_MINUTES = TICK_PER_MINUTE * 15;
 constexpr float MICROSECS_IN_ONE_SEC = 1000000.0f;
 constexpr float MILLIS_IN_ONE_SEC = 1000.0f;
 

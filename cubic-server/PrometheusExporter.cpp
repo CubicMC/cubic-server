@@ -46,6 +46,28 @@ void PrometheusExporter::registerMetrics()
     _player_nether_gauge = &player_gauge.Add({{"dimension", "nether"}});
     _player_end_gauge = &player_gauge.Add({{"dimension", "end"}});
 
+    // clang-format off
+    auto &tps_gauge = prometheus::BuildGauge()
+        .Name("one_minute_tps")
+        .Help("Server one minute TPS")
+        .Register(*_registry);
+    // clang-format on
+    _tps_global_gauge = &tps_gauge.Add({{"dimension", "global"}});
+    _tps_overworld_gauge = &tps_gauge.Add({{"dimension", "overworld"}});
+    _tps_nether_gauge = &tps_gauge.Add({{"dimension", "nether"}});
+    _tps_end_gauge = &tps_gauge.Add({{"dimension", "end"}});
+
+    // clang-format off
+    auto &mspt_gauge = prometheus::BuildGauge()
+        .Name("mean_mspt")
+        .Help("Server mean MSPT")
+        .Register(*_registry);
+    // clang-format on
+    _mspt_global_gauge = &mspt_gauge.Add({{"dimension", "global"}});
+    _mspt_overworld_gauge = &mspt_gauge.Add({{"dimension", "overworld"}});
+    _mspt_nether_gauge = &mspt_gauge.Add({{"dimension", "nether"}});
+    _mspt_end_gauge = &mspt_gauge.Add({{"dimension", "end"}});
+
     _exposer.RegisterCollectable(_registry);
 
     _ready = true;
