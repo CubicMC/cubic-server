@@ -514,7 +514,7 @@ void Player::sendChunkAndLightUpdate(int32_t x, int32_t z)
         return;
     }
 
-    std::lock_guard<std::mutex> _(this->getDimension()->_loadingChunksMutex);
+    std::lock_guard _(this->getDimension()->_loadingChunksMutex);
     this->sendChunkAndLightUpdate(this->_dim->getChunk(x, z));
 }
 
