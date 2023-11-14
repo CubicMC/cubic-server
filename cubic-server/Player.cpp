@@ -1468,12 +1468,22 @@ void Player::_respawn()
     // Synchronize the player position
     this->sendSynchronizePlayerPosition();
 
+    // Set the pose to standing
     this->_pose = Pose::Standing;
 
-    for (auto player : this->_dim->getPlayers()) {
+    for (auto player : this->getDimension()->getPlayers()) {
         if (player->getId() == this->getId())
             continue;
         player->sendEntityMetadata(*this);
+        player->sendSpawnPlayer({
+            this->_id,
+            this->_uuid,
+            this->_pos.x,
+            this->_pos.y,
+            this->_pos.z,
+            this->_rot.x,
+            this->_rot.z,
+        });
     }
 }
 
