@@ -43,7 +43,10 @@ std::deque<Position> OreVein::computeUniformDistribution(const double spawnTries
                     (utility::PseudoRandomGenerator::getInstance()->generateNumber(0, 100) < spawnRate)) {
                     positions.emplace_back(x, y, z);
                     spawnTry--;
-                    x < z ? x = x + MAX_NB_OF_BLOCKS[spawnSize] % SECTION_WIDTH : z = z + MAX_NB_OF_BLOCKS[spawnSize] % SECTION_WIDTH;
+                    if (x < z)
+                        x = x + MAX_NB_OF_BLOCKS[spawnSize] % SECTION_WIDTH;
+                    else
+                        z = z + MAX_NB_OF_BLOCKS[spawnSize] % SECTION_WIDTH;
                 }
             }
         }
@@ -75,7 +78,10 @@ std::deque<Position> OreVein::computeTriangleDistribution(const int spawnSize, c
                         (utility::PseudoRandomGenerator::getInstance()->generateNumber(0.0, spawnTries) < spawnRate)) {
                         positions.emplace_back(x, y - abs(minY), z);
                         spawnTry--;
-                        x < z ? x = x + MAX_NB_OF_BLOCKS[spawnSize] : z = z + MAX_NB_OF_BLOCKS[spawnSize];
+                        if (x < z)
+                            x = x + MAX_NB_OF_BLOCKS[spawnSize] % SECTION_WIDTH;
+                        else
+                            z = z + MAX_NB_OF_BLOCKS[spawnSize] % SECTION_WIDTH;
                     }
                 }
             }
