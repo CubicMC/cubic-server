@@ -82,12 +82,6 @@ void LivingEntity::kill(UNUSED const int32_t &killerId)
 
     // send entity death pose to connected players
     this->_pose = Pose::Dying;
-
-    for (auto player : this->getDimension()->getPlayers()) {
-        if (player->getId() == this->getId())
-            continue;
-        player->sendEntityMetadata(*this);
-    }
 }
 
 void LivingEntity::setHealth(float health) { _health = health; }
