@@ -29,7 +29,7 @@ bool OreVein::isSkippedWhenAirExposed(Position pos, const int spawnSize, const d
     return false;
 }
 
-std::deque<Position> OreVein::addPositions(const double spawnTries, const int minY, const int maxY, const int spawnSize, const double skipRate, const int spawnRate)
+std::deque<Position> OreVein::computeUniformDistribution(const double spawnTries, const int minY, const int maxY, const int spawnSize, const double skipRate, const int spawnRate)
 {
     using namespace world_storage;
     std::deque<Position> positions;
@@ -91,7 +91,7 @@ OreVein::defineAllBlobPositions(const GenerationType generationType, const int s
     std::deque<Position> positions;
 
     if (generationType == GenerationType::UNIFORM) {
-        positions = addPositions(spawnTries, minY, maxY, spawnSize, skipRate, UNIFORM_SPAWN_RATE);
+        positions = computeUniformDistribution(spawnTries, minY, maxY, spawnSize, skipRate, UNIFORM_SPAWN_RATE);
     } else if (generationType == GenerationType::TRIANGLE) {
         positions = computeTriangleDistribution(spawnSize, spawnTries, minY, maxY, skipRate);
     }
@@ -100,6 +100,7 @@ OreVein::defineAllBlobPositions(const GenerationType generationType, const int s
 
 void OreVein::createBlob(const BlockId &blockID, const int spawnSize, const Position &pos) const
 {
+    using namespace world_storage;
     auto nbOfBlocksInBlob = utility::PseudoRandomGenerator::getInstance()->generateNumber(0, MAX_NB_OF_BLOCKS[spawnSize]);
     int m = pos.x + spawnSize; /**< Longitudinal spread of the blob */
     int n = pos.z + spawnSize; /**< Latitudinal spread of the blob */
@@ -107,16 +108,19 @@ void OreVein::createBlob(const BlockId &blockID, const int spawnSize, const Posi
     int r = spawnSize / 2; /**< Radius of the blob */
     int customSkipRate;
     int nb = 0;
+    Position blobCenter = {m / 2, p / 2, n / 2}; /**< Coordinates of the center of the blob*/
 
     for (int y = pos.y; y < p && nb < nbOfBlocksInBlob; y++) {
         for (int x = pos.x; x < m; x++) {
             for (int z = pos.z; z < n; z++) {
+                /** customSkipRate: the closer we are from the center of the blob, the smaller this skip rate is.
+                 * Allows to maximise the number of blocks generated at the center of the blob to make it more spheric than cubic.
+                 */
                 customSkipRate =
-                    abs(((((m / 2) - x) % world_storage::SECTION_WIDTH) ^ 2) + ((((p / 2) - y) % world_storage::SECTION_WIDTH) ^ 2) +
-                        ((((n / 2) - z) % world_storage::SECTION_WIDTH) ^ 2) % world_storage::SECTION_WIDTH);
+                    abs((((blobCenter.x - x) % SECTION_WIDTH) ^ 2) + (((blobCenter.y - y) % SECTION_WIDTH) ^ 2) + (((blobCenter.z - z) % SECTION_WIDTH) ^ 2) % SECTION_WIDTH);
                 auto block = _chunk.getBlock({x, y, z});
                 if ((x - pos.x < r && z - pos.z < r) && r / 2 > customSkipRate && nb < nbOfBlocksInBlob &&
-                    (block != Blocks::Air::toProtocol() && block != Blocks::Bedrock::toProtocol()) && y > world_storage::CHUNK_HEIGHT_MIN) {
+                    (block != Blocks::Air::toProtocol() && block != Blocks::Bedrock::toProtocol()) && y > CHUNK_HEIGHT_MIN) {
                     _chunk.updateBlock({x, y, z}, blockID);
                     nb++;
                 }
@@ -127,8 +131,12 @@ void OreVein::createBlob(const BlockId &blockID, const int spawnSize, const Posi
 
 void OreVein::generateIronBlobs()
 {
-    std::deque<Position> posTriangle = defineAllBlobPositions(GenerationType::TRIANGLE, BLOB_SPAWN_SIZE_IRON_TRIANGLE, -24, 56, 0, 10);
-    std::deque<Position> posUniform = defineAllBlobPositions(GenerationType::UNIFORM, BLOB_SPAWN_SIZE_IRON_UNIFORM, -64, 72, 0, 10);
+    std::deque<Position> posTriangle = defineAllBlobPositions(
+        GenerationType::TRIANGLE, BLOB_SPAWN_SIZE_IRON_TRIANGLE, BLOB_MIN_Y_SPAWN_IRON_TRIANGLE, BLOB_MAX_Y_SPAWN_IRON_TRIANGLE, BLOB_SKIP_RATE_IRON, BLOB_SPAWN_TRIES_IRON
+    );
+    std::deque<Position> posUniform = defineAllBlobPositions(
+        GenerationType::UNIFORM, BLOB_SPAWN_SIZE_IRON_UNIFORM, BLOB_MIN_Y_SPAWN_IRON_UNIFORM, BLOB_MAX_Y_SPAWN_IRON_UNIFORM, BLOB_SKIP_RATE_IRON, BLOB_SPAWN_TRIES_IRON
+    );
 
     while (!posTriangle.empty()) {
         createBlob(Blocks::IronOre::toProtocol(), BLOB_SPAWN_SIZE_IRON_TRIANGLE, posTriangle.back());
@@ -142,8 +150,14 @@ void OreVein::generateIronBlobs()
 
 void OreVein::generateRedstoneBlobs()
 {
-    std::deque<Position> posTriangle = defineAllBlobPositions(GenerationType::TRIANGLE, BLOB_SPAWN_SIZE_REDSTONE, -96, -32, 0, 8);
-    std::deque<Position> posUniform = defineAllBlobPositions(GenerationType::UNIFORM, BLOB_SPAWN_SIZE_REDSTONE, -64, 15, 0, 4);
+    std::deque<Position> posTriangle = defineAllBlobPositions(
+        GenerationType::TRIANGLE, BLOB_SPAWN_SIZE_REDSTONE, BLOB_MIN_Y_SPAWN_REDSTONE_TRIANGLE, BLOB_MAX_Y_SPAWN_REDSTONE_TRIANGLE, BLOB_SKIP_RATE_REDSTONE,
+        BLOB_SPAWN_TRIES_REDSTONE_TRIANGLE
+    );
+    std::deque<Position> posUniform = defineAllBlobPositions(
+        GenerationType::UNIFORM, BLOB_SPAWN_SIZE_REDSTONE, BLOB_MIN_Y_SPAWN_REDSTONE_UNIFORM, BLOB_MAX_Y_SPAWN_REDSTONE_UNIFORM, BLOB_SKIP_RATE_REDSTONE,
+        BLOB_SPAWN_TRIES_REDSTONE_UNIFORM
+    );
 
     while (!posTriangle.empty()) {
         createBlob(Blocks::RedstoneOre::toProtocol(Blocks::RedstoneOre::Properties::Lit::FALSE), BLOB_SPAWN_SIZE_REDSTONE, posTriangle.back());
@@ -157,9 +171,17 @@ void OreVein::generateRedstoneBlobs()
 
 void OreVein::generateDiamondBlobs()
 {
-    std::deque<Position> posTriangleOne = defineAllBlobPositions(GenerationType::TRIANGLE, BLOB_SPAWN_SIZE_DIAMOND_BARELY_EXPOSED, -144, 16, 0.7, (1 / 9));
-    std::deque<Position> posTriangleTwo = defineAllBlobPositions(GenerationType::TRIANGLE, BLOB_SPAWN_SIZE_DIAMOND_HALF_EXPOSED, -144, 16, 0.5, 7);
-    std::deque<Position> posTriangleThree = defineAllBlobPositions(GenerationType::TRIANGLE, BLOB_SPAWN_SIZE_DIAMOND_HIDDEN, -144, 16, 1, 4);
+    std::deque<Position> posTriangleOne = defineAllBlobPositions(
+        GenerationType::TRIANGLE, BLOB_SPAWN_SIZE_DIAMOND_BARELY_EXPOSED, BLOB_MIN_Y_SPAWN_DIAMOND, BLOB_MAX_Y_SPAWN_DIAMOND, BLOB_SKIP_RATE_DIAMOND_BARELY_EXPOSED,
+        BLOB_SPAWN_TRIES_DIAMOND_BARELY_EXPOSED
+    );
+    std::deque<Position> posTriangleTwo = defineAllBlobPositions(
+        GenerationType::TRIANGLE, BLOB_SPAWN_SIZE_DIAMOND_HALF_EXPOSED, BLOB_MIN_Y_SPAWN_DIAMOND, BLOB_MAX_Y_SPAWN_DIAMOND, BLOB_SKIP_RATE_DIAMOND_HALF_EXPOSED,
+        BLOB_SPAWN_TRIES_DIAMOND_HALF_EXPOSED
+    );
+    std::deque<Position> posTriangleThree = defineAllBlobPositions(
+        GenerationType::TRIANGLE, BLOB_SPAWN_SIZE_DIAMOND_HIDDEN, BLOB_MIN_Y_SPAWN_DIAMOND, BLOB_MAX_Y_SPAWN_DIAMOND, BLOB_SKIP_RATE_DIAMOND_HIDDEN, BLOB_SPAWN_TRIES_DIAMOND_HIDDEN
+    );
 
     while (!posTriangleOne.empty()) {
         createBlob(Blocks::DiamondOre::toProtocol(), BLOB_SPAWN_SIZE_DIAMOND_BARELY_EXPOSED, posTriangleOne.back());
@@ -177,9 +199,12 @@ void OreVein::generateDiamondBlobs()
 
 void OreVein::generateCoalBlobs()
 {
-    std::deque<Position> posTriangle = defineAllBlobPositions(GenerationType::TRIANGLE, BLOB_SPAWN_SIZE_COAL, 0, 192, 0.5, 20);
-    std::deque<Position> posUniform = defineAllBlobPositions(GenerationType::UNIFORM, BLOB_SPAWN_SIZE_COAL, 136, 320, 0, 30);
-    std::deque<Position> posUniformBis = defineAllBlobPositions(GenerationType::UNIFORM, BLOB_SPAWN_SIZE_COAL, 128, 156, 0, 0);
+    std::deque<Position> posTriangle = defineAllBlobPositions(
+        GenerationType::TRIANGLE, BLOB_SPAWN_SIZE_COAL, BLOB_MIN_Y_SPAWN_COAL_TRIANGLE, BLOB_MAX_Y_SPAWN_COAL_TRIANGLE, BLOB_SKIP_RATE_COAL_TRIANGLE, BLOB_SPAWN_TRIES_COAL_TRIANGLE
+    );
+    std::deque<Position> posUniform = defineAllBlobPositions(
+        GenerationType::UNIFORM, BLOB_SPAWN_SIZE_COAL, BLOB_MIN_Y_SPAWN_COAL_UNIFORM, BLOB_MAX_Y_SPAWN_COAL_UNIFORM, BLOB_SKIP_RATE_COAL_UNIFORM, BLOB_SPAWN_TRIES_COAL_UNIFORM
+    );
 
     while (!posTriangle.empty()) {
         createBlob(Blocks::CoalOre::toProtocol(), BLOB_SPAWN_SIZE_COAL, posTriangle.back());
@@ -189,15 +214,13 @@ void OreVein::generateCoalBlobs()
         createBlob(Blocks::CoalOre::toProtocol(), BLOB_SPAWN_SIZE_COAL, posUniform.back());
         posUniform.pop_back();
     }
-    while (!posUniformBis.empty()) {
-        createBlob(Blocks::CoalOre::toProtocol(), BLOB_SPAWN_SIZE_COAL, posUniformBis.back());
-        posUniformBis.pop_back();
-    }
 }
 
 void OreVein::generateEmeraldBlobs()
 {
-    std::deque<Position> posTriangle = defineAllBlobPositions(GenerationType::TRIANGLE, BLOB_SPAWN_SIZE_EMERALD, -16, 320, 0, 100);
+    std::deque<Position> posTriangle = defineAllBlobPositions(
+        GenerationType::TRIANGLE, BLOB_SPAWN_SIZE_EMERALD, BLOB_MIN_Y_SPAWN_EMERALD, BLOB_MAX_Y_SPAWN_EMERALD, BLOB_SKIP_RATE_EMERALD, BLOB_SPAWN_TRIES_EMERALD
+    );
 
     while (!posTriangle.empty()) {
         createBlob(Blocks::EmeraldOre::toProtocol(), BLOB_SPAWN_SIZE_EMERALD, posTriangle.back());
@@ -207,7 +230,8 @@ void OreVein::generateEmeraldBlobs()
 
 void OreVein::generateCopperBlobs()
 {
-    std::deque<Position> posTriangle = defineAllBlobPositions(GenerationType::TRIANGLE, BLOB_SPAWN_SIZE_COPPER, -16, 112, 0, 16);
+    std::deque<Position> posTriangle =
+        defineAllBlobPositions(GenerationType::TRIANGLE, BLOB_SPAWN_SIZE_COPPER, BLOB_MIN_Y_SPAWN_COPPER, BLOB_MAX_Y_SPAWN_COPPER, BLOB_SKIP_RATE_COPPER, BLOB_SPAWN_TRIES_COPPER);
 
     while (!posTriangle.empty()) {
         createBlob(Blocks::CopperOre::toProtocol(), BLOB_SPAWN_SIZE_COPPER, posTriangle.back());
@@ -217,18 +241,32 @@ void OreVein::generateCopperBlobs()
 
 void OreVein::generateLapisBlobs()
 {
-    std::deque<Position> posTriangle = defineAllBlobPositions(GenerationType::TRIANGLE, BLOB_SPAWN_SIZE_LAPIS, -32, 32, 0, 2);
+    std::deque<Position> posTriangle = defineAllBlobPositions(
+        GenerationType::TRIANGLE, BLOB_SPAWN_SIZE_LAPIS, BLOB_MIN_Y_SPAWN_LAPIS_TRIANGLE, BLOB_MAX_Y_SPAWN_LAPIS_TRIANGLE, BLOB_SKIP_RATE_LAPIS_TRIANGLE,
+        BLOB_SPAWN_TRIES_LAPIS_TRIANGLE
+    );
+    std::deque<Position> posUniform = defineAllBlobPositions(
+        GenerationType::UNIFORM, BLOB_SPAWN_SIZE_LAPIS, BLOB_MIN_Y_SPAWN_LAPIS_UNIFORM, BLOB_MAX_Y_SPAWN_LAPIS_UNIFORM, BLOB_SKIP_RATE_LAPIS_UNIFORM, BLOB_SPAWN_TRIES_LAPIS_UNIFORM
+    );
 
     while (!posTriangle.empty()) {
         createBlob(Blocks::LapisOre::toProtocol(), BLOB_SPAWN_SIZE_LAPIS, posTriangle.back());
         posTriangle.pop_back();
     }
+    while (!posUniform.empty()) {
+        createBlob(Blocks::GoldOre::toProtocol(), BLOB_SPAWN_SIZE_LAPIS, posUniform.back());
+        posUniform.pop_back();
+    }
 }
 
 void OreVein::generateGoldBlobs()
 {
-    std::deque<Position> posTriangle = defineAllBlobPositions(GenerationType::TRIANGLE, BLOB_SPAWN_SIZE_GOLD, -64, 32, 0.5, 4);
-    std::deque<Position> posUniform = defineAllBlobPositions(GenerationType::UNIFORM, BLOB_SPAWN_SIZE_GOLD, -64, -48, 0.5, 0.5);
+    std::deque<Position> posTriangle = defineAllBlobPositions(
+        GenerationType::TRIANGLE, BLOB_SPAWN_SIZE_GOLD, BLOB_MIN_Y_SPAWN_GOLD, BLOB_MAX_Y_SPAWN_GOLD_TRIANGLE, BLOB_SKIP_RATE_GOLD, BLOB_SPAWN_TRIES_GOLD_TRIANGLE
+    );
+    std::deque<Position> posUniform = defineAllBlobPositions(
+        GenerationType::UNIFORM, BLOB_SPAWN_SIZE_GOLD, BLOB_MIN_Y_SPAWN_GOLD, BLOB_MAX_Y_SPAWN_GOLD_UNIFORM, BLOB_SKIP_RATE_GOLD, BLOB_SPAWN_TRIES_GOLD_UNIFORM
+    );
 
     while (!posTriangle.empty()) {
         createBlob(Blocks::GoldOre::toProtocol(), BLOB_SPAWN_SIZE_GOLD, posTriangle.back());

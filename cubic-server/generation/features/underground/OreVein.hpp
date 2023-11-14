@@ -54,6 +54,84 @@ constexpr int BLOB_SPAWN_SIZE_EMERALD = 3;
 constexpr int BLOB_SPAWN_SIZE_INFESTED_STONE = 9;
 
 constexpr int UNIFORM_SPAWN_RATE = 100;
+
+/** Spawn tries per chunk for each different ore blob that can be generated.
+* This is the maximum number of one type of blob that can be generated in one chunk
+*/
+constexpr double BLOB_SPAWN_TRIES_COAL_TRIANGLE = 20;
+constexpr double BLOB_SPAWN_TRIES_COAL_UNIFORM = 30;
+constexpr double BLOB_SPAWN_TRIES_IRON = 10;
+constexpr double BLOB_SPAWN_TRIES_COPPER = 16;
+constexpr double BLOB_SPAWN_TRIES_REDSTONE_TRIANGLE = 8;
+constexpr double BLOB_SPAWN_TRIES_REDSTONE_UNIFORM = 4;
+constexpr double BLOB_SPAWN_TRIES_LAPIS_TRIANGLE = 2;
+constexpr double BLOB_SPAWN_TRIES_LAPIS_UNIFORM = 4;
+constexpr double BLOB_SPAWN_TRIES_GOLD_TRIANGLE = 4;
+constexpr double BLOB_SPAWN_TRIES_GOLD_UNIFORM = 0.5;
+constexpr double BLOB_SPAWN_TRIES_DIAMOND_HALF_EXPOSED = 7; /**< If it is exposed to air then it has 1/2 chance of being skipped */
+constexpr double BLOB_SPAWN_TRIES_DIAMOND_HIDDEN = 4; /**< If it is exposed to air then it is skipped */
+constexpr double BLOB_SPAWN_TRIES_DIAMOND_BARELY_EXPOSED = 1/9; /**< If it is exposed to air then it has 70% chance of being skipped */
+constexpr double BLOB_SPAWN_TRIES_EMERALD = 100;
+
+/** Minimum height where an ore blob can be generated.
+ * In the case of triangle distribution, this value is sometimes lower than the minimum of that of the world.
+ * This is purely for calculations purpose, as both the minimum and maximum height are of importance to determine
+ * the right amount of ores to be generated according to the triangle distribution, and does not mean in any way
+ * that ores might generate outside of the bonds of the world.
+ */
+constexpr int BLOB_MIN_Y_SPAWN_COAL_TRIANGLE = 0;
+constexpr int BLOB_MIN_Y_SPAWN_COAL_UNIFORM = 136;
+constexpr int BLOB_MIN_Y_SPAWN_IRON_TRIANGLE = -24;
+constexpr int BLOB_MIN_Y_SPAWN_IRON_UNIFORM = -64;
+constexpr int BLOB_MIN_Y_SPAWN_COPPER = -16;
+constexpr int BLOB_MIN_Y_SPAWN_REDSTONE_TRIANGLE = -96;
+constexpr int BLOB_MIN_Y_SPAWN_REDSTONE_UNIFORM = -64;
+constexpr int BLOB_MIN_Y_SPAWN_LAPIS_TRIANGLE = -32;
+constexpr int BLOB_MIN_Y_SPAWN_LAPIS_UNIFORM = -64;
+constexpr int BLOB_MIN_Y_SPAWN_GOLD = -64;
+constexpr int BLOB_MIN_Y_SPAWN_GOLD_BALDLANDS = 32;
+constexpr int BLOB_MIN_Y_SPAWN_DIAMOND = -144;
+constexpr int BLOB_MIN_Y_SPAWN_EMERALD = -16;
+
+/** Maximum height where an ore blob can be generated.
+ * In the case of triangle distribution, this value is sometimes higher than the maximum of that of the world.
+ * This is purely for calculations purpose, as both the minimum and maximum height are of importance to determine
+ * the right amount of ores to be generated according to the triangle distribution, and does not mean in any way
+ * that ores might generate outside of the bonds of the world.
+ */
+constexpr int BLOB_MAX_Y_SPAWN_COAL_TRIANGLE = 192;
+constexpr int BLOB_MAX_Y_SPAWN_COAL_UNIFORM = 320;
+constexpr int BLOB_MAX_Y_SPAWN_IRON_TRIANGLE = 56;
+constexpr int BLOB_MAX_Y_SPAWN_IRON_UNIFORM = 72;
+constexpr int BLOB_MAX_Y_SPAWN_COPPER = 112;
+constexpr int BLOB_MAX_Y_SPAWN_REDSTONE_TRIANGLE = -32;
+constexpr int BLOB_MAX_Y_SPAWN_REDSTONE_UNIFORM = 15;
+constexpr int BLOB_MAX_Y_SPAWN_LAPIS_TRIANGLE = 32;
+constexpr int BLOB_MAX_Y_SPAWN_LAPIS_UNIFORM = 64;
+constexpr int BLOB_MAX_Y_SPAWN_GOLD_TRIANGLE = 32;
+constexpr int BLOB_MAX_Y_SPAWN_GOLD_UNIFORM = -48;
+constexpr int BLOB_MAX_Y_SPAWN_GOLD_BALDLANDS = 256;
+constexpr int BLOB_MAX_Y_SPAWN_DIAMOND = 16;
+constexpr int BLOB_MAX_Y_SPAWN_EMERALD = 480;
+
+/** When meeting certain condition, this define the skipping rate.
+ * If the blob is exposed to air, then it has this chance of being skipped instead.
+ */
+constexpr std::array<double, 4> SkipRate = {0, 0.5, 0.7, 1};
+constexpr double BLOB_SKIP_RATE_COAL_TRIANGLE = SkipRate[1];
+constexpr double BLOB_SKIP_RATE_COAL_UNIFORM = SkipRate[0];
+constexpr double BLOB_SKIP_RATE_IRON = SkipRate[0];
+constexpr double BLOB_SKIP_RATE_COPPER = SkipRate[0];
+constexpr double BLOB_SKIP_RATE_REDSTONE = SkipRate[0];
+constexpr double BLOB_SKIP_RATE_LAPIS_TRIANGLE = SkipRate[0];
+constexpr double BLOB_SKIP_RATE_LAPIS_UNIFORM = SkipRate[3];
+constexpr double BLOB_SKIP_RATE_GOLD = SkipRate[1];
+constexpr double BLOB_SKIP_RATE_GOLD_BALDLANDS = SkipRate[0];
+constexpr double BLOB_SKIP_RATE_DIAMOND_HALF_EXPOSED = SkipRate[1];
+constexpr double BLOB_SKIP_RATE_DIAMOND_HIDDEN = SkipRate[3];
+constexpr double BLOB_SKIP_RATE_DIAMOND_BARELY_EXPOSED = SkipRate[2];
+constexpr double BLOB_SKIP_RATE_EMERALD = SkipRate[0];
+
 // clang-format on
 
 /**
@@ -72,11 +150,6 @@ enum class GenerationType {
     UNIFORM, /**< Uniform distribution have all ores spread in same frequency at any height */
     TRIANGLE /**< Triangle generate ores more frequently in center height */
 };
-
-/* When meeting certain condition, this define the skipping rate.
- * If the blob is exposed to air, then it has this chance of being skipped instead.
- */
-constexpr std::array<double, 4> SkipRate = {0, 0.5, 0.7, 1};
 
 class OreVein {
 public:
@@ -114,7 +187,18 @@ public:
     std::deque<Position>
     defineAllBlobPositions(const GenerationType generationType, const int spawnSize, const int minY, const int maxY, const double skipRate, const double spawnTries);
 
-    std::deque<Position> addPositions(const double spawnTries, const int minY, const int maxY, const int spawnSize, const double skipRate, const int spawnRate);
+    /**
+     * @brief Define all the positions where a blob can generate for the uniform distribution
+     *
+     * @param spawnSize Blob spawn size (according to the value defined above)
+     * @param minY Minimum height for the blob to generate
+     * @param maxY Maximum height for the blob to generate
+     * @param skipRate The skip rate of the blob
+     * @param spawnTries A number of times the blob is allowed to try to generate
+     * @return a deque holding all the positions where a blob can generate for the uniform distribution
+     *
+     */
+    std::deque<Position> computeUniformDistribution(const double spawnTries, const int minY, const int maxY, const int spawnSize, const double skipRate, const int spawnRate);
 
     /**
      * @brief Skip the position if the ore is exposed to air
@@ -142,6 +226,7 @@ public:
     void generateBlobs();
 
 protected:
+private:
     void generateIronBlobs();
     void generateRedstoneBlobs();
     void generateDiamondBlobs();
@@ -151,7 +236,6 @@ protected:
     void generateLapisBlobs();
     void generateGoldBlobs();
 
-private:
     /* The chunks where to generate the feature */
     world_storage::ChunkColumn &_chunk;
 
