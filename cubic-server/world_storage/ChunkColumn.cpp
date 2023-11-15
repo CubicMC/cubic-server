@@ -7,6 +7,7 @@
 #include "generation/features/surface/forestRock.hpp"
 #include "generation/features/tree/oak.hpp"
 #include "generation/features/tree/spruce.hpp"
+#include "generation/features/underground/OreVein.hpp"
 #include "generation/overworld.hpp"
 #include "logging/logging.hpp"
 #include "nbt.hpp"
@@ -481,19 +482,19 @@ void ChunkColumn::_generateRawGeneration(generation::Generator &generator)
 void ChunkColumn::_generateLakes(UNUSED generation::Generator &generator)
 {
     std::lock_guard<std::mutex> _(this->_generationLock);
-    int waterLevel = 86;
+    // int waterLevel = 86;
 
     // TODO: improve this to fill caves
     // generate water
-    for (int z = 0; z < SECTION_WIDTH; z++) {
-        for (int x = 0; x < SECTION_WIDTH; x++) {
-            for (int y = waterLevel; 0 < y; y--) {
-                if (getBlock({x, y, z}) == 1)
-                    break;
-                updateBlock({x, y, z}, Blocks::Water::toProtocol(Blocks::Water::Properties::Level::ZERO));
-            }
-        }
-    }
+    // for (int z = 0; z < SECTION_WIDTH; z++) {
+    //     for (int x = 0; x < SECTION_WIDTH; x++) {
+    //         for (int y = waterLevel; 0 < y; y--) {
+    //             if (getBlock({x, y, z}) == 1)
+    //                 break;
+    //             updateBlock({x, y, z}, Blocks::Water::toProtocol(Blocks::Water::Properties::Level::ZERO));
+    //         }
+    //     }
+    // }
     _currentState = GenerationState::LAKES;
 }
 
@@ -551,6 +552,8 @@ void ChunkColumn::_generateStrongholds(UNUSED generation::Generator &generator)
 void ChunkColumn::_generateUndergroundOres(UNUSED generation::Generator &generator)
 {
     std::lock_guard<std::mutex> _(this->_generationLock);
+    OreVein oreVeins(*this, generator);
+    oreVeins.generateBlobs();
     _currentState = GenerationState::UNDERGROUND_ORES;
 }
 

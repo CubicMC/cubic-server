@@ -43,6 +43,10 @@
 
 #include "registry/MasterRegistry.hpp"
 
+#if PROMETHEUS_SUPPORT == 1
+#include "PrometheusExporter.hpp"
+#endif
+
 constexpr char MC_VERSION[] = "1.19.3";
 constexpr char MC_VERSION_BRANDING[] = "CubicServer 1.19.3";
 constexpr uint16_t MC_PROTOCOL = 761;
@@ -52,6 +56,19 @@ constexpr uint16_t MS_PER_TICK = 50;
 #define ITEM_CONVERTER Server::getInstance()->getItemConverter()
 #define SOUND_EVENT_CONVERTER Server::getInstance()->getSoundEventConverter()
 #define CONFIG Server::getInstance()->getConfig()
+
+#if PROMETHEUS_SUPPORT == 1
+#define PROMETHEUS Server::getInstance()->getPrometheusExporter()
+#define PEXP(method)                                   \
+    if (Server::getInstance()->prometheusExporterOn()) \
+        Server::getInstance()->getPrometheusExporter().method();
+#define PEXPP(method, ...)                             \
+    if (Server::getInstance()->prometheusExporterOn()) \
+        Server::getInstance()->getPrometheusExporter().method(__VA_ARGS__);
+#else
+#define PEXP(method)
+#define PEXPP(method, ...)
+#endif
 
 class Client;
 class WorldGroup;
@@ -154,6 +171,16 @@ private:
     std::thread _writeThread;
 
     RSAEncryptionHandler _rsaKey;
+
+#if PROMETHEUS_SUPPORT == 1
+    std::unique_ptr<PrometheusExporter> _prometheusExporter;
+    bool _prometheusExporterOn;
+
+public:
+    NODISCARD inline const PrometheusExporter &getPrometheusExporter() const { return *_prometheusExporter; }
+    NODISCARD inline PrometheusExporter &getPrometheusExporter() { return *_prometheusExporter; }
+    bool prometheusExporterOn() const noexcept { return _prometheusExporterOn; }
+#endif
 
 public:
     NODISCARD inline bool isCompressed() const { return _config["compression"].as<bool>(); }

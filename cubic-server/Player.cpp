@@ -85,11 +85,13 @@ Player::Player(std::weak_ptr<Client> cli, std::shared_ptr<Dimension> dim, u128 u
     nbt_tag_compound_append(root, display);
 
     this->_inventory->playerInventory().at(14) = protocol::Slot(true, 1, 12, root);
+    PEXP(incrementPlayerCountGlobal);
 }
 
 Player::~Player()
 {
     this->_dim->getWorld()->sendPlayerInfoRemovePlayer(this);
+    PEXP(decrementPlayerCountGlobal);
 
     // Send a disconnect message
     onEvent(Server::getInstance()->getPluginManager(), onPlayerLeave, this);
@@ -512,7 +514,7 @@ void Player::sendChunkAndLightUpdate(int32_t x, int32_t z)
         return;
     }
 
-    std::lock_guard<std::mutex> _(this->getDimension()->_loadingChunksMutex);
+    std::lock_guard _(this->getDimension()->_loadingChunksMutex);
     this->sendChunkAndLightUpdate(this->_dim->getChunk(x, z));
 }
 
