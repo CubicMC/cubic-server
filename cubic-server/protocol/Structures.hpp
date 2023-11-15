@@ -10,7 +10,7 @@ namespace protocol {
 struct Slot {
     constexpr ~Slot()
     {
-    // clang-format off
+        // clang-format off
         if (this->nbt != nullptr)
             nbt_free_tag(this->nbt);
     }

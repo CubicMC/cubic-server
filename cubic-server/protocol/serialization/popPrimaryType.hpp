@@ -17,11 +17,11 @@
 #include "nbt.h"
 #include "nbt.hpp"
 
-#include <utility>
 #include "protocol/ParseExceptions.hpp"
 #include "protocol/Structures.hpp"
 #include "protocol/common.hpp"
 #include "types.hpp"
+#include <utility>
 
 namespace protocol {
 constexpr uint8_t popByte(uint8_t *&at, uint8_t *eof)
@@ -219,7 +219,6 @@ constexpr std::string popChat(uint8_t *&at, uint8_t *eof) { return popString(at,
 // constexpr EntityMetadata popEntityMetadata(uint8_t *&at, uint8_t *eof)
 // {
 // }
-
 
 inline size_t _readMem(void *pck, uint8_t *data, size_t size)
 {

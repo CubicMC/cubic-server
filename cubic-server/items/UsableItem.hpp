@@ -26,7 +26,8 @@ enum class ItemMaxDurabilityByType : int32_t {
     Unbreakable = -1,
 };
 
-inline ItemMaxDurabilityByType getMaxDurabilityById(int32_t itemId) {
+inline ItemMaxDurabilityByType getMaxDurabilityById(int32_t itemId)
+{
     switch (itemId) {
     case 864:
         return ItemMaxDurabilityByType::FishingRod;
