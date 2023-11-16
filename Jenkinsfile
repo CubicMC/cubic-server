@@ -21,8 +21,8 @@ pipeline {
                                 sh '''
                                 mkdir -pv build
                                 cd build
-                                CC=gcc CXX=g++ cmake -DCMAKE_BUILD_TYPE=Release -DGTEST=1 ..
-                                make -j4
+                                cmake -DCMAKE_BUILD_TYPE=Release -DGTEST=1 -DUSE_CLANG=1 ..
+                                make -j6
                                 cp CubicServer CubicServer_x86-64_GNULinux_dev
                                 '''
                             }
@@ -64,26 +64,26 @@ pipeline {
                         }
                     }
                 }
-                stage('FreeBSD') {
+                stage('MUSL/Linux') {
                     agent {
-                        label "cubic-freebsd"
+                        label "cubic-musl"
                     }
                     options {
-                        timeout(time: 1, unit: 'HOURS')
+                        timeout(time: 20, unit: 'MINUTES')
                     }
                     stages {
-                        stage ('Build FreeBSD') {
+                        stage ('Build MUSL/Linux') {
                             steps {
                                 sh '''
                                 mkdir -pv build
                                 cd build
-                                CC=gcc CXX=g++ cmake -DCMAKE_BUILD_TYPE=Release -DGTEST=1 ..
-                                make -j4
-                                cp CubicServer CubicServer_x86-64_FreeBSD_dev
+                                cmake -DCMAKE_BUILD_TYPE=Release -DGTEST=1 -DUSE_CLANG=1 ..
+                                make -j6
+                                cp CubicServer CubicServer_x86-64_MUSLLinux_dev
                                 '''
                             }
                         }
-                        stage ('Test FreeBSD') {
+                        stage ('Test MUSL/Linux') {
                             steps {
                                 sh '''
                                 cd build
@@ -95,7 +95,7 @@ pipeline {
                     post {
                         always {
                             archiveArtifacts (
-                                artifacts: 'build/Testing/**/*.xml, build/CubicServer_x86-64_FreeBSD_dev',
+                                artifacts: 'build/Testing/**/*.xml, build/CubicServer_x86-64_MUSLLinux_dev',
                                 allowEmptyArchive: true,
                                 fingerprint: true
                             )
