@@ -7,6 +7,7 @@
 #include "prometheus/counter.h"
 #include "prometheus/exposer.h"
 #include "prometheus/registry.h"
+#include "prometheus/summary.h"
 
 class PrometheusExporter {
 public:
@@ -82,45 +83,35 @@ public:
         if (_ready)
             _player_end_gauge->Decrement();
     }
-    void setTpsGlobal(double tps)
+    void addTpsOverworld(double tps)
     {
         if (_ready)
-            _tps_global_gauge->Set(tps);
+            _tps_overworld_summary->Observe(tps);
     }
-    void setTpsOverworld(double tps)
+    void addTpsNether(double tps)
     {
         if (_ready)
-            _tps_overworld_gauge->Set(tps);
+            _tps_nether_summary->Observe(tps);
     }
-    void setTpsNether(double tps)
+    void addTpsEnd(double tps)
     {
         if (_ready)
-            _tps_nether_gauge->Set(tps);
+            _tps_end_summary->Observe(tps);
     }
-    void setTpsEnd(double tps)
+    void addMsptOverworld(double mspt)
     {
         if (_ready)
-            _tps_end_gauge->Set(tps);
+            _mspt_overworld_summary->Observe(mspt);
     }
-    void setMsptGlobal(double mspt)
+    void addMsptNether(double mspt)
     {
         if (_ready)
-            _mspt_global_gauge->Set(mspt);
+            _mspt_nether_summary->Observe(mspt);
     }
-    void setMsptOverworld(double mspt)
+    void addMsptEnd(double mspt)
     {
         if (_ready)
-            _mspt_overworld_gauge->Set(mspt);
-    }
-    void setMsptNether(double mspt)
-    {
-        if (_ready)
-            _mspt_nether_gauge->Set(mspt);
-    }
-    void setMsptEnd(double mspt)
-    {
-        if (_ready)
-            _mspt_end_gauge->Set(mspt);
+            _mspt_end_summary->Observe(mspt);
     }
 
 private:
@@ -137,15 +128,13 @@ private:
     prometheus::Gauge *_player_nether_gauge;
     prometheus::Gauge *_player_end_gauge;
 
-    prometheus::Gauge *_tps_global_gauge;
-    prometheus::Gauge *_tps_overworld_gauge;
-    prometheus::Gauge *_tps_nether_gauge;
-    prometheus::Gauge *_tps_end_gauge;
+    prometheus::Summary *_tps_overworld_summary;
+    prometheus::Summary *_tps_nether_summary;
+    prometheus::Summary *_tps_end_summary;
 
-    prometheus::Gauge *_mspt_global_gauge;
-    prometheus::Gauge *_mspt_overworld_gauge;
-    prometheus::Gauge *_mspt_nether_gauge;
-    prometheus::Gauge *_mspt_end_gauge;
+    prometheus::Summary *_mspt_overworld_summary;
+    prometheus::Summary *_mspt_nether_summary;
+    prometheus::Summary *_mspt_end_summary;
 
     std::atomic<bool> _ready;
 };

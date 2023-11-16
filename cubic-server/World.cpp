@@ -6,6 +6,7 @@
 #include "WorldGroup.hpp"
 #include "logging/logging.hpp"
 #include "types.hpp"
+#include "world_storage/ChunkColumn.hpp"
 #include <cmath>
 #include <cstdint>
 #include <vector>
@@ -23,51 +24,25 @@ World::World(std::shared_ptr<WorldGroup> worldGroup, world_storage::WorldType wo
     _generationPool(CONFIG["num-gen-thread"].as<uint16_t>(), "WorldGen"),
     _worldType(worldType),
     _folder(folder),
-    _publishTpsClock(
-        20,
-        [this]() {
-            const auto tps = this->getTps();
-            double globalTps = 0;
-            for (const auto &[dimensionName, dimensionTps] : tps) {
-                if (dimensionName == "overworld" && dimensionTps.oneMinTps != 0) {
-                    PEXPP(setTpsOverworld, dimensionTps.oneMinTps)
-                } else if (dimensionName == "nether" && dimensionTps.oneMinTps != 0) {
-                    PEXPP(setTpsNether, dimensionTps.oneMinTps)
-                } else if (dimensionName == "end" && dimensionTps.oneMinTps != 0) {
-                    PEXPP(setTpsEnd, dimensionTps.oneMinTps)
-                }
-                if (dimensionTps.oneMinTps != 0)
-                    globalTps += dimensionTps.oneMinTps;
-                else
-                    globalTps = -MAXFLOAT;
+    _publishTpsClock(20, [this]() {
+        const auto tps = this->getTps();
+        for (const auto &[dimensionType, dimensionTps] : tps) {
+            switch (dimensionType) {
+            case world_storage::DimensionType::OVERWORLD:
+                PEXPP(addTpsOverworld, -dimensionTps.oneMinTps)
+                break;
+            case world_storage::DimensionType::NETHER:
+                PEXPP(addTpsNether, -dimensionTps.oneMinTps)
+                break;
+            case world_storage::DimensionType::END:
+                PEXPP(addTpsEnd, -dimensionTps.oneMinTps)
+                break;
             }
-            if (globalTps >= 0)
-                PEXPP(setTpsGlobal, globalTps / tps.size())
         }
-    ),
-    _publishMsptClock(20, [this]() {
-        const auto mspt = this->getMSPTInfos();
-        double globalMspt = 0;
-        for (const auto &[dimensionName, dimensionMspt] : mspt) {
-            if (dimensionName == "overworld" && dimensionMspt.mean != 0) {
-                PEXPP(setMsptOverworld, dimensionMspt.mean)
-            } else if (dimensionName == "nether" && dimensionMspt.mean != 0) {
-                PEXPP(setMsptNether, dimensionMspt.mean)
-            } else if (dimensionName == "end" && dimensionMspt.mean != 0) {
-                PEXPP(setMsptEnd, dimensionMspt.mean)
-            }
-            if (dimensionMspt.mean != 0)
-                globalMspt += dimensionMspt.mean;
-            else
-                globalMspt = -MAXFLOAT;
-        }
-        if (globalMspt >= 0)
-            PEXPP(setMsptGlobal, globalMspt / mspt.size())
     })
 {
     _timeUpdateClock.start();
     _publishTpsClock.start();
-    _publishMsptClock.start();
 }
 
 void World::tick()
@@ -79,7 +54,6 @@ void World::tick()
     for (auto &[_, dim] : this->_dimensions)
         dim->getDimensionLock().release();
     _publishTpsClock.tick();
-    _publishMsptClock.tick();
 }
 
 void World::initialize()
@@ -235,18 +209,18 @@ void World::setTime(int time)
         _time = time;
 }
 
-std::vector<std::pair<std::string, Tps>> World::getTps() const
+std::vector<std::pair<world_storage::DimensionType, Tps>> World::getTps() const
 {
-    std::vector<std::pair<std::string, Tps>> tps;
-    for (const auto &[name, dim] : _dimensions)
-        tps.emplace_back(name, dim->getTps());
+    std::vector<std::pair<world_storage::DimensionType, Tps>> tps;
+    for (const auto &[_, dim] : _dimensions)
+        tps.emplace_back(dim->getDimensionType(), dim->getTps());
     return tps;
 }
 
-std::vector<std::pair<std::string, MSPTInfos>> World::getMSPTInfos() const
+std::vector<std::pair<world_storage::DimensionType, MSPTInfos>> World::getMSPTInfos() const
 {
-    std::vector<std::pair<std::string, MSPTInfos>> msptInfos;
-    for (const auto &[name, dim] : _dimensions)
-        msptInfos.emplace_back(name, dim->getMSPTInfos());
+    std::vector<std::pair<world_storage::DimensionType, MSPTInfos>> msptInfos;
+    for (const auto &[_, dim] : _dimensions)
+        msptInfos.emplace_back(dim->getDimensionType(), dim->getMSPTInfos());
     return msptInfos;
 }

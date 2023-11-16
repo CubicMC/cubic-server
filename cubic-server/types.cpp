@@ -70,6 +70,6 @@ std::string Tps::toString() const
 std::string MSPTInfos::toString() const
 {
     std::stringstream sstr;
-    sstr << "MSPTInfos: " << this->min << " " << this->mean << " " << this->max;
+    sstr << "MSPT: " << this->min << " " << this->mean << " " << this->max;
     return sstr.str();
 }

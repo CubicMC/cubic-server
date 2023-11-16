@@ -17,14 +17,14 @@ void worldMSPTMessage(Player *invoker)
         msg.style().italic = true;
         invoker->getDimension()->getWorld()->getChat()->sendSystemMessage(msg, *invoker);
         for (const auto &each : invoker->getDimension()->getWorld()->getMSPTInfos()) {
-            auto msg = chat::Message(each.first + " " + each.second.toString());
+            auto msg = chat::Message("Dimension(" + std::to_string(int(each.first)) + ") " + each.second.toString());
             msg.style().italic = true;
             invoker->getDimension()->getWorld()->getChat()->sendSystemMessage(msg, *invoker);
         }
     } else {
         LINFO("Dimension MSPT: min avg max");
         for (const auto &each : Server::getInstance()->getWorldGroup("default")->getWorld("default")->getMSPTInfos())
-            LINFO(each.first + " " + each.second.toString());
+            LINFO("Dimension({}) {}", each.first, each.second.toString());
     }
 }
 

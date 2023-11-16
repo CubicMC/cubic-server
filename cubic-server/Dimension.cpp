@@ -9,6 +9,7 @@
 #include "math/Vector3.hpp"
 #include "protocol/ClientPackets.hpp"
 #include "types.hpp"
+#include "world_storage/ChunkColumn.hpp"
 #include <chrono>
 #include <cstdint>
 #include <memory>
@@ -74,6 +75,17 @@ void Dimension::tick()
     float msptTime_micro = (float) std::chrono::duration_cast<std::chrono::microseconds>(msptTime).count();
     _circularBufferTps.push_back(compute_time_micro);
     _circularBufferMSPT.push_back(msptTime_micro);
+    switch (_dimensionType) {
+    case world_storage::DimensionType::OVERWORLD:
+        PEXPP(addMsptOverworld, msptTime_micro)
+        break;
+    case world_storage::DimensionType::NETHER:
+        PEXPP(addMsptNether, msptTime_micro)
+        break;
+    case world_storage::DimensionType::END:
+        PEXPP(addMsptEnd, msptTime_micro)
+        break;
+    }
 }
 
 void Dimension::stop()

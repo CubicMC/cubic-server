@@ -67,15 +67,15 @@ public:
 
     /**
      * @brief Get the tps of all dimensions
-     * @return a vector of pairs of dimension name and their tps
+     * @return a vector of pairs of dimension type and their tps
      */
-    virtual std::vector<std::pair<std::string, Tps>> getTps() const;
+    virtual std::vector<std::pair<world_storage::DimensionType, Tps>> getTps() const;
 
     /**
      * @brief Get the mspt of all dimensions
-     * @return a vector of pairs of dimension name and their mspt
+     * @return a vector of pairs of dimension type and their mspt
      */
-    virtual std::vector<std::pair<std::string, MSPTInfos>> getMSPTInfos() const;
+    virtual std::vector<std::pair<world_storage::DimensionType, MSPTInfos>> getMSPTInfos() const;
 
 protected:
     std::shared_ptr<Chat> _chat;
@@ -91,7 +91,6 @@ protected:
     world_storage::WorldType _worldType;
     std::string _folder;
     TickClock _publishTpsClock;
-    TickClock _publishMsptClock;
 };
 
 #endif // CUBICSERVER_WORLD_HPP
