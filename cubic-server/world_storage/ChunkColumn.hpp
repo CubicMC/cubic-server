@@ -59,8 +59,8 @@ enum class WorldType {
 
 enum class DimensionType {
     OVERWORLD = 0,
-    NETHER,
-    END
+    NETHER = -1,
+    END = 1
 };
 
 enum class GenerationState {

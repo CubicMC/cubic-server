@@ -1,3 +1,4 @@
+#include <chrono>
 #include <memory>
 
 #include <prometheus/counter.h>
@@ -47,26 +48,77 @@ void PrometheusExporter::registerMetrics()
     _player_end_gauge = &player_gauge.Add({{"dimension", "end"}});
 
     // clang-format off
-    auto &tps_gauge = prometheus::BuildGauge()
-        .Name("one_minute_tps")
-        .Help("Server one minute TPS")
+    auto &tps_summary = prometheus::BuildSummary()
+        .Name("tps")
+        .Help("Server TPS")
         .Register(*_registry);
-    // clang-format on
-    _tps_global_gauge = &tps_gauge.Add({{"dimension", "global"}});
-    _tps_overworld_gauge = &tps_gauge.Add({{"dimension", "overworld"}});
-    _tps_nether_gauge = &tps_gauge.Add({{"dimension", "nether"}});
-    _tps_end_gauge = &tps_gauge.Add({{"dimension", "end"}});
 
-    // clang-format off
-    auto &mspt_gauge = prometheus::BuildGauge()
-        .Name("mean_mspt")
-        .Help("Server mean MSPT")
+    _tps_overworld_summary = &tps_summary.Add(
+        {{"dimension", "overworld"}},
+        prometheus::Summary::Quantiles({
+            {0.5, 0.05},
+            {0.9, 0.01},
+            {0.99, 0.001}
+        }),
+        std::chrono::minutes{15},
+        15
+    );
+    _tps_nether_summary = &tps_summary.Add(
+        {{"dimension", "nether"}},
+        prometheus::Summary::Quantiles({
+            {0.5, 0.05},
+            {0.9, 0.01},
+            {0.99, 0.001}
+        }),
+        std::chrono::minutes{15},
+        15
+    );
+    _tps_end_summary = &tps_summary.Add(
+        {{"dimension", "end"}},
+        prometheus::Summary::Quantiles({
+            {0.5, 0.05},
+            {0.9, 0.01},
+            {0.99, 0.001}
+        }),
+        std::chrono::minutes{15},
+        15
+    );
+
+    auto &mspt_summary = prometheus::BuildSummary()
+        .Name("mspt")
+        .Help("Server MSPT")
         .Register(*_registry);
-    // clang-format on
-    _mspt_global_gauge = &mspt_gauge.Add({{"dimension", "global"}});
-    _mspt_overworld_gauge = &mspt_gauge.Add({{"dimension", "overworld"}});
-    _mspt_nether_gauge = &mspt_gauge.Add({{"dimension", "nether"}});
-    _mspt_end_gauge = &mspt_gauge.Add({{"dimension", "end"}});
+
+    _mspt_overworld_summary = &mspt_summary.Add(
+        {{"dimension", "overworld"}},
+        prometheus::Summary::Quantiles({
+            {0.5, 0.05},
+            {0.9, 0.01},
+            {0.99, 0.001}
+        }),
+        std::chrono::minutes{15},
+        15
+    );
+    _mspt_nether_summary = &mspt_summary.Add(
+        {{"dimension", "nether"}},
+        prometheus::Summary::Quantiles({
+            {0.5, 0.05},
+            {0.9, 0.01},
+            {0.99, 0.001}
+        }),
+        std::chrono::minutes{15},
+        15
+    );
+    _mspt_end_summary = &mspt_summary.Add(
+        {{"dimension", "end"}},
+        prometheus::Summary::Quantiles({
+            {0.5, 0.05},
+            {0.9, 0.01},
+            {0.99, 0.001}
+        }),
+        std::chrono::minutes{15},
+        15
+    );
 
     _exposer.RegisterCollectable(_registry);
 
