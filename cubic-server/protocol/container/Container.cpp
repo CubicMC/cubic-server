@@ -53,11 +53,7 @@ void Container::onClick(std::shared_ptr<Player> player, int16_t index, uint8_t b
                 player->getDimension()->makeEntity<Item>(_cursor)->dropItem(player->getPosition());
                 _cursor.reset();
             } else {
-                protocol::Slot item = {true, _cursor.itemID, 1};
-                player->getDimension()->makeEntity<Item>(item)->dropItem(player->getPosition());
-                _cursor.itemCount--;
-                if (_cursor.itemCount == 0)
-                    _cursor.reset();
+                player->getDimension()->makeEntity<Item>(_cursor.takeOne())->dropItem(player->getPosition());
             }
         } else if (buttonId == 0) {
             at(index).swap(_cursor);
@@ -97,17 +93,12 @@ void Container::onClick(std::shared_ptr<Player> player, int16_t index, uint8_t b
         if (!at(index).present)
             break;
         if (buttonId == 0) {
-            protocol::Slot item = {true, at(index).itemID, 1};
-            player->getDimension()->makeEntity<Item>(item)->dropItem(player->getPosition());
-            at(index).itemCount--;
-            if (at(index).itemCount == 0)
-                at(index).reset();
+            LINFO("Dropping item");
+            player->getDimension()->makeEntity<Item>(at(index).takeOne())->dropItem(player->getPosition());
         } else {
             player->getDimension()->makeEntity<Item>(at(index))->dropItem(player->getPosition());
             at(index).reset();
         }
-        if (at(index).itemCount == 0)
-            at(index).reset();
         break;
 
     case ClickMode::Drag:
