@@ -7,9 +7,9 @@
 #include <string>
 #include <vector>
 
-constexpr std::array<std::string, 3> SINGLE_SELECTOR = {"@r", "@s", "@p"};
-constexpr std::array<std::string, 2> MULTIPLE_SELECTOR = {"@a", "@e"};
-constexpr std::array<std::string, 2> INVOKER_REQUIRED_SELECTOR = {"@s", "@p"};
+static const std::array<std::string, 3> SINGLE_SELECTOR = {"@r", "@s", "@p"};
+static const std::array<std::string, 2> MULTIPLE_SELECTOR = {"@a", "@e"};
+static const std::array<std::string, 2> INVOKER_REQUIRED_SELECTOR = {"@s", "@p"};
 
 constexpr bool isMultipleSelector(const std::string &str) { return std::find(MULTIPLE_SELECTOR.begin(), MULTIPLE_SELECTOR.end(), str) != MULTIPLE_SELECTOR.end(); }
 
