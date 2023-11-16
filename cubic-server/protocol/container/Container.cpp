@@ -93,7 +93,6 @@ void Container::onClick(std::shared_ptr<Player> player, int16_t index, uint8_t b
         if (!at(index).present)
             break;
         if (buttonId == 0) {
-            LINFO("Dropping item");
             player->getDimension()->makeEntity<Item>(at(index).takeOne())->dropItem(player->getPosition());
         } else {
             player->getDimension()->makeEntity<Item>(at(index))->dropItem(player->getPosition());
