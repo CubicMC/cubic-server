@@ -1,14 +1,15 @@
 #include "BoundingBox.hpp"
 #include "math/Vector3.hpp"
+#include <optional>
 
 BoundingBox::BoundingBox(float width, float height, float depth):
-    width(width),
-    height(height),
-    depth(depth)
 {
-    this->min = Vector3f(-width / 2, -height / 2, -depth / 2);
-    this->max = Vector3f(width / 2, height / 2, depth / 2);
-    this->center = Vector3f(0, 0, 0);
+    this->rect.min = Vector3f(-width / 2, -height / 2, -depth / 2);
+    this->rect.max = Vector3f(width / 2, height / 2, depth / 2);
+    this->rect.center = Vector3f(0, 0, 0);
+    this->rect.width = width;
+    this->rect.height = height;
+    this->rect.depth = depth;
 }
 
 BoundingBox::BoundingBox(const Vector3f &dimensions):
@@ -16,19 +17,20 @@ BoundingBox::BoundingBox(const Vector3f &dimensions):
 {
 }
 
-BoundingBox::BoundingBox(const Vector3f &min, const Vector3f &max):
-    min(min),
-    max(max)
+BoundingBox::BoundingBox(const Vector3f &min, const Vector3f &max)
 {
-    this->width = max.x - min.x;
-    this->height = max.y - min.y;
-    this->depth = max.z - min.z;
-    this->center = Vector3f(min.x + this->width / 2, min.y + this->height / 2, min.z + this->depth / 2);
+    this->rect.min = min;
+    this->rect.max = max;
+    this->rect.width = max.x - min.x;
+    this->rect.height = max.y - min.y;
+    this->rect.depth = max.z - min.z;
+    this->rect.center = Vector3f(min.x + this->rect.width / 2, min.y + this->rect.height / 2, min.z + this->rect.depth / 2);
 }
 
 bool BoundingBox::contains(const Vector3f &point) const
 {
-    if (point.x < this->min.x || point.y < this->min.y || point.z < this->min.z || point.x > this->max.x || point.y > this->max.y || point.z > this->max.z) {
+    if (point.x < this->rect.min.x || point.y < this->rect.min.y || point.z < this->rect.min.z || point.x > this->rect.max.x || point.y > this->rect.max.y ||
+        point.z > this->rect.max.z) {
         return false;
     }
     return true;
@@ -36,49 +38,45 @@ bool BoundingBox::contains(const Vector3f &point) const
 
 bool BoundingBox::intersects(const BoundingBox &other) const
 {
-    if (this->min.x > other.max.x || this->max.x < other.min.x) {
+    if (this->rect.min.x > other.rect.max.x || this->rect.max.x < other.rect.min.x) {
         return false;
     }
-    if (this->min.y > other.max.y || this->max.y < other.min.y) {
+    if (this->rect.min.y > other.rect.max.y || this->rect.max.y < other.rect.min.y) {
         return false;
     }
-    if (this->min.z > other.max.z || this->max.z < other.min.z) {
+    if (this->rect.min.z > other.rect.max.z || this->rect.max.z < other.rect.min.z) {
         return false;
     }
     return true;
 }
 
-Vector3<float> BoundingBox::getCenter() const
+std::optional<BoundingBox::Rect> BoundingBox::intersectRect(const BoundingBox &other) const
 {
-    return this->center;
+    if (!this->intersects(other)) {
+        return std::nullopt;
+    }
+
+    float minX = std::max(this->rect.min.x, other.rect.min.x);
+    float minY = std::max(this->rect.min.y, other.rect.min.y);
+    float minZ = std::max(this->rect.min.z, other.rect.min.z);
+
+    float maxX = std::min(this->rect.max.x, other.rect.max.x);
+    float maxY = std::min(this->rect.max.y, other.rect.max.y);
+    float maxZ = std::min(this->rect.max.z, other.rect.max.z);
+
+    return Rect {.min = Vector3<float>(minX, minY, minZ), .max = Vector3<float>(maxX, maxY, maxZ), .width = maxX - minX, .height = maxY - minY, .depth = maxZ - minZ};
 }
 
-Vector3<float> BoundingBox::getDimensions() const
-{
-    return Vector3f(this->width, this->height, this->depth);
-}
+BoundingBox::Rect BoundingBox::getRect() const { return this->rect; }
 
-Vector3<float> BoundingBox::getMin() const
-{
-    return this->min;
-}
+Vector3<float> BoundingBox::getDimensions() const { return Vector3f(this->rect.width, this->rect.height, this->rect.depth); }
 
-Vector3<float> BoundingBox::getMax() const
-{
-    return this->max;
-}
+Vector3<float> BoundingBox::getMin() const { return this->rect.min; }
 
-float BoundingBox::getWidth() const
-{
-    return this->width;
-}
+Vector3<float> BoundingBox::getMax() const { return this->rect.max; }
 
-float BoundingBox::getHeight() const
-{
-    return this->height;
-}
+float BoundingBox::getWidth() const { return this->rect.width; }
 
-float BoundingBox::getDepth() const
-{
-    return this->depth;
-}
+float BoundingBox::getHeight() const { return this->rect.height; }
+
+float BoundingBox::getDepth() const { return this->rect.depth; }
