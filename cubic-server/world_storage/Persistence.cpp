@@ -19,7 +19,6 @@
 #include <filesystem>
 #include <memory>
 #include <mutex>
-#include <netinet/in.h>
 #include <stdexcept>
 #include <string>
 #include <string_view>
@@ -106,14 +105,14 @@ static size_t _readMem(void *ud, uint8_t *d, size_t s)
     return toCopy;
 }
 
-static int64_t getFileSize(const std::string &filename)
+static int64_t getFileSize(const std::filesystem::path &filename)
 {
     struct stat stat_buf;
-    int rc = stat(filename.c_str(), &stat_buf);
+    int rc = stat(filename.string().c_str(), &stat_buf);
     return rc == 0 ? stat_buf.st_size : -1;
 }
 
-static char *loadFile(const std::string &file, size_t *size)
+static char *loadFile(const std::filesystem::path &file, size_t *size)
 {
     if (!std::filesystem::exists(file))
         return nullptr;
@@ -124,7 +123,7 @@ static char *loadFile(const std::string &file, size_t *size)
 
     char *fileContents = (char *) malloc(fileSize);
 
-    FILE *openedFile = fopen(file.c_str(), "r");
+    FILE *openedFile = fopen(file.string().c_str(), "r");
 
     *size = fread(fileContents, 1, fileSize, openedFile);
 

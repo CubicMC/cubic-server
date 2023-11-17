@@ -5,11 +5,8 @@
 #include <cstring>
 #include <curl/curl.h>
 #include <mutex>
-#include <netinet/in.h>
-#include <poll.h>
 #include <stdexcept>
 #include <string>
-#include <sys/socket.h>
 #include <sys/types.h>
 #include <thread>
 #include <unistd.h>

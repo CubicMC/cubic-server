@@ -1,14 +1,12 @@
 #ifndef CUBICSERVER_SERVER_HPP
 #define CUBICSERVER_SERVER_HPP
 
-#include <arpa/inet.h>
 #include <array>
 #include <boost/asio.hpp>
 #include <boost/container/flat_map.hpp>
 #include <boost/lockfree/queue.hpp>
 #include <cstdint>
 #include <memory>
-#include <netinet/in.h>
 #include <string>
 #include <unordered_map>
 #include <vector>

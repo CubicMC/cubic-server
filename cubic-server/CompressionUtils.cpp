@@ -10,7 +10,7 @@
 int compressVector(const std::vector<uint8_t> &source, std::vector<uint8_t> &destination)
 {
     unsigned long source_length = source.size();
-    size_t destination_length = compressBound(source_length);
+    auto destination_length = compressBound(source_length);
 
     uint8_t *destination_data = (uint8_t *) malloc(destination_length);
     if (destination_data == nullptr) {

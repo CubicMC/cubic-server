@@ -37,8 +37,8 @@ u128 u128::fromShortString(const std::string &str)
 u128 u128::random()
 {
     return u128(
-        {utility::PseudoRandomGenerator::getInstance()->generateNumber<long unsigned int>(0, 0xffffffffffffffff),
-         utility::PseudoRandomGenerator::getInstance()->generateNumber<long unsigned int>(0, 0xffffffffffffffff)}
+        {utility::PseudoRandomGenerator::getInstance()->generateNumber<uint64_t>(0, 0xffffffffffffffff),
+         utility::PseudoRandomGenerator::getInstance()->generateNumber<uint64_t>(0, 0xffffffffffffffff)}
     );
 }
 

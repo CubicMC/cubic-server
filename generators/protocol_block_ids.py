@@ -146,7 +146,8 @@ class Block:
     def print_switch(self, remaining_props, state, data):
         data += "switch (" + remaining_props[0] + ") {\n"
         for each in self.properties[remaining_props[0]]:
-                data += "case Properties::" + remaining_props[0].capitalize() + "::" + (num2words(each).replace("-", "_").upper() if each.isdigit() else each.upper()) + ":\n"
+                nb = num2words(each).replace("-", "_")
+                data += "case Properties::" + remaining_props[0].capitalize() + "::" + (nb[0].upper() + nb[1:].lower() if each.isdigit() else each[0].upper() + each[1:].lower()) + ":\n"
                 if len(remaining_props) > 1:
                     state = change_item_in_list(state, (remaining_props[0], each))
                     data = self.print_switch(remaining_props[1:], state, data)
@@ -167,11 +168,12 @@ class Block:
                 data += "enum class " + prop.capitalize() + " {\n"
                 for each in self.properties[prop]:
                     if each.isdigit():
-                        data += num2words(each).replace("-", "_").upper() + ",\n"
+                        nb = num2words(each).replace("-", "_")
+                        data += nb[0].upper() + nb[1:].lower() + ",\n"
                     else:
-                        data += each.upper() + ",\n"
+                        data += each[0].upper() + each[1:].lower() + ",\n"
                 data = data[:-2] + "\n};\n"
-            data += "}\n"
+            data += "} // namespace Properties\n"
 
         return data
 
@@ -218,12 +220,13 @@ class Block:
                         first_value = False
                     else:
                         data += "} else if (prop.second == \"" + each + "\") {\n"
+                    nb = num2words(each).replace("-", "_")
                     # this line add to data the value of the property (for example "face")
                     # the enum of the property (for example "Face")
                     # the value of the property (for example "floor")
                     # if the value is a number it converts it to a string
                     # if the value contains a "-" it replaces it with "_"
-                    data += prop + " = Properties::" + prop.capitalize() + "::" + (num2words(each).replace("-", "_").upper() if each.isdigit() else each.upper()) + ";\n"
+                    data += prop + " = Properties::" + prop.capitalize() + "::" + (nb[0].upper() + nb[1:].lower() if each.isdigit() else each[0].upper() + each[1:].lower()) + ";\n"
                 data += "} else {\n"
                 data += "throw std::runtime_error(\"Invalid property \\\"" + prop + "\\\" value\");\n"
                 data += "}\n"
@@ -248,14 +251,14 @@ class Block:
             data = data[:-2]
         data += ");\n"
         # data += "BlockId paletteToProtocol(std::vector<std::pair<std::string, std::string>> properties);\n"
-        data += "}\n"
+        data += "} // namespace " + self.name.split(":")[1].title().replace("_", "") + "\n"
         return data + "\n"
 
     def namespaceForSourceFile(self):
         data = "namespace " + self.name.split(":")[1].title().replace("_", "") + " {\n"
         data += self.toProtocol()
         # data += self.paletteToProtocol()
-        data += "}\n"
+        data += "} // namespace " + self.name.split(":")[1].title().replace("_", "") + "\n"
         return data + "\n"
 
     # print the name of the block and the function that returns the protocol id of the block
@@ -294,7 +297,7 @@ def create_block_files(path, block):
         writer("typedef int32_t BlockId;\n\n", f)
 
         writer(block.namespaceForHeaderFile(), f)
-        writer("}\n", f)
+        writer("} // namespace Blocks\n", f)
     global indentation
     global is_switch
     indentation = 0
@@ -305,7 +308,7 @@ def create_block_files(path, block):
 
         writer("namespace Blocks {\n", f)
         writer(block.namespaceForSourceFile(), f)
-        writer("}\n", f)
+        writer("} // namespace Blocks\n", f)
 
     indentation = 0
     is_switch = 0

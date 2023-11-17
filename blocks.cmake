@@ -52,7 +52,7 @@ find_package (Python3 REQUIRED Interpreter)
 
 execute_process(
     COMMAND ${Python3_EXECUTABLE} protocol_block_ids.py -i ${CMAKE_BINARY_DIR}/blocks-1.19.3.json --get-generated-files
-    WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/../generators
+    WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/generators
     COMMAND_ERROR_IS_FATAL ANY
     OUTPUT_VARIABLE BLOCKS_SRC
 )
@@ -63,10 +63,10 @@ list(APPEND BLOCKS_SRC ${Blocks_SOURCE_DIR}/blocks.hpp)
 add_custom_command(
     OUTPUT ${BLOCKS_SRC}
     COMMAND ${Python3_EXECUTABLE} protocol_block_ids.py -i ${CMAKE_BINARY_DIR}/blocks-1.19.3.json -o ${Blocks_SOURCE_DIR}/ --format
-    WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/../generators
-    DEPENDS ${CMAKE_BINARY_DIR}/../generators/protocol_block_ids.py
+    WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/generators
+    DEPENDS ${CMAKE_SOURCE_DIR}/generators/protocol_block_ids.py
     MAIN_DEPENDENCY ${CMAKE_BINARY_DIR}/blocks-1.19.3.json
     VERBATIM
 )
 
-add_library(Blocks STATIC ${BLOCKS_SRC})
+add_library(Blocks ${BLOCKS_SRC})

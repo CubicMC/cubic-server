@@ -305,7 +305,7 @@ void ChunkColumn::_generateFlat(UNUSED GenerationState goalState)
                 } else if (y == 1 || y == 2) {
                     updateBlock({x, y + CHUNK_HEIGHT_MIN, z}, Blocks::Dirt::toProtocol());
                 } else if (y == 3) {
-                    updateBlock({x, y + CHUNK_HEIGHT_MIN, z}, Blocks::GrassBlock::toProtocol(Blocks::GrassBlock::Properties::Snowy::FALSE));
+                    updateBlock({x, y + CHUNK_HEIGHT_MIN, z}, Blocks::GrassBlock::toProtocol(Blocks::GrassBlock::Properties::Snowy::False));
                 }
             }
         }
@@ -334,7 +334,7 @@ void ChunkColumn::_generateFlatCubicServer(UNUSED GenerationState goalState)
                 } else if (y == 1 || y == 2) {
                     updateBlock({x, y + CHUNK_HEIGHT_MIN, z}, Blocks::Dirt::toProtocol());
                 } else if (y == 3) {
-                    updateBlock({x, y + CHUNK_HEIGHT_MIN, z}, Blocks::GrassBlock::toProtocol(Blocks::GrassBlock::Properties::Snowy::FALSE));
+                    updateBlock({x, y + CHUNK_HEIGHT_MIN, z}, Blocks::GrassBlock::toProtocol(Blocks::GrassBlock::Properties::Snowy::False));
                 } else if ((y == 4 || y == 5 || y == 6) && z == 8 && x == 8) {
                     updateBlock({x, y + CHUNK_HEIGHT_MIN, z}, Blocks::OakLog::toProtocol(Blocks::OakLog::Properties::Axis::Y));
                 } else if (y == 7 || y == 8) {
@@ -347,7 +347,7 @@ void ChunkColumn::_generateFlatCubicServer(UNUSED GenerationState goalState)
                         updateBlock(
                             {x, y + CHUNK_HEIGHT_MIN, z},
                             Blocks::OakLeaves::toProtocol(
-                                Blocks::OakLeaves::Properties::Distance::ONE, Blocks::OakLeaves::Properties::Persistent::FALSE, Blocks::OakLeaves::Properties::Waterlogged::FALSE
+                                Blocks::OakLeaves::Properties::Distance::One, Blocks::OakLeaves::Properties::Persistent::False, Blocks::OakLeaves::Properties::Waterlogged::False
                             )
                         );
                         break;
@@ -359,7 +359,7 @@ void ChunkColumn::_generateFlatCubicServer(UNUSED GenerationState goalState)
                         updateBlock(
                             {x, y + CHUNK_HEIGHT_MIN, z},
                             Blocks::OakLeaves::toProtocol(
-                                Blocks::OakLeaves::Properties::Distance::ONE, Blocks::OakLeaves::Properties::Persistent::FALSE, Blocks::OakLeaves::Properties::Waterlogged::FALSE
+                                Blocks::OakLeaves::Properties::Distance::One, Blocks::OakLeaves::Properties::Persistent::False, Blocks::OakLeaves::Properties::Waterlogged::False
                             )
                         );
                         break;
@@ -370,7 +370,7 @@ void ChunkColumn::_generateFlatCubicServer(UNUSED GenerationState goalState)
                         updateBlock(
                             {x, y + CHUNK_HEIGHT_MIN, z},
                             Blocks::OakLeaves::toProtocol(
-                                Blocks::OakLeaves::Properties::Distance::ONE, Blocks::OakLeaves::Properties::Persistent::FALSE, Blocks::OakLeaves::Properties::Waterlogged::FALSE
+                                Blocks::OakLeaves::Properties::Distance::One, Blocks::OakLeaves::Properties::Persistent::False, Blocks::OakLeaves::Properties::Waterlogged::False
                             )
                         );
                         break;
@@ -382,7 +382,7 @@ void ChunkColumn::_generateFlatCubicServer(UNUSED GenerationState goalState)
                         updateBlock(
                             {x, y + CHUNK_HEIGHT_MIN, z},
                             Blocks::OakLeaves::toProtocol(
-                                Blocks::OakLeaves::Properties::Distance::ONE, Blocks::OakLeaves::Properties::Persistent::FALSE, Blocks::OakLeaves::Properties::Waterlogged::FALSE
+                                Blocks::OakLeaves::Properties::Distance::One, Blocks::OakLeaves::Properties::Persistent::False, Blocks::OakLeaves::Properties::Waterlogged::False
                             )
                         );
                         break;
@@ -394,7 +394,7 @@ void ChunkColumn::_generateFlatCubicServer(UNUSED GenerationState goalState)
                         updateBlock(
                             {x, y + CHUNK_HEIGHT_MIN, z},
                             Blocks::OakLeaves::toProtocol(
-                                Blocks::OakLeaves::Properties::Distance::ONE, Blocks::OakLeaves::Properties::Persistent::FALSE, Blocks::OakLeaves::Properties::Waterlogged::FALSE
+                                Blocks::OakLeaves::Properties::Distance::One, Blocks::OakLeaves::Properties::Persistent::False, Blocks::OakLeaves::Properties::Waterlogged::False
                             )
                         );
                         break;
@@ -412,7 +412,7 @@ void ChunkColumn::_generateFlatCubicServer(UNUSED GenerationState goalState)
                         updateBlock(
                             {x, y + CHUNK_HEIGHT_MIN, z},
                             Blocks::OakLeaves::toProtocol(
-                                Blocks::OakLeaves::Properties::Distance::ONE, Blocks::OakLeaves::Properties::Persistent::FALSE, Blocks::OakLeaves::Properties::Waterlogged::FALSE
+                                Blocks::OakLeaves::Properties::Distance::One, Blocks::OakLeaves::Properties::Persistent::False, Blocks::OakLeaves::Properties::Waterlogged::False
                             )
                         );
                         break;
@@ -490,7 +490,7 @@ void ChunkColumn::_generateLakes(UNUSED generation::Generator &generator)
             for (int y = waterLevel; 0 < y; y--) {
                 if (getBlock({x, y, z}) == 1)
                     break;
-                updateBlock({x, y, z}, Blocks::Water::toProtocol(Blocks::Water::Properties::Level::ZERO));
+                updateBlock({x, y, z}, Blocks::Water::toProtocol(Blocks::Water::Properties::Level::Zero));
             }
         }
     }
@@ -508,16 +508,16 @@ void ChunkColumn::_generateLocalModifications(UNUSED generation::Generator &gene
                 auto block = getBlock({x, y, z});
                 if (block == Blocks::Air::toProtocol())
                     continue;
-                if (block == Blocks::Water::toProtocol(Blocks::Water::Properties::Level::ZERO)) {
-                    lastBlock = Blocks::Water::toProtocol(Blocks::Water::Properties::Level::ZERO);
+                if (block == Blocks::Water::toProtocol(Blocks::Water::Properties::Level::Zero)) {
+                    lastBlock = Blocks::Water::toProtocol(Blocks::Water::Properties::Level::Zero);
                     continue;
                 }
-                if (block == Blocks::Stone::toProtocol() && lastBlock == Blocks::Water::toProtocol(Blocks::Water::Properties::Level::ZERO)) {
+                if (block == Blocks::Stone::toProtocol() && lastBlock == Blocks::Water::toProtocol(Blocks::Water::Properties::Level::Zero)) {
                     updateBlock({x, y, z}, Blocks::Sand::toProtocol()); // sand
                     break;
                 }
                 if (block == Blocks::Stone::toProtocol() && lastBlock == Blocks::Air::toProtocol()) {
-                    updateBlock({x, y, z}, Blocks::GrassBlock::toProtocol(Blocks::GrassBlock::Properties::Snowy::FALSE)); // grass
+                    updateBlock({x, y, z}, Blocks::GrassBlock::toProtocol(Blocks::GrassBlock::Properties::Snowy::False)); // grass
                     if (y - 1 >= CHUNK_HEIGHT_MIN)
                         updateBlock({x, y - 1, z}, Blocks::Dirt::toProtocol()); // dirt
                     if (y - 2 >= CHUNK_HEIGHT_MIN)

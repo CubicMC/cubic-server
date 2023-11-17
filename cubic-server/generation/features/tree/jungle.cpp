@@ -25,7 +25,7 @@ std::deque<Position> &JungleTree::getPosForTreeGeneration(void)
                 if (block == Blocks::Air::toProtocol())
                     continue;
                 else {
-                    if (block == Blocks::GrassBlock::toProtocol(Blocks::GrassBlock::Properties::Snowy::FALSE) || block == Blocks::Dirt::toProtocol()) {
+                    if (block == Blocks::GrassBlock::toProtocol(Blocks::GrassBlock::Properties::Snowy::False) || block == Blocks::Dirt::toProtocol()) {
                         if (_generator.getNoise(x + _chunk.getChunkPos().x * SECTION_WIDTH, y, z + _chunk.getChunkPos().z * SECTION_WIDTH).noise3D.density > 0 &&
                             _generator.getNoise(x + _chunk.getChunkPos().x * SECTION_WIDTH, y, z + _chunk.getChunkPos().z * SECTION_WIDTH).noise2D.trees > 0.4 &&
                             _generator.getBiome(x + _chunk.getChunkPos().x * SECTION_WIDTH, y, z + _chunk.getChunkPos().z * SECTION_WIDTH)) {
@@ -91,7 +91,7 @@ const std::vector<generation::Generator::FeatureBlock> JungleTree::getTree(const
     Tree::buildTree(
         treeSize, tree,
         Blocks::JungleLeaves::toProtocol(
-            Blocks::JungleLeaves::Properties::Distance::ONE, Blocks::JungleLeaves::Properties::Persistent::FALSE, Blocks::JungleLeaves::Properties::Waterlogged::FALSE
+            Blocks::JungleLeaves::Properties::Distance::One, Blocks::JungleLeaves::Properties::Persistent::False, Blocks::JungleLeaves::Properties::Waterlogged::False
         ),
         Blocks::JungleLog::toProtocol(Blocks::JungleLog::Properties::Axis::Y)
     );

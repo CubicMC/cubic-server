@@ -5,10 +5,7 @@
 #include <cstdint>
 #include <memory>
 #include <mutex>
-#include <netdb.h>
-#include <poll.h>
 #include <string>
-#include <sys/socket.h>
 #include <thread>
 #include <unistd.h>
 

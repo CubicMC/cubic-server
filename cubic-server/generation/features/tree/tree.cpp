@@ -1,6 +1,7 @@
 #include "tree.hpp"
 
 #include <algorithm>
+#include <cmath>
 #include <cstdlib>
 #include <vector>
 
@@ -94,7 +95,7 @@ void Tree::buildTree(const int treeSize, std::vector<generation::Generator::Feat
 
 void Tree::placeLeaf(std::vector<generation::Generator::FeatureBlock> &tree, generation::Generator::FeatureBlock leaf) const
 {
-    long tinyDistance = 8;
+    int64_t tinyDistance = 8;
     for (const auto &block : tree) {
         // I'm sorry for this, but I don't have the time to do it properly
         // clang-format off

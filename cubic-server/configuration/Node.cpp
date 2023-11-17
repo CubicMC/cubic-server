@@ -32,7 +32,7 @@ void configuration::Node::initMap()
 void configuration::Node::load(const std::filesystem::path &path)
 {
     try {
-        this->_impl = YAML::LoadFile(path);
+        this->_impl = YAML::LoadFile(path.string());
     } catch (const YAML::BadFile &) {
         throw configuration::BadFile("Unable to open file '" + path.string() + "'");
     }

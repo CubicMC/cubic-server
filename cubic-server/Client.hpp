@@ -1,10 +1,8 @@
 #ifndef CUBICSERVER_CLIENT_HPP
 #define CUBICSERVER_CLIENT_HPP
 
-#include <arpa/inet.h>
 #include <boost/asio.hpp>
 #include <memory>
-#include <netinet/in.h>
 #include <thread>
 #include <vector>
 

@@ -1,7 +1,6 @@
 #ifndef D3EBB5BA_3F3F_4BBD_A2B5_05FD6729E432
 #define D3EBB5BA_3F3F_4BBD_A2B5_05FD6729E432
 
-#include <arpa/inet.h>
 #include <cstdint>
 #include <memory>
 #include <mutex>
@@ -13,10 +12,17 @@
 
 #include "LevelData.hpp"
 #include "Player.hpp"
+#include "options.hpp"
 #include "types.hpp"
 #include "world_storage/ChunkColumn.hpp"
 #include "world_storage/Palette.hpp"
 #include "world_storage/PlayerData.hpp"
+
+#ifdef CBSRV_PLATFORM_WINDOWS
+#include <winsock2.h>
+#else
+#include <arpa/inet.h>
+#endif
 
 namespace world_storage {
 

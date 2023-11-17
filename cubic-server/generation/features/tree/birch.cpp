@@ -23,7 +23,7 @@ std::deque<Position> &BirchTree::getPosForTreeGeneration(void)
                 if (block == Blocks::Air::toProtocol())
                     continue;
                 else {
-                    if (block == Blocks::GrassBlock::toProtocol(Blocks::GrassBlock::Properties::Snowy::FALSE) || block == Blocks::Dirt::toProtocol()) {
+                    if (block == Blocks::GrassBlock::toProtocol(Blocks::GrassBlock::Properties::Snowy::False) || block == Blocks::Dirt::toProtocol()) {
                         if (_generator.getNoise(x + _chunk.getChunkPos().x * SECTION_WIDTH, y, z + _chunk.getChunkPos().z * SECTION_WIDTH).noise3D.density > 0 &&
                             _generator.getNoise(x + _chunk.getChunkPos().x * SECTION_WIDTH, y, z + _chunk.getChunkPos().z * SECTION_WIDTH).noise2D.trees > 0.4 &&
                             _generator.getBiome(x + _chunk.getChunkPos().x * SECTION_WIDTH, y, z + _chunk.getChunkPos().z * SECTION_WIDTH)) {
@@ -89,7 +89,7 @@ const std::vector<generation::Generator::FeatureBlock> BirchTree::getTree(const 
     Tree::buildTree(
         treeSize, tree,
         Blocks::BirchLeaves::toProtocol(
-            Blocks::BirchLeaves::Properties::Distance::ONE, Blocks::BirchLeaves::Properties::Persistent::FALSE, Blocks::BirchLeaves::Properties::Waterlogged::FALSE
+            Blocks::BirchLeaves::Properties::Distance::One, Blocks::BirchLeaves::Properties::Persistent::False, Blocks::BirchLeaves::Properties::Waterlogged::False
         ),
         Blocks::BirchLog::toProtocol(Blocks::BirchLog::Properties::Axis::Y)
     );

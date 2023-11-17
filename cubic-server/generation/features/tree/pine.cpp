@@ -23,7 +23,7 @@ std::deque<Position> &PineTree::getPosForTreeGeneration(void)
                 if (block == Blocks::Air::toProtocol())
                     continue;
                 else {
-                    if (block == Blocks::GrassBlock::toProtocol(Blocks::GrassBlock::Properties::Snowy::FALSE) || block == Blocks::Dirt::toProtocol()) {
+                    if (block == Blocks::GrassBlock::toProtocol(Blocks::GrassBlock::Properties::Snowy::False) || block == Blocks::Dirt::toProtocol()) {
                         if (_generator.getNoise(x + _chunk.getChunkPos().x * SECTION_WIDTH, y, z + _chunk.getChunkPos().z * SECTION_WIDTH).noise3D.density > 0 &&
                             _generator.getNoise(x + _chunk.getChunkPos().x * SECTION_WIDTH, y, z + _chunk.getChunkPos().z * SECTION_WIDTH).noise2D.trees > 0.4 &&
                             _generator.getBiome(x + _chunk.getChunkPos().x * SECTION_WIDTH, y, z + _chunk.getChunkPos().z * SECTION_WIDTH)) {
@@ -153,7 +153,7 @@ const std::vector<generation::Generator::FeatureBlock> PineTree::getTree(const P
     PineTree::buildTree(
         treeSize, tree,
         Blocks::SpruceLeaves::toProtocol(
-            Blocks::SpruceLeaves::Properties::Distance::ONE, Blocks::SpruceLeaves::Properties::Persistent::FALSE, Blocks::SpruceLeaves::Properties::Waterlogged::FALSE
+            Blocks::SpruceLeaves::Properties::Distance::One, Blocks::SpruceLeaves::Properties::Persistent::False, Blocks::SpruceLeaves::Properties::Waterlogged::False
         ),
         Blocks::SpruceLog::toProtocol(Blocks::SpruceLog::Properties::Axis::Y)
     );

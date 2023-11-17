@@ -2,6 +2,7 @@
 #define CUBICSERVER_PLUGINMANAGER_HPP
 
 #include <cstdint>
+#include <filesystem>
 #include <memory>
 #include <string>
 #include <unordered_map>
@@ -64,7 +65,7 @@ public:
 private:
     std::shared_ptr<PluginInterface> _interface;
 
-    void loadPlugin(std::string filepath);
+    void loadPlugin(const std::filesystem::path &filepath);
     std::string _folder;
     std::unordered_map<std::string, void *> _plugins;
 };

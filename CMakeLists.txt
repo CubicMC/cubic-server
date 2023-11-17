@@ -77,6 +77,13 @@ set(MBEDTLS_FATAL_WARNINGS OFF CACHE BOOL "" FORCE)
 
 set(FETCHCONTENT_QUIET OFF)
 
+# Fix prometheus-cpp 3rdparty dependencies when cross-compiling
+if(WIN32)
+    set(civetweb-3rdparty_DIR ${CMAKE_BINARY_DIR}/_deps/prometheus-cpp-src/cmake)
+    set(BUILD_SHARED_LIBS ON CACHE BOOL "" FORCE)
+    set(CMAKE_INSTALL_PREFIX "${CMAKE_BINARY_DIR}")
+endif()
+
 include(FetchContent)
 include(boost.cmake)
 
@@ -139,10 +146,10 @@ FetchContent_Declare(
 FetchContent_MakeAvailable(
     yaml-cpp
     json
-    noise
-    argparse
-    nbt
     spdlog
+    noise
+    nbt
+    argparse
     mbedtls
 )
 
@@ -246,12 +253,13 @@ target_link_libraries (${CMAKE_PROJECT_NAME} PRIVATE
     MbedTLS::mbedtls
     spdlog::spdlog
     CURL::libcurl
-    $<$<BOOL:${MINGW}>:ws2_32>
     $<$<NOT:$<BOOL:${Boost_FOUND}>>:Boost::asio>
     $<$<NOT:$<BOOL:${Boost_FOUND}>>:Boost::container>
     $<$<NOT:$<BOOL:${Boost_FOUND}>>:Boost::system>
     $<$<NOT:$<BOOL:${Boost_FOUND}>>:Boost::lockfree>
     $<$<NOT:$<BOOL:${Boost_FOUND}>>:Boost::circular_buffer>
+    $<$<BOOL:${WIN32}>:ws2_32>
+    $<$<BOOL:${WIN32}>:wsock32>
 )
 
 if (PROMETHEUS)

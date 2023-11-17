@@ -236,7 +236,9 @@ int main(int argc, char *argv[])
 
     std::signal(SIGTERM, signalHandler);
     std::signal(SIGINT, signalHandler);
+#ifdef SIGPIPE
     std::signal(SIGPIPE, SIG_IGN);
+#endif
 
 #if GUI_UNAVAILABLE == 0
     if (program["nogui"] == false)
