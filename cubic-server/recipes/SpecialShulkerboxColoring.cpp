@@ -12,5 +12,8 @@ SpecialShulkerboxColoring::SpecialShulkerboxColoring(const std::string &identifi
 
 void SpecialShulkerboxColoring::dump(void) const { LINFO("recipe special shulkerbox coloring"); }
 
-std::unique_ptr<Recipe> SpecialShulkerboxColoring::create(const std::string &identifier, const nlohmann::json &recipe) { return (std::make_unique<SpecialShulkerboxColoring>(SpecialShulkerboxColoring(identifier, recipe))); }
+std::unique_ptr<Recipe> SpecialShulkerboxColoring::create(const std::string &identifier, const nlohmann::json &recipe)
+{
+    return (std::make_unique<SpecialShulkerboxColoring>(SpecialShulkerboxColoring(identifier, recipe)));
+}
 } // namespace Recipe

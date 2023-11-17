@@ -76,7 +76,10 @@ void CraftingShaped::dump(void) const
     LINFO(stream.str());
 }
 
-std::unique_ptr<Recipe> CraftingShaped::create(const std::string &identifier, const nlohmann::json &recipe) { return (std::make_unique<CraftingShaped>(CraftingShaped(identifier, recipe))); }
+std::unique_ptr<Recipe> CraftingShaped::create(const std::string &identifier, const nlohmann::json &recipe)
+{
+    return (std::make_unique<CraftingShaped>(CraftingShaped(identifier, recipe)));
+}
 
 bool CraftingShaped::getKey(char key, const nlohmann::json &content)
 {

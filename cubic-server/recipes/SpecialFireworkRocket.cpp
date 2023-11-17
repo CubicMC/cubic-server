@@ -12,5 +12,8 @@ SpecialFireworkRocket::SpecialFireworkRocket(const std::string &identifier, cons
 
 void SpecialFireworkRocket::dump(void) const { LINFO("recipe special firework rocket"); }
 
-std::unique_ptr<Recipe> SpecialFireworkRocket::create(const std::string &identifier, const nlohmann::json &recipe) { return (std::make_unique<SpecialFireworkRocket>(SpecialFireworkRocket(identifier, recipe))); }
+std::unique_ptr<Recipe> SpecialFireworkRocket::create(const std::string &identifier, const nlohmann::json &recipe)
+{
+    return (std::make_unique<SpecialFireworkRocket>(SpecialFireworkRocket(identifier, recipe)));
+}
 } // namespace Recipe

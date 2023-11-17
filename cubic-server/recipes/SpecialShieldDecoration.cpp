@@ -12,5 +12,8 @@ SpecialShieldDecoration::SpecialShieldDecoration(const std::string &identifier, 
 
 void SpecialShieldDecoration::dump(void) const { LINFO("recipe special shield decoration"); }
 
-std::unique_ptr<Recipe> SpecialShieldDecoration::create(const std::string &identifier, const nlohmann::json &recipe) { return (std::make_unique<SpecialShieldDecoration>(SpecialShieldDecoration(identifier, recipe))); }
+std::unique_ptr<Recipe> SpecialShieldDecoration::create(const std::string &identifier, const nlohmann::json &recipe)
+{
+    return (std::make_unique<SpecialShieldDecoration>(SpecialShieldDecoration(identifier, recipe)));
+}
 } // namespace Recipe

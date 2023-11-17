@@ -52,5 +52,8 @@ void CampfireCooking::dump(void) const
     LINFO(stream.str());
 }
 
-std::unique_ptr<Recipe> CampfireCooking::create(const std::string &identifier, const nlohmann::json &recipe) { return (std::make_unique<CampfireCooking>(CampfireCooking(identifier, recipe))); }
+std::unique_ptr<Recipe> CampfireCooking::create(const std::string &identifier, const nlohmann::json &recipe)
+{
+    return (std::make_unique<CampfireCooking>(CampfireCooking(identifier, recipe)));
+}
 } // namespace Recipe

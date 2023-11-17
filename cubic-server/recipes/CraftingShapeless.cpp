@@ -56,5 +56,8 @@ void CraftingShapeless::dump(void) const
     LINFO(stream.str());
 }
 
-std::unique_ptr<Recipe> CraftingShapeless::create(const std::string &identifier, const nlohmann::json &recipe) { return (std::make_unique<CraftingShapeless>(CraftingShapeless(identifier, recipe))); }
+std::unique_ptr<Recipe> CraftingShapeless::create(const std::string &identifier, const nlohmann::json &recipe)
+{
+    return (std::make_unique<CraftingShapeless>(CraftingShapeless(identifier, recipe)));
+}
 } // namespace Recipe

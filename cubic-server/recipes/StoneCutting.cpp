@@ -50,5 +50,8 @@ void StoneCutting::dump(void) const
     LINFO(stream.str());
 }
 
-std::unique_ptr<Recipe> StoneCutting::create(const std::string &identifier, const nlohmann::json &recipe) { return (std::make_unique<StoneCutting>(StoneCutting(identifier, recipe))); }
+std::unique_ptr<Recipe> StoneCutting::create(const std::string &identifier, const nlohmann::json &recipe)
+{
+    return (std::make_unique<StoneCutting>(StoneCutting(identifier, recipe)));
+}
 } // namespace Recipe
