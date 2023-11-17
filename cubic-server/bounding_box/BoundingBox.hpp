@@ -14,12 +14,12 @@ public:
 
 public:
     BoundingBox(float width, float height, float depth);
-    BoundingBox(const Vector3f& dimensions);
-    BoundingBox(const Vector3f& min, const Vector3f& max);
+    BoundingBox(const Vector3f &dimensions);
+    BoundingBox(const Vector3f &min, const Vector3f &max);
 
-    bool contains(const Vector3f& point) const;
-    bool intersects(const BoundingBox& other) const;
-    std::optional<Rect> intersectRect(const BoundingBox& other) const;
+    bool contains(const Vector3f &point) const;
+    bool intersects(const BoundingBox &other) const;
+    std::optional<Rect> intersectRect(const BoundingBox &other) const;
     Rect getRect() const;
     Vector3f getCenter() const;
     Vector3f getDimensions() const;
