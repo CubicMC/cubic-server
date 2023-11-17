@@ -22,8 +22,9 @@ message(STATUS "Building with Prometheus support: ${PROMETHEUS}")
 
 if (USE_CLANG)
     find_program(CLANG_EXECUTABLE clang REQUIRED)
-    set(CMAKE_CXX_COMPILER ${CLANG_EXECUTABLE}++)
+    find_program(CLANGPP_EXECUTABLE clang++ REQUIRED)
     set(CMAKE_C_COMPILER ${CLANG_EXECUTABLE})
+    set(CMAKE_CXX_COMPILER ${CLANGPP_EXECUTABLE})
 endif()
 
 set(CMAKE_CXX_STANDARD 20)
