@@ -13,18 +13,20 @@ pipeline {
                         label "cubic-gnu"
                     }
                     options {
-                        timeout(time: 20, unit: 'MINUTES')
+                        timeout(time: 30, unit: 'MINUTES')
                     }
                     stages {
                         stage ('Build GNU/Linux') {
                             steps {
-                                sh '''
-                                mkdir -pv build
-                                cd build
-                                CC=gcc CXX=g++ cmake -DCMAKE_BUILD_TYPE=Release -DGTEST=1 ..
-                                make -j4
-                                cp CubicServer CubicServer_x86-64_GNULinux_dev
-                                '''
+                                cache(defaultBranch: 'master', caches: [arbitraryFileCache(path: 'build', cacheName: 'gnu-master-cache')]) {
+                                    sh '''
+                                    mkdir -pv build
+                                    cd build
+                                    cmake -DCMAKE_BUILD_TYPE=Release -DGTEST=1 -DUSE_CLANG=1 ..
+                                    make -j6
+                                    cp CubicServer CubicServer_x86-64_GNULinux_dev
+                                    '''
+                                }
                             }
                         }
                         stage ('Test GNU/Linux') {
@@ -64,26 +66,28 @@ pipeline {
                         }
                     }
                 }
-                stage('FreeBSD') {
+                stage('MUSL/Linux') {
                     agent {
-                        label "cubic-freebsd"
+                        label "cubic-musl"
                     }
                     options {
-                        timeout(time: 1, unit: 'HOURS')
+                        timeout(time: 30, unit: 'MINUTES')
                     }
                     stages {
-                        stage ('Build FreeBSD') {
+                        stage ('Build MUSL/Linux') {
                             steps {
-                                sh '''
-                                mkdir -pv build
-                                cd build
-                                CC=gcc CXX=g++ cmake -DCMAKE_BUILD_TYPE=Release -DGTEST=1 ..
-                                make -j4
-                                cp CubicServer CubicServer_x86-64_FreeBSD_dev
-                                '''
+                                cache(defaultBranch: 'master', caches: [arbitraryFileCache(path: 'build', cacheName: 'musl-master-cache')]) {
+                                    sh '''
+                                    mkdir -pv build
+                                    cd build
+                                    cmake -DCMAKE_BUILD_TYPE=Release -DGTEST=1 -DUSE_CLANG=1 ..
+                                    make -j6
+                                    cp CubicServer CubicServer_x86-64_MUSLLinux_dev
+                                    '''
+                                }
                             }
                         }
-                        stage ('Test FreeBSD') {
+                        stage ('Test MUSL/Linux') {
                             steps {
                                 sh '''
                                 cd build
@@ -95,7 +99,7 @@ pipeline {
                     post {
                         always {
                             archiveArtifacts (
-                                artifacts: 'build/Testing/**/*.xml, build/CubicServer_x86-64_FreeBSD_dev',
+                                artifacts: 'build/Testing/**/*.xml, build/CubicServer_x86-64_MUSLLinux_dev',
                                 allowEmptyArchive: true,
                                 fingerprint: true
                             )

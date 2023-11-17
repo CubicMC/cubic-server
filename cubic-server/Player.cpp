@@ -916,9 +916,8 @@ void Player::playerPickupItem()
     auto entity = Entity::pickupItem();
     if (entity != nullptr) {
         auto item = std::dynamic_pointer_cast<Item>(entity)->getItem();
-        auto slotItem = protocol::Slot {true, item.itemID, item.itemCount};
         this->sendPickupItem({entity->getId(), this->getId(), item.itemCount});
-        this->_inventory->insert(slotItem);
+        this->_inventory->insert(item);
         this->sendSetContainerContent({_inventory});
         this->getDimension()->removeEntity(entity->getId());
     }
@@ -1011,10 +1010,7 @@ void Player::_onPlayerAction(protocol::PlayerAction &pck)
     case protocol::PlayerAction::Status::DropItem:
         if (!_inventory->hotbar().at(this->_heldItem).present)
             break;
-        getDimension()->makeEntity<Item>(protocol::Slot {true, _inventory->hotbar().at(this->_heldItem).itemID, 1})->dropItem(this->getPosition());
-        _inventory->hotbar().at(this->_heldItem).itemCount--;
-        if (_inventory->hotbar().at(this->_heldItem).itemCount == 0)
-            _inventory->hotbar().at(this->_heldItem).reset();
+        getDimension()->makeEntity<Item>(_inventory->hotbar().at(this->_heldItem).takeOne())->dropItem(this->getPosition());
         break;
     case protocol::PlayerAction::Status::ShootArrowOrFinishEating:
         _eat();

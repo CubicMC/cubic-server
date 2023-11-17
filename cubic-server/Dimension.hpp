@@ -2,6 +2,7 @@
 #define CUBICSERVER_DIMENSION_HPP
 
 #include <atomic>
+#include <boost/circular_buffer.hpp>
 #include <functional>
 #include <memory>
 #include <semaphore>
@@ -15,6 +16,9 @@
 
 // TODO(huntears): Fix whatever this is
 constexpr int SEMAPHORE_MAX = 1000;
+constexpr int TICK_PER_MINUTE = 20 * 60;
+constexpr float MICROSECS_IN_ONE_SEC = 1000000.0f;
+constexpr float MILLIS_IN_ONE_SEC = 1000.0f;
 
 class World;
 class Player;
@@ -143,6 +147,20 @@ public:
      */
     virtual BlockId getBlock(const Position &pos) const { return getLevel().getChunkColumnFromBlockPos(pos.x, pos.z).getBlock(pos); }
 
+    /**
+     * @brief Get the tps of the dimension
+     *
+     * @return Tps
+     */
+    virtual Tps getTps() const;
+
+    /**
+     * @brief Get the MSPTInfos of the dimension
+     *
+     * @return MSPTInfos
+     */
+    virtual MSPTInfos getMSPTInfos() const;
+
 protected:
     virtual void _run();
 
@@ -165,6 +183,9 @@ protected:
     std::unordered_map<Position2D, ChunkRequest> _loadingChunks;
     std::thread _processingThread;
     world_storage::DimensionType _dimensionType;
+    boost::circular_buffer_space_optimized<float> _circularBufferTps;
+    std::chrono::time_point<std::chrono::system_clock, std::chrono::duration<long, std::ratio<1, 1000000000>>> _previousTickTime;
+    boost::circular_buffer_space_optimized<float> _circularBufferMSPT;
 };
 
 template<isBaseOf<Entity> T, typename... Args>

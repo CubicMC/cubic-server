@@ -5,21 +5,44 @@
 #include "Server.hpp"
 #include "WorldGroup.hpp"
 #include "logging/logging.hpp"
+#include "types.hpp"
+#include "world_storage/ChunkColumn.hpp"
+#include <cmath>
 #include <cstdint>
+#include <vector>
 
 World::World(std::shared_ptr<WorldGroup> worldGroup, world_storage::WorldType worldType, std::string folder):
+    _chat(worldGroup->getChat()),
     _worldGroup(worldGroup),
+    _dimensions({}),
     _age(0),
     _time(0),
     _renderDistance(CONFIG["render-distance"].as<uint8_t>()),
+    _levelData(),
     _timeUpdateClock(20, std::bind(&World::updateTime, this)), // 1 second for time updates
+    _seed(CONFIG["seed"].as<int64_t>()),
     _generationPool(CONFIG["num-gen-thread"].as<uint16_t>(), "WorldGen"),
     _worldType(worldType),
-    _folder(folder)
+    _folder(folder),
+    _publishTpsClock(20, [this]() {
+        const auto tps = this->getTps();
+        for (const auto &[dimensionType, dimensionTps] : tps) {
+            switch (dimensionType) {
+            case world_storage::DimensionType::OVERWORLD:
+                PEXPP(addTpsOverworld, -dimensionTps.oneMinTps)
+                break;
+            case world_storage::DimensionType::NETHER:
+                PEXPP(addTpsNether, -dimensionTps.oneMinTps)
+                break;
+            case world_storage::DimensionType::END:
+                PEXPP(addTpsEnd, -dimensionTps.oneMinTps)
+                break;
+            }
+        }
+    })
 {
     _timeUpdateClock.start();
-    _seed = CONFIG["seed"].as<int64_t>();
-    _chat = worldGroup->getChat();
+    _publishTpsClock.start();
 }
 
 void World::tick()
@@ -30,6 +53,7 @@ void World::tick()
     _timeUpdateClock.tick();
     for (auto &[_, dim] : this->_dimensions)
         dim->getDimensionLock().release();
+    _publishTpsClock.tick();
 }
 
 void World::initialize()
@@ -183,4 +207,20 @@ void World::setTime(int time)
 {
     if (time >= 0)
         _time = time;
+}
+
+std::vector<std::pair<world_storage::DimensionType, Tps>> World::getTps() const
+{
+    std::vector<std::pair<world_storage::DimensionType, Tps>> tps;
+    for (const auto &[_, dim] : _dimensions)
+        tps.emplace_back(dim->getDimensionType(), dim->getTps());
+    return tps;
+}
+
+std::vector<std::pair<world_storage::DimensionType, MSPTInfos>> World::getMSPTInfos() const
+{
+    std::vector<std::pair<world_storage::DimensionType, MSPTInfos>> msptInfos;
+    for (const auto &[_, dim] : _dimensions)
+        msptInfos.emplace_back(dim->getDimensionType(), dim->getMSPTInfos());
+    return msptInfos;
 }

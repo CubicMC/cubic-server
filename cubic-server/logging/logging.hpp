@@ -8,27 +8,67 @@ namespace logging {
 
 constexpr spdlog::string_view_t LEVEL_NAMES[] = SPDLOG_LEVEL_NAMES;
 
-#define LTRACE(...) logging::instance().threadDefaultLogger()->log(spdlog::level::trace, __VA_ARGS__)
-#define LDEBUG(...) logging::instance().threadDefaultLogger()->log(spdlog::level::debug, __VA_ARGS__)
-#define LINFO(...) logging::instance().threadDefaultLogger()->log(spdlog::level::info, __VA_ARGS__)
-#define LWARN(...) logging::instance().threadDefaultLogger()->log(spdlog::level::warn, __VA_ARGS__)
-#define LERROR(...) logging::instance().threadDefaultLogger()->log(spdlog::level::err, __VA_ARGS__)
-#define LFATAL(...) logging::instance().threadDefaultLogger()->log(spdlog::level::critical, __VA_ARGS__)
+#define LTRACE(...)                                                                        \
+    do {                                                                                   \
+        logging::instance().threadDefaultLogger()->log(spdlog::level::trace, __VA_ARGS__); \
+    } while (false)
+#define LDEBUG(...)                                                                        \
+    do {                                                                                   \
+        logging::instance().threadDefaultLogger()->log(spdlog::level::debug, __VA_ARGS__); \
+    } while (false)
+#define LINFO(...)                                                                        \
+    do {                                                                                  \
+        logging::instance().threadDefaultLogger()->log(spdlog::level::info, __VA_ARGS__); \
+    } while (false)
+#define LWARN(...)                                                                        \
+    do {                                                                                  \
+        logging::instance().threadDefaultLogger()->log(spdlog::level::warn, __VA_ARGS__); \
+    } while (false)
+#define LERROR(...)                                                                      \
+    do {                                                                                 \
+        logging::instance().threadDefaultLogger()->log(spdlog::level::err, __VA_ARGS__); \
+    } while (false)
+#define LFATAL(...)                                                                           \
+    do {                                                                                      \
+        logging::instance().threadDefaultLogger()->log(spdlog::level::critical, __VA_ARGS__); \
+    } while (false)
 
 #ifdef DEBUG_NETWORK
-#define N_LTRACE(...) logging::instance().get("network")->log(spdlog::level::trace, __VA_ARGS__)
-#define N_LDEBUG(...) logging::instance().get("network")->log(spdlog::level::debug, __VA_ARGS__)
-#define N_LINFO(...) logging::instance().get("network")->log(spdlog::level::info, __VA_ARGS__)
-#define N_LWARN(...) logging::instance().get("network")->log(spdlog::level::warn, __VA_ARGS__)
-#define N_LERROR(...) logging::instance().get("network")->log(spdlog::level::err, __VA_ARGS__)
-#define N_LFATAL(...) logging::instance().get("network")->log(spdlog::level::critical, __VA_ARGS__)
+
+#define N_LTRACE(...)                                                               \
+    do {                                                                            \
+        logging::instance().get("network")->log(spdlog::level::trace, __VA_ARGS__); \
+    } while (false)
+#define N_LDEBUG(...)                                                               \
+    do {                                                                            \
+        logging::instance().get("network")->log(spdlog::level::debug, __VA_ARGS__); \
+    } while (false)
+#define N_LINFO(...)                                                               \
+    do {                                                                           \
+        logging::instance().get("network")->log(spdlog::level::info, __VA_ARGS__); \
+    } while (false)
+#define N_LWARN(...)                                                               \
+    do {                                                                           \
+        logging::instance().get("network")->log(spdlog::level::warn, __VA_ARGS__); \
+    } while (false)
+#define N_LERROR(...)                                                             \
+    do {                                                                          \
+        logging::instance().get("network")->log(spdlog::level::err, __VA_ARGS__); \
+    } while (false)
+#define N_LFATAL(...)                                                                  \
+    do {                                                                               \
+        logging::instance().get("network")->log(spdlog::level::critical, __VA_ARGS__); \
+    } while (false)
+
 #else
+
 #define N_LTRACE(...)
 #define N_LDEBUG(...)
 #define N_LINFO(...)
 #define N_LWARN(...)
 #define N_LERROR(...)
 #define N_LFATAL(...)
+
 #endif
 
 inline Registry &instance() noexcept { return Registry::instance(); }

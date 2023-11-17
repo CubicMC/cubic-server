@@ -1,6 +1,5 @@
 #include "types.hpp"
 #include "utility/PseudoRandomGenerator.hpp"
-#include <cstdint>
 #include <iterator>
 #include <mbedtls/md5.h>
 #include <random>
@@ -60,3 +59,17 @@ u128 u128::fromOfflinePlayerName(const std::string &name)
 bool u128::operator==(const u128 &other) const { return this->most == other.most && this->least == other.least; }
 
 Position::valueType Position::manhattanDistance(const Position &other) const { return std::abs(x - other.x) + std::abs(y - other.y) + std::abs(z - other.z); }
+
+std::string Tps::toString() const
+{
+    std::stringstream sstr;
+    sstr << "Tps: " << this->oneMinTps << " " << this->fiveMinTps << " " << this->fifteenMinTps;
+    return sstr.str();
+}
+
+std::string MSPTInfos::toString() const
+{
+    std::stringstream sstr;
+    sstr << "MSPT: " << this->min << " " << this->mean << " " << this->max;
+    return sstr.str();
+}

@@ -1,6 +1,7 @@
 #ifndef CUBICSERVER_PROTOCOL_STRUCTURES_HPP
 #define CUBICSERVER_PROTOCOL_STRUCTURES_HPP
 
+#include <cstddef>
 #include <cstdint>
 
 #include "nbt.h"
@@ -30,6 +31,7 @@ struct Slot {
         nbt(nbt_copy_tag(other.nbt))
     {
     }
+
     Slot &operator=(const Slot &other)
     {
         this->present = other.present;
@@ -38,8 +40,7 @@ struct Slot {
         this->nbt = nbt_copy_tag(other.nbt);
         return *this;
     }
-    // constexpr Slot(Slot &&other) noexcept = default;
-    // constexpr Slot &operator=(Slot &&other) noexcept = default;
+
     constexpr Slot(Slot &&other) noexcept:
         present(other.present),
         itemID(other.itemID),
@@ -60,13 +61,16 @@ struct Slot {
         return *this;
     }
 
+    inline void reset();
+    inline void swap(Slot &other);
+    inline void swap(Slot &other, int8_t count);
+    inline Slot takeOne();
+
+public:
     bool present = false;                           /* Slot: The inventory slot the item is in. */
     int32_t itemID = 0;                             /* Item/Block ID. If not specified, gets treated as air, resulting in the item being removed. */
     int8_t itemCount = 0;                           /* Count: Number of items stacked in this inventory slot. Values below 0 cause the item to be treated as air, resulting in the item being removed. */
     nbt_tag_t *nbt = nullptr;                       /* TAG_compound. Additional information about the item. This tag is optional for most items. */
-    inline void reset();
-    inline void swap(Slot &other);
-    inline void swap(Slot &other, int8_t count);
     // clang-format on
 };
 
@@ -113,6 +117,21 @@ void Slot::swap(protocol::Slot &other, int8_t x)
         this->itemCount += other.itemCount - 64;
         other.itemCount = 64;
     }
+}
+
+inline Slot Slot::takeOne()
+{
+    if (this->itemCount == 1) {
+        Slot slot = std::move(*this);
+        nbt = nullptr;
+        this->reset();
+        return slot;
+    }
+    if (this->itemCount > 1) {
+        this->itemCount--;
+        return Slot(true, this->itemID, 1, nbt_copy_tag(this->nbt));
+    }
+    return Slot();
 }
 
 // For chunk and light updates

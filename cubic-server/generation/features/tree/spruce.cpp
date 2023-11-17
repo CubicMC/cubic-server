@@ -104,7 +104,7 @@ void SpruceTree::starLayer(std::vector<generation::Generator::FeatureBlock> &tre
     }
 }
 
-void SpruceTree::repetitivePattern(std::vector<generation::Generator::FeatureBlock> &tree, int y, const BlockId &leaf, const BlockId &log, int treeSize) const
+void SpruceTree::repetitivePattern(std::vector<generation::Generator::FeatureBlock> &tree, int y, const BlockId &leaf, const BlockId &log, UNUSED int treeSize) const
 {
     for (int i = y, counter = 0; i >= (y - 3) && i > 0; i--, counter++) {
         if (counter % 2 == 0)
