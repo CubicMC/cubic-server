@@ -6,7 +6,6 @@ BoundingBox::BoundingBox(float width, float height, float depth):
 {
     this->rect.min = Vector3f(-width / 2, -height / 2, -depth / 2);
     this->rect.max = Vector3f(width / 2, height / 2, depth / 2);
-    this->rect.center = Vector3f(0, 0, 0);
     this->rect.width = width;
     this->rect.height = height;
     this->rect.depth = depth;
@@ -24,7 +23,6 @@ BoundingBox::BoundingBox(const Vector3f &min, const Vector3f &max)
     this->rect.width = max.x - min.x;
     this->rect.height = max.y - min.y;
     this->rect.depth = max.z - min.z;
-    this->rect.center = Vector3f(min.x + this->rect.width / 2, min.y + this->rect.height / 2, min.z + this->rect.depth / 2);
 }
 
 bool BoundingBox::contains(const Vector3f &point) const
