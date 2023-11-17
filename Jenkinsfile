@@ -13,18 +13,20 @@ pipeline {
                         label "cubic-gnu"
                     }
                     options {
-                        timeout(time: 20, unit: 'MINUTES')
+                        timeout(time: 30, unit: 'MINUTES')
                     }
                     stages {
                         stage ('Build GNU/Linux') {
                             steps {
-                                sh '''
-                                mkdir -pv build
-                                cd build
-                                cmake -DCMAKE_BUILD_TYPE=Release -DGTEST=1 -DUSE_CLANG=1 ..
-                                make -j6
-                                cp CubicServer CubicServer_x86-64_GNULinux_dev
-                                '''
+                                cache(defaultBranch: 'master', caches: [arbitraryFileCache(path: 'build', cacheName: 'gnu-master-cache')]) {
+                                    sh '''
+                                    mkdir -pv build
+                                    cd build
+                                    cmake -DCMAKE_BUILD_TYPE=Release -DGTEST=1 -DUSE_CLANG=1 ..
+                                    make -j6
+                                    cp CubicServer CubicServer_x86-64_GNULinux_dev
+                                    '''
+                                }
                             }
                         }
                         stage ('Test GNU/Linux') {
@@ -69,18 +71,20 @@ pipeline {
                         label "cubic-musl"
                     }
                     options {
-                        timeout(time: 20, unit: 'MINUTES')
+                        timeout(time: 30, unit: 'MINUTES')
                     }
                     stages {
                         stage ('Build MUSL/Linux') {
                             steps {
-                                sh '''
-                                mkdir -pv build
-                                cd build
-                                cmake -DCMAKE_BUILD_TYPE=Release -DGTEST=1 -DUSE_CLANG=1 ..
-                                make -j6
-                                cp CubicServer CubicServer_x86-64_MUSLLinux_dev
-                                '''
+                                cache(defaultBranch: 'master', caches: [arbitraryFileCache(path: 'build', cacheName: 'musl-master-cache')]) {
+                                    sh '''
+                                    mkdir -pv build
+                                    cd build
+                                    cmake -DCMAKE_BUILD_TYPE=Release -DGTEST=1 -DUSE_CLANG=1 ..
+                                    make -j6
+                                    cp CubicServer CubicServer_x86-64_MUSLLinux_dev
+                                    '''
+                                }
                             }
                         }
                         stage ('Test MUSL/Linux') {
