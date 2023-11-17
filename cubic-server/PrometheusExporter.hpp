@@ -7,6 +7,7 @@
 #include "prometheus/counter.h"
 #include "prometheus/exposer.h"
 #include "prometheus/registry.h"
+#include "prometheus/summary.h"
 
 class PrometheusExporter {
 public:
@@ -82,6 +83,36 @@ public:
         if (_ready)
             _player_end_gauge->Decrement();
     }
+    void addTpsOverworld(double tps)
+    {
+        if (_ready)
+            _tps_overworld_summary->Observe(tps);
+    }
+    void addTpsNether(double tps)
+    {
+        if (_ready)
+            _tps_nether_summary->Observe(tps);
+    }
+    void addTpsEnd(double tps)
+    {
+        if (_ready)
+            _tps_end_summary->Observe(tps);
+    }
+    void addMsptOverworld(double mspt)
+    {
+        if (_ready)
+            _mspt_overworld_summary->Observe(mspt);
+    }
+    void addMsptNether(double mspt)
+    {
+        if (_ready)
+            _mspt_nether_summary->Observe(mspt);
+    }
+    void addMsptEnd(double mspt)
+    {
+        if (_ready)
+            _mspt_end_summary->Observe(mspt);
+    }
 
 private:
     prometheus::Exposer _exposer;
@@ -96,6 +127,14 @@ private:
     prometheus::Gauge *_player_overworld_gauge;
     prometheus::Gauge *_player_nether_gauge;
     prometheus::Gauge *_player_end_gauge;
+
+    prometheus::Summary *_tps_overworld_summary;
+    prometheus::Summary *_tps_nether_summary;
+    prometheus::Summary *_tps_end_summary;
+
+    prometheus::Summary *_mspt_overworld_summary;
+    prometheus::Summary *_mspt_nether_summary;
+    prometheus::Summary *_mspt_end_summary;
 
     std::atomic<bool> _ready;
 };

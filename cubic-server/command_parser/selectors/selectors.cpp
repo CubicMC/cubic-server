@@ -38,7 +38,7 @@ void fillSelector(
 }
 
 void fillSingleSelector(
-    const std::string &selector, Entity &out, const std::vector<std::shared_ptr<Entity>> &entities, const std::vector<std::shared_ptr<Player>> &players, Player *invoker
+    const std::string &selector, Entity &out, UNUSED const std::vector<std::shared_ptr<Entity>> &entities, const std::vector<std::shared_ptr<Player>> &players, Player *invoker
 )
 {
     static std::random_device rd;

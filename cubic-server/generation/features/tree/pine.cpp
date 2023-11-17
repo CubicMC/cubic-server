@@ -89,7 +89,7 @@ void PineTree::makeLongPine(std::vector<generation::Generator::FeatureBlock> &tr
     layerWithoutCorner(tree, y - 1, leaf, log, 1);
 }
 
-void PineTree::makeMushroomPine(const int treeSize, std::vector<generation::Generator::FeatureBlock> &tree, int y, const BlockId &leaf, const BlockId &log) const
+void PineTree::makeMushroomPine(UNUSED const int treeSize, std::vector<generation::Generator::FeatureBlock> &tree, int y, const BlockId &leaf, const BlockId &log) const
 {
     if (_generator.getRandomizer() % 2 == 0) {
         layerWithoutCorner(tree, y, leaf, log, 2);

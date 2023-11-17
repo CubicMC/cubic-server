@@ -212,4 +212,18 @@ struct std::hash<Position2D> {
     }
 };
 
+struct Tps {
+    float oneMinTps;
+    float fiveMinTps;
+    float fifteenMinTps;
+    std::string toString() const;
+};
+
+struct MSPTInfos {
+    float min;
+    float mean;
+    float max;
+    std::string toString() const;
+};
+
 #endif // CUBICSERVER_TYPES_HPP
