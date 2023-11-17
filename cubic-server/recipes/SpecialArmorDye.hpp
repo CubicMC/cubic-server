@@ -8,12 +8,12 @@
 namespace Recipe {
 class SpecialArmorDye : public Recipe {
 public:
-    SpecialArmorDye(const nlohmann::json &recipe);
+    SpecialArmorDye(const std::string &identifier, const nlohmann::json &recipe);
     ~SpecialArmorDye() = default;
 
     void dump(void) const override;
 
-    static std::unique_ptr<Recipe> create(const nlohmann::json &recipe);
+    static std::unique_ptr<Recipe> create(const std::string &identifier, const nlohmann::json &recipe);
 };
 };
 

@@ -8,12 +8,12 @@
 namespace Recipe {
 class SpecialShieldDecoration : public Recipe {
 public:
-    SpecialShieldDecoration(const nlohmann::json &recipe);
+    SpecialShieldDecoration(const std::string &identifier, const nlohmann::json &recipe);
     ~SpecialShieldDecoration() = default;
 
     void dump(void) const override;
 
-    static std::unique_ptr<Recipe> create(const nlohmann::json &recipe);
+    static std::unique_ptr<Recipe> create(const std::string &identifier, const nlohmann::json &recipe);
 };
 };
 

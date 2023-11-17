@@ -8,12 +8,12 @@
 namespace Recipe {
 class SpecialBookCloning : public Recipe {
 public:
-    SpecialBookCloning(const nlohmann::json &recipe);
+    SpecialBookCloning(const std::string &identifier, const nlohmann::json &recipe);
     ~SpecialBookCloning() = default;
 
     void dump(void) const override;
 
-    static std::unique_ptr<Recipe> create(const nlohmann::json &recipe);
+    static std::unique_ptr<Recipe> create(const std::string &identifier, const nlohmann::json &recipe);
 };
 };
 

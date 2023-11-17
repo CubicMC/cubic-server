@@ -122,7 +122,7 @@ void Server::launch(const configuration::ConfigHandler &config)
 
     // TODO(huntears): Deal with this
     // Initialize default recipes
-    // this->_recipes.initialize();
+    this->_recipes.initialize();
 
     // Initialize scoreboard system
     this->_scoreboardSystem.initialize();

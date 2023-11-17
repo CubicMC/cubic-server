@@ -8,12 +8,12 @@
 namespace Recipe {
 class SpecialMapCloning : public Recipe {
 public:
-    SpecialMapCloning(const nlohmann::json &recipe);
+    SpecialMapCloning(const std::string &identifier, const nlohmann::json &recipe);
     ~SpecialMapCloning() = default;
 
     void dump(void) const override;
 
-    static std::unique_ptr<Recipe> create(const nlohmann::json &recipe);
+    static std::unique_ptr<Recipe> create(const std::string &identifier, const nlohmann::json &recipe);
 };
 };
 

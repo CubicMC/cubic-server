@@ -8,12 +8,12 @@
 namespace Recipe {
 class SpecialShulkerboxColoring : public Recipe {
 public:
-    SpecialShulkerboxColoring(const nlohmann::json &recipe);
+    SpecialShulkerboxColoring(const std::string &identifier, const nlohmann::json &recipe);
     ~SpecialShulkerboxColoring() = default;
 
     void dump(void) const override;
 
-    static std::unique_ptr<Recipe> create(const nlohmann::json &recipe);
+    static std::unique_ptr<Recipe> create(const std::string &identifier, const nlohmann::json &recipe);
 };
 };
 

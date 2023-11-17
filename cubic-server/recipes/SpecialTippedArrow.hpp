@@ -8,12 +8,12 @@
 namespace Recipe {
 class SpecialTippedArrow : public Recipe {
 public:
-    SpecialTippedArrow(const nlohmann::json &recipe);
+    SpecialTippedArrow(const std::string &identifier, const nlohmann::json &recipe);
     ~SpecialTippedArrow() = default;
 
     void dump(void) const override;
 
-    static std::unique_ptr<Recipe> create(const nlohmann::json &recipe);
+    static std::unique_ptr<Recipe> create(const std::string &identifier, const nlohmann::json &recipe);
 };
 };
 
