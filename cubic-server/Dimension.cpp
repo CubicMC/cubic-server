@@ -77,13 +77,13 @@ void Dimension::tick()
     _circularBufferMSPT.push_back(msptTime_micro);
     switch (_dimensionType) {
     case world_storage::DimensionType::OVERWORLD:
-        PEXPP(addMsptOverworld, msptTime_micro)
+        PEXPP(addMsptOverworld, msptTime_micro / MILLIS_IN_ONE_SEC)
         break;
     case world_storage::DimensionType::NETHER:
-        PEXPP(addMsptNether, msptTime_micro)
+        PEXPP(addMsptNether, msptTime_micro / MILLIS_IN_ONE_SEC)
         break;
     case world_storage::DimensionType::END:
-        PEXPP(addMsptEnd, msptTime_micro)
+        PEXPP(addMsptEnd, msptTime_micro / MILLIS_IN_ONE_SEC)
         break;
     }
 }
