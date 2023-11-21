@@ -47,6 +47,11 @@ download_and_check_file(
     registries-${MINECRAFT_VERSION}.json
     ${CMAKE_BINARY_DIR}
 )
+# download_and_check_file(
+#     "https://cdn.cubic-mc.com/${MINECRAFT_VERSION}/blocks-data-${MINECRAFT_VERSION}.json"
+#     blocks-data-${MINECRAFT_VERSION}.json
+#     ${CMAKE_CURRENT_BINARY_DIR}
+# )
 
 find_package (Python3 REQUIRED Interpreter)
 
