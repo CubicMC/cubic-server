@@ -30,6 +30,7 @@
 #include "protocol_id_converter/blockIdConverter.hpp"
 #include "protocol_id_converter/itemConverter.hpp"
 #include "protocol_id_converter/soundEventConverter.hpp"
+#include "protocol_id_converter/blockDataConverter.hpp"
 
 #include "Permissions.hpp"
 #include "loot_tables/LootTables.hpp"
@@ -108,6 +109,7 @@ public:
     NODISCARD const Blocks::GlobalPalette &getGlobalPalette() const { return _globalPalette; }
     NODISCARD const Items::ItemConverter &getItemConverter() const { return _itemConverter; }
     NODISCARD const SoundEvents::SoundEventConverter &getSoundEventConverter() const { return _soundEventConverter; }
+    NODISCARD const Blocks::BlockDataConverter &getBlockDataConverter() const { return _blockDataConverter; }
 
     NODISCARD registry::MasterRegistry &getRegistry() noexcept { return _registry; }
     NODISCARD std::shared_ptr<WorldGroup> getWorldGroup(const std::string_view &name) { return this->_worldGroups.at(name); }
@@ -156,6 +158,7 @@ private:
     Blocks::GlobalPalette _globalPalette;
     Items::ItemConverter _itemConverter;
     SoundEvents::SoundEventConverter _soundEventConverter;
+    Blocks::BlockDataConverter _blockDataConverter;
     Recipes _recipes;
     PluginManager _pluginManager;
     LootTables _lootTables;

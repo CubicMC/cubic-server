@@ -113,6 +113,14 @@ void Server::launch(const configuration::ConfigHandler &config)
         exit(1);
     }
 
+    // Initialize the block data converter
+    if (_blockDataConverter.initialize(std::string("blocks-data-") + MC_VERSION + ".json"))
+        LINFO("BlockDataConverter initialized");
+    else {
+        LFATAL("BlockDataConverter failed to initialize");
+        exit(1);
+    }
+
     // Initialize loot tables
     _lootTables.initialize();
 
