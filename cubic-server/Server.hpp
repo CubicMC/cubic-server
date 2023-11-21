@@ -27,7 +27,7 @@
 
 #include "allCommands.hpp"
 
-#include "protocol_id_converter/blockStates.hpp"
+#include "protocol_id_converter/blockIdConverter.hpp"
 #include "protocol_id_converter/itemConverter.hpp"
 #include "protocol_id_converter/soundEventConverter.hpp"
 
