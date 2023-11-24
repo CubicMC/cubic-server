@@ -27,10 +27,10 @@
 
 #include "allCommands.hpp"
 
+#include "protocol_id_converter/blockDataConverter.hpp"
 #include "protocol_id_converter/blockIdConverter.hpp"
 #include "protocol_id_converter/itemConverter.hpp"
 #include "protocol_id_converter/soundEventConverter.hpp"
-#include "protocol_id_converter/blockDataConverter.hpp"
 
 #include "Permissions.hpp"
 #include "loot_tables/LootTables.hpp"
@@ -56,6 +56,7 @@ constexpr uint16_t MS_PER_TICK = 50;
 #define GLOBAL_PALETTE Server::getInstance()->getGlobalPalette()
 #define ITEM_CONVERTER Server::getInstance()->getItemConverter()
 #define SOUND_EVENT_CONVERTER Server::getInstance()->getSoundEventConverter()
+#define BLOCK_DATA_CONVERTER Server::getInstance()->getBlockDataConverter()
 #define CONFIG Server::getInstance()->getConfig()
 
 #if PROMETHEUS_SUPPORT == 1

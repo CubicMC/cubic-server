@@ -21,9 +21,9 @@ struct BlockData {
     bool transparent;
     uint8_t emitLight;
     uint8_t filterLight;
-    // BlockId defaultState;
-    // BlockId minState;
-    // BlockId maxState;
+    BlockId defaultState;
+    BlockId minStateId;
+    BlockId maxStateId;
     // States but already exist in blockIdConverter
     std::vector<std::pair<ItemId, bool>> harvestTool;
     // std::vector<BlockId> drops;
@@ -50,7 +50,7 @@ public:
      * @param blockName The block name to get the data from
      * @return The block data of the block
      */
-    BlockData fromBlockNameToBlockData(const std::string &blockName) const;
+    const BlockData fromBlockNameToBlockData(const std::string &blockName) const;
 
     /**
      * @brief Get the block data from a block id
@@ -58,7 +58,8 @@ public:
      * @param blockId The block id to get the data from
      * @return The block data of the block
      */
-    BlockData fromBlockIdToBlockData(const BlockId &blockId) const;
+    const BlockData fromBlockIdToBlockData(const BlockId &blockId) const;
+
 private:
     std::vector<BlockData> _blocks;
 };

@@ -1,5 +1,6 @@
 #include "blockDataConverter.hpp"
 
+#include <algorithm>
 #include <filesystem>
 #include <fstream>
 #include <iterator>
@@ -30,9 +31,10 @@ bool Blocks::BlockDataConverter::initialize(const std::string &path)
         b.transparent = block.value()["transparent"];
         b.emitLight = block.value()["emitLight"];
         b.filterLight = block.value()["filterLight"];
-        // b.defaultState = block.value()["defaultState"];
-        // b.minState = block.value()["minState"];
-        // b.maxState = block.value()["maxState"];
+        b.defaultState = block.value()["defaultState"];
+        b.minStateId = block.value()["minStateId"];
+        b.maxStateId = block.value()["maxStateId"];
+        // states
         b.harvestTool = [block]() {
             auto harvestTools = std::vector<std::pair<ItemId, bool>> {};
             for (auto tool = block.value()["harvestTools"].rbegin(); tool != block.value()["harvestTools"].rend(); ++tool)
@@ -46,6 +48,18 @@ bool Blocks::BlockDataConverter::initialize(const std::string &path)
     return true;
 }
 
-Blocks::BlockData Blocks::BlockDataConverter::fromBlockNameToBlockData(const std::string &blockName) const { }
+const Blocks::BlockData Blocks::BlockDataConverter::fromBlockNameToBlockData(const std::string &blockName) const
+{
+    const auto block = std::find_if(this->_blocks.begin(), this->_blocks.end(), [blockName](const Blocks::BlockData &block) {
+        return block.name == blockName;
+    });
+    return *(block != this->_blocks.end() ? block : this->_blocks.begin());
+}
 
-Blocks::BlockData Blocks::BlockDataConverter::fromBlockIdToBlockData(const BlockId &blockId) const { }
+const Blocks::BlockData Blocks::BlockDataConverter::fromBlockIdToBlockData(const BlockId &blockId) const
+{
+    const auto block = std::find_if(this->_blocks.begin(), this->_blocks.end(), [blockId](const Blocks::BlockData &block) {
+        return block.minStateId <= blockId && blockId <= block.maxStateId;
+    });
+    return *(block != this->_blocks.end() ? block : this->_blocks.begin());
+}
