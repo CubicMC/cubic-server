@@ -22,8 +22,10 @@ pipeline {
                                     sh '''
                                     mkdir -pv build
                                     cd build
-                                    cmake -DCMAKE_BUILD_TYPE=Release -DGTEST=1 -DUSE_CLANG=1 ..
-                                    make -j6
+                                    find . -name CMakeCache.txt -delete
+                                    cmake -DCMAKE_BUILD_TYPE=Release -DGTEST=1 -DUSE_CLANG=1 -DCMAKE_CXX_COMPILER_LAUNCHER=ccache -DNO_GUI=1 ..
+                                    mkdir -pv cache
+                                    CCACHE_DIR=$(pwd)/cache make -j6
                                     cp CubicServer CubicServer_x86-64_GNULinux_dev
                                     '''
                                 }
@@ -80,8 +82,11 @@ pipeline {
                                     sh '''
                                     mkdir -pv build
                                     cd build
-                                    cmake -DCMAKE_BUILD_TYPE=Release -DGTEST=1 -DUSE_CLANG=1 ..
-                                    make -j6
+                                    find . -name CMakeCache.txt -delete
+                                    rm -rf _deps
+                                    cmake -DCMAKE_BUILD_TYPE=Release -DGTEST=1 -DUSE_CLANG=1 -DCMAKE_CXX_COMPILER_LAUNCHER=ccache -DNO_GUI=1 ..
+                                    mkdir -pv cache
+                                    CCACHE_DIR=$(pwd)/cache make -j6
                                     cp CubicServer CubicServer_x86-64_MUSLLinux_dev
                                     '''
                                 }
