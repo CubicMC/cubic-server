@@ -298,7 +298,7 @@ void ChunkColumn::_generateEnd(UNUSED GenerationState goalState) { std::lock_gua
 void ChunkColumn::_generateFlat(UNUSED GenerationState goalState)
 {
     std::lock_guard<std::mutex> _(this->_generationLock);
-    for (int y = 0; y < 11; y++) {
+    for (int y = 0; y < 4; y++) {
         for (int z = 0; z < SECTION_WIDTH; z++) {
             for (int x = 0; x < SECTION_WIDTH; x++) {
                 if (y == 0) {
