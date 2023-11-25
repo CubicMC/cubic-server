@@ -7,6 +7,7 @@
 #include "generation/features/surface/forestRock.hpp"
 #include "generation/features/tree/oak.hpp"
 #include "generation/features/tree/spruce.hpp"
+#include "generation/features/underground/OreVein.hpp"
 #include "generation/overworld.hpp"
 #include "logging/logging.hpp"
 #include "nbt.hpp"
@@ -551,6 +552,8 @@ void ChunkColumn::_generateStrongholds(UNUSED generation::Generator &generator)
 void ChunkColumn::_generateUndergroundOres(UNUSED generation::Generator &generator)
 {
     std::lock_guard<std::mutex> _(this->_generationLock);
+    OreVein oreVeins(*this, generator);
+    oreVeins.generateBlobs();
     _currentState = GenerationState::UNDERGROUND_ORES;
 }
 

@@ -9,22 +9,39 @@
 #include "math/Vector3.hpp"
 #include "protocol/ClientPackets.hpp"
 #include "types.hpp"
+#include "world_storage/ChunkColumn.hpp"
+#include <chrono>
 #include <cstdint>
 #include <memory>
 #include <mutex>
 #include <thread>
 
 Dimension::Dimension(std::shared_ptr<World> world, world_storage::DimensionType dimensionType):
-    _dimensionLock(std::counting_semaphore<1000>(0)),
+    _playersMutex(),
+    _entitiesMutex(),
+    _newEntitiesMutex(),
+    _loadingChunksMutex(),
+    _dimensionLock(std::counting_semaphore<SEMAPHORE_MAX>(0)),
+    _entities({}),
+    _newEntities({}),
+    _players({}),
     _world(world),
+    _processingMutex(),
     _isInitialized(false),
     _isRunning(false),
-    _dimensionType(dimensionType)
+    _level(),
+    _loadingChunks({}),
+    _processingThread(),
+    _dimensionType(dimensionType),
+    _circularBufferTps((TICK_PER_MINUTE * 15)),
+    _previousTickTime(std::chrono::high_resolution_clock::now()),
+    _circularBufferMSPT((TICK_PER_MINUTE * 15))
 {
 }
 
 void Dimension::tick()
 {
+    auto startTickTime = std::chrono::high_resolution_clock::now();
     {
         std::lock_guard _(_entitiesMutex);
         for (auto ent : _entities) {
@@ -49,6 +66,25 @@ void Dimension::tick()
             _entities.insert(_entities.end(), _newEntities.begin(), _newEntities.end());
             _newEntities.clear();
         }
+    }
+    auto endTime = std::chrono::high_resolution_clock::now();
+    auto compute_time = endTime - _previousTickTime;
+    auto msptTime = endTime - startTickTime;
+    _previousTickTime = endTime;
+    float compute_time_micro = (float) std::chrono::duration_cast<std::chrono::microseconds>(compute_time).count();
+    float msptTime_micro = (float) std::chrono::duration_cast<std::chrono::microseconds>(msptTime).count();
+    _circularBufferTps.push_back(compute_time_micro);
+    _circularBufferMSPT.push_back(msptTime_micro);
+    switch (_dimensionType) {
+    case world_storage::DimensionType::OVERWORLD:
+        PEXPP(addMsptOverworld, msptTime_micro / MILLIS_IN_ONE_SEC)
+        break;
+    case world_storage::DimensionType::NETHER:
+        PEXPP(addMsptNether, msptTime_micro / MILLIS_IN_ONE_SEC)
+        break;
+    case world_storage::DimensionType::END:
+        PEXPP(addMsptEnd, msptTime_micro / MILLIS_IN_ONE_SEC)
+        break;
     }
 }
 
@@ -146,7 +182,7 @@ void Dimension::generateChunk(UNUSED int x, UNUSED int z, UNUSED world_storage::
 
 void Dimension::loadOrGenerateChunk(int x, int z, const std::shared_ptr<Player> player)
 {
-    std::lock_guard<std::mutex> _(_loadingChunksMutex);
+    std::lock_guard _(_loadingChunksMutex);
     if (this->_loadingChunks.contains({x, z})) {
         if (std::find_if(this->_loadingChunks[{x, z}].players.begin(), this->_loadingChunks[{x, z}].players.end(), [player](const std::weak_ptr<const Player> current_weak_player) {
                 if (auto current_player = current_weak_player.lock())
@@ -203,7 +239,7 @@ bool Dimension::hasChunkLoaded(int x, int z) const { return this->_level.hasChun
 
 void Dimension::removePlayerFromLoadingChunk(const Position2D &pos, const std::shared_ptr<const Player> player)
 {
-    std::lock_guard<std::mutex> _(_loadingChunksMutex);
+    std::lock_guard _(_loadingChunksMutex);
     if (!this->_loadingChunks.contains(pos))
         return;
 
@@ -324,11 +360,63 @@ void Dimension::updateEntityAttributes(const protocol::UpdateAttributes &attribu
 void Dimension::sendChunkToPlayers(int x, int z)
 {
     // This send the chunk to the players that are loading it
-    std::lock_guard<std::mutex> _(_loadingChunksMutex);
+    std::lock_guard _(_loadingChunksMutex);
+
+    // This if should not be needed normally but somehow 2 jobs get the same
+    // chunk to process and try to send it to the players at the same time
+    // which will literally segfault the whole stuff.
+    // TODO(huntears): Fix that freaking threadpool :(
+    if (!this->_loadingChunks.contains({x, z}))
+        return;
+
     for (auto weak_player : this->_loadingChunks[{x, z}].players) {
         if (auto player = weak_player.lock()) {
             player->sendChunkAndLightUpdate(this->_level.getChunkColumn(x, z));
         }
     }
     this->_loadingChunks.erase({x, z});
+}
+
+Tps Dimension::getTps() const
+{
+    const auto buffer_size = _circularBufferTps.size();
+    const auto buffer_end = _circularBufferTps.end();
+    const auto tpsCalculation = [buffer_end](const int tick_number) {
+        return 1.0f / ((std::accumulate(buffer_end - tick_number, buffer_end, 0.0f) / (float) (tick_number)) / MICROSECS_IN_ONE_SEC);
+    };
+    const float tpsOnFullBuffer = tpsCalculation(buffer_size);
+
+    Tps tps {0, 0, 0};
+
+    if (buffer_size < TICK_PER_MINUTE - 1) {
+        tps.oneMinTps = tps.fiveMinTps = tps.fifteenMinTps = tpsOnFullBuffer;
+        return tps;
+    }
+    tps.oneMinTps = tpsCalculation(TICK_PER_MINUTE);
+    if (buffer_size < (TICK_PER_MINUTE * 5) - 1) {
+        tps.fiveMinTps = tps.fifteenMinTps = tpsOnFullBuffer;
+        return tps;
+    }
+    tps.fiveMinTps = tpsCalculation((TICK_PER_MINUTE * 5));
+    if (buffer_size < (TICK_PER_MINUTE * 15) - 1) {
+        tps.fifteenMinTps = tpsOnFullBuffer;
+        return tps;
+    }
+    tps.fifteenMinTps = tpsCalculation((TICK_PER_MINUTE * 15));
+    return tps;
+}
+
+MSPTInfos Dimension::getMSPTInfos() const
+{
+    if (_circularBufferMSPT.empty())
+        return {0, 0, 0};
+    const auto buffer_begin = _circularBufferMSPT.begin();
+    const auto buffer_end = _circularBufferMSPT.end();
+    // clang-format off
+    return {
+        *std::min_element(buffer_begin, buffer_end) / MILLIS_IN_ONE_SEC,
+        (std::accumulate(buffer_begin, buffer_end, 0.0f) / float(_circularBufferMSPT.size())) / MILLIS_IN_ONE_SEC,
+        *std::max_element(buffer_begin, buffer_end) / MILLIS_IN_ONE_SEC
+    };
+    // clang-format on
 }

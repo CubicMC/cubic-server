@@ -65,6 +65,18 @@ public:
     */
     virtual void setTime(int time);
 
+    /**
+     * @brief Get the tps of all dimensions
+     * @return a vector of pairs of dimension type and their tps
+     */
+    virtual std::vector<std::pair<world_storage::DimensionType, Tps>> getTps() const;
+
+    /**
+     * @brief Get the mspt of all dimensions
+     * @return a vector of pairs of dimension type and their mspt
+     */
+    virtual std::vector<std::pair<world_storage::DimensionType, MSPTInfos>> getMSPTInfos() const;
+
 protected:
     std::shared_ptr<Chat> _chat;
     std::shared_ptr<WorldGroup> _worldGroup;
@@ -74,10 +86,11 @@ protected:
     uint8_t _renderDistance;
     world_storage::LevelData _levelData;
     TickClock _timeUpdateClock;
-    Seed _seed;
+    const Seed _seed;
     thread_pool::PriorityThreadPool _generationPool;
     world_storage::WorldType _worldType;
     std::string _folder;
+    TickClock _publishTpsClock;
 };
 
 #endif // CUBICSERVER_WORLD_HPP
