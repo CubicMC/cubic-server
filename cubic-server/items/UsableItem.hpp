@@ -2,6 +2,7 @@
 #define CUBICSERVER_ITEMS_USABLEITEM_HPP
 
 #include <array>
+#include <cstdint>
 #include <string_view>
 
 namespace Items {
@@ -89,14 +90,6 @@ inline ItemMaxDurabilityByType getMaxDurabilityById(int32_t itemId)
         return ItemMaxDurabilityByType::Unbreakable;
     }
 }
-
-class UsableItem {
-public:
-    virtual ~UsableItem();
-
-    virtual bool isBroken(); /* true if damage = max_durability */
-    virtual void updateDamage(); /* set damage = damage + 1 */
-};
 
 } // namespace Items
 
