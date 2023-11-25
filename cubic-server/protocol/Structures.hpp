@@ -3,11 +3,34 @@
 
 #include <cstddef>
 #include <cstdint>
+#include <cassert>
 
+#include "items/UsableItem.hpp"
 #include "nbt.h"
 #include "nbt.hpp"
 
 namespace protocol {
+
+#define GET_VALUE(t, type_accessor, dst, src, root)    \
+    do {                                               \
+        auto *__tmp = nbt_tag_compound_get(root, src); \
+        assert(__tmp);                                 \
+        assert(__tmp->type == t);                      \
+        dst = __tmp->type_accessor.value;              \
+    } while (0)
+
+#define GET_VALUE_INT(dst, src, root) GET_VALUE(NBT_TYPE_INT, tag_int, dst, src, root)
+
+#define SET_VALUE(t, type_accessor, dst, src, root)    \
+    do {                                               \
+        auto *__tmp = nbt_tag_compound_get(root, src); \
+        assert(__tmp);                                 \
+        assert(__tmp->type == t);                      \
+        __tmp->type_accessor.value = dst;              \
+    } while (0)
+
+#define SET_VALUE_INT(dst, src, root) SET_VALUE(NBT_TYPE_INT, tag_int, dst, src, root)
+
 struct Slot {
     constexpr ~Slot()
     {
@@ -65,6 +88,8 @@ struct Slot {
     inline void swap(Slot &other);
     inline void swap(Slot &other, int8_t count);
     inline Slot takeOne();
+    bool isBroken(); /* true if damageTaken = maxDurability */
+    void updateDamage(); /* set damageTaken = damageTaken + 1 */
 
 public:
     bool present = false;                           /* Slot: The inventory slot the item is in. */

@@ -20,6 +20,7 @@
 #include "protocol/ClientPackets.hpp"
 #include "protocol/PacketUtils.hpp"
 #include "protocol/ServerPackets.hpp"
+#include "protocol/Structures.hpp"
 #include "protocol/common.hpp"
 #include "protocol/container/Container.hpp"
 #include "protocol/container/Inventory.hpp"
@@ -84,7 +85,13 @@ Player::Player(std::weak_ptr<Client> cli, std::shared_ptr<Dimension> dim, u128 u
     nbt_tag_compound_append(display, name);
     nbt_tag_compound_append(root, display);
 
+    constexpr int32_t DURABILITY = 24;
+    auto rootItem = nbt_new_tag_compound();
+    auto damage = nbt_new_tag_int(DURABILITY);
+    nbt_tag_compound_append(root, damage);
+
     this->_inventory->playerInventory().at(14) = protocol::Slot(true, 1, 12, root);
+    this->_inventory->playerInventory().at(16) = protocol::Slot(true, 710, 1, rootItem);
     PEXP(incrementPlayerCountGlobal);
 }
 
@@ -1001,6 +1008,7 @@ void Player::_onPlayerAction(protocol::PlayerAction &pck)
         _foodExhaustionLevel += 0.005;
         _dim->makeEntity<Item>(protocol::Slot {true, id, 1})
             ->dropItem({static_cast<double>(pck.location.x) + 0.5, static_cast<double>(pck.location.y), static_cast<double>(pck.location.z) + 0.5});
+        this->_inventory->hotbar().at(this->_heldItem).updateDamage();
         break;
     }
     case protocol::PlayerAction::Status::DropItemStack:
