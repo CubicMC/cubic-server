@@ -35,12 +35,8 @@ bool Blocks::BlockDataConverter::initialize(const std::string &path)
         b.minStateId = block.value()["minStateId"];
         b.maxStateId = block.value()["maxStateId"];
         // states
-        b.harvestTool = [block]() {
-            auto harvestTools = std::vector<std::pair<ItemId, bool>> {};
-            for (auto tool = block.value()["harvestTools"].rbegin(); tool != block.value()["harvestTools"].rend(); ++tool)
-                harvestTools.push_back({stoi(tool.key()), tool.value()});
-            return harvestTools;
-        }();
+        for (auto tool = block.value()["harvestTools"].rbegin(); tool != block.value()["harvestTools"].rend(); ++tool)
+            b.harvestTool.push_back({stoi(tool.key()), tool.value()});
         // b.drops = block.value()["drops"];
         b.boundingBox = block.value()["boundingBox"];
         this->_blocks.push_back(b);
