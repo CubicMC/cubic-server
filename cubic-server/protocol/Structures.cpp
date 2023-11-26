@@ -9,7 +9,7 @@ bool protocol::Slot::isBroken()
     }
     int32_t damageTaken = 0;
     GET_VALUE_INT(damageTaken, "Damage", this->nbt);
-    if (damageTaken == (int32_t)Items::getMaxDurabilityById(this->itemID)) {
+    if (damageTaken == (int32_t) Items::getMaxDurabilityById(this->itemID)) {
         return true;
     }
     return false;

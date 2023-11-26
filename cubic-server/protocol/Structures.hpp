@@ -1,9 +1,9 @@
 #ifndef CUBICSERVER_PROTOCOL_STRUCTURES_HPP
 #define CUBICSERVER_PROTOCOL_STRUCTURES_HPP
 
+#include <cassert>
 #include <cstddef>
 #include <cstdint>
-#include <cassert>
 
 #include "items/UsableItem.hpp"
 #include "nbt.h"
