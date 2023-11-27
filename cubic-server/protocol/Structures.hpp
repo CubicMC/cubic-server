@@ -35,8 +35,8 @@ struct Slot {
     constexpr ~Slot()
     {
         // clang-format off
-        if (this->nbt != nullptr)
-            nbt_free_tag(this->nbt);
+        // if (this->nbt != nullptr)
+            // nbt_free_tag(this->nbt);
     }
 
     constexpr Slot(bool present = false, int32_t itemID = 0, int8_t itemCount = 0, nbt_tag_t *nbt = nullptr):
