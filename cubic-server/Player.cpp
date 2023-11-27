@@ -994,6 +994,20 @@ void Player::_onPlayerAction(protocol::PlayerAction &pck)
             }
             this->getDimension()->updateBlock(pck.location, 0);
         }
+        if (this->getGamemode() == player_attributes::Gamemode::Survival) {
+            onEventCancelable(Server::getInstance()->getPluginManager(), onBlockDestroy, canceled, 0, tmp);
+            if (canceled) {
+                Event::cancelBlockDestroy(this, this->getDimension()->getLevel().getChunkColumnFromBlockPos(pck.location.x, pck.location.z).getBlock(pck.location), pck.location);
+                return;
+            }
+            if (BLOCK_DATA_CONVERTER.fromBlockIdToBlockData(this->getDimension()->getBlock(pck.location)).hardness == 0) {
+                int id = ITEM_CONVERTER.fromItemToProtocolId(GLOBAL_PALETTE.fromProtocolIdToBlock(this->getDimension()->getBlock(pck.location)).name);
+                this->getDimension()->updateBlock(pck.location, 0);
+                _foodExhaustionLevel += 0.005;
+                _dim->makeEntity<Item>(protocol::Slot {true, id, 1})
+                    ->dropItem({static_cast<double>(pck.location.x) + 0.5, static_cast<double>(pck.location.y), static_cast<double>(pck.location.z) + 0.5});
+            }
+        }
         break;
     case protocol::PlayerAction::Status::CancelledDigging:
         break;
