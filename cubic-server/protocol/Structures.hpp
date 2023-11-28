@@ -91,10 +91,10 @@ struct Slot {
     void updateDamage(); /* set damageTaken = damageTaken + 1 */
 
 public:
-    bool present = false;                           /* Slot: The inventory slot the item is in. */
-    int32_t itemID = 0;                             /* Item/Block ID. If not specified, gets treated as air, resulting in the item being removed. */
-    int8_t itemCount = 0;                           /* Count: Number of items stacked in this inventory slot. Values below 0 cause the item to be treated as air, resulting in the item being removed. */
-    nbt_tag_t *nbt = nullptr;                       /* TAG_compound. Additional information about the item. This tag is optional for most items. */
+    bool present = false; /* Slot: The inventory slot the item is in. */
+    int32_t itemID = 0; /* Item/Block ID. If not specified, gets treated as air, resulting in the item being removed. */
+    int8_t itemCount = 0; /* Count: Number of items stacked in this inventory slot. Values below 0 cause the item to be treated as air, resulting in the item being removed. */
+    nbt_tag_t *nbt = nullptr; /* TAG_compound. Additional information about the item. This tag is optional for most items. */
 };
 
 inline bool operator==(const Slot &lhs, const Slot &rhs) { return lhs.present == rhs.present && lhs.itemID == rhs.itemID && nbt_compare_tags(lhs.nbt, rhs.nbt); }
