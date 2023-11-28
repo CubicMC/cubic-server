@@ -4,28 +4,6 @@
 
 using Inventory = protocol::container::Inventory;
 
-Inventory::~Inventory()
-{
-    for (auto &slot : _craftingGrid) {
-        if (slot.nbt != nullptr)
-            nbt_free_tag(slot.nbt);
-    }
-    for (auto &slot : _playerInventory) {
-        if (slot.nbt != nullptr)
-            nbt_free_tag(slot.nbt);
-    }
-    for (auto &slot : _hotbar) {
-        if (slot.nbt != nullptr)
-            nbt_free_tag(slot.nbt);
-    }
-    for (auto &slot : _armor) {
-        if (slot.nbt != nullptr)
-            nbt_free_tag(slot.nbt);
-    }
-    if (_offhand.nbt != nullptr)
-        nbt_free_tag(_offhand.nbt);
-}
-
 template<size_t N>
 static void swapContainer(protocol::Slot &slot, std::array<protocol::Slot, N> &container)
 {

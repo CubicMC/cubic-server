@@ -215,16 +215,6 @@ struct ClickContainerButton : BaseServerPacket {
 std::unique_ptr<ClickContainerButton> parseClickContainerButton(std::vector<uint8_t> &buffer);
 
 struct ClickContainer : BaseServerPacket {
-    constexpr ~ClickContainer()
-    {
-        for (auto &slot : arrayOfSlots) {
-            if (slot.slotData.nbt != nullptr) {
-                nbt_free_tag(slot.slotData.nbt);
-            }
-        }
-        if (carriedItem.nbt != nullptr)
-            nbt_free_tag(carriedItem.nbt);
-    }
     struct SlotWithIndex {
         int16_t slotNumber;
         Slot slotData;

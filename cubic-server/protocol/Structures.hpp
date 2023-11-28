@@ -34,9 +34,8 @@ namespace protocol {
 struct Slot {
     constexpr ~Slot()
     {
-        // clang-format off
-        // if (this->nbt != nullptr)
-            // nbt_free_tag(this->nbt);
+        if (this->nbt != nullptr)
+            nbt_free_tag(this->nbt);
     }
 
     constexpr Slot(bool present = false, int32_t itemID = 0, int8_t itemCount = 0, nbt_tag_t *nbt = nullptr):
@@ -96,7 +95,6 @@ public:
     int32_t itemID = 0;                             /* Item/Block ID. If not specified, gets treated as air, resulting in the item being removed. */
     int8_t itemCount = 0;                           /* Count: Number of items stacked in this inventory slot. Values below 0 cause the item to be treated as air, resulting in the item being removed. */
     nbt_tag_t *nbt = nullptr;                       /* TAG_compound. Additional information about the item. This tag is optional for most items. */
-    // clang-format on
 };
 
 inline bool operator==(const Slot &lhs, const Slot &rhs) { return lhs.present == rhs.present && lhs.itemID == rhs.itemID && nbt_compare_tags(lhs.nbt, rhs.nbt); }
