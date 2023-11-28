@@ -7,6 +7,10 @@
 
 namespace Items {
 
+/**
+ * @brief Max durability for each type of item. As an unbreakable item does not have any, if an item is unbreakable, its value will be -1 to facilitate the use of this enum.
+ * 
+ */
 enum class ItemMaxDurabilityByType : int32_t {
     FishingRod = 64,
     FlintAndSteel = 64,
@@ -27,6 +31,12 @@ enum class ItemMaxDurabilityByType : int32_t {
     Unbreakable = -1,
 };
 
+/** @brief Only used in isBroken() function (Structures.cpp) to get the maximum durability
+* of an item before checking if it is broken or not.
+*
+* @note Note that these ID values are only true for Minecraft 1.19.3, as those IDs might change.
+* 
+*/
 inline ItemMaxDurabilityByType getMaxDurabilityById(int32_t itemId)
 {
     switch (itemId) {

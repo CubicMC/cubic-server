@@ -7,7 +7,7 @@ bool protocol::Slot::isBroken()
         LERROR("Error with NBT");
         return false;
     } else if (nbt_tag_compound_get(this->nbt, "Damage") == nullptr) {
-        LINFO("Unbreakable item");
+        LDEBUG("Unbreakable item");
         return false;
     }
     int32_t damageTaken = 0;
@@ -24,16 +24,16 @@ void protocol::Slot::updateDamage()
         LERROR("Error with NBT");
         return;
     } else if (nbt_tag_compound_get(this->nbt, "Damage") == nullptr) {
-        LINFO("Unbreakable item");
+        LDEBUG("Unbreakable item");
         return;
     }
     int32_t damageTaken = 0;
     GET_VALUE_INT(damageTaken, "Damage", this->nbt);
     damageTaken += 1;
     SET_VALUE_INT(damageTaken, "Damage", this->nbt);
-    LINFO("Damage taken: {}", damageTaken);
+    LDEBUG("Damage taken: {}", damageTaken);
     if (isBroken()) {
         this->reset();
-        LINFO("Item broke");
+        LDEBUG("Item just broke");
     }
 }
