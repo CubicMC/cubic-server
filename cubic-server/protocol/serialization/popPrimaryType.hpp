@@ -16,12 +16,12 @@
 
 #include "nbt.h"
 #include "nbt.hpp"
+#include <utility>
 
 #include "protocol/ParseExceptions.hpp"
 #include "protocol/Structures.hpp"
 #include "protocol/common.hpp"
 #include "types.hpp"
-#include <utility>
 
 namespace protocol {
 constexpr uint8_t popByte(uint8_t *&at, uint8_t *eof)
