@@ -8,6 +8,7 @@ target_sources (${CMAKE_PROJECT_NAME} PRIVATE
     ParseExceptions.hpp
     ServerPackets.cpp
     ServerPackets.hpp
+    Structures.cpp
     Structures.hpp
     typeSerialization.hpp
     WorldEvent.hpp
