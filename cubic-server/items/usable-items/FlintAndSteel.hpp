@@ -4,12 +4,14 @@
 #include "items/UsableItem.hpp"
 #include "nbt.h"
 #include "protocol/Structures.hpp"
+#include "types.hpp"
+
 #include <cstdint>
 #include <string_view>
 
 namespace Items {
 
-struct FlintAndSteel{
+struct FlintAndSteel : public UsableItem {
 
     FlintAndSteel()
     {
@@ -33,7 +35,6 @@ public:
     const Items::UsableItem *flintAndSteel = std::find_if(Items::usableItems.begin(), Items::usableItems.end(), [this](const Items::UsableItem &item) {
         return item.stringId == this->stringId;
     });
-    protocol::Slot slot;
 };
 
 } // namespace Items

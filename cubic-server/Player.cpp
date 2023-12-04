@@ -8,7 +8,6 @@
 #include "Server.hpp"
 #include "World.hpp"
 #include "WorldGroup.hpp"
-#include "blocks.hpp"
 #include "command_parser/CommandParser.hpp"
 #include "entities/Entity.hpp"
 #include "entities/Item.hpp"
@@ -27,7 +26,6 @@
 #include "protocol/container/Inventory.hpp"
 #include "protocol/metadata.hpp"
 #include "protocol/serialization/addPrimaryType.hpp"
-#include "types.hpp"
 #include "world_storage/Level.hpp"
 
 #include <algorithm>
@@ -1150,6 +1148,11 @@ void Player::_onUseItemOn(protocol::UseItemOn &pck)
         this->getDimension()->updateBlock(pck.location, GLOBAL_PALETTE.fromBlockToProtocolId(ITEM_CONVERTER.fromProtocolIdToItem(_inventory->hotbar().at(this->_heldItem).itemID)));
     if (_gamemode == player_attributes::Gamemode::Creative)
         return;
+    if (this->_inventory->hotbar().at(this->_heldItem).getUsabilityType() == Items::UsabilityType::RightMouseClickUsable) {
+        this->_inventory->hotbar().at(this->_heldItem).itemUse->onUse();
+        this->_inventory->hotbar().at(this->_heldItem).updateDamage();
+        return;
+    }
     this->_inventory->hotbar().at(this->_heldItem).itemCount--;
     if (_inventory->hotbar().at(this->_heldItem).itemCount == 0)
         _inventory->hotbar().at(this->_heldItem).reset();
