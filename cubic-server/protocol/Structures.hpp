@@ -5,7 +5,6 @@
 #include <cstddef>
 #include <cstdint>
 
-#include "items/UsableItem.hpp"
 #include "nbt.h"
 #include "nbt.hpp"
 
@@ -87,17 +86,12 @@ struct Slot {
     inline void swap(Slot &other);
     inline void swap(Slot &other, int8_t count);
     inline Slot takeOne();
-    /** damageTaken = damageTaken + 1, breaks item if (damageTaken > maxDurability) */
-    void updateDamage();
-    /** For usable items, to get which mouse click is used to break them */
-    Items::UsabilityType getUsabilityType();
 
 public:
     bool present = false; /* Slot: The inventory slot the item is in. */
     int32_t itemID = 0; /* Item/Block ID. If not specified, gets treated as air, resulting in the item being removed. */
     int8_t itemCount = 0; /* Count: Number of items stacked in this inventory slot. Values below 0 cause the item to be treated as air, resulting in the item being removed. */
     nbt_tag_t *nbt = nullptr; /* TAG_compound. Additional information about the item. This tag is optional for most items. */
-    const Items::UsableItem *itemUse;
 };
 
 inline bool operator==(const Slot &lhs, const Slot &rhs) { return lhs.present == rhs.present && lhs.itemID == rhs.itemID && nbt_compare_tags(lhs.nbt, rhs.nbt); }
