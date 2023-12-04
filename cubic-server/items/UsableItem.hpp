@@ -53,12 +53,16 @@ struct UsableItem {
     _maxDurability(maxDurability),
     _isUnbreakable(isUnbreakable),
     _usabilityType(usabilityType)
-    {};
+    {
+        auto root = setNbtTag();
+        _slot = protocol::Slot(true, _numeralId, 1, root);
+    };
 
     public:
         /** damageTaken = damageTaken + 1, breaks item if (damageTaken > maxDurability) */
         virtual void updateDamage();
         virtual void onUse(Position &pos);
+        nbt_tag_t *setNbtTag(){return nullptr;};
 
         const std::string_view _stringId;
         const int32_t _numeralId; // this ID can become obsolete between versions. Only guaranteed to work for 1.19.3, avoid to use it.
