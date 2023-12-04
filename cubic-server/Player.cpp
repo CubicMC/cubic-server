@@ -86,7 +86,7 @@ Player::Player(std::weak_ptr<Client> cli, std::shared_ptr<Dimension> dim, u128 u
     Items::FlintAndSteel flint;
 
     this->_inventory->playerInventory().at(14) = protocol::Slot(true, 1, 12, root);
-    this->_inventory->playerInventory().at(16) = flint.slot;
+    this->_inventory->playerInventory().at(16) = flint._slot;
     PEXP(incrementPlayerCountGlobal);
 }
 

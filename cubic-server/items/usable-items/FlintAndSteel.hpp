@@ -12,13 +12,13 @@
 namespace Items {
 
 struct FlintAndSteel : public UsableItem {
-    FlintAndSteel()
+    FlintAndSteel(const std::string_view stringId = "minecraft:flint_and_steel", const int32_t numeralId = 733, const ItemMaxDurabilityByType maxDurability = ItemMaxDurabilityByType::FlintAndSteel, bool isUnbreakable = false, const UsabilityType usabilityType = UsabilityType::RightMouseClickUsable):
+    _stringId(stringId),
+    _numeralId(numeralId),
+    _maxDurability(maxDurability),
+    _isUnbreakable(isUnbreakable),
+    _usabilityType(usabilityType)
     {
-        this->_stringId = "minecraft:flint_and_steel";
-        this->_numeralId = 733;
-        this->_maxDurability = ItemMaxDurabilityByType::FlintAndSteel;
-        this->_isUnbreakable = false;
-        this->_usabilityType = UsabilityType::RightMouseClickUsable;
         auto root = setNbtTag();
         this->_slot = protocol::Slot(true, this->_numeralId, 1, root);
     }
