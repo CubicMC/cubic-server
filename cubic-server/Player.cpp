@@ -1018,7 +1018,7 @@ void Player::_onPlayerAction(protocol::PlayerAction &pck)
         _dim->makeEntity<Item>(protocol::Slot {true, id, 1})
             ->dropItem({static_cast<double>(pck.location.x) + 0.5, static_cast<double>(pck.location.y), static_cast<double>(pck.location.z) + 0.5});
         if (this->_inventory->hotbar().at(this->_heldItem).getUsabilityType() == Items::UsabilityType::LeftMouseClickUsable)
-            this->_inventory->hotbar().at(this->_heldItem).updateDamage();
+            this->_inventory->hotbar().at(this->_heldItem).onUse(this->getDimension(), pck.location);
         break;
     }
     case protocol::PlayerAction::Status::DropItemStack:
@@ -1149,8 +1149,7 @@ void Player::_onUseItemOn(protocol::UseItemOn &pck)
     if (_gamemode == player_attributes::Gamemode::Creative)
         return;
     if (this->_inventory->hotbar().at(this->_heldItem).getUsabilityType() == Items::UsabilityType::RightMouseClickUsable) {
-        this->_inventory->hotbar().at(this->_heldItem).itemUse->onUse();
-        this->_inventory->hotbar().at(this->_heldItem).updateDamage();
+        this->_inventory->hotbar().at(this->_heldItem).onUse(this->getDimension(), pck.location);
         return;
     }
     this->_inventory->hotbar().at(this->_heldItem).itemCount--;

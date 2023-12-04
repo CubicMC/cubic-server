@@ -12,11 +12,10 @@
 namespace Items {
 
 struct FlintAndSteel : public UsableItem {
-
-    FlintAndSteel()
+    FlintAndSteel("minecraft:flint_and_steel", 733, ItemMaxDurabilityByType::FlintAndSteel, false, UsabilityType::RightMouseClickUsable)
     {
         int32_t DAMAGE = 0;
-        int32_t UNBREAKABLE = this->flintAndSteel->isUnbreakable;
+        int32_t UNBREAKABLE = this->_isUnbreakable;
         std::string_view DAMAGE_TAG = "Damage";
         std::string_view UNBREAKABLE_TAG = "Breakable";
         auto root = nbt_new_tag_compound();
@@ -27,14 +26,8 @@ struct FlintAndSteel : public UsableItem {
         nbt_tag_compound_append(root, damage);
         nbt_tag_compound_append(root, breakable);
 
-        this->slot = protocol::Slot(true, this->flintAndSteel->numeralId, 1, root);
+        this->_slot = protocol::Slot(true, this->_numeralId, 1, root);
     }
-
-public:
-    const std::string_view stringId = "minecraft:flint_and_steel";
-    const Items::UsableItem *flintAndSteel = std::find_if(Items::usableItems.begin(), Items::usableItems.end(), [this](const Items::UsableItem &item) {
-        return item.stringId == this->stringId;
-    });
 };
 
 } // namespace Items

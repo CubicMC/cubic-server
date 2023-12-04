@@ -47,19 +47,25 @@ enum class UsabilityType : int32_t {
 };
 
 struct UsableItem {
-    UsableItem(const std::string_view stringId, const int32_t numeralId, const ItemMaxDurabilityByType maxDurability, bool isUnbreakable, const UsabilityType usabilityType);
-    UsableItem();
+    UsableItem(const std::string_view stringId, const int32_t numeralId, const ItemMaxDurabilityByType maxDurability, bool isUnbreakable, const UsabilityType usabilityType):
+    _stringId(stringId),
+    _numeralId(numeralId),
+    _maxDurability(maxDurability),
+    _isUnbreakable(isUnbreakable),
+    _usabilityType(usabilityType)
+    {};
 
-    void onUse(const std::string_view stringId, Position &pos);
-    /** damageTaken = damageTaken + 1, breaks item if (damageTaken > maxDurability) */
-    void updateDamage();
     public:
-        const std::string_view stringId;
-        const int32_t numeralId; // this ID can become obsolete between versions. Only guaranteed to work for 1.19.3, avoid to use it.
-        const ItemMaxDurabilityByType maxDurability;
-        bool isUnbreakable;
-        const UsabilityType usabilityType;
-        protocol::Slot &slot;
+        /** damageTaken = damageTaken + 1, breaks item if (damageTaken > maxDurability) */
+        virtual void updateDamage();
+        virtual void onUse(Position &pos);
+
+        const std::string_view _stringId;
+        const int32_t _numeralId; // this ID can become obsolete between versions. Only guaranteed to work for 1.19.3, avoid to use it.
+        const ItemMaxDurabilityByType _maxDurability;
+        bool _isUnbreakable;
+        const UsabilityType _usabilityType;
+        protocol::Slot _slot;
 };
 
 const std::array<UsableItem, 41> usableItems {
@@ -103,7 +109,7 @@ const std::array<UsableItem, 41> usableItems {
     UsableItem ("minecraft:netherite_pickaxe", 779, ItemMaxDurabilityByType::NetheriteItem, false, UsabilityType::LeftMouseClickUsable),
     UsableItem ("minecraft:netherite_axe", 780, ItemMaxDurabilityByType::NetheriteItem, false, UsabilityType::LeftMouseClickUsable),
     UsableItem ("minecraft:netherite_hoe", 781, ItemMaxDurabilityByType::NetheriteItem, false, UsabilityType::LeftMouseClickUsable),
-    UsableItem ("cubic:unusable", 0, ItemMaxDurabilityByType::Unbreakable, true, UsabilityType::NoneClickUsable) /**< used for all items which are not usable */
+    UsableItem ("cubic:unusable", 0, ItemMaxDurabilityByType::Unbreakable, true, UsabilityType::NoneClickUsable) /**< used for all items that are not usable */
 };
 
 } // namespace Items
