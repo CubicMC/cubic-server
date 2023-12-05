@@ -35,9 +35,9 @@ void protocol::Slot::updateDamage()
     GET_VALUE_INT(damageTaken, "Damage", this->nbt);
     damageTaken += 1;
     SET_VALUE_INT(damageTaken, "Damage", this->nbt);
-    LINFO("Damage taken: {}/{}", damageTaken, item->_maxDurability);
+    LDEBUG("Damage taken: {}/{}", damageTaken, item->_maxDurability);
     if (damageTaken >= (int32_t) item->_maxDurability) {
         this->reset();
-        LINFO("Item just broke");
+        LDEBUG("Item just broke");
     }
 }

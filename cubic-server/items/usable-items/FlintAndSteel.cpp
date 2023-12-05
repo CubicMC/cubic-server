@@ -1,7 +1,6 @@
 #include "FlintAndSteel.hpp"
 #include "Dimension.hpp"
 #include "blocks.hpp"
-#include "logging/logging.hpp"
 
 nbt_tag_t *Items::FlintAndSteel::setNbtTag()
 {
@@ -29,5 +28,4 @@ void Items::FlintAndSteel::onUse(UNUSED std::shared_ptr<Dimension> dim, UNUSED P
             Blocks::Fire::Properties::Up::FALSE, Blocks::Fire::Properties::West::FALSE
         )
     );
-    LWARN("Burnin\' ur house");
 }
