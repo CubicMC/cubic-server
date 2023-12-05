@@ -2,9 +2,11 @@
 #define CUBICSERVER_PROTOCOL_STRUCTURES_HPP
 
 #include <cassert>
-#include <cstddef>
 #include <cstdint>
+#include <variant>
 
+#include "items/UsableItem.hpp"
+#include "items/usable-items/FlintAndSteel.hpp"
 #include "nbt.h"
 #include "nbt.hpp"
 
@@ -30,6 +32,7 @@ namespace protocol {
 
 #define SET_VALUE_INT(dst, src, root) SET_VALUE(NBT_TYPE_INT, tag_int, dst, src, root)
 
+typedef std::variant<Items::UsableItem, Items::FlintAndSteel> ItemType;
 struct Slot {
     constexpr ~Slot()
     {
@@ -86,6 +89,9 @@ struct Slot {
     inline void swap(Slot &other);
     inline void swap(Slot &other, int8_t count);
     inline Slot takeOne();
+    /** damageTaken = damageTaken + 1, breaks item if (damageTaken > maxDurability) */
+    void updateDamage();
+    const ItemType getUsableItemFromSlot();
 
 public:
     bool present = false; /* Slot: The inventory slot the item is in. */
