@@ -1,13 +1,36 @@
 #ifndef CUBICSERVER_PROTOCOL_STRUCTURES_HPP
 #define CUBICSERVER_PROTOCOL_STRUCTURES_HPP
 
+#include <cassert>
 #include <cstddef>
 #include <cstdint>
 
+#include "items/UsableItem.hpp"
 #include "nbt.h"
 #include "nbt.hpp"
 
 namespace protocol {
+
+#define GET_VALUE(t, type_accessor, dst, src, root)    \
+    do {                                               \
+        auto *__tmp = nbt_tag_compound_get(root, src); \
+        assert(__tmp);                                 \
+        assert(__tmp->type == t);                      \
+        dst = __tmp->type_accessor.value;              \
+    } while (0)
+
+#define GET_VALUE_INT(dst, src, root) GET_VALUE(NBT_TYPE_INT, tag_int, dst, src, root)
+
+#define SET_VALUE(t, type_accessor, dst, src, root)    \
+    do {                                               \
+        auto *__tmp = nbt_tag_compound_get(root, src); \
+        assert(__tmp);                                 \
+        assert(__tmp->type == t);                      \
+        __tmp->type_accessor.value = dst;              \
+    } while (0)
+
+#define SET_VALUE_INT(dst, src, root) SET_VALUE(NBT_TYPE_INT, tag_int, dst, src, root)
+
 struct Slot {
     constexpr ~Slot()
     {
@@ -64,12 +87,14 @@ struct Slot {
     inline void swap(Slot &other);
     inline void swap(Slot &other, int8_t count);
     inline Slot takeOne();
+    bool isBroken(); /* true if damageTaken = maxDurability */
+    void updateDamage(); /* set damageTaken = damageTaken + 1 */
 
 public:
-    bool present = false;
-    int32_t itemID = 0;
-    int8_t itemCount = 0;
-    nbt_tag_t *nbt = nullptr;
+    bool present = false; /* Slot: The inventory slot the item is in. */
+    int32_t itemID = 0; /* Item/Block ID. If not specified, gets treated as air, resulting in the item being removed. */
+    int8_t itemCount = 0; /* Count: Number of items stacked in this inventory slot. Values below 0 cause the item to be treated as air, resulting in the item being removed. */
+    nbt_tag_t *nbt = nullptr; /* TAG_compound. Additional information about the item. This tag is optional for most items. */
 };
 
 inline bool operator==(const Slot &lhs, const Slot &rhs) { return lhs.present == rhs.present && lhs.itemID == rhs.itemID && nbt_compare_tags(lhs.nbt, rhs.nbt); }

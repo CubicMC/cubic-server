@@ -9,7 +9,7 @@
 #include "nbt.hpp"
 #include "protocol/serialization/add.hpp"
 #include "protocol/serialization/popPrimaryType.hpp"
-#include "protocol_id_converter/blockStates.hpp"
+#include "protocol_id_converter/blockIdConverter.hpp"
 #include "world_storage/Palette.hpp"
 #include "world_storage/Section.hpp"
 #include <cstdint>
