@@ -3,21 +3,28 @@
 
 #include "items/UsableItem.hpp"
 
-#include <cstdint>
-#include <string_view>
+/**
+ * @file The 'Flint & Steel' is an item used to put fire to everything, especially your friends' houses (and Nether Portals, but that's not really important there)
+ *
+ */
 
 namespace Items {
 
 struct FlintAndSteel : public UsableItem {
-    FlintAndSteel(
-        const std::string_view stringId = "minecraft:flint_and_steel", const int32_t numeralId = 733,
-        const ItemMaxDurabilityByType maxDurability = ItemMaxDurabilityByType::FlintAndSteel, const bool isUnbreakable = false,
-        const UsabilityType usabilityType = UsabilityType::RightMouseClickUsable
-    ):
-        UsableItem(stringId, numeralId, maxDurability, isUnbreakable, usabilityType)
+    FlintAndSteel():
+        UsableItem(usableItems[1])
     {
     }
+    /**
+     * @note See Item::UsableItem::onUse() for more info
+     *
+     */
     void onUse(std::shared_ptr<Dimension> dim, Position &pos) const override;
+
+    /**
+     * @note See Item::UsableItem::setNbtTag() for more info
+     *
+     */
     nbt_tag_t *setNbtTag() override;
 };
 

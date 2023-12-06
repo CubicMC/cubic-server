@@ -4,7 +4,7 @@
 
 nbt_tag_t *Items::FlintAndSteel::setNbtTag()
 {
-    int32_t DAMAGE = 60;
+    int32_t DAMAGE = 0;
     int32_t UNBREAKABLE = this->_isUnbreakable;
     std::string_view DAMAGE_TAG = "Damage";
     std::string_view UNBREAKABLE_TAG = "Breakable";

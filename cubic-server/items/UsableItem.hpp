@@ -15,7 +15,7 @@ class Dimension;
 namespace Items {
 
 /**
- * @brief Max durability for each type of item. As an unbreakable item does not have any, if an item is unbreakable, its value will be -1 to facilitate the use of this enum.
+ * @brief Max durability for each type of item. As an unbreakable item does not have any, its value will be -1 to facilitate the use of this enum.
  *
  */
 enum class ItemMaxDurabilityByType : int32_t {
@@ -35,7 +35,7 @@ enum class ItemMaxDurabilityByType : int32_t {
     IronItem = 250,
     DiamondItem = 1561,
     NetheriteItem = 2031,
-    ResetDefault = -1,
+    ResetDefault = -1, // only for custom unbreakable items (when an item is broken, it is set to this custom value)
 };
 
 /**
@@ -46,7 +46,7 @@ enum class UsabilityType : int32_t {
     LeftMouseClickUsable = 0,
     RightMouseClickUsable = 1,
     BothMouseClicksUsable = 2,
-    NoneClickUsable = -1, // only for custom unbreakable items
+    NoneClickUsable = -1, // only for custom unbreakable items (when an item is broken, it is set to this custom value)
 };
 
 struct UsableItem {
@@ -67,11 +67,23 @@ struct UsableItem {
     }
 
 public:
+    /**
+     * @brief Define the course of action when the player uses the item
+     *
+     * @param dim The current dimension the player is in (facultative)
+     * @param pos The position on which the item was used (facultative)
+     */
     virtual void onUse(UNUSED std::shared_ptr<Dimension> dim, UNUSED Position &pos) const {};
+
+    /**
+     * @brief Set the NBT Tag of the item
+     *
+     * @return The NBT Tag for the item
+     */
     virtual nbt_tag_t *setNbtTag() { return nullptr; };
 
     const std::string_view _stringId;
-    const int32_t _numeralId; // this ID can become obsolete between versions. Only guaranteed to work for 1.19.3, avoid to use it.
+    const int32_t _numeralId; /**< this ID can become obsolete between versions. Only guaranteed to work for 1.19.3, avoid to use it. */
     const ItemMaxDurabilityByType _maxDurability;
     bool _isUnbreakable;
     const UsabilityType _usabilityType;
@@ -118,7 +130,7 @@ const std::array<UsableItem, 41> usableItems {
     UsableItem("minecraft:netherite_pickaxe", 779, ItemMaxDurabilityByType::NetheriteItem, false, UsabilityType::LeftMouseClickUsable),
     UsableItem("minecraft:netherite_axe", 780, ItemMaxDurabilityByType::NetheriteItem, false, UsabilityType::LeftMouseClickUsable),
     UsableItem("minecraft:netherite_hoe", 781, ItemMaxDurabilityByType::NetheriteItem, false, UsabilityType::LeftMouseClickUsable),
-    UsableItem("cubic:unusable", -1, ItemMaxDurabilityByType::ResetDefault, true, UsabilityType::NoneClickUsable) /**< used for all items that are not usable */
+    UsableItem("cubic:unusable", -1, ItemMaxDurabilityByType::ResetDefault, true, UsabilityType::NoneClickUsable) /**< For items that are not usable/broken */
 };
 
 } // namespace Items
