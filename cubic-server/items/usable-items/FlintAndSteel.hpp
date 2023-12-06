@@ -3,13 +3,12 @@
 
 #include "items/UsableItem.hpp"
 
-/**
- * @file The 'Flint & Steel' is an item used to put fire to everything, especially your friends' houses (and Nether Portals, but that's not really important there)
- *
- */
-
 namespace Items {
 
+/**
+ * @brief The 'Flint & Steel' is an item used to put fire to everything, especially your friends' houses (and Nether Portals, but that's not really important there)
+ *
+ */
 struct FlintAndSteel : public UsableItem {
     FlintAndSteel():
         UsableItem(usableItems[1])
