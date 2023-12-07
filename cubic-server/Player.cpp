@@ -7,33 +7,30 @@
 #include "PluginManager.hpp"
 #include "Server.hpp"
 #include "World.hpp"
-#include "WorldGroup.hpp"
-#include "blocks.hpp"
 #include "command_parser/CommandParser.hpp"
 #include "entities/Entity.hpp"
 #include "entities/Item.hpp"
 #include "entities/LivingEntity.hpp"
 #include "events/CancelEvents.hpp"
+#include "items/UsableItem.hpp"
 #include "items/foodItems.hpp"
+#include "items/usable-items/FlintAndSteel.hpp"
 #include "logging/logging.hpp"
 #include "nbt.h"
 #include "protocol/ClientPackets.hpp"
-#include "protocol/PacketUtils.hpp"
 #include "protocol/ServerPackets.hpp"
 #include "protocol/Structures.hpp"
 #include "protocol/common.hpp"
 #include "protocol/container/Container.hpp"
 #include "protocol/container/Inventory.hpp"
 #include "protocol/metadata.hpp"
-#include "protocol/serialization/addPrimaryType.hpp"
-#include "types.hpp"
 #include "world_storage/Level.hpp"
 
 #include <algorithm>
 #include <cstdint>
 #include <memory>
 #include <mutex>
-#include <stdexcept>
+#include <variant>
 #include <vector>
 
 #define GET_CLIENT()                 \
@@ -84,16 +81,11 @@ Player::Player(std::weak_ptr<Client> cli, std::shared_ptr<Dimension> dim, u128 u
     nbt_set_tag_name(display, DISPLAY_TAG.data(), DISPLAY_TAG.size());
     nbt_tag_compound_append(display, name);
     nbt_tag_compound_append(root, display);
-
-    constexpr int32_t DAMAGE = 0;
-    constexpr std::string_view DAMAGE_TAG = "Damage";
-    auto rootItem = nbt_new_tag_compound();
-    auto damage = nbt_new_tag_int(DAMAGE);
-    nbt_set_tag_name(damage, DAMAGE_TAG.data(), DAMAGE_TAG.size());
-    nbt_tag_compound_append(rootItem, damage);
+    Items::FlintAndSteel flint;
+    auto flintRoot = flint.setNbtTag();
 
     this->_inventory->playerInventory().at(14) = protocol::Slot(true, 1, 12, root);
-    this->_inventory->playerInventory().at(16) = protocol::Slot(true, 710, 1, rootItem);
+    this->_inventory->playerInventory().at(16) = protocol::Slot(true, flint._numeralId, 1, flintRoot);
     PEXP(incrementPlayerCountGlobal);
 }
 
@@ -1024,7 +1016,6 @@ void Player::_onPlayerAction(protocol::PlayerAction &pck)
         _foodExhaustionLevel += 0.005;
         _dim->makeEntity<Item>(protocol::Slot {true, id, 1})
             ->dropItem({static_cast<double>(pck.location.x) + 0.5, static_cast<double>(pck.location.y), static_cast<double>(pck.location.z) + 0.5});
-        this->_inventory->hotbar().at(this->_heldItem).updateDamage();
         break;
     }
     case protocol::PlayerAction::Status::DropItemStack:
@@ -1149,6 +1140,15 @@ void Player::_onUseItemOn(protocol::UseItemOn &pck)
     case protocol::UseItemOn::Face::East:
         pck.location.x++;
         break;
+    }
+    auto item = this->_inventory->hotbar().at(this->_heldItem).getUsableItemFromSlot();
+    if (const Items::FlintAndSteel *usedItem = std::get_if<Items::FlintAndSteel>(&item)) {
+        if (usedItem->_usabilityType == Items::UsabilityType::RightMouseClickUsable) {
+            usedItem->onUse(this->getDimension(), pck.location);
+            this->_inventory->hotbar().at(this->_heldItem).updateDamage();
+            this->sendSetContainerSlot({this->_inventory, static_cast<int16_t>(this->_heldItem + HOTBAR_OFFSET)});
+        }
+        return;
     }
     if (_inventory->hotbar().at(this->_heldItem).present)
         this->getDimension()->updateBlock(pck.location, GLOBAL_PALETTE.fromBlockToProtocolId(ITEM_CONVERTER.fromProtocolIdToItem(_inventory->hotbar().at(this->_heldItem).itemID)));
