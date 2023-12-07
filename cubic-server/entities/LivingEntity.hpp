@@ -25,8 +25,27 @@ public:
     }
     virtual ~LivingEntity() override = default;
 
-    virtual void attack(const Vector3<double> &source);
+    /*
+     * @brief Attack the entity
+     *
+     * @param damage The damage to deal
+     * @param source The source of the damage
+     */
+    virtual void attack(float damage, const Vector3<double> &source);
+
+    /*
+     * @brief Inflict damage to the entity
+     *
+     * @param damage The damage to deal
+     */
     virtual void damage(float damage);
+
+    /*
+     * @brief Inflict knockback to the entity
+     *
+     * @param source The source of the knockback
+     * @param force The force of the knockback
+     */
     virtual void knockback(const Vector3<double> &source = Vector3<double>(0, 0, 0), float force = KNOCKBACK_DEFAULT_FORCE);
 
     virtual void setHealth(float health);

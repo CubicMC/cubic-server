@@ -14,6 +14,7 @@
 #include "events/CancelEvents.hpp"
 #include "items/UsableItem.hpp"
 #include "items/foodItems.hpp"
+#include "items/toolsDamage.hpp"
 #include "items/usable-items/FlintAndSteel.hpp"
 #include "logging/logging.hpp"
 #include "nbt.h"
@@ -58,7 +59,8 @@ Player::Player(std::weak_ptr<Client> cli, std::shared_ptr<Dimension> dim, u128 u
     _additionalHearts(0),
     _score(0),
     _skinParts(true, true, true, true, true, true, true),
-    _mainHand(MainHand::Right)
+    _mainHand(MainHand::Right),
+    _nbTickBeforeNextAttack(0)
 {
     _keepAliveClock.start();
     _heldItem = 0;
@@ -86,6 +88,7 @@ Player::Player(std::weak_ptr<Client> cli, std::shared_ptr<Dimension> dim, u128 u
 
     this->_inventory->playerInventory().at(14) = protocol::Slot(true, 1, 12, root);
     this->_inventory->playerInventory().at(16) = protocol::Slot(true, flint._numeralId, 1, flintRoot);
+    this->_inventory->playerInventory().at(17) = protocol::Slot(true, ITEM_CONVERTER.fromItemToProtocolId("minecraft:wooden_sword"), 1);
     PEXP(incrementPlayerCountGlobal);
 }
 
@@ -102,6 +105,8 @@ void Player::tick()
 {
     _keepAliveClock.tick();
     _synchronizeClock.tick();
+    if (_nbTickBeforeNextAttack > 0)
+        _nbTickBeforeNextAttack--;
 
     _foodTick();
 
@@ -878,16 +883,32 @@ void Player::_onInteract(protocol::Interact &pck)
     switch (pck.type) {
     case protocol::Interact::Type::Interact:
         break;
-    case protocol::Interact::Type::Attack:
+    case protocol::Interact::Type::Attack: {
         onEvent(Server::getInstance()->getPluginManager(), onEntityInteractEntity, this, target.get());
+        if (_nbTickBeforeNextAttack > 0) {
+            LINFO("Player {} is attacking too fast", this->getUsername());
+            return;
+        }
+        Items::ToolDescription tool;
+        const auto currentTool = std::find_if(Items::toolsDamage.begin(), Items::toolsDamage.end(), [&](const auto &tool) {
+            return tool.id == _inventory->hotbar().at(_heldItem).itemID;
+        });
+        if (currentTool == Items::toolsDamage.end()) {
+            tool.damage = 1;
+            tool.attackSpeed = 4;
+        } else {
+            tool = *currentTool;
+        }
+        _nbTickBeforeNextAttack = int(20.0 / tool.attackSpeed);
         if (player != nullptr && player->_gamemode != player_attributes::Gamemode::Creative) {
-            player->attack(_pos);
+            player->attack(tool.damage, _pos);
             player->sendHealth();
         } else if (target != nullptr) {
-            target->attack(_pos);
+            target->attack(tool.damage, _pos);
         }
         _foodExhaustionLevel += player_attributes::FOOD_EXHAUSTION_ATTACK;
         break;
+    }
     case protocol::Interact::Type::InteractAt:
         break;
     default:
