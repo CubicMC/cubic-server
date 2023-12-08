@@ -226,7 +226,8 @@ void Team::sendUpdateTeam(void) const
         this->_color,
         this->_memberNamePrefix,
         this->_memberNameSuffix,
-        {}};
+        {}
+    };
     for (const auto &[_, world] : this->_scoreboard.getWorldGroup().getWorlds()) {
         for (const auto &[_, dimension] : world->getDimensions()) {
             for (const auto &player : dimension->getPlayers()) {
