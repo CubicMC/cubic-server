@@ -262,6 +262,7 @@ private:
         Left = 0,
         Right = 1,
     } _mainHand;
+    int _nbTickBeforeNextAttack;
 };
 
 template<isBaseOf<protocol::container::Container> Container, typename... Args>
