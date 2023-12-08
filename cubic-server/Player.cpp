@@ -14,7 +14,7 @@
 #include "events/CancelEvents.hpp"
 #include "items/UsableItem.hpp"
 #include "items/foodItems.hpp"
-#include "items/usable-items/FlintAndSteel.hpp"
+#include "items/usable-items/Hoe.hpp"
 #include "logging/logging.hpp"
 #include "nbt.h"
 #include "protocol/ClientPackets.hpp"
@@ -81,11 +81,11 @@ Player::Player(std::weak_ptr<Client> cli, std::shared_ptr<Dimension> dim, u128 u
     nbt_set_tag_name(display, DISPLAY_TAG.data(), DISPLAY_TAG.size());
     nbt_tag_compound_append(display, name);
     nbt_tag_compound_append(root, display);
-    Items::FlintAndSteel flint;
-    auto flintRoot = flint.setNbtTag();
+    Items::Hoe hoe = Items::Hoe("minecraft:wooden_hoe", 756, Items::ItemMaxDurabilityByType::WoodenItem, false, Items::UsabilityType::BothMouseClicksUsable);
+    auto hoeRoot = hoe.setNbtTag();
 
     this->_inventory->playerInventory().at(14) = protocol::Slot(true, 1, 12, root);
-    this->_inventory->playerInventory().at(16) = protocol::Slot(true, flint._numeralId, 1, flintRoot);
+    this->_inventory->playerInventory().at(16) = protocol::Slot(true, hoe._numeralId, 1, hoeRoot);
     PEXP(incrementPlayerCountGlobal);
 }
 
@@ -1011,6 +1011,15 @@ void Player::_onPlayerAction(protocol::PlayerAction &pck)
             Event::cancelBlockDestroy(this, this->getDimension()->getLevel().getChunkColumnFromBlockPos(pck.location.x, pck.location.z).getBlock(pck.location), pck.location);
             return;
         }
+        auto item = this->_inventory->hotbar().at(this->_heldItem).getUsableItemFromSlot();
+        if (Items::Hoe *usedItem = std::get_if<Items::Hoe>(&item)) {
+            if (usedItem->_usabilityType == Items::UsabilityType::LeftMouseClickUsable || usedItem->_usabilityType == Items::UsabilityType::BothMouseClicksUsable) {
+                usedItem->onUse(this->getDimension(), pck.location, Items::UsabilityType::LeftMouseClickUsable, 1);
+                if (usedItem->canUpdateDamage) {
+                    this->_inventory->hotbar().at(this->_heldItem).updateDamage();
+                }
+            }
+        }
         int id = ITEM_CONVERTER.fromItemToProtocolId(GLOBAL_PALETTE.fromProtocolIdToBlock(this->getDimension()->getBlock(pck.location)).name);
         this->getDimension()->updateBlock(pck.location, 0);
         _foodExhaustionLevel += 0.005;
@@ -1142,10 +1151,12 @@ void Player::_onUseItemOn(protocol::UseItemOn &pck)
         break;
     }
     auto item = this->_inventory->hotbar().at(this->_heldItem).getUsableItemFromSlot();
-    if (const Items::FlintAndSteel *usedItem = std::get_if<Items::FlintAndSteel>(&item)) {
-        if (usedItem->_usabilityType == Items::UsabilityType::RightMouseClickUsable) {
-            usedItem->onUse(this->getDimension(), pck.location);
-            this->_inventory->hotbar().at(this->_heldItem).updateDamage();
+    if (Items::Hoe *usedItem = std::get_if<Items::Hoe>(&item)) {
+        if (usedItem->_usabilityType == Items::UsabilityType::RightMouseClickUsable || usedItem->_usabilityType == Items::UsabilityType::BothMouseClicksUsable) {
+            usedItem->onUse(this->getDimension(), pck.location, Items::UsabilityType::RightMouseClickUsable, (int32_t)pck.face);
+            if (usedItem->canUpdateDamage) {
+                this->_inventory->hotbar().at(this->_heldItem).updateDamage();
+            }
             this->sendSetContainerSlot({this->_inventory, static_cast<int16_t>(this->_heldItem + HOTBAR_OFFSET)});
         }
         return;

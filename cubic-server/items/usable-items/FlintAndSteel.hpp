@@ -18,7 +18,7 @@ struct FlintAndSteel : public UsableItem {
      * @note See Item::UsableItem::onUse() for more info
      *
      */
-    void onUse(std::shared_ptr<Dimension> dim, Position &pos) const override;
+    void onUse(std::shared_ptr<Dimension> dim, Position &pos, UNUSED UsabilityType usage, UNUSED int32_t face) override;
 
     /**
      * @note See Item::UsableItem::setNbtTag() for more info

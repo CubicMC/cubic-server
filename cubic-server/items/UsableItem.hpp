@@ -72,8 +72,9 @@ public:
      *
      * @param dim The current dimension the player is in (facultative)
      * @param pos The position on which the item was used (facultative)
+     * @param usage Determining with which mouse click the item is used (for items that are used with both clicks)
      */
-    virtual void onUse(UNUSED std::shared_ptr<Dimension> dim, UNUSED Position &pos) const {};
+    virtual void onUse(UNUSED std::shared_ptr<Dimension> dim, UNUSED Position &pos, UNUSED UsabilityType usage, UNUSED int32_t face) {};
 
     /**
      * @brief Set the NBT Tag of the item
@@ -109,27 +110,27 @@ const std::array<UsableItem, 41> usableItems {
     UsableItem("minecraft:wooden_shovel", 753, ItemMaxDurabilityByType::WoodenItem, false, UsabilityType::BothMouseClicksUsable),
     UsableItem("minecraft:wooden_pickaxe", 754, ItemMaxDurabilityByType::WoodenItem, false, UsabilityType::LeftMouseClickUsable),
     UsableItem("minecraft:wooden_axe", 755, ItemMaxDurabilityByType::WoodenItem, false, UsabilityType::LeftMouseClickUsable),
-    UsableItem("minecraft:wooden_hoe", 756, ItemMaxDurabilityByType::WoodenItem, false, UsabilityType::LeftMouseClickUsable),
+    UsableItem("minecraft:wooden_hoe", 756, ItemMaxDurabilityByType::WoodenItem, false, UsabilityType::BothMouseClicksUsable),
     UsableItem("minecraft:stone_sword", 757, ItemMaxDurabilityByType::StoneItem, false, UsabilityType::LeftMouseClickUsable),
     UsableItem("minecraft:stone_shovel", 758, ItemMaxDurabilityByType::StoneItem, false, UsabilityType::BothMouseClicksUsable),
     UsableItem("minecraft:stone_pickaxe", 759, ItemMaxDurabilityByType::StoneItem, false, UsabilityType::LeftMouseClickUsable),
     UsableItem("minecraft:stone_axe", 760, ItemMaxDurabilityByType::StoneItem, false, UsabilityType::LeftMouseClickUsable),
-    UsableItem("minecraft:stone_hoe", 761, ItemMaxDurabilityByType::StoneItem, false, UsabilityType::LeftMouseClickUsable),
+    UsableItem("minecraft:stone_hoe", 761, ItemMaxDurabilityByType::StoneItem, false, UsabilityType::BothMouseClicksUsable),
     UsableItem("minecraft:iron_sword", 767, ItemMaxDurabilityByType::IronItem, false, UsabilityType::LeftMouseClickUsable),
     UsableItem("minecraft:iron_shovel", 768, ItemMaxDurabilityByType::IronItem, false, UsabilityType::BothMouseClicksUsable),
     UsableItem("minecraft:iron_pickaxe", 769, ItemMaxDurabilityByType::IronItem, false, UsabilityType::LeftMouseClickUsable),
     UsableItem("minecraft:iron_axe", 770, ItemMaxDurabilityByType::IronItem, false, UsabilityType::LeftMouseClickUsable),
-    UsableItem("minecraft:iron_hoe", 771, ItemMaxDurabilityByType::IronItem, false, UsabilityType::LeftMouseClickUsable),
+    UsableItem("minecraft:iron_hoe", 771, ItemMaxDurabilityByType::IronItem, false, UsabilityType::BothMouseClicksUsable),
     UsableItem("minecraft:diamond_sword", 772, ItemMaxDurabilityByType::DiamondItem, false, UsabilityType::LeftMouseClickUsable),
     UsableItem("minecraft:diamond_shovel", 773, ItemMaxDurabilityByType::DiamondItem, false, UsabilityType::BothMouseClicksUsable),
     UsableItem("minecraft:diamond_pickaxe", 774, ItemMaxDurabilityByType::DiamondItem, false, UsabilityType::LeftMouseClickUsable),
     UsableItem("minecraft:diamond_axe", 775, ItemMaxDurabilityByType::DiamondItem, false, UsabilityType::LeftMouseClickUsable),
-    UsableItem("minecraft:diamond_hoe", 776, ItemMaxDurabilityByType::DiamondItem, false, UsabilityType::LeftMouseClickUsable),
+    UsableItem("minecraft:diamond_hoe", 776, ItemMaxDurabilityByType::DiamondItem, false, UsabilityType::BothMouseClicksUsable),
     UsableItem("minecraft:netherite_sword", 777, ItemMaxDurabilityByType::NetheriteItem, false, UsabilityType::LeftMouseClickUsable),
     UsableItem("minecraft:netherite_shovel", 778, ItemMaxDurabilityByType::NetheriteItem, false, UsabilityType::BothMouseClicksUsable),
     UsableItem("minecraft:netherite_pickaxe", 779, ItemMaxDurabilityByType::NetheriteItem, false, UsabilityType::LeftMouseClickUsable),
     UsableItem("minecraft:netherite_axe", 780, ItemMaxDurabilityByType::NetheriteItem, false, UsabilityType::LeftMouseClickUsable),
-    UsableItem("minecraft:netherite_hoe", 781, ItemMaxDurabilityByType::NetheriteItem, false, UsabilityType::LeftMouseClickUsable),
+    UsableItem("minecraft:netherite_hoe", 781, ItemMaxDurabilityByType::NetheriteItem, false, UsabilityType::BothMouseClicksUsable),
     UsableItem("cubic:unusable", -1, ItemMaxDurabilityByType::ResetDefault, true, UsabilityType::NoneClickUsable) /**< For items that are not usable/broken */
 };
 
