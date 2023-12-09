@@ -14,8 +14,8 @@
 #include "events/CancelEvents.hpp"
 #include "items/UsableItem.hpp"
 #include "items/foodItems.hpp"
-#include "items/usable-items/Hoe.hpp"
 #include "items/toolsDamage.hpp"
+#include "items/usable-items/Hoe.hpp"
 #include "logging/logging.hpp"
 #include "nbt.h"
 #include "protocol/ClientPackets.hpp"
@@ -1174,7 +1174,7 @@ void Player::_onUseItemOn(protocol::UseItemOn &pck)
     auto item = this->_inventory->hotbar().at(this->_heldItem).getUsableItemFromSlot();
     if (Items::Hoe *usedItem = std::get_if<Items::Hoe>(&item)) {
         if (usedItem->_usabilityType == Items::UsabilityType::RightMouseClickUsable || usedItem->_usabilityType == Items::UsabilityType::BothMouseClicksUsable) {
-            usedItem->onUse(this->getDimension(), pck.location, Items::UsabilityType::RightMouseClickUsable, (int32_t)pck.face);
+            usedItem->onUse(this->getDimension(), pck.location, Items::UsabilityType::RightMouseClickUsable, (int32_t) pck.face);
             if (usedItem->canUpdateDamage) {
                 this->_inventory->hotbar().at(this->_heldItem).updateDamage();
             }

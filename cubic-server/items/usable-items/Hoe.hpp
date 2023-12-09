@@ -54,8 +54,7 @@ const std::array<std::string, 16> breakableWithHoe {
     "minecraft:leaves",
     "minecraft:sculk",
     "minecraft:sculk_vein",
-    "minecraft:moss_block"
-};
+    "minecraft:moss_block"};
 
 } // namespace Items
 

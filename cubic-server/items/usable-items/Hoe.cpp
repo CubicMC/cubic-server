@@ -49,8 +49,8 @@ void Items::Hoe::onUse(std::shared_ptr<Dimension> dim, Position &pos, UsabilityT
     }
 
     try {
-    auto Topblock = dim->getBlock(pos);
-    auto block = dim->getBlock(blockPos);
+        auto Topblock = dim->getBlock(pos);
+        auto block = dim->getBlock(blockPos);
         if (usage == UsabilityType::RightMouseClickUsable) {
             if (Topblock == Blocks::Air::toProtocol() &&
                 (block == Blocks::Dirt::toProtocol() || block == Blocks::GrassBlock::toProtocol(Blocks::GrassBlock::Properties::Snowy::FALSE) ||
