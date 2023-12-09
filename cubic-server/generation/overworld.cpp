@@ -53,7 +53,7 @@ BlockId generation::Overworld::getBlock(positionType x, positionType y, position
     //! NEW NEW
     auto noise = getNoise(x, y, z);
     int heightOffset = 100;
-    int surfaceLevel = heightOffset + noise.noise2D.continentalness * 20;
+    int surfaceLevel = heightOffset + noise.noise2D.continentalness * 5;
     BlockId blockId = Blocks::Air::toProtocol();
 
     if (y < surfaceLevel)

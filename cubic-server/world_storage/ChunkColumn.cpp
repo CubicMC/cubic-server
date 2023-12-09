@@ -3,6 +3,7 @@
 #include "Dimension.hpp"
 #include "World.hpp"
 #include "blocks.hpp"
+#include "generation/features/surface/Vegetation.hpp"
 #include "generation/features/tree/oak.hpp"
 #include "generation/features/underground/OreVein.hpp"
 #include "generation/overworld.hpp"
@@ -586,6 +587,12 @@ void ChunkColumn::_generateVegetalDecoration(generation::Generator &generator)
     // rock.getPosForRockGeneration();
     // while (!rock.filterRockOverlap().empty())
     //     rock.generateRock(std::vector<world_storage::ChunkColumn *>());
+
+    Vegetation vegetation(*this, generator);
+    vegetation.getPositions();
+    vegetation.generateVegetation(std::vector<world_storage::ChunkColumn *>());
+    // while (!vegetation.filterOverlap().empty())
+
 
     // RELEASE_NEIGHBOURS()
     _currentState = GenerationState::VEGETAL_DECORATION;
