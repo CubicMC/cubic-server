@@ -64,7 +64,7 @@ void Items::Hoe::onUse(std::shared_ptr<Dimension> dim, Position &pos, UsabilityT
                 return;
             } else if (Topblock == Blocks::Air::toProtocol() && block == Blocks::RootedDirt::toProtocol()) {
                 dim->updateBlock(blockPos, Blocks::Dirt::toProtocol());
-                dim->makeEntity<Item>(protocol::Slot {true, 937, 1})
+                dim->makeEntity<Item>(protocol::Slot {true, 214, 1})
                     ->dropItem({static_cast<double>(pos.x) + 0.5, static_cast<double>(pos.y), static_cast<double>(pos.z) + 0.5}); // hanging roots
                 canUpdateDamage = true;
                 return;
