@@ -19,7 +19,7 @@ nbt_tag_t *Items::FlintAndSteel::setNbtTag()
     return root;
 }
 
-void Items::FlintAndSteel::onUse(UNUSED std::shared_ptr<Dimension> dim, UNUSED Position &pos) const
+void Items::FlintAndSteel::onUse(std::shared_ptr<Dimension> dim, Position &pos, UNUSED UsabilityType usage, UNUSED int32_t face)
 {
     dim->updateBlock(
         pos,

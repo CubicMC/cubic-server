@@ -1,6 +1,7 @@
 #include "Structures.hpp"
 #include "items/UsableItem.hpp"
 #include "items/usable-items/FlintAndSteel.hpp"
+#include "items/usable-items/Hoe.hpp"
 #include "logging/logging.hpp"
 
 const protocol::ItemType protocol::Slot::getUsableItemFromSlot()
@@ -13,6 +14,8 @@ const protocol::ItemType protocol::Slot::getUsableItemFromSlot()
     }
     if (item->_stringId == "minecraft:flint_and_steel")
         return Items::FlintAndSteel();
+    if (item->_stringId.find("_hoe"))
+        return Items::Hoe(*item);
     return *item;
 }
 
