@@ -204,4 +204,8 @@ std::ostream &operator<<(std::ostream &o, const Vector3<T> &v)
     return o;
 }
 
+typedef Vector3<float> Vector3f;
+typedef Vector3<double> Vector3d;
+typedef Vector3<int> Vector3i;
+
 #endif // CUBICSERVER_MATH_VECTOR3_HPP
