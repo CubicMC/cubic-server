@@ -480,7 +480,7 @@ void ChunkColumn::_generateRawGeneration(generation::Generator &generator)
 void ChunkColumn::_generateLakes(UNUSED generation::Generator &generator)
 {
     std::lock_guard<std::mutex> _(this->_generationLock);
-    int waterLevel = 86;
+    int waterLevel = 66;
 
     // TODO: improve this to fill caves
     // generate water
@@ -591,8 +591,6 @@ void ChunkColumn::_generateVegetalDecoration(generation::Generator &generator)
     Vegetation vegetation(*this, generator);
     vegetation.getPositions();
     vegetation.generateVegetation(std::vector<world_storage::ChunkColumn *>());
-    // while (!vegetation.filterOverlap().empty())
-
 
     // RELEASE_NEIGHBOURS()
     _currentState = GenerationState::VEGETAL_DECORATION;
