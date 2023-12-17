@@ -97,6 +97,8 @@ public:
      */
     void loadLevelData(LevelData &dest);
 
+    void saveLevelData(LevelData &src);
+
     /**
      * @brief Loads the level.dat from disk
      *

@@ -5,6 +5,7 @@
 #include "logging/logging.hpp"
 #include "nbt.h"
 #include "nbt.hpp"
+#include "nnbt.hpp"
 #include "types.hpp"
 #include "world_storage/ChunkColumn.hpp"
 #include "world_storage/Level.hpp"
@@ -17,6 +18,9 @@
 #include <cstdio>
 #include <cstring>
 #include <filesystem>
+#include <fstream>
+#include <ios>
+#include <iostream>
 #include <memory>
 #include <mutex>
 #include <netinet/in.h>
@@ -81,6 +85,14 @@ static size_t _readMem(void *ud, uint8_t *d, size_t s)
     memcpy(d, u->start, toCopy);
     u->start += toCopy;
     return toCopy;
+}
+
+static size_t _writeToFile(void *ud, uint8_t *d, size_t s)
+{
+    std::ofstream *u = (std::ofstream *) ud;
+    u->write((const char *) d, s);
+
+    return s;
 }
 
 static int64_t getFileSize(const std::string &filename)
@@ -201,6 +213,76 @@ void Persistence::loadLevelData(LevelData &dest)
     GET_VALUE_INT(dest.thunderTime, "thunderTime", data);
     GET_VALUE_BYTE(dest.thundering, "thundering", data);
     GET_VALUE_INT(dest.version, "version", data);
+
+    nbt_free_tag(root);
+}
+
+void Persistence::saveLevelData(LevelData &src)
+{
+    std::unique_lock<std::mutex> lock(_accessMutex);
+
+    const std::filesystem::path file = std::filesystem::path(_folder) / "level.dat";
+    std::ofstream output_file(file, std::ios::out | std::ios::binary);
+    if (!output_file.is_open())
+        throw std::runtime_error("Could not open file " + _folder);
+
+    auto root = nnbt::Tag::fromRaw(nbt_new_tag_compound());
+    auto data = root.addCompound("Data");
+
+    data.add(src.borderCenterX, "BorderCenterX");
+    data.add(src.borderCenterZ, "BorderCenterZ");
+    data.add(src.borderDamagePerBlock, "BorderDamagePerBlock");
+    data.add(src.borderSafeZone, "BorderSafeZone");
+    data.add(src.borderSize, "BorderSize");
+    data.add(src.borderSizeLerpTarget, "BorderSizeLerpTarget");
+    data.add(src.borderSizeLerpTime, "BorderSizeLerpTime");
+    data.add(src.borderWarningBlocks, "BorderWarningBlocks");
+    data.add(src.borderWarningTime, "BorderWarningTime");
+    data.add(src.dataVersion, "DataVersion");
+    data.add(src.dayTime, "DayTime");
+    data.add(src.difficulty, "Difficulty");
+    data.add(src.difficultyLocked, "DifficultyLocked");
+    data.add(src.gameType, "GameType");
+    data.add(src.lastPlayed, "LastPlayed");
+    data.add(src.levelName, "LevelName");
+    data.add(src.spawnAngle, "SpawnAngle");
+    data.add(src.spawnX, "SpawnX");
+    data.add(src.spawnY, "SpawnY");
+    data.add(src.spawnZ, "SpawnZ");
+    data.add(src.time, "Time");
+
+    auto version = data.addCompound("Version");
+    version.add(src.mcVersion.id, "Id");
+    version.add(src.mcVersion.name, "Name");
+    version.add(src.mcVersion.series, "Series");
+    version.add(src.mcVersion.snapshot, "Snapshot");
+
+    data.add(src.wanderingTraderSpawnChance, "WanderingTraderSpawnChance");
+    data.add(src.wanderingTraderSpawnDelay, "WanderingTraderSpawnDelay");
+    data.add(src.wasModded, "WasModded");
+
+    auto worldGenSettings = data.addCompound("WorldGenSettings");
+    worldGenSettings.add(src.worldGenSettings.bonus_chest, "bonus_chest");
+    worldGenSettings.add(src.worldGenSettings.generateFeatures, "generate_features");
+    worldGenSettings.add(src.worldGenSettings.seed, "seed");
+
+    data.add(src.allowCommands, "allowCommands");
+    data.add(src.clearWeatherTime, "clearWeatherTime");
+    data.add(src.hardcore, "hardcore");
+    data.add(src.initialized, "initialized");
+    data.add(src.rainTime, "rainTime");
+    data.add(src.raining, "raining");
+    data.add(src.thunderTime, "thunderTime");
+    data.add(src.thundering, "thundering");
+    data.add(src.version, "version");
+
+    nbt_writer_t writer {
+        .write = _writeToFile,
+        .userdata = &output_file,
+    };
+    nbt_write(writer, root.data, NBT_WRITE_FLAG_USE_ZLIB);
+
+    root.destroy();
 }
 
 LevelData Persistence::loadLevelData()
