@@ -45,6 +45,7 @@ target_sources (${CMAKE_PROJECT_NAME} PRIVATE
     Checksum.hpp
     CompressionUtils.cpp
     CompressionUtils.hpp
+    nnbt.hpp
 )
 
 if(PROMETHEUS)
