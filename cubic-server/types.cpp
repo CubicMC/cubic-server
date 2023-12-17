@@ -18,6 +18,18 @@ std::string u128::toString() const
     return uuidstr;
 }
 
+std::vector<int32_t> u128::toVector() const
+{
+    u128 result(*this);
+    result.swapEndianness();
+    return std::vector<int32_t> {
+        (int32_t) ((result.most & 0xffffffff00000000) >> 32),
+        (int32_t) (result.most & 0x00000000ffffffff),
+        (int32_t) ((result.least & 0xffffffff00000000) >> 32),
+        (int32_t) (result.least & 0x00000000ffffffff),
+    };
+}
+
 void u128::swapEndianness()
 {
     // Yes I know this is terrible but it works really well

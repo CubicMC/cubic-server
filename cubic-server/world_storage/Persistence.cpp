@@ -14,6 +14,7 @@
 #include "world_storage/Section.hpp"
 #include <algorithm>
 #include <cassert>
+#include <cstddef>
 #include <cstdint>
 #include <cstdio>
 #include <cstring>
@@ -367,7 +368,7 @@ void Persistence::loadPlayerData(u128 uuid, PlayerData &dest)
     GET_VALUE_INT(dest.selectedItemSlot, "SelectedItemSlot", root);
     GET_VALUE_SHORT(dest.sleepTimer, "SleepTimer", root);
     {
-        auto *__tmpArray = nbt_tag_compound_get(root, "Rotation");
+        auto *__tmpArray = nbt_tag_compound_get(root, "UUID");
         assert(__tmpArray);
         assert(__tmpArray->type == NBT_TYPE_INT_ARRAY);
         assert(__tmpArray->tag_int_array.size == 4);
@@ -398,6 +399,66 @@ PlayerData Persistence::loadPlayerData(u128 uuid)
 void Persistence::loadPlayerData(const Player &player, PlayerData &dest) { loadPlayerData(player.getUuid(), dest); }
 
 PlayerData Persistence::loadPlayerData(const Player &player) { return loadPlayerData(player.getUuid()); }
+
+void Persistence::savePlayerData(u128 uuid, const PlayerData &src)
+{
+    std::unique_lock<std::mutex> lock(_accessMutex);
+
+    const std::filesystem::path file = std::filesystem::path(_folder) / "playerdata" / (uuid.toString() + ".dat");
+    std::ofstream output_file(file, std::ios::out | std::ios::binary);
+    if (!output_file.is_open())
+        throw std::runtime_error("Could not open file " + _folder);
+
+    auto root = nnbt::Tag::fromRaw(nbt_new_tag_compound());
+
+    root.add(src.absorptionAmount, "AbsorptionAmount");
+    root.add(src.air, "Air");
+    root.add(src.dataVersion, "DataVersion");
+    root.add(src.deathTime, "DeathTime");
+    root.add(src.dimension, "Dimension");
+    root.add(src.fallDistance, "FallDistance");
+    root.add(src.fallFlying, "FallFlying");
+    root.add(src.fire, "Fire");
+    root.add(src.health, "Health");
+    root.add(src.hurtByTimestamp, "HurtByTimestamp");
+    root.add(src.hurtTime, "HurtTime");
+    root.add(src.invulnerable, "Invulnerable");
+
+    auto motion = root.addList(NBT_TYPE_DOUBLE, "Motion");
+    motion.add(src.motion.x, nullptr);
+    motion.add(src.motion.y, nullptr);
+    motion.add(src.motion.z, nullptr);
+
+    root.add(src.onGround, "OnGround");
+    root.add(src.portalCooldown, "PortalCooldown");
+
+    auto pos = root.addList(NBT_TYPE_DOUBLE, "Pos");
+    pos.add(src.pos.x, nullptr);
+    pos.add(src.pos.y, nullptr);
+    pos.add(src.pos.z, nullptr);
+
+    auto rotation = root.addList(NBT_TYPE_DOUBLE, "Rotation");
+    rotation.add(src.rotation.yaw, nullptr);
+    rotation.add(src.rotation.pitch, nullptr);
+
+    root.add(src.score, "Score");
+    root.add(src.selectedItemSlot, "SelectedItemSlot");
+    root.add(src.sleepTimer, "SleepTimer");
+
+    std::vector<int32_t> to_add_uuid = src.uuid.toVector();
+    root.add(to_add_uuid, "UUID");
+
+    root.add(src.xpLevel, "XpLevel");
+    root.add(src.xpP, "XpP");
+    root.add(src.xpSeed, "XpSeed");
+    root.add(src.xpTotal, "XpTotal");
+    root.add(src.foodExhaustionLevel, "foodExhaustionLevel");
+    root.add(src.foodLevel, "foodLevel");
+    root.add(src.foodSaturationLevel, "foodSaturationLevel");
+    root.add(src.foodTickTimer, "foodTickTimer");
+    root.add(src.playerGameType, "playerGameType");
+    root.add(src.seenCredits, "seenCredits");
+}
 
 void Persistence::loadRegion(Dimension &dim, int x, int z)
 {

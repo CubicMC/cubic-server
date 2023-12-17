@@ -9,6 +9,7 @@
 #include <ostream>
 #include <sstream>
 #include <string>
+#include <vector>
 
 struct u128 {
     uint64_t most;
@@ -20,6 +21,8 @@ struct u128 {
      * @return std::string The string version of the UUID
      */
     std::string toString() const;
+
+    std::vector<int32_t> toVector() const;
 
     /**
      * @brief Swaps the endianness of the current UUID
