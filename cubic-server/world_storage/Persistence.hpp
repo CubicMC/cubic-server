@@ -150,6 +150,8 @@ public:
      */
     PlayerData loadPlayerData(const Player &player);
 
+    void savePlayerData(u128 uuid, const PlayerData &src);
+
     /**
      * @brief Loads a region from disk
      *

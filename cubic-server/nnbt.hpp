@@ -45,8 +45,8 @@ struct Tag {
             nbt_new_tag_string(to_add.c_str(), to_add.size());
         else
             static_assert(
-                !(std::is_same_v<T, std::string> || std::is_same_v<T, std::vector<int64_t>> || std::is_same_v<T, std::vector<int32_t>>, std::is_same_v<T, std::vector<int8_t>>,
-                  std::is_same_v<T, double>, std::is_same_v<T, float>, std::is_same_v<T, int8_t>, std::is_same_v<T, int16_t>, std::is_same_v<T, int64_t>,
+                !(std::is_same_v<T, std::string> || std::is_same_v<T, std::vector<int64_t>> || std::is_same_v<T, std::vector<int32_t>> || std::is_same_v<T, std::vector<int8_t>> ||
+                  std::is_same_v<T, double> || std::is_same_v<T, float> || std::is_same_v<T, int8_t> || std::is_same_v<T, int16_t> || std::is_same_v<T, int64_t> ||
                   std::is_same_v<T, int32_t>)
             );
 
