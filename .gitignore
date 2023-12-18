@@ -44,3 +44,6 @@ build*
 *.kdev4
 world
 world2
+
+# Symbolic link
+compile_commands.json

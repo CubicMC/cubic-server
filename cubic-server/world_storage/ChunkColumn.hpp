@@ -2,20 +2,15 @@
 #define CUBICSERVER_WORLDSTORAGE_CHUNKCOLUMN_HPP
 
 #include <array>
-#include <cmath>
 #include <cstdint>
 #include <memory>
 #include <mutex>
-#include <vector>
 
 #include "Palette.hpp"
 #include "Section.hpp"
 #include "generation/generator.hpp"
 #include "nbt.hpp"
-#include "protocol/Structures.hpp"
-#include "protocol/common.hpp"
 #include "types.hpp"
-#include "world_storage/DynamicStorage.hpp"
 
 class Dimension;
 

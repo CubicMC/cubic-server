@@ -24,7 +24,7 @@ void LivingEntity::attack(const Vector3<double> &source, const int32_t &sourceId
         return;
     //  TODO : think about how to deal with damage calculation later
     onEvent(Server::getInstance()->getPluginManager(), onEntityDamage, this, 1.0f);
-    this->damage(1, sourceId);
+    this->damage(damage, sourceId);
     this->knockback(source);
 }
 
@@ -49,12 +49,6 @@ void LivingEntity::damage(float damage, const int32_t &sourceId)
     LDEBUG("entity type {} with id {} took damage {}, health is now {}", this->_type, this->_id, damage, _health);
 }
 
-/*
- * @brief Inflict knockback to the entity
- *
- * @param source The source of the knockback
- * @param force The force of the knockback
- */
 void LivingEntity::knockback(const Vector3<double> &source, float force)
 {
     // compute knockback

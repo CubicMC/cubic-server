@@ -7,33 +7,31 @@
 #include "PluginManager.hpp"
 #include "Server.hpp"
 #include "World.hpp"
-#include "WorldGroup.hpp"
-#include "blocks.hpp"
 #include "command_parser/CommandParser.hpp"
 #include "entities/Entity.hpp"
 #include "entities/Item.hpp"
 #include "entities/LivingEntity.hpp"
 #include "events/CancelEvents.hpp"
+#include "items/UsableItem.hpp"
 #include "items/foodItems.hpp"
+#include "items/toolsDamage.hpp"
+#include "items/usable-items/Hoe.hpp"
 #include "logging/logging.hpp"
 #include "nbt.h"
 #include "protocol/ClientPackets.hpp"
-#include "protocol/PacketUtils.hpp"
 #include "protocol/ServerPackets.hpp"
 #include "protocol/Structures.hpp"
 #include "protocol/common.hpp"
 #include "protocol/container/Container.hpp"
 #include "protocol/container/Inventory.hpp"
 #include "protocol/metadata.hpp"
-#include "protocol/serialization/addPrimaryType.hpp"
-#include "types.hpp"
 #include "world_storage/Level.hpp"
 
 #include <algorithm>
 #include <cstdint>
 #include <memory>
 #include <mutex>
-#include <stdexcept>
+#include <variant>
 #include <vector>
 
 #define GET_CLIENT()                 \
@@ -62,7 +60,8 @@ Player::Player(std::weak_ptr<Client> cli, std::shared_ptr<Dimension> dim, u128 u
     _additionalHearts(0),
     _score(0),
     _skinParts(true, true, true, true, true, true, true),
-    _mainHand(MainHand::Right)
+    _mainHand(MainHand::Right),
+    _nbTickBeforeNextAttack(0)
 {
     _keepAliveClock.start();
     _heldItem = 0;
@@ -85,16 +84,12 @@ Player::Player(std::weak_ptr<Client> cli, std::shared_ptr<Dimension> dim, u128 u
     nbt_set_tag_name(display, DISPLAY_TAG.data(), DISPLAY_TAG.size());
     nbt_tag_compound_append(display, name);
     nbt_tag_compound_append(root, display);
-
-    constexpr int32_t DAMAGE = 0;
-    constexpr std::string_view DAMAGE_TAG = "Damage";
-    auto rootItem = nbt_new_tag_compound();
-    auto damage = nbt_new_tag_int(DAMAGE);
-    nbt_set_tag_name(damage, DAMAGE_TAG.data(), DAMAGE_TAG.size());
-    nbt_tag_compound_append(rootItem, damage);
+    Items::Hoe hoe = Items::Hoe("minecraft:wooden_hoe", 756, Items::ItemMaxDurabilityByType::WoodenItem, false, Items::UsabilityType::BothMouseClicksUsable);
+    auto hoeRoot = hoe.setNbtTag();
 
     this->_inventory->playerInventory().at(14) = protocol::Slot(true, 1, 12, root);
-    this->_inventory->playerInventory().at(16) = protocol::Slot(true, 710, 1, rootItem);
+    this->_inventory->playerInventory().at(16) = protocol::Slot(true, hoe._numeralId, 1, hoeRoot);
+    this->_inventory->playerInventory().at(17) = protocol::Slot(true, ITEM_CONVERTER.fromItemToProtocolId("minecraft:wooden_sword"), 1);
     PEXP(incrementPlayerCountGlobal);
 }
 
@@ -111,6 +106,8 @@ void Player::tick()
 {
     _keepAliveClock.tick();
     _synchronizeClock.tick();
+    if (_nbTickBeforeNextAttack > 0)
+        _nbTickBeforeNextAttack--;
 
     _foodTick();
 
@@ -912,16 +909,32 @@ void Player::_onInteract(protocol::Interact &pck)
     switch (pck.type) {
     case protocol::Interact::Type::Interact:
         break;
-    case protocol::Interact::Type::Attack:
+    case protocol::Interact::Type::Attack: {
         onEvent(Server::getInstance()->getPluginManager(), onEntityInteractEntity, this, target.get());
+        if (_nbTickBeforeNextAttack > 0) {
+            LINFO("Player {} is attacking too fast", this->getUsername());
+            return;
+        }
+        Items::ToolDescription tool;
+        const auto currentTool = std::find_if(Items::toolsDamage.begin(), Items::toolsDamage.end(), [&](const auto &tool) {
+            return tool.id == _inventory->hotbar().at(_heldItem).itemID;
+        });
+        if (currentTool == Items::toolsDamage.end()) {
+            tool.damage = 1;
+            tool.attackSpeed = 4;
+        } else {
+            tool = *currentTool;
+        }
+        _nbTickBeforeNextAttack = int(20.0 / tool.attackSpeed);
         if (player != nullptr && player->_gamemode != player_attributes::Gamemode::Creative) {
-            player->attack(_pos);
+            player->attack(tool.damage, _pos);
             player->sendHealth();
         } else if (target != nullptr) {
-            target->attack(_pos);
+            target->attack(tool.damage, _pos);
         }
         _foodExhaustionLevel += player_attributes::FOOD_EXHAUSTION_ATTACK;
         break;
+    }
     case protocol::Interact::Type::InteractAt:
         break;
     default:
@@ -1045,12 +1058,20 @@ void Player::_onPlayerAction(protocol::PlayerAction &pck)
             Event::cancelBlockDestroy(this, this->getDimension()->getLevel().getChunkColumnFromBlockPos(pck.location.x, pck.location.z).getBlock(pck.location), pck.location);
             return;
         }
+        auto item = this->_inventory->hotbar().at(this->_heldItem).getUsableItemFromSlot();
+        if (Items::Hoe *usedItem = std::get_if<Items::Hoe>(&item)) {
+            if (usedItem->_usabilityType == Items::UsabilityType::LeftMouseClickUsable || usedItem->_usabilityType == Items::UsabilityType::BothMouseClicksUsable) {
+                usedItem->onUse(this->getDimension(), pck.location, Items::UsabilityType::LeftMouseClickUsable, 1);
+                if (usedItem->canUpdateDamage) {
+                    this->_inventory->hotbar().at(this->_heldItem).updateDamage();
+                }
+            }
+        }
         int id = ITEM_CONVERTER.fromItemToProtocolId(GLOBAL_PALETTE.fromProtocolIdToBlock(this->getDimension()->getBlock(pck.location)).name);
         this->getDimension()->updateBlock(pck.location, 0);
         _foodExhaustionLevel += 0.005;
         _dim->makeEntity<Item>(protocol::Slot {true, id, 1})
             ->dropItem({static_cast<double>(pck.location.x) + 0.5, static_cast<double>(pck.location.y), static_cast<double>(pck.location.z) + 0.5});
-        this->_inventory->hotbar().at(this->_heldItem).updateDamage();
         break;
     }
     case protocol::PlayerAction::Status::DropItemStack:
@@ -1175,6 +1196,17 @@ void Player::_onUseItemOn(protocol::UseItemOn &pck)
     case protocol::UseItemOn::Face::East:
         pck.location.x++;
         break;
+    }
+    auto item = this->_inventory->hotbar().at(this->_heldItem).getUsableItemFromSlot();
+    if (Items::Hoe *usedItem = std::get_if<Items::Hoe>(&item)) {
+        if (usedItem->_usabilityType == Items::UsabilityType::RightMouseClickUsable || usedItem->_usabilityType == Items::UsabilityType::BothMouseClicksUsable) {
+            usedItem->onUse(this->getDimension(), pck.location, Items::UsabilityType::RightMouseClickUsable, (int32_t) pck.face);
+            if (usedItem->canUpdateDamage) {
+                this->_inventory->hotbar().at(this->_heldItem).updateDamage();
+            }
+            this->sendSetContainerSlot({this->_inventory, static_cast<int16_t>(this->_heldItem + HOTBAR_OFFSET)});
+        }
+        return;
     }
     if (_inventory->hotbar().at(this->_heldItem).present)
         this->getDimension()->updateBlock(pck.location, GLOBAL_PALETTE.fromBlockToProtocolId(ITEM_CONVERTER.fromProtocolIdToItem(_inventory->hotbar().at(this->_heldItem).itemID)));
