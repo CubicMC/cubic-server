@@ -32,12 +32,13 @@ public:
      * @param damage The damage to deal
      * @param source The source of the damage
      */
-    virtual void attack(float damage, const Vector3<double> &source);
+    virtual void attack(float damage, const Vector3<double> &source, const int32_t &sourceId = 0);
 
     /*
      * @brief Inflict damage to the entity
      *
      * @param damage The damage to deal
+     * @param sourceId The ID of the source entity dealing damage
      */
     virtual void damage(float damage, const int32_t &sourceId = 0);
 

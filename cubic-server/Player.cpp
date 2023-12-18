@@ -927,10 +927,10 @@ void Player::_onInteract(protocol::Interact &pck)
         }
         _nbTickBeforeNextAttack = int(20.0 / tool.attackSpeed);
         if (player != nullptr && player->_gamemode != player_attributes::Gamemode::Creative) {
-            player->attack(tool.damage, _pos);
+            player->attack(tool.damage, _pos, _id);
             player->sendHealth();
         } else if (target != nullptr) {
-            target->attack(tool.damage, _pos);
+            target->attack(tool.damage, _pos, _id);
         }
         _foodExhaustionLevel += player_attributes::FOOD_EXHAUSTION_ATTACK;
         break;

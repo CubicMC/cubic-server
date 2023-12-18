@@ -12,27 +12,15 @@
 #include "protocol/metadata.hpp"
 #include <optional>
 
-/*
- * @brief Attack the entity
- *
- * @param damage The damage to deal
- * @param source The source of the damage
- */
-void LivingEntity::attack(const Vector3<double> &source, const int32_t &sourceId)
+void LivingEntity::attack(float damage, const Vector3<double> &source, const int32_t &sourceId)
 {
     if (_health <= 0)
         return;
-    //  TODO : think about how to deal with damage calculation later
     onEvent(Server::getInstance()->getPluginManager(), onEntityDamage, this, 1.0f);
     this->damage(damage, sourceId);
     this->knockback(source);
 }
 
-/*
- * @brief Inflict damage to the entity
- *
- * @param damage The damage to deal
- */
 void LivingEntity::damage(float damage, const int32_t &sourceId)
 {
     bool canceled = false;
