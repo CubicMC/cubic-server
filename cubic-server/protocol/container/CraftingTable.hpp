@@ -1,8 +1,8 @@
 #ifndef PROTOCOL_WINDOW_CRAFTING_HPP
 #define PROTOCOL_WINDOW_CRAFTING_HPP
 
-#include "protocol/container/Container.hpp"
 #include "Player.hpp"
+#include "protocol/container/Container.hpp"
 #include <cstdint>
 
 constexpr const int16_t CRAFTINGTABLE_CRAFTED_ITEM_SIZE = 1;
@@ -24,7 +24,10 @@ public:
 
     protocol::Slot &at(int16_t index) override;
     const protocol::Slot &at(int16_t index) const override;
-    NODISCARD constexpr inline uint64_t size() const override { return CRAFTINGTABLE_CRAFTED_ITEM_SIZE + CRAFTINGTABLE_CRAFTING_GRID_3X3 + CRAFTINGTABLE_INVENTORY_SIZE + CRAFTINGTABLE_HOTBAR_SIZE; }
+    NODISCARD constexpr inline uint64_t size() const override
+    {
+        return CRAFTINGTABLE_CRAFTED_ITEM_SIZE + CRAFTINGTABLE_CRAFTING_GRID_3X3 + CRAFTINGTABLE_INVENTORY_SIZE + CRAFTINGTABLE_HOTBAR_SIZE;
+    }
     void insert(protocol::Slot &slot) override;
     bool canInsert(const protocol::Slot &slot) override;
 
