@@ -53,6 +53,7 @@ enum class ClientPacketID : int32_t {
     UpdateEntityPosition = 0x27,
     UpdateEntityPositionRotation = 0x28,
     UpdateEntityRotation = 0x29,
+    OpenScreen = 0x2c,
     PlayerAbilities = 0x30,
     PlayerChatMessage = 0x31,
     PlayerInfoRemove = 0x35,
@@ -390,6 +391,13 @@ struct UpdateEntityRotation {
     bool onGround;
 };
 std::unique_ptr<std::vector<uint8_t>> createUpdateEntityRotation(const UpdateEntityRotation &);
+
+struct OpenScreen {
+    int32_t id;
+    int32_t type;
+    const chat::Message &title;
+};
+std::unique_ptr<std::vector<uint8_t>> createOpenScreen(const OpenScreen &in);
 
 struct PlayerAbilitiesClient {
     uint8_t flags;
