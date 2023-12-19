@@ -23,8 +23,8 @@
 #include "protocol/Structures.hpp"
 #include "protocol/common.hpp"
 #include "protocol/container/Container.hpp"
-#include "protocol/container/Inventory.hpp"
 #include "protocol/container/CraftingTable.hpp"
+#include "protocol/container/Inventory.hpp"
 #include "protocol/metadata.hpp"
 #include "world_storage/Level.hpp"
 
@@ -35,9 +35,9 @@
 #include <variant>
 #include <vector>
 
-#define GET_CLIENT()                 \
-    auto client = this->_cli.lock(); \
-    if (client == nullptr)           \
+#define GET_CLIENT()                   \
+    auto client = this -> _cli.lock(); \
+    if (client == nullptr)             \
     return
 
 Player::Player(std::weak_ptr<Client> cli, std::shared_ptr<Dimension> dim, u128 uuid, const std::string &username):
@@ -1164,7 +1164,7 @@ void Player::_onUseItemOn(protocol::UseItemOn &pck)
 
     if (GLOBAL_PALETTE.fromProtocolIdToBlock(this->getDimension()->getBlock(pck.location)).name == "minecraft:crafting_table") {
         std::shared_ptr<protocol::container::Container> &container = _containers.emplace_back(std::make_shared<protocol::container::CraftingTable>(*this));
-        //std::shared_ptr<protocol::container::Container> &container = this->openContainer<protocol::container::CraftingTable>(*this);
+        // std::shared_ptr<protocol::container::Container> &container = this->openContainer<protocol::container::CraftingTable>(*this);
         protocol::OpenScreen openScreen = {container->id(), container->type(), container->title()};
         this->sendOpenScreen(openScreen);
         return;
