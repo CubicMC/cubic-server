@@ -24,6 +24,7 @@
 #include "protocol/common.hpp"
 #include "protocol/container/Container.hpp"
 #include "protocol/container/Inventory.hpp"
+#include "protocol/container/CraftingTable.hpp"
 #include "protocol/metadata.hpp"
 #include "world_storage/Level.hpp"
 
@@ -279,6 +280,15 @@ void Player::sendBlockUpdate(const protocol::BlockUpdate &packet)
     client->doWrite(std::move(pck));
 
     N_LDEBUG("Sent a block update at {} = {} to {}", packet.location, packet.blockId, this->getUsername());
+}
+
+void Player::sendOpenScreen(const protocol::OpenScreen &packet)
+{
+    GET_CLIENT();
+    auto pck = protocol::createOpenScreen(packet);
+    client->doWrite(std::move(pck));
+
+    N_LDEBUG("Sent a open screen");
 }
 
 void Player::sendFeatureFlags(const protocol::FeatureFlags &packet)
@@ -1151,6 +1161,15 @@ void Player::_onTeleportToEntity(UNUSED protocol::TeleportToEntity &pck) { N_LDE
 void Player::_onUseItemOn(protocol::UseItemOn &pck)
 {
     N_LDEBUG("Got a Use Item On {} -> {}", pck.location, this->_heldItem);
+
+    if (GLOBAL_PALETTE.fromProtocolIdToBlock(this->getDimension()->getBlock(pck.location)).name == "minecraft:crafting_table") {
+        std::shared_ptr<protocol::container::Container> &container = _containers.emplace_back(std::make_shared<protocol::container::CraftingTable>(*this));
+        //std::shared_ptr<protocol::container::Container> &container = this->openContainer<protocol::container::CraftingTable>(*this);
+        protocol::OpenScreen openScreen = {container->id(), container->type(), container->title()};
+        this->sendOpenScreen(openScreen);
+        return;
+    }
+
     switch (pck.face) {
     case protocol::UseItemOn::Face::Bottom:
         pck.location.y--;
