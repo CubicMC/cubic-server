@@ -45,7 +45,7 @@ protocol::Slot &CraftingTable::at(int16_t index)
         return _craftingGrid.at(index - 1);
     else if (index < 37)
         return _playerInventory.at(index - 10);
-    else if (index < 45)
+    else if (index < 46)
         return _hotbar.at(index - 37);
     else
         throw std::out_of_range("Index out of range");
@@ -61,7 +61,7 @@ const protocol::Slot &CraftingTable::at(int16_t index) const
         return _craftingGrid.at(index - 1);
     else if (index < 37)
         return _playerInventory.at(index - 10);
-    else if (index < 45)
+    else if (index < 46)
         return _hotbar.at(index - 37);
     else
         throw std::out_of_range("Index out of range");
@@ -87,13 +87,13 @@ void CraftingTable::insert(protocol::Slot &slot)
         }
     }
 
-    for (uint64_t i = 0; i < _craftingGrid.size(); i++) {
-        if (_craftingGrid.at(i) == slot && _craftingGrid.at(i).itemCount < 64) {
-            if (_craftingGrid.at(i).itemCount + toInsert > 64) {
-                toInsert -= 64 - _craftingGrid.at(i).itemCount;
-                _craftingGrid.at(i).itemCount = 64;
+    for (uint64_t i = 0; i < _playerInventory.size(); i++) {
+        if (_playerInventory.at(i) == slot && _playerInventory.at(i).itemCount < 64) {
+            if (_playerInventory.at(i).itemCount + toInsert > 64) {
+                toInsert -= 64 - _playerInventory.at(i).itemCount;
+                _playerInventory.at(i).itemCount = 64;
             } else {
-                _craftingGrid.at(i).itemCount += toInsert;
+                _playerInventory.at(i).itemCount += toInsert;
                 return;
             }
         }
@@ -107,9 +107,9 @@ void CraftingTable::insert(protocol::Slot &slot)
         }
     }
 
-    for (uint64_t i = 0; i < _craftingGrid.size(); i++) {
-        if (!_craftingGrid.at(i).present) {
-            _craftingGrid.at(i) = slot;
+    for (uint64_t i = 0; i < _playerInventory.size(); i++) {
+        if (!_playerInventory.at(i).present) {
+            _playerInventory.at(i) = slot;
             return;
         }
     }
@@ -136,15 +136,15 @@ bool CraftingTable::canInsert(const protocol::Slot &slot)
         }
     }
 
-    for (uint64_t i = 0; i < _craftingGrid.size(); i++) {
-        if (!_craftingGrid.at(i).present)
+    for (uint64_t i = 0; i < _playerInventory.size(); i++) {
+        if (!_playerInventory.at(i).present)
             return true;
-        if (_craftingGrid.at(i) == slot && _craftingGrid.at(i).itemCount < 64) {
-            if (_craftingGrid.at(i).itemCount + toInsert > 64) {
-                toInsert -= 64 - _craftingGrid.at(i).itemCount;
-                _craftingGrid.at(i).itemCount = 64;
+        if (_playerInventory.at(i) == slot && _playerInventory.at(i).itemCount < 64) {
+            if (_playerInventory.at(i).itemCount + toInsert > 64) {
+                toInsert -= 64 - _playerInventory.at(i).itemCount;
+                _playerInventory.at(i).itemCount = 64;
             } else {
-                _craftingGrid.at(i).itemCount += toInsert;
+                _playerInventory.at(i).itemCount += toInsert;
                 return true;
             }
         }
