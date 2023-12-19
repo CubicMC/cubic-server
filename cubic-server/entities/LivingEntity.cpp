@@ -12,6 +12,15 @@
 #include "protocol/metadata.hpp"
 #include <optional>
 
+void LivingEntity::tick()
+{
+    if (_health <= 0) {
+        _deathClock.tick();
+        return;
+    }
+    Entity::tick();
+}
+
 void LivingEntity::attack(float damage, const Vector3<double> &source, const int32_t &sourceId)
 {
     if (_health <= 0)
@@ -59,11 +68,10 @@ void LivingEntity::knockback(const Vector3<double> &source, float force)
 
 void LivingEntity::kill(UNUSED const int32_t &killerId)
 {
-    // TODO : think about how to deal with death later
     _health = 0;
 
-    // send entity death pose to connected players
     this->_pose = Pose::Dying;
+    this->_deathClock.start();
 }
 
 void LivingEntity::setHealth(float health) { _health = health; }

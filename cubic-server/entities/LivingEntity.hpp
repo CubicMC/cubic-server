@@ -1,8 +1,11 @@
 #ifndef CUBICSERVER_ENTITIES_LIVINGENTITY_HPP
 #define CUBICSERVER_ENTITIES_LIVINGENTITY_HPP
 
+#include "Dimension.hpp"
 #include "Entity.hpp"
 #include "EntityType.hpp"
+#include "TickClock.hpp"
+#include "logging/logging.hpp"
 #include "options.hpp"
 #include <cstdint>
 #include <optional>
@@ -21,11 +24,16 @@ public:
         _numArrowsInEntity(0),
         _numBeeStingerInEntity(0),
         _isSleeping(false),
-        _posBedSleeping(0, 0, 0)
+        _posBedSleeping(0, 0, 0),
+        _deathClock(20, [this]() {
+            this->_dim->removeEntity(this->_id);
+            LDEBUG("Entity {} removed from dimension {}", this->_id, this->_dim->getDimensionName());
+        })
     {
     }
     virtual ~LivingEntity() override = default;
 
+    virtual void tick() override;
     /*
      * @brief Attack the entity
      *
@@ -87,6 +95,8 @@ protected:
 
     bool _isSleeping;
     Position _posBedSleeping;
+
+    TickClock _deathClock;
 };
 
 #endif // CUBICSERVER_ENTITIES_LIVINGENTITY_HPP
