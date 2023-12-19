@@ -26,9 +26,9 @@ public:
         _isSleeping(false),
         _posBedSleeping(0, 0, 0),
         _deathClock(20, [this]() {
-            this->_dim->removeEntity(this->_id);
-            LDEBUG("Entity {} removed from dimension {}", this->_id, this->_dim->getDimensionName());
-        })
+            this->_readyToRemove = true;
+        }),
+        _readyToRemove(false)
     {
     }
     virtual ~LivingEntity() override = default;
@@ -69,6 +69,11 @@ public:
     NODISCARD virtual const float &getHealth() const;
 
     /**
+     * @brief Returns boolean indicating if the entity can be removed (dead and end of animation)
+     */
+    NODISCARD virtual const bool &isReadyToRemove() const { return _readyToRemove; };
+
+    /**
      * @brief Adds serialized metadata to an output buffer
      *
      * @param data The output buffer
@@ -97,6 +102,7 @@ protected:
     Position _posBedSleeping;
 
     TickClock _deathClock;
+    bool _readyToRemove;
 };
 
 #endif // CUBICSERVER_ENTITIES_LIVINGENTITY_HPP

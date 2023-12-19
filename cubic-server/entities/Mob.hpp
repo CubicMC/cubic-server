@@ -27,7 +27,7 @@ public:
             if (ai->brain())
                 break;
         }
-        Entity::tick();
+        LivingEntity::tick();
     }
 
     /**

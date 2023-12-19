@@ -45,6 +45,17 @@ void Dimension::tick()
     {
         std::lock_guard _(_entitiesMutex);
         for (auto ent : _entities) {
+            auto living_ent = std::dynamic_pointer_cast<LivingEntity>(ent);
+
+            // TODO : Use removeEntity() but it segfaults so replace when fixed
+            if (living_ent && living_ent->isReadyToRemove()) {
+                for (auto &player : this->_players) {
+                    player->sendRemoveEntities({living_ent->getId()});
+                }
+                LDEBUG("Entity {} removed from dimension {}", living_ent->getId(), this->_dimensionType);
+
+                continue;
+            }
             ent->tick();
         }
     }
