@@ -25,9 +25,12 @@ public:
         _numBeeStingerInEntity(0),
         _isSleeping(false),
         _posBedSleeping(0, 0, 0),
-        _deathClock(20, [this]() {
-            this->_readyToRemove = true;
-        }),
+        _deathClock(
+            20,
+            [this]() {
+                this->_readyToRemove = true;
+            }
+        ),
         _readyToRemove(false)
     {
     }
@@ -68,6 +71,11 @@ public:
     NODISCARD virtual float &getHealth();
     NODISCARD virtual const float &getHealth() const;
 
+    /**
+     * @brief Sets the isReadyToRemove boolean
+     * @param readyToRemove The new value
+     */
+    virtual void setIsReadyToRemove(bool readyToRemove) { _readyToRemove = readyToRemove; };
     /**
      * @brief Returns boolean indicating if the entity can be removed (dead and end of animation)
      */

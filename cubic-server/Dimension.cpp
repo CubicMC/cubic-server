@@ -42,23 +42,17 @@ Dimension::Dimension(std::shared_ptr<World> world, world_storage::DimensionType 
 void Dimension::tick()
 {
     auto startTickTime = std::chrono::high_resolution_clock::now();
+
+    this->removeDeadEntities();
+    this->removeDeadPlayers();
+
     {
         std::lock_guard _(_entitiesMutex);
         for (auto ent : _entities) {
-            auto living_ent = std::dynamic_pointer_cast<LivingEntity>(ent);
-
-            // TODO : Use removeEntity() but it segfaults so replace when fixed
-            if (living_ent && living_ent->isReadyToRemove()) {
-                for (auto &player : this->_players) {
-                    player->sendRemoveEntities({living_ent->getId()});
-                }
-                LDEBUG("Entity {} removed from dimension {}", living_ent->getId(), this->_dimensionType);
-
-                continue;
-            }
             ent->tick();
         }
     }
+
     uint32_t rts = CONFIG["randomtickspeed"].as<uint32_t>();
     if (rts != 0) {
         for (auto &[pos, chunk] : _level.getChunkColumns()) {
@@ -173,6 +167,43 @@ void Dimension::removePlayer(int32_t entity_id)
     );
     for (auto player : _players)
         player->sendRemoveEntities({entity_id});
+}
+
+void Dimension::removeDeadEntities()
+{
+    std::lock_guard _(_entitiesMutex);
+
+    _entities.erase(
+        std::remove_if(
+            _entities.begin(), _entities.end(),
+            [this](const std::shared_ptr<Entity> ent) {
+                auto living_ent = std::dynamic_pointer_cast<LivingEntity>(ent);
+                if (living_ent && living_ent->isReadyToRemove()) {
+                    LDEBUG("Entity {} removed from dimension {}", ent->getId(), this->_dimensionType);
+                    for (auto player : this->_players)
+                        player->sendRemoveEntities({living_ent->getId()});
+                    return true;
+                }
+                return false;
+            }
+        ),
+        _entities.end()
+    );
+}
+
+void Dimension::removeDeadPlayers()
+{
+    std::lock_guard _(_playersMutex);
+
+    _players.erase(
+        std::remove_if(
+            _players.begin(), _players.end(),
+            [](const std::shared_ptr<Player> player) {
+                return player->isReadyToRemove();
+            }
+        ),
+        _players.end()
+    );
 }
 
 void Dimension::addEntity(std::shared_ptr<Entity> entity)

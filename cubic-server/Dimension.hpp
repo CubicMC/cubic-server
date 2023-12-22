@@ -55,6 +55,8 @@ public:
 
     virtual void removeEntity(int32_t entity_id);
     virtual void removePlayer(int32_t entity_id);
+    virtual void removeDeadEntities(void);
+    virtual void removeDeadPlayers(void);
     virtual void addEntity(std::shared_ptr<Entity> entity);
     virtual void addPlayer(std::shared_ptr<Player> player);
 

@@ -1475,6 +1475,10 @@ void Player::teleport(const Vector3<double> &pos)
 
 void Player::_respawn()
 {
+    this->setIsReadyToRemove(false);
+    this->_dim->addEntity(shared_from_this());
+    this->_dim->addPlayer(dynamic_pointer_cast<Player>(shared_from_this()));
+
     // Perform the respawn
     this->sendRespawn({
         this->_dim->getDimensionTypeName(), // Dimension Type
@@ -1505,20 +1509,21 @@ void Player::_respawn()
     // Set the pose to standing
     this->_pose = Pose::Standing;
 
-    for (auto player : this->getDimension()->getPlayers()) {
-        if (player->getId() == this->getId())
-            continue;
-        player->sendEntityMetadata(*this);
-        player->sendSpawnPlayer({
-            this->_id,
-            this->_uuid,
-            this->_pos.x,
-            this->_pos.y,
-            this->_pos.z,
-            this->_rot.x,
-            this->_rot.z,
-        });
-    }
+    this->_dim->spawnPlayer(*this);
+    // for (auto player : this->getDimension()->getPlayers()) {
+    //     if (player->getId() == this->getId())
+    //         continue;
+    //     player->sendEntityMetadata(*this);
+    //     player->sendSpawnPlayer({
+    //         this->_id,
+    //         this->_uuid,
+    //         this->_pos.x,
+    //         this->_pos.y,
+    //         this->_pos.z,
+    //         this->_rot.x,
+    //         this->_rot.z,
+    //     });
+    // }
 }
 
 void Player::kill(const int32_t &killerId)
