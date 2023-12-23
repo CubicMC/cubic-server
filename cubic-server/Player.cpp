@@ -1307,7 +1307,7 @@ void Player::_continueLoginSequence()
     this->sendUpdateRecipiesBook({});
 
     // TODO: change that to player_attributes::DEFAULT_SPAWN_POINT
-    this->teleport({8.5, 100, 8.5});
+    this->teleport({8.5, 70, 8.5});
 
     this->sendServerData({false, "", false, "", false});
 
