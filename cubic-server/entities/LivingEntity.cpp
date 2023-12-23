@@ -10,6 +10,66 @@
 #include "protocol/metadata.hpp"
 #include <optional>
 
+double LivingEntity::getBlockSoftness(Blocks::GlobalPalette palette, const BlockId &blkId)
+{
+    std::string blk = palette.fromProtocolIdToBlock(blkId).name;
+    static const std::list<std::string> blkImmune = {
+        "ladder", "vine", "bubble_column", "water", "lava", "cobweb", "slime_block", "honey_block"
+    };
+    if (std::find(blkImmune.begin(), blkImmune.end(), blk) != blkImmune.end())
+        return 0.0;
+    if (blk == "scaffolding" && this->_crouching)
+        return 0.0;
+    if (blk == "hay_block")
+        return 0.2;
+    if (blk != "bedrock" && blk.find("bed") != std::string::npos)
+        return 0.5;
+    return 1.0;
+}
+
+typedef protocol::SpawnEntity::EntityType EType;
+double LivingEntity::getFallDmgEnvironmentFactor(Blocks::GlobalPalette palette)
+{
+    static const std::list<EType> mobImmune = {
+        EType::Blaze, EType::EnderDragon, EType::Ghast, EType::MagmaCube,
+        EType::Phantom, EType::Vex, EType::Wither, EType::Shulker, // hostile
+        EType::Bat, EType::Bee, EType::Chicken, EType::Cat, EType::IronGolem,
+        EType::SnowGolem, EType::Ocelot, EType::Parrot, // passive
+    };
+    BlockId blkUnder = _dim->getChunk(this->_pos.x, this->_pos.z).getBlock(
+        {(int) this->_pos.x % 16, (int) (this->_pos.y - 2) % 16, (int) this->_pos.z % 16}
+    );
+    if (std::find(mobImmune.begin(), mobImmune.end(), this->_type) != mobImmune.end())
+        return 0.0;
+    return getBlockSoftness(palette, blkUnder) *
+            (// TODO is entity sitting? in a boat, riding a saddled entity...
+            // !this->isSitting() &&
+            // TODO waiting for potion effects to be implemented
+            // !this->hasEffect(PotionEffect::SlowFalling) &&
+            // !this->_flyingWithElytra
+            true); // does not handle kinetic collision
+}
+
+void LivingEntity::applyFallDamage(const double &height)
+{
+    int fallDamage = ceil(height - this->_pos.y); // nb of blocks fallen
+    static const std::vector<EType> mobHalfDmg = {
+        EType::Camel, EType::Donkey, EType::Horse, EType::Mule, EType::SkeletonHorse, EType::ZombieHorse
+    };
+    fallDamage -= 3; // mobs don't take damage if they fall 3 blocks or less
+    if (fallDamage <= 0)
+        return;
+    if (std::find(mobHalfDmg.begin(), mobHalfDmg.end(), this->_type) != mobHalfDmg.end())
+        fallDamage /= 2;
+    else if (this->_type == EType::Llama) // llamas take damage from 6 blocks or more
+        fallDamage = (fallDamage - 3) / 2;
+    else if (this->_type == EType::Goat || this->_type == EType::Frog || this->_type == EType::Fox)
+        fallDamage -= (5 + 5 * (this->_type == EType::Goat));
+    if (fallDamage >= this->_health + 0.5) // making sure death is infliged if fall damage is too high
+        fallDamage = 999;
+    this->damage((fallDamage < 0) * fallDamage);
+}
+
 void LivingEntity::attack(float damage, const Vector3<double> &source)
 {
     //  TODO : think about how to deal with damage calculation later

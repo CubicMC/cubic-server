@@ -1522,55 +1522,6 @@ void Player::appendMetadataPacket(std::vector<uint8_t> &data) const
     // Right shoulder
 }
 
-bool Player::isInRenderDistance(UNUSED const Vector2<double> &pos) const { return true; }
-
-void Player::sendEntityMetadata(const Entity &entity)
-{
-    GET_CLIENT();
-    auto pck = protocol::createSetEntityMetadata(entity);
-    client->doWrite(std::move(pck));
-    N_LDEBUG("Sent change difficulty packet");
-}
-
-void Player::appendMetadataPacket(std::vector<uint8_t> &data) const
-{
-    LivingEntity::appendMetadataPacket(data);
-
-    using namespace protocol::entity_metadata;
-
-    // Additional hearts
-    addMFloat(data, 15, _additionalHearts);
-
-    // Score
-    addMVarInt(data, 16, _score);
-
-    // Skin parts
-    uint8_t flag = 0;
-    if (_skinParts.capeEnabled)
-        flag |= 0x01;
-    if (_skinParts.jacketEnabled)
-        flag |= 0x02;
-    if (_skinParts.leftSleeveEnabled)
-        flag |= 0x04;
-    if (_skinParts.rightSleeveEnabled)
-        flag |= 0x08;
-    if (_skinParts.leftPantsEnabled)
-        flag |= 0x10;
-    if (_skinParts.rightPantsEnabled)
-        flag |= 0x20;
-    if (_skinParts.hatEnabled)
-        flag |= 0x40;
-    addMByte(data, 17, flag);
-
-    // Main hand
-    addMByte(data, 18, (uint8_t) _mainHand);
-
-    // TODO(huntears): Handle parrots on shoulders here (Way later xd)
-    // Left shoulder
-
-    // Right shoulder
-}
-
 /*
  * @brief Inflict damage to the player
  *

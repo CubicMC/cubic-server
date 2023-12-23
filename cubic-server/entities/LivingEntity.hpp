@@ -26,6 +26,28 @@ public:
     virtual ~LivingEntity() override = default;
 
     /*
+     * @brief Detect the block softness, return multiplicator
+     *
+     * @param palette The palette of the dimension that the entity is in
+     * @param blkId   The block to check
+     */
+    virtual double getBlockSoftness(Blocks::GlobalPalette palette, const BlockId &blkId);
+
+    /*
+     * @brief Detect whether the entity should take fall damage, return multiplicator
+     *
+     * @param palette The block palette needed to identify the block under the entity
+     */
+    virtual double getFallDmgEnvironmentFactor(Blocks::GlobalPalette palette);
+
+    /*
+     * @brief Deal fall damage to the entity
+     *
+     * @param height The height level from which the entity fell
+     */
+    virtual void applyFallDamage(const double &height);
+
+    /*
      * @brief Attack the entity
      *
      * @param damage The damage to deal
