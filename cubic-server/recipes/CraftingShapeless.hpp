@@ -16,7 +16,7 @@ public:
     static std::unique_ptr<Recipe> create(const std::string &identifier, const nlohmann::json &recipe);
 
 private:
-    std::vector<std::vector<ItemId>> _ingredients; // list of alternative items to craft
+    std::vector<std::unordered_set<ItemId>> _ingredients; // list of alternative items to craft
     ItemId _result; // crafted item
     uint64_t _count; // number of crafted items
 };

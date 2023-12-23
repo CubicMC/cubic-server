@@ -21,11 +21,11 @@ CraftingShapeless::CraftingShapeless(const std::string &identifier, const nlohma
     this->_ingredients.reserve(recipe["ingredients"].size());
     for (size_t i = 0; i < recipe["ingredients"].size(); i++) {
         if (recipe["ingredients"].at(i).is_object() && recipe["ingredients"].at(i).contains("item") && recipe["ingredients"].at(i).is_string())
-            this->_ingredients[i].push_back(ITEM_CONVERTER.fromItemToProtocolId(recipe["ingredients"]["item"].get<std::string>()));
+            this->_ingredients[i].insert(ITEM_CONVERTER.fromItemToProtocolId(recipe["ingredients"]["item"].get<std::string>()));
         else if (recipe["ingredients"].is_array()) {
             for (const auto &ingredient : recipe["ingredients"].at(i)) {
                 if (ingredient.is_object() && !ingredient.contains("item") && ingredient["item"].is_string())
-                    this->_ingredients[i].push_back(ITEM_CONVERTER.fromItemToProtocolId(ingredient["item"].get<std::string>()));
+                    this->_ingredients[i].insert(ITEM_CONVERTER.fromItemToProtocolId(ingredient["item"].get<std::string>()));
             }
         } else
             return;

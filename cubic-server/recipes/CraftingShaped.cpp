@@ -86,17 +86,17 @@ bool CraftingShaped::getKey(char key, const nlohmann::json &content)
     if (content.is_object()) {
         if (!content.contains("item") || !content["item"].is_string())
             return (false);
-        this->_key[key] = std::make_shared<std::vector<ItemId>>(std::vector<ItemId>());
-        this->_key[key]->push_back(ITEM_CONVERTER.fromItemToProtocolId(content["item"].get<std::string>()));
+        this->_key[key] = std::make_shared<std::unordered_set<ItemId>>(std::unordered_set<ItemId>());
+        this->_key[key]->insert(ITEM_CONVERTER.fromItemToProtocolId(content["item"].get<std::string>()));
         return (true);
     } else if (content.is_array()) {
-        this->_key[key] = std::make_shared<std::vector<ItemId>>(std::vector<ItemId>());
+        this->_key[key] = std::make_shared<std::unordered_set<ItemId>>(std::unordered_set<ItemId>());
         for (const auto &item : content) {
             if (!item.is_object() || !item.contains("item") || !item["item"].is_string()) {
                 this->_key[key].reset();
                 return (false);
             }
-            this->_key[key]->push_back(ITEM_CONVERTER.fromItemToProtocolId(item["item"].get<std::string>()));
+            this->_key[key]->insert(ITEM_CONVERTER.fromItemToProtocolId(item["item"].get<std::string>()));
         }
         return (true);
     }
