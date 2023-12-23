@@ -60,7 +60,7 @@ void Dimension::tick()
         }
     }
     for (auto &[pos, chunk] : _level.getChunkColumns()) {
-        if(!chunk.isReady())
+        if (!chunk.isReady())
             continue;
         chunk.tick();
     }

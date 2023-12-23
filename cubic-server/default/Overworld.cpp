@@ -3,8 +3,11 @@
 #include "Dimension.hpp"
 #include "Server.hpp"
 #include "World.hpp"
+#include "blocks.hpp"
 #include "default/DefaultWorld.hpp"
+#include "events/Events.hpp"
 #include "logging/logging.hpp"
+#include "types.hpp"
 #include "world_storage/Level.hpp"
 #include <future>
 #include <memory>
@@ -80,6 +83,10 @@ void Overworld::generateChunk(int x, int z, world_storage::GenerationState goalS
         _level.addChunkColumn(pos, shared_from_this()).generate(goalState);
     else
         _level.addChunkColumn(pos, shared_from_this());
+    if (x == 0 && z == 0)
+        this->addTileEntity(
+            {0, 71, 0}, Blocks::Chest::toProtocol(Blocks::Chest::Properties::Type::SINGLE, Blocks::Chest::Properties::Facing::NORTH, Blocks::Chest::Properties::Waterlogged::FALSE)
+        );
 }
 
 void Overworld::removePlayer(int32_t entity_id)
