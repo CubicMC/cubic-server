@@ -54,7 +54,7 @@ public:
             .sectionCoordinate = int8_t(((position.x & 15) << 4) | (position.z & 15)),
             .height = int16_t(position.y),
             .type = blockId,
-            .data = nullptr,
+            .data = _nbt,
         };
     }
 
