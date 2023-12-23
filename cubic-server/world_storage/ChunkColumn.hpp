@@ -11,8 +11,8 @@
 #include "Section.hpp"
 #include "generation/generator.hpp"
 #include "nbt.hpp"
-#include "types.hpp"
 #include "tiles-entities/TileEntity.hpp"
+#include "types.hpp"
 
 class Dimension;
 

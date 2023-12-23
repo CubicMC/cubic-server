@@ -61,6 +61,7 @@ public:
     const Position position;
     const std::string id;
     const BlockId blockId = 0;
+
 protected:
     bool _keepPacked = false;
     nbt_tag_t *_nbt = nullptr;
