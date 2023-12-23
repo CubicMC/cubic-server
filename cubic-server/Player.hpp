@@ -51,6 +51,7 @@ public:
     uint8_t keepAliveIgnored() const;
     bool isOperator() const;
     NODISCARD const std::vector<protocol::PlayerProperty> &getProperties() const;
+    std::shared_ptr<protocol::container::Inventory> getInventory() { return _inventory; };
     std::shared_ptr<const protocol::container::Inventory> getInventory() const { return _inventory; };
 
 public:
@@ -132,6 +133,7 @@ public:
     void sendChunkAndLightUpdate(const world_storage::ChunkColumn &chunk);
     void sendUnloadChunk(int32_t x, int32_t z);
     void sendBlockUpdate(const protocol::BlockUpdate &packet);
+    void sendOpenScreen(const protocol::OpenScreen &packet);
     void sendPlayerAbilities(const protocol::PlayerAbilitiesClient &packet);
     void sendFeatureFlags(const protocol::FeatureFlags &packet);
     void sendServerData(const protocol::ServerData &packet);
