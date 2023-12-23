@@ -8,8 +8,10 @@
 #include "logging/logging.hpp"
 #include "math/Vector3.hpp"
 #include "protocol/ClientPackets.hpp"
+#include "tiles-entities/TileEntity.hpp"
 #include "types.hpp"
 #include "world_storage/ChunkColumn.hpp"
+#include "world_storage/Level.hpp"
 #include <chrono>
 #include <cstdint>
 #include <memory>
@@ -56,6 +58,11 @@ void Dimension::tick()
                 continue;
             chunk.processRandomTick(rts);
         }
+    }
+    for (auto &[pos, chunk] : _level.getChunkColumns()) {
+        if(!chunk.isReady())
+            continue;
+        chunk.tick();
     }
     {
         std::unique_lock a(_entitiesMutex, std::defer_lock);
@@ -346,6 +353,45 @@ void Dimension::updateBlock(Position position, int32_t id)
     std::lock_guard _(_playersMutex);
     for (auto player : _players) {
         player->sendBlockUpdate({position, id});
+    }
+}
+
+void Dimension::addTileEntity(Position position, BlockId type)
+{
+    auto &chunk = this->_level.getChunkColumnFromBlockPos(position.x, position.z);
+
+    // Weird ass modulo to get the correct block position in the chunk
+    auto x = position.x % 16;
+    auto z = position.z % 16;
+    if (x < 0)
+        x += 16;
+    if (z < 0)
+        z += 16;
+
+    chunk.updateBlock({x, position.y, z}, type);
+    chunk.addTileEntity(std::make_unique<TileEntity>("", type, position));
+    for (auto player : _players) {
+        player->sendBlockUpdate({position, type});
+    }
+}
+
+void Dimension::removeTileEntity(Position position)
+{
+    auto &chunk = this->_level.getChunkColumnFromBlockPos(position.x, position.z);
+
+    // Weird ass modulo to get the correct block position in the chunk
+    auto x = position.x % 16;
+    auto z = position.z % 16;
+    if (x < 0)
+        x += 16;
+    if (z < 0)
+        z += 16;
+
+    auto type = chunk.getBlock({x, position.y, z});
+    chunk.updateBlock({x, position.y, z}, 0);
+    chunk.removeTileEntity(position);
+    for (auto player : _players) {
+        player->sendBlockUpdate({position, type});
     }
 }
 

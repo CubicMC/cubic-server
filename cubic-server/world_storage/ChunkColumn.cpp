@@ -11,6 +11,7 @@
 #include "nbt.hpp"
 #include "types.hpp"
 #include "world_storage/Section.hpp"
+#include <algorithm>
 #include <cstdlib>
 #include <memory>
 
@@ -611,4 +612,25 @@ void ChunkColumn::processRandomTick(uint32_t rts)
     }
 }
 
+void ChunkColumn::tick()
+{
+    for (auto &tileEntity : _tileEntities) {
+        tileEntity->tick();
+    }
+}
+
+void ChunkColumn::addTileEntity(std::unique_ptr<TileEntity> tileEntity)
+{
+    _tileEntities.push_back(std::move(tileEntity));
+}
+
+void ChunkColumn::removeTileEntity(const Position &pos)
+{
+    auto tileEntity = std::find_if(_tileEntities.begin(), _tileEntities.end(), [&pos](const std::unique_ptr<TileEntity> &tileEntity) {
+        return tileEntity->position == pos;
+    });
+
+    if (tileEntity != _tileEntities.end())
+        _tileEntities.erase(tileEntity);
+}
 } // namespace world_storage
