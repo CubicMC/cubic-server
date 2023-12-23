@@ -619,10 +619,7 @@ void ChunkColumn::tick()
     }
 }
 
-void ChunkColumn::addTileEntity(std::unique_ptr<TileEntity> tileEntity)
-{
-    _tileEntities.push_back(std::move(tileEntity));
-}
+void ChunkColumn::addTileEntity(std::unique_ptr<TileEntity> tileEntity) { _tileEntities.push_back(std::move(tileEntity)); }
 
 void ChunkColumn::removeTileEntity(const Position &pos)
 {
