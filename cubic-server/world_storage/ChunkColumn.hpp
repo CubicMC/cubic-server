@@ -5,12 +5,14 @@
 #include <cstdint>
 #include <memory>
 #include <mutex>
+#include <vector>
 
 #include "Palette.hpp"
 #include "Section.hpp"
 #include "generation/generator.hpp"
 #include "nbt.hpp"
 #include "types.hpp"
+#include "tiles-entities/TileEntity.hpp"
 
 class Dimension;
 
@@ -141,6 +143,32 @@ public:
      */
     void processRandomTick(uint32_t rts);
 
+    /**
+     * @brief Process a tick on the chunk
+     */
+    void tick();
+
+    /**
+     * @brief Get the Tile Entities object as a vector
+     *
+     * @return const std::vector<std::unique_ptr<TileEntity>>&
+     */
+    constexpr const std::vector<std::unique_ptr<TileEntity>> &getTileEntities() const { return _tileEntities; }
+
+    /**
+     * @brief Add a Tile Entity to the chunk
+     *
+     * @param std::unique_ptr<TileEntity>
+     */
+    void addTileEntity(std::unique_ptr<TileEntity> tileEntity);
+
+    /**
+     * @brief Remove a Tile Entity from the chunk
+     *
+     * @param pos The position of the Tile Entity
+     */
+    void removeTileEntity(const Position &pos);
+
     friend class Persistence;
 
 private:
@@ -177,6 +205,7 @@ private:
     GenerationState _currentState;
     std::mutex _generationLock;
     std::shared_ptr<Dimension> _dimension;
+    std::vector<std::unique_ptr<TileEntity>> _tileEntities;
 };
 
 } // namespace world_storage

@@ -161,6 +161,21 @@ public:
      */
     virtual MSPTInfos getMSPTInfos() const;
 
+    /**
+     * @brief Add a new tile entity to the dimension
+     *
+     * @param position The position of the tile entity (in absolute coordinates)
+     * @param type The type of the tile entity (as a BlockId)
+     */
+    virtual void addTileEntity(Position position, BlockId type);
+
+    /**
+     * @brief Remove a tile entity from the dimension
+     *
+     * @param position The position of the tile entity (in absolute coordinates)
+     */
+    virtual void removeTileEntity(Position position);
+
 protected:
     virtual void _run();
 

@@ -173,7 +173,7 @@ struct BlockEntity {
     int8_t sectionCoordinate;
     int16_t height;
     int32_t type;
-    nbt::Compound data;
+    nbt_tag_t *data;
 };
 } // namespace protocol
 

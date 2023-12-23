@@ -9,6 +9,7 @@
 #include "addPrimaryType.hpp"
 #include "protocol/ClientPackets.hpp"
 #include "protocol/container/Container.hpp"
+#include "tiles-entities/TileEntity.hpp"
 #include "world_storage/ChunkColumn.hpp"
 #include "world_storage/DynamicStorage.hpp"
 #include "world_storage/Section.hpp"
@@ -22,11 +23,11 @@ constexpr void addBlockEntity(std::vector<uint8_t> &out, const BlockEntity &data
     addNBT(out, data.data);
 }
 
-constexpr void addBlockEntities(std::vector<uint8_t> &out, const std::vector<BlockEntity> &data)
+constexpr void addBlockEntities(std::vector<uint8_t> &out, const std::vector<std::unique_ptr<TileEntity>> &data)
 {
     addVarInt(out, data.size());
     for (auto &i : data)
-        addBlockEntity(out, i);
+        addBlockEntity(out, i->updateNbt()->toBlockEntity());
 }
 
 constexpr void addPalette(std::vector<uint8_t> &out, const world_storage::Palette &palette)
@@ -153,7 +154,7 @@ constexpr void addChunkColumn(std::vector<uint8_t> &out, const world_storage::Ch
 
     // Block Entities
     // addBlockEntities(out, data.getBlockEntities());
-    addBlockEntities(out, {});
+    addBlockEntities(out, data.getTileEntities());
     addLight(out, data);
 }
 
