@@ -2,6 +2,7 @@
 #define CUBICSERVER_COMMANDPARSER_COMMANDS_BASE_HPP
 
 #include <cstdint>
+#include <memory>
 #include <string>
 #include <vector>
 

@@ -14,6 +14,8 @@ public:
 
     void tick() override;
     void initialize() override;
+    void spawnPlayer(Player &player) override;
+    void removePlayer(int32_t entity_id) override;
 };
 
 #endif // CUBICSERVER_DEFAULT_THEEND_HPP

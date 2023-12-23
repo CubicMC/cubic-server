@@ -26,4 +26,10 @@ target_sources (${CMAKE_PROJECT_NAME} PRIVATE
     Loot.cpp
     Scoreboard.cpp
     Scoreboard.hpp
+    Teleport.cpp
+    Teleport.hpp
+    Tps.cpp
+    Tps.hpp
+    MSPT.cpp
+    MSPT.hpp
 )

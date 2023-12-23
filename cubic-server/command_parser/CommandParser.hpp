@@ -1,6 +1,7 @@
 #ifndef CUBICSERVER_COMMANDPARSER_COMMANDPARSER_HPP
 #define CUBICSERVER_COMMANDPARSER_COMMANDPARSER_HPP
 
+#include <memory>
 #include <string>
 
 class Player;

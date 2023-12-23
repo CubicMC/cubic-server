@@ -2,6 +2,7 @@
 #include <csignal>
 #include <cstring>
 #include <iostream>
+#include <limits>
 #include <thread>
 
 #include "CommandLine.hpp"
@@ -41,6 +42,29 @@ auto initArgs(int argc, const char *const argv[])
         .defaultValue(25565)
         .required();
 
+    program.add("compression")
+        .help("enables compression of the protocol")
+        .valueFromConfig("network", "compression")
+        .valueFromEnvironmentVariable("CBSRV_COMPRESSION")
+        .defaultValue(true)
+        .required();
+
+    program.add("compression-level")
+        .help("sets the zlib compression level for outbound packets (0-9, 9 best compression)")
+        .valueFromConfig("network", "compression-level")
+        .valueFromEnvironmentVariable("CBSRV_COMPRESSION_LEVEL")
+        .defaultValue(6)
+        .inRange(0, 9)
+        .required();
+
+    program.add("compression-threshold")
+        .help("Minimum of bytes in a packet before compressing it")
+        .valueFromConfig("network", "compression-threshold")
+        .valueFromEnvironmentVariable("CBSRV_COMPRESSION_THRESHOLD")
+        .defaultValue(256)
+        .inRange(0, std::numeric_limits<int32_t>::max())
+        .required();
+
     program.add("max-players")
         .help("sets the maximum number of players")
         .valueFromConfig("general", "max_players")
@@ -54,12 +78,6 @@ auto initArgs(int argc, const char *const argv[])
         .valueFromEnvironmentVariable("CBSRV_MOTD")
         .defaultValue("A Cubic Server")
         .required();
-
-    // program.add("world")
-    //     .help("sets the world to load")
-    //     .valueFromConfig("general", "world")
-    //     .valueFromEnvironmentVariable("CBSRV_WORLD")
-    //     .defaultValue("world");
 
     program.add("whitelist-enabled")
         .help("enables the whitelist")
@@ -136,6 +154,43 @@ auto initArgs(int argc, const char *const argv[])
         .valueFromEnvironmentVariable("CBSRV_GAMEMODE")
         .possibleValues("creative", "survival", "adventure", "spectator")
         .defaultValue("survival");
+
+    program.add("world-border")
+        .help("Set the world border")
+        .valueFromConfig("general", "world-border")
+        .valueFromEnvironmentVariable("CBSRV_WORLD_BORDER")
+        .valueFromArgument("--world-border")
+        .defaultValue(10000);
+
+    program.add("randomtickspeed")
+        .help("Set the randomtickspeed")
+        .valueFromConfig("gamerule", "randomtickspeed")
+        .valueFromEnvironmentVariable("CBSRV_RANDOMTICKSPEED")
+        .valueFromArgument("--randomtickspeed")
+        .defaultValue(3)
+        .inRange(0, std::numeric_limits<int32_t>::max());
+
+    program.add("monitoring-prometheus-enable")
+        .help("Enable prometheus data exporting")
+        .valueFromConfig("monitoring", "prometheus", "enable")
+        .valueFromEnvironmentVariable("CBSRV_MONITORING_PROMETHEUS_ENABLE")
+        .valueFromArgument("--monitoring-prometheus-enable")
+        .defaultValue(false)
+        .implicit();
+
+    program.add("monitoring-prometheus-ip")
+        .help("Prometheus IP")
+        .valueFromConfig("monitoring", "prometheus", "ip")
+        .valueFromEnvironmentVariable("CBSRV_MONITORING_PROMETHEUS_IP")
+        .valueFromArgument("--monitoring-prometheus-ip")
+        .defaultValue("0.0.0.0");
+
+    program.add("monitoring-prometheus-port")
+        .help("Prometheus port")
+        .valueFromConfig("monitoring", "prometheus", "port")
+        .valueFromEnvironmentVariable("CBSRV_MONITORING_PROMETHEUS_PORT")
+        .valueFromArgument("--monitoring-prometheus-port")
+        .defaultValue("8080");
     // clang-format on
 
     try {

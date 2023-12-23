@@ -14,6 +14,7 @@
 
 #include <mbedtls/rsa.h>
 
+#include "PrometheusExporter.hpp"
 #include "Server.hpp"
 #include "World.hpp"
 
@@ -24,29 +25,24 @@
 #include "WorldGroup.hpp"
 #include "command_parser/commands/Gamemode.hpp"
 #include "command_parser/commands/InventoryDump.hpp"
+#include "command_parser/commands/Teleport.hpp"
+#include "command_parser/commands/Tps.hpp"
 #include "default/DefaultWorldGroup.hpp"
 #include "logging/logging.hpp"
+#include "registry/Biome.hpp"
+#include "registry/Chat.hpp"
+#include "registry/Dimension.hpp"
+#include "registry/MasterRegistry.hpp"
 #include "scoreboard/ScoreboardSystem.hpp"
 
 using boost::asio::ip::tcp;
 
 Server::Server():
     _running(false),
-    // _sockfd(-1),
     _config(),
-    _toSend(1024),
-    _pluginManager(this)
+    _pluginManager(this),
+    _toSend(1024)
 {
-    // _config.load("./config.yml");
-    // _config.parse("./config.yml");
-    // _config.parse(2, (const char * const *){"./CubicServer", "--nogui"});
-    // _host = _config.getIP();
-    // _port = _config.getPort();
-    // _maxPlayer = _config.getMaxPlayers();
-    // _motd = _config.getMotd();
-    // _enforceWhitelist = _config.getEnforceWhitelist();
-
-    _commands.reserve(25);
     _commands.emplace_back(std::make_unique<command_parser::Help>());
     _commands.emplace_back(std::make_unique<command_parser::QuestionMark>());
     _commands.emplace_back(std::make_unique<command_parser::Stop>());
@@ -72,6 +68,10 @@ Server::Server():
     _commands.emplace_back(std::make_unique<command_parser::Loot>());
     _commands.emplace_back(std::make_unique<command_parser::Gamemode>());
     _commands.emplace_back(std::make_unique<command_parser::InventoryDump>());
+    _commands.emplace_back(std::make_unique<command_parser::Tp>());
+    _commands.emplace_back(std::make_unique<command_parser::Teleport>());
+    _commands.emplace_back(std::make_unique<command_parser::Tps>());
+    _commands.emplace_back(std::make_unique<command_parser::MSPT>());
 }
 
 Server::~Server() { }
@@ -81,14 +81,45 @@ void Server::launch(const configuration::ConfigHandler &config)
     this->_config = config;
 
     _rsaKey.generate();
+    auto &dimensionRegistry = _registry.addRegistry<registry::Dimension>();
+    auto &biomeRegistry = _registry.addRegistry<registry::Biome>();
+    auto &chatRegistry = _registry.addRegistry<registry::Chat>();
+
+    registry::setupDefaultsDimension(dimensionRegistry);
+    registry::setupDefaultsBiome(biomeRegistry);
+    registry::setupDefaultsChat(chatRegistry);
 
     // Initialize the global palette
-    _globalPalette.initialize(std::string("blocks-") + MC_VERSION + ".json");
-    LINFO("GlobalPalette initialized");
+    if (_globalPalette.initialize(std::string("blocks-") + MC_VERSION + ".json"))
+        LINFO("GlobalPalette initialized");
+    else {
+        LFATAL("GlobalPalette failed to initialize");
+        exit(1);
+    }
 
     // Initialize the item converter
-    _itemConverter.initialize(std::string("registries-") + MC_VERSION + ".json");
-    LINFO("ItemConverter initialized");
+    if (_itemConverter.initialize(std::string("registries-") + MC_VERSION + ".json"))
+        LINFO("ItemConverter initialized");
+    else {
+        LFATAL("ItemConverter failed to initialize");
+        exit(1);
+    }
+
+    // Initialize the sound event converter
+    if (_soundEventConverter.initialize(std::string("registries-") + MC_VERSION + ".json"))
+        LINFO("SoundEventConverter initialized");
+    else {
+        LFATAL("SoundEventConverter failed to initialize");
+        exit(1);
+    }
+
+    // Initialize the block data converter
+    if (_blockDataConverter.initialize(std::string("blocks-data-") + MC_VERSION + ".json"))
+        LINFO("BlockDataConverter initialized");
+    else {
+        LFATAL("BlockDataConverter failed to initialize");
+        exit(1);
+    }
 
     // Initialize loot tables
     _lootTables.initialize();
@@ -96,7 +127,6 @@ void Server::launch(const configuration::ConfigHandler &config)
     // Initialize default world group
     auto defaultChat = std::make_shared<Chat>();
     _worldGroups.emplace("default", new DefaultWorldGroup(defaultChat));
-    _worldGroups.at("default")->initialize();
 
     // TODO(huntears): Deal with this
     // Initialize default recipes
@@ -108,26 +138,43 @@ void Server::launch(const configuration::ConfigHandler &config)
     // Get plugins
     this->_pluginManager.load();
 
+    _worldGroups.at("default")->initialize();
+    _registry.initialize();
+
     this->_running = true;
 
-    auto tmpaddr = boost::asio::ip::make_address(_config["ip"].as<std::string>());
-    boost::asio::ip::address_v6 addr;
-    if (tmpaddr.is_v4())
-        addr = boost::asio::ip::make_address_v6(boost::asio::ip::v4_mapped, tmpaddr.to_v4());
-    else
-        addr = tmpaddr.to_v6();
+    boost::asio::ip::tcp::resolver resolver(_io_context);
+    auto it = resolver.resolve(boost::asio::ip::tcp::resolver::query(_config["ip"].as<std::string>(), std::to_string(_config["port"].as<uint16_t>())));
+    boost::asio::ip::address addr = it->endpoint().address();
+
+    // This force ipv6 for any and loopback
+    // If the user want to use ipv6, he should provide an ipv6 address
+    if (addr == boost::asio::ip::address_v4::any())
+        addr = boost::asio::ip::address_v6::any();
+    else if (addr == boost::asio::ip::address_v4::loopback())
+        addr = boost::asio::ip::address_v6::loopback();
+
     auto endpoint = tcp::endpoint(addr, _config["port"].as<uint16_t>());
 
-    _acceptor = std::make_unique<boost::asio::ip::tcp::acceptor>(_io_context, tcp::v6());
+    _acceptor = std::make_unique<boost::asio::ip::tcp::acceptor>(_io_context, endpoint.protocol());
+
     _acceptor->set_option(boost::asio::ip::tcp::acceptor::reuse_address(true));
-    _acceptor->set_option(boost::asio::ip::v6_only(false));
+    if (addr.is_v6())
+        _acceptor->set_option(boost::asio::ip::v6_only(false));
+
     _acceptor->bind(endpoint);
     _acceptor->listen();
 
-    auto opt = boost::asio::ip::v6_only();
-    _acceptor->get_option(opt);
-
     _writeThread = std::thread(&Server::_writeLoop, this);
+
+#if PROMETHEUS_SUPPORT == 1
+    if (CONFIG["monitoring-prometheus-enable"].as<bool>()) {
+        _prometheusExporter =
+            std::make_unique<PrometheusExporter>(CONFIG["monitoring-prometheus-ip"].as<std::string>() + std::string(":") + CONFIG["monitoring-prometheus-port"].as<std::string>());
+        _prometheusExporter->registerMetrics();
+        _prometheusExporterOn = true;
+    }
+#endif
 
     _doAccept();
 
@@ -135,26 +182,6 @@ void Server::launch(const configuration::ConfigHandler &config)
 
     // Cleanup stuff here
     this->_stop();
-    // this->_writeThread.join();
-    // std::unique_lock _(clientsMutex);
-
-    // for (auto [id, cli] : _clients)
-    //     cli->stop();
-
-    // for (auto [id, cli] : _clients) {
-    //     if (cli->getThread().joinable())
-    //         cli->getThread().join();
-    // }
-
-    // _clients.clear();
-
-    // using namespace std::chrono_literals;
-    // // Wait for 5 seconds max for all data to be out
-    // for (int i = 0; i < 500; i++) {
-    //     if (_toSend.empty())
-    //         break;
-    //     std::this_thread::sleep_for(10ms);
-    // }
 }
 
 void Server::sendData(size_t clientID, std::unique_ptr<std::vector<uint8_t>> &&data) { _toSend.push({clientID, data.release()}); }
@@ -189,8 +216,11 @@ void Server::_writeLoop()
             }
             boost::system::error_code ec;
             boost::asio::write(client->getSocket(), boost::asio::buffer(data.data->data(), data.data->size()), ec);
+            PEXP(incrementPacketTxCounter);
             // TODO(huntears): Handle errors properly xd
             if (ec) {
+                client->disconnect("Network error");
+                delete data.data;
                 LERROR(ec.what());
                 continue;
             }
@@ -207,15 +237,6 @@ void Server::triggerClientCleanup(size_t clientID)
         _clients.erase(clientID);
         return;
     }
-    // boost::lockfree::queue<size_t> toDelete(_clients.size());
-    // for (auto [id, cli] : _clients) {
-    //     if (!cli) {
-    //         _clients.erase(id);
-    //     } else if (cli->isDisconnected()) {
-    //         cli->getThread().join();
-    //         _clients.erase(id);
-    //     }
-    // }
     std::erase_if(_clients, [](const auto augh) {
         if (augh.second->isDisconnected()) {
             if (augh.second->getThread().joinable())
@@ -226,24 +247,10 @@ void Server::triggerClientCleanup(size_t clientID)
     });
 }
 
-void Server::addCommand(std::unique_ptr<CommandBase> command)
-{
-    this->_commands.emplace_back(std::move(command));
-}
+void Server::addCommand(std::unique_ptr<CommandBase> command) { this->_commands.emplace_back(std::move(command)); }
 
 void Server::_doAccept()
 {
-    // while (_running) {
-    //     boost::system::error_code ec;
-    //     tcp::socket socket(_io_context);
-
-    //     _acceptor->accept(socket, ec);
-    //     if (!ec) {
-    //         std::shared_ptr<Client> _cli(new Client(std::move(socket), currentClientID));
-    //         _clients.emplace(currentClientID++, _cli);
-    //         _cli->run();
-    //     }
-    // }
     tcp::socket *socket = new tcp::socket(_io_context);
 
     _acceptor->async_accept(*socket, [socket, this](const boost::system::error_code &error) {
@@ -255,10 +262,6 @@ void Server::_doAccept()
         }
         delete socket;
         if (this->_running) {
-            // for (auto [id, cli] : _clients) {
-            //     if (!cli || cli->isDisconnected()) // Somehow they can already be freed before we get here...
-            //         _clients.erase(id);
-            // }
             this->_doAccept();
         }
     });
@@ -381,13 +384,3 @@ void Server::_enforceWhitelistOnReload()
         }
     }
 }
-
-std::unordered_map<std::string_view, std::shared_ptr<WorldGroup>> &Server::getWorldGroups() { return _worldGroups; }
-
-const std::unordered_map<std::string_view, std::shared_ptr<WorldGroup>> &Server::getWorldGroups() const { return _worldGroups; }
-
-Recipes &Server::getRecipeSystem(void) noexcept { return (this->_recipes); }
-
-ScoreboardSystem &Server::getScoreboardSystem(void) { return (this->_scoreboardSystem); }
-
-LootTables &Server::getLootTableSystem(void) noexcept { return (this->_lootTables); }

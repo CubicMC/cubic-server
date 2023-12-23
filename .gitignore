@@ -45,6 +45,9 @@ build*
 world
 world2
 
+# Symbolic link
+compile_commands.json
+
 # Convenience
 COMPILE.sh
 Makefile

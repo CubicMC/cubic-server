@@ -8,11 +8,14 @@
 
 #include "PlayerAttributes.hpp"
 #include "Structures.hpp"
+#include "chat/Message.hpp"
 #include "common.hpp"
+#include "entities/EntityType.hpp"
 #include "protocol/container/Container.hpp"
 #include "types.hpp"
 #include "world_storage/ChunkColumn.hpp"
-#include "chat/Message.hpp"
+
+class Entity;
 
 namespace protocol {
 
@@ -21,6 +24,7 @@ enum class ClientPacketID : int32_t {
     DisconnectLogin = 0x00,
     EncryptionRequest = 0x01,
     LoginSuccess = 0x02,
+    SetCompression = 0x03,
 
     // Status State
     Status = 0x00,
@@ -37,7 +41,6 @@ enum class ClientPacketID : int32_t {
     SetContainerContent = 0x10,
     SetContainerSlot = 0x12,
     PluginMessage = 0x15,
-    // CustomSoundEffect = 0x16, TODO: This is removed in the last revision of wiki.vg
     DisconnectPlay = 0x17,
     EntityEvent = 0x19,
     UnloadChunk = 0x1b,
@@ -50,6 +53,7 @@ enum class ClientPacketID : int32_t {
     UpdateEntityPosition = 0x27,
     UpdateEntityPositionRotation = 0x28,
     UpdateEntityRotation = 0x29,
+    OpenScreen = 0x2c,
     PlayerAbilities = 0x30,
     PlayerChatMessage = 0x31,
     PlayerInfoRemove = 0x35,
@@ -75,6 +79,7 @@ enum class ClientPacketID : int32_t {
     SoundEffect = 0x5E,
     StopSound = 0x5F,
     SystemChatMessage = 0x60,
+    PickupItem = 0x63,
     TeleportEntity = 0x64,
     UpdateAdvancements = 0x65,
     UpdateAttributes = 0x66,
@@ -102,6 +107,8 @@ struct LoginSuccess {
 };
 std::unique_ptr<std::vector<uint8_t>> createLoginSuccess(const LoginSuccess &);
 
+std::unique_ptr<std::vector<uint8_t>> createSetCompression(int32_t compressionTreshold);
+
 struct StatusResponse {
     std::string payload;
 };
@@ -115,132 +122,7 @@ std::unique_ptr<std::vector<uint8_t>> createPingResponse(const PingResponse &);
 struct SpawnEntity {
     int32_t entityId;
     u128 entityUuid;
-    enum class EntityType : int32_t {
-        Allay = 0,
-        AreaEffectCloud = 1,
-        ArmorStand = 2,
-        Arrow = 3,
-        Axolotl = 4,
-        Bat = 5,
-        Bee = 6,
-        Blaze = 7,
-        // BlockDisplay = 8,
-        Boat = 8,
-        ChestBoat = 9,
-        Cat = 10,
-        Camel = 11, // update_1_20
-        CaveSpider = 12,
-        Chicken = 13,
-        Cod = 14,
-        Cow = 15,
-        Creeper = 16,
-        Dolphin = 17,
-        Donkey = 18,
-        DragonFireball = 19,
-        Drowned = 20,
-        ElderGuardian = 21,
-        EndCrystal = 22,
-        EnderDragon = 23,
-        Enderman = 24,
-        Endermite = 25,
-        Evoker = 26,
-        EvokerFangs = 27,
-        ExperienceOrb = 28, // SpawnExperienceOrb
-        EyeOfEnder = 29,
-        FallingBlock = 30,
-        FireworkRocket = 31,
-        Fox = 32,
-        Frog = 33,
-        Ghast = 34,
-        Giant = 35,
-        GlowItemFrame = 36,
-        GlowSquid = 37,
-        Goat = 38,
-        Guardian = 39,
-        Hoglin = 40,
-        Horse = 41,
-        Husk = 42,
-        Illusioner = 43,
-        IronGolem = 44,
-        Item = 45,
-        ItemFrame = 46,
-        Fireball = 47,
-        LeashKnot = 48,
-        LightningBolt = 49,
-        Llama = 50,
-        LlamaSpit = 51,
-        MagmaCube = 52,
-        // Interaction = 52,  // 1.19.4
-        Marker = 53, // Not spawnable
-        Minecart = 54,
-        ChestMinecart = 55,
-        // ItemDisplay = 55,  // 1.19.4
-        CommandBlockMinecart = 56,
-        FurnaceMinecart = 57,
-        HopperMinecart = 58,
-        SpawnerMinecart = 59,
-        TntMinecart = 60,
-        Mule = 61,
-        Mooshroom = 62,
-        Ocelot = 63,
-        Painting = 64,
-        Panda = 65,
-        Parrot = 66,
-        Phantom = 67,
-        Pig = 68,
-        Piglin = 69,
-        PiglinBrute = 70,
-        Pillager = 71,
-        PolarBear = 72,
-        Tnt = 73,
-        Pufferfish = 74,
-        Rabbit = 75,
-        Ravager = 76,
-        Salmon = 77,
-        Sheep = 78,
-        Shulker = 79,
-        ShulkerBullet = 80,
-        Silverfish = 81,
-        Skeleton = 82,
-        SkeletonHorse = 83,
-        Slime = 84,
-        SmallFireball = 85,
-        SnowGolem = 86,
-        Snowball = 87,
-        SpectralArrow = 88,
-        Spider = 89,
-        Squid = 90,
-        // Sniffer = 90,         // update_1_20
-        Stray = 91,
-        Strider = 92,
-        Tadpole = 93,
-        Egg = 94,
-        EnderPearl = 95,
-        ExperienceBottle = 96,
-        Potion = 97,
-        Trident = 98,
-        TraderLlama = 99,
-        // TextDisplay = 100,   // 1.19.4
-        TropicalFish = 100,
-        Turtle = 101,
-        Vex = 102,
-        Villager = 103,
-        Vindicaton = 104,
-        WanderingTrader = 105,
-        Warden = 106,
-        Witch = 107,
-        Wither = 108,
-        WitherSkeleton = 109,
-        WitherSkull = 110,
-        Wolf = 111,
-        Zoglin = 112,
-        Zombie = 113,
-        ZombieHorse = 114,
-        ZombieVillager = 115,
-        ZombifiedPiglin = 116,
-        Player = 117, // SpawnPlayer
-        FishingBobber = 118,
-    } type;
+    EntityType type;
     double x;
     double y;
     double z;
@@ -307,11 +189,19 @@ struct SetContainerContent {
 std::unique_ptr<std::vector<uint8_t>> createSetContainerContent(const SetContainerContent &);
 
 struct SetContainerSlot {
-    SetContainerSlot(const std::shared_ptr<container::Container> &container, int8_t containerId, int16_t slot)
-        : container(container), containerId(containerId), slot(slot) {}
-    SetContainerSlot(const std::shared_ptr<container::Container> &container, int16_t slot)
-        : container(container), containerId(container->id()), slot(slot) {}
-    const std::shared_ptr<container::Container> container;
+    SetContainerSlot(const std::shared_ptr<const container::Container> &container, int8_t containerId, int16_t slot):
+        container(container),
+        containerId(containerId),
+        slot(slot)
+    {
+    }
+    SetContainerSlot(const std::shared_ptr<const container::Container> &container, int16_t slot):
+        container(container),
+        containerId(container->id()),
+        slot(slot)
+    {
+    }
+    const std::shared_ptr<const container::Container> container;
     int8_t containerId;
     int16_t slot;
 };
@@ -322,18 +212,6 @@ struct PluginMessageResponse {
     std::vector<uint8_t> data;
 };
 std::unique_ptr<std::vector<uint8_t>> createPluginMessageResponse(const PluginMessageResponse &);
-
-struct CustomSoundEffect {
-    std::string name;
-    int32_t category;
-    int32_t x;
-    int32_t y;
-    int32_t z;
-    float volume;
-    float pitch;
-    long seed;
-};
-std::unique_ptr<std::vector<uint8_t>> createCustomSoundEffect(const CustomSoundEffect &);
 
 std::unique_ptr<std::vector<uint8_t>> createPlayDisconnect(const Disconnect &);
 
@@ -469,7 +347,7 @@ struct LoginPlay {
     player_attributes::Gamemode gamemode;
     player_attributes::Gamemode previousGamemode; // must be a signed byte
     std::vector<std::string> dimensionNames;
-    std::shared_ptr<nbt::Compound> registryCodec;
+    const std::shared_ptr<const nbt::Compound> &registryCodec;
     std::string dimensionType;
     std::string dimensionName;
     long hashedSeed;
@@ -513,6 +391,13 @@ struct UpdateEntityRotation {
     bool onGround;
 };
 std::unique_ptr<std::vector<uint8_t>> createUpdateEntityRotation(const UpdateEntityRotation &);
+
+struct OpenScreen {
+    int32_t id;
+    int32_t type;
+    const chat::Message &title;
+};
+std::unique_ptr<std::vector<uint8_t>> createOpenScreen(const OpenScreen &in);
 
 struct PlayerAbilitiesClient {
     uint8_t flags;
@@ -665,46 +550,7 @@ struct DisplayObjective {
 };
 std::unique_ptr<std::vector<uint8_t>> createDisplayObjective(const DisplayObjective &);
 
-struct SetEntityMetadata {
-    struct EntityMetadata {
-        uint8_t index;
-        enum class Type : int32_t {
-            Byte = 0,
-            VarInt = 1,
-            VarLong = 2,
-            Float = 3,
-            String = 4,
-            Chat = 5,
-            OptChat = 6,
-            Slot = 7,
-            Boolean = 8,
-            Rotation = 9,
-            Position = 10,
-            OptPosition = 11,
-            Direction = 12,
-            OptUUID = 13,
-            BlockID = 14,
-            OptBlockID = 15,
-            NBT = 16,
-            Particle = 17,
-            VillagerData = 18,
-            OptVarInt = 19,
-            Pose = 20,
-            CatVariant = 21,
-            FrogVariant = 22,
-            OptGlobalPos = 23,
-            PaintingVariant = 24,
-            SnifferState = 25,
-            Vector3 = 26,
-            Quaternion = 27,
-        } type;
-        Slot slot; // TODO: remove (hardcoded)
-        // TODO: value GLHF;
-    };
-    int32_t entityId;
-    std::vector<EntityMetadata> metadata;
-};
-std::unique_ptr<std::vector<uint8_t>> createSetEntityMetadata(const SetEntityMetadata &);
+std::unique_ptr<std::vector<uint8_t>> createSetEntityMetadata(const Entity &);
 
 struct UpdateTime {
     long worldAge;
@@ -713,7 +559,31 @@ struct UpdateTime {
 std::unique_ptr<std::vector<uint8_t>> createUpdateTime(const UpdateTime &);
 
 struct EntitySoundEffect {
+    EntitySoundEffect(int32_t soundId, int32_t category, int32_t entityId, float volume, float pitch, long seed):
+        soundId(soundId + 1), // see https://wiki.vg/index.php?title=Protocol&oldid=18067#Entity_Sound_Effect
+        category(category),
+        entityId(entityId),
+        volume(volume),
+        pitch(pitch),
+        seed(seed)
+    {
+    }
+    EntitySoundEffect(std::string soundName, bool hasFixedRange, float range, int32_t category, int32_t entityId, float volume, float pitch):
+        soundId(0), // see https://wiki.vg/index.php?title=Protocol&oldid=18067#Entity_Sound_Effect
+        soundName(soundName),
+        hasFixedRange(hasFixedRange),
+        range(range),
+        category(category),
+        entityId(entityId),
+        volume(volume),
+        pitch(pitch),
+        seed(0)
+    {
+    }
     int32_t soundId;
+    std::string soundName;
+    bool hasFixedRange;
+    float range;
     int32_t category;
     int32_t entityId;
     float volume;
@@ -723,7 +593,35 @@ struct EntitySoundEffect {
 std::unique_ptr<std::vector<uint8_t>> createEntitySoundEffect(const EntitySoundEffect &);
 
 struct SoundEffect {
+    SoundEffect(int32_t soundId, int32_t category, int32_t x, int32_t y, int32_t z, float volume, float pitch, long seed):
+        soundId(soundId + 1), // see https://wiki.vg/index.php?title=Protocol&oldid=18067#Entity_Sound_Effect
+        category(category),
+        x(x),
+        y(y),
+        z(z),
+        volume(volume),
+        pitch(pitch),
+        seed(seed)
+    {
+    }
+    SoundEffect(std::string soundName, bool hasFixedRange, float range, int32_t category, int32_t x, int32_t y, int32_t z, float volume, float pitch, long seed):
+        soundId(0), // see https://wiki.vg/index.php?title=Protocol&oldid=18067#Entity_Sound_Effect
+        soundName(soundName),
+        hasFixedRange(hasFixedRange),
+        range(range),
+        category(category),
+        x(x),
+        y(y),
+        z(z),
+        volume(volume),
+        pitch(pitch),
+        seed(seed)
+    {
+    }
     int32_t soundId;
+    std::string soundName;
+    bool hasFixedRange;
+    float range;
     int32_t category;
     int32_t x;
     int32_t y;
@@ -746,6 +644,13 @@ struct SystemChatMessage {
     bool overlay;
 };
 std::unique_ptr<std::vector<uint8_t>> createSystemChatMessage(const SystemChatMessage &);
+
+struct PickupItem {
+    int32_t collectedEntityId;
+    int32_t collectorEntityId;
+    int32_t pickupItemCount;
+};
+std::unique_ptr<std::vector<uint8_t>> createPickupItem(const PickupItem &);
 
 struct EntityVelocity {
     int32_t entityId;

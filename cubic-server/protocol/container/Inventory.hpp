@@ -22,6 +22,8 @@ public:
     protocol::Slot &at(int16_t index) override;
     const protocol::Slot &at(int16_t index) const override;
     NODISCARD constexpr inline uint64_t size() const override { return INVENTORY_SIZE + HOTBAR_SIZE + ARMOR_SIZE + CRAFTING_GRID_2X2 + 1; }
+    void insert(protocol::Slot &slot) override;
+    bool canInsert(const protocol::Slot &slot) override;
 
     void onClick(std::shared_ptr<Player> player, int16_t index, uint8_t buttonId, uint8_t mode, const std::vector<protocol::ClickContainer::SlotWithIndex> &updates) override;
 

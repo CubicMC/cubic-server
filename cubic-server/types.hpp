@@ -1,6 +1,7 @@
 #ifndef CUBICSERVER_TYPES_HPP
 #define CUBICSERVER_TYPES_HPP
 
+#include "math/Vector3.hpp"
 #include <cstdint>
 #include <iomanip>
 #include <iostream>
@@ -26,6 +27,9 @@ struct u128 {
     void swapEndianness();
 
     static u128 fromShortString(const std::string &str);
+    static u128 random();
+    static u128 fromOfflinePlayerName(const std::string &name);
+    bool operator==(const u128 &other) const;
 };
 
 typedef int64_t Seed;
@@ -33,16 +37,19 @@ typedef int64_t Seed;
 typedef int32_t BlockId;
 typedef uint8_t BiomeId;
 typedef int32_t ItemId;
+typedef int32_t SoundEventId;
 
 // https://wiki.vg/Data_types#Fixed-point_numbers
 // https://wiki.vg/index.php?title=Protocol&oldid=17753#Custom_Sound_Effect
 // https://wiki.vg/index.php?title=Protocol&oldid=17753#Sound_Effect
 // I think I should move this outside the protocol, but where ? '-'
-struct FloatingPosition {
-    double x;
-    double z;
-    double y;
-};
+// struct FloatingPosition {
+//     double x;
+//     double z;
+//     double y;
+// };
+
+typedef Vector3<double> FloatingPosition;
 
 struct Position {
     typedef int64_t valueType;
@@ -50,6 +57,14 @@ struct Position {
     valueType x;
     valueType y;
     valueType z;
+
+    constexpr Position() = default;
+    constexpr Position(valueType x, valueType y, valueType z):
+        x(x),
+        y(y),
+        z(z)
+    {
+    }
 
     constexpr Position operator*(valueType i) const;
     constexpr Position operator*(const Position &other) const;
@@ -73,9 +88,27 @@ struct Position {
 
     constexpr bool operator>=(valueType i) const;
     constexpr bool operator<=(valueType i) const;
-};
 
-std::ostream &operator<<(std::ostream &os, const Position &pos);
+    /**
+     * @brief Converts the position to a Vector3
+     *
+     * @tparam T The type of the Vector3
+     * @return constexpr Vector3<T> The converted position
+     */
+    template<typename T>
+    constexpr operator Vector3<T>() const
+    {
+        return Vector3<T> {static_cast<T>(x), static_cast<T>(y), static_cast<T>(z)};
+    }
+
+    /**
+     * @brief Returns the manhattan distance between two positions
+     *
+     * @param other The other position
+     * @return valueType The manhattan distance
+     */
+    valueType manhattanDistance(const Position &other) const;
+};
 
 struct Position2D {
     typedef int32_t valueType;
@@ -114,14 +147,10 @@ struct Position2D {
     constexpr bool operator<=(valueType i) const;
 };
 
-std::ostream &operator<<(std::ostream &os, const Position2D &pos);
-
 struct Rotation {
     float yaw;
     float pitch;
 };
-
-std::ostream &operator<<(std::ostream &os, const Rotation &rot);
 
 // Position
 constexpr Position Position::operator*(valueType i) const { return Position {x * i, y * i, z * i}; }
@@ -181,6 +210,20 @@ struct std::hash<Position2D> {
         std::size_t h2 = std::hash<Position2D::valueType> {}(pos.z);
         return h1 ^ (h2 << 1);
     }
+};
+
+struct Tps {
+    float oneMinTps;
+    float fiveMinTps;
+    float fifteenMinTps;
+    std::string toString() const;
+};
+
+struct MSPTInfos {
+    float min;
+    float mean;
+    float max;
+    std::string toString() const;
 };
 
 #endif // CUBICSERVER_TYPES_HPP

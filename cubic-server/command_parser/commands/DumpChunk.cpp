@@ -9,7 +9,7 @@
 #include "nbt.hpp"
 #include "protocol/serialization/add.hpp"
 #include "protocol/serialization/popPrimaryType.hpp"
-#include "protocol_id_converter/blockStates.hpp"
+#include "protocol_id_converter/blockIdConverter.hpp"
 #include "world_storage/Palette.hpp"
 #include "world_storage/Section.hpp"
 #include <cstdint>
@@ -211,6 +211,7 @@ void command_parser::DumpChunk::execute(std::vector<std::string> &args, Player *
     LDEBUG("--- CHUNK PACKET DATA END ---");
 
     LINFO("Done");
+    invoker->getDimension()->getWorld()->getChat()->sendSystemMessage("Done", *invoker);
 }
 
 void command_parser::DumpChunk::help(UNUSED std::vector<std::string> &args, Player *invoker) const

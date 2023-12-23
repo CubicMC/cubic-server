@@ -31,7 +31,7 @@ struct RollResult {
 class Roll {
 public:
     Roll(void);
-    ~Roll() = default;
+    virtual ~Roll() = default;
 
     // roll must be valid, call setValidity(true) to validate
     bool isValid(void) const noexcept;

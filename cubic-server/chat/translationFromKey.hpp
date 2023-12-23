@@ -2,6 +2,7 @@
 #define CHAT_TRANSLATIONKEY_HPP
 
 #include <cstdint>
+#include <memory>
 
 class Player;
 namespace chat {

@@ -8,7 +8,7 @@ namespace Entry {
 class ItemTag : public Entry {
 public:
     ItemTag(const nlohmann::json &entry);
-    ItemTag() = default;
+    ~ItemTag() = default;
 
     bool poll(LootTablePoll &poll, LootContext *context) const override;
 

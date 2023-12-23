@@ -312,8 +312,11 @@ def create_block_files(path, block):
 
 def create_blocks_hpp_file(path, blocks):
     with open(path + "/blocks.hpp", "w") as f:
+        writer("#ifndef BLOCKS_HPP\n", f)
+        writer("#define BLOCKS_HPP\n", f)
         for block in blocks:
             writer("#include \"blocks/" + block.name.split(":")[1].title().replace("_", "") + ".hpp\"\n", f)
+        writer("#endif // BLOCKS_HPP\n", f)
 
 # get different option you can pass to the script
 def parse_args(options):

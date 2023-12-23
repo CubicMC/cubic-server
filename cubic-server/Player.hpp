@@ -2,13 +2,13 @@
 #define CUBICSERVER_PLAYER_HPP
 
 #include "Chat.hpp"
-#include "Entity.hpp"
-#include "LivingEntity.hpp"
 #include "PlayerAttributes.hpp"
 #include "SoundList.hpp"
 #include "TickClock.hpp"
 #include "chat/Message.hpp"
 #include "concept.hpp"
+#include "entities/Entity.hpp"
+#include "entities/LivingEntity.hpp"
 #include "math/Vector3.hpp"
 #include "protocol/ClientPackets.hpp"
 #include "protocol/ServerPackets.hpp"
@@ -44,16 +44,14 @@ public:
 
     std::weak_ptr<Client> getClient() const;
     const std::string &getUsername() const;
-    const u128 &getUuid() const;
     uint16_t getHeldItem() const;
-    const std::string &getUuidString() const;
     player_attributes::Gamemode getGamemode() const;
     const protocol::ClientInformation::ChatVisibility &getChatVisibility() const;
     long keepAliveId() const;
     uint8_t keepAliveIgnored() const;
     bool isOperator() const;
     NODISCARD const std::vector<protocol::PlayerProperty> &getProperties() const;
-    void sendSkinLayers(int32_t entityID);
+    std::shared_ptr<protocol::container::Inventory> getInventory() { return _inventory; };
     std::shared_ptr<const protocol::container::Inventory> getInventory() const { return _inventory; };
 
 public:
@@ -65,18 +63,48 @@ public:
     void setOperator(const bool isOp);
     void setKeepAliveId(long id);
     void updatePlayerInfo(const protocol::PlayerInfoUpdate &data);
+    void playerPickupItem();
     void damage(float damage) override;
 
     template<isBaseOf<protocol::container::Container> Container, typename... Args>
     std::shared_ptr<Container> openContainer(Args &...);
     void closeContainer(uint8_t id);
 
+    /**
+     * @brief Sends the metadata of the given entity
+     *
+     * @param entity The entity to send the metadata of
+     */
+    void sendEntityMetadata(const Entity &entity);
+
+    /**
+     * @brief Checks if a given position is in the render distance
+     *
+     * @todo Returns only true, needs to be implemented
+     * @param pos The position to check if in render distance
+     * @return true The position is in the render distance
+     * @return false The position is not in the render distance
+     */
+    bool isInRenderDistance(const Vector2<double> &pos) const;
+
+    /**
+     * @brief Adds serialized metadata to an output buffer
+     *
+     * @param data The output buffer
+     */
+    void appendMetadataPacket(std::vector<uint8_t> &data) const override;
+
 public:
+    /**
+     * @brief Synchronize the player with the server
+     */
+    void synchronize();
     void disconnect(const chat::Message &reason = "Disconnected");
     void sendLoginPlay(const protocol::LoginPlay &packet);
     void sendPlayerInfoUpdate(const protocol::PlayerInfoUpdate &data);
     void sendPlayerInfoRemove(const protocol::PlayerInfoRemove &data);
     void sendSpawnEntity(const protocol::SpawnEntity &data);
+    void sendSpawnEntity(const Entity &data);
     void sendSpawnPlayer(const protocol::SpawnPlayer &data);
     void sendEntityVelocity(const protocol::EntityVelocity &data);
     void sendHealth(void);
@@ -85,13 +113,16 @@ public:
     void sendSystemChatMessage(const protocol::SystemChatMessage &packet);
     void sendWorldEvent(const protocol::WorldEvent &packet);
     void playSoundEffect(SoundsList sound, FloatingPosition position, SoundCategory category = SoundCategory::Master);
+    void playSoundEffect(const protocol::SoundEffect &packet);
     void playSoundEffect(SoundsList sound, const Entity &entity, SoundCategory category = SoundCategory::Master);
-    void playCustomSound(std::string sound, FloatingPosition position, SoundCategory category = SoundCategory::Master);
+    void playSoundEffect(const protocol::EntitySoundEffect &packet);
     void stopSound(uint8_t flags = 0, SoundCategory category = SoundCategory::Ambient, std::string sound = "");
     void sendKeepAlive(long id);
     void sendSynchronizePosition(const Vector3<double> &pos);
+    void sendSynchronizePlayerPosition(const protocol::SynchronizePlayerPosition &data);
+    void sendSynchronizePlayerPosition(void);
     void sendSwingArm(bool mainHand, int32_t swingerId);
-    void sendTeleportEntity(int32_t id, const Vector3<double> &pos);
+    void sendTeleportEntity(int32_t id, const Vector3<double> &pos, const Vector2<uint8_t> &rot);
     void sendRemoveEntities(const std::vector<int32_t> &entities);
     void sendUpdateEntityPosition(const protocol::UpdateEntityPosition &data);
     void sendUpdateEntityPositionAndRotation(const protocol::UpdateEntityPositionRotation &data);
@@ -103,6 +134,7 @@ public:
     void sendChunkAndLightUpdate(const world_storage::ChunkColumn &chunk);
     void sendUnloadChunk(int32_t x, int32_t z);
     void sendBlockUpdate(const protocol::BlockUpdate &packet);
+    void sendOpenScreen(const protocol::OpenScreen &packet);
     void sendPlayerAbilities(const protocol::PlayerAbilitiesClient &packet);
     void sendFeatureFlags(const protocol::FeatureFlags &packet);
     void sendServerData(const protocol::ServerData &packet);
@@ -130,6 +162,8 @@ public:
     void sendUpdateTeams(const protocol::UpdateTeams &packet);
     void setJumpFromHeight(double height);
     bool takesFalldmg(void);
+    void sendUpdateTeams(const protocol::UpdateTeams &packet);
+    void sendPickupItem(const protocol::PickupItem &packet);
 
 private:
     void _onConfirmTeleportation(protocol::ConfirmTeleportation &pck);
@@ -186,7 +220,6 @@ private:
 
 private:
     void _processKeepAlive();
-    void _tickPosition();
     void _updateRenderedChunks(const Position2D &oldChunkPos, const Position2D &newChunkPos);
     void _continueLoginSequence();
     void _unloadChunk(int32_t x, int32_t z);
@@ -195,13 +228,12 @@ private:
 
     std::weak_ptr<Client> _cli;
     std::string _username;
-    std::string _uuidString;
-    u128 _uuid;
     long _keepAliveId;
     uint8_t _keepAliveIgnored;
     int16_t _heldItem;
     player_attributes::Gamemode _gamemode;
     TickClock _keepAliveClock;
+    TickClock _synchronizeClock;
     std::unordered_map<Position2D, ChunkState> _chunks;
     mutable std::mutex _chunksMutex;
 
@@ -222,8 +254,25 @@ private:
     protocol::ClientInformation::ChatVisibility _chatVisibility;
     bool _isFlying;
     bool _isOperator;
-    bool _isSprinting;
     bool _isJumping;
+
+    // metadata
+    float _additionalHearts;
+    int32_t _score;
+    struct {
+        bool capeEnabled;
+        bool jacketEnabled;
+        bool leftSleeveEnabled;
+        bool rightSleeveEnabled;
+        bool leftPantsEnabled;
+        bool rightPantsEnabled;
+        bool hatEnabled;
+    } _skinParts;
+    enum class MainHand : uint8_t {
+        Left = 0,
+        Right = 1,
+    } _mainHand;
+    int _nbTickBeforeNextAttack;
 };
 
 template<isBaseOf<protocol::container::Container> Container, typename... Args>

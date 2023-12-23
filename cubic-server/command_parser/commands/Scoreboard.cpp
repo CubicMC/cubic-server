@@ -30,7 +30,7 @@ void command_parser::Objectives::execute(UNUSED std::vector<std::string> &args, 
 
 void command_parser::Objectives::help(UNUSED std::vector<std::string> &args, Player *invoker) const
 {
-    (void)invoker;
+    (void) invoker;
     LINFO("help addobjective");
 }
 
@@ -54,7 +54,7 @@ void command_parser::AddObjective::execute(std::vector<std::string> &args, UNUSE
 
 void command_parser::AddObjective::help(UNUSED std::vector<std::string> &args, Player *invoker) const
 {
-    (void)invoker;
+    (void) invoker;
     LINFO("help addobjective");
 }
 
@@ -81,7 +81,7 @@ void command_parser::SetScore::execute(std::vector<std::string> &args, UNUSED Pl
 
 void command_parser::SetScore::help(UNUSED std::vector<std::string> &args, Player *invoker) const
 {
-    (void)invoker;
+    (void) invoker;
     LINFO("help setscore");
 }
 
@@ -108,7 +108,7 @@ void command_parser::RemoveScore::execute(std::vector<std::string> &args, UNUSED
 
 void command_parser::RemoveScore::help(UNUSED std::vector<std::string> &args, Player *invoker) const
 {
-    (void)invoker;
+    (void) invoker;
     LINFO("help removescore");
 }
 
@@ -117,7 +117,7 @@ void command_parser::RemoveScore::help(UNUSED std::vector<std::string> &args, Pl
 */
 void command_parser::DisplayObjective::help(UNUSED std::vector<std::string> &args, Player *invoker) const
 {
-    (void)invoker;
+    (void) invoker;
     LINFO("help displayobjective");
 }
 
@@ -164,7 +164,7 @@ void command_parser::RemoveObjective::execute(std::vector<std::string> &args, UN
 
 void command_parser::RemoveObjective::help(UNUSED std::vector<std::string> &args, Player *invoker) const
 {
-    (void)invoker;
+    (void) invoker;
     LINFO("help removeobjective");
 }
 
@@ -194,7 +194,7 @@ void command_parser::Teams::execute(UNUSED std::vector<std::string> &args, UNUSE
 
 void command_parser::Teams::help(UNUSED std::vector<std::string> &args, Player *invoker) const
 {
-    (void)invoker;
+    (void) invoker;
     LINFO("help addobjective");
 }
 
@@ -220,7 +220,7 @@ void command_parser::AddTeam::execute(std::vector<std::string> &args, UNUSED Pla
 
 void command_parser::AddTeam::help(UNUSED std::vector<std::string> &args, Player *invoker) const
 {
-    (void)invoker;
+    (void) invoker;
     LINFO("help jointeam");
 }
 
@@ -247,7 +247,7 @@ void command_parser::ModifyTeam::execute(std::vector<std::string> &args, UNUSED 
 
 void command_parser::ModifyTeam::help(UNUSED std::vector<std::string> &args, Player *invoker) const
 {
-    (void)invoker;
+    (void) invoker;
     LINFO("help modifyteam");
 }
 
@@ -273,7 +273,7 @@ void command_parser::JoinTeam::execute(std::vector<std::string> &args, UNUSED Pl
 
 void command_parser::JoinTeam::help(UNUSED std::vector<std::string> &args, Player *invoker) const
 {
-    (void)invoker;
+    (void) invoker;
     LINFO("help jointeam");
 }
 
@@ -299,7 +299,7 @@ void command_parser::LeaveTeam::execute(std::vector<std::string> &args, UNUSED P
 
 void command_parser::LeaveTeam::help(UNUSED std::vector<std::string> &args, Player *invoker) const
 {
-    (void)invoker;
+    (void) invoker;
     LINFO("help leaveteam");
 }
 
@@ -325,6 +325,6 @@ void command_parser::RemoveTeam::execute(std::vector<std::string> &args, UNUSED 
 
 void command_parser::RemoveTeam::help(UNUSED std::vector<std::string> &args, Player *invoker) const
 {
-    (void)invoker;
+    (void) invoker;
     LINFO("help removeteam");
 }

@@ -8,12 +8,6 @@ target_sources (${CMAKE_PROJECT_NAME} PRIVATE
     Player.hpp
     PlayerAttributes.cpp
     PlayerAttributes.hpp
-    Entity.cpp
-    Entity.hpp
-    Item.cpp
-    Item.hpp
-    LivingEntity.cpp
-    LivingEntity.hpp
     Chat.cpp
     Chat.hpp
     WorldGroup.cpp
@@ -37,6 +31,7 @@ target_sources (${CMAKE_PROJECT_NAME} PRIVATE
     Permissions.cpp
     types.hpp
     types.cpp
+    PluginInterface.cpp
     PluginInterface.hpp
     PluginManager.hpp
     PluginManager.cpp
@@ -48,7 +43,16 @@ target_sources (${CMAKE_PROJECT_NAME} PRIVATE
     RSAEncryptionHandler.hpp
     Checksum.cpp
     Checksum.hpp
+    CompressionUtils.cpp
+    CompressionUtils.hpp
 )
+
+if(PROMETHEUS)
+target_sources (${CMAKE_PROJECT_NAME} PRIVATE
+    PrometheusExporter.cpp
+    PrometheusExporter.hpp
+)
+endif()
 
 file(MAKE_DIRECTORY ${CMAKE_BINARY_DIR}/plugins)
 
@@ -110,3 +114,6 @@ add_subdirectory (recipes)
 add_subdirectory (events)
 add_subdirectory (utility)
 add_subdirectory (scoreboard)
+add_subdirectory (registry)
+add_subdirectory (entities)
+add_subdirectory (ai)

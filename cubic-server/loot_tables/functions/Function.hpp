@@ -20,7 +20,7 @@ namespace Function {
 class Function {
 public:
     Function(const nlohmann::json &function);
-    ~Function() = default;
+    virtual ~Function() = default;
 
     // function must be validated, if not overloaded, call setValitity(true) to validate
     bool isValid(void) const noexcept;
