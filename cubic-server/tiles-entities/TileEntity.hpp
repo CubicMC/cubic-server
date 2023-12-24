@@ -2,6 +2,7 @@
 #define CUBICSERVER_TILEENTITY_HPP
 
 #include "nbt.h"
+#include "protocol/ClientPackets.hpp"
 #include "protocol/Structures.hpp"
 #include "types.hpp"
 #include <cstdint>
@@ -55,6 +56,20 @@ public:
             .height = int16_t(position.y),
             .type = blockId,
             .data = _nbt,
+        };
+    }
+
+    /**
+     * @brief Translate the tile entity to a block entity data
+     *
+     * @return const protocol::BlockEntityData
+     */
+    const protocol::BlockEntityData toBlockEntityData() const
+    {
+        return protocol::BlockEntityData {
+            .location = position,
+            .type = blockId,
+            .nbtData = _nbt,
         };
     }
 

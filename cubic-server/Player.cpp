@@ -318,6 +318,15 @@ void Player::sendBlockUpdate(const protocol::BlockUpdate &packet)
     N_LDEBUG("Sent a block update at {} = {} to {}", packet.location, packet.blockId, this->getUsername());
 }
 
+void Player::sendBlockEntityData(const protocol::BlockEntityData &packet)
+{
+    GET_CLIENT();
+    auto pck = protocol::createBlockEntityData(packet);
+    client->doWrite(std::move(pck));
+
+    N_LDEBUG("Sent a block entity data packet");
+}
+
 void Player::sendOpenScreen(const protocol::OpenScreen &packet)
 {
     GET_CLIENT();

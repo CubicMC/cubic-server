@@ -11,10 +11,10 @@
 #include "Section.hpp"
 #include "generation/generator.hpp"
 #include "nbt.hpp"
-#include "tiles-entities/TileEntity.hpp"
 #include "types.hpp"
 
 class Dimension;
+class TileEntity;
 
 namespace world_storage {
 
