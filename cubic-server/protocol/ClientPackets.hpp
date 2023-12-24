@@ -34,6 +34,7 @@ enum class ClientPacketID : int32_t {
     SpawnEntity = 0x00,
     SpawnPlayer = 0x02,
     EntityAnimation = 0x03,
+    BlockEntityData = 0x07,
     BlockUpdate = 0x09,
     ChangeDifficulty = 0x0B,
     Commands = 0x0E,
@@ -159,6 +160,13 @@ struct EntityAnimation {
     int32_t entityId;
 };
 std::unique_ptr<std::vector<uint8_t>> createEntityAnimation(EntityAnimation::ID animId, int32_t entityID);
+
+struct BlockEntityData {
+    Position location;
+    int32_t type;
+    nbt_tag_t *nbtData;
+};
+std::unique_ptr<std::vector<uint8_t>> createBlockEntityData(const BlockEntityData &);
 
 struct BlockUpdate {
     Position location;

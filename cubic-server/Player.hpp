@@ -133,6 +133,7 @@ public:
     void sendChunkAndLightUpdate(const world_storage::ChunkColumn &chunk);
     void sendUnloadChunk(int32_t x, int32_t z);
     void sendBlockUpdate(const protocol::BlockUpdate &packet);
+    void sendBlockEntityData(const protocol::BlockEntityData &packet);
     void sendOpenScreen(const protocol::OpenScreen &packet);
     void sendPlayerAbilities(const protocol::PlayerAbilitiesClient &packet);
     void sendFeatureFlags(const protocol::FeatureFlags &packet);

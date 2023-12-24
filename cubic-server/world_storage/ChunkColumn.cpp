@@ -9,6 +9,7 @@
 #include "generation/overworld.hpp"
 #include "logging/logging.hpp"
 #include "nbt.hpp"
+#include "tiles-entities/TileEntity.hpp"
 #include "types.hpp"
 #include "world_storage/Section.hpp"
 #include <algorithm>
