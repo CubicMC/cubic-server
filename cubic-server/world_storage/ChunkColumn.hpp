@@ -10,6 +10,7 @@
 #include "Palette.hpp"
 #include "Section.hpp"
 #include "generation/generator.hpp"
+#include "nbt.h"
 #include "nbt.hpp"
 #include "types.hpp"
 
@@ -198,6 +199,8 @@ public:
      * @return const std::vector<std::pair<Position, BlockId>>&
      */
     constexpr std::vector<std::pair<Position, BlockId>> &getBlocksToBeUpdated() { return _blocksToBeUpdated; }
+
+    nbt_tag_t *toRegionCompatibleFormat() const;
 
     friend class Persistence;
 

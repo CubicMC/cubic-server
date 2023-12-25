@@ -28,6 +28,16 @@ struct RegionLocation {
     inline uint8_t getSize() const { return data >> 24; }
 
     inline bool isEmpty() const { return data == 0; }
+
+    RegionLocation(uint32_t offset, uint8_t size):
+        data(((offset & 0x00FF0000) >> 16) | (offset & 0x0000FF00) | ((offset & 0x000000FF) << 16) | (size << 24))
+    {
+    }
+
+    RegionLocation():
+        data(0)
+    {
+    }
 };
 
 struct RegionTimestamp {
@@ -38,19 +48,25 @@ constexpr uint32_t maxXPerRegion = 32;
 constexpr uint32_t maxZPerRegion = 32;
 constexpr uint32_t numChunksPerRegion = maxXPerRegion * maxZPerRegion;
 constexpr uint64_t regionChunkAlignment = 0x1000;
+constexpr uint64_t regionChunkAlignmentMask = 0xFFF;
 
 struct __attribute__((__packed__)) RegionHeader {
     RegionLocation locationTable[numChunksPerRegion];
     RegionLocation timestampTable[numChunksPerRegion];
 };
 
+enum class RegionChunkCompressionScheme : uint8_t {
+    GZIP = 1,
+    ZLIB = 2,
+};
+
 struct __attribute__((__packed__)) ChunkHeader {
     uint32_t length;
-    uint8_t compressionScheme;
+    RegionChunkCompressionScheme compressionScheme;
 
     inline uint32_t getLength() const { return ntohl(length); }
 
-    inline uint8_t getCompressionScheme() const { return compressionScheme; }
+    inline RegionChunkCompressionScheme getCompressionScheme() const { return compressionScheme; }
 };
 
 /**
@@ -151,6 +167,8 @@ public:
     PlayerData loadPlayerData(const Player &player);
 
     void savePlayerData(u128 uuid, const PlayerData &src);
+
+    void saveRegion(const Dimension &dim, int x, int z);
 
     /**
      * @brief Loads a region from disk

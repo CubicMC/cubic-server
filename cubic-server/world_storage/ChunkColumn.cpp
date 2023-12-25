@@ -645,4 +645,14 @@ void ChunkColumn::removeTileEntity(const Position &pos)
     if (_tileEntities.contains(pos))
         _tileEntities.erase(pos);
 }
+
+nbt_tag_t *ChunkColumn::toRegionCompatibleFormat() const
+{
+    nbt_tag_t *root = nbt_new_tag_compound();
+
+    // TODO(huntears): Implement
+
+    return root;
+}
+
 } // namespace world_storage
