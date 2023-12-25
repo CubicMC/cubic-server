@@ -22,6 +22,13 @@
 #include "nnbt.hpp"
 #include "Dimension.hpp"
 #include "Server.hpp"
+#include "protocol/serialization/addPrimaryType.hpp"
+#include "types.hpp"
+#include "world_storage/ChunkColumn.hpp"
+#include "world_storage/Level.hpp"
+#include "world_storage/LevelData.hpp"
+#include "world_storage/PlayerData.hpp"
+#include "world_storage/Section.hpp"
 
 #define GET_VALUE_TO(t, type_accessor, dst, src, root, dstroot) \
     do {                                                        \
@@ -451,6 +458,75 @@ void Persistence::savePlayerData(u128 uuid, const PlayerData &src)
     root.add(src.seenCredits, "seenCredits");
 }
 
+void Persistence::saveRegion(const Dimension &dim, int x, int z)
+{
+    std::unique_lock<std::mutex> lock(_accessMutex);
+
+    std::vector<uint8_t> finalData(sizeof(RegionHeader), 0);
+    RegionHeader header;
+    memset(&header, 0, sizeof(header));
+    uint32_t lastOffset = 2; // This takes into account the region header
+    uint8_t lastSize = 0;
+
+    // TODO(huntears): Check if the region is loaded, else just exit here
+    // EDIT: Is that really needed? This depends on how this is called, but it might not need to be done
+
+    LDEBUG("Saving region {} {}", x, z);
+
+    const std::string regionSlice = "r." + std::to_string(x) + "." + std::to_string(z) + ".mca";
+    const std::filesystem::path file = std::filesystem::path(_folder) / "region" / regionSlice;
+
+    for (uint16_t cx = 0; cx < maxXPerRegion; cx++) {
+        for (uint16_t cz = 0; cz < maxZPerRegion; cz++) {
+            if (!dim.hasChunkLoaded(x, z))
+                continue;
+
+            const world_storage::ChunkColumn &chunk = dim.getChunk(x, z);
+            const uint16_t currentOffset = cx + cz * maxXPerRegion;
+
+            // Nothing here can be const for some fucking reason
+            nbt_tag_t *chunkData = chunk.toRegionCompatibleFormat();
+            std::vector<uint8_t> dataToAdd;
+            protocol::addNBT(dataToAdd, chunkData, NBT_WRITE_FLAG_USE_ZLIB);
+
+            // Add the chunk header
+            ChunkHeader cHeader = {
+                .length = (uint32_t) dataToAdd.size() + 1, // That + 1 is here because you also need to count the compression scheme
+                .compressionScheme = RegionChunkCompressionScheme::ZLIB,
+            };
+            dataToAdd.insert(dataToAdd.begin(), (uint8_t *) &cHeader, ((uint8_t *) &cHeader) + sizeof(cHeader));
+
+            // Fill in the location table with the chunk's offset and size
+            const size_t actualChunkSize = dataToAdd.size();
+            const size_t chunkSize =
+                !(actualChunkSize & regionChunkAlignmentMask) ? actualChunkSize : actualChunkSize + regionChunkAlignment - (actualChunkSize & regionChunkAlignmentMask);
+            const uint32_t chunkOffset = lastOffset + lastSize;
+            header.locationTable[currentOffset] = RegionLocation(chunkOffset, chunkSize);
+
+            // Add padding if necessary to the chunk's data
+            const uint32_t chunkPadding = chunkSize - actualChunkSize;
+            if (chunkPadding)
+                dataToAdd.insert(dataToAdd.end(), chunkPadding, 0);
+
+            // Add the chunk to the list of chunks to fill in
+            finalData.insert(finalData.end(), dataToAdd.begin(), dataToAdd.end());
+
+            // Update last location table values
+            lastOffset = chunkOffset;
+            lastSize = chunkSize;
+        }
+    }
+    // Copy the region header to the final data
+    memcpy(finalData.data(), &header, sizeof(header));
+
+    // Flush to disk
+    // TODO (huntears): Error handling
+    FILE *f = fopen(file.c_str(), "w");
+    fwrite(finalData.data(), 1, finalData.size(), f);
+
+    LDEBUG("Saved region {} {}", x, z);
+}
+
 void Persistence::loadRegion(Dimension &dim, int x, int z)
 {
     std::unique_lock<std::mutex> lock(_accessMutex);
@@ -483,19 +559,15 @@ void Persistence::loadRegion(Dimension &dim, int x, int z)
 
             const ChunkHeader *cHeader = (const ChunkHeader *) (fileContents + chunkOffset);
 
-            // clang-format off
             _userData ud = {
                 ((char *) cHeader) + sizeof(*cHeader),
-                ((char *) cHeader) + sizeof(*cHeader) + cHeader->getLength() - 1
+                ((char *) cHeader) + sizeof(*cHeader) + cHeader->getLength() - 1,
             };
-            // clang-format on
 
-            // clang-format off
             nbt_reader_t reader = {
                 _readMem,
-                &ud
+                &ud,
             };
-            // clang-format on
 
             auto *data = nbt_parse(reader, NBT_PARSE_FLAG_USE_ZLIB);
             assert(data->type == NBT_TYPE_COMPOUND);
