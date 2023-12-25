@@ -1,17 +1,3 @@
-#include "Persistence.hpp"
-#include "Dimension.hpp"
-#include "Server.hpp"
-#include "World.hpp"
-#include "logging/logging.hpp"
-#include "nbt.h"
-#include "nbt.hpp"
-#include "nnbt.hpp"
-#include "types.hpp"
-#include "world_storage/ChunkColumn.hpp"
-#include "world_storage/Level.hpp"
-#include "world_storage/LevelData.hpp"
-#include "world_storage/PlayerData.hpp"
-#include "world_storage/Section.hpp"
 #include <algorithm>
 #include <cassert>
 #include <cstddef>
@@ -27,10 +13,15 @@
 #include <netinet/in.h>
 #include <stdexcept>
 #include <string>
-#include <string_view>
 #include <sys/stat.h>
 #include <vector>
 #include <zlib.h>
+#include "nbt.hpp"
+#include "Persistence.hpp"
+#include "logging/logging.hpp"
+#include "nnbt.hpp"
+#include "Dimension.hpp"
+#include "Server.hpp"
 
 #define GET_VALUE_TO(t, type_accessor, dst, src, root, dstroot) \
     do {                                                        \
