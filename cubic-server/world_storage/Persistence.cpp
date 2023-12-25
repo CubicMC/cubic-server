@@ -488,6 +488,7 @@ void Persistence::saveRegion(const Dimension &dim, int x, int z)
             nbt_tag_t *chunkData = chunk.toRegionCompatibleFormat();
             std::vector<uint8_t> dataToAdd;
             protocol::addNBT(dataToAdd, chunkData, NBT_WRITE_FLAG_USE_ZLIB);
+            nbt_free_tag(chunkData);
 
             // Add the chunk header
             ChunkHeader cHeader = {
