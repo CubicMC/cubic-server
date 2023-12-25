@@ -1,6 +1,7 @@
 #include "ChunkColumn.hpp"
 
 #include "Dimension.hpp"
+#include "Server.hpp"
 #include "World.hpp"
 #include "blocks.hpp"
 #include "generation/features/surface/Vegetation.hpp"
@@ -8,11 +9,12 @@
 #include "generation/features/underground/OreVein.hpp"
 #include "generation/overworld.hpp"
 #include "logging/logging.hpp"
+#include "nbt.h"
 #include "nbt.hpp"
 #include "tiles-entities/TileEntity.hpp"
+#include "nnbt.hpp"
 #include "types.hpp"
 #include "world_storage/Section.hpp"
-#include <algorithm>
 #include <cstdlib>
 #include <memory>
 
@@ -648,11 +650,46 @@ void ChunkColumn::removeTileEntity(const Position &pos)
 
 nbt_tag_t *ChunkColumn::toRegionCompatibleFormat() const
 {
-    nbt_tag_t *root = nbt_new_tag_compound();
+    nbt_tag_t *root_raw = nbt_new_tag_compound();
+    nnbt::Tag root = nnbt::Tag::fromRaw(root_raw);
 
-    // TODO(huntears): Implement
+    // TODO (huntears): Change that when we will handle semi generated chunks
+    root.add("full", "Status");
 
-    return root;
+    // Add sections
+    nnbt::Tag sections = root.addList(NBT_TYPE_COMPOUND, "sections");
+    for (size_t i = 0; i < this->getSections().size(); i++) {
+        const auto &sec = this->getSections().at(i);
+        nnbt::Tag section = sections.addCompound(nullptr);
+        int8_t y = (int8_t) i - 5;
+        section.add(y, "Y");
+
+        // Load blocks_states
+        nnbt::Tag block_states = section.addCompound("block_states");
+        // Save palette
+        nnbt::Tag palette = block_states.addList(NBT_TYPE_COMPOUND, "palette");
+        for (auto raw_entry : sec.getBlockPalette()) {
+            nnbt::Tag block_entry = palette.addCompound(nullptr);
+            auto entry = GLOBAL_PALETTE.fromProtocolIdToBlock(raw_entry);
+            block_entry.add(entry.name, "Name");
+            if (entry.properties.size() != 0) {
+                nnbt::Tag props = block_entry.addCompound("Properties");
+                for (auto &prop : entry.properties)
+                    props.add(prop.second, prop.first.c_str());
+            }
+        }
+
+        // Save blocks
+        nbt_tag_t *blocks = nbt_new_tag_long_array((int64_t *) sec.getBlocks().data().data(), sec.getBlocks().data().size());
+        nbt_set_tag_name(blocks, "data", 4);
+        nbt_tag_compound_append(section.data, blocks);
+
+        // TODO(huntears): Save lights (Not strictly needed)
+    }
+
+    // TODO(huntears): Save heightmaps
+
+    return root_raw;
 }
 
 } // namespace world_storage
