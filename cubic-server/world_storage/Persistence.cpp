@@ -524,6 +524,7 @@ void Persistence::saveRegion(const Dimension &dim, int x, int z)
     // TODO (huntears): Error handling
     FILE *f = fopen(file.c_str(), "w");
     fwrite(finalData.data(), 1, finalData.size(), f);
+    fclose(f);
 
     LDEBUG("Saved region {} {}", x, z);
 }
