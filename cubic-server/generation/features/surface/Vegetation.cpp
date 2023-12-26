@@ -55,6 +55,7 @@ void Vegetation::generateVegetation(std::vector<world_storage::ChunkColumn *>)
 
 void Vegetation::placeGrass(std::vector<generation::Generator::FeatureBlock> &listOfFeatureBlocks, const Position &pos) const
 {
+    // Grass noise under -0.6 so the other values of the noise map can be used for the tall grass (fewer tall grass than normal grass)
     if (_generator.getNoise(pos.x + _chunk.getChunkPos().x * world_storage::SECTION_WIDTH, pos.y, pos.z + _chunk.getChunkPos().z * world_storage::SECTION_WIDTH).noise2D.grass >=
         -0.6) {
         listOfFeatureBlocks.emplace_back(generation::Generator::FeatureBlock {pos, Blocks::Grass::toProtocol()});
@@ -67,6 +68,7 @@ void Vegetation::placeGrass(std::vector<generation::Generator::FeatureBlock> &li
 
 void Vegetation::placePoppies(std::vector<generation::Generator::FeatureBlock> &listOfFeatureBlocks, const Position &pos) const
 {
+    // Flowers noise over 0.2 so the other values of the noise map can be used for the dandelions (and other flowers)
     if (_generator.getNoise(pos.x + _chunk.getChunkPos().x * world_storage::SECTION_WIDTH, pos.y, pos.z + _chunk.getChunkPos().z * world_storage::SECTION_WIDTH).noise2D.flowers >
         0.2) {
         listOfFeatureBlocks.emplace_back(generation::Generator::FeatureBlock {pos, Blocks::Poppy::toProtocol()});
@@ -75,6 +77,7 @@ void Vegetation::placePoppies(std::vector<generation::Generator::FeatureBlock> &
 
 void Vegetation::placeDandelions(std::vector<generation::Generator::FeatureBlock> &listOfFeatureBlocks, const Position &pos) const
 {
+    // Flowers noise under -0.5 so the other values of the noise map can be used for the poppies (and other flowers)
     if (_generator.getNoise(pos.x + _chunk.getChunkPos().x * world_storage::SECTION_WIDTH, pos.y, pos.z + _chunk.getChunkPos().z * world_storage::SECTION_WIDTH).noise2D.flowers <=
         -0.5) {
         listOfFeatureBlocks.emplace_back(generation::Generator::FeatureBlock {pos, Blocks::Dandelion::toProtocol()});
@@ -83,6 +86,7 @@ void Vegetation::placeDandelions(std::vector<generation::Generator::FeatureBlock
 
 void Vegetation::placeOxeyeDaisies(std::vector<generation::Generator::FeatureBlock> &listOfFeatureBlocks, const Position &pos) const
 {
+    // Flowers noise under 0.2 so the other values of the noise map can be used for the poppies and dandelions
     if (_generator.getNoise(pos.x + _chunk.getChunkPos().x * world_storage::SECTION_WIDTH, pos.y, pos.z + _chunk.getChunkPos().z * world_storage::SECTION_WIDTH).noise2D.flowers <=
         0.2) {
         listOfFeatureBlocks.emplace_back(generation::Generator::FeatureBlock {pos, Blocks::OxeyeDaisy::toProtocol()});
