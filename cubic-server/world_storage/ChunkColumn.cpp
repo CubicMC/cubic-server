@@ -13,6 +13,7 @@
 #include "nbt.hpp"
 #include "tiles-entities/TileEntity.hpp"
 #include "nnbt.hpp"
+#include "protocol_id_converter/blockIdConverter.hpp"
 #include "types.hpp"
 #include "world_storage/Section.hpp"
 #include <cstdlib>
@@ -648,7 +649,7 @@ void ChunkColumn::removeTileEntity(const Position &pos)
         _tileEntities.erase(pos);
 }
 
-nbt_tag_t *ChunkColumn::toRegionCompatibleFormat() const
+nbt_tag_t *ChunkColumn::toRegionCompatibleFormat()
 {
     int32_t dataVersion = 2865; // TODO(huntears): This sucks, no idea what that value is
     nbt_tag_t *root_raw = nbt_new_tag_compound();
@@ -674,12 +675,23 @@ nbt_tag_t *ChunkColumn::toRegionCompatibleFormat() const
         nnbt::Tag palette = block_states.addList(NBT_TYPE_COMPOUND, "palette");
         for (auto raw_entry : sec.getBlockPalette()) {
             nnbt::Tag block_entry = palette.addCompound(nullptr);
-            auto entry = GLOBAL_PALETTE.fromProtocolIdToBlock(raw_entry);
-            block_entry.add(entry.name, "Name");
-            if (entry.properties.size() != 0) {
-                nnbt::Tag props = block_entry.addCompound("Properties");
-                for (auto &prop : entry.properties)
-                    props.add(prop.second, prop.first.c_str());
+            auto cached_entry = GLOBAL_PALETTE.fetchFromCache(raw_entry);
+            if (!cached_entry.has_value()) {
+                auto entry = GLOBAL_PALETTE.fromProtocolIdToBlock(raw_entry);
+                block_entry.add(entry.name, "Name");
+                if (entry.properties.size() != 0) {
+                    nnbt::Tag props = block_entry.addCompound("Properties");
+                    for (auto &prop : entry.properties)
+                        props.add(prop.second, prop.first.c_str());
+                }
+            } else {
+                auto &entry = const_cast<Blocks::Block &>(cached_entry->get()); // Yeah I know that is crazy bad, but for now it will do
+                block_entry.add(entry.name, "Name");
+                if (entry.properties.size() != 0) {
+                    nnbt::Tag props = block_entry.addCompound("Properties");
+                    for (auto &prop : entry.properties)
+                        props.add(prop.second, prop.first.c_str());
+                }
             }
         }
 

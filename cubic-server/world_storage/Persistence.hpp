@@ -168,7 +168,7 @@ public:
 
     void savePlayerData(u128 uuid, const PlayerData &src);
 
-    void saveRegion(const Dimension &dim, int x, int z);
+    void saveRegion(Dimension &dim, int x, int z);
 
     /**
      * @brief Loads a region from disk
