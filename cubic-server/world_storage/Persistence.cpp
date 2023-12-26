@@ -478,10 +478,10 @@ void Persistence::saveRegion(const Dimension &dim, int x, int z)
 
     for (uint16_t cx = 0; cx < maxXPerRegion; cx++) {
         for (uint16_t cz = 0; cz < maxZPerRegion; cz++) {
-            if (!dim.hasChunkLoaded(x, z))
+            if (!dim.hasChunkLoaded(cx + x * 32, cz + z * 32))
                 continue;
 
-            const world_storage::ChunkColumn &chunk = dim.getChunk(x, z);
+            const world_storage::ChunkColumn &chunk = dim.getChunk(cx + x * 32, cz + z * 32);
             const uint16_t currentOffset = cx + cz * maxXPerRegion;
 
             // Nothing here can be const for some fucking reason
@@ -492,7 +492,7 @@ void Persistence::saveRegion(const Dimension &dim, int x, int z)
 
             // Add the chunk header
             ChunkHeader cHeader = {
-                .length = (uint32_t) dataToAdd.size() + 1, // That + 1 is here because you also need to count the compression scheme
+                .length = ntohl((uint32_t) dataToAdd.size() + 1), // That + 1 is here because you also need to count the compression scheme
                 .compressionScheme = RegionChunkCompressionScheme::ZLIB,
             };
             dataToAdd.insert(dataToAdd.begin(), (uint8_t *) &cHeader, ((uint8_t *) &cHeader) + sizeof(cHeader));
@@ -502,7 +502,8 @@ void Persistence::saveRegion(const Dimension &dim, int x, int z)
             const size_t chunkSize =
                 !(actualChunkSize & regionChunkAlignmentMask) ? actualChunkSize : actualChunkSize + regionChunkAlignment - (actualChunkSize & regionChunkAlignmentMask);
             const uint32_t chunkOffset = lastOffset + lastSize;
-            header.locationTable[currentOffset] = RegionLocation(chunkOffset, chunkSize);
+            LDEBUG("Location Offset: {} | Chunk Offset: {} | ChunkSize: {}", currentOffset, chunkOffset, chunkSize / regionChunkAlignment);
+            header.locationTable[currentOffset] = RegionLocation(chunkOffset, chunkSize / regionChunkAlignment);
 
             // Add padding if necessary to the chunk's data
             const uint32_t chunkPadding = chunkSize - actualChunkSize;
@@ -514,7 +515,7 @@ void Persistence::saveRegion(const Dimension &dim, int x, int z)
 
             // Update last location table values
             lastOffset = chunkOffset;
-            lastSize = chunkSize;
+            lastSize = chunkSize / regionChunkAlignment;
         }
     }
     // Copy the region header to the final data

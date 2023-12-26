@@ -58,11 +58,11 @@ ChunkColumn::ChunkColumn(const Position2D &chunkPos, std::shared_ptr<Dimension> 
 {
     // OOF
     for (auto idx = 0; HEIGHTMAP_ENTRY[idx] != nullptr; idx++) {
-        auto listBase = NBT_MAKE(nbt::List, HEIGHTMAP_ENTRY[idx]);
-        auto list = std::dynamic_pointer_cast<nbt::List>(listBase);
+        auto listBase = NBT_MAKE(nbt::LongArray, HEIGHTMAP_ENTRY[idx]);
+        auto list = std::dynamic_pointer_cast<nbt::LongArray>(listBase);
 
         for (auto i = 0; i < HEIGHTMAP_ARRAY_SIZE; i++)
-            list->push_back(std::make_shared<nbt::Long>("", 0));
+            list->getValues().push_back(0);
 
         _heightMap.addValue(listBase);
     }
@@ -650,8 +650,11 @@ void ChunkColumn::removeTileEntity(const Position &pos)
 
 nbt_tag_t *ChunkColumn::toRegionCompatibleFormat() const
 {
+    int32_t dataVersion = 2865; // TODO(huntears): This sucks, no idea what that value is
     nbt_tag_t *root_raw = nbt_new_tag_compound();
     nnbt::Tag root = nnbt::Tag::fromRaw(root_raw);
+
+    root.add(dataVersion, "DataVersion");
 
     // TODO (huntears): Change that when we will handle semi generated chunks
     std::string full("full");
@@ -683,12 +686,26 @@ nbt_tag_t *ChunkColumn::toRegionCompatibleFormat() const
         // Save blocks
         nbt_tag_t *blocks = nbt_new_tag_long_array((int64_t *) sec.getBlocks().data().data(), sec.getBlocks().data().size());
         nbt_set_tag_name(blocks, "data", 4);
-        nbt_tag_compound_append(section.data, blocks);
+        nbt_tag_compound_append(block_states.data, blocks);
 
         // TODO(huntears): Save lights (Not strictly needed)
     }
 
-    // TODO(huntears): Save heightmaps
+    // Save heightmaps
+    nnbt::Tag heightmaps = root.addCompound("Heightmaps");
+
+    nbt_tag_t *motion_blocking = nbt_new_tag_long_array(
+        (int64_t *) _heightMap.getValue("MOTION_BLOCKING")->as<nbt::LongArray>()->getValues().data(),
+        _heightMap.getValue("MOTION_BLOCKING")->as<nbt::LongArray>()->getValues().size()
+    );
+    nbt_set_tag_name(motion_blocking, "MOTION_BLOCKING", 15);
+    nbt_tag_compound_append(heightmaps.data, motion_blocking);
+
+    nbt_tag_t *world_surface = nbt_new_tag_long_array(
+        (int64_t *) _heightMap.getValue("WORLD_SURFACE")->as<nbt::LongArray>()->getValues().data(), _heightMap.getValue("WORLD_SURFACE")->as<nbt::LongArray>()->getValues().size()
+    );
+    nbt_set_tag_name(world_surface, "WORLD_SURFACE", 13);
+    nbt_tag_compound_append(heightmaps.data, world_surface);
 
     return root_raw;
 }

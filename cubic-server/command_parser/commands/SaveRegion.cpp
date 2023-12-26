@@ -32,12 +32,12 @@ void command_parser::SaveRegion::execute(UNUSED std::vector<std::string> &args, 
             return;
         }
     }
-    LDEBUG("Called save-region");
+    LWARN("Called save-region");
     auto world = std::dynamic_pointer_cast<DefaultWorld>(Server::getInstance()->getWorldGroup("default")->getWorld("default"));
     auto &persistence = world->persistence;
     const auto dim = world->getDimension("overworld");
     persistence.saveRegion(*dim, std::stoi(args.at(0)), std::stoi(args.at(1)));
-    LDEBUG("Finished call to save-region");
+    LWARN("Finished call to save-region");
 }
 
 void command_parser::SaveRegion::help(UNUSED std::vector<std::string> &args, Player *invoker) const
