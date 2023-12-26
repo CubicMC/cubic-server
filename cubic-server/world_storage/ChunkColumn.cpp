@@ -654,7 +654,8 @@ nbt_tag_t *ChunkColumn::toRegionCompatibleFormat() const
     nnbt::Tag root = nnbt::Tag::fromRaw(root_raw);
 
     // TODO (huntears): Change that when we will handle semi generated chunks
-    root.add("full", "Status");
+    std::string full("full");
+    root.add(full, "Status");
 
     // Add sections
     nnbt::Tag sections = root.addList(NBT_TYPE_COMPOUND, "sections");
