@@ -458,7 +458,7 @@ void Persistence::savePlayerData(u128 uuid, const PlayerData &src)
     root.add(src.seenCredits, "seenCredits");
 }
 
-void Persistence::saveRegion(const Dimension &dim, int x, int z)
+void Persistence::saveRegion(Dimension &dim, int x, int z)
 {
     std::unique_lock<std::mutex> lock(_accessMutex);
 
@@ -481,7 +481,7 @@ void Persistence::saveRegion(const Dimension &dim, int x, int z)
             if (!dim.hasChunkLoaded(cx + x * 32, cz + z * 32))
                 continue;
 
-            const world_storage::ChunkColumn &chunk = dim.getChunk(cx + x * 32, cz + z * 32);
+            world_storage::ChunkColumn &chunk = dim.getChunk(cx + x * 32, cz + z * 32);
             const uint16_t currentOffset = cx + cz * maxXPerRegion;
 
             // Nothing here can be const for some fucking reason

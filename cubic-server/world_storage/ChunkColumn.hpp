@@ -200,7 +200,7 @@ public:
      */
     constexpr std::vector<std::pair<Position, BlockId>> &getBlocksToBeUpdated() { return _blocksToBeUpdated; }
 
-    nbt_tag_t *toRegionCompatibleFormat() const;
+    nbt_tag_t *toRegionCompatibleFormat();
 
     friend class Persistence;
 

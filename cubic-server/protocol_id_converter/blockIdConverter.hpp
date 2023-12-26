@@ -1,8 +1,11 @@
 #ifndef CUBICSERVER_PROTOCOLIDCONVERTER_BLOCKIDCONVERTER_HPP
 #define CUBICSERVER_PROTOCOLIDCONVERTER_BLOCKIDCONVERTER_HPP
 
+#include <optional>
 #include <string>
 #include <vector>
+
+#include <boost/container/flat_map.hpp>
 
 #include "types.hpp"
 
@@ -64,7 +67,7 @@ public:
      * @param id The protocol id to convert
      * @return The block corresponding to the protocol id
      */
-    Block fromProtocolIdToBlock(BlockId id) const;
+    Block fromProtocolIdToBlock(BlockId id);
 
     /**
      * @brief Initialize the global palette with the blocks from the given json file
@@ -73,8 +76,12 @@ public:
      */
     bool initialize(const std::string &path = "blocks.json");
 
+    std::optional<std::reference_wrapper<const Block>> fetchFromCache(BlockId protocolID) const;
+
 private:
     std::vector<InternalBlock> _blocks; // The internal blocks
+
+    boost::container::flat_map<BlockId, Block> _cache;
 };
 }
 

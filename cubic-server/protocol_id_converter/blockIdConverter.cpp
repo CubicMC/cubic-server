@@ -2,7 +2,9 @@
 
 #include <filesystem>
 #include <fstream>
+#include <functional>
 #include <iterator>
+#include <optional>
 #include <type_traits>
 
 #include <nlohmann/json.hpp>
@@ -116,23 +118,35 @@ BlockId Blocks::GlobalPalette::fromBlockToProtocolId(Blocks::Block &block) const
     return id;
 }
 
-Blocks::Block Blocks::GlobalPalette::fromProtocolIdToBlock(BlockId id) const
+Blocks::Block Blocks::GlobalPalette::fromProtocolIdToBlock(BlockId id)
 {
     for (auto b : this->_blocks) {
         if (id < b.baseProtocolId || id > b.maxProtocolId)
             continue;
         Blocks::Block block;
         block.name = b.name;
-        if (b.properties.size() == 0)
+        if (b.properties.size() == 0) {
+            if (!_cache.contains(id))
+                _cache.emplace(id, block);
             return block;
+        }
         id -= b.baseProtocolId;
         for (auto it = b.properties.rbegin(); it != b.properties.rend(); ++it) {
             auto property = *it;
             block.properties.push_back({property.name, property.values[id / property.baseWeight]});
             id %= property.baseWeight;
         }
+        if (!_cache.contains(id))
+            _cache.emplace(id, block);
         return block;
     }
     LERROR("Block not found in palette (id: {})", id);
     return {"minecraft:air", {}};
+}
+
+std::optional<std::reference_wrapper<const Blocks::Block>> Blocks::GlobalPalette::fetchFromCache(BlockId protocolID) const
+{
+    if (!_cache.contains(protocolID))
+        return std::nullopt;
+    return std::optional<std::reference_wrapper<const Blocks::Block>>(std::reference_wrapper<const Blocks::Block>(_cache.at(protocolID)));
 }
