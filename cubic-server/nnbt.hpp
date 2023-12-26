@@ -24,25 +24,25 @@ struct Tag {
         nbt_tag_t *new_data = nullptr;
 
         if constexpr (std::is_same_v<T, int32_t>)
-            nbt_new_tag_int(to_add);
+            new_data = nbt_new_tag_int(to_add);
         else if constexpr (std::is_same_v<T, int64_t>)
-            nbt_new_tag_long(to_add);
+            new_data = nbt_new_tag_long(to_add);
         else if constexpr (std::is_same_v<T, int16_t>)
-            nbt_new_tag_short(to_add);
+            new_data = nbt_new_tag_short(to_add);
         else if constexpr (std::is_same_v<T, int8_t>)
-            nbt_new_tag_byte(to_add);
+            new_data = nbt_new_tag_byte(to_add);
         else if constexpr (std::is_same_v<T, float>)
-            nbt_new_tag_float(to_add);
+            new_data = nbt_new_tag_float(to_add);
         else if constexpr (std::is_same_v<T, double>)
-            nbt_new_tag_double(to_add);
+            new_data = nbt_new_tag_double(to_add);
         else if constexpr (std::is_same_v<T, std::vector<int8_t>>)
-            nbt_new_tag_byte_array(to_add.data(), to_add.size());
+            new_data = nbt_new_tag_byte_array(to_add.data(), to_add.size());
         else if constexpr (std::is_same_v<T, std::vector<int32_t>>)
-            nbt_new_tag_int_array(to_add.data(), to_add.size());
+            new_data = nbt_new_tag_int_array(to_add.data(), to_add.size());
         else if constexpr (std::is_same_v<T, std::vector<int64_t>>)
-            nbt_new_tag_long_array(to_add.data(), to_add.size());
+            new_data = nbt_new_tag_long_array(to_add.data(), to_add.size());
         else if constexpr (std::is_same_v<T, std::string>)
-            nbt_new_tag_string(to_add.c_str(), to_add.size());
+            new_data = nbt_new_tag_string(to_add.c_str(), to_add.size());
         else
             static_assert(
                 !(std::is_same_v<T, std::string> || std::is_same_v<T, std::vector<int64_t>> || std::is_same_v<T, std::vector<int32_t>> || std::is_same_v<T, std::vector<int8_t>> ||
