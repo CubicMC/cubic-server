@@ -10,11 +10,31 @@
 
 namespace nnbt {
 
+/**
+ * @brief Simpliers C++ mappings to the new nbt library
+ * @todo This needs to be made better, cause it sucks big time right now, though for now it does the job
+ */
 struct Tag {
     nbt_tag_t *data;
 
+    /**
+     * @brief Constructs a nnbt tag from a raw nbt tag
+     *
+     * This is not strictly necessary but aight, it's written so who cares
+     *
+     * @param n The raw tag to embed in the nnbt tag
+     * @return Tag The nnbt tag
+     */
     static Tag fromRaw(nbt_tag_t *n) { return Tag {.data = n}; }
 
+    /**
+     * @brief Adds a tag to another tag
+     *
+     * @tparam T The type of the to_add parameter
+     * @param to_add The data to add to the root tag
+     * @param name The name of the tag
+     * @return Tag The added tag
+     */
     template<typename T>
     Tag add(T &to_add, const char *name)
     {
@@ -60,6 +80,13 @@ struct Tag {
         return Tag {.data = new_data};
     };
 
+    /**
+     * @brief Add a list to another tag
+     *
+     * @param type The type of the data contained in the list
+     * @param name The name of the tag
+     * @return Tag The new tag
+     */
     Tag addList(nbt_tag_type_t type, const char *name)
     {
         assert(data);
@@ -76,6 +103,12 @@ struct Tag {
         return Tag {.data = new_data};
     }
 
+    /**
+     * @brief Add a compound to another tag
+     *
+     * @param name The name of the tag
+     * @return Tag The new tag
+     */
     Tag addCompound(const char *name)
     {
         assert(data);
@@ -92,6 +125,10 @@ struct Tag {
         return Tag {.data = new_data};
     }
 
+    /**
+     * @brief Calls the destroyer of the raw_tag and all its children
+     *
+     */
     void destroy()
     {
         if (data)

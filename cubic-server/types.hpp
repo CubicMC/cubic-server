@@ -22,6 +22,11 @@ struct u128 {
      */
     std::string toString() const;
 
+    /**
+     * @brief Returs a vector of ints representing the uuid
+     *
+     * @return std::vector<int32_t> The vector of ints representing the uuid
+     */
     std::vector<int32_t> toVector() const;
 
     /**

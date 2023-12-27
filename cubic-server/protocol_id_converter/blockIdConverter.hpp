@@ -76,6 +76,12 @@ public:
      */
     bool initialize(const std::string &path = "blocks.json");
 
+    /**
+     * @brief Fetch a block from the cache
+     *
+     * @param protocolID The protocolID of the block to fetch
+     * @return std::optional<std::reference_wrapper<const Block>> The block that has been fetched, empty if not in cache
+     */
     std::optional<std::reference_wrapper<const Block>> fetchFromCache(BlockId protocolID) const;
 
 private:

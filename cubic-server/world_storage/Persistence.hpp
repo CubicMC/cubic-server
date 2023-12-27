@@ -113,6 +113,11 @@ public:
      */
     void loadLevelData(LevelData &dest);
 
+    /**
+     * @brief Saves level data to disk
+     *
+     * @param src The level data to save
+     */
     void saveLevelData(LevelData &src);
 
     /**
@@ -166,8 +171,21 @@ public:
      */
     PlayerData loadPlayerData(const Player &player);
 
+    /**
+     * @brief Saves player data to disk
+     *
+     * @param uuid The uuid of the player
+     * @param src The player data to save
+     */
     void savePlayerData(u128 uuid, const PlayerData &src);
 
+    /**
+     * @brief Saves a region to disk
+     *
+     * @param dim The dimension to save the region from
+     * @param x X coordinate of the region
+     * @param z Z coordinate of the region
+     */
     void saveRegion(Dimension &dim, int x, int z);
 
     /**
