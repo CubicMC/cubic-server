@@ -40,6 +40,9 @@ inline Position convertChunkPositionToPosition(const Position2D &chunkPos, const
 
 // Heightmap
 constexpr int HEIGHTMAP_BITS = bitsNeeded(CHUNK_HEIGHT + 1);
+// TODO(huntears): This + 1 here makes me wanna cry, but somehow we are off by one
+// So if a kind soul out here wants to go around to figure out why and fix this it
+// would be fucking awesome
 constexpr int HEIGHTMAP_ARRAY_SIZE = (SECTION_2D_SIZE * HEIGHTMAP_BITS / 64) + ((SECTION_2D_SIZE * HEIGHTMAP_BITS % 64) != 0) + 1;
 constexpr const char *const HEIGHTMAP_ENTRY[] = {"MOTION_BLOCKING", "WORLD_SURFACE", nullptr};
 
