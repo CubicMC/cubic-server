@@ -405,7 +405,7 @@ void Persistence::savePlayerData(u128 uuid, const PlayerData &src)
     const std::filesystem::path file = std::filesystem::path(_folder) / "playerdata" / (uuid.toString() + ".dat");
     std::ofstream output_file(file, std::ios::out | std::ios::binary);
     if (!output_file.is_open())
-        throw std::runtime_error("Could not open file " + _folder);
+        throw std::runtime_error("Could not open file " + std::string(file));
 
     auto root = nnbt::Tag::fromRaw(nbt_new_tag_compound());
 
@@ -456,6 +456,14 @@ void Persistence::savePlayerData(u128 uuid, const PlayerData &src)
     root.add(src.foodTickTimer, "foodTickTimer");
     root.add(src.playerGameType, "playerGameType");
     root.add(src.seenCredits, "seenCredits");
+
+    nbt_writer_t writer {
+        .write = _writeToFile,
+        .userdata = &output_file,
+    };
+    nbt_write(writer, root.data, NBT_WRITE_FLAG_USE_ZLIB);
+
+    root.destroy();
 }
 
 void Persistence::saveRegion(Dimension &dim, int x, int z)
@@ -465,13 +473,13 @@ void Persistence::saveRegion(Dimension &dim, int x, int z)
     std::vector<uint8_t> finalData(sizeof(RegionHeader), 0);
     RegionHeader header;
     memset(&header, 0, sizeof(header));
-    uint32_t lastOffset = 2; // This takes into account the region header
+    uint32_t lastOffset = sizeof(header) / regionChunkAlignment; // This needs to take the regino header into account
     uint8_t lastSize = 0;
 
     // TODO(huntears): Check if the region is loaded, else just exit here
     // EDIT: Is that really needed? This depends on how this is called, but it might not need to be done
 
-    LDEBUG("Saving region {} {}", x, z);
+    LDEBUG("Saving region {} {}...", x, z);
 
     const std::string regionSlice = "r." + std::to_string(x) + "." + std::to_string(z) + ".mca";
     const std::filesystem::path file = std::filesystem::path(_folder) / "region" / regionSlice;
@@ -502,7 +510,8 @@ void Persistence::saveRegion(Dimension &dim, int x, int z)
             const size_t chunkSize =
                 !(actualChunkSize & regionChunkAlignmentMask) ? actualChunkSize : actualChunkSize + regionChunkAlignment - (actualChunkSize & regionChunkAlignmentMask);
             const uint32_t chunkOffset = lastOffset + lastSize;
-            LDEBUG("Location Offset: {} | Chunk Offset: {} | ChunkSize: {}", currentOffset, chunkOffset, chunkSize / regionChunkAlignment);
+            // Only uncomment this if there is heavy debug to do, cause this will absolutely fill your logs with nonsense
+            // LDEBUG("Location Offset: {} | Chunk Offset: {} | ChunkSize: {}", currentOffset, chunkOffset, chunkSize / regionChunkAlignment);
             header.locationTable[currentOffset] = RegionLocation(chunkOffset, chunkSize / regionChunkAlignment);
 
             // Add padding if necessary to the chunk's data
@@ -524,6 +533,8 @@ void Persistence::saveRegion(Dimension &dim, int x, int z)
     // Flush to disk
     // TODO (huntears): Error handling
     FILE *f = fopen(file.c_str(), "w");
+    if (!f)
+        throw std::runtime_error("Could not open file " + std::string(file));
     fwrite(finalData.data(), 1, finalData.size(), f);
     fclose(f);
 

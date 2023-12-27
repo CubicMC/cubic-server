@@ -200,6 +200,11 @@ public:
      */
     constexpr std::vector<std::pair<Position, BlockId>> &getBlocksToBeUpdated() { return _blocksToBeUpdated; }
 
+    /*
+     * @brief Gets an nbt formatted to be saved to disk in a region file
+     *
+     * @return nbt_tag_t* The formatted nbt tag
+     */
     nbt_tag_t *toRegionCompatibleFormat();
 
     friend class Persistence;

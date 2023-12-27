@@ -62,8 +62,7 @@ ChunkColumn::ChunkColumn(const Position2D &chunkPos, std::shared_ptr<Dimension> 
         auto listBase = NBT_MAKE(nbt::LongArray, HEIGHTMAP_ENTRY[idx]);
         auto list = std::dynamic_pointer_cast<nbt::LongArray>(listBase);
 
-        for (auto i = 0; i < HEIGHTMAP_ARRAY_SIZE; i++)
-            list->getValues().push_back(0);
+        list->getValues().insert(list->getValues().end(), HEIGHTMAP_ARRAY_SIZE, 0);
 
         _heightMap.addValue(listBase);
     }
