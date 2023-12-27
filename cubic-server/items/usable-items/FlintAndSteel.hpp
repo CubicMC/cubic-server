@@ -1,6 +1,7 @@
 #ifndef CUBICSERVER_ITEMS_USABLE_ITEMS_FLINT_AND_STEEL
 #define CUBICSERVER_ITEMS_USABLE_ITEMS_FLINT_AND_STEEL
 
+#include "../../generation/player_constructions/NetherPortal.hpp"
 #include "items/UsableItem.hpp"
 
 namespace Items {

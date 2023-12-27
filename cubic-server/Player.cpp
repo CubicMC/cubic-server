@@ -15,6 +15,7 @@
 #include "items/UsableItem.hpp"
 #include "items/foodItems.hpp"
 #include "items/toolsDamage.hpp"
+#include "items/usable-items/FlintAndSteel.hpp"
 #include "items/usable-items/Hoe.hpp"
 #include "logging/logging.hpp"
 #include "nbt.h"
@@ -86,10 +87,14 @@ Player::Player(std::weak_ptr<Client> cli, std::shared_ptr<Dimension> dim, u128 u
     nbt_tag_compound_append(root, display);
     Items::Hoe hoe = Items::Hoe("minecraft:wooden_hoe", 756, Items::ItemMaxDurabilityByType::WoodenItem, false, Items::UsabilityType::BothMouseClicksUsable);
     auto hoeRoot = hoe.setNbtTag();
+    Items::FlintAndSteel flint = Items::FlintAndSteel();
+    auto flintRoot = flint.setNbtTag();
 
     this->_inventory->playerInventory().at(14) = protocol::Slot(true, 1, 12, root);
-    this->_inventory->playerInventory().at(16) = protocol::Slot(true, hoe._numeralId, 1, hoeRoot);
-    this->_inventory->playerInventory().at(17) = protocol::Slot(true, ITEM_CONVERTER.fromItemToProtocolId("minecraft:wooden_sword"), 1);
+    this->_inventory->playerInventory().at(15) = protocol::Slot(true, ITEM_CONVERTER.fromItemToProtocolId("minecraft:obsidian"), 20);
+    this->_inventory->playerInventory().at(16) = protocol::Slot(true, flint._numeralId, 1, flintRoot);
+    this->_inventory->playerInventory().at(17) = protocol::Slot(true, hoe._numeralId, 1, hoeRoot);
+    this->_inventory->playerInventory().at(18) = protocol::Slot(true, ITEM_CONVERTER.fromItemToProtocolId("minecraft:wooden_sword"), 1);
     PEXP(incrementPlayerCountGlobal);
 }
 
@@ -1200,9 +1205,15 @@ void Player::_onUseItemOn(protocol::UseItemOn &pck)
             this->sendSetContainerSlot({this->_inventory, static_cast<int16_t>(this->_heldItem + HOTBAR_OFFSET)});
         }
         return;
+    } else if (Items::FlintAndSteel *usedItem = std::get_if<Items::FlintAndSteel>(&item)) {
+        usedItem->onUse(this->getDimension(), pck.location, Items::UsabilityType::RightMouseClickUsable, (int32_t) pck.face);
+        this->_inventory->hotbar().at(this->_heldItem).updateDamage();
+        this->sendSetContainerSlot({this->_inventory, static_cast<int16_t>(this->_heldItem + HOTBAR_OFFSET)});
+        return;
     }
-    if (_inventory->hotbar().at(this->_heldItem).present)
+    if (_inventory->hotbar().at(this->_heldItem).present) {
         this->getDimension()->updateBlock(pck.location, GLOBAL_PALETTE.fromBlockToProtocolId(ITEM_CONVERTER.fromProtocolIdToItem(_inventory->hotbar().at(this->_heldItem).itemID)));
+    }
     if (_gamemode == player_attributes::Gamemode::Creative)
         return;
     this->_inventory->hotbar().at(this->_heldItem).itemCount--;

@@ -1,4 +1,5 @@
 #include "generator.hpp"
+#include "generation/nether.hpp"
 #include "generation/overworld.hpp"
 
 bool generation::Generator::isCached(positionType x, positionType y, positionType z) { return isCached2D(x, z) && _noiseCache[x][z].second.contains(y); }
