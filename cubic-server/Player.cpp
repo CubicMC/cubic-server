@@ -1086,6 +1086,7 @@ void Player::_onPlayerAction(protocol::PlayerAction &pck)
 {
     bool canceled = false;
     Vector3<int> tmp(pck.location.x, pck.location.y, pck.location.z);
+    BlockId targetedBlock = this->getDimension()->getBlock(pck.location);
 
     // N_LINFO("Got a Player Action {} at {}", pck.status, pck.location);
     N_LDEBUG("Got a Player Action and player is in gamemode {} and status is {}", this->getGamemode(), pck.status);
@@ -1094,7 +1095,7 @@ void Player::_onPlayerAction(protocol::PlayerAction &pck)
         if (this->getGamemode() == player_attributes::Gamemode::Creative) {
             onEventCancelable(Server::getInstance()->getPluginManager(), onBlockDestroy, canceled, 0, tmp);
             if (canceled) {
-                Event::cancelBlockDestroy(this, this->getDimension()->getLevel().getChunkColumnFromBlockPos(pck.location.x, pck.location.z).getBlock(pck.location), pck.location);
+                Event::cancelBlockDestroy(this, targetedBlock, pck.location);
                 return;
             }
             this->getDimension()->updateBlock(pck.location, 0);
@@ -1102,11 +1103,11 @@ void Player::_onPlayerAction(protocol::PlayerAction &pck)
         if (this->getGamemode() == player_attributes::Gamemode::Survival) {
             onEventCancelable(Server::getInstance()->getPluginManager(), onBlockDestroy, canceled, 0, tmp);
             if (canceled) {
-                Event::cancelBlockDestroy(this, this->getDimension()->getLevel().getChunkColumnFromBlockPos(pck.location.x, pck.location.z).getBlock(pck.location), pck.location);
+                Event::cancelBlockDestroy(this, targetedBlock, pck.location);
                 return;
             }
-            if (BLOCK_DATA_CONVERTER.fromBlockIdToBlockData(this->getDimension()->getBlock(pck.location)).hardness == 0) {
-                int id = ITEM_CONVERTER.fromItemToProtocolId(GLOBAL_PALETTE.fromProtocolIdToBlock(this->getDimension()->getBlock(pck.location)).name);
+            if (BLOCK_DATA_CONVERTER.fromBlockIdToBlockData(targetedBlock).hardness == 0) {
+                int id = ITEM_CONVERTER.fromItemToProtocolId(GLOBAL_PALETTE.fromProtocolIdToBlock(targetedBlock).name);
                 this->getDimension()->updateBlock(pck.location, 0);
                 _foodExhaustionLevel += 0.005;
                 _dim->makeEntity<Item>(protocol::Slot {true, id, 1})
@@ -1119,7 +1120,7 @@ void Player::_onPlayerAction(protocol::PlayerAction &pck)
     case protocol::PlayerAction::Status::FinishedDigging: {
         onEventCancelable(Server::getInstance()->getPluginManager(), onBlockDestroy, canceled, 0, tmp);
         if (canceled) {
-            Event::cancelBlockDestroy(this, this->getDimension()->getLevel().getChunkColumnFromBlockPos(pck.location.x, pck.location.z).getBlock(pck.location), pck.location);
+            Event::cancelBlockDestroy(this, targetedBlock, pck.location);
             return;
         }
         auto item = this->_inventory->hotbar().at(this->_heldItem).getUsableItemFromSlot();
@@ -1131,7 +1132,7 @@ void Player::_onPlayerAction(protocol::PlayerAction &pck)
                 }
             }
         }
-        int id = ITEM_CONVERTER.fromItemToProtocolId(GLOBAL_PALETTE.fromProtocolIdToBlock(this->getDimension()->getBlock(pck.location)).name);
+        int id = ITEM_CONVERTER.fromItemToProtocolId(GLOBAL_PALETTE.fromProtocolIdToBlock(targetedBlock).name);
         this->getDimension()->updateBlock(pck.location, 0);
         _foodExhaustionLevel += 0.005;
         _dim->makeEntity<Item>(protocol::Slot {true, id, 1})
