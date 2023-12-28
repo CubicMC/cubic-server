@@ -9,6 +9,7 @@
 #include "math/Vector3.hpp"
 #include "protocol/ClientPackets.hpp"
 #include "tiles-entities/TileEntity.hpp"
+#include "tiles-entities/TileEntityList.hpp"
 #include "types.hpp"
 #include "world_storage/ChunkColumn.hpp"
 #include "world_storage/Level.hpp"
@@ -343,9 +344,20 @@ void Dimension::updateBlock(Position position, int32_t id)
 
     auto chunkPosition = world_storage::convertPositionToChunkPosition(position);
     chunk.updateBlock(chunkPosition, id);
+    const TileEntity *tileEntity = nullptr;
+    if (id == 0)
+        chunk.removeTileEntity(position);
+    else if (int tileEntityId = convertBlockNameToBlockEntityType(GLOBAL_PALETTE.fromProtocolIdToBlock(id).name) != -1) {
+        chunk.addTileEntity(std::make_unique<TileEntity>("", tileEntityId, position));
+        tileEntity = chunk.getTileEntity(position);
+    }
     std::lock_guard _(_playersMutex);
     for (auto player : _players) {
         player->sendBlockUpdate({position, id});
+        if (tileEntity)
+            player->sendBlockEntityData(tileEntity->toBlockEntityData());
+        else
+            player->sendBlockEntityData({position, -1, nullptr});
     }
 }
 
@@ -365,6 +377,7 @@ void Dimension::addTileEntity(Position position, BlockId type)
     chunk.addTileEntity(std::make_unique<TileEntity>("", type, position));
     for (auto player : _players) {
         player->sendBlockUpdate({position, type});
+        player->sendBlockEntityData(chunk.getTileEntity(position)->toBlockEntityData());
     }
 }
 
