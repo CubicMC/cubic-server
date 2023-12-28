@@ -156,6 +156,14 @@ public:
     constexpr const std::vector<std::unique_ptr<TileEntity>> &getTileEntities() const { return _tileEntities; }
 
     /**
+     * @brief Get the Tile Entity object at the given position
+     *
+     * @param pos The position of the Tile Entity
+     * @return const TileEntity *
+     */
+    const TileEntity *getTileEntity(const Position &pos);
+
+    /**
      * @brief Add a Tile Entity to the chunk
      *
      * @param std::unique_ptr<TileEntity>
