@@ -103,8 +103,8 @@ else
     sha256sum -c registries-$MinecraftVersion.json.sha256
     rm registries-$MinecraftVersion.json.sha256
 
-    wget https://github.com/CubicMC/cubic-server/releases/download/$ServerVersion/CubicServer_x86-64_${OperatingSystem}_$ServerVersion
-    chmod +x CubicServer_x86-64_${OperatingSystem}_$ServerVersion
+    wget https://github.com/CubicMC/cubic-server/releases/download/$ServerVersion/CubicServer_x86-64_${OperatingSystem}_$ServerVersion -o CubicServer
+    chmod +x CubicServer
     mkdir -p assets
     tar xf loot_tables.tar.gz --directory=assets/
     tar xf recipes.tar.gz --directory=assets/
