@@ -1,13 +1,41 @@
-FROM alpine:latest
+FROM alpine:latest AS builder
 
 RUN apk add --no-cache \
-    curl \
-    libstdc++
+    git \
+    make \
+    cmake \
+    python3 \
+    zlib-dev \
+    curl-dev \
+    clang \
+    boost-dev
 
 WORKDIR /home/cubic-server
 
-RUN curl -sSf https://raw.githubusercontent.com/CubicMC/cubic-server/master/bootstrap.sh | sh
+COPY CMakeLists.txt .
+COPY cubic-server cubic-server
+COPY generators generators
+COPY blocks.cmake .
+COPY boost.cmake .
+COPY c_flag_overrides.cmake .
+COPY cxx_flag_overrides.cmake .
 
-EXPOSE 25565
+RUN cmake -S . -B build -DCMAKE_BUILD_TYPE=Release -DUSE_CLANG=true -DNO_GUI=true
 
-ENTRYPOINT [ "./CubicServer_x86-64_MUSLLinux_0.3.0-beta" ]
+RUN cmake --build build -j`nproc --ignore=1`
+
+FROM alpine:latest AS runner
+
+# curl-dev is needed because the library is not linked statically
+RUN apk add --no-cache \
+    libstdc++ \
+    curl-dev
+
+WORKDIR /home/cubic-server
+
+COPY --from=builder /home/cubic-server/build/CubicServer .
+COPY --from=builder /home/cubic-server/build/blocks-*.json .
+COPY --from=builder /home/cubic-server/build/registries-*.json .
+COPY --from=builder /home/cubic-server/build/assets assets
+
+ENTRYPOINT [ "./CubicServer" ]
