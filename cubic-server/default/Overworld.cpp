@@ -84,9 +84,7 @@ void Overworld::generateChunk(int x, int z, world_storage::GenerationState goalS
     else
         _level.addChunkColumn(pos, shared_from_this());
     if (x == 0 && z == 0)
-        this->addTileEntity(
-            {0, 71, 0}, Blocks::Chest::toProtocol(Blocks::Chest::Properties::Type::SINGLE, Blocks::Chest::Properties::Facing::NORTH, Blocks::Chest::Properties::Waterlogged::FALSE)
-        );
+        this->addTileEntity({0, 71, 0}, Blocks::Furnace::toProtocol(Blocks::Furnace::Properties::Facing::SOUTH, Blocks::Furnace::Properties::Lit::FALSE));
 }
 
 void Overworld::removePlayer(int32_t entity_id)

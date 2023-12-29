@@ -347,9 +347,12 @@ void Dimension::updateBlock(Position position, int32_t id)
     const TileEntity *tileEntity = nullptr;
     if (id == 0)
         chunk.removeTileEntity(position);
-    else if (int tileEntityId = convertBlockNameToBlockEntityType(GLOBAL_PALETTE.fromProtocolIdToBlock(id).name) != -1) {
-        chunk.addTileEntity(std::make_unique<TileEntity>("", tileEntityId, position));
-        tileEntity = chunk.getTileEntity(position);
+    else {
+        TileEntityType tileEntityId = convertBlockNameToBlockEntityType(GLOBAL_PALETTE.fromProtocolIdToBlock(id).name);
+        if (tileEntityId != TileEntityType::UnknownType) {
+            chunk.addTileEntity(createTileEntity(id, position));
+            tileEntity = chunk.getTileEntity(position);
+        }
     }
     std::lock_guard _(_playersMutex);
     for (auto player : _players) {
@@ -374,7 +377,7 @@ void Dimension::addTileEntity(Position position, BlockId type)
         z += 16;
 
     chunk.updateBlock({x, position.y, z}, type);
-    chunk.addTileEntity(std::make_unique<TileEntity>("", type, position));
+    chunk.addTileEntity(createTileEntity(type, position));
     for (auto player : _players) {
         player->sendBlockUpdate({position, type});
         player->sendBlockEntityData(chunk.getTileEntity(position)->toBlockEntityData());
