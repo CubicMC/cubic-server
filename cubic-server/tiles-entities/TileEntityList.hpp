@@ -1,7 +1,9 @@
 #ifndef CUBICSERVER_TILEENTITY_TILEENTITIESLIST_HPP
 #define CUBICSERVER_TILEENTITY_TILEENTITIESLIST_HPP
 
+#include "types.hpp"
 #include <array>
+#include <memory>
 #include <string>
 
 const std::array<std::string, 155> tileEntityNameList {
@@ -137,7 +139,6 @@ const std::array<std::string, 155> tileEntityNameList {
     "command_block",
     "repeating_command_block",
     "chain_command_block",
-
     "end_gateway",
     "structure_block",
     "jigsaw",
@@ -163,85 +164,130 @@ const std::array<std::string, 155> tileEntityNameList {
     "bell",
 };
 
-constexpr int convertBlockNameToBlockEntityType(const std::string &name)
+enum class TileEntityType : int {
+    UnknownType = -1,
+    Furnace = 0,
+    Chest = 1,
+    TrappedChest = 2,
+    EnderChest = 3,
+    Jukebox = 4,
+    Dispenser = 5,
+    Dropper = 6,
+    Sign = 7,
+    HangingSign = 8,
+    Spawner = 9,
+    MovingPiston = 10,
+    BrewingStand = 11,
+    EnchantingTable = 12,
+    EndPortal = 13,
+    Beacon = 14,
+    Skull = 15,
+    DaylightDetector = 16,
+    Hopper = 17,
+    Comparator = 18,
+    Banner = 19,
+    StructureBlock = 20,
+    EndGateway = 21,
+    CommandBlock = 22,
+    ShulkerBox = 23,
+    Bed = 24,
+    Conduit = 25,
+    Barrel = 26,
+    Smoker = 27,
+    BlastFurnace = 28,
+    Lectern = 29,
+    Bell = 30,
+    Jigsaw = 31,
+    Campfire = 32,
+    Beehive = 33,
+    SculkSensor = 34,
+    SculkCatalyst = 35,
+    SculkShrieker = 36,
+    ChiseledBookshelf = 37,
+};
+
+constexpr TileEntityType convertBlockNameToBlockEntityType(const std::string &name)
 {
     if (name.find("bee") != std::string::npos)
-        return 33;
+        return TileEntityType::Beehive;
     if (name.find("hanging_sign") != std::string::npos)
-        return 8;
+        return TileEntityType::HangingSign;
     if (name.find("sign") != std::string::npos)
-        return 7;
+        return TileEntityType::Sign;
     if (name.find("sculk_sensor") != std::string::npos)
-        return 34;
+        return TileEntityType::SculkSensor;
     if (name.find("sculk_catalyst") != std::string::npos)
-        return 35;
+        return TileEntityType::SculkCatalyst;
     if (name.find("sculk_shrieker") != std::string::npos)
-        return 36;
+        return TileEntityType::SculkShrieker;
     if (name.find("banner") != std::string::npos)
-        return 19;
+        return TileEntityType::Banner;
     if (name.find("trapped_chest") != std::string::npos)
-        return 2;
+        return TileEntityType::TrappedChest;
     if (name.find("ender_chest") != std::string::npos)
-        return 3;
+        return TileEntityType::EnderChest;
     if (name.find("chest") != std::string::npos)
-        return 1;
+        return TileEntityType::Chest;
     if (name.find("dispenser") != std::string::npos)
-        return 5;
+        return TileEntityType::Dispenser;
     if (name.find("furnace") != std::string::npos)
-        return 0;
+        return TileEntityType::Furnace;
     if (name.find("brewing_stand") != std::string::npos)
-        return 11;
+        return TileEntityType::BrewingStand;
     if (name.find("hopper") != std::string::npos)
-        return 17;
+        return TileEntityType::Hopper;
     if (name.find("dropper") != std::string::npos)
-        return 6;
+        return TileEntityType::Dropper;
     if (name.find("shulker_box") != std::string::npos)
-        return 23;
+        return TileEntityType::ShulkerBox;
     if (name.find("barrel") != std::string::npos)
-        return 26;
+        return TileEntityType::Barrel;
     if (name.find("smoker") != std::string::npos)
-        return 27;
+        return TileEntityType::Smoker;
     if (name.find("blast_furnace") != std::string::npos)
-        return 28;
+        return TileEntityType::BlastFurnace;
     if (name.find("campfire") != std::string::npos)
-        return 32;
+        return TileEntityType::Campfire;
     if (name.find("lectern") != std::string::npos)
-        return 29;
+        return TileEntityType::Lectern;
     if (name.find("chiseled_bookshelf") != std::string::npos)
-        return 37;
+        return TileEntityType::ChiseledBookshelf;
     if (name.find("beacon") != std::string::npos)
-        return 14;
+        return TileEntityType::Beacon;
     if (name.find("spawner") != std::string::npos)
-        return 9;
+        return TileEntityType::Spawner;
     if (name.find("moving_piston") != std::string::npos)
-        return 10;
+        return TileEntityType::MovingPiston;
     if (name.find("jukebox") != std::string::npos)
-        return 4;
+        return TileEntityType::Jukebox;
     if (name.find("enchanting_table") != std::string::npos)
-        return 12;
+        return TileEntityType::EnchantingTable;
     if (name.find("end_portal") != std::string::npos)
-        return 13;
+        return TileEntityType::EndPortal;
     if (name.find("skull") != std::string::npos || name.find("head") != std::string::npos)
-        return 15;
+        return TileEntityType::Skull;
     if (name.find("command_block") != std::string::npos)
-        return 22;
+        return TileEntityType::CommandBlock;
     if (name.find("end_gateway") != std::string::npos)
-        return 21;
+        return TileEntityType::EndGateway;
     if (name.find("structure_block") != std::string::npos)
-        return 20;
+        return TileEntityType::StructureBlock;
     if (name.find("jigsaw") != std::string::npos)
-        return 31;
+        return TileEntityType::Jigsaw;
     if (name.find("daylight_detector") != std::string::npos)
-        return 16;
+        return TileEntityType::DaylightDetector;
     if (name.find("comparator") != std::string::npos)
-        return 18;
+        return TileEntityType::Comparator;
     if (name.find("bed") != std::string::npos)
-        return 24;
+        return TileEntityType::Bed;
     if (name.find("conduit") != std::string::npos)
-        return 25;
+        return TileEntityType::Conduit;
     if (name.find("bell") != std::string::npos)
-        return 30;
-    return -1;
+        return TileEntityType::Bell;
+    return TileEntityType::UnknownType;
 };
+
+class TileEntity;
+std::unique_ptr<TileEntity> createTileEntity(BlockId blockId, Position position);
 
 #endif // CUBICSERVER_TILEENTITY_TILEENTITIESLIST_HPP
