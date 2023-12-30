@@ -344,10 +344,11 @@ void Dimension::updateBlock(Position position, int32_t id)
 
     auto chunkPosition = world_storage::convertPositionToChunkPosition(position);
     chunk.updateBlock(chunkPosition, id);
-    const TileEntity *tileEntity = nullptr;
+    const tile_entity::TileEntity *tileEntity = nullptr;
     if (id == 0)
         chunk.removeTileEntity(position);
     else {
+        using namespace tile_entity;
         TileEntityType tileEntityId = convertBlockNameToBlockEntityType(GLOBAL_PALETTE.fromProtocolIdToBlock(id).name);
         if (tileEntityId != TileEntityType::UnknownType) {
             chunk.addTileEntity(createTileEntity(id, position));
@@ -377,7 +378,7 @@ void Dimension::addTileEntity(Position position, BlockId type)
         z += 16;
 
     chunk.updateBlock({x, position.y, z}, type);
-    chunk.addTileEntity(createTileEntity(type, position));
+    chunk.addTileEntity(tile_entity::createTileEntity(type, position));
     for (auto player : _players) {
         player->sendBlockUpdate({position, type});
         player->sendBlockEntityData(chunk.getTileEntity(position)->toBlockEntityData());
