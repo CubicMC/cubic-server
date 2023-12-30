@@ -9,6 +9,7 @@
 #include <cstdint>
 #include <string>
 
+namespace tile_entity {
 class TileEntity {
 public:
     TileEntity(const std::string &id, const Position &position, nbt_tag_t *nbt = nullptr):
@@ -97,5 +98,6 @@ protected:
     nbt_tag_t *_nbt = nullptr;
     bool _needBlockUpdate = false;
 };
+}
 
 #endif // CUBICSERVER_TILEENTITY_HPP

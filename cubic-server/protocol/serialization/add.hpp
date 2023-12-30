@@ -23,7 +23,7 @@ constexpr void addBlockEntity(std::vector<uint8_t> &out, const BlockEntity &data
     addNBT(out, data.data);
 }
 
-constexpr void addBlockEntities(std::vector<uint8_t> &out, const std::vector<std::unique_ptr<TileEntity>> &data)
+constexpr void addBlockEntities(std::vector<uint8_t> &out, const std::vector<std::unique_ptr<tile_entity::TileEntity>> &data)
 {
     addVarInt(out, data.size());
     for (auto &i : data)

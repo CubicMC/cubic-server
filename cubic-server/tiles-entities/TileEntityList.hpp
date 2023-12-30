@@ -6,6 +6,7 @@
 #include <memory>
 #include <string>
 
+namespace tile_entity {
 const std::array<std::string, 155> tileEntityNameList {
     "beehive",
     "bee_nest",
@@ -288,6 +289,10 @@ constexpr TileEntityType convertBlockNameToBlockEntityType(const std::string &na
 };
 
 class TileEntity;
-std::unique_ptr<TileEntity> createTileEntity(BlockId blockId, Position position);
+}
+
+namespace tile_entity {
+std::unique_ptr<tile_entity::TileEntity> createTileEntity(BlockId blockId, Position position);
+}
 
 #endif // CUBICSERVER_TILEENTITY_TILEENTITIESLIST_HPP

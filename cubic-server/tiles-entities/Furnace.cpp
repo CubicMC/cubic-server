@@ -2,6 +2,7 @@
 #include "logging/logging.hpp"
 #include "types.hpp"
 
+using namespace tile_entity;
 Furnace::Furnace(BlockId blockId, const Position &position, nbt_tag_t *nbt):
     TileEntity("minecraft:furnace", position, nbt),
     _burningTime(0),

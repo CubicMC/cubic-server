@@ -3,7 +3,7 @@
 
 #include "Furnace.hpp"
 
-std::unique_ptr<TileEntity> createTileEntity(BlockId blockId, Position position)
+std::unique_ptr<tile_entity::TileEntity> tile_entity::createTileEntity(BlockId blockId, Position position)
 {
     TileEntityType tileEntityType = convertBlockNameToBlockEntityType(GLOBAL_PALETTE.fromProtocolIdToBlock(blockId).name);
     switch (tileEntityType) {

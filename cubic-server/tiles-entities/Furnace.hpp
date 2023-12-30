@@ -9,6 +9,7 @@
 #include "types.hpp"
 // #include "recipes/Smelting.hpp"
 
+namespace tile_entity {
 class Furnace : public TileEntity {
 public:
     Furnace(BlockId blockId, const Position &position, nbt_tag_t *nbt = nullptr);
@@ -29,5 +30,6 @@ protected:
     Blocks::Furnace::Properties::Facing _facing;
     // Recipes &_recipes;
 };
+}
 
 #endif // CUBICSERVER_TILEENTITY_FURNACE_HPP
