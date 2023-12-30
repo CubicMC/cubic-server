@@ -94,6 +94,13 @@ public:
      */
     void appendMetadataPacket(std::vector<uint8_t> &data) const override;
 
+    /**
+     * @brief Get the Window Id of the next screen / window / inventory
+     *
+     * @return int The window id
+     */
+    int getWindowId() { return _windowId; }
+
 public:
     /**
      * @brief Synchronize the player with the server
@@ -271,6 +278,7 @@ private:
         Right = 1,
     } _mainHand;
     int _nbTickBeforeNextAttack;
+    int _windowId;
 };
 
 template<isBaseOf<protocol::container::Container> Container, typename... Args>
