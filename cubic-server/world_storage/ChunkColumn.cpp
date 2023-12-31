@@ -295,6 +295,7 @@ void ChunkColumn::_generateNether(UNUSED GenerationState goalState)
     auto generator = generation::Nether(_dimension->getWorld()->getSeed());
 
     std::lock_guard<std::mutex> _(this->_generationLock);
+    int lavaLevel = 32;
     // generate blocks
     for (int y = CHUNK_HEIGHT_MIN; y < CHUNK_HEIGHT_MAX; y++) {
         for (int z = 0; z < SECTION_WIDTH; z++) {
@@ -355,6 +356,16 @@ void ChunkColumn::_generateNether(UNUSED GenerationState goalState)
                             updateBlock({x, y, z}, Blocks::Bedrock::toProtocol());
                     }
                 }
+            }
+        }
+    }
+
+    // generate lava seas
+    for (int z = 0; z < SECTION_WIDTH; z++) {
+        for (int x = 0; x < SECTION_WIDTH; x++) {
+            for (int y = lavaLevel; 0 < y; y--) {
+                if (getBlock({x, y, z}) == Blocks::Air::toProtocol())
+                    updateBlock({x, y, z}, Blocks::Lava::toProtocol(Blocks::Lava::Properties::Level::ZERO));
             }
         }
     }

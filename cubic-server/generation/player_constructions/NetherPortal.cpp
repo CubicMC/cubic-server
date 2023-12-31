@@ -1,8 +1,8 @@
 #include "NetherPortal.hpp"
+#include "Dimension.hpp"
 #include "Server.hpp"
 #include "logging/logging.hpp"
 #include "types.hpp"
-#include "Dimension.hpp"
 
 bool NetherPortal::checkLayers(Position pos, int axis)
 {
