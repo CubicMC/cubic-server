@@ -18,8 +18,6 @@
 #define FRAME_WIDTH 4
 #define FRAME_HEIGHT 5
 
-using namespace generation;
-
 struct Frame {
     int axis;
     int direction;

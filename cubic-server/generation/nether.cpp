@@ -1,6 +1,4 @@
 #include "nether.hpp"
-#include "blocks/Air.hpp"
-#include "blocks/Stone.hpp"
 
 #include "blocks.hpp"
 #include "options.hpp"
