@@ -145,7 +145,7 @@ public:
      * @param pos The position of the block
      * @return BlockId The block ID
      */
-    virtual BlockId getBlock(const Position &pos) const { return getLevel().getChunkColumnFromBlockPos(pos.x, pos.z).getBlock(pos); }
+    virtual BlockId getBlock(const Position &pos) const { return getLevel().getChunkColumnFromBlockPos(pos.x, pos.z).getBlock(world_storage::convertPositionToChunkPosition(pos)); }
 
     /**
      * @brief Get the tps of the dimension
