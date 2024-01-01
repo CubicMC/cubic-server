@@ -85,25 +85,45 @@ void NetherPortal::buildPortal(Position pos)
         auto block = _chunk.getBlock(pos);
         for (int y = 0; y < FRAME_HEIGHT - 1; y++) {
             for (int x = 0; x < FRAME_WIDTH - 1; x++) {
-                if (frame.axis == AXIS_X) {
-                    block = _chunk.getBlock({pos.x + x, pos.y + y, pos.z});
+                if (frame.direction == POSITIVE_POS && frame.axis == AXIS_X) {
+                    block = _chunk.getBlock({pos.x - 1 + x, pos.y + y, pos.z});
                     if (block == Blocks::Air::toProtocol() ||
                         block ==
                             Blocks::Fire::toProtocol(
                                 Blocks::Fire::Properties::Age::ZERO, Blocks::Fire::Properties::East::FALSE, Blocks::Fire::Properties::North::FALSE,
                                 Blocks::Fire::Properties::South::FALSE, Blocks::Fire::Properties::Up::FALSE, Blocks::Fire::Properties::West::FALSE
                             )) {
-                        _dim->updateBlock({pos.x + x, pos.y + y, pos.z}, Blocks::NetherPortal::toProtocol(Blocks::NetherPortal::Properties::Axis::X));
+                        _dim->updateBlock({pos.x - 1 + x, pos.y + y, pos.z}, Blocks::NetherPortal::toProtocol(Blocks::NetherPortal::Properties::Axis::X));
                     }
-                } else if (frame.axis == AXIS_Z) {
-                    block = _chunk.getBlock({pos.x, pos.y + y, pos.z + x});
+                } else if (frame.direction == POSITIVE_POS && frame.axis == AXIS_Z) {
+                    block = _chunk.getBlock({pos.x, pos.y + y, pos.z - 1 + x});
                     if (block == Blocks::Air::toProtocol() ||
                         block ==
                             Blocks::Fire::toProtocol(
                                 Blocks::Fire::Properties::Age::ZERO, Blocks::Fire::Properties::East::FALSE, Blocks::Fire::Properties::North::FALSE,
                                 Blocks::Fire::Properties::South::FALSE, Blocks::Fire::Properties::Up::FALSE, Blocks::Fire::Properties::West::FALSE
                             )) {
-                        _dim->updateBlock({pos.x, pos.y + y, pos.z + x}, Blocks::NetherPortal::toProtocol(Blocks::NetherPortal::Properties::Axis::Z));
+                        _dim->updateBlock({pos.x, pos.y + y, pos.z - 1 + x}, Blocks::NetherPortal::toProtocol(Blocks::NetherPortal::Properties::Axis::Z));
+                    }
+                } else if (frame.direction == NEGATIVE_POS && frame.axis == AXIS_X) {
+                    block = _chunk.getBlock({pos.x - 2 + x, pos.y + y, pos.z});
+                    if (block == Blocks::Air::toProtocol() ||
+                        block ==
+                            Blocks::Fire::toProtocol(
+                                Blocks::Fire::Properties::Age::ZERO, Blocks::Fire::Properties::East::FALSE, Blocks::Fire::Properties::North::FALSE,
+                                Blocks::Fire::Properties::South::FALSE, Blocks::Fire::Properties::Up::FALSE, Blocks::Fire::Properties::West::FALSE
+                            )) {
+                        _dim->updateBlock({pos.x - 2 + x, pos.y + y, pos.z}, Blocks::NetherPortal::toProtocol(Blocks::NetherPortal::Properties::Axis::X));
+                    }
+                } else if (frame.direction == NEGATIVE_POS && frame.axis == AXIS_Z) {
+                    block = _chunk.getBlock({pos.x, pos.y + y, pos.z - 2 + x});
+                    if (block == Blocks::Air::toProtocol() ||
+                        block ==
+                            Blocks::Fire::toProtocol(
+                                Blocks::Fire::Properties::Age::ZERO, Blocks::Fire::Properties::East::FALSE, Blocks::Fire::Properties::North::FALSE,
+                                Blocks::Fire::Properties::South::FALSE, Blocks::Fire::Properties::Up::FALSE, Blocks::Fire::Properties::West::FALSE
+                            )) {
+                        _dim->updateBlock({pos.x, pos.y + y, pos.z - 2 + x}, Blocks::NetherPortal::toProtocol(Blocks::NetherPortal::Properties::Axis::Z));
                     }
                 }
             }

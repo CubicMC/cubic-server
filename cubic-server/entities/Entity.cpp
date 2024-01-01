@@ -7,11 +7,15 @@
 #include "World.hpp"
 #include "WorldGroup.hpp"
 #include "chat/Message.hpp"
+#include "default/Overworld.hpp"
+#include "default/TheNether.hpp"
+#include "entities/EntityType.hpp"
 #include "logging/logging.hpp"
 #include "math/Vector3.hpp"
 #include "options.hpp"
 #include "protocol/metadata.hpp"
 #include "types.hpp"
+#include "world_storage/ChunkColumn.hpp"
 #include <memory>
 #include <optional>
 #include <utility>
@@ -150,7 +154,27 @@ const std::shared_ptr<Entity> Entity::pickupItem()
     return nullptr;
 }
 
-void Entity::tick() { this->tickPosition(); }
+void Entity::tick()
+{
+    this->tickPosition();
+    auto block = _dim->getBlock({static_cast<int>(_pos.x), static_cast<int>(_pos.y), static_cast<int>(_pos.z)});
+
+    if (block == Blocks::NetherPortal::toProtocol(Blocks::NetherPortal::Properties::Axis::Z) ||
+        block == Blocks::NetherPortal::toProtocol(Blocks::NetherPortal::Properties::Axis::X)) {
+        if (_type == EntityType::Player) {
+            _tickCounter++;
+            // LINFO("Counter: {}", _tickCounter);
+            if (_tickCounter >= 4 * 20) {
+                teleportPlayerThroughPortal(_dim);
+                _tickCounter = 0;
+            }
+        } else {
+            teleportEntityThroughPortal(_dim);
+        }
+    } else {
+        _tickCounter = 0;
+    }
+}
 
 void Entity::tickPosition()
 {
@@ -268,5 +292,135 @@ void Entity::broadcastMetadata() const
         if (!player->isInRenderDistance(_pos))
             continue;
         player->sendEntityMetadata(*this);
+    }
+}
+
+void Entity::teleportEntityThroughPortal(std::shared_ptr<Dimension> currentDimension)
+{
+    if (currentDimension->getDimensionType() == world_storage::DimensionType::OVERWORLD) {
+        auto dim = currentDimension->getWorld()->getDimensions().at("nether");
+        dim->addEntity(this->dynamicSharedFromThis<Entity>());
+        dim->spawnEntity(this->dynamicSharedFromThis<Entity>());
+        currentDimension->removeEntity(_id);
+    } else if (currentDimension->getDimensionType() == world_storage::DimensionType::NETHER) {
+        auto dim = currentDimension->getWorld()->getDimensions().at("overworld");
+        dim->addEntity(this->dynamicSharedFromThis<Entity>());
+        dim->spawnEntity(this->dynamicSharedFromThis<Entity>());
+        currentDimension->removeEntity(_id);
+    }
+}
+
+void Entity::teleportPlayerThroughPortal(std::shared_ptr<Dimension> currentDimension)
+{
+    auto thisPlayer = this->dynamicSharedFromThis<Player>();
+    if (currentDimension->getDimensionType() == world_storage::DimensionType::OVERWORLD) {
+        currentDimension->removePlayer(_id);
+        auto nextDimension = currentDimension->getWorld()->getDimensions().at("nether");
+        thisPlayer->setDimension(nextDimension);
+        thisPlayer->sendRespawn({
+            "minecraft:the_nether", // Dimension Type
+            "the_nether", // Dimension name
+            0, // Hashed seed
+            thisPlayer->getGamemode(), // Gamemode
+            thisPlayer->getGamemode(), // Previous gamemode
+            0, // Is debug
+            0, // Is flat
+            0, // Copy metadata
+            false, // Has death location
+            "the_nether", // Dimension name
+            {
+                static_cast<long>(thisPlayer->_pos.x), // death X
+                static_cast<long>(thisPlayer->_pos.y), // death Y
+                static_cast<long>(thisPlayer->_pos.z) // death Z
+            }, // Position
+        });
+        thisPlayer->sendFeatureFlags({{"minecraft:vanilla"}});
+        thisPlayer->sendChangeDifficulty({1, true});
+        thisPlayer->sendPlayerAbilities({player_attributes::getAbilitiesByGamemode(thisPlayer->getGamemode()), 0.05, 0.1});
+        thisPlayer->sendSetHeldItem({4});
+        thisPlayer->sendUpdateRecipes({});
+        thisPlayer->sendUpdateTags({});
+        thisPlayer->sendEntityEvent({thisPlayer->_id, 24});
+        thisPlayer->sendCommands({{}, 0});
+        thisPlayer->sendUpdateRecipiesBook({});
+        thisPlayer->teleport({8.5, 70, 8.5});
+        thisPlayer->sendServerData({false, "", false, "", false});
+        currentDimension->addEntity(this->dynamicSharedFromThis<Entity>());
+        currentDimension->addPlayer(thisPlayer);
+        thisPlayer->sendSetCenterChunk({0, 0});
+        auto renderDistance = currentDimension->getWorld()->getRenderDistance();
+        thisPlayer->sendChunkAndLightUpdate(0, 0);
+        for (int32_t x = -renderDistance; x < renderDistance + 1; x++) {
+            for (int32_t z = -renderDistance; z < renderDistance + 1; z++) {
+                if (x == 0 && z == 0)
+                    continue;
+                thisPlayer->sendChunkAndLightUpdate(x, z);
+            }
+        }
+        thisPlayer->sendInitializeWorldBorder({0, 0, 0, CONFIG["world-border"].as<double>(), 0, 29999984, 10, 10});
+        thisPlayer->sendSetDefaultSpawnPosition({{0, 70, 0}, 0.0f});
+        thisPlayer->sendSetContainerContent({thisPlayer->getInventory()});
+        thisPlayer->sendEntityMetadata(*thisPlayer);
+        thisPlayer->sendUpdateAttributes({thisPlayer->getId(), {}});
+        thisPlayer->sendUpdateAdvancements({false, {}, {}, {}});
+        thisPlayer->sendHealth();
+        thisPlayer->sendSetExperience({0, 0, 0});
+        currentDimension->spawnPlayer(*thisPlayer);
+        currentDimension->getWorld()->getWorldGroup()->getScoreboard().sendScoreboardStatus(*thisPlayer);
+
+    } else if (currentDimension->getDimensionType() == world_storage::DimensionType::NETHER) {
+        currentDimension->removePlayer(_id);
+        auto nextDimension = currentDimension->getWorld()->getDimensions().at("overworld");
+        thisPlayer->setDimension(nextDimension);
+        thisPlayer->sendRespawn({
+            "minecraft:overworld", // Dimension Type
+            "overworld", // Dimension name
+            0, // Hashed seed
+            thisPlayer->getGamemode(), // Gamemode
+            thisPlayer->getGamemode(), // Previous gamemode
+            0, // Is debug
+            0, // Is flat
+            0, // Copy metadata
+            false, // Has death location
+            "overworld", // Dimension name
+            {
+                static_cast<long>(thisPlayer->_pos.x), // death X
+                static_cast<long>(thisPlayer->_pos.y), // death Y
+                static_cast<long>(thisPlayer->_pos.z) // death Z
+            }, // Position
+        });
+        thisPlayer->sendFeatureFlags({{"minecraft:vanilla"}});
+        thisPlayer->sendChangeDifficulty({1, true});
+        thisPlayer->sendPlayerAbilities({player_attributes::getAbilitiesByGamemode(thisPlayer->getGamemode()), 0.05, 0.1});
+        thisPlayer->sendSetHeldItem({4});
+        thisPlayer->sendUpdateRecipes({});
+        thisPlayer->sendUpdateTags({});
+        thisPlayer->sendEntityEvent({thisPlayer->_id, 24});
+        thisPlayer->sendCommands({{}, 0});
+        thisPlayer->sendUpdateRecipiesBook({});
+        thisPlayer->teleport({8.5, 70, 8.5});
+        thisPlayer->sendServerData({false, "", false, "", false});
+        currentDimension->addEntity(this->dynamicSharedFromThis<Entity>());
+        currentDimension->addPlayer(thisPlayer);
+        thisPlayer->sendSetCenterChunk({0, 0});
+        auto renderDistance = currentDimension->getWorld()->getRenderDistance();
+        thisPlayer->sendChunkAndLightUpdate(0, 0);
+        for (int32_t x = -renderDistance; x < renderDistance + 1; x++) {
+            for (int32_t z = -renderDistance; z < renderDistance + 1; z++) {
+                if (x == 0 && z == 0)
+                    continue;
+                thisPlayer->sendChunkAndLightUpdate(x, z);
+            }
+        }
+        thisPlayer->sendInitializeWorldBorder({0, 0, 0, CONFIG["world-border"].as<double>(), 0, 29999984, 10, 10});
+        thisPlayer->sendSetDefaultSpawnPosition({{0, 70, 0}, 0.0f});
+        thisPlayer->sendSetContainerContent({thisPlayer->getInventory()});
+        thisPlayer->sendEntityMetadata(*thisPlayer);
+        thisPlayer->sendUpdateAttributes({thisPlayer->getId(), {}});
+        thisPlayer->sendUpdateAdvancements({false, {}, {}, {}});
+        thisPlayer->sendHealth();
+        thisPlayer->sendSetExperience({0, 0, 0});
+        currentDimension->spawnPlayer(*thisPlayer);
+        currentDimension->getWorld()->getWorldGroup()->getScoreboard().sendScoreboardStatus(*thisPlayer);
     }
 }

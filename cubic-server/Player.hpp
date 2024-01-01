@@ -123,6 +123,7 @@ public:
     void sendSwingArm(bool mainHand, int32_t swingerId);
     void sendTeleportEntity(int32_t id, const Vector3<double> &pos, const Vector2<uint8_t> &rot);
     void sendRemoveEntities(const std::vector<int32_t> &entities);
+    void sendRespawn(const protocol::Respawn &data);
     void sendUpdateEntityPosition(const protocol::UpdateEntityPosition &data);
     void sendUpdateEntityPositionAndRotation(const protocol::UpdateEntityPositionRotation &data);
     void sendUpdateEntityRotation(const protocol::UpdateEntityRotation &data);
@@ -220,6 +221,7 @@ private:
     void _unloadChunk(int32_t x, int32_t z);
     void _foodTick();
     void _eat();
+    void _respawn();
 
     std::weak_ptr<Client> _cli;
     std::string _username;
@@ -241,6 +243,7 @@ private:
     float _foodSaturationLevel;
     int _foodTickTimer;
     float _foodExhaustionLevel;
+    FloatingPosition _respawnPoint;
 
     // player status
     protocol::ClientInformation::ChatVisibility _chatVisibility;

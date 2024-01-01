@@ -301,7 +301,6 @@ void ChunkColumn::_generateNether(UNUSED GenerationState goalState)
         for (int z = 0; z < SECTION_WIDTH; z++) {
             for (int x = 0; x < SECTION_WIDTH; x++) {
                 auto block = generator.getBlock(x + this->_chunkPos.x * SECTION_WIDTH, y, z + this->_chunkPos.z * SECTION_WIDTH);
-                // if (block != Blocks::Air::toProtocol())
                 updateBlock({x, y, z}, block);
             }
         }
@@ -364,11 +363,23 @@ void ChunkColumn::_generateNether(UNUSED GenerationState goalState)
     for (int z = 0; z < SECTION_WIDTH; z++) {
         for (int x = 0; x < SECTION_WIDTH; x++) {
             for (int y = lavaLevel; 0 < y; y--) {
-                if (getBlock({x, y, z}) == Blocks::Air::toProtocol())
+                auto lastBlock = 0;
+                auto block = getBlock({x, y, z});
+                if (getBlock({x, y, z}) == Blocks::Air::toProtocol()) {
                     updateBlock({x, y, z}, Blocks::Lava::toProtocol(Blocks::Lava::Properties::Level::ZERO));
+                }
+                if (block == Blocks::Lava::toProtocol(Blocks::Lava::Properties::Level::ZERO)) {
+                    lastBlock = Blocks::Lava::toProtocol(Blocks::Lava::Properties::Level::ZERO);
+                    continue;
+                }
+                if (block == Blocks::Netherrack::toProtocol() && lastBlock == Blocks::Lava::toProtocol(Blocks::Lava::Properties::Level::ZERO)) {
+                    updateBlock({x, y, z}, Blocks::SoulSand::toProtocol()); // sand
+                    break;
+                }
             }
         }
     }
+    _currentState = GenerationState::READY;
 }
 
 void ChunkColumn::_generateEnd(UNUSED GenerationState goalState) { std::lock_guard<std::mutex> _(this->_generationLock); }

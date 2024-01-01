@@ -28,7 +28,7 @@ void TheNether::tick()
 void TheNether::initialize()
 {
     Dimension::initialize();
-    LINFO("Initialize - TheNether");
+    LINFO("Initialize - The Nether");
     int x = -NB_SPAWN_CHUNKS / 2, z = -NB_SPAWN_CHUNKS / 2;
     int i = 0;
     while (x < NB_SPAWN_CHUNKS / 2 || z < NB_SPAWN_CHUNKS / 2) {
@@ -54,7 +54,7 @@ void TheNether::initialize()
     // TODO: Move this to a better place
     this->_worldGenFuture = std::async(std::launch::async, [this] {
         this->getWorld()->getGenerationPool().waitUntilJobsDone();
-        LINFO("TheNether initialized");
+        LINFO("The Nether initialized");
         this->_isInitialized = true;
     });
 }
@@ -85,7 +85,7 @@ void TheNether::generateChunk(int x, int z, world_storage::GenerationState goalS
 void TheNether::removePlayer(int32_t entity_id)
 {
     Dimension::removePlayer(entity_id);
-    PEXP(incrementPlayerCountNether);
+    PEXP(decrementPlayerCountNether);
 }
 
 void TheNether::spawnPlayer(Player &player)

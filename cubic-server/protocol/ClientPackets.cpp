@@ -688,6 +688,36 @@ std::unique_ptr<std::vector<uint8_t>> protocol::createRemoveEntities(const Remov
     return packet;
 }
 
+std::unique_ptr<std::vector<uint8_t>> protocol::createRespawn(const Respawn &in)
+{
+    std::vector<uint8_t> payload;
+
+    // clang-format off
+    serialize(payload,
+        in.dimensionType, addIdentifier,
+        in.dimensionName, addIdentifier,
+        in.hashedSeed, addLong,
+        in.gamemode, addByte,
+        in.previousGamemode, addByte,
+        in.isDebug, addBoolean,
+        in.isFlat, addBoolean,
+        in.copyMetadata, addBoolean,
+        in.hasDeathLocation, addBoolean
+    );
+    // clang-format on
+    if (in.hasDeathLocation) {
+        // clang-format off
+        serialize(payload,
+            in.deathDimensionName, addIdentifier,
+            in.deathLocation, addPosition
+        );
+        // clang-format on
+    }
+    auto packet = std::make_unique<std::vector<uint8_t>>();
+    finalize(*packet, payload, ClientPacketID::Respawn);
+    return packet;
+}
+
 std::unique_ptr<std::vector<uint8_t>> protocol::createHeadRotation(const HeadRotation &in)
 {
     std::vector<uint8_t> payload;

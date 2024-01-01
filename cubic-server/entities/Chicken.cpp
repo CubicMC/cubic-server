@@ -17,7 +17,7 @@ Chicken::Chicken(std::shared_ptr<Dimension> dim, u128 uuid, float health, float 
     _layEgg.setCallback(std::bind(&Chicken::layEgg, this));
     _layEgg.start();
     attachAI<ai::Wandering>();
-    this->forceSetPosition({8.5, 70, 8.5});
+    this->forceSetPosition({8.5, 100, 8.5});
 }
 
 void Chicken::layEgg()

@@ -536,10 +536,10 @@ void Client::sendLoginPlay()
         .isHardcore = false, // TODO: something like this this->_player->_dim->getWorld()->getDifficulty(); Thats not difficulty tho (peaceful, easy, normal, hard)
         .gamemode = this->_player->getGamemode(),
         .previousGamemode = this->_player->getGamemode(),
-        .dimensionNames = std::vector<std::string>({"minecraft:overworld"}), // TODO: something like this this->_player->_dim->getWorld()->getDimensions();
+        .dimensionNames = std::vector<std::string>({"minecraft:overworld", "minecraft:the_nether"}), // TODO: something like this this->_player->_dim->getWorld()->getDimensions();
         .registryCodec = Server::getInstance()->getRegistry().toNBT(),
-        .dimensionType = "minecraft:overworld", // TODO: something like this this->_player->_dim->getDimensionType();
-        .dimensionName = "overworld", // TODO: something like this this->_player->getDimension()->name;
+        .dimensionType = _player->getDimension()->getDimensionTypeName(),
+        .dimensionName = _player->getDimension()->getDimensionName(),
         .hashedSeed = 0, // TODO: something like this this->_player->_dim->getWorld()->getHashedSeed();
         .maxPlayers = 20, // TODO: something like this this->_player->_dim->getWorld()->maxPlayers;
         .viewDistance = this->_player->getWorld()->getRenderDistance(),

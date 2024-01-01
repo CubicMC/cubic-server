@@ -55,6 +55,7 @@ Player::Player(std::weak_ptr<Client> cli, std::shared_ptr<Dimension> dim, u128 u
     _foodSaturationLevel(player_attributes::DEFAULT_FOOD_SATURATION_LEVEL), // TODO: Take this from the saved data
     _foodTickTimer(0), // TODO: Take this from the saved data
     _foodExhaustionLevel(0.0f), // TODO: Take this from the saved data
+    _respawnPoint(0, 120, 0), // TODO: Take this from the saved data
     _chatVisibility(protocol::ClientInformation::ChatVisibility::Enabled),
     _isFlying(true), // TODO: Take this from the saved data
     _isJumping(false),
@@ -91,7 +92,7 @@ Player::Player(std::weak_ptr<Client> cli, std::shared_ptr<Dimension> dim, u128 u
     auto flintRoot = flint.setNbtTag();
 
     this->_inventory->playerInventory().at(14) = protocol::Slot(true, 1, 12, root);
-    this->_inventory->playerInventory().at(15) = protocol::Slot(true, ITEM_CONVERTER.fromItemToProtocolId("minecraft:obsidian"), 20);
+    this->_inventory->playerInventory().at(15) = protocol::Slot(true, ITEM_CONVERTER.fromItemToProtocolId("minecraft:obsidian"), 40);
     this->_inventory->playerInventory().at(16) = protocol::Slot(true, flint._numeralId, 1, flintRoot);
     this->_inventory->playerInventory().at(17) = protocol::Slot(true, hoe._numeralId, 1, hoeRoot);
     this->_inventory->playerInventory().at(18) = protocol::Slot(true, ITEM_CONVERTER.fromItemToProtocolId("minecraft:wooden_sword"), 1);
@@ -586,6 +587,14 @@ void Player::sendRemoveEntities(const std::vector<int32_t> &entities)
     auto pck = protocol::createRemoveEntities({entities});
     client->doWrite(std::move(pck));
     N_LDEBUG("Sent a Remove Entities packet");
+}
+
+void Player::sendRespawn(const protocol::Respawn &packet)
+{
+    GET_CLIENT();
+    auto pck = protocol::createRespawn(packet);
+    client->doWrite(std::move(pck));
+    N_LDEBUG("Sent a Respawn packet");
 }
 
 void Player::sendSwingArm(bool mainHand, int32_t swingerId)
@@ -1475,6 +1484,39 @@ void Player::teleport(const Vector3<double> &pos)
     this->sendSynchronizePosition(pos);
     LDEBUG("Synchronize player position");
     Entity::teleport(pos);
+}
+
+void Player::_respawn()
+{
+    // this->setIsReadyToRemove(false);
+    this->_dim->addEntity(shared_from_this());
+    this->_dim->addPlayer(dynamic_pointer_cast<Player>(shared_from_this()));
+
+    // Perform the respawn
+    this->sendRespawn({
+        this->_dim->getDimensionTypeName(), // Dimension Type
+        this->_dim->getDimensionName(), // Dimension name
+        0, // Hashed seed
+        this->_gamemode, // Gamemode
+        this->_gamemode, // Previous gamemode
+        0, // Is debug
+        0, // Is flat
+        0, // Copy metadata
+        true, // Has death location
+        this->_dim->getDimensionName(), // Dimension name
+        {
+            static_cast<long>(this->_pos.x), // death X
+            static_cast<long>(this->_pos.y), // death Y
+            static_cast<long>(this->_pos.z) // death Z
+        }, // Position
+    });
+
+    _health = 20;
+
+    this->forceSetPosition(this->_respawnPoint);
+    this->sendSynchronizePlayerPosition();
+    this->_pose = Pose::Standing;
+    this->_dim->spawnPlayer(*this);
 }
 
 bool Player::isInRenderDistance(UNUSED const Vector2<double> &pos) const { return true; }

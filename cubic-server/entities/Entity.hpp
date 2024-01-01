@@ -167,6 +167,20 @@ public:
      */
     void broadcastMetadata() const;
 
+    /**
+     * @brief Teleports the entity through the Nether Portal, to either the Nether or the Overworld
+     *
+     * @param currentDimension the dimension the entity is in
+     */
+    void teleportEntityThroughPortal(std::shared_ptr<Dimension> currentDimension);
+
+    /**
+     * @brief Teleports the player through the Nether Portal, to either the Nether or the Overworld
+     *
+     * @param currentDimension the dimension the entity is in
+     */
+    void teleportPlayerThroughPortal(std::shared_ptr<Dimension> currentDimension);
+
 protected:
     std::shared_ptr<Dimension> _dim;
     bool _onFire;
@@ -190,6 +204,7 @@ protected:
     Vector3<double> _lastPos;
     Vector2<uint8_t> _lastRot;
     EntityType _type;
+    int _tickCounter = 0;
 };
 
 #endif // CUBICSERVER_ENTITIES_ENTITY_HPP
