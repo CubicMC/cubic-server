@@ -4,6 +4,7 @@
 #include "Entity.hpp"
 #include "EntityType.hpp"
 #include "options.hpp"
+#include "protocol_id_converter/blockIdConverter.hpp"
 #include <optional>
 
 constexpr float KNOCKBACK_DEFAULT_FORCE = 2500.0f;

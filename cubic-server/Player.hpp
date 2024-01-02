@@ -161,7 +161,6 @@ public:
     void sendUpdateTeams(const protocol::UpdateTeams &packet);
     void setJumpFromHeight(double height);
     bool takesFalldmg(void);
-    void sendUpdateTeams(const protocol::UpdateTeams &packet);
     void sendPickupItem(const protocol::PickupItem &packet);
 
 private:
