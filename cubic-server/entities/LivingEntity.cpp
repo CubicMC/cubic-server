@@ -37,10 +37,10 @@ double LivingEntity::getFallDmgEnvironmentFactor(Blocks::GlobalPalette palette)
         return 0.0;
     return getBlockSoftness(palette, blkUnder) *
         ( // TODO is entity sitting? in a boat, riding a saddled entity...
-               // !this->isSitting() &&
-               // TODO waiting for potion effects to be implemented
-               // !this->hasEffect(PotionEffect::SlowFalling) &&
-               // !this->_flyingWithElytra
+          // !this->isSitting() &&
+          // TODO waiting for potion effects to be implemented
+          // !this->hasEffect(PotionEffect::SlowFalling) &&
+          // !this->_flyingWithElytra
                true
         ); // does not handle kinetic collision
 }
