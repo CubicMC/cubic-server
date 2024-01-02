@@ -13,9 +13,7 @@
 double LivingEntity::getBlockSoftness(Blocks::GlobalPalette palette, const BlockId &blkId)
 {
     std::string blk = palette.fromProtocolIdToBlock(blkId).name;
-    static const std::list<std::string> blkImmune = {
-        "ladder", "vine", "bubble_column", "water", "lava", "cobweb", "slime_block", "honey_block"
-    };
+    static const std::list<std::string> blkImmune = {"ladder", "vine", "bubble_column", "water", "lava", "cobweb", "slime_block", "honey_block"};
     if (std::find(blkImmune.begin(), blkImmune.end(), blk) != blkImmune.end())
         return 0.0;
     if (blk == "scaffolding" && this->_crouching)
@@ -31,31 +29,26 @@ typedef protocol::SpawnEntity::EntityType EType;
 double LivingEntity::getFallDmgEnvironmentFactor(Blocks::GlobalPalette palette)
 {
     static const std::list<EType> mobImmune = {
-        EType::Blaze, EType::EnderDragon, EType::Ghast, EType::MagmaCube,
-        EType::Phantom, EType::Vex, EType::Wither, EType::Shulker, // hostile
-        EType::Bat, EType::Bee, EType::Chicken, EType::Cat, EType::IronGolem,
-        EType::SnowGolem, EType::Ocelot, EType::Parrot, // passive
+        EType::Blaze, EType::EnderDragon, EType::Ghast,   EType::MagmaCube, EType::Phantom,   EType::Vex,       EType::Wither, EType::Shulker, // hostile
+        EType::Bat,   EType::Bee,         EType::Chicken, EType::Cat,       EType::IronGolem, EType::SnowGolem, EType::Ocelot, EType::Parrot, // passive
     };
-    BlockId blkUnder = _dim->getChunk(this->_pos.x, this->_pos.z).getBlock(
-        {(int) this->_pos.x % 16, (int) (this->_pos.y - 2) % 16, (int) this->_pos.z % 16}
-    );
+    BlockId blkUnder = _dim->getChunk(this->_pos.x, this->_pos.z).getBlock({(int) this->_pos.x % 16, (int) (this->_pos.y - 2) % 16, (int) this->_pos.z % 16});
     if (std::find(mobImmune.begin(), mobImmune.end(), this->_type) != mobImmune.end())
         return 0.0;
     return getBlockSoftness(palette, blkUnder) *
-            (// TODO is entity sitting? in a boat, riding a saddled entity...
-            // !this->isSitting() &&
-            // TODO waiting for potion effects to be implemented
-            // !this->hasEffect(PotionEffect::SlowFalling) &&
-            // !this->_flyingWithElytra
-            true); // does not handle kinetic collision
+        ( // TODO is entity sitting? in a boat, riding a saddled entity...
+               // !this->isSitting() &&
+               // TODO waiting for potion effects to be implemented
+               // !this->hasEffect(PotionEffect::SlowFalling) &&
+               // !this->_flyingWithElytra
+               true
+        ); // does not handle kinetic collision
 }
 
 void LivingEntity::applyFallDamage(const double &height)
 {
     int fallDamage = ceil(height - this->_pos.y); // nb of blocks fallen
-    static const std::vector<EType> mobHalfDmg = {
-        EType::Camel, EType::Donkey, EType::Horse, EType::Mule, EType::SkeletonHorse, EType::ZombieHorse
-    };
+    static const std::vector<EType> mobHalfDmg = {EType::Camel, EType::Donkey, EType::Horse, EType::Mule, EType::SkeletonHorse, EType::ZombieHorse};
     fallDamage -= 3; // mobs don't take damage if they fall 3 blocks or less
     if (fallDamage <= 0)
         return;
