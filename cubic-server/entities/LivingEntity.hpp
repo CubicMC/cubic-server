@@ -43,7 +43,7 @@ public:
      * @param damage The damage to deal
      * @param source The source of the damage
      */
-    virtual void attack(float damage, const Vector3<double> &source, const int32_t &sourceId = 0);
+    virtual void attack(float damage, const Vector3<double> &source, const int32_t sourceId = 0);
 
     /*
      * @brief Inflict damage to the entity
@@ -51,7 +51,7 @@ public:
      * @param damage The damage to deal
      * @param sourceId The ID of the source entity dealing damage
      */
-    virtual void damage(float damage, const int32_t &sourceId = 0);
+    virtual void damage(float damage, const int32_t sourceId = 0);
 
     /*
      * @brief Inflict knockback to the entity
@@ -64,7 +64,7 @@ public:
     /**
      * @brief Kill the entity
      */
-    virtual void kill(const int32_t &killerId = 0);
+    virtual void kill(const int32_t killerId = 0);
 
     virtual void setHealth(float health);
 
@@ -79,7 +79,7 @@ public:
     /**
      * @brief Returns boolean indicating if the entity can be removed (dead and end of animation)
      */
-    NODISCARD virtual const bool &isReadyToRemove() const { return _readyToRemove; };
+    NODISCARD virtual bool isReadyToRemove() const { return _readyToRemove; };
 
     /**
      * @brief Adds serialized metadata to an output buffer

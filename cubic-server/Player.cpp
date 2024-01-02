@@ -53,7 +53,7 @@ Player::Player(std::weak_ptr<Client> cli, std::shared_ptr<Dimension> dim, u128 u
     _foodSaturationLevel(player_attributes::DEFAULT_FOOD_SATURATION_LEVEL), // TODO: Take this from the saved data
     _foodTickTimer(0), // TODO: Take this from the saved data
     _foodExhaustionLevel(0.0f), // TODO: Take this from the saved data
-    _respawnPoint(0, 120, 0),
+    _respawnPoint(0, 120, 0), // TODO: Take this from the saved data
     _chatVisibility(protocol::ClientInformation::ChatVisibility::Enabled),
     _isFlying(true), // TODO: Take this from the saved data
     _isJumping(false),
@@ -1510,31 +1510,17 @@ void Player::_respawn()
     this->_pose = Pose::Standing;
 
     this->_dim->spawnPlayer(*this);
-    // for (auto player : this->getDimension()->getPlayers()) {
-    //     if (player->getId() == this->getId())
-    //         continue;
-    //     player->sendEntityMetadata(*this);
-    //     player->sendSpawnPlayer({
-    //         this->_id,
-    //         this->_uuid,
-    //         this->_pos.x,
-    //         this->_pos.y,
-    //         this->_pos.z,
-    //         this->_rot.x,
-    //         this->_rot.z,
-    //     });
-    // }
 }
 
-void Player::kill(const int32_t &killerId)
+void Player::kill(const int32_t killerId)
 {
     this->sendHealth();
     LivingEntity::kill(killerId);
 
     this->sendCombatDeath({
-        this->_id, // Player id
-        killerId, // Killer Entity id
-        "You died :(" // Message
+        this->_id,
+        killerId,
+        "You died :("
     });
 }
 
