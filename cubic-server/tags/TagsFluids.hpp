@@ -1,4 +1,4 @@
 enum class TagsFluids {
-	LAVA,
-	WATER,
+    LAVA,
+    WATER,
 };

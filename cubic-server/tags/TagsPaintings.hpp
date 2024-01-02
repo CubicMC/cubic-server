@@ -1,3 +1,3 @@
 enum class TagsPaintings {
-	PLACEABLE,
+    PLACEABLE,
 };

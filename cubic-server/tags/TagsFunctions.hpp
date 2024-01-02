@@ -1,4 +1,4 @@
 enum class TagsFunctions {
-	LOAD,
-	TICK,
+    LOAD,
+    TICK,
 };

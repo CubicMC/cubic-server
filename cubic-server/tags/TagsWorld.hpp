@@ -1,4 +1,4 @@
 enum class TagsWorld {
-	NORMAL,
-	EXTENDED,
+    NORMAL,
+    EXTENDED,
 };

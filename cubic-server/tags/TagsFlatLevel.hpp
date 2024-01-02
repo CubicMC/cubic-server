@@ -1,3 +1,3 @@
 enum class TagsFlatLevel {
-	VISIBLE,
+    VISIBLE,
 };
