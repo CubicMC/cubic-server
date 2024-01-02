@@ -5,21 +5,44 @@
 #include "Server.hpp"
 #include "WorldGroup.hpp"
 #include "logging/logging.hpp"
+#include "types.hpp"
+#include "world_storage/ChunkColumn.hpp"
+#include <cmath>
 #include <cstdint>
+#include <vector>
 
 World::World(std::shared_ptr<WorldGroup> worldGroup, world_storage::WorldType worldType, std::string folder):
+    _chat(worldGroup->getChat()),
     _worldGroup(worldGroup),
+    _dimensions({}),
     _age(0),
     _time(0),
     _renderDistance(CONFIG["render-distance"].as<uint8_t>()),
+    _levelData(),
     _timeUpdateClock(20, std::bind(&World::updateTime, this)), // 1 second for time updates
+    _seed(CONFIG["seed"].as<int64_t>()),
     _generationPool(CONFIG["num-gen-thread"].as<uint16_t>(), "WorldGen"),
     _worldType(worldType),
-    _folder(folder)
+    _folder(folder),
+    _publishTpsClock(20, [this]() {
+        const auto tps = this->getTps();
+        for (const auto &[dimensionType, dimensionTps] : tps) {
+            switch (dimensionType) {
+            case world_storage::DimensionType::OVERWORLD:
+                PEXPP(addTpsOverworld, -dimensionTps.oneMinTps)
+                break;
+            case world_storage::DimensionType::NETHER:
+                PEXPP(addTpsNether, -dimensionTps.oneMinTps)
+                break;
+            case world_storage::DimensionType::END:
+                PEXPP(addTpsEnd, -dimensionTps.oneMinTps)
+                break;
+            }
+        }
+    })
 {
     _timeUpdateClock.start();
-    _seed = CONFIG["seed"].as<int64_t>();
-    _chat = worldGroup->getChat();
+    _publishTpsClock.start();
 }
 
 void World::tick()
@@ -30,6 +53,7 @@ void World::tick()
     _timeUpdateClock.tick();
     for (auto &[_, dim] : this->_dimensions)
         dim->getDimensionLock().release();
+    _publishTpsClock.tick();
 }
 
 void World::initialize()
@@ -57,30 +81,8 @@ bool World::isInitialized() const
     return true;
 }
 
-std::shared_ptr<WorldGroup> World::getWorldGroup() { return _worldGroup; }
-
-const std::shared_ptr<WorldGroup> World::getWorldGroup() const { return _worldGroup; }
-
-std::shared_ptr<Chat> World::getChat() { return _chat; }
-
-const std::shared_ptr<Chat> World::getChat() const { return _chat; }
-
-std::shared_ptr<Dimension> World::getDimension(const std::string_view &name) { return this->_dimensions.at(name); }
-
-const std::shared_ptr<Dimension> World::getDimension(const std::string_view &name) const { return this->_dimensions.at(name); }
-
-std::unordered_map<std::string_view, std::shared_ptr<Dimension>> &World::getDimensions() { return _dimensions; }
-
-const std::unordered_map<std::string_view, std::shared_ptr<Dimension>> &World::getDimensions() const { return _dimensions; }
-
-const world_storage::LevelData &World::getLevelData() const { return _levelData; }
-
-void World::setLevelData(const world_storage::LevelData &value) { _levelData = value; }
-
 void World::updateTime()
 {
-    std::shared_ptr<std::vector<uint8_t>> data;
-
     _age += 20;
     _time += 20;
     if (_time > 24000)
@@ -187,16 +189,6 @@ void World::sendPlayerInfoRemovePlayer(const Player *current)
     LDEBUG("Sent player info to {}", current->getUsername());
 }
 
-thread_pool::PriorityThreadPool &World::getGenerationPool() { return _generationPool; }
-
-Seed World::getSeed() const { return _seed; }
-
-uint8_t World::getRenderDistance() const { return _renderDistance; }
-
-long World::getTime() const { return _time; }
-
-long World::getAge() const { return _age; }
-
 int World::addTime(int time)
 {
     if (time >= 0) {
@@ -215,4 +207,20 @@ void World::setTime(int time)
 {
     if (time >= 0)
         _time = time;
+}
+
+std::vector<std::pair<world_storage::DimensionType, Tps>> World::getTps() const
+{
+    std::vector<std::pair<world_storage::DimensionType, Tps>> tps;
+    for (const auto &[_, dim] : _dimensions)
+        tps.emplace_back(dim->getDimensionType(), dim->getTps());
+    return tps;
+}
+
+std::vector<std::pair<world_storage::DimensionType, MSPTInfos>> World::getMSPTInfos() const
+{
+    std::vector<std::pair<world_storage::DimensionType, MSPTInfos>> msptInfos;
+    for (const auto &[_, dim] : _dimensions)
+        msptInfos.emplace_back(dim->getDimensionType(), dim->getMSPTInfos());
+    return msptInfos;
 }

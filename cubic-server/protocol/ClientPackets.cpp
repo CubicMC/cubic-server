@@ -1,6 +1,8 @@
 #include "ClientPackets.hpp"
 
 #include "PacketUtils.hpp"
+#include "entities/Entity.hpp"
+#include "logging/logging.hpp"
 #include "protocol/serialization/addPrimaryType.hpp"
 #include "serialization/add.hpp"
 #include <memory>
@@ -63,6 +65,19 @@ std::unique_ptr<std::vector<uint8_t>> protocol::createLoginSuccess(const LoginSu
     // clang-format on
     auto packet = std::make_unique<std::vector<uint8_t>>();
     finalize(*packet, payload, ClientPacketID::LoginSuccess);
+    return packet;
+}
+
+std::unique_ptr<std::vector<uint8_t>> protocol::createSetCompression(int32_t compressionTreshold)
+{
+    std::vector<uint8_t> payload;
+    // clang-format off
+    serialize(payload,
+        compressionTreshold, addVarInt
+    );
+    // clang-format on
+    auto packet = std::make_unique<std::vector<uint8_t>>();
+    finalize(*packet, payload, ClientPacketID::SetCompression);
     return packet;
 }
 
@@ -254,27 +269,6 @@ std::unique_ptr<std::vector<uint8_t>> protocol::createPluginMessageResponse(cons
     auto packet = std::make_unique<std::vector<uint8_t>>();
     finalize(*packet, payload, ClientPacketID::PluginMessage);
     return packet;
-}
-
-std::unique_ptr<std::vector<uint8_t>> protocol::createCustomSoundEffect(UNUSED const CustomSoundEffect &in)
-{
-    return std::make_unique<std::vector<uint8_t>>();
-    /*
-    std::vector<uint8_t> payload;
-    serialize(payload,
-        in.name, addIdentifier,
-        in.category, addVarInt,
-        in.x, addInt,
-        in.y, addInt,
-        in.z, addInt,
-        in.volume, addFloat,
-        in.pitch, addFloat,
-        in.seed, addLong
-    );
-    auto packet = std::make_unique<std::vector<uint8_t>>();
-    finalize(*packet, payload, (int32_t) ClientPacketID::CustomSoundEffect);
-    return packet;
-    */
 }
 
 std::unique_ptr<std::vector<uint8_t>> protocol::createPlayDisconnect(const Disconnect &in)
@@ -487,6 +481,21 @@ std::unique_ptr<std::vector<uint8_t>> protocol::createUpdateEntityRotation(const
     // clang-format on
     auto packet = std::make_unique<std::vector<uint8_t>>();
     finalize(*packet, payload, ClientPacketID::UpdateEntityRotation);
+    return packet;
+}
+
+std::unique_ptr<std::vector<uint8_t>> protocol::createOpenScreen(const OpenScreen &in)
+{
+    std::vector<uint8_t> payload;
+    // clang-format off
+    serialize(payload,
+        in.id, addVarInt,
+        in.type, addVarInt,
+        in.title.serialize(), addChat
+    );
+    // clang-format on
+    auto packet = std::make_unique<std::vector<uint8_t>>();
+    finalize(*packet, payload, ClientPacketID::OpenScreen);
     return packet;
 }
 
@@ -763,18 +772,12 @@ std::unique_ptr<std::vector<uint8_t>> protocol::createDisplayObjective(const Dis
     return packet;
 }
 
-std::unique_ptr<std::vector<uint8_t>> protocol::createSetEntityMetadata(const SetEntityMetadata &in)
+std::unique_ptr<std::vector<uint8_t>> protocol::createSetEntityMetadata(const Entity &entity)
 {
     std::vector<uint8_t> payload;
-    // clang-format off
-    serialize(payload,
-        in.entityId, addVarInt,
-        in.metadata[0].index, addByte,
-        in.metadata[0].type, addVarInt,
-        in.metadata[0].slot, addSlot,
-        0xff, addByte
-    );
-    // clang-format on
+    serialize(payload, entity.getId(), addVarInt);
+    entity.appendMetadataPacket(payload);
+    payload.push_back(0xff);
     auto packet = std::make_unique<std::vector<uint8_t>>();
     finalize(*packet, payload, ClientPacketID::SetEntityMetadata);
     return packet;
@@ -798,8 +801,14 @@ std::unique_ptr<std::vector<uint8_t>> protocol::createEntitySoundEffect(const En
 {
     std::vector<uint8_t> payload;
     // clang-format off
+    serialize(payload, in.soundId, addVarInt);
+    if (in.soundId == 0)
+        serialize(payload,
+            in.soundName, addIdentifier,
+            in.hasFixedRange, addBoolean,
+            in.range, addFloat
+        );
     serialize(payload,
-        in.soundId, addVarInt,
         in.category, addVarInt,
         in.entityId, addVarInt,
         in.volume, addFloat,
@@ -816,8 +825,14 @@ std::unique_ptr<std::vector<uint8_t>> protocol::createSoundEffect(const SoundEff
 {
     std::vector<uint8_t> payload;
     // clang-format off
+    serialize(payload, in.soundId, addVarInt);
+    if (in.soundId == 0)
+        serialize(payload,
+            in.soundName, addIdentifier,
+            in.hasFixedRange, addBoolean,
+            in.range, addFloat
+        );
     serialize(payload,
-        in.soundId, addVarInt,
         in.category, addVarInt,
         in.x, addInt,
         in.y, addInt,
@@ -845,7 +860,6 @@ std::unique_ptr<std::vector<uint8_t>> protocol::createStopSound(const StopSound 
     finalize(*packet, payload, ClientPacketID::StopSound);
     return packet;
 }
-
 std::unique_ptr<std::vector<uint8_t>> protocol::createSystemChatMessage(const SystemChatMessage &in)
 {
     std::vector<uint8_t> payload;
@@ -857,6 +871,21 @@ std::unique_ptr<std::vector<uint8_t>> protocol::createSystemChatMessage(const Sy
     // clang-format on
     auto packet = std::make_unique<std::vector<uint8_t>>();
     finalize(*packet, payload, ClientPacketID::SystemChatMessage);
+    return packet;
+}
+
+std::unique_ptr<std::vector<uint8_t>> protocol::createPickupItem(const PickupItem &in)
+{
+    std::vector<uint8_t> payload;
+    // clang-format off
+    serialize(payload,
+        in.collectedEntityId, addVarInt,
+        in.collectorEntityId, addVarInt,
+        in.pickupItemCount, addVarInt
+    );
+    // clang-format on
+    auto packet = std::make_unique<std::vector<uint8_t>>();
+    finalize(*packet, payload, ClientPacketID::PickupItem);
     return packet;
 }
 

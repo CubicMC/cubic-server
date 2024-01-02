@@ -8,7 +8,7 @@ namespace Entry {
 class Sequence : public Entry {
 public:
     Sequence(const nlohmann::json &entry);
-    Sequence() = default;
+    ~Sequence() = default;
 
     bool poll(LootTablePoll &poll, LootContext *context) const override;
 

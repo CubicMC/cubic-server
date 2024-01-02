@@ -8,7 +8,7 @@ namespace Entry {
 class Dynamic : public Entry {
 public:
     Dynamic(const nlohmann::json &entry);
-    Dynamic() = default;
+    ~Dynamic() = default;
 
     bool poll(LootTablePoll &poll, LootContext *context) const override;
 

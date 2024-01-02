@@ -1,10 +1,8 @@
 #include "types.hpp"
+#include "utility/PseudoRandomGenerator.hpp"
 #include <iterator>
-
-std::ostream &operator<<(std::ostream &os, const Position &pos) { return os << "Position(" << pos.x << ", " << pos.y << ", " << pos.z << ")"; }
-std::ostream &operator<<(std::ostream &os, const Position2D &pos) { return os << "Position2D(" << pos.x << ", " << pos.z << ")"; }
-
-std::ostream &operator<<(std::ostream &os, const Rotation &rot) { return os << "Rotation(yaw: " << rot.yaw << ", pitch: " << rot.pitch << ")"; }
+#include <mbedtls/md5.h>
+#include <random>
 
 std::string u128::toString() const
 {
@@ -34,4 +32,44 @@ u128 u128::fromShortString(const std::string &str)
     std::string first = std::string(str.begin(), it);
     std::string second = std::string(it, str.end());
     return u128({std::stoull(first, 0, 16), std::stoull(second, 0, 16)});
+}
+
+u128 u128::random()
+{
+    return u128(
+        {utility::PseudoRandomGenerator::getInstance()->generateNumber<long unsigned int>(0, 0xffffffffffffffff),
+         utility::PseudoRandomGenerator::getInstance()->generateNumber<long unsigned int>(0, 0xffffffffffffffff)}
+    );
+}
+
+u128 u128::fromOfflinePlayerName(const std::string &name)
+{
+    std::string playername = "OfflinePlayer:" + name;
+    unsigned char result[16];
+    uint64_t most = 0;
+    mbedtls_md5((const unsigned char *) playername.c_str(), playername.size(), result);
+    uint64_t least = 0;
+    for (int i = 0; i < 8; i++)
+        most = (most << 8) | result[i];
+    for (int i = 8; i < 16; i++)
+        least = (least << 8) | result[i];
+    return {most, least};
+}
+
+bool u128::operator==(const u128 &other) const { return this->most == other.most && this->least == other.least; }
+
+Position::valueType Position::manhattanDistance(const Position &other) const { return std::abs(x - other.x) + std::abs(y - other.y) + std::abs(z - other.z); }
+
+std::string Tps::toString() const
+{
+    std::stringstream sstr;
+    sstr << "Tps: " << this->oneMinTps << " " << this->fiveMinTps << " " << this->fifteenMinTps;
+    return sstr.str();
+}
+
+std::string MSPTInfos::toString() const
+{
+    std::stringstream sstr;
+    sstr << "MSPT: " << this->min << " " << this->mean << " " << this->max;
+    return sstr.str();
 }

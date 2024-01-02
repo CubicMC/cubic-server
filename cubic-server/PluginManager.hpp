@@ -1,8 +1,8 @@
 #ifndef CUBICSERVER_PLUGINMANAGER_HPP
 #define CUBICSERVER_PLUGINMANAGER_HPP
 
-#include <memory>
 #include <cstdint>
+#include <memory>
 #include <string>
 #include <unordered_map>
 #include <variant>
@@ -56,7 +56,8 @@ public:
     void reload();
     void unload();
 
-    std::shared_ptr<PluginInterface> getInterface() const;
+    std::shared_ptr<const PluginInterface> getInterface() const { return this->_interface; }
+    std::shared_ptr<PluginInterface> getInterface() { return this->_interface; }
 
     std::unordered_map<std::string, std::vector<EventType::AllTypes>> _events;
 

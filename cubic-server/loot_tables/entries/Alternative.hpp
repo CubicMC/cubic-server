@@ -8,7 +8,7 @@ namespace Entry {
 class Alternative : public Entry {
 public:
     Alternative(const nlohmann::json &entry);
-    Alternative() = default;
+    ~Alternative() = default;
 
     bool poll(LootTablePoll &poll, LootContext *context) const override;
 

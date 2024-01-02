@@ -1,5 +1,6 @@
 #include "Overworld.hpp"
 
+#include "Dimension.hpp"
 #include "Server.hpp"
 #include "World.hpp"
 #include "default/DefaultWorld.hpp"
@@ -79,4 +80,16 @@ void Overworld::generateChunk(int x, int z, world_storage::GenerationState goalS
         _level.addChunkColumn(pos, shared_from_this()).generate(goalState);
     else
         _level.addChunkColumn(pos, shared_from_this());
+}
+
+void Overworld::removePlayer(int32_t entity_id)
+{
+    Dimension::removePlayer(entity_id);
+    PEXP(decrementPlayerCountOverworld);
+}
+
+void Overworld::spawnPlayer(Player &player)
+{
+    Dimension::spawnPlayer(player);
+    PEXP(incrementPlayerCountOverworld);
 }

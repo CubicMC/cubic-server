@@ -45,6 +45,11 @@ build*
 world
 world2
 
+<<<<<<< HEAD
 # Convenience
 COMPILE.sh
 Makefile
+=======
+# Symbolic link
+compile_commands.json
+>>>>>>> origin/master

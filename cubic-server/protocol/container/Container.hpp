@@ -25,6 +25,33 @@ enum ClickMode {
     DoubleClick = 6,
 };
 
+enum InventoryType {
+    Generic9x1 = 0,
+    Generic9x2 = 1,
+    Generic9x3 = 2,
+    Generic9x4 = 3,
+    Generic9x5 = 4,
+    Generic9x6 = 5,
+    Generic3x3 = 6,
+    Anvil = 7,
+    Beacon = 8,
+    BlastFurnace = 9,
+    BrewingStand = 10,
+    Crafting = 11,
+    Enchantment = 12,
+    Furnace = 13,
+    Grindstone = 14,
+    Hopper = 15,
+    Lectern = 16,
+    Loom = 17,
+    Merchant = 18,
+    ShulkerBox = 19,
+    Smothing = 20,
+    Smoker = 21,
+    Cartography = 22,
+    StoneCutter = 23
+};
+
 class Container {
 public:
     Container(int32_t id, int32_t type, chat::Message title):
@@ -32,7 +59,7 @@ public:
         _type(type),
         _state(State::Normal),
         _title(std::move(title)),
-        _cursor({false}),
+        _cursor(false),
         _cariedItemIndex(0)
     {
     }
@@ -43,13 +70,24 @@ public:
     virtual constexpr const protocol::Slot &at(int16_t index) const = 0;
     virtual constexpr inline uint64_t size() const = 0;
 
+    /**
+     * @brief Insert the given slot in the container
+     * If the slot is already present, the item count will be added to the existing slot
+     * this will modify the slot to reflect what is left after the insertion
+     *
+     * @param slot
+     */
+    virtual void insert(protocol::Slot &slot) = 0;
+
+    NODISCARD virtual bool canInsert(const protocol::Slot &slot);
+
     protocol::Slot &operator[](int16_t index) { return at(index); }
     const protocol::Slot &operator[](int16_t index) const { return at(index); }
     constexpr protocol::Slot &cursor() { return _cursor; }
     constexpr void setCariedItemIndex(int16_t index) { _cariedItemIndex = index; }
 
     virtual void onClick(std::shared_ptr<Player> player, int16_t index, uint8_t buttonId, uint8_t mode, const std::vector<protocol::ClickContainer::SlotWithIndex> &updates);
-    virtual void onButtonClick(UNUSED std::shared_ptr<Player> player, UNUSED uint8_t buttonId) { };
+    virtual void onButtonClick(UNUSED std::shared_ptr<Player> player, UNUSED uint8_t buttonId) {};
     virtual void close(UNUSED std::shared_ptr<Player> player);
 
     NODISCARD constexpr inline int32_t id() const { return _id; }

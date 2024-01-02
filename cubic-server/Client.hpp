@@ -22,6 +22,10 @@
 
 #define PCK_CALLBACK(type) __PCK_CALLBACK_PRIM(type, this)
 
+#define __PCK_CALLBACK_EMPTY_PRIM(type, object) return object->_on##type()
+
+#define PCK_CALLBACK_EMPTY(type) __PCK_CALLBACK_EMPTY_PRIM(type, this)
+
 #define __PCK_CALLBACK_PLAY(type) __PCK_CALLBACK_PRIM(type, _player)
 
 #define PCK_CALLBACK_PLAY(type) \
@@ -78,12 +82,13 @@ public:
     void sendLoginSuccess(const protocol::LoginSuccess &packet);
     void sendLoginPlay(void);
     void sendEncryptionRequest(void);
+    void sendSetCompression();
 
     // Disconnect the client
     void disconnect(const chat::Message &reason = "Disconnected");
 
     std::shared_ptr<Player> getPlayer();
-    const std::shared_ptr<Player> getPlayer() const;
+    std::shared_ptr<const Player> getPlayer() const;
     inline size_t getID() const { return _clientID; };
     inline boost::asio::ip::tcp::socket &getSocket() { return _socket; }
 
@@ -93,13 +98,14 @@ private:
     void _tryFlushAllSendData();
     // void _sendData(std::vector<uint8_t> &data);
     void _onHandshake(protocol::Handshake &pck);
-    void _onStatusRequest(protocol::StatusRequest &pck);
+    void _onStatusRequest();
     void _onLoginStart(protocol::LoginStart &pck);
     void _onPingRequest(protocol::PingRequest &pck);
     void _onEncryptionResponse(protocol::EncryptionResponse &pck);
     void _loginSequence(const protocol::LoginSuccess &packet);
     bool _handleOnline(const std::array<uint8_t, 16> &key);
     NODISCARD inline const std::vector<protocol::PlayerProperty> &getProperties() const { return _resPck.properties; }
+    NODISCARD inline bool isCompressed() const { return _isCompressed; }
 
 private:
     std::atomic<bool> _isRunning;
@@ -118,6 +124,7 @@ private:
     bool _isEncrypted;
     EASEncryptionHandler _encryption;
     protocol::LoginSuccess _resPck;
+    bool _isCompressed;
 };
 
 #endif // CUBICSERVER_CLIENT_HPP

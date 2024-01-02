@@ -1,4 +1,4 @@
-target_sources (${CMAKE_PROJECT_NAME} PRIVATE 
+target_sources (${CMAKE_PROJECT_NAME} PRIVATE
     AdvancementEntity.cpp
     AdvancementEntity.hpp
     AdvancementReward.cpp

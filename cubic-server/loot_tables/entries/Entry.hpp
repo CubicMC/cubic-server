@@ -27,7 +27,7 @@ namespace Entry {
 class Entry {
 public:
     Entry(const nlohmann::json &entry);
-    ~Entry() = default;
+    virtual ~Entry() = default;
 
     // entry must be valid, call setValidity(true) to validate
     bool isValid(void) const noexcept;

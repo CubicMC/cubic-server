@@ -3,7 +3,9 @@
 
 #include "concept.hpp"
 #include "configuration/Value.hpp"
+#include "protocol/Structures.hpp"
 #include "types.hpp"
+#include <spdlog/fmt/bundled/core.h>
 #include <spdlog/fmt/fmt.h>
 #include <type_traits>
 
@@ -30,6 +32,19 @@ struct fmt::formatter<Position> : fmt::formatter<std::string> {
 template<>
 struct fmt::formatter<Position2D> : fmt::formatter<std::string> {
     auto format(const Position2D &conf, format_context &ctx) -> decltype(ctx.out()) { return fmt::format_to(ctx.out(), "({}, {})", conf.x, conf.z); }
+};
+
+template<typename T>
+struct fmt::formatter<Vector3<T>> : fmt::formatter<std::string> {
+    auto format(const Vector3<T> &conf, format_context &ctx) -> decltype(ctx.out()) { return fmt::format_to(ctx.out(), "({:.3f} {:.3f} {:.3f})", conf.x, conf.y, conf.z); }
+};
+
+template<>
+struct fmt::formatter<protocol::Slot> : fmt::formatter<std::string> {
+    auto format(const protocol::Slot &conf, format_context &ctx) -> decltype(ctx.out())
+    {
+        return fmt::format_to(ctx.out(), "Slot({} {} {} {})", conf.present, conf.itemID, conf.itemCount, conf.nbt != nullptr);
+    }
 };
 
 #endif // LOGGING_FORMATING_HPP

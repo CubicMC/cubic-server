@@ -1,7 +1,7 @@
 #include "Hover.hpp"
 
-#include "hovers/Entity.hpp"
-#include "hovers/Item.hpp"
+#include "hovers/EntityEvent.hpp"
+#include "hovers/ItemEvent.hpp"
 #include "hovers/Text.hpp"
 #include "logging/logging.hpp"
 

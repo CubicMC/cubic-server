@@ -1,3 +1,4 @@
+#include <algorithm>
 #include <boost/system/detail/error_category.hpp>
 #include <boost/system/detail/error_code.hpp>
 #include <cstdint>
@@ -12,12 +13,14 @@
 #include <sys/types.h>
 #include <thread>
 #include <unistd.h>
+#include <zlib.h>
 
 #include "Client.hpp"
 #include "PlayerAttributes.hpp"
 #include "nbt.hpp"
 
 #include "Checksum.hpp"
+#include "CompressionUtils.hpp"
 #include "Dimension.hpp"
 #include "Player.hpp"
 #include "Server.hpp"
@@ -28,6 +31,7 @@
 #include "nlohmann/json.hpp"
 #include "protocol/ClientPackets.hpp"
 #include "protocol/ServerPackets.hpp"
+#include "protocol/serialization/addPrimaryType.hpp"
 #include "protocol/serialization/popPrimaryType.hpp"
 #include "types.hpp"
 
@@ -41,7 +45,8 @@ Client::Client(tcp::socket &&socket, size_t clientID):
     _player(nullptr),
     _socket(std::move(socket)),
     _clientID(clientID),
-    _isEncrypted(false)
+    _isEncrypted(false),
+    _isCompressed(false)
 {
     LDEBUG("Creating client");
 }
@@ -61,6 +66,8 @@ Client::~Client()
         if (chunkReq.second == Player::ChunkState::Loading)
             this->_player->getDimension()->removePlayerFromLoadingChunk(chunkReq.first, this->_player);
     }
+    chat::Message disconnectMsg = chat::Message::fromTranslationKey<chat::message::TranslationKey::MultiplayerPlayerLeft>(*_player);
+    this->_player->getWorld()->getChat()->sendSystemMessage(disconnectMsg, *_player->getWorldGroup());
     // if (_thread.joinable())
     // _thread.join();
     // _thread.detach();
@@ -88,8 +95,38 @@ void Client::doRead()
     // Server::getInstance()->triggerClientCleanup(_clientID);
 }
 
+static void compressPacket(std::vector<uint8_t> &in, std::vector<uint8_t> &out)
+{
+    // Don't compress if the packet is too small
+    if (in.size() < (size_t) CONFIG["compression-threshold"].as<int32_t>()) {
+        uint8_t *at = in.data();
+        int32_t size = protocol::popVarInt(at, in.data() + in.size() - 1);
+        protocol::addVarInt(out, size + 1);
+        protocol::addVarInt(out, 0);
+        out.insert(out.end(), at, in.data() + in.size());
+        return;
+    }
+    uint8_t *at = in.data();
+    int32_t size = protocol::popVarInt(at, in.data() + in.size() - 1);
+    std::vector<uint8_t> compressedData;
+    int compressReturn = compressVector(std::vector<uint8_t>(at, in.data() + in.size()), compressedData);
+    if (compressReturn != Z_OK)
+        abort(); // If we get here, we have a big problem
+    protocol::addVarInt(out, compressedData.size() + (uint64_t) (at - in.data()));
+    protocol::addVarInt(out, size);
+    out.insert(out.end(), compressedData.begin(), compressedData.end());
+}
+
 void Client::doWrite(std::unique_ptr<std::vector<uint8_t>> &&data)
 {
+    if (_isCompressed) {
+        auto toSend = std::make_unique<std::vector<uint8_t>>();
+        compressPacket(*data, *toSend);
+        if (_isEncrypted)
+            _encryption.encrypt(*toSend);
+        Server::getInstance()->sendData(_clientID, std::move(toSend));
+        return;
+    }
     if (_isEncrypted)
         _encryption.encrypt(*data);
     Server::getInstance()->sendData(_clientID, std::move(data));
@@ -111,6 +148,7 @@ void Client::handleParsedClientPacket(std::unique_ptr<protocol::BaseServerPacket
 {
     using namespace protocol;
 
+    PEXP(incrementPacketRxCounter);
     switch (_status) {
     case ClientStatus::Initial:
         switch (packetID) {
@@ -123,7 +161,7 @@ void Client::handleParsedClientPacket(std::unique_ptr<protocol::BaseServerPacket
     case ClientStatus::Status:
         switch (packetID) {
         case ServerPacketsID::StatusRequest:
-            PCK_CALLBACK(StatusRequest);
+            PCK_CALLBACK_EMPTY(StatusRequest);
         case ServerPacketsID::PingRequest:
             PCK_CALLBACK(PingRequest);
         default:
@@ -210,7 +248,7 @@ void Client::_handlePacket()
         if (bufferLength == 0)
             break;
         uint8_t *at = data.data();
-        uint8_t *eof = at + bufferLength;
+        uint8_t *eof = at + bufferLength - 1;
         int32_t length = 0;
         try {
             length = protocol::popVarInt(at, eof);
@@ -223,7 +261,29 @@ void Client::_handlePacket()
         } catch (const protocol::PacketEOF &_) {
             break; // Not enough data in buffer to parse the length of the packet
         }
+
         const uint8_t *startPayload = at;
+
+        std::vector<uint8_t> uncompressedData;
+        if (_isCompressed) {
+            int32_t uncompressedLength = protocol::popVarInt(at, eof);
+            if (uncompressedLength == 0)
+                goto packetNotCompressed;
+            if (decompressVector(std::vector<uint8_t>(at, eof + 1), uncompressedData, uncompressedLength)) {
+                LERROR("Failed to decompress client packet!");
+                this->disconnect("Badly formed compressed packet!");
+                return;
+            }
+            if ((size_t) uncompressedLength != uncompressedData.size()) {
+                LERROR("{} != {}", uncompressedLength, uncompressedData.size());
+                this->disconnect("Bad packet compression metadata!");
+                return;
+            }
+            at = uncompressedData.data();
+            eof = uncompressedData.data() + uncompressedData.size() - 1;
+        }
+    packetNotCompressed:
+
         bool error = false;
         // Handle the packet if the length is there
         const auto packetId = static_cast<protocol::ServerPacketsID>(protocol::popVarInt(at, eof));
@@ -242,7 +302,7 @@ void Client::_handlePacket()
         case protocol::ClientStatus::Play:
             GET_PARSER(Play);
         }
-        std::vector<uint8_t> toParse(data.begin() + (at - data.data()), data.end());
+        std::vector<uint8_t> toParse(at, eof + 1);
         data.erase(data.begin(), data.begin() + (startPayload - data.data()) + length);
         if (error) {
             N_LWARN("Unhandled packet: {} in status {}", packetId, _status);
@@ -270,7 +330,7 @@ void Client::_onHandshake(protocol::Handshake &pck)
         this->setStatus(protocol::ClientStatus::Login);
 }
 
-void Client::_onStatusRequest(UNUSED protocol::StatusRequest &pck)
+void Client::_onStatusRequest()
 {
     N_LDEBUG("Got a status request");
 
@@ -293,12 +353,12 @@ void Client::_onStatusRequest(UNUSED protocol::StatusRequest &pck)
         return;
     }
 
-    json["version"]["name"] = MC_VERSION;
+    json["version"]["name"] = MC_VERSION_BRANDING;
     json["version"]["protocol"] = MC_PROTOCOL;
     json["players"]["max"] = conf["max-players"].as<int32_t>();
     {
         std::lock_guard _(srv->clientsMutex);
-        json["players"]["online"] = std::count_if(cli.begin(), cli.end(), [](std::pair<size_t, std::shared_ptr<Client>> each) {
+        json["players"]["online"] = std::count_if(cli.begin(), cli.end(), [](std::pair<size_t, const std::shared_ptr<const Client>> each) {
             return each.second->getStatus() == protocol::ClientStatus::Play;
         });
     }
@@ -318,7 +378,7 @@ void Client::_onLoginStart(protocol::LoginStart &pck)
     N_LDEBUG("Got a Login Start");
     protocol::LoginSuccess resPck;
 
-    resPck.uuid = pck.hasPlayerUuid ? pck.playerUuid : u128 {std::hash<std::string> {}("OfflinePlayer:"), std::hash<std::string> {}(pck.name)};
+    resPck.uuid = pck.hasPlayerUuid ? pck.playerUuid : u128::fromOfflinePlayerName(pck.name);
     resPck.username = pck.name;
     resPck.properties = {}; // TODO: figure out what to put there
 
@@ -327,6 +387,13 @@ void Client::_onLoginStart(protocol::LoginStart &pck)
         return;
     } else if (Server::getInstance()->isWhitelistEnabled() && !Server::getInstance()->getWhitelist().isPlayerWhitelisted(resPck.uuid, resPck.username).first) {
         this->disconnect("You are not whitelisted on this server.");
+        return;
+    } else if (std::find_if(Server::getInstance()->getClients().begin(), Server::getInstance()->getClients().end(), [resPck](auto &each) {
+                   if (each.second->_player == nullptr)
+                       return false;
+                   return each.second->getPlayer()->getUuid() == resPck.uuid;
+               }) != Server::getInstance()->getClients().end()) {
+        this->disconnect("You are already connected to this server or someone already has the same UUID as you.");
         return;
     }
     if (CONFIG["online-mode"].as<bool>()) {
@@ -470,104 +537,7 @@ void Client::sendLoginPlay()
         .gamemode = this->_player->getGamemode(),
         .previousGamemode = this->_player->getGamemode(),
         .dimensionNames = std::vector<std::string>({"minecraft:overworld"}), // TODO: something like this this->_player->_dim->getWorld()->getDimensions();
-        // clang-format off
-        .registryCodec = std::shared_ptr<nbt::Compound>(new nbt::Compound("", {
-            NBT_MAKE(nbt::Compound, "minecraft:dimension_type", {
-                NBT_MAKE(nbt::String, "type", "minecraft:dimension_type"),
-                NBT_MAKE(nbt::List, "value", {
-                    NBT_MAKE(nbt::Compound, "", {
-                        NBT_MAKE(nbt::String, "name", "minecraft:overworld"),
-                        NBT_MAKE(nbt::Int, "id", 0),
-                        NBT_MAKE(nbt::Compound, "element", {
-                            NBT_MAKE(nbt::Byte, "ultrawarm", 0),
-                            NBT_MAKE(nbt::Int, "logical_height", 256),
-                            NBT_MAKE(nbt::String, "infiniburn", "#minecraft:infiniburn_overworld"),
-                            NBT_MAKE(nbt::Byte, "piglin_safe", 0),
-                            NBT_MAKE(nbt::Float, "ambient_light", 0.0),
-                            NBT_MAKE(nbt::Byte, "has_skylight", 1),
-                            NBT_MAKE(nbt::String, "effects", "minecraft:overworld"),
-                            NBT_MAKE(nbt::Byte, "has_raids", 1),
-                            NBT_MAKE(nbt::Int, "monster_spawn_block_light_limit", 0),
-                            NBT_MAKE(nbt::Byte, "respawn_anchor_works", 0),
-                            NBT_MAKE(nbt::Int, "height", 384),
-                            NBT_MAKE(nbt::Byte, "has_ceiling", 0),
-                            NBT_MAKE(nbt::Compound, "monster_spawn_light_level", {
-                                NBT_MAKE(nbt::String, "type", "minecraft:uniform"),
-                                NBT_MAKE(nbt::Compound, "value", {
-                                    NBT_MAKE(nbt::Int, "max_inclusive", 7),
-                                    NBT_MAKE(nbt::Int, "min_inclusive", 0)
-                                })
-                            }),
-                            NBT_MAKE(nbt::Byte, "natural", 1),
-                            NBT_MAKE(nbt::Int, "min_y", -64),
-                            NBT_MAKE(nbt::Float, "coordinate_scale", 1.0),
-                            NBT_MAKE(nbt::Byte, "bed_works", 1)
-                        })
-                    })
-                })
-            }),
-            NBT_MAKE(nbt::Compound, "minecraft:worldgen/biome", {
-                NBT_MAKE(nbt::String, "type", "minecraft:worldgen/biome"),
-                NBT_MAKE(nbt::List, "value", {
-                    NBT_MAKE(nbt::Compound, "", {
-                        NBT_MAKE(nbt::String, "name", "minecraft:plains"),
-                        NBT_MAKE(nbt::Int, "id", 0),
-                        NBT_MAKE(nbt::Compound, "element", {
-                            NBT_MAKE(nbt::String, "precipitation", "none"),
-                            NBT_MAKE(nbt::Float, "temperature", 0.8),
-                            NBT_MAKE(nbt::Float, "downfall", 0.4),
-                            NBT_MAKE(nbt::Compound, "effects", {
-                                NBT_MAKE(nbt::Int, "sky_color", 7907327),
-                                NBT_MAKE(nbt::Int, "water_fog_color", 329011),
-                                NBT_MAKE(nbt::Int, "fog_color", 12638463),
-                                NBT_MAKE(nbt::Int, "water_color", 4159204),
-                            })
-                        }),
-                    }),
-                    NBT_MAKE(nbt::Compound, "", {
-                        NBT_MAKE(nbt::String, "name", "minecraft:my_super_cool_biome_lol_haha"),
-                        NBT_MAKE(nbt::Int, "id", 1),
-                        NBT_MAKE(nbt::Compound, "element", {
-                            NBT_MAKE(nbt::String, "precipitation", "none"),
-                            NBT_MAKE(nbt::Float, "temperature", 0.8),
-                            NBT_MAKE(nbt::Float, "downfall", 0.4),
-                            NBT_MAKE(nbt::Compound, "effects", {
-                                NBT_MAKE(nbt::Int, "sky_color", 7907327),
-                                NBT_MAKE(nbt::Int, "water_fog_color", 329011),
-                                NBT_MAKE(nbt::Int, "fog_color", 12638463),
-                                NBT_MAKE(nbt::Int, "water_color", 4159204),
-                            })
-                        }),
-                    })
-                })
-            }),
-            NBT_MAKE(nbt::Compound, "minecraft:chat_type", {
-                NBT_MAKE(nbt::String, "type", "minecraft:chat_type"),
-                NBT_MAKE(nbt::List, "value", {
-                    NBT_MAKE(nbt::Compound, "", {
-                        NBT_MAKE(nbt::String, "name", "minecraft:chat"),
-                        NBT_MAKE(nbt::Int, "id", 0),
-                        NBT_MAKE(nbt::Compound, "element", {
-                            NBT_MAKE(nbt::Compound, "chat", {
-                                NBT_MAKE(nbt::List, "parameters", {
-                                    NBT_MAKE(nbt::String, "", "sender"),
-                                    NBT_MAKE(nbt::String, "", "content")
-                                }),
-                                NBT_MAKE(nbt::String, "translation_key", "chat.type.text"),
-                            }),
-                            NBT_MAKE(nbt::Compound, "narration", {
-                                NBT_MAKE(nbt::List, "parameters", {
-                                    NBT_MAKE(nbt::String, "", "sender"),
-                                    NBT_MAKE(nbt::String, "", "content")
-                                }),
-                                NBT_MAKE(nbt::String, "translation_key", "chat.type.text.narrate"),
-                            })
-                        })
-                    })
-                })
-            })
-        })),
-        // clang-format on
+        .registryCodec = Server::getInstance()->getRegistry().toNBT(),
         .dimensionType = "minecraft:overworld", // TODO: something like this this->_player->_dim->getDimensionType();
         .dimensionName = "overworld", // TODO: something like this this->_player->getDimension()->name;
         .hashedSeed = 0, // TODO: something like this this->_player->_dim->getWorld()->getHashedSeed();
@@ -599,10 +569,19 @@ void Client::disconnect(const chat::Message &reason)
     N_LDEBUG("Sent a disconnect login packet");
 }
 
+void Client::sendSetCompression()
+{
+    auto pck = protocol::createSetCompression(CONFIG["compression-threshold"].as<int32_t>());
+    doWrite(std::move(pck));
+    _isCompressed = true;
+    N_LDEBUG("Send a set compression packet");
+}
+
 void Client::_loginSequence(const protocol::LoginSuccess &pck)
 {
-    // Encryption request
     // Set Compression
+    if (Server::getInstance()->isCompressed())
+        this->sendSetCompression();
     this->sendLoginSuccess(pck);
     this->switchToPlayState(pck.uuid, pck.username);
     this->sendLoginPlay();
@@ -611,4 +590,4 @@ void Client::_loginSequence(const protocol::LoginSuccess &pck)
 
 std::shared_ptr<Player> Client::getPlayer() { return _player; }
 
-const std::shared_ptr<Player> Client::getPlayer() const { return _player; }
+std::shared_ptr<const Player> Client::getPlayer() const { return _player; }

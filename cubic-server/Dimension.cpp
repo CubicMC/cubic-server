@@ -1,32 +1,90 @@
 #include "Dimension.hpp"
 
-#include "Entity.hpp"
 #include "Player.hpp"
 #include "Server.hpp"
 #include "World.hpp"
+#include "entities/Entity.hpp"
+#include "entities/EntityType.hpp"
 #include "logging/logging.hpp"
 #include "math/Vector3.hpp"
 #include "protocol/ClientPackets.hpp"
 #include "types.hpp"
+#include "world_storage/ChunkColumn.hpp"
+#include <chrono>
 #include <cstdint>
 #include <memory>
 #include <mutex>
 #include <thread>
 
 Dimension::Dimension(std::shared_ptr<World> world, world_storage::DimensionType dimensionType):
-    _dimensionLock(std::counting_semaphore<1000>(0)),
+    _playersMutex(),
+    _entitiesMutex(),
+    _newEntitiesMutex(),
+    _loadingChunksMutex(),
+    _dimensionLock(std::counting_semaphore<SEMAPHORE_MAX>(0)),
+    _entities({}),
+    _newEntities({}),
+    _players({}),
     _world(world),
+    _processingMutex(),
     _isInitialized(false),
     _isRunning(false),
-    _dimensionType(dimensionType)
+    _level(),
+    _loadingChunks({}),
+    _processingThread(),
+    _dimensionType(dimensionType),
+    _circularBufferTps((TICK_PER_MINUTE * 15)),
+    _previousTickTime(std::chrono::high_resolution_clock::now()),
+    _circularBufferMSPT((TICK_PER_MINUTE * 15))
 {
 }
 
 void Dimension::tick()
 {
-    std::lock_guard _(_entitiesMutex);
-    for (auto ent : _entities) {
-        ent->tick();
+    auto startTickTime = std::chrono::high_resolution_clock::now();
+    {
+        std::lock_guard _(_entitiesMutex);
+        for (auto ent : _entities) {
+            ent->tick();
+        }
+    }
+    uint32_t rts = CONFIG["randomtickspeed"].as<uint32_t>();
+    if (rts != 0) {
+        for (auto &[pos, chunk] : _level.getChunkColumns()) {
+            // TODO(huntears): Test if a chunk is within simulation distance of a player
+            if (!chunk.isReady())
+                continue;
+            chunk.processRandomTick(rts);
+        }
+    }
+    {
+        std::unique_lock a(_entitiesMutex, std::defer_lock);
+        std::unique_lock b(_newEntitiesMutex, std::defer_lock);
+        std::lock(a, b);
+
+        if (_newEntities.size() != 0) {
+            _entities.insert(_entities.end(), _newEntities.begin(), _newEntities.end());
+            _newEntities.clear();
+        }
+    }
+    auto endTime = std::chrono::high_resolution_clock::now();
+    auto compute_time = endTime - _previousTickTime;
+    auto msptTime = endTime - startTickTime;
+    _previousTickTime = endTime;
+    float compute_time_micro = (float) std::chrono::duration_cast<std::chrono::microseconds>(compute_time).count();
+    float msptTime_micro = (float) std::chrono::duration_cast<std::chrono::microseconds>(msptTime).count();
+    _circularBufferTps.push_back(compute_time_micro);
+    _circularBufferMSPT.push_back(msptTime_micro);
+    switch (_dimensionType) {
+    case world_storage::DimensionType::OVERWORLD:
+        PEXPP(addMsptOverworld, msptTime_micro / MILLIS_IN_ONE_SEC)
+        break;
+    case world_storage::DimensionType::NETHER:
+        PEXPP(addMsptNether, msptTime_micro / MILLIS_IN_ONE_SEC)
+        break;
+    case world_storage::DimensionType::END:
+        PEXPP(addMsptEnd, msptTime_micro / MILLIS_IN_ONE_SEC)
+        break;
     }
 }
 
@@ -48,34 +106,24 @@ void Dimension::initialize()
     this->_processingThread = std::thread(&Dimension::_run, this);
 }
 
-bool Dimension::isInitialized() const { return _isInitialized; }
-
-std::shared_ptr<World> Dimension::getWorld() { return _world; }
-
-const std::shared_ptr<World> Dimension::getWorld() const { return _world; }
-
-std::counting_semaphore<1000> &Dimension::getDimensionLock() { return _dimensionLock; }
-
-std::vector<std::shared_ptr<Entity>> &Dimension::getEntities() { return _entities; }
-
-const std::vector<std::shared_ptr<Entity>> &Dimension::getEntities() const { return _entities; }
-
 std::shared_ptr<Entity> Dimension::getEntityByID(int32_t id)
 {
     std::lock_guard _(_entitiesMutex);
     for (auto &entity : _entities)
         if (entity->getId() == id)
             return entity;
-    throw std::runtime_error("Entity not found");
+    LERROR("Entity not found");
+    return nullptr;
 }
 
-const std::shared_ptr<Entity> Dimension::getEntityByID(int32_t id) const
+std::shared_ptr<const Entity> Dimension::getEntityByID(int32_t id) const
 {
     std::lock_guard _(_entitiesMutex);
     for (auto &entity : _entities)
         if (entity->getId() == id)
             return entity;
-    throw std::runtime_error("Entity not found");
+    LERROR("Entity not found");
+    return nullptr;
 }
 
 void Dimension::removeEntity(int32_t entity_id)
@@ -118,8 +166,8 @@ void Dimension::removePlayer(int32_t entity_id)
 
 void Dimension::addEntity(std::shared_ptr<Entity> entity)
 {
-    std::lock_guard _(_entitiesMutex);
-    _entities.emplace_back(entity);
+    std::lock_guard _(_newEntitiesMutex);
+    _newEntities.emplace_back(entity);
 }
 
 void Dimension::addPlayer(std::shared_ptr<Player> entity)
@@ -128,19 +176,15 @@ void Dimension::addPlayer(std::shared_ptr<Player> entity)
     _players.emplace_back(entity);
 }
 
-const world_storage::Level &Dimension::getLevel() const { return _level; }
-
-world_storage::Level &Dimension::getLevel() { return _level; }
-
 void Dimension::generateChunk(Position2D pos, world_storage::GenerationState goalState) { generateChunk(pos.x, pos.z, goalState); }
 
 void Dimension::generateChunk(UNUSED int x, UNUSED int z, UNUSED world_storage::GenerationState goalState) { }
 
-void Dimension::loadOrGenerateChunk(int x, int z, std::shared_ptr<Player> player)
+void Dimension::loadOrGenerateChunk(int x, int z, const std::shared_ptr<Player> player)
 {
-    std::lock_guard<std::mutex> _(_loadingChunksMutex);
+    std::lock_guard _(_loadingChunksMutex);
     if (this->_loadingChunks.contains({x, z})) {
-        if (std::find_if(this->_loadingChunks[{x, z}].players.begin(), this->_loadingChunks[{x, z}].players.end(), [player](const std::weak_ptr<Player> current_weak_player) {
+        if (std::find_if(this->_loadingChunks[{x, z}].players.begin(), this->_loadingChunks[{x, z}].players.end(), [player](const std::weak_ptr<const Player> current_weak_player) {
                 if (auto current_player = current_weak_player.lock())
                     return current_player->getId() == player->getId();
                 return false;
@@ -159,7 +203,7 @@ void Dimension::loadOrGenerateChunk(int x, int z, std::shared_ptr<Player> player
                 const Vector3<double> chunkPos = {(double) x * 16, pos.y, (double) z * 16};
                 current_min = std::min(current_min, pos.distance(chunkPos));
             }
-            return static_cast<size_t>(std::ceil(current_min));
+            return static_cast<int>(std::ceil(current_min));
         },
         [this, x, z] {
             // TODO: load chunk from disk if it exists
@@ -169,7 +213,8 @@ void Dimension::loadOrGenerateChunk(int x, int z, std::shared_ptr<Player> player
                 return;
 
             this->sendChunkToPlayers(x, z);
-    });
+        }
+    );
 
     auto request = ChunkRequest {id, {player}};
 
@@ -190,22 +235,18 @@ void Dimension::_run()
     }
 }
 
-std::vector<std::shared_ptr<Player>> &Dimension::getPlayers() { return _players; }
-
-const std::vector<std::shared_ptr<Player>> &Dimension::getPlayers() const { return _players; }
-
 bool Dimension::hasChunkLoaded(int x, int z) const { return this->_level.hasChunkColumn(x, z); }
 
-void Dimension::removePlayerFromLoadingChunk(const Position2D &pos, std::shared_ptr<Player> player)
+void Dimension::removePlayerFromLoadingChunk(const Position2D &pos, const std::shared_ptr<const Player> player)
 {
-    std::lock_guard<std::mutex> _(_loadingChunksMutex);
+    std::lock_guard _(_loadingChunksMutex);
     if (!this->_loadingChunks.contains(pos))
         return;
 
     this->_loadingChunks[pos].players.erase(
         std::remove_if(
             this->_loadingChunks[pos].players.begin(), this->_loadingChunks[pos].players.end(),
-            [player](const std::weak_ptr<Player> current_weak_player) {
+            [player](const std::weak_ptr<const Player> current_weak_player) {
                 if (auto current_player = current_weak_player.lock())
                     return current_player->getId() == player->getId();
                 return true;
@@ -230,47 +271,61 @@ const world_storage::ChunkColumn &Dimension::getChunk(const Position2D &pos) con
 void Dimension::spawnPlayer(Player &current)
 {
     auto current_id = current.getId();
-    std::lock_guard _(_playersMutex);
-    for (auto player : _players) {
-        LDEBUG("player is: {}", player->getUsername());
-        LDEBUG("current is: {}", current.getUsername());
-        // if (current->getPos().distance(player->getPos()) <= 12) {
-        if (player->getId() != current_id) {
-            player->sendSpawnPlayer(
-                {current_id, current.getUuid(), current.getPosition().x, current.getPosition().y, current.getPosition().z, current.getRotation().x, current.getRotation().z}
-            );
-            LDEBUG("send spawn player to {}", player->getUsername());
-            current.sendSpawnPlayer(
-                {player->getId(), player->getUuid(), player->getPosition().x, player->getPosition().y, player->getPosition().z, player->getRotation().x, player->getRotation().z}
-            );
-            LDEBUG("send spawn player to {}", current.getUsername());
-            //}
+    {
+
+        std::lock_guard _(_playersMutex);
+        for (auto player : _players) {
+            LDEBUG("player is: {}", player->getUsername());
+            LDEBUG("current is: {}", current.getUsername());
+            // if (current->getPos().distance(player->getPos()) <= 12) {
+            if (player->getId() != current_id) {
+                player->sendSpawnPlayer(
+                    {current_id, current.getUuid(), current.getPosition().x, current.getPosition().y, current.getPosition().z, current.getRotation().x, current.getRotation().z}
+                );
+                LDEBUG("send spawn player to {}", player->getUsername());
+                current.sendSpawnPlayer(
+                    {player->getId(), player->getUuid(), player->getPosition().x, player->getPosition().y, player->getPosition().z, player->getRotation().x,
+                     player->getRotation().z}
+                );
+                LDEBUG("send spawn player to {}", current.getUsername());
+                //}
+            }
+            player->sendEntityMetadata(current);
+            current.sendEntityMetadata(*player);
         }
-        player->sendSkinLayers(current_id);
-        current.sendSkinLayers(player->getId());
+    }
+    {
+        std::lock_guard _(_entitiesMutex);
+        for (auto ent : _entities) {
+            if (ent->getType() == EntityType::Player)
+                continue;
+            current.sendSpawnEntity(*ent);
+            current.sendEntityMetadata(*ent);
+        }
     }
 }
 
-void Dimension::spawnEntity(std::shared_ptr<Entity> current)
+void Dimension::spawnEntity(const std::shared_ptr<const Entity> current)
 {
     std::lock_guard _(_entitiesMutex);
     for (auto player : _players) {
         LDEBUG("spawn entity with id: {}", current->getId());
-        player->sendSpawnEntity(
-            {current->getId(),
-             {(uint64_t) current->getId(), (uint64_t) current->getId()},
-             current->getType(),
-             current->getPosition().x,
-             current->getPosition().y,
-             current->getPosition().z,
-             0,
-             0,
-             0,
-             0,
-             16,
-             0,
-             0}
-        );
+        player->sendSpawnEntity({
+            current->getId(), // Entity ID
+            current->getUuid(), // Entity UUID
+            current->getType(), // Entity Type
+            current->getPosition().x, // Entity Position X
+            current->getPosition().y, // Entity Position Y
+            current->getPosition().z, // Entity Position Z
+            0, // Entity Pitch
+            0, // Entity Yaw
+            0, // Entity Head Yaw
+            0, // Entity data
+            0, // Entity Velocity X
+            0, // Entity Velocity Y
+            0 // Entity Velocity Z
+        });
+        player->sendEntityMetadata(*current);
     }
 }
 
@@ -302,22 +357,66 @@ void Dimension::updateEntityAttributes(const protocol::UpdateAttributes &attribu
     }
 }
 
-void Dimension::addEntityMetadata(const protocol::SetEntityMetadata &metadata)
-{
-    std::lock_guard _(_entitiesMutex);
-    for (auto player : _players) {
-        player->sendSetEntityMetadata(metadata);
-    }
-}
-
 void Dimension::sendChunkToPlayers(int x, int z)
 {
     // This send the chunk to the players that are loading it
-    std::lock_guard<std::mutex> _(_loadingChunksMutex);
+    std::lock_guard _(_loadingChunksMutex);
+
+    // This if should not be needed normally but somehow 2 jobs get the same
+    // chunk to process and try to send it to the players at the same time
+    // which will literally segfault the whole stuff.
+    // TODO(huntears): Fix that freaking threadpool :(
+    if (!this->_loadingChunks.contains({x, z}))
+        return;
+
     for (auto weak_player : this->_loadingChunks[{x, z}].players) {
         if (auto player = weak_player.lock()) {
             player->sendChunkAndLightUpdate(this->_level.getChunkColumn(x, z));
         }
     }
     this->_loadingChunks.erase({x, z});
+}
+
+Tps Dimension::getTps() const
+{
+    const auto buffer_size = _circularBufferTps.size();
+    const auto buffer_end = _circularBufferTps.end();
+    const auto tpsCalculation = [buffer_end](const int tick_number) {
+        return 1.0f / ((std::accumulate(buffer_end - tick_number, buffer_end, 0.0f) / (float) (tick_number)) / MICROSECS_IN_ONE_SEC);
+    };
+    const float tpsOnFullBuffer = tpsCalculation(buffer_size);
+
+    Tps tps {0, 0, 0};
+
+    if (buffer_size < TICK_PER_MINUTE - 1) {
+        tps.oneMinTps = tps.fiveMinTps = tps.fifteenMinTps = tpsOnFullBuffer;
+        return tps;
+    }
+    tps.oneMinTps = tpsCalculation(TICK_PER_MINUTE);
+    if (buffer_size < (TICK_PER_MINUTE * 5) - 1) {
+        tps.fiveMinTps = tps.fifteenMinTps = tpsOnFullBuffer;
+        return tps;
+    }
+    tps.fiveMinTps = tpsCalculation((TICK_PER_MINUTE * 5));
+    if (buffer_size < (TICK_PER_MINUTE * 15) - 1) {
+        tps.fifteenMinTps = tpsOnFullBuffer;
+        return tps;
+    }
+    tps.fifteenMinTps = tpsCalculation((TICK_PER_MINUTE * 15));
+    return tps;
+}
+
+MSPTInfos Dimension::getMSPTInfos() const
+{
+    if (_circularBufferMSPT.empty())
+        return {0, 0, 0};
+    const auto buffer_begin = _circularBufferMSPT.begin();
+    const auto buffer_end = _circularBufferMSPT.end();
+    // clang-format off
+    return {
+        *std::min_element(buffer_begin, buffer_end) / MILLIS_IN_ONE_SEC,
+        (std::accumulate(buffer_begin, buffer_end, 0.0f) / float(_circularBufferMSPT.size())) / MILLIS_IN_ONE_SEC,
+        *std::max_element(buffer_begin, buffer_end) / MILLIS_IN_ONE_SEC
+    };
+    // clang-format on
 }

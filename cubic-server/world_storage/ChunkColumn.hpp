@@ -2,20 +2,15 @@
 #define CUBICSERVER_WORLDSTORAGE_CHUNKCOLUMN_HPP
 
 #include <array>
-#include <cmath>
 #include <cstdint>
 #include <memory>
 #include <mutex>
-#include <vector>
 
 #include "Palette.hpp"
-#include "generation/generator.hpp"
 #include "Section.hpp"
+#include "generation/generator.hpp"
 #include "nbt.hpp"
-#include "protocol/Structures.hpp"
-#include "protocol/common.hpp"
 #include "types.hpp"
-#include "world_storage/DynamicStorage.hpp"
 
 class Dimension;
 
@@ -59,8 +54,8 @@ enum class WorldType {
 
 enum class DimensionType {
     OVERWORLD = 0,
-    NETHER,
-    END
+    NETHER = -1,
+    END = 1
 };
 
 enum class GenerationState {
@@ -105,6 +100,8 @@ public:
     constexpr std::array<Section, NB_OF_SECTIONS> &getSections() { return _sections; }
     constexpr const std::array<Section, NB_OF_SECTIONS> &getSections() const { return _sections; }
 
+    const std::shared_ptr<const Dimension> getDimension() const { return _dimension; }
+
     int64_t getTick();
     void setTick(int64_t tick);
     Position2D getChunkPos() const;
@@ -124,6 +121,13 @@ public:
     NODISCARD constexpr inline const nbt::Compound &getHeightMap() const { return _heightMap; }
 
     void generate(GenerationState goalState = GenerationState::READY);
+
+    /**
+     * @brief Process a random tick on the chunk
+     *
+     * @param rts The value of randomtickspeed
+     */
+    void processRandomTick(uint32_t rts);
 
     friend class Persistence;
 
@@ -149,7 +153,7 @@ private:
     void _generateTopLayerModification(generation::Generator &generator);
 
 private:
-    private:
+private:
     std::array<Section, NB_OF_SECTIONS> _sections;
     // std::array<uint8_t, (NB_OF_PLAYABLE_SECTIONS + 2) * SECTION_3D_SIZE> _skyLights;
     // std::array<uint8_t, (NB_OF_PLAYABLE_SECTIONS + 2) * SECTION_3D_SIZE> _blockLights;

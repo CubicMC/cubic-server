@@ -8,8 +8,8 @@
 #include "events/clicks/OpenUrl.hpp"
 #include "events/clicks/RunCommand.hpp"
 #include "events/clicks/SuggestCommand.hpp"
-#include "events/hovers/Entity.hpp"
-#include "events/hovers/Item.hpp"
+#include "events/hovers/EntityEvent.hpp"
+#include "events/hovers/ItemEvent.hpp"
 #include "events/hovers/Text.hpp"
 
 #endif // CHAT_EVENTS_HPP

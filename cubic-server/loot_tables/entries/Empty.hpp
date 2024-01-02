@@ -11,7 +11,7 @@ namespace Entry {
 class Empty : public Entry {
 public:
     Empty(const nlohmann::json &entry);
-    Empty() = default;
+    ~Empty() = default;
 
     bool poll(LootTablePoll &poll, LootContext *context) const override;
 
