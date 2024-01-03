@@ -28,7 +28,7 @@ static void swapContainer(protocol::Slot &slot, std::array<protocol::Slot, N> &c
 }
 
 CraftingTable::CraftingTable(Player &player):
-    Container(player.getWindowId(), protocol::container::InventoryType::Crafting, "Crafting"),
+    Container(player.getWindowId(), protocol::container::InventoryType::TypeCrafting, "Crafting"),
     _playerInventory(player.getInventory()->playerInventory()),
     _hotbar(player.getInventory()->hotbar()),
     _offhand(player.getInventory()->offhand())
