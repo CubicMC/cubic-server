@@ -16,6 +16,18 @@ class Dimension;
 
 namespace world_storage {
 
+// Weird ass modulo to get the correct block position in the chunk
+inline Position convertPositionToChunkPosition(const Position &position)
+{
+    auto x = position.x % 16;
+    auto z = position.z % 16;
+    if (x < 0)
+        x += 16;
+    if (z < 0)
+        z += 16;
+    return {x, position.y, z};
+}
+
 // Heightmap
 constexpr int HEIGHTMAP_BITS = bitsNeeded(CHUNK_HEIGHT + 1);
 constexpr int HEIGHTMAP_ARRAY_SIZE = (SECTION_2D_SIZE * HEIGHTMAP_BITS / 64) + ((SECTION_2D_SIZE * HEIGHTMAP_BITS % 64) != 0);

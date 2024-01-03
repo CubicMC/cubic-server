@@ -25,7 +25,7 @@ double LivingEntity::getBlockSoftness(Blocks::GlobalPalette palette, const Block
     return 1.0;
 }
 
-typedef protocol::SpawnEntity::EntityType EType;
+typedef EntityType EType;
 double LivingEntity::getFallDmgEnvironmentFactor(Blocks::GlobalPalette palette)
 {
     static const std::list<EType> mobImmune = {
@@ -48,7 +48,7 @@ double LivingEntity::getFallDmgEnvironmentFactor(Blocks::GlobalPalette palette)
 void LivingEntity::applyFallDamage(const double &height)
 {
     int fallDamage = ceil(height - this->_pos.y); // nb of blocks fallen
-    static const std::vector<EType> mobHalfDmg = {EType::Camel, EType::Donkey, EType::Horse, EType::Mule, EType::SkeletonHorse, EType::ZombieHorse};
+    static const std::list<EType> mobHalfDmg = {EType::Camel, EType::Donkey, EType::Horse, EType::Mule, EType::SkeletonHorse, EType::ZombieHorse};
     fallDamage -= 3; // mobs don't take damage if they fall 3 blocks or less
     if (fallDamage <= 0)
         return;
@@ -58,8 +58,8 @@ void LivingEntity::applyFallDamage(const double &height)
         fallDamage = (fallDamage - 3) / 2;
     else if (this->_type == EType::Goat || this->_type == EType::Frog || this->_type == EType::Fox)
         fallDamage -= (5 + 5 * (this->_type == EType::Goat));
-    if (fallDamage >= this->_health + 0.5) // making sure death is infliged if fall damage is too high
-        fallDamage = 999;
+    if (fallDamage >= this->_health + 0.5)
+        fallDamage = 999; // making sure death is infliged if fall damage is too high
     this->damage((fallDamage < 0) * fallDamage);
 }
 
