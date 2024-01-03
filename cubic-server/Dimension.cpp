@@ -365,7 +365,7 @@ void Dimension::updateBlock(Position position, int32_t id)
     }
 }
 
-void Dimension::addTileEntity(Position position, BlockId type)
+void Dimension::addTileEntity(const Position &position, BlockId type)
 {
     auto &chunk = this->_level.getChunkColumnFromBlockPos(position.x, position.z);
 
@@ -385,7 +385,7 @@ void Dimension::addTileEntity(Position position, BlockId type)
     }
 }
 
-void Dimension::removeTileEntity(Position position)
+void Dimension::removeTileEntity(const Position &position)
 {
     auto &chunk = this->_level.getChunkColumnFromBlockPos(position.x, position.z);
 
@@ -403,6 +403,12 @@ void Dimension::removeTileEntity(Position position)
     for (auto player : _players) {
         player->sendBlockUpdate({position, type});
     }
+}
+
+tile_entity::TileEntity *Dimension::getTileEntity(const Position &position)
+{
+    auto &chunk = this->_level.getChunkColumnFromBlockPos(position.x, position.z);
+    return chunk.getTileEntity(position);
 }
 
 void Dimension::updateEntityAttributes(const protocol::UpdateAttributes &attributes)
