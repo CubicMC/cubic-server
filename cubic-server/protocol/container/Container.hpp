@@ -25,31 +25,33 @@ enum ClickMode {
     DoubleClick = 6,
 };
 
+// I was obligated to rename the enum to avoid conflict
+// with the different classes of each type
 enum InventoryType {
-    Generic9x1 = 0,
-    Generic9x2 = 1,
-    Generic9x3 = 2,
-    Generic9x4 = 3,
-    Generic9x5 = 4,
-    Generic9x6 = 5,
-    Generic3x3 = 6,
-    Anvil = 7,
-    Beacon = 8,
-    BlastFurnace = 9,
-    BrewingStand = 10,
-    Crafting = 11,
-    Enchantment = 12,
-    Furnace = 13,
-    Grindstone = 14,
-    Hopper = 15,
-    Lectern = 16,
-    Loom = 17,
-    Merchant = 18,
-    ShulkerBox = 19,
-    Smothing = 20,
-    Smoker = 21,
-    Cartography = 22,
-    StoneCutter = 23
+    TypeGeneric9x1 = 0,
+    TypeGeneric9x2 = 1,
+    TypeGeneric9x3 = 2,
+    TypeGeneric9x4 = 3,
+    TypeGeneric9x5 = 4,
+    TypeGeneric9x6 = 5,
+    TypeGeneric3x3 = 6,
+    TypeAnvil = 7,
+    TypeBeacon = 8,
+    TypeBlastFurnace = 9,
+    TypeBrewingStand = 10,
+    TypeCrafting = 11,
+    TypeEnchantment = 12,
+    TypeFurnace = 13,
+    TypeGrindstone = 14,
+    TypeHopper = 15,
+    TypeLectern = 16,
+    TypeLoom = 17,
+    TypeMerchant = 18,
+    TypeShulkerBox = 19,
+    TypeSmothing = 20,
+    TypeSmoker = 21,
+    TypeCartography = 22,
+    TypeStoneCutter = 23
 };
 
 class Container {
