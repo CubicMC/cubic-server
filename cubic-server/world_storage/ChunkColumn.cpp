@@ -620,7 +620,18 @@ void ChunkColumn::tick()
     }
 }
 
-const tile_entity::TileEntity *ChunkColumn::getTileEntity(const Position &pos)
+const tile_entity::TileEntity *ChunkColumn::getTileEntity(const Position &pos) const
+{
+    auto tileEntity = std::find_if(_tileEntities.begin(), _tileEntities.end(), [&pos](const std::unique_ptr<tile_entity::TileEntity> &tileEntity) {
+        return tileEntity->position == pos;
+    });
+
+    if (tileEntity != _tileEntities.end())
+        return tileEntity->get();
+    return nullptr;
+}
+
+tile_entity::TileEntity *ChunkColumn::getTileEntity(const Position &pos)
 {
     auto tileEntity = std::find_if(_tileEntities.begin(), _tileEntities.end(), [&pos](const std::unique_ptr<tile_entity::TileEntity> &tileEntity) {
         return tileEntity->position == pos;

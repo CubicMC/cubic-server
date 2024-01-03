@@ -163,7 +163,15 @@ public:
      * @param pos The position of the Tile Entity
      * @return const TileEntity *
      */
-    const tile_entity::TileEntity *getTileEntity(const Position &pos);
+    const tile_entity::TileEntity *getTileEntity(const Position &pos) const;
+
+    /**
+     * @brief Get the Tile Entity object at the given position
+     *
+     * @param pos The position of the Tile Entity
+     * @return TileEntity *
+     */
+    tile_entity::TileEntity *getTileEntity(const Position &pos);
 
     /**
      * @brief Add a Tile Entity to the chunk
