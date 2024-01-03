@@ -25,8 +25,10 @@
 #include "protocol/common.hpp"
 #include "protocol/container/Container.hpp"
 #include "protocol/container/CraftingTable.hpp"
+#include "protocol/container/Furnace.hpp"
 #include "protocol/container/Inventory.hpp"
 #include "protocol/metadata.hpp"
+#include "tiles-entities/Furnace.hpp"
 #include "world_storage/Level.hpp"
 
 #include <algorithm>
@@ -1261,6 +1263,24 @@ void Player::_onUseItemOn(protocol::UseItemOn &pck)
             protocol::OpenScreen openScreen = {container->id(), container->type(), container->title()};
             this->sendOpenScreen(openScreen);
             return;
+        }
+        auto tileEntity = this->getDimension()->getTileEntity(pck.location);
+        if (tileEntity != nullptr) {
+            switch (tileEntity->blockEntityType) {
+            case tile_entity::TileEntityType::UnknownType:
+                LERROR("tile entity at {} has type UnknownType", pck.location);
+                break;
+            case tile_entity::TileEntityType::Furnace: {
+                std::shared_ptr<protocol::container::Container> &container =
+                    _containers.emplace_back(std::make_shared<protocol::container::Furnace>(*this, (tile_entity::Furnace *)tileEntity));
+                protocol::OpenScreen openScreen = {container->id(), container->type(), container->title()};
+                this->sendOpenScreen(openScreen);
+                break;
+            }
+            default:
+                LERROR("tile entity at {} has unhandled type {}", pck.location, tileEntity->blockEntityType);
+                break;
+            }
         }
     }
 
