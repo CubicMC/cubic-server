@@ -4,6 +4,7 @@
 #include "Server.hpp"
 #include "TileEntity.hpp"
 #include "blocks.hpp"
+#include "options.hpp"
 #include "protocol/Structures.hpp"
 #include "tiles-entities/TileEntityList.hpp"
 #include "types.hpp"
@@ -20,8 +21,21 @@ public:
 
     BlockId getBlockId() const override { return Blocks::Furnace::toProtocol(_facing, _lit); }
 
-protected:
+    int getBurningTime() const { return _burningTime; }
+    int getBurnTimeCurrentFuel() const { return _burnTimeCurrentFuel; }
+    int getCookTime() const { return _cookTime; }
+
+    protocol::Slot &fuel() { return _fuel; }
+    protocol::Slot &ingredient() { return _ingredient; }
+    protocol::Slot &result() { return _result; }
+
+    const protocol::Slot &fuel() const { return _fuel; }
+    const protocol::Slot &ingredient() const { return _ingredient; }
+    const protocol::Slot &result() const { return _result; }
+
+private:
     int _burningTime;
+    int _burnTimeCurrentFuel;
     int _cookTime;
     protocol::Slot _ingredient;
     protocol::Slot _fuel;
