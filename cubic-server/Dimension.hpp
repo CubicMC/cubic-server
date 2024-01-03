@@ -167,14 +167,21 @@ public:
      * @param position The position of the tile entity (in absolute coordinates)
      * @param type The type of the tile entity (as a BlockId)
      */
-    virtual void addTileEntity(Position position, BlockId type);
+    virtual void addTileEntity(const Position &position, BlockId type);
 
     /**
      * @brief Remove a tile entity from the dimension
      *
      * @param position The position of the tile entity (in absolute coordinates)
      */
-    virtual void removeTileEntity(Position position);
+    virtual void removeTileEntity(const Position &position);
+
+    /**
+     * @brief Get a tile entity from the dimension using its position
+     *
+     * @param position The position of the tile entity (in absolute coordinates)
+     */
+    virtual tile_entity::TileEntity *getTileEntity(const Position &position);
 
 protected:
     virtual void _run();
