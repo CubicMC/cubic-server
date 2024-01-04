@@ -3,4 +3,6 @@ target_sources (${CMAKE_PROJECT_NAME} PRIVATE
     FlintAndSteel.hpp
     Hoe.cpp
     Hoe.hpp
+    Bow.cpp
+    Bow.hpp
 )

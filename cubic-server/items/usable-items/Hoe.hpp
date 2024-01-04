@@ -27,7 +27,7 @@ struct Hoe : public UsableItem {
      * @note See Item::UsableItem::onUse() for more info
      *
      */
-    void onUse(std::shared_ptr<Dimension> dim, Position &pos, UsabilityType usage, int32_t face) override;
+    void onUseOn(std::shared_ptr<Dimension> dim, Position &pos, UsabilityType usage, int32_t face, Entity &user) override;
 
     /**
      * @note See Item::UsableItem::setNbtTag() for more info

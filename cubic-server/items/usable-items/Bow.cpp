@@ -1,8 +1,11 @@
-#include "FlintAndSteel.hpp"
+#include "Bow.hpp"
 #include "Dimension.hpp"
-#include "blocks.hpp"
+#include "entities/Arrow.hpp"
+#include "entities/Entity.hpp"
+#include "items/UsableItem.hpp"
+#include "logging/logging.hpp"
 
-nbt_tag_t *Items::FlintAndSteel::setNbtTag()
+nbt_tag_t *Items::Bow::setNbtTag()
 {
     int32_t DAMAGE = 0;
     int32_t UNBREAKABLE = this->_isUnbreakable;
@@ -19,13 +22,11 @@ nbt_tag_t *Items::FlintAndSteel::setNbtTag()
     return root;
 }
 
-void Items::FlintAndSteel::onUseOn(std::shared_ptr<Dimension> dim, Position &pos, UNUSED UsabilityType usage, UNUSED int32_t face, UNUSED Entity &user)
+void Items::Bow::onUse(std::shared_ptr<Dimension> dim, Entity &user, UsabilityType usage)
 {
-    dim->updateBlock(
-        pos,
-        Blocks::Fire::toProtocol(
-            Blocks::Fire::Properties::Age::ZERO, Blocks::Fire::Properties::East::FALSE, Blocks::Fire::Properties::North::FALSE, Blocks::Fire::Properties::South::FALSE,
-            Blocks::Fire::Properties::Up::FALSE, Blocks::Fire::Properties::West::FALSE
-        )
-    );
+    auto &entityRotation = user.getRotation();
+    auto arr = dim->makeEntity<Arrow>();
+    arr->forceSetPosition(user.getPosition());
+    LINFO("spawn entity arrow");
+    dim->spawnEntity(arr);
 }
