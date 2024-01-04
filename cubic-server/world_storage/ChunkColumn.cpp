@@ -650,7 +650,7 @@ void ChunkColumn::removeTileEntity(const Position &pos)
 
 nbt_tag_t *ChunkColumn::toRegionCompatibleFormat()
 {
-    int32_t dataVersion = 2865; // TODO(huntears): This sucks, no idea what that value is
+    int32_t dataVersion = 3218; // Hardcoded version number for 1.19.3
     nbt_tag_t *root_raw = nbt_new_tag_compound();
     nnbt::Tag root = nnbt::Tag::fromRaw(root_raw);
 
