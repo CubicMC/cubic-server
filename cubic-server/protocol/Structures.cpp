@@ -14,6 +14,8 @@ const protocol::ItemType protocol::Slot::getUsableItemFromSlot()
     }
     if (item->_stringId == "minecraft:flint_and_steel")
         return Items::FlintAndSteel();
+    if (item->_stringId == "minecraft:bow")
+        return Items::Bow(*item);
     if (item->_stringId.find("_hoe") != item->_stringId.npos)
         return Items::Hoe(*item);
     return *item;

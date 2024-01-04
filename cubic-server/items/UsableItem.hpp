@@ -1,16 +1,17 @@
 #ifndef CUBICSERVER_ITEMS_USABLEITEM_HPP
 #define CUBICSERVER_ITEMS_USABLEITEM_HPP
 
-#include "nbt.h"
-#include "options.hpp"
-#include "types.hpp"
-
 #include <array>
 #include <cstdint>
 #include <memory>
 #include <string_view>
 
+#include "nbt.h"
+#include "options.hpp"
+#include "types.hpp"
+
 class Dimension;
+class Entity;
 
 namespace Items {
 
@@ -74,7 +75,9 @@ public:
      * @param pos The position on which the item was used (facultative)
      * @param usage Determining with which mouse click the item is used (for items that are used with both clicks)
      */
-    virtual void onUse(UNUSED std::shared_ptr<Dimension> dim, UNUSED Position &pos, UNUSED UsabilityType usage, UNUSED int32_t face) {};
+    virtual void onUseOn(UNUSED std::shared_ptr<Dimension> dim, UNUSED Position &pos, UNUSED UsabilityType usage, UNUSED int32_t face, UNUSED Entity &user) {};
+
+    virtual void onUse(UNUSED std::shared_ptr<Dimension> dim, UNUSED Entity &user, UNUSED UsabilityType usage) {};
 
     /**
      * @brief Set the NBT Tag of the item

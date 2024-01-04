@@ -240,6 +240,7 @@ private:
     void _unloadChunk(int32_t x, int32_t z);
     void _foodTick();
     void _eat();
+    void _shoot();
 
     std::weak_ptr<Client> _cli;
     std::string _username;
