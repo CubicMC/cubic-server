@@ -1273,7 +1273,7 @@ void Player::_onUseItemOn(protocol::UseItemOn &pck)
                 break;
             case tile_entity::TileEntityType::Furnace: {
                 std::shared_ptr<protocol::container::Container> &container =
-                    _containers.emplace_back(std::make_shared<protocol::container::Furnace>(*this, (tile_entity::Furnace *)tileEntity));
+                    _containers.emplace_back(std::make_shared<protocol::container::Furnace>(*this, std::dynamic_pointer_cast<tile_entity::Furnace>(tileEntity)));
                 protocol::OpenScreen openScreen = {container->id(), container->type(), container->title()};
                 this->sendOpenScreen(openScreen);
                 break;

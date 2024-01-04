@@ -14,7 +14,7 @@ constexpr const int16_t PLAYER_HOTBAR_SIZE = 9;
 namespace protocol::container {
 class Furnace : public Container {
 public:
-    explicit Furnace(Player &player, tile_entity::Furnace *furnace);
+    explicit Furnace(Player &player, std::shared_ptr<tile_entity::Furnace> furnace);
     ~Furnace() = default;
 
     protocol::Slot &at(int16_t index) override;

@@ -292,7 +292,7 @@ class TileEntity;
 }
 
 namespace tile_entity {
-std::unique_ptr<tile_entity::TileEntity> createTileEntity(BlockId blockId, Position position);
+std::shared_ptr<tile_entity::TileEntity> createTileEntity(BlockId blockId, Position position);
 }
 
 #endif // CUBICSERVER_TILEENTITY_TILEENTITIESLIST_HPP
