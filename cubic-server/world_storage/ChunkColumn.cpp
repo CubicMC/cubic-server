@@ -620,33 +620,33 @@ void ChunkColumn::tick()
     }
 }
 
-const tile_entity::TileEntity *ChunkColumn::getTileEntity(const Position &pos) const
+const std::shared_ptr<tile_entity::TileEntity> ChunkColumn::getTileEntity(const Position &pos) const
 {
-    auto tileEntity = std::find_if(_tileEntities.begin(), _tileEntities.end(), [&pos](const std::unique_ptr<tile_entity::TileEntity> &tileEntity) {
+    auto tileEntity = std::find_if(_tileEntities.begin(), _tileEntities.end(), [&pos](const std::shared_ptr<tile_entity::TileEntity> &tileEntity) {
         return tileEntity->position == pos;
     });
 
     if (tileEntity != _tileEntities.end())
-        return tileEntity->get();
+        return *tileEntity;
     return nullptr;
 }
 
-tile_entity::TileEntity *ChunkColumn::getTileEntity(const Position &pos)
+std::shared_ptr<tile_entity::TileEntity> ChunkColumn::getTileEntity(const Position &pos)
 {
-    auto tileEntity = std::find_if(_tileEntities.begin(), _tileEntities.end(), [&pos](const std::unique_ptr<tile_entity::TileEntity> &tileEntity) {
+    auto tileEntity = std::find_if(_tileEntities.begin(), _tileEntities.end(), [&pos](const std::shared_ptr<tile_entity::TileEntity> &tileEntity) {
         return tileEntity->position == pos;
     });
 
     if (tileEntity != _tileEntities.end())
-        return tileEntity->get();
+        return *tileEntity;
     return nullptr;
 }
 
-void ChunkColumn::addTileEntity(std::unique_ptr<tile_entity::TileEntity> tileEntity) { _tileEntities.push_back(std::move(tileEntity)); }
+void ChunkColumn::addTileEntity(std::shared_ptr<tile_entity::TileEntity> tileEntity) { _tileEntities.push_back(std::move(tileEntity)); }
 
 void ChunkColumn::removeTileEntity(const Position &pos)
 {
-    auto tileEntity = std::find_if(_tileEntities.begin(), _tileEntities.end(), [&pos](const std::unique_ptr<tile_entity::TileEntity> &tileEntity) {
+    auto tileEntity = std::find_if(_tileEntities.begin(), _tileEntities.end(), [&pos](const std::shared_ptr<tile_entity::TileEntity> &tileEntity) {
         return tileEntity->position == pos;
     });
 

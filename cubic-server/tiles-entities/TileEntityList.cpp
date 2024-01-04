@@ -3,12 +3,12 @@
 
 #include "Furnace.hpp"
 
-std::unique_ptr<tile_entity::TileEntity> tile_entity::createTileEntity(BlockId blockId, Position position)
+std::shared_ptr<tile_entity::TileEntity> tile_entity::createTileEntity(BlockId blockId, Position position)
 {
     TileEntityType tileEntityType = convertBlockNameToBlockEntityType(GLOBAL_PALETTE.fromProtocolIdToBlock(blockId).name);
     switch (tileEntityType) {
     case TileEntityType::Furnace:
-        return std::make_unique<Furnace>(blockId, position);
+        return std::make_shared<Furnace>(blockId, position);
     default:
         LINFO("Unknown tile entity type: {}", tileEntityType);
         return nullptr;

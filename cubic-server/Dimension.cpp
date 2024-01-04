@@ -344,7 +344,7 @@ void Dimension::updateBlock(Position position, int32_t id)
 
     auto chunkPosition = world_storage::convertPositionToChunkPosition(position);
     chunk.updateBlock(chunkPosition, id);
-    const tile_entity::TileEntity *tileEntity = nullptr;
+    std::shared_ptr<const tile_entity::TileEntity> tileEntity = nullptr;
     if (id == 0)
         chunk.removeTileEntity(position);
     else {
@@ -405,7 +405,13 @@ void Dimension::removeTileEntity(const Position &position)
     }
 }
 
-tile_entity::TileEntity *Dimension::getTileEntity(const Position &position)
+std::shared_ptr<tile_entity::TileEntity> Dimension::getTileEntity(const Position &position)
+{
+    auto &chunk = this->_level.getChunkColumnFromBlockPos(position.x, position.z);
+    return chunk.getTileEntity(position);
+}
+
+std::shared_ptr<const tile_entity::TileEntity> Dimension::getTileEntity(const Position &position) const
 {
     auto &chunk = this->_level.getChunkColumnFromBlockPos(position.x, position.z);
     return chunk.getTileEntity(position);

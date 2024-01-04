@@ -153,32 +153,32 @@ public:
     /**
      * @brief Get the Tile Entities object as a vector
      *
-     * @return const std::vector<std::unique_ptr<TileEntity>>&
+     * @return const std::vector<std::shared_ptr<TileEntity>>&
      */
-    constexpr const std::vector<std::unique_ptr<tile_entity::TileEntity>> &getTileEntities() const { return _tileEntities; }
+    constexpr const std::vector<std::shared_ptr<tile_entity::TileEntity>> &getTileEntities() const { return _tileEntities; }
 
     /**
      * @brief Get the Tile Entity object at the given position
      *
      * @param pos The position of the Tile Entity
-     * @return const TileEntity *
+     * @return const std::shared_ptr<TileEntity>
      */
-    const tile_entity::TileEntity *getTileEntity(const Position &pos) const;
+    const std::shared_ptr<tile_entity::TileEntity> getTileEntity(const Position &pos) const;
 
     /**
      * @brief Get the Tile Entity object at the given position
      *
      * @param pos The position of the Tile Entity
-     * @return TileEntity *
+     * @return std::shared_ptr<TileEntity>
      */
-    tile_entity::TileEntity *getTileEntity(const Position &pos);
+    std::shared_ptr<tile_entity::TileEntity> getTileEntity(const Position &pos);
 
     /**
      * @brief Add a Tile Entity to the chunk
      *
-     * @param std::unique_ptr<TileEntity>
+     * @param std::shared_ptr<TileEntity>
      */
-    void addTileEntity(std::unique_ptr<tile_entity::TileEntity> tileEntity);
+    void addTileEntity(std::shared_ptr<tile_entity::TileEntity> tileEntity);
 
     /**
      * @brief Remove a Tile Entity from the chunk
@@ -223,7 +223,7 @@ private:
     GenerationState _currentState;
     std::mutex _generationLock;
     std::shared_ptr<Dimension> _dimension;
-    std::vector<std::unique_ptr<tile_entity::TileEntity>> _tileEntities;
+    std::vector<std::shared_ptr<tile_entity::TileEntity>> _tileEntities;
 };
 
 } // namespace world_storage

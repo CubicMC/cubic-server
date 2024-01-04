@@ -2,7 +2,7 @@
 #include "logging/logging.hpp"
 #include "protocol/ClientPackets.hpp"
 
-protocol::container::Furnace::Furnace(Player &player, tile_entity::Furnace *furnace) :
+protocol::container::Furnace::Furnace(Player &player, std::shared_ptr<tile_entity::Furnace> furnace):
     Container(player.getWindowId(), protocol::container::InventoryType::TypeFurnace, "Furnace"),
     _ingredient(furnace->ingredient()),
     _fuel(furnace->fuel()),
@@ -122,4 +122,3 @@ void protocol::container::Furnace::insert(UNUSED protocol::Slot &slot)
     //     }
     // }
 }
-
