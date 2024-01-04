@@ -1,6 +1,7 @@
 #include "Section.hpp"
 #include "blocks.hpp"
 #include "logging/logging.hpp"
+#include "options.hpp"
 #include "types.hpp"
 #include "utility/PseudoRandomGenerator.hpp"
 #include <cstdint>
@@ -225,7 +226,7 @@ void world_storage::Section::processRandomTick(uint32_t rts, Position2D chunkPos
     }
 }
 
-void world_storage::Section::_processBlockRandomTick(uint32_t blockIndex, Position2D chunkPos)
+void world_storage::Section::_processBlockRandomTick(UNUSED uint32_t blockIndex, UNUSED Position2D chunkPos)
 {
     // TODO(huntears): Add the randomtick events here (Grass/fire spreading, crops growth, etc...)
     if (this->getBlockLight(blockIndex) < 10)
