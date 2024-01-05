@@ -150,6 +150,7 @@ public:
     void sendEntityAnimation(protocol::EntityAnimation::ID animId, int32_t entityID);
     void sendCloseContainer(uint8_t containerId);
     void sendSetContainerContent(const protocol::SetContainerContent &packet);
+    void sendSetContainerProperty(const protocol::SetContainerProperty &packet);
     void sendSetContainerSlot(const protocol::SetContainerSlot &packet);
     void sendUpdateRecipes(const protocol::UpdateRecipes &packet);
     void sendUpdateTags(const protocol::UpdateTags &packet);

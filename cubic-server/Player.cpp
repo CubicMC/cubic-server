@@ -695,6 +695,14 @@ void Player::sendSetContainerContent(const protocol::SetContainerContent &packet
     N_LDEBUG("Sent set container content packet");
 }
 
+void Player::sendSetContainerProperty(const protocol::SetContainerProperty &packet)
+{
+    GET_CLIENT();
+    auto pck = protocol::createSetContainerProperty(packet);
+    client->doWrite(std::move(pck));
+    N_LDEBUG("Sent set container property packet");
+}
+
 void Player::sendSetContainerSlot(const protocol::SetContainerSlot &packet)
 {
     GET_CLIENT();
