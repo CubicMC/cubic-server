@@ -1,15 +1,27 @@
 #include "Furnace.hpp"
+#include "Player.hpp"
 #include "logging/logging.hpp"
 #include "protocol/ClientPackets.hpp"
+#include "tiles-entities/Furnace.hpp"
+#include <memory>
 
-protocol::container::Furnace::Furnace(Player &player, std::shared_ptr<tile_entity::Furnace> furnace):
-    Container(player.getWindowId(), protocol::container::InventoryType::TypeFurnace, "Furnace"),
+protocol::container::Furnace::Furnace(std::weak_ptr<Player> player, std::shared_ptr<tile_entity::Furnace> furnace):
+    Container(player.lock()->getWindowId(), protocol::container::InventoryType::TypeFurnace, "Furnace"),
     _ingredient(furnace->ingredient()),
     _fuel(furnace->fuel()),
     _result(furnace->result()),
-    _playerInventory(player.getInventory()->playerInventory()),
-    _hotbar(player.getInventory()->hotbar())
+    _playerInventory(player.lock()->getInventory()->playerInventory()),
+    _hotbar(player.lock()->getInventory()->hotbar()),
+    _playerId(player.lock()->getId()),
+    _furnace(furnace)
 {
+    furnace->addPlayer(player, this->id());
+}
+
+protocol::container::Furnace::~Furnace()
+{
+    if (!_furnace.expired())
+        _furnace.lock()->removePlayer(_playerId);
 }
 
 protocol::Slot &protocol::container::Furnace::at(int16_t index)
