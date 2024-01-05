@@ -65,7 +65,7 @@ Player::Player(std::weak_ptr<Client> cli, std::shared_ptr<Dimension> dim, u128 u
     _skinParts(true, true, true, true, true, true, true),
     _mainHand(MainHand::Right),
     _nbTickBeforeNextAttack(0),
-    _windowId(1)
+    _windowId(0)
 {
     _keepAliveClock.start();
     _heldItem = 0;

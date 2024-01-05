@@ -56,7 +56,7 @@ enum InventoryType {
 
 class Container {
 public:
-    Container(int32_t id, int32_t type, chat::Message title):
+    Container(uint8_t id, int32_t type, chat::Message title):
         _id(id),
         _type(type),
         _state(State::Normal),
@@ -92,7 +92,7 @@ public:
     virtual void onButtonClick(UNUSED std::shared_ptr<Player> player, UNUSED uint8_t buttonId) {};
     virtual void close(UNUSED std::shared_ptr<Player> player);
 
-    NODISCARD constexpr inline int32_t id() const { return _id; }
+    NODISCARD constexpr inline uint8_t id() const { return _id; }
     NODISCARD constexpr inline int32_t type() const { return _type; }
     NODISCARD constexpr inline int32_t state() const { return _state; }
     NODISCARD constexpr inline const chat::Message &title() const { return _title; }
@@ -100,7 +100,7 @@ public:
     NODISCARD constexpr inline const protocol::Slot &cariedItem() const { return at(_cariedItemIndex); }
 
 private:
-    int32_t _id;
+    uint8_t _id;
     int32_t _type;
     int32_t _state;
     chat::Message _title;

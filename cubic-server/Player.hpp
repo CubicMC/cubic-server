@@ -96,9 +96,9 @@ public:
     /**
      * @brief Get the Window Id of the next screen / window / inventory
      *
-     * @return int The window id
+     * @return uint8_t The window id
      */
-    int getWindowId() { return _windowId; }
+    uint8_t getWindowId() { return ++_windowId; }
 
 public:
     /**
@@ -277,7 +277,7 @@ private:
         Right = 1,
     } _mainHand;
     int _nbTickBeforeNextAttack;
-    int _windowId;
+    uint8_t _windowId;
 };
 
 template<isBaseOf<protocol::container::Container> Container, typename... Args>
