@@ -8,7 +8,8 @@
 #include "protocol/Structures.hpp"
 #include "tiles-entities/TileEntityList.hpp"
 #include "types.hpp"
-// #include "recipes/Smelting.hpp"
+
+class Player;
 
 namespace tile_entity {
 class Furnace : public TileEntity {
@@ -33,16 +34,19 @@ public:
     const protocol::Slot &ingredient() const { return _ingredient; }
     const protocol::Slot &result() const { return _result; }
 
+    void addPlayer(std::weak_ptr<Player> player, uint8_t windowId);
+    void removePlayer(int playerId);
+
 private:
-    int _burningTime;
-    int _burnTimeCurrentFuel;
-    int _cookTime;
+    int16_t _burningTime;
+    int16_t _burnTimeCurrentFuel;
+    int16_t _cookTime;
     protocol::Slot _ingredient;
     protocol::Slot _fuel;
     protocol::Slot _result;
     Blocks::Furnace::Properties::Lit _lit;
     Blocks::Furnace::Properties::Facing _facing;
-    // Recipes &_recipes;
+    std::vector<std::pair<std::weak_ptr<Player>, uint8_t>> _players;
 };
 }
 

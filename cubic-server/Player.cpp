@@ -1278,10 +1278,12 @@ void Player::_onUseItemOn(protocol::UseItemOn &pck)
                 LERROR("tile entity at {} has type UnknownType", pck.location);
                 break;
             case tile_entity::TileEntityType::Furnace: {
-                std::shared_ptr<protocol::container::Container> &container =
-                    _containers.emplace_back(std::make_shared<protocol::container::Furnace>(*this, std::dynamic_pointer_cast<tile_entity::Furnace>(tileEntity)));
+                std::shared_ptr<protocol::container::Container> &container = _containers.emplace_back(
+                    std::make_shared<protocol::container::Furnace>(this->dynamicWeakFromThis<Player>(), std::dynamic_pointer_cast<tile_entity::Furnace>(tileEntity))
+                );
                 protocol::OpenScreen openScreen = {container->id(), container->type(), container->title()};
                 this->sendOpenScreen(openScreen);
+                this->sendSetContainerContent({container});
                 break;
             }
             default:

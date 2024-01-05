@@ -1,21 +1,25 @@
 #ifndef PROTOCOL_WINDOW_FURNACE_HPP
 #define PROTOCOL_WINDOW_FURNACE_HPP
 
-#include "Player.hpp"
 #include "protocol/Structures.hpp"
 #include "protocol/container/Container.hpp"
-#include "tiles-entities/Furnace.hpp"
 #include <cstdint>
+#include <memory>
 
 constexpr const int16_t FURNACE_SLOT_NUMBER = 3;
 constexpr const int16_t PLAYER_INVENTORY_SIZE = 27;
 constexpr const int16_t PLAYER_HOTBAR_SIZE = 9;
 
+namespace tile_entity {
+class Furnace;
+}
+class Player;
+
 namespace protocol::container {
 class Furnace : public Container {
 public:
-    explicit Furnace(Player &player, std::shared_ptr<tile_entity::Furnace> furnace);
-    ~Furnace() = default;
+    explicit Furnace(std::weak_ptr<Player> player, std::shared_ptr<tile_entity::Furnace> furnace);
+    ~Furnace();
 
     protocol::Slot &at(int16_t index) override;
     const protocol::Slot &at(int16_t index) const override;
@@ -43,6 +47,8 @@ private:
     protocol::Slot &_result;
     std::array<protocol::Slot, PLAYER_INVENTORY_SIZE> &_playerInventory;
     std::array<protocol::Slot, PLAYER_HOTBAR_SIZE> &_hotbar;
+    const int _playerId;
+    std::weak_ptr<tile_entity::Furnace> _furnace;
 };
 }
 
