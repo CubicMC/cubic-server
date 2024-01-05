@@ -41,6 +41,7 @@ enum class ClientPacketID : int32_t {
     Commands = 0x0E,
     CloseContainer = 0x0F,
     SetContainerContent = 0x10,
+    SetContainerProperty = 0x11,
     SetContainerSlot = 0x12,
     PluginMessage = 0x15,
     DisconnectPlay = 0x17,
@@ -200,6 +201,13 @@ struct SetContainerContent {
     const std::shared_ptr<container::Container> container;
 };
 std::unique_ptr<std::vector<uint8_t>> createSetContainerContent(const SetContainerContent &);
+
+struct SetContainerProperty {
+    uint8_t windowId;
+    int16_t property;
+    int16_t value;
+};
+std::unique_ptr<std::vector<uint8_t>> createSetContainerProperty(const SetContainerProperty &);
 
 struct SetContainerSlot {
     SetContainerSlot(const std::shared_ptr<const container::Container> &container, int8_t containerId, int16_t slot):
