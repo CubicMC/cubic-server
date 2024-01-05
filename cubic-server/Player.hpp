@@ -24,7 +24,6 @@
 #include <type_traits>
 
 class Client;
-// class Entity;
 
 class Player : public LivingEntity {
     friend class Client;

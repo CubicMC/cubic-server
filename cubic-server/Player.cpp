@@ -1265,8 +1265,7 @@ void Player::_onUseItemOn(protocol::UseItemOn &pck)
             this->sendOpenScreen(openScreen);
             return;
         }
-        auto tileEntity = this->getDimension()->getTileEntity(pck.location);
-        if (tileEntity != nullptr) {
+        if (auto tileEntity = this->getDimension()->getTileEntity(pck.location); tileEntity != nullptr) {
             switch (tileEntity->blockEntityType) {
             case tile_entity::TileEntityType::UnknownType:
                 LERROR("tile entity at {} has type UnknownType", pck.location);
