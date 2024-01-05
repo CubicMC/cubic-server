@@ -349,8 +349,7 @@ void Dimension::updateBlock(Position position, int32_t id)
         chunk.removeTileEntity(position);
     else {
         using namespace tile_entity;
-        TileEntityType tileEntityId = convertBlockNameToBlockEntityType(GLOBAL_PALETTE.fromProtocolIdToBlock(id).name);
-        if (tileEntityId != TileEntityType::UnknownType) {
+        if (convertBlockNameToBlockEntityType(GLOBAL_PALETTE.fromProtocolIdToBlock(id).name) != TileEntityType::UnknownType) {
             chunk.addTileEntity(createTileEntity(id, position));
             tileEntity = chunk.getTileEntity(position);
         }
@@ -369,15 +368,8 @@ void Dimension::addTileEntity(const Position &position, BlockId type)
 {
     auto &chunk = this->_level.getChunkColumnFromBlockPos(position.x, position.z);
 
-    // Weird ass modulo to get the correct block position in the chunk
-    auto x = position.x % 16;
-    auto z = position.z % 16;
-    if (x < 0)
-        x += 16;
-    if (z < 0)
-        z += 16;
-
-    chunk.updateBlock({x, position.y, z}, type);
+    auto chunkPosition = world_storage::convertPositionToChunkPosition(position);
+    chunk.updateBlock(chunkPosition, type);
     chunk.addTileEntity(tile_entity::createTileEntity(type, position));
     for (auto player : _players) {
         player->sendBlockUpdate({position, type});
@@ -389,16 +381,10 @@ void Dimension::removeTileEntity(const Position &position)
 {
     auto &chunk = this->_level.getChunkColumnFromBlockPos(position.x, position.z);
 
-    // Weird ass modulo to get the correct block position in the chunk
-    auto x = position.x % 16;
-    auto z = position.z % 16;
-    if (x < 0)
-        x += 16;
-    if (z < 0)
-        z += 16;
+    auto chunkPosition = world_storage::convertPositionToChunkPosition(position);
 
-    auto type = chunk.getBlock({x, position.y, z});
-    chunk.updateBlock({x, position.y, z}, 0);
+    auto type = chunk.getBlock(chunkPosition);
+    chunk.updateBlock(chunkPosition, 0);
     chunk.removeTileEntity(position);
     for (auto player : _players) {
         player->sendBlockUpdate({position, type});
