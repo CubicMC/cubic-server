@@ -797,6 +797,34 @@ std::unique_ptr<std::vector<uint8_t>> protocol::createUpdateTime(const UpdateTim
     return packet;
 }
 
+std::unique_ptr<std::vector<uint8_t>> protocol::createSetTitleText(const SetTitleText &in)
+{
+    std::vector<uint8_t> payload;
+    // clang-format off
+    serialize(payload,
+        in.title, addChat
+    );
+    // clang-format on
+    auto packet = std::make_unique<std::vector<uint8_t>>();
+    finalize(*packet, payload, ClientPacketID::SetTitleText);
+    return packet;
+}
+
+std::unique_ptr<std::vector<uint8_t>> protocol::createSetTitleAnimationTimes(const SetTitleAnimationTimes &in)
+{
+    std::vector<uint8_t> payload;
+    // clang-format off
+    serialize(payload,
+        in.fadeIn, addInt,
+        in.stay, addInt,
+        in.fadeOut, addInt
+    );
+    // clang-format on
+    auto packet = std::make_unique<std::vector<uint8_t>>();
+    finalize(*packet, payload, ClientPacketID::SetTitleAnimationTimes);
+    return packet;
+}
+
 std::unique_ptr<std::vector<uint8_t>> protocol::createEntitySoundEffect(const EntitySoundEffect &in)
 {
     std::vector<uint8_t> payload;
@@ -1003,6 +1031,19 @@ std::unique_ptr<std::vector<uint8_t>> protocol::createUpdateScore(const UpdateSc
     // clang-format on
     auto packet = std::make_unique<std::vector<uint8_t>>();
     finalize(*packet, payload, ClientPacketID::UpdateScore);
+    return packet;
+}
+
+std::unique_ptr<std::vector<uint8_t>> protocol::createSetSubtitleText(const SetSubtitleText &in)
+{
+    std::vector<uint8_t> payload;
+    // clang-format off
+    serialize(payload,
+        in.subtitle, addChat
+    );
+    // clang-format on
+    auto packet = std::make_unique<std::vector<uint8_t>>();
+    finalize(*packet, payload, ClientPacketID::SetSubtitleText);
     return packet;
 }
 

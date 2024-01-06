@@ -159,6 +159,9 @@ public:
     void sendUpdateScore(const protocol::UpdateScore &packet);
     void sendUpdateTeams(const protocol::UpdateTeams &packet);
     void sendPickupItem(const protocol::PickupItem &packet);
+    void sendSubtitleText(const protocol::SetSubtitleText &data);
+    void sendTitleText(const protocol::SetTitleText &data);
+    void sendTitleAnimationTimes(const protocol::SetTitleAnimationTimes &data);
 
 private:
     void _onConfirmTeleportation(protocol::ConfirmTeleportation &pck);
