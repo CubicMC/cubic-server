@@ -212,18 +212,6 @@ void Player::updateEquipment(bool mainHand, bool offHand, bool boots, bool leggi
 
     if (mainHand)
         equip.equipment.push_back(std::make_pair(protocol::SetEquipment::EquipmentPosition::MainHand, this->_inventory->hotbar().at(this->_heldItem)));
-    /*
-        if (offHand)
-            equip.equipment.push_back(std::make_pair(protocol::SetEquipment::EquipmentPosition::OffHand, this->_inventory->offhand()));
-        if (boots)
-            equip.equipment.push_back(std::make_pair(protocol::SetEquipment::EquipmentPosition::ArmorSlotBoots, this->_inventory->armor().at(0)));
-        if (leggings)
-            equip.equipment.push_back(std::make_pair(protocol::SetEquipment::EquipmentPosition::ArmorSlotLegs, this->_inventory->armor().at(1)));
-        if (chestplate)
-            equip.equipment.push_back(std::make_pair(protocol::SetEquipment::EquipmentPosition::ArmorSlotChest, this->_inventory->armor().at(2)));
-        if (helmet)
-            equip.equipment.push_back(std::make_pair(protocol::SetEquipment::EquipmentPosition::ArmorSlotHelmet, this->_inventory->armor().at(3)));
-    */
 
     for (const auto &player : this->getDimension()->getPlayers()) {
         if (player->getId() != this->getId())
