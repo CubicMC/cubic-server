@@ -96,6 +96,8 @@ Player::Player(std::weak_ptr<Client> cli, std::shared_ptr<Dimension> dim, u128 u
     this->_inventory->playerInventory().at(14) = protocol::Slot(true, 1, 12, root);
     this->_inventory->playerInventory().at(16) = protocol::Slot(true, hoe._numeralId, 1, hoeRoot);
     this->_inventory->playerInventory().at(17) = protocol::Slot(true, ITEM_CONVERTER.fromItemToProtocolId("minecraft:wooden_sword"), 1);
+    this->_inventory->hotbar().at(0) = protocol::Slot(true, ITEM_CONVERTER.fromItemToProtocolId("minecraft:coal"), 1);
+    this->_inventory->hotbar().at(1) = protocol::Slot(true, ITEM_CONVERTER.fromItemToProtocolId("minecraft:cobblestone"), 10);
     PEXP(incrementPlayerCountGlobal);
 }
 
