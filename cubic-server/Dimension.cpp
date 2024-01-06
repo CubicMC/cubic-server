@@ -284,8 +284,8 @@ void Dimension::spawnPlayer(Player &current)
                 );
                 LDEBUG("send spawn player to {}", player->getUsername());
                 current.sendSpawnPlayer(
-                    {player->getId(), player->getUuid(), player->getPosition().x, player->getPosition().y, player->getPosition().z, player->getRotation().x, player->getRotation().z
-                    }
+                    {player->getId(), player->getUuid(), player->getPosition().x, player->getPosition().y, player->getPosition().z, player->getRotation().x,
+                     player->getRotation().z}
                 );
                 LDEBUG("send spawn player to {}", current.getUsername());
                 //}

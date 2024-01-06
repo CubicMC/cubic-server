@@ -216,6 +216,7 @@ void Team::sendUpdateTeam(void) const
 {
     uint8_t friendlyFlags = (0b00000000 | this->_seeFriendlyInvisibles << 1) | this->_allowFriendlyFire;
 
+    // clang-format off
     const protocol::UpdateTeams update {
         this->_name,
         2,
@@ -225,9 +226,9 @@ void Team::sendUpdateTeam(void) const
         CollisionRule::getProtocolFlag(this->_collisionRule),
         this->_color,
         this->_memberNamePrefix,
-        this->_memberNameSuffix,
-        {}
+        this->_memberNameSuffix
     };
+    //clang-format on
     for (const auto &[_, world] : this->_scoreboard.getWorldGroup().getWorlds()) {
         for (const auto &[_, dimension] : world->getDimensions()) {
             for (const auto &player : dimension->getPlayers()) {
