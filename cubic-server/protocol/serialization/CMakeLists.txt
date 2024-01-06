@@ -18,6 +18,7 @@ if (GTEST)
 
     target_link_libraries(
         serialization_test
+        Blocks
         GTest::gtest_main
         rapidcheck
         rapidcheck_gtest
@@ -29,6 +30,8 @@ if (GTEST)
         PRIVATE
         ${CMAKE_CURRENT_SOURCE_DIR}/../../
         ${nbt_SOURCE_DIR}
+        ${Blocks_SOURCE_DIR}
+        ${noise_SOURCE_DIR}
     )
 
     include(GoogleTest)
