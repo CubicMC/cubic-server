@@ -77,15 +77,23 @@ public:
     }
 
     /**
-     * @brief Return a boolean that indicate if the blockId need to be updated
+     * @brief Return a boolean that indicate if the blockId need to be updated and consume the boolean
      *
      * @return bool
      */
-    virtual bool needBlockUpdate() const final { return _needBlockUpdate; }
+    virtual bool needBlockUpdate() final
+    {
+        if (_needBlockUpdate) {
+            _needBlockUpdate = false;
+            return true;
+        }
+        return false;
+    }
 
     /**
      * @brief Get the block id of the tile entity
      *
+     * @return BlockId
      */
     virtual BlockId getBlockId() const = 0;
 

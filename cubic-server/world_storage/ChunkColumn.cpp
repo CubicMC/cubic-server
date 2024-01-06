@@ -617,6 +617,10 @@ void ChunkColumn::tick()
 {
     for (auto &tileEntity : _tileEntities) {
         tileEntity->tick();
+        if (tileEntity->needBlockUpdate()) {
+            updateBlock(world_storage::convertPositionToChunkPosition(tileEntity->position), tileEntity->getBlockId());
+            _blocksToBeUpdated.push_back({tileEntity->position, tileEntity->getBlockId()});
+        }
     }
 }
 

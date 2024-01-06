@@ -187,6 +187,13 @@ public:
      */
     void removeTileEntity(const Position &pos);
 
+    /**
+     * @brief Get the Blocks To Be Updated object
+     *
+     * @return const std::vector<std::pair<Position, BlockId>>&
+     */
+    constexpr std::vector<std::pair<Position, BlockId>> &getBlocksToBeUpdated() { return _blocksToBeUpdated; }
+
     friend class Persistence;
 
 private:
@@ -224,6 +231,7 @@ private:
     std::mutex _generationLock;
     std::shared_ptr<Dimension> _dimension;
     std::vector<std::shared_ptr<tile_entity::TileEntity>> _tileEntities;
+    std::vector<std::pair<Position, BlockId>> _blocksToBeUpdated;
 };
 
 } // namespace world_storage

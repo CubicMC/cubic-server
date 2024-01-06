@@ -64,6 +64,17 @@ void Dimension::tick()
         if (!chunk.isReady())
             continue;
         chunk.tick();
+        if (auto &blocks = chunk.getBlocksToBeUpdated(); !blocks.empty()) {
+            std::lock_guard _(_playersMutex);
+            for (auto player : _players) {
+                while (!blocks.empty()) {
+                    auto [pos, id] = blocks.back();
+                    LTRACE("Sending block update to player {} for block {} with id {}", player->getUsername(), pos, id);
+                    player->sendBlockUpdate({pos, id});
+                    blocks.pop_back();
+                }
+            }
+        }
     }
     {
         std::unique_lock a(_entitiesMutex, std::defer_lock);

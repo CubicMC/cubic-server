@@ -12,6 +12,8 @@ Furnace::Furnace(BlockId blockId, const Position &position, nbt_tag_t *nbt):
     _ingredient(),
     _fuel(),
     _result(),
+    _lit(Blocks::Furnace::Properties::Lit::FALSE),
+    _facing(Blocks::Furnace::Properties::Facing::NORTH),
     _players()
 {
     for (auto [name, value] : GLOBAL_PALETTE.fromProtocolIdToBlock(blockId).properties) {
