@@ -12,15 +12,18 @@ generation::Nether::Nether(Seed seed):
 BlockId generation::Nether::getBlock(positionType x, positionType y, positionType z)
 {
     auto noise = getNoise(x, y, z);
-    int heightOffset = 70;
-    int surfaceLevel = heightOffset + noise.noise2D.continentalness * 10;
-    BlockId blockId = Blocks::Air::toProtocol();
-
-    if (y < surfaceLevel)
-        blockId = Blocks::Netherrack::toProtocol();
-
-    auto density = noise.noise3D.density * 0.5;
-    if (blockId == Blocks::Netherrack::toProtocol() && density >= -.15 && density <= .05)
+    BlockId blockId = Blocks::Netherrack::toProtocol();
+    
+    auto density = noise.noise3D.density * 1.5;
+    if (y >= 100)
+        density *= 0.75;
+    if (y >= 200)
+        density *= 1.5;
+    if (y >= 270)
+        density *= 5;
+    if (y >= 310)
+        density *= 100;
+    if (blockId == Blocks::Netherrack::toProtocol() && density >= -0.5 && density <= 0.1)
         blockId = Blocks::Air::toProtocol();
 
     return blockId;
