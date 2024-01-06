@@ -1401,6 +1401,17 @@ void Player::_continueLoginSequence()
     // send scoreboard status (objectives and teams)
     _dim->getWorld()->getWorldGroup()->getScoreboard().sendScoreboardStatus(*this);
 
+    // send other player's held item
+    for (std::shared_ptr<Player> other : _dim->getPlayers()) {
+        if (other->getInventory()->hotbar().at(other->getHeldItem()).present) {
+            protocol::SetEquipment equip;
+
+            equip.entityId = other->getId();
+            equip.equipment.push_back(std::make_pair(protocol::SetEquipment::EquipmentPosition::MainHand, other->getInventory()->hotbar().at(other->getHeldItem())));
+            this->sendSetEquipment(equip);
+        }
+    }
+
     // Send login message
     chat::Message connectionMsg = chat::Message::fromTranslationKey<chat::message::TranslationKey::MultiplayerPlayerJoined>(*this);
 
