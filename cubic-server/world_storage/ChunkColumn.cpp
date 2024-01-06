@@ -340,15 +340,15 @@ void ChunkColumn::_generateNether(UNUSED GenerationState goalState)
                 if (generator.getRandomizer() != 0) {
                     if (block == Blocks::Air::toProtocol() || (abs(pos.x % 8) >= abs(pos.z % 4) && pos.y % 2 != 0)) {
                         if (abs(pos.x) % 3 != abs(pos.z % 5)) {
-                            updateBlock({x, 1 + CHUNK_HEIGHT_MIN, z}, Blocks::Bedrock::toProtocol());
-                            updateBlock({(x - 2) % SECTION_WIDTH, 1 + CHUNK_HEIGHT_MIN, (z + 1) % SECTION_WIDTH}, Blocks::Bedrock::toProtocol());
+                            updateBlock({x, pos.y + y, z}, Blocks::Bedrock::toProtocol());
+                            updateBlock({(x - 2) % SECTION_WIDTH, pos.y + y, (z + 1) % SECTION_WIDTH}, Blocks::Bedrock::toProtocol());
                         } else if ((abs(pos.z - x) % generator.getRandomizer() != 0 || abs(pos.x - z) % 2 != 0) && abs(pos.y) % 4 != abs(z - x) % 8 && pos.y % 2 == 0)
-                            updateBlock({x, y, (z + 1) % SECTION_WIDTH}, Blocks::Bedrock::toProtocol());
+                            updateBlock({x, pos.y + y, (z + 1) % SECTION_WIDTH}, Blocks::Bedrock::toProtocol());
                         if ((abs(pos.z) % 2 != 0 || abs(pos.x) % 2 != 0) || x == z) {
-                            updateBlock({x, 2 + CHUNK_HEIGHT_MIN, (z + 1) % SECTION_WIDTH}, Blocks::Bedrock::toProtocol());
+                            updateBlock({x, pos.y + y, (z + 1) % SECTION_WIDTH}, Blocks::Bedrock::toProtocol());
                         } else if ((abs(pos.z) != abs(pos.x) + x && abs(pos.z % 4) != z % 2) && pos.y % 2 != 0) {
-                            updateBlock({(x + 5) % SECTION_WIDTH, 3 + CHUNK_HEIGHT_MIN, (z - 3) % SECTION_WIDTH}, Blocks::Bedrock::toProtocol());
-                            updateBlock({x, y, (z + 2) % SECTION_WIDTH}, Blocks::Bedrock::toProtocol());
+                            updateBlock({(x + 5) % SECTION_WIDTH, pos.y + y, (z - 3) % SECTION_WIDTH}, Blocks::Bedrock::toProtocol());
+                            updateBlock({x, pos.y + y, (z + 2) % SECTION_WIDTH}, Blocks::Bedrock::toProtocol());
                         }
                     } else {
                         if (abs(pos.x) % 3 != 0 && (generator.getRandomizer() == z % 5 && abs(pos.z) % 3 == 2) && abs(pos.y) % 2 == 0)
@@ -362,7 +362,7 @@ void ChunkColumn::_generateNether(UNUSED GenerationState goalState)
     // generate lava seas
     for (int z = 0; z < SECTION_WIDTH; z++) {
         for (int x = 0; x < SECTION_WIDTH; x++) {
-            for (int y = lavaLevel; 0 < y; y--) {
+            for (int y = lavaLevel; CHUNK_HEIGHT_MIN + 1 < y; y--) {
                 auto lastBlock = 0;
                 auto block = getBlock({x, y, z});
                 if (getBlock({x, y, z}) == Blocks::Air::toProtocol()) {
@@ -373,7 +373,7 @@ void ChunkColumn::_generateNether(UNUSED GenerationState goalState)
                     continue;
                 }
                 if (block == Blocks::Netherrack::toProtocol() && lastBlock == Blocks::Lava::toProtocol(Blocks::Lava::Properties::Level::ZERO)) {
-                    updateBlock({x, y, z}, Blocks::SoulSand::toProtocol()); // sand
+                    updateBlock({x, y, z}, Blocks::SoulSand::toProtocol());
                     break;
                 }
             }
