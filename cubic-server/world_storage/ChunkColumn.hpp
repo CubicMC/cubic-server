@@ -32,6 +32,11 @@ inline Position convertPositionToChunkPosition(const Position &position)
     return {x, position.y, z};
 }
 
+inline Position convertChunkPositionToPosition(const Position2D &chunkPos, const Position &blockPos)
+{
+    return {chunkPos.x * 16 + blockPos.x, blockPos.y, chunkPos.z * 16 + blockPos.z};
+}
+
 // Heightmap
 constexpr int HEIGHTMAP_BITS = bitsNeeded(CHUNK_HEIGHT + 1);
 constexpr int HEIGHTMAP_ARRAY_SIZE = (SECTION_2D_SIZE * HEIGHTMAP_BITS / 64) + ((SECTION_2D_SIZE * HEIGHTMAP_BITS % 64) != 0);
