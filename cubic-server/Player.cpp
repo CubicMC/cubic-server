@@ -1517,11 +1517,7 @@ void Player::kill(const int32_t killerId)
     this->sendHealth();
     LivingEntity::kill(killerId);
 
-    this->sendCombatDeath({
-        this->_id,
-        killerId,
-        "You died :("
-    });
+    this->sendCombatDeath({this->_id, killerId, "You died :("});
 }
 
 bool Player::isInRenderDistance(UNUSED const Vector2<double> &pos) const { return true; }
