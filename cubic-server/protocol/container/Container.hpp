@@ -62,7 +62,7 @@ public:
         _state(State::Normal),
         _title(std::move(title)),
         _cursor(false),
-        _cariedItemIndex(0)
+        _cariedItemIndex(-1)
     {
     }
 
