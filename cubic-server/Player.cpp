@@ -1512,7 +1512,7 @@ void Player::_respawn()
     this->_dim->spawnPlayer(*this);
 }
 
-void Player::kill(const int32_t killerId)
+void Player::kill(int32_t killerId)
 {
     this->sendHealth();
     LivingEntity::kill(killerId);

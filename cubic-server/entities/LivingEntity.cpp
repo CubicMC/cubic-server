@@ -21,7 +21,7 @@ void LivingEntity::tick()
     Entity::tick();
 }
 
-void LivingEntity::attack(float damage, const Vector3<double> &source, const int32_t sourceId)
+void LivingEntity::attack(float damage, const Vector3<double> &source, int32_t sourceId)
 {
     if (_health <= 0)
         return;
@@ -30,7 +30,7 @@ void LivingEntity::attack(float damage, const Vector3<double> &source, const int
     this->knockback(source);
 }
 
-void LivingEntity::damage(float damage, const int32_t sourceId)
+void LivingEntity::damage(float damage, int32_t sourceId)
 {
     bool canceled = false;
 
@@ -66,7 +66,7 @@ void LivingEntity::knockback(const Vector3<double> &source, float force)
     }
 }
 
-void LivingEntity::kill(UNUSED const int32_t killerId)
+void LivingEntity::kill(UNUSED int32_t killerId)
 {
     _health = 0;
 

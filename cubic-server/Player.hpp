@@ -68,7 +68,7 @@ public:
      *
      * @param killerId The id of the entity that killed it
      */
-    void kill(const int32_t killerId) override;
+    void kill(int32_t killerId) override;
     void playerPickupItem();
 
     template<isBaseOf<protocol::container::Container> Container, typename... Args>

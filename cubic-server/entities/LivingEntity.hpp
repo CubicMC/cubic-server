@@ -43,7 +43,7 @@ public:
      * @param damage The damage to deal
      * @param source The source of the damage
      */
-    virtual void attack(float damage, const Vector3<double> &source, const int32_t sourceId = 0);
+    virtual void attack(float damage, const Vector3<double> &source, int32_t sourceId = 0);
 
     /*
      * @brief Inflict damage to the entity
@@ -51,7 +51,7 @@ public:
      * @param damage The damage to deal
      * @param sourceId The ID of the source entity dealing damage
      */
-    virtual void damage(float damage, const int32_t sourceId = 0);
+    virtual void damage(float damage, int32_t sourceId = 0);
 
     /*
      * @brief Inflict knockback to the entity
@@ -64,7 +64,7 @@ public:
     /**
      * @brief Kill the entity
      */
-    virtual void kill(const int32_t killerId = 0);
+    virtual void kill(int32_t killerId = 0);
 
     virtual void setHealth(float health);
 
