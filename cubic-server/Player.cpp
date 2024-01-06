@@ -35,9 +35,9 @@
 #include <variant>
 #include <vector>
 
-#define GET_CLIENT()                 \
-    auto client = this->_cli.lock(); \
-    if (client == nullptr)           \
+#define GET_CLIENT()                   \
+    auto client = this -> _cli.lock(); \
+    if (client == nullptr)             \
     return
 
 Player::Player(std::weak_ptr<Client> cli, std::shared_ptr<Dimension> dim, u128 uuid, const std::string &username):
@@ -779,6 +779,30 @@ void Player::sendPickupItem(const protocol::PickupItem &packet)
     auto pck = protocol::createPickupItem(packet);
     client->doWrite(std::move(pck));
     LDEBUG("Sent pickup item packet");
+}
+
+void Player::sendSubtitleText(const protocol::SetSubtitleText &packet)
+{
+    GET_CLIENT();
+    auto pck = protocol::createSetSubtitleText(packet);
+    client->doWrite(std::move(pck));
+    LDEBUG("Sent subtitle text packet");
+}
+
+void Player::sendTitleText(const protocol::SetTitleText &packet)
+{
+    GET_CLIENT();
+    auto pck = protocol::createSetTitleText(packet);
+    client->doWrite(std::move(pck));
+    LDEBUG("Sent title text packet");
+}
+
+void Player::sendTitleAnimationTimes(const protocol::SetTitleAnimationTimes &packet)
+{
+    GET_CLIENT();
+    auto pck = protocol::createSetTitleAnimationTimes(packet);
+    client->doWrite(std::move(pck));
+    LDEBUG("Sent title animation times packet");
 }
 
 #pragma endregion
