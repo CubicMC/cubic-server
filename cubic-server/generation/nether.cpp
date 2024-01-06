@@ -13,7 +13,7 @@ BlockId generation::Nether::getBlock(positionType x, positionType y, positionTyp
 {
     auto noise = getNoise(x, y, z);
     BlockId blockId = Blocks::Netherrack::toProtocol();
-    
+
     auto density = noise.noise3D.density * 1.5;
     if (y >= 100)
         density *= 0.75;
@@ -31,7 +31,7 @@ BlockId generation::Nether::getBlock(positionType x, positionType y, positionTyp
 
 BlockId generation::Nether::getBlock(const Position &pos) { return getBlock(pos.x, pos.y, pos.z); }
 
-BiomeId generation::Nether::getBiome(positionType x, positionType y, positionType z) { return getNoise(x, y, z).noise2D.weirdness > 0.0 ? 0 : 1; }
+BiomeId generation::Nether::getBiome(positionType x, positionType y, positionType z) { return 2; }
 
 BiomeId generation::Nether::getBiome(const Position &pos) { return getBiome(pos.x, pos.y, pos.z); }
 

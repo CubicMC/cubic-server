@@ -44,7 +44,7 @@ public:
 
     std::weak_ptr<Client> getClient() const;
     const std::string &getUsername() const;
-    uint16_t getHeldItem() const;
+    uint8_t getHeldItem() const;
     player_attributes::Gamemode getGamemode() const;
     const protocol::ClientInformation::ChatVisibility &getChatVisibility() const;
     long keepAliveId() const;
@@ -227,7 +227,7 @@ private:
     std::string _username;
     long _keepAliveId;
     uint8_t _keepAliveIgnored;
-    int16_t _heldItem;
+    int8_t _heldItem;
     player_attributes::Gamemode _gamemode;
     TickClock _keepAliveClock;
     TickClock _synchronizeClock;

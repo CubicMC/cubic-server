@@ -385,6 +385,15 @@ void ChunkColumn::_generateNether(UNUSED GenerationState goalState)
         }
     }
 
+    // set biome to nether_wastes (id: 2)
+    for (int y = 0; y < BIOME_HEIGHT_MAX; y++) {
+        for (int z = 0; z < BIOME_SECTION_WIDTH; z++) {
+            for (int x = 0; x < BIOME_SECTION_WIDTH; x++) {
+                updateBiome({x, y + BIOME_HEIGHT_MIN, z}, 2);
+            }
+        }
+    }
+
     _currentState = GenerationState::READY;
 }
 

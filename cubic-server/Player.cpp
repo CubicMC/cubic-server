@@ -132,7 +132,7 @@ std::weak_ptr<Client> Player::getClient() const { return _cli; }
 
 const std::string &Player::getUsername() const { return _username; }
 
-uint16_t Player::getHeldItem() const { return this->_heldItem; }
+uint8_t Player::getHeldItem() const { return this->_heldItem; }
 
 player_attributes::Gamemode Player::getGamemode() const { return _gamemode; }
 

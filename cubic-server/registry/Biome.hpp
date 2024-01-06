@@ -121,13 +121,13 @@ inline void registry::setupDefaultsBiome(registry::Biome &registry)
 
     registry.addEntry()
         .name("minecraft:nether_wastes")
-        .id(8)
+        .id(2)
         .precipitation("none")
         .temperature(2.0)
         .downfall(0)
         .effects({
-            .skyColor = 16733440,
-            .waterFogColor = 16733440,
+            .skyColor = 0,
+            .waterFogColor = 3344392,
             .fogColor = 3344392,
             .waterColor = 4159204,
         });

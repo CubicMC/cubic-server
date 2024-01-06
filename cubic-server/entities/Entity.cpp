@@ -337,6 +337,7 @@ void Entity::teleportPlayerThroughPortal(std::shared_ptr<Dimension> currentDimen
         thisPlayer->sendFeatureFlags({{"minecraft:vanilla"}});
         thisPlayer->sendChangeDifficulty({1, true});
         thisPlayer->sendPlayerAbilities({player_attributes::getAbilitiesByGamemode(thisPlayer->getGamemode()), 0.05, 0.1});
+        thisPlayer->sendSetHeldItem({thisPlayer->getHeldItem()});
         thisPlayer->sendUpdateRecipes({});
         thisPlayer->sendUpdateTags({});
         thisPlayer->sendEntityEvent({thisPlayer->_id, 24});
