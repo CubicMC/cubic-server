@@ -25,6 +25,33 @@ enum ClickMode {
     DoubleClick = 6,
 };
 
+enum InventoryType {
+    Generic9x1 = 0,
+    Generic9x2 = 1,
+    Generic9x3 = 2,
+    Generic9x4 = 3,
+    Generic9x5 = 4,
+    Generic9x6 = 5,
+    Generic3x3 = 6,
+    Anvil = 7,
+    Beacon = 8,
+    BlastFurnace = 9,
+    BrewingStand = 10,
+    Crafting = 11,
+    Enchantment = 12,
+    Furnace = 13,
+    Grindstone = 14,
+    Hopper = 15,
+    Lectern = 16,
+    Loom = 17,
+    Merchant = 18,
+    ShulkerBox = 19,
+    Smothing = 20,
+    Smoker = 21,
+    Cartography = 22,
+    StoneCutter = 23
+};
+
 class Container {
 public:
     Container(int32_t id, int32_t type, chat::Message title):

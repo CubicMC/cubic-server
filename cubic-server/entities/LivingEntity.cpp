@@ -10,25 +10,14 @@
 #include "protocol/metadata.hpp"
 #include <optional>
 
-/*
- * @brief Attack the entity
- *
- * @param damage The damage to deal
- * @param source The source of the damage
- */
-void LivingEntity::attack(const Vector3<double> &source)
+void LivingEntity::attack(float damage, const Vector3<double> &source)
 {
     //  TODO : think about how to deal with damage calculation later
     onEvent(Server::getInstance()->getPluginManager(), onEntityDamage, this, 1.0f);
-    this->damage(1);
+    this->damage(damage);
     this->knockback(source);
 }
 
-/*
- * @brief Inflict damage to the entity
- *
- * @param damage The damage to deal
- */
 void LivingEntity::damage(float damage)
 {
     bool canceled = false;
@@ -42,12 +31,6 @@ void LivingEntity::damage(float damage)
     LDEBUG("entity type {} with id {} took damage {}, health is now {}", this->_type, this->_id, damage, _health);
 }
 
-/*
- * @brief Inflict knockback to the entity
- *
- * @param source The source of the knockback
- * @param force The force of the knockback
- */
 void LivingEntity::knockback(const Vector3<double> &source, float force)
 {
     // compute knockback

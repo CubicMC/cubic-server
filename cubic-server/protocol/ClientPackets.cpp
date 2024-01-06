@@ -484,6 +484,21 @@ std::unique_ptr<std::vector<uint8_t>> protocol::createUpdateEntityRotation(const
     return packet;
 }
 
+std::unique_ptr<std::vector<uint8_t>> protocol::createOpenScreen(const OpenScreen &in)
+{
+    std::vector<uint8_t> payload;
+    // clang-format off
+    serialize(payload,
+        in.id, addVarInt,
+        in.type, addVarInt,
+        in.title.serialize(), addChat
+    );
+    // clang-format on
+    auto packet = std::make_unique<std::vector<uint8_t>>();
+    finalize(*packet, payload, ClientPacketID::OpenScreen);
+    return packet;
+}
+
 std::unique_ptr<std::vector<uint8_t>> protocol::createPlayerAbilities(const PlayerAbilitiesClient &in)
 {
     std::vector<uint8_t> payload;

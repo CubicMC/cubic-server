@@ -14,7 +14,8 @@
 #include "events/CancelEvents.hpp"
 #include "items/UsableItem.hpp"
 #include "items/foodItems.hpp"
-#include "items/usable-items/FlintAndSteel.hpp"
+#include "items/toolsDamage.hpp"
+#include "items/usable-items/Hoe.hpp"
 #include "logging/logging.hpp"
 #include "nbt.h"
 #include "protocol/ClientPackets.hpp"
@@ -22,6 +23,7 @@
 #include "protocol/Structures.hpp"
 #include "protocol/common.hpp"
 #include "protocol/container/Container.hpp"
+#include "protocol/container/CraftingTable.hpp"
 #include "protocol/container/Inventory.hpp"
 #include "protocol/metadata.hpp"
 #include "world_storage/Level.hpp"
@@ -58,7 +60,8 @@ Player::Player(std::weak_ptr<Client> cli, std::shared_ptr<Dimension> dim, u128 u
     _additionalHearts(0),
     _score(0),
     _skinParts(true, true, true, true, true, true, true),
-    _mainHand(MainHand::Right)
+    _mainHand(MainHand::Right),
+    _nbTickBeforeNextAttack(0)
 {
     _keepAliveClock.start();
     _heldItem = 0;
@@ -81,11 +84,12 @@ Player::Player(std::weak_ptr<Client> cli, std::shared_ptr<Dimension> dim, u128 u
     nbt_set_tag_name(display, DISPLAY_TAG.data(), DISPLAY_TAG.size());
     nbt_tag_compound_append(display, name);
     nbt_tag_compound_append(root, display);
-    Items::FlintAndSteel flint;
-    auto flintRoot = flint.setNbtTag();
+    Items::Hoe hoe = Items::Hoe("minecraft:wooden_hoe", 756, Items::ItemMaxDurabilityByType::WoodenItem, false, Items::UsabilityType::BothMouseClicksUsable);
+    auto hoeRoot = hoe.setNbtTag();
 
     this->_inventory->playerInventory().at(14) = protocol::Slot(true, 1, 12, root);
-    this->_inventory->playerInventory().at(16) = protocol::Slot(true, flint._numeralId, 1, flintRoot);
+    this->_inventory->playerInventory().at(16) = protocol::Slot(true, hoe._numeralId, 1, hoeRoot);
+    this->_inventory->playerInventory().at(17) = protocol::Slot(true, ITEM_CONVERTER.fromItemToProtocolId("minecraft:wooden_sword"), 1);
     PEXP(incrementPlayerCountGlobal);
 }
 
@@ -102,6 +106,8 @@ void Player::tick()
 {
     _keepAliveClock.tick();
     _synchronizeClock.tick();
+    if (_nbTickBeforeNextAttack > 0)
+        _nbTickBeforeNextAttack--;
 
     _foodTick();
 
@@ -301,6 +307,15 @@ void Player::sendBlockUpdate(const protocol::BlockUpdate &packet)
     client->doWrite(std::move(pck));
 
     N_LDEBUG("Sent a block update at {} = {} to {}", packet.location, packet.blockId, this->getUsername());
+}
+
+void Player::sendOpenScreen(const protocol::OpenScreen &packet)
+{
+    GET_CLIENT();
+    auto pck = protocol::createOpenScreen(packet);
+    client->doWrite(std::move(pck));
+
+    N_LDEBUG("Sent a open screen");
 }
 
 void Player::sendFeatureFlags(const protocol::FeatureFlags &packet)
@@ -914,16 +929,32 @@ void Player::_onInteract(protocol::Interact &pck)
     switch (pck.type) {
     case protocol::Interact::Type::Interact:
         break;
-    case protocol::Interact::Type::Attack:
+    case protocol::Interact::Type::Attack: {
         onEvent(Server::getInstance()->getPluginManager(), onEntityInteractEntity, this, target.get());
+        if (_nbTickBeforeNextAttack > 0) {
+            LINFO("Player {} is attacking too fast", this->getUsername());
+            return;
+        }
+        Items::ToolDescription tool;
+        const auto currentTool = std::find_if(Items::toolsDamage.begin(), Items::toolsDamage.end(), [&](const auto &tool) {
+            return tool.id == _inventory->hotbar().at(_heldItem).itemID;
+        });
+        if (currentTool == Items::toolsDamage.end()) {
+            tool.damage = 1;
+            tool.attackSpeed = 4;
+        } else {
+            tool = *currentTool;
+        }
+        _nbTickBeforeNextAttack = int(20.0 / tool.attackSpeed);
         if (player != nullptr && player->_gamemode != player_attributes::Gamemode::Creative) {
-            player->attack(_pos);
+            player->attack(tool.damage, _pos);
             player->sendHealth();
         } else if (target != nullptr) {
-            target->attack(_pos);
+            target->attack(tool.damage, _pos);
         }
         _foodExhaustionLevel += player_attributes::FOOD_EXHAUSTION_ATTACK;
         break;
+    }
     case protocol::Interact::Type::InteractAt:
         break;
     default:
@@ -1048,6 +1079,15 @@ void Player::_onPlayerAction(protocol::PlayerAction &pck)
             Event::cancelBlockDestroy(this, this->getDimension()->getLevel().getChunkColumnFromBlockPos(pck.location.x, pck.location.z).getBlock(pck.location), pck.location);
             return;
         }
+        auto item = this->_inventory->hotbar().at(this->_heldItem).getUsableItemFromSlot();
+        if (Items::Hoe *usedItem = std::get_if<Items::Hoe>(&item)) {
+            if (usedItem->_usabilityType == Items::UsabilityType::LeftMouseClickUsable || usedItem->_usabilityType == Items::UsabilityType::BothMouseClicksUsable) {
+                usedItem->onUse(this->getDimension(), pck.location, Items::UsabilityType::LeftMouseClickUsable, 1);
+                if (usedItem->canUpdateDamage) {
+                    this->_inventory->hotbar().at(this->_heldItem).updateDamage();
+                }
+            }
+        }
         int id = ITEM_CONVERTER.fromItemToProtocolId(GLOBAL_PALETTE.fromProtocolIdToBlock(this->getDimension()->getBlock(pck.location)).name);
         this->getDimension()->updateBlock(pck.location, 0);
         _foodExhaustionLevel += 0.005;
@@ -1169,6 +1209,15 @@ void Player::_onTeleportToEntity(UNUSED protocol::TeleportToEntity &pck) { N_LDE
 void Player::_onUseItemOn(protocol::UseItemOn &pck)
 {
     N_LDEBUG("Got a Use Item On {} -> {}", pck.location, this->_heldItem);
+
+    if (GLOBAL_PALETTE.fromProtocolIdToBlock(this->getDimension()->getBlock(pck.location)).name == "minecraft:crafting_table") {
+        std::shared_ptr<protocol::container::Container> &container = _containers.emplace_back(std::make_shared<protocol::container::CraftingTable>(*this));
+        // std::shared_ptr<protocol::container::Container> &container = this->openContainer<protocol::container::CraftingTable>(*this);
+        protocol::OpenScreen openScreen = {container->id(), container->type(), container->title()};
+        this->sendOpenScreen(openScreen);
+        return;
+    }
+
     switch (pck.face) {
     case protocol::UseItemOn::Face::Bottom:
         pck.location.y--;
@@ -1190,10 +1239,12 @@ void Player::_onUseItemOn(protocol::UseItemOn &pck)
         break;
     }
     auto item = this->_inventory->hotbar().at(this->_heldItem).getUsableItemFromSlot();
-    if (const Items::FlintAndSteel *usedItem = std::get_if<Items::FlintAndSteel>(&item)) {
-        if (usedItem->_usabilityType == Items::UsabilityType::RightMouseClickUsable) {
-            usedItem->onUse(this->getDimension(), pck.location);
-            this->_inventory->hotbar().at(this->_heldItem).updateDamage();
+    if (Items::Hoe *usedItem = std::get_if<Items::Hoe>(&item)) {
+        if (usedItem->_usabilityType == Items::UsabilityType::RightMouseClickUsable || usedItem->_usabilityType == Items::UsabilityType::BothMouseClicksUsable) {
+            usedItem->onUse(this->getDimension(), pck.location, Items::UsabilityType::RightMouseClickUsable, (int32_t) pck.face);
+            if (usedItem->canUpdateDamage) {
+                this->_inventory->hotbar().at(this->_heldItem).updateDamage();
+            }
             this->sendSetContainerSlot({this->_inventory, static_cast<int16_t>(this->_heldItem + HOTBAR_OFFSET)});
         }
         return;
@@ -1308,7 +1359,7 @@ void Player::_continueLoginSequence()
     this->sendUpdateRecipiesBook({});
 
     // TODO: change that to player_attributes::DEFAULT_SPAWN_POINT
-    this->teleport({8.5, 100, 8.5});
+    this->teleport({8.5, 70, 8.5});
 
     this->sendServerData({false, "", false, "", false});
 

@@ -334,15 +334,8 @@ void Dimension::updateBlock(Position position, int32_t id)
     LDEBUG("Dimension block update {} -> {}", position, id);
     auto &chunk = this->_level.getChunkColumnFromBlockPos(position.x, position.z);
 
-    // Weird ass modulo to get the correct block position in the chunk
-    auto x = position.x % 16;
-    auto z = position.z % 16;
-    if (x < 0)
-        x += 16;
-    if (z < 0)
-        z += 16;
-
-    chunk.updateBlock({x, position.y, z}, id);
+    auto chunkPosition = world_storage::convertPositionToChunkPosition(position);
+    chunk.updateBlock(chunkPosition, id);
     std::lock_guard _(_playersMutex);
     for (auto player : _players) {
         player->sendBlockUpdate({position, id});

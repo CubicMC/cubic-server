@@ -110,13 +110,13 @@ inline void registry::setupDefaultsBiome(registry::Biome &registry)
         .name("cubsrv:my_super_cool_biome_lol_haha")
         .id(1)
         .precipitation("none")
-        .temperature(0.8)
-        .downfall(0.4)
+        .temperature(0)
+        .downfall(1)
         .effects({
-            .skyColor = 7907327,
-            .waterFogColor = 329011,
-            .fogColor = 12638463,
-            .waterColor = 4159204,
+            .skyColor = 0,
+            .waterFogColor = 0,
+            .fogColor = 0,
+            .waterColor = 0,
         });
 }
 
