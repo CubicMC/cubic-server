@@ -1,4 +1,4 @@
-FROM alpine:latest AS builder
+FROM alpine:3.19 AS builder
 
 RUN apk add --no-cache \
     git \
@@ -24,18 +24,18 @@ RUN cmake -S . -B build -DCMAKE_BUILD_TYPE=Release -DUSE_CLANG=true -DNO_GUI=tru
 
 RUN cmake --build build -j`nproc --ignore=1`
 
-FROM alpine:latest AS runner
+FROM alpine:3.19 AS runner
 
-# curl-dev is needed because the library is not linked statically
+# curl is needed because the library is not linked statically
 RUN apk add --no-cache \
     libstdc++ \
-    curl-dev
+    curl
 
 WORKDIR /home/cubic-server
 
-COPY --from=builder /home/cubic-server/build/CubicServer .
-COPY --from=builder /home/cubic-server/build/blocks-*.json .
-COPY --from=builder /home/cubic-server/build/registries-*.json .
-COPY --from=builder /home/cubic-server/build/assets assets
+COPY --from=builder /home/cubic-server/build/CubicServer ./
+COPY --from=builder /home/cubic-server/build/blocks-*.json ./
+COPY --from=builder /home/cubic-server/build/registries-*.json ./
+COPY --from=builder /home/cubic-server/build/assets ./
 
 ENTRYPOINT [ "./CubicServer" ]
