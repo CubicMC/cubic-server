@@ -13,8 +13,7 @@ static const boost::container::flat_map<std::string, world_storage::WorldType> _
     {"amplified", world_storage::WorldType::AMPLIFIED},
     {"singlebiome", world_storage::WorldType::SINGLEBIOME},
     {"debug", world_storage::WorldType::DEBUG},
-    {"superflat_cubic_server", world_storage::WorldType::SUPERFLAT_CUBIC_SERVER}
-};
+    {"superflat_cubic_server", world_storage::WorldType::SUPERFLAT_CUBIC_SERVER}};
 } // namespace world_storage
 
 DefaultWorldGroup::DefaultWorldGroup(std::shared_ptr<Chat> chat):
