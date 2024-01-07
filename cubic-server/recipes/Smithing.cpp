@@ -32,7 +32,7 @@ Smithing::Smithing(const nlohmann::json &recipe):
 
 void Smithing::dump(void) const
 {
-    LINFO(
+    LTRACE(
         "\"{}\" + \"{}\" = {}", ITEM_CONVERTER.fromProtocolIdToItem(this->_base), ITEM_CONVERTER.fromProtocolIdToItem(this->_addition),
         ITEM_CONVERTER.fromProtocolIdToItem(this->_result)
     );

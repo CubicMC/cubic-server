@@ -10,7 +10,7 @@ SpecialFireworkStarFade::SpecialFireworkStarFade(const nlohmann::json &recipe):
     this->setValidity(false);
 }
 
-void SpecialFireworkStarFade::dump(void) const { LINFO("recipe special firework star fade"); }
+void SpecialFireworkStarFade::dump(void) const { LTRACE("recipe special firework star fade"); }
 
 std::unique_ptr<Recipe> SpecialFireworkStarFade::create(const nlohmann::json &recipe) { return (std::make_unique<SpecialFireworkStarFade>(SpecialFireworkStarFade(recipe))); }
 } // namespace Recipe
