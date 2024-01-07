@@ -1,4 +1,5 @@
 #include "Inventory.hpp"
+#include "Player.hpp"
 #include "protocol/container/Container.hpp"
 #include <variant>
 
@@ -169,6 +170,7 @@ void Inventory::onClick(std::shared_ptr<Player> player, int16_t index, uint8_t b
             swapContainer(at(index), _hotbar);
         else
             swapContainer(at(index), _playerInventory);
+        player->updateEquipment(true, true, false, false, false, false);
         break;
 
     case ClickMode::Keys:
@@ -176,10 +178,12 @@ void Inventory::onClick(std::shared_ptr<Player> player, int16_t index, uint8_t b
             std::swap(_offhand, at(index));
         else
             std::swap(_hotbar.at(buttonId), at(index));
+        player->updateEquipment(true, true, false, false, false, false);
         break;
 
     default:
         Container::onClick(player, index, buttonId, mode, updates);
+        player->updateEquipment(true, true, true, true, true, true);
         break;
     }
 }

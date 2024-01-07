@@ -933,6 +933,24 @@ std::unique_ptr<std::vector<uint8_t>> protocol::createEntityVelocity(const Entit
     return packet;
 }
 
+std::unique_ptr<std::vector<uint8_t>> protocol::createSetEquipment(const SetEquipment &in)
+{
+    std::vector<uint8_t> payload;
+
+    serialize(payload, in.entityId, addVarInt);
+    for (const auto &it : in.equipment) {
+        // clang-format off
+        serialize(payload,
+            it.first, addByte,
+            it.second, addSlot
+        );
+        // clang-format on
+    }
+    auto packet = std::make_unique<std::vector<uint8_t>>();
+    finalize(*packet, payload, ClientPacketID::SetEquipment);
+    return packet;
+}
+
 std::unique_ptr<std::vector<uint8_t>> protocol::createSetExperience(const SetExperience &in)
 {
     std::vector<uint8_t> payload;
