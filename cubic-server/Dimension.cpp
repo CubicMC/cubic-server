@@ -340,9 +340,9 @@ void Dimension::spawnEntity(const std::shared_ptr<const Entity> current)
             current->getRotation().x, // Entity Yaw
             0, // Entity Head Yaw
             0, // Entity data
-            current->getVelocity().x, // Entity Velocity X
-            current->getVelocity().y, // Entity Velocity Y
-            current->getVelocity().z // Entity Velocity Z
+            (int16_t) current->getVelocity().x, // Entity Velocity X
+            (int16_t) current->getVelocity().y, // Entity Velocity Y
+            (int16_t) current->getVelocity().z // Entity Velocity Z
         });
         player->sendEntityMetadata(*current);
     }

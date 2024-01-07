@@ -38,7 +38,7 @@ Entity::Entity(std::shared_ptr<Dimension> dim,
     Vector2<uint8_t> rot,
     Vector3<double> lastPos,
     Vector2<uint8_t> lastRot,
-    Vector3<int16_t> vel):
+    Vector3<double> vel):
     _dim(dim)
 {
     static std::atomic<int32_t> currentID = 0;
@@ -89,9 +89,9 @@ void Entity::setPosition(const Vector3<double> &pos, UNUSED bool onGround) { _po
 
 void Entity::setPosition(double x, double y, double z, bool onGround) { this->setPosition({x, y, z}, onGround); }
 
-void Entity::setVelocity(const Vector3<int16_t> &vel) { this->setVelocity(vel.x, vel.y, vel.z); };
+void Entity::setVelocity(const Vector3<double> &vel) { this->setVelocity(vel.x, vel.y, vel.z); };
 
-void Entity::setVelocity(int16_t x, int16_t y, int16_t z)
+void Entity::setVelocity(double x, double y, double z)
 {
     _velocity.x = x;
     _velocity.y = y;
