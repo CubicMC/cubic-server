@@ -32,17 +32,17 @@ static constexpr float mcAngleToDegrees(uint8_t angle)
     return simpleAngle * 360.0f;
 }
 
-static constexpr float mcAngleToRadian(uint8_t angle)
+static constexpr double mcAngleToRadian(uint8_t angle)
 {
-    const float degreeAngle = mcAngleToDegrees(angle);
-    const float radianConverter = std::numbers::pi / 180.0f;
+    const double degreeAngle = mcAngleToDegrees(angle);
+    const double radianConverter = std::numbers::pi / 180.0f;
     return degreeAngle * radianConverter;
 }
 
-static Vector3<float> convertAnglesToHeadingVector(uint8_t yaw, uint8_t pitch)
+static Vector3<double> convertAnglesToHeadingVector(uint8_t yaw, uint8_t pitch)
 {
-    const float radianYaw = -mcAngleToRadian(yaw);
-    const float radianPitch = -mcAngleToRadian(pitch);
+    const double radianYaw = -mcAngleToRadian(yaw);
+    const double radianPitch = -mcAngleToRadian(pitch);
 
     return {
         std::sin(radianYaw) * std::cos(radianPitch),
@@ -56,14 +56,9 @@ void Items::Bow::onUse(std::shared_ptr<Dimension> dim, Entity &user, UNUSED Usab
     auto &entityRotation = user.getRotation();
     auto arr = dim->makeEntity<Arrow>();
 
-    const float arrowSpeed = 24000.0f; // Close enough to vanilla
-    const Vector3<float> directionVector = convertAnglesToHeadingVector(entityRotation.x, entityRotation.z);
-    const Vector3<float> weightedFloatingVector = directionVector * arrowSpeed;
-    const Vector3<int16_t> weightedVector = {
-        (int16_t) weightedFloatingVector.x,
-        (int16_t) weightedFloatingVector.y,
-        (int16_t) weightedFloatingVector.z,
-    };
+    const double arrowSpeed = 24000.0f; // Close enough to vanilla
+    const Vector3<double> directionVector = convertAnglesToHeadingVector(entityRotation.x, entityRotation.z);
+    const Vector3<double> weightedVector = directionVector * arrowSpeed;
     const uint8_t arrowRotationSignedYaw = -*((int8_t *) &user.getRotation().x);
     const uint8_t arrowRotationSignedPitch = -*((int8_t *) &user.getRotation().z);
     const Vector2<uint8_t> arrowRotation = {
@@ -86,9 +81,9 @@ void Items::Bow::onUse(std::shared_ptr<Dimension> dim, Entity &user, UNUSED Usab
     for (auto &player : dim->getPlayers()) {
         player->sendEntityVelocity({
             arr->getId(),
-            weightedVector.x,
-            weightedVector.y,
-            weightedVector.z,
+            (int16_t) weightedVector.x,
+            (int16_t) weightedVector.y,
+            (int16_t) weightedVector.z,
         });
     }
 }

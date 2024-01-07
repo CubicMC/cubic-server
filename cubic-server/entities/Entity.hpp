@@ -61,7 +61,7 @@ public:
         Vector2<uint8_t> rot = {0, 0},
         Vector3<double> lastPos = {0, 0, 0},
         Vector2<uint8_t> lastRot = {0, 0},
-        Vector3<int16_t> velocity = {0, 0, 0});
+        Vector3<double> velocity = {0, 0, 0});
     // clang-format on
     /**
      * @brief Destroy the Entity object
@@ -98,9 +98,9 @@ public:
      */
     virtual void setPosition(double x, double y, double z, bool on_ground);
 
-    virtual void setVelocity(const Vector3<int16_t> &vel);
+    virtual void setVelocity(const Vector3<double> &vel);
 
-    virtual void setVelocity(int16_t x, int16_t y, int16_t z);
+    virtual void setVelocity(double x, double y, double z);
 
     /**
      * @brief Set the position and the last position of the entity
@@ -132,7 +132,7 @@ public:
     NODISCARD virtual const u128 &getUuid() const { return _uuid; }
     NODISCARD virtual const Vector3<double> &getPosition() const { return _pos; }
     NODISCARD virtual const Vector2<uint8_t> &getRotation() const { return _rot; }
-    NODISCARD virtual const Vector3<int16_t> &getVelocity() const { return _velocity; }
+    NODISCARD virtual const Vector3<double> &getVelocity() const { return _velocity; }
     NODISCARD virtual const Vector2<float> getRotationDegree() const { return {(float) _rot.x / (256.0f / 360.0f), (float) _rot.z / (256.0f / 360.0f)}; }
     NODISCARD virtual EntityType getType() const { return _type; }
 
@@ -195,7 +195,7 @@ protected:
     Vector2<uint8_t> _rot;
     Vector3<double> _lastPos;
     Vector2<uint8_t> _lastRot;
-    Vector3<int16_t> _velocity;
+    Vector3<double> _velocity;
     EntityType _type;
 };
 
