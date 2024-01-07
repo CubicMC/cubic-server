@@ -12,5 +12,5 @@ SpecialMapExtending::SpecialMapExtending(const nlohmann::json &recipe):
 
 void SpecialMapExtending::dump(void) const { LTRACE("recipe special map extending"); }
 
-std::unique_ptr<Recipe> SpecialMapExtending::create(const nlohmann::json &recipe) { return (std::make_unique<SpecialMapExtending>(SpecialMapExtending(recipe))); }
+std::shared_ptr<Recipe> SpecialMapExtending::create(const nlohmann::json &recipe) { return (std::make_shared<SpecialMapExtending>(SpecialMapExtending(recipe))); }
 } // namespace Recipe

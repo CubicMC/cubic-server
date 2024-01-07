@@ -12,5 +12,5 @@ SpecialShulkerboxColoring::SpecialShulkerboxColoring(const nlohmann::json &recip
 
 void SpecialShulkerboxColoring::dump(void) const { LTRACE("recipe special shulkerbox coloring"); }
 
-std::unique_ptr<Recipe> SpecialShulkerboxColoring::create(const nlohmann::json &recipe) { return (std::make_unique<SpecialShulkerboxColoring>(SpecialShulkerboxColoring(recipe))); }
+std::shared_ptr<Recipe> SpecialShulkerboxColoring::create(const nlohmann::json &recipe) { return (std::make_shared<SpecialShulkerboxColoring>(SpecialShulkerboxColoring(recipe))); }
 } // namespace Recipe

@@ -115,6 +115,9 @@ void Recipes::loadFolder(const std::string &_namespace, const std::string &folde
     // prints the recipes loaded into the given namespace (includes previously loaded recipes from other sources)
     for (const auto &[name, recipe] : this->_recipes[_namespace]) {
         LTRACE("\"{}:{}\":", _namespace, name);
+        LTRACE("category: {}", recipe->hasCategory() ? recipe->getCategory() : "none");
+        LTRACE("group: {}", recipe->hasGroup() ? recipe->getGroup() : "none");
+        LTRACE("valid: {}", recipe->isValid() ? "true" : "false");
         recipe->dump();
         LTRACE("");
     }

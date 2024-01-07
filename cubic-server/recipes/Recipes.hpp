@@ -48,7 +48,7 @@ private:
   Minecraft default's recipe types include :
   crafting_shapeless, crafting_shaped, smelting, stonecutting...
 */
-typedef std::unique_ptr<Recipe> (*Creator)(const nlohmann::json &recipe);
+typedef std::shared_ptr<Recipe> (*Creator)(const nlohmann::json &recipe);
 };
 
 /*
@@ -68,7 +68,7 @@ public:
     void clear(void);
 
 private:
-    std::unordered_map<std::string, std::unordered_map<std::string, std::unique_ptr<Recipe::Recipe>>> _recipes;
+    std::unordered_map<std::string, std::unordered_map<std::string, std::shared_ptr<Recipe::Recipe>>> _recipes;
     std::unordered_map<std::string, std::unordered_map<std::string, Recipe::Creator>> _recipeCreators;
     std::unordered_map<std::string, std::vector<std::string>> _folderPaths;
 };

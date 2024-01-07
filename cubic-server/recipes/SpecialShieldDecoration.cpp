@@ -12,5 +12,5 @@ SpecialShieldDecoration::SpecialShieldDecoration(const nlohmann::json &recipe):
 
 void SpecialShieldDecoration::dump(void) const { LTRACE("recipe special shield decoration"); }
 
-std::unique_ptr<Recipe> SpecialShieldDecoration::create(const nlohmann::json &recipe) { return (std::make_unique<SpecialShieldDecoration>(SpecialShieldDecoration(recipe))); }
+std::shared_ptr<Recipe> SpecialShieldDecoration::create(const nlohmann::json &recipe) { return (std::make_shared<SpecialShieldDecoration>(SpecialShieldDecoration(recipe))); }
 } // namespace Recipe
