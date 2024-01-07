@@ -128,6 +128,7 @@ public:
     void sendUpdateEntityPositionAndRotation(const protocol::UpdateEntityPositionRotation &data);
     void sendUpdateEntityRotation(const protocol::UpdateEntityRotation &data);
     void sendHeadRotation(const protocol::HeadRotation &data);
+    void sendUpdateSectionBlock(const protocol::UpdateSectionBlock &data);
     void sendSetCenterChunk(const Position2D &pos);
     void sendChunkAndLightUpdate(const Position2D &pos);
     void sendChunkAndLightUpdate(int32_t x, int32_t z);

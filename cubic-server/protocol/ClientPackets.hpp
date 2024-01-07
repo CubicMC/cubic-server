@@ -63,6 +63,7 @@ enum class ClientPacketID : int32_t {
     RemoveEntities = 0x3A,
     Respawn = 0x3D,
     HeadRotation = 0x3E,
+    UpdateSectionBlocks = 0x3F,
     ServerData = 0x41,
     SetHeldItem = 0x49,
     CenterChunk = 0x4a,
@@ -537,6 +538,13 @@ struct HeadRotation {
     uint8_t headYaw;
 };
 std::unique_ptr<std::vector<uint8_t>> createHeadRotation(const HeadRotation &in);
+
+struct UpdateSectionBlock {
+    const world_storage::ChunkColumn &chunkData;
+    bool suppressLightUpdates;
+    std::vector<std::pair<Position, BlockId>> blocks;
+};
+std::unique_ptr<std::vector<uint8_t>> createUpdateSectionBlock(const UpdateSectionBlock &in);
 
 struct ServerData {
     bool hasMotd;

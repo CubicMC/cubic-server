@@ -1,8 +1,10 @@
 #include "NetherPortal.hpp"
 #include "Dimension.hpp"
+#include "Player.hpp"
 #include "Server.hpp"
 #include "logging/logging.hpp"
 #include "types.hpp"
+#include <utility>
 
 bool NetherPortal::checkLayers(Position pos, int axis)
 {
@@ -81,52 +83,61 @@ void NetherPortal::buildPortal(Position pos)
 {
     world_storage::ChunkColumn &_chunk = _dim->getLevel().getChunkColumnFromBlockPos(pos.x, pos.z);
     auto frame = getFrame(pos);
-    if (isFrame(pos)) {
-        auto block = _chunk.getBlock(pos);
-        for (int y = 0; y < FRAME_HEIGHT - 1; y++) {
-            for (int x = 0; x < FRAME_WIDTH - 1; x++) {
-                if (frame.direction == POSITIVE_POS && frame.axis == AXIS_X) {
-                    block = _chunk.getBlock({pos.x - 1 + x, pos.y + y, pos.z});
-                    if (block == Blocks::Air::toProtocol() ||
-                        block ==
-                            Blocks::Fire::toProtocol(
-                                Blocks::Fire::Properties::Age::ZERO, Blocks::Fire::Properties::East::FALSE, Blocks::Fire::Properties::North::FALSE,
-                                Blocks::Fire::Properties::South::FALSE, Blocks::Fire::Properties::Up::FALSE, Blocks::Fire::Properties::West::FALSE
-                            )) {
-                        _dim->updateBlock({pos.x - 1 + x, pos.y + y, pos.z}, Blocks::NetherPortal::toProtocol(Blocks::NetherPortal::Properties::Axis::X));
-                    }
-                } else if (frame.direction == POSITIVE_POS && frame.axis == AXIS_Z) {
-                    block = _chunk.getBlock({pos.x, pos.y + y, pos.z - 1 + x});
-                    if (block == Blocks::Air::toProtocol() ||
-                        block ==
-                            Blocks::Fire::toProtocol(
-                                Blocks::Fire::Properties::Age::ZERO, Blocks::Fire::Properties::East::FALSE, Blocks::Fire::Properties::North::FALSE,
-                                Blocks::Fire::Properties::South::FALSE, Blocks::Fire::Properties::Up::FALSE, Blocks::Fire::Properties::West::FALSE
-                            )) {
-                        _dim->updateBlock({pos.x, pos.y + y, pos.z - 1 + x}, Blocks::NetherPortal::toProtocol(Blocks::NetherPortal::Properties::Axis::Z));
-                    }
-                } else if (frame.direction == NEGATIVE_POS && frame.axis == AXIS_X) {
-                    block = _chunk.getBlock({pos.x - 2 + x, pos.y + y, pos.z});
-                    if (block == Blocks::Air::toProtocol() ||
-                        block ==
-                            Blocks::Fire::toProtocol(
-                                Blocks::Fire::Properties::Age::ZERO, Blocks::Fire::Properties::East::FALSE, Blocks::Fire::Properties::North::FALSE,
-                                Blocks::Fire::Properties::South::FALSE, Blocks::Fire::Properties::Up::FALSE, Blocks::Fire::Properties::West::FALSE
-                            )) {
-                        _dim->updateBlock({pos.x - 2 + x, pos.y + y, pos.z}, Blocks::NetherPortal::toProtocol(Blocks::NetherPortal::Properties::Axis::X));
-                    }
-                } else if (frame.direction == NEGATIVE_POS && frame.axis == AXIS_Z) {
-                    block = _chunk.getBlock({pos.x, pos.y + y, pos.z - 2 + x});
-                    if (block == Blocks::Air::toProtocol() ||
-                        block ==
-                            Blocks::Fire::toProtocol(
-                                Blocks::Fire::Properties::Age::ZERO, Blocks::Fire::Properties::East::FALSE, Blocks::Fire::Properties::North::FALSE,
-                                Blocks::Fire::Properties::South::FALSE, Blocks::Fire::Properties::Up::FALSE, Blocks::Fire::Properties::West::FALSE
-                            )) {
-                        _dim->updateBlock({pos.x, pos.y + y, pos.z - 2 + x}, Blocks::NetherPortal::toProtocol(Blocks::NetherPortal::Properties::Axis::Z));
-                    }
+    std::vector<std::pair<Position, BlockId>> blocksArray;
+    auto block = _chunk.getBlock(pos);
+    for (int y = 0; y < FRAME_HEIGHT - 1; y++) {
+        for (int x = 0; x < FRAME_WIDTH - 1; x++) {
+            if (frame.direction == POSITIVE_POS && frame.axis == AXIS_X) {
+                block = _chunk.getBlock({pos.x - 1 + x, pos.y + y, pos.z});
+                if (block == Blocks::Air::toProtocol() ||
+                    block ==
+                        Blocks::Fire::toProtocol(
+                            Blocks::Fire::Properties::Age::ZERO, Blocks::Fire::Properties::East::FALSE, Blocks::Fire::Properties::North::FALSE,
+                            Blocks::Fire::Properties::South::FALSE, Blocks::Fire::Properties::Up::FALSE, Blocks::Fire::Properties::West::FALSE
+                        )) {
+                    blocksArray.push_back({{pos.x - 1 + x, pos.y + y, pos.z}, Blocks::NetherPortal::toProtocol(Blocks::NetherPortal::Properties::Axis::X)});
+                }
+            } else if (frame.direction == POSITIVE_POS && frame.axis == AXIS_Z) {
+                block = _chunk.getBlock({pos.x, pos.y + y, pos.z - 1 + x});
+                if (block == Blocks::Air::toProtocol() ||
+                    block ==
+                        Blocks::Fire::toProtocol(
+                            Blocks::Fire::Properties::Age::ZERO, Blocks::Fire::Properties::East::FALSE, Blocks::Fire::Properties::North::FALSE,
+                            Blocks::Fire::Properties::South::FALSE, Blocks::Fire::Properties::Up::FALSE, Blocks::Fire::Properties::West::FALSE
+                        )) {
+                    blocksArray.push_back({{pos.x, pos.y + y, pos.z - 1 + x}, Blocks::NetherPortal::toProtocol(Blocks::NetherPortal::Properties::Axis::Z)});
+                }
+            } else if (frame.direction == NEGATIVE_POS && frame.axis == AXIS_X) {
+                block = _chunk.getBlock({pos.x - 2 + x, pos.y + y, pos.z});
+                if (block == Blocks::Air::toProtocol() ||
+                    block ==
+                        Blocks::Fire::toProtocol(
+                            Blocks::Fire::Properties::Age::ZERO, Blocks::Fire::Properties::East::FALSE, Blocks::Fire::Properties::North::FALSE,
+                            Blocks::Fire::Properties::South::FALSE, Blocks::Fire::Properties::Up::FALSE, Blocks::Fire::Properties::West::FALSE
+                        )) {
+                    blocksArray.push_back({{pos.x - 2 + x, pos.y + y, pos.z}, Blocks::NetherPortal::toProtocol(Blocks::NetherPortal::Properties::Axis::X)});
+                }
+            } else if (frame.direction == NEGATIVE_POS && frame.axis == AXIS_Z) {
+                block = _chunk.getBlock({pos.x, pos.y + y, pos.z - 2 + x});
+                if (block == Blocks::Air::toProtocol() ||
+                    block ==
+                        Blocks::Fire::toProtocol(
+                            Blocks::Fire::Properties::Age::ZERO, Blocks::Fire::Properties::East::FALSE, Blocks::Fire::Properties::North::FALSE,
+                            Blocks::Fire::Properties::South::FALSE, Blocks::Fire::Properties::Up::FALSE, Blocks::Fire::Properties::West::FALSE
+                        )) {
+                    blocksArray.push_back({{pos.x, pos.y + y, pos.z - 2 + x}, Blocks::NetherPortal::toProtocol(Blocks::NetherPortal::Properties::Axis::Z)});
                 }
             }
         }
+    }
+    for (auto [position, id] : blocksArray) {
+        auto &chunk = _dim->getLevel().getChunkColumnFromBlockPos(position.x, position.z);
+        auto chunkPosition = world_storage::convertPositionToChunkPosition(position);
+        chunk.updateBlock(chunkPosition, id);
+    }
+    for (auto player : _dim->getPlayers()) {
+        player->sendBlockUpdate({pos, _chunk.getBlock(pos)});
+        player->sendBlockUpdate({{pos.x, pos.y + 1, pos.z}, _chunk.getBlock({pos.x, pos.y + 1, pos.z})});
+        player->sendUpdateSectionBlock({_chunk, true, blocksArray});
     }
 }

@@ -327,12 +327,6 @@ void Entity::teleportPlayerThroughPortal(std::shared_ptr<Dimension> currentDimen
             0, // Is flat
             0, // Copy metadata
             false, // Has death location
-            "the_nether", // Dimension name
-            {
-                static_cast<long>(thisPlayer->_pos.x), // death X
-                static_cast<long>(thisPlayer->_pos.y), // death Y
-                static_cast<long>(thisPlayer->_pos.z) // death Z
-            }, // Position
         });
         thisPlayer->sendFeatureFlags({{"minecraft:vanilla"}});
         thisPlayer->sendChangeDifficulty({1, true});

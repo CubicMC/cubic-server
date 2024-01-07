@@ -5,7 +5,10 @@
 #include "logging/logging.hpp"
 #include "protocol/serialization/addPrimaryType.hpp"
 #include "serialization/add.hpp"
+#include "world_storage/ChunkColumn.hpp"
+#include "world_storage/Section.hpp"
 #include <memory>
+#include <vector>
 
 using namespace protocol;
 
@@ -729,6 +732,27 @@ std::unique_ptr<std::vector<uint8_t>> protocol::createHeadRotation(const HeadRot
     // clang-format on
     auto packet = std::make_unique<std::vector<uint8_t>>();
     finalize(*packet, payload, ClientPacketID::HeadRotation);
+    return packet;
+}
+
+std::unique_ptr<std::vector<uint8_t>> protocol::createUpdateSectionBlock(const UpdateSectionBlock &in)
+{
+    std::vector<uint8_t> payload;
+    int sectionY = world_storage::getSectionIndex(in.blocks[0].first) - 5;
+    long chunkSectionPosition = ((in.chunkData.getChunkPos().x & 0x3FFFFF) << 42) | (sectionY & 0xFFFFF) | ((in.chunkData.getChunkPos().z & 0x3FFFFF) << 20);
+    std::vector<long> blocks;
+    for (auto [block, id] : in.blocks) {
+        blocks.push_back(id << 12 | (block.x << 8 | block.z << 4 | block.y));
+    }
+    // clang-format off
+    serialize(payload,
+        chunkSectionPosition, addLong,
+        in.suppressLightUpdates, addBoolean,
+        blocks, addArray<long, addVarLong>
+    );
+    // clang-format on
+    auto packet = std::make_unique<std::vector<uint8_t>>();
+    finalize(*packet, payload, ClientPacketID::UpdateSectionBlocks);
     return packet;
 }
 

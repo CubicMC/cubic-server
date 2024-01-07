@@ -474,6 +474,14 @@ void Player::sendHeadRotation(const protocol::HeadRotation &data)
     N_LDEBUG("Sent an entity head rotation packet");
 }
 
+void Player::sendUpdateSectionBlock(const protocol::UpdateSectionBlock &data)
+{
+    GET_CLIENT();
+    auto pck = protocol::createUpdateSectionBlock(data);
+    client->doWrite(std::move(pck));
+    N_LDEBUG("Sent an UpdateSectionBlock packet");
+}
+
 void Player::sendSetCenterChunk(const Position2D &pos)
 {
     GET_CLIENT();
