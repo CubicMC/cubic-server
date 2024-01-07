@@ -128,6 +128,9 @@ void Server::launch(const configuration::ConfigHandler &config)
     // Initialize loot tables
     _lootTables.initialize();
 
+    // Initialize recipes
+    _recipes.initialize();
+
     // Initialize default world group
     auto defaultChat = std::make_shared<Chat>();
     _worldGroups.emplace("default", new DefaultWorldGroup(defaultChat));
