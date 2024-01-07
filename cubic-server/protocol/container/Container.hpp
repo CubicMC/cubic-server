@@ -100,8 +100,8 @@ public:
     NODISCARD constexpr inline const protocol::Slot &cariedItem() const { return at(_cariedItemIndex); }
 
 private:
-    uint8_t _id;
-    int32_t _type;
+    const uint8_t _id;
+    const int32_t _type;
     int32_t _state;
     chat::Message _title;
     protocol::Slot _cursor;

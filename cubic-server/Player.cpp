@@ -1268,10 +1268,7 @@ void Player::_onUseItemOn(protocol::UseItemOn &pck)
 
     if (!this->_crouching) {
         if (GLOBAL_PALETTE.fromProtocolIdToBlock(this->getDimension()->getBlock(pck.location)).name == "minecraft:crafting_table") {
-            std::shared_ptr<protocol::container::Container> &container = _containers.emplace_back(std::make_shared<protocol::container::CraftingTable>(*this));
-            // std::shared_ptr<protocol::container::Container> &container = this->openContainer<protocol::container::CraftingTable>(*this);
-            protocol::OpenScreen openScreen = {container->id(), container->type(), container->title()};
-            this->sendOpenScreen(openScreen);
+            _containers.emplace_back(std::make_shared<protocol::container::CraftingTable>(this->dynamicWeakFromThis<Player>()));
             return;
         }
         if (auto tileEntity = this->getDimension()->getTileEntity(pck.location); tileEntity != nullptr) {
@@ -1280,11 +1277,9 @@ void Player::_onUseItemOn(protocol::UseItemOn &pck)
                 LERROR("tile entity at {} has type UnknownType", pck.location);
                 break;
             case tile_entity::TileEntityType::Furnace: {
-                std::shared_ptr<protocol::container::Container> &container = _containers.emplace_back(
+                auto &container = _containers.emplace_back(
                     std::make_shared<protocol::container::Furnace>(this->dynamicWeakFromThis<Player>(), std::dynamic_pointer_cast<tile_entity::Furnace>(tileEntity))
                 );
-                protocol::OpenScreen openScreen = {container->id(), container->type(), container->title()};
-                this->sendOpenScreen(openScreen);
                 this->sendSetContainerContent({container});
                 break;
             }
