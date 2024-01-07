@@ -10,7 +10,7 @@ SpecialRepairItem::SpecialRepairItem(const nlohmann::json &recipe):
     this->setValidity(false);
 }
 
-void SpecialRepairItem::dump(void) const { LINFO("recipe special repair item"); }
+void SpecialRepairItem::dump(void) const { LTRACE("recipe special repair item"); }
 
 std::unique_ptr<Recipe> SpecialRepairItem::create(const nlohmann::json &recipe) { return (std::make_unique<SpecialRepairItem>(SpecialRepairItem(recipe))); }
 } // namespace Recipe

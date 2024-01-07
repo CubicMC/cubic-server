@@ -44,7 +44,7 @@ void CraftingShapeless::dump(void) const
         stream << "\"" << ITEM_CONVERTER.fromProtocolIdToItem(item) << "\" ";
     }
     stream << "= \"" << ITEM_CONVERTER.fromProtocolIdToItem(this->_result) << "\" (x" << this->_count << ")";
-    LINFO(stream.str());
+    LTRACE(stream.str());
 }
 
 std::unique_ptr<Recipe> CraftingShapeless::create(const nlohmann::json &recipe) { return (std::make_unique<CraftingShapeless>(CraftingShapeless(recipe))); }

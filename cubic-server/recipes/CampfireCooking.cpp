@@ -31,7 +31,7 @@ CampfireCooking::CampfireCooking(const nlohmann::json &recipe):
 
 void CampfireCooking::dump(void) const
 {
-    LINFO(
+    LTRACE(
         "\"{}\" -> \"{}\" (cooking for {} ticks and get {} xp)", ITEM_CONVERTER.fromProtocolIdToItem(this->_ingredient), ITEM_CONVERTER.fromProtocolIdToItem(this->_result),
         this->_cookingTime, this->_experience
     );

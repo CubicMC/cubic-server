@@ -84,7 +84,7 @@ void CraftingShaped::dump(void) const
                     stream << '!';
             }
         }
-        LINFO(stream.str());
+        LTRACE(stream.str());
         stream.str("");
     }
     for (const auto &[key, items] : this->_key) {
@@ -99,11 +99,11 @@ void CraftingShaped::dump(void) const
             stream << '\"' << ITEM_CONVERTER.fromProtocolIdToItem(item) << '\"';
         }
         stream << ']';
-        LINFO(stream.str());
+        LTRACE(stream.str());
         stream.str("");
     }
     stream << " -> " << ITEM_CONVERTER.fromProtocolIdToItem(this->_result) << " (x" << this->_count << ')';
-    LINFO(stream.str());
+    LTRACE(stream.str());
 }
 
 bool CraftingShaped::getKey(char key, const nlohmann::json &content)
