@@ -1,7 +1,10 @@
 #include "Furnace.hpp"
 #include "Player.hpp"
+#include "Server.hpp"
+#include "items/fuels.hpp"
 #include "logging/logging.hpp"
 #include "types.hpp"
+#include <algorithm>
 
 using namespace tile_entity;
 Furnace::Furnace(BlockId blockId, const Position &position, nbt_tag_t *nbt):
@@ -46,8 +49,15 @@ void Furnace::tick()
 
     if (_burningTime == 0) {
         if (_fuel.itemCount > 0 && _ingredient.itemCount > 0) {
-            _burningTime = _burnTimeCurrentFuel =
-                1600; // TODO: get the right value with a convertor function (item name -> burning time) (for now, it's the burning time of a coal)
+            auto fuel = std::find_if(Items::fuels.begin(), Items::fuels.end(), [this](const auto &fuel) {
+                return fuel.name == ITEM_CONVERTER.fromProtocolIdToItem(_fuel.itemID);
+            });
+            if (fuel != Items::fuels.end())
+                _burnTimeCurrentFuel = _burningTime = fuel->burnTime;
+            else {
+                LERROR("Fuel {} (name: {}) not found as a fuel. Using coal burning time", _fuel.itemID, ITEM_CONVERTER.fromProtocolIdToItem(_fuel.itemID));
+                _burnTimeCurrentFuel = _burningTime = 1600;
+            }
             _fuel.itemCount--;
             updateMaximumFuelBurnTime = true;
             if (_lit == Blocks::Furnace::Properties::Lit::FALSE) {
