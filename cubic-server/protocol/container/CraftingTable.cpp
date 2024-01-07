@@ -1,4 +1,5 @@
 #include "CraftingTable.hpp"
+#include "Player.hpp"
 #include "protocol/container/Container.hpp"
 #include <variant>
 
@@ -27,12 +28,13 @@ static void swapContainer(protocol::Slot &slot, std::array<protocol::Slot, N> &c
     }
 }
 
-CraftingTable::CraftingTable(Player &player):
-    Container(player.getWindowId(), protocol::container::InventoryType::TypeCrafting, "Crafting"),
-    _playerInventory(player.getInventory()->playerInventory()),
-    _hotbar(player.getInventory()->hotbar()),
-    _offhand(player.getInventory()->offhand())
+CraftingTable::CraftingTable(std::weak_ptr<Player> player):
+    Container(player.lock()->getWindowId(), protocol::container::InventoryType::TypeCrafting, "Crafting"),
+    _playerInventory(player.lock()->getInventory()->playerInventory()),
+    _hotbar(player.lock()->getInventory()->hotbar()),
+    _offhand(player.lock()->getInventory()->offhand())
 {
+    player.lock()->sendOpenScreen({this->id(), this->type(), this->title()});
 }
 
 protocol::Slot &CraftingTable::at(int16_t index)
