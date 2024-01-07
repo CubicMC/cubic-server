@@ -1,16 +1,13 @@
 #ifndef CUBICSERVER_TILEENTITY_FURNACE_HPP
 #define CUBICSERVER_TILEENTITY_FURNACE_HPP
 
-#include "Server.hpp"
 #include "TileEntity.hpp"
 #include "blocks.hpp"
-#include "options.hpp"
-#include "protocol/Structures.hpp"
-#include "tiles-entities/TileEntityList.hpp"
-#include "types.hpp"
 
 class Player;
-
+namespace Recipe {
+class Smelting;
+}
 namespace tile_entity {
 class Furnace : public TileEntity {
 public:
@@ -38,6 +35,14 @@ public:
     void removePlayer(int playerId);
 
 private:
+    enum class ContainerProperty {
+        FuelLeft = 0,
+        MaximumFuelBurnTime = 1,
+        ProgressArrow = 2,
+        MaximumProgress = 3
+    };
+    bool canCook() const;
+
     int16_t _burningTime;
     int16_t _burnTimeCurrentFuel;
     int16_t _cookTime;
@@ -47,6 +52,7 @@ private:
     Blocks::Furnace::Properties::Lit _lit;
     Blocks::Furnace::Properties::Facing _facing;
     std::vector<std::pair<std::weak_ptr<Player>, uint8_t>> _players;
+    std::unordered_map<std::string, std::shared_ptr<Recipe::Smelting>> _recipes;
 };
 }
 
