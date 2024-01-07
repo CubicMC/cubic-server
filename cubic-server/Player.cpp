@@ -1684,3 +1684,17 @@ void Player::appendMetadataPacket(std::vector<uint8_t> &data) const
 
     // Right shoulder
 }
+
+std::shared_ptr<protocol::container::Container> Player::getContainer(uint8_t windowId)
+{
+    if (windowId == 0)
+        return _inventory;
+    auto it = std::find_if(_containers.begin(), _containers.end(), [&](const auto &container) {
+        if (container->id() == windowId)
+            return true;
+        return false;
+    });
+    if (it == _containers.end())
+        return nullptr;
+    return *it;
+}

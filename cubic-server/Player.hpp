@@ -100,6 +100,13 @@ public:
      */
     uint8_t getWindowId() { return ++_windowId; }
 
+    /**
+     * @brief Get a container by its window id
+     *
+     * @param windowId The window id of the container
+     */
+    std::shared_ptr<protocol::container::Container> getContainer(uint8_t windowId);
+
 public:
     /**
      * @brief Synchronize the player with the server
