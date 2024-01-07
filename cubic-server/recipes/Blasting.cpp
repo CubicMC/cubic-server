@@ -37,5 +37,5 @@ void Blasting::dump(void) const
     );
 }
 
-std::unique_ptr<Recipe> Blasting::create(const nlohmann::json &recipe) { return (std::make_unique<Blasting>(Blasting(recipe))); }
+std::shared_ptr<Recipe> Blasting::create(const nlohmann::json &recipe) { return (std::make_shared<Blasting>(Blasting(recipe))); }
 } // namespace Recipe

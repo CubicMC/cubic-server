@@ -12,5 +12,5 @@ SpecialBannerDuplicate::SpecialBannerDuplicate(const nlohmann::json &recipe):
 
 void SpecialBannerDuplicate::dump(void) const { LTRACE("recipe special banner duplicate"); }
 
-std::unique_ptr<Recipe> SpecialBannerDuplicate::create(const nlohmann::json &recipe) { return (std::make_unique<SpecialBannerDuplicate>(SpecialBannerDuplicate(recipe))); }
+std::shared_ptr<Recipe> SpecialBannerDuplicate::create(const nlohmann::json &recipe) { return (std::make_shared<SpecialBannerDuplicate>(SpecialBannerDuplicate(recipe))); }
 } // namespace Recipe

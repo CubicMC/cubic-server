@@ -12,5 +12,5 @@ SpecialBookCloning::SpecialBookCloning(const nlohmann::json &recipe):
 
 void SpecialBookCloning::dump(void) const { LTRACE("recipe special book cloning"); }
 
-std::unique_ptr<Recipe> SpecialBookCloning::create(const nlohmann::json &recipe) { return (std::make_unique<SpecialBookCloning>(SpecialBookCloning(recipe))); }
+std::shared_ptr<Recipe> SpecialBookCloning::create(const nlohmann::json &recipe) { return (std::make_shared<SpecialBookCloning>(SpecialBookCloning(recipe))); }
 } // namespace Recipe

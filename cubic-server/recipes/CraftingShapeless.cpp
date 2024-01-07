@@ -47,5 +47,5 @@ void CraftingShapeless::dump(void) const
     LTRACE(stream.str());
 }
 
-std::unique_ptr<Recipe> CraftingShapeless::create(const nlohmann::json &recipe) { return (std::make_unique<CraftingShapeless>(CraftingShapeless(recipe))); }
+std::shared_ptr<Recipe> CraftingShapeless::create(const nlohmann::json &recipe) { return (std::make_shared<CraftingShapeless>(CraftingShapeless(recipe))); }
 } // namespace Recipe

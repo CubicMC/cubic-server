@@ -12,5 +12,5 @@ SpecialRepairItem::SpecialRepairItem(const nlohmann::json &recipe):
 
 void SpecialRepairItem::dump(void) const { LTRACE("recipe special repair item"); }
 
-std::unique_ptr<Recipe> SpecialRepairItem::create(const nlohmann::json &recipe) { return (std::make_unique<SpecialRepairItem>(SpecialRepairItem(recipe))); }
+std::shared_ptr<Recipe> SpecialRepairItem::create(const nlohmann::json &recipe) { return (std::make_shared<SpecialRepairItem>(SpecialRepairItem(recipe))); }
 } // namespace Recipe

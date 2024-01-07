@@ -37,5 +37,5 @@ void CampfireCooking::dump(void) const
     );
 }
 
-std::unique_ptr<Recipe> CampfireCooking::create(const nlohmann::json &recipe) { return (std::make_unique<CampfireCooking>(CampfireCooking(recipe))); }
+std::shared_ptr<Recipe> CampfireCooking::create(const nlohmann::json &recipe) { return (std::make_shared<CampfireCooking>(CampfireCooking(recipe))); }
 } // namespace Recipe

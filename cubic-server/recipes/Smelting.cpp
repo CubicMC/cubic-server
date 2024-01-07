@@ -37,5 +37,5 @@ void Smelting::dump(void) const
     );
 }
 
-std::unique_ptr<Recipe> Smelting::create(const nlohmann::json &recipe) { return (std::make_unique<Smelting>(Smelting(recipe))); }
+std::shared_ptr<Recipe> Smelting::create(const nlohmann::json &recipe) { return (std::make_shared<Smelting>(Smelting(recipe))); }
 } // namespace Recipe
