@@ -39,10 +39,10 @@ Furnace::Furnace(BlockId blockId, const Position &position, nbt_tag_t *nbt):
 
 void Furnace::tick()
 {
-    // LINFO("Furnace::tick()");
     bool updateFuelLeft = false;
     bool updateMaximumFuelBurnTime = false;
     bool updateProgressArrow = false;
+    bool updateIngredientSlot = false;
 
     if (_burningTime == 0) {
         if (_fuel.itemCount > 0 && _ingredient.itemCount > 0) {
@@ -71,6 +71,7 @@ void Furnace::tick()
             } else {
                 _result.itemCount += 1;
             }
+            updateIngredientSlot = true;
         }
         updateProgressArrow = true;
     } else {
@@ -80,18 +81,30 @@ void Furnace::tick()
         _burningTime--;
         updateFuelLeft = true;
     }
+    bool updatePlayerList = false;
     if (_players.size() > 0) {
         for (auto &[player, windowId] : _players) {
-            if (player.expired())
+            if (player.expired()) {
+                updatePlayerList = true;
                 continue;
+            }
             if (updateFuelLeft)
                 player.lock()->sendSetContainerProperty({windowId, 0, _burningTime});
-            if (updateMaximumFuelBurnTime)
+            if (updateMaximumFuelBurnTime) {
                 player.lock()->sendSetContainerProperty({windowId, 1, _burnTimeCurrentFuel});
+                player.lock()->sendSetContainerSlot({player.lock()->getContainer(windowId), 1});
+            }
             if (updateProgressArrow)
                 player.lock()->sendSetContainerProperty({windowId, 2, _cookTime});
+            if (updateIngredientSlot)
+                player.lock()->sendSetContainerContent({player.lock()->getContainer(windowId)});
         }
     }
+    if (updatePlayerList)
+        _players.erase(std::remove_if(_players.begin(), _players.end(), [](const auto &pair) {
+            auto &[player, windowId] = pair;
+            return player.expired();
+        }));
 }
 
 void Furnace::addPlayer(std::weak_ptr<Player> player, uint8_t windowId)
