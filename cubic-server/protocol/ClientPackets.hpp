@@ -4,6 +4,7 @@
 #include <cstdint>
 #include <memory>
 #include <string>
+#include <utility>
 #include <vector>
 
 #include "PlayerAttributes.hpp"
@@ -71,12 +72,16 @@ enum class ClientPacketID : int32_t {
     DisplayObjective = 0x4d,
     SetEntityMetadata = 0x4e,
     EntityVelocity = 0x50,
+    SetEquipment = 0x51,
     SetExperience = 0x52,
     Health = 0x53,
     UpdateObjective = 0x54,
     UpdateTeam = 0x56,
     UpdateScore = 0x57,
+    SetSubtitleText = 0x59,
     UpdateTime = 0x5A,
+    SetTitleText = 0x5B,
+    SetTitleAnimationTimes = 0x5c,
     EntitySoundEffect = 0x5D,
     SoundEffect = 0x5E,
     StopSound = 0x5F,
@@ -582,6 +587,18 @@ struct UpdateTime {
 };
 std::unique_ptr<std::vector<uint8_t>> createUpdateTime(const UpdateTime &);
 
+struct SetTitleText {
+    chat::Message title;
+};
+std::unique_ptr<std::vector<uint8_t>> createSetTitleText(const SetTitleText &);
+
+struct SetTitleAnimationTimes {
+    int32_t fadeIn;
+    int32_t stay;
+    int32_t fadeOut;
+};
+std::unique_ptr<std::vector<uint8_t>> createSetTitleAnimationTimes(const SetTitleAnimationTimes &);
+
 struct EntitySoundEffect {
     EntitySoundEffect(int32_t soundId, int32_t category, int32_t entityId, float volume, float pitch, long seed):
         soundId(soundId + 1), // see https://wiki.vg/index.php?title=Protocol&oldid=18067#Entity_Sound_Effect
@@ -684,6 +701,20 @@ struct EntityVelocity {
 };
 std::unique_ptr<std::vector<uint8_t>> createEntityVelocity(const EntityVelocity &);
 
+struct SetEquipment {
+    int32_t entityId;
+    enum class EquipmentPosition : int8_t {
+        MainHand = 0,
+        OffHand = 1,
+        ArmorSlotBoots = 2,
+        ArmorSlotLegs = 3,
+        ArmorSlotChest = 4,
+        ArmorSlotHelmet = 5,
+    };
+    std::vector<std::pair<EquipmentPosition, Slot>> equipment;
+};
+std::unique_ptr<std::vector<uint8_t>> createSetEquipment(const SetEquipment &);
+
 struct SetExperience {
     float experienceBar;
     int32_t totalExperience;
@@ -753,6 +784,11 @@ struct UpdateScore {
     int32_t value;
 };
 std::unique_ptr<std::vector<uint8_t>> createUpdateScore(const UpdateScore &);
+
+struct SetSubtitleText {
+    chat::Message subtitle;
+};
+std::unique_ptr<std::vector<uint8_t>> createSetSubtitleText(const SetSubtitleText &);
 
 struct TeleportEntity {
     int32_t entityID;

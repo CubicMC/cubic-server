@@ -210,6 +210,21 @@ void Player::updatePlayerInfo(const protocol::PlayerInfoUpdate &data)
     }
 }
 
+void Player::updateEquipment(bool mainHand, bool offHand, bool boots, bool leggings, bool chestplate, bool helmet)
+{
+    protocol::SetEquipment equip;
+
+    equip.entityId = this->getId();
+
+    if (mainHand)
+        equip.equipment.push_back(std::make_pair(protocol::SetEquipment::EquipmentPosition::MainHand, this->_inventory->hotbar().at(this->_heldItem)));
+
+    for (const auto &player : this->getDimension()->getPlayers()) {
+        if (player->getId() != this->getId())
+            player->sendSetEquipment(equip);
+    }
+}
+
 void Player::closeContainer(uint8_t id)
 {
     if (id == 0) {
@@ -387,6 +402,15 @@ void Player::sendEntityVelocity(const protocol::EntityVelocity &data)
     client->doWrite(std::move(pck));
 
     N_LDEBUG("Sent an Entity Velocity packet with velocity: x -> {} | y -> {} | z -> {}", data.velocityX, data.velocityY, data.velocityZ);
+}
+
+void Player::sendSetEquipment(const protocol::SetEquipment &data)
+{
+    GET_CLIENT();
+    auto pck = protocol::createSetEquipment(data);
+    client->doWrite(std::move(pck));
+
+    N_LDEBUG("Sent a Set Equipment packet");
 }
 
 void Player::sendHealth(void)
@@ -803,6 +827,30 @@ void Player::sendPickupItem(const protocol::PickupItem &packet)
     LDEBUG("Sent pickup item packet");
 }
 
+void Player::sendSubtitleText(const protocol::SetSubtitleText &packet)
+{
+    GET_CLIENT();
+    auto pck = protocol::createSetSubtitleText(packet);
+    client->doWrite(std::move(pck));
+    LDEBUG("Sent subtitle text packet");
+}
+
+void Player::sendTitleText(const protocol::SetTitleText &packet)
+{
+    GET_CLIENT();
+    auto pck = protocol::createSetTitleText(packet);
+    client->doWrite(std::move(pck));
+    LDEBUG("Sent title text packet");
+}
+
+void Player::sendTitleAnimationTimes(const protocol::SetTitleAnimationTimes &packet)
+{
+    GET_CLIENT();
+    auto pck = protocol::createSetTitleAnimationTimes(packet);
+    client->doWrite(std::move(pck));
+    LDEBUG("Sent title animation times packet");
+}
+
 #pragma endregion
 #pragma region ServerBound
 
@@ -974,6 +1022,7 @@ void Player::playerPickupItem()
         this->_inventory->insert(item);
         this->sendSetContainerContent({_inventory});
         this->getDimension()->removeEntity(entity->getId());
+        this->updateEquipment(true, false, false, false, false, false);
     }
 }
 
@@ -1083,11 +1132,20 @@ void Player::_onPlayerAction(protocol::PlayerAction &pck)
     case protocol::PlayerAction::Status::DropItemStack:
         getDimension()->makeEntity<Item>(_inventory->hotbar().at(this->_heldItem))->dropItem(this->getPosition());
         _inventory->hotbar().at(this->_heldItem).reset();
+        // update item in hand for other players
+        this->updateEquipment(true, false, false, false, false, false);
         break;
     case protocol::PlayerAction::Status::DropItem:
         if (!_inventory->hotbar().at(this->_heldItem).present)
             break;
         getDimension()->makeEntity<Item>(_inventory->hotbar().at(this->_heldItem).takeOne())->dropItem(this->getPosition());
+        _inventory->hotbar().at(this->_heldItem).itemCount--;
+        if (_inventory->hotbar().at(this->_heldItem).itemCount == 0) {
+            _inventory->hotbar().at(this->_heldItem).reset();
+
+            // update item in hand for other players
+            this->updateEquipment(true, false, false, false, false, false);
+        }
         break;
     case protocol::PlayerAction::Status::ShootArrowOrFinishEating:
         _eat();
@@ -1146,6 +1204,8 @@ void Player::_onSetBeaconEffect(UNUSED protocol::SetBeaconEffect &pck) { N_LDEBU
 void Player::_onSetHeldItem(protocol::SetHeldItem &pck)
 {
     this->_heldItem = pck.slot;
+
+    this->updateEquipment(true, false, false, false, false, false);
     N_LDEBUG("Got a Set Held Item");
 }
 
@@ -1234,8 +1294,12 @@ void Player::_onUseItemOn(protocol::UseItemOn &pck)
     if (_gamemode == player_attributes::Gamemode::Creative)
         return;
     this->_inventory->hotbar().at(this->_heldItem).itemCount--;
-    if (_inventory->hotbar().at(this->_heldItem).itemCount == 0)
+    if (_inventory->hotbar().at(this->_heldItem).itemCount == 0) {
         _inventory->hotbar().at(this->_heldItem).reset();
+
+        // update item in hand for other players
+        this->updateEquipment(true, false, false, false, false, false);
+    }
 }
 
 void Player::_onUseItem(UNUSED protocol::UseItem &pck) { N_LDEBUG("Got a Use Item"); }
@@ -1389,6 +1453,17 @@ void Player::_continueLoginSequence()
     // send scoreboard status (objectives and teams)
     _dim->getWorld()->getWorldGroup()->getScoreboard().sendScoreboardStatus(*this);
 
+    // send other player's held item
+    for (std::shared_ptr<Player> other : _dim->getPlayers()) {
+        if (other->getInventory()->hotbar().at(other->getHeldItem()).present) {
+            protocol::SetEquipment equip;
+
+            equip.entityId = other->getId();
+            equip.equipment.push_back(std::make_pair(protocol::SetEquipment::EquipmentPosition::MainHand, other->getInventory()->hotbar().at(other->getHeldItem())));
+            this->sendSetEquipment(equip);
+        }
+    }
+
     // Send login message
     chat::Message connectionMsg = chat::Message::fromTranslationKey<chat::message::TranslationKey::MultiplayerPlayerJoined>(*this);
 
@@ -1485,6 +1560,12 @@ void Player::_eat()
     this->sendHealth();
     _inventory->hotbar().at(this->_heldItem).itemCount--;
     this->sendSetContainerSlot({_inventory, static_cast<int16_t>(this->_heldItem + HOTBAR_OFFSET)});
+    if (_inventory->hotbar().at(this->_heldItem).itemCount == 0) {
+        _inventory->hotbar().at(this->_heldItem).reset();
+
+        // update item in hand for other players
+        this->updateEquipment(true, false, false, false, false, false);
+    }
 }
 
 void Player::teleport(const Vector3<double> &pos)

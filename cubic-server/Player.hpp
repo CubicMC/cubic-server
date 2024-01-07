@@ -64,6 +64,7 @@ public:
     void setKeepAliveId(long id);
     void updatePlayerInfo(const protocol::PlayerInfoUpdate &data);
     void playerPickupItem();
+    void updateEquipment(bool mainHand, bool offHand, bool boots, bool leggings, bool chestplate, bool helmet);
 
     template<isBaseOf<protocol::container::Container> Container, typename... Args>
     std::shared_ptr<Container> openContainer(Args &...);
@@ -106,6 +107,7 @@ public:
     void sendSpawnEntity(const Entity &data);
     void sendSpawnPlayer(const protocol::SpawnPlayer &data);
     void sendEntityVelocity(const protocol::EntityVelocity &data);
+    void sendSetEquipment(const protocol::SetEquipment &data);
     void sendHealth(void);
     void sendUpdateTime(const protocol::UpdateTime &data);
     void sendChatMessageResponse(const protocol::PlayerChatMessage &packet);
@@ -161,6 +163,9 @@ public:
     void sendUpdateScore(const protocol::UpdateScore &packet);
     void sendUpdateTeams(const protocol::UpdateTeams &packet);
     void sendPickupItem(const protocol::PickupItem &packet);
+    void sendSubtitleText(const protocol::SetSubtitleText &data);
+    void sendTitleText(const protocol::SetTitleText &data);
+    void sendTitleAnimationTimes(const protocol::SetTitleAnimationTimes &data);
 
 private:
     void _onConfirmTeleportation(protocol::ConfirmTeleportation &pck);

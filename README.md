@@ -24,6 +24,8 @@ without needing a third-party to implement changes into the server downstream
 
 Precompiled binaries are currently available [here](https://github.com/CubicMC/cubic-server/releases).
 
+You can also use the docker-compose file to run the server using docker.
+
 See **Building** section to know how to compile the server.
 
 ## Building
@@ -50,7 +52,7 @@ To install those dependencies you can see an example for Fedora 38 from our
 [build image](https://github.com/CubicMC/cubic-runners/blob/master/Dockerfile)
 
 ### How to build
-
+#### Build from source on your machine
 To build follow those steps :
 ```bash
 git clone https://github.com/CubicMC/cubic-server
@@ -59,6 +61,14 @@ mkdir build
 cd build
 cmake -DCMAKE_BUILD_TYPE=RELEASE ..
 make -j `nproc` # The "-j `nproc`" is here to speed-up the compilation
+```
+#### Build from source with docker
+To build with docker follow those steps :
+```bash
+git clone https://github.com/CubicMC/cubic-server
+cd cubic-server
+docker build --tag cubic-server .
+docker compose up
 ```
 
 ## Contributing

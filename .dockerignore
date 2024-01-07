@@ -1,0 +1,14 @@
+Jenkinsfile
+LICENSE
+README.md
+bootstrap.sh
+.editorconfig
+docs
+build*
+.vscode
+.idea
+.github
+.devcontainer
+.cache
+docker-compose.yaml
+Dockerfile
