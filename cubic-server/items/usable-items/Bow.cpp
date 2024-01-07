@@ -1,9 +1,13 @@
 #include "Bow.hpp"
 #include "Dimension.hpp"
+#include "Player.hpp"
 #include "entities/Arrow.hpp"
 #include "entities/Entity.hpp"
 #include "items/UsableItem.hpp"
 #include "logging/logging.hpp"
+#include <cmath>
+#include <limits>
+#include <numbers>
 
 nbt_tag_t *Items::Bow::setNbtTag()
 {
@@ -22,11 +26,69 @@ nbt_tag_t *Items::Bow::setNbtTag()
     return root;
 }
 
-void Items::Bow::onUse(std::shared_ptr<Dimension> dim, Entity &user, UsabilityType usage)
+static constexpr float mcAngleToDegrees(uint8_t angle)
+{
+    const float simpleAngle = ((float) angle) / std::numeric_limits<uint8_t>::max();
+    return simpleAngle * 360.0f;
+}
+
+static constexpr float mcAngleToRadian(uint8_t angle)
+{
+    const float degreeAngle = mcAngleToDegrees(angle);
+    const float radianConverter = std::numbers::pi / 180.0f;
+    return degreeAngle * radianConverter;
+}
+
+static Vector3<float> convertAnglesToHeadingVector(uint8_t yaw, uint8_t pitch)
+{
+    const float radianYaw = -mcAngleToRadian(yaw);
+    const float radianPitch = -mcAngleToRadian(pitch);
+
+    return {
+        std::sin(radianYaw) * std::cos(radianPitch),
+        std::sin(radianPitch),
+        std::cos(radianYaw) * std::cos(radianPitch),
+    };
+}
+
+void Items::Bow::onUse(std::shared_ptr<Dimension> dim, Entity &user, UNUSED UsabilityType usage)
 {
     auto &entityRotation = user.getRotation();
     auto arr = dim->makeEntity<Arrow>();
-    arr->forceSetPosition(user.getPosition());
-    LINFO("spawn entity arrow");
+
+    const float arrowSpeed = 24000.0f; // Close enough to vanilla
+    const Vector3<float> directionVector = convertAnglesToHeadingVector(entityRotation.x, entityRotation.z);
+    const Vector3<float> weightedFloatingVector = directionVector * arrowSpeed;
+    const Vector3<int16_t> weightedVector = {
+        (int16_t) weightedFloatingVector.x,
+        (int16_t) weightedFloatingVector.y,
+        (int16_t) weightedFloatingVector.z,
+    };
+    const uint8_t arrowRotationSignedYaw = -*((int8_t *) &user.getRotation().x);
+    const uint8_t arrowRotationSignedPitch = -*((int8_t *) &user.getRotation().z);
+    const Vector2<uint8_t> arrowRotation = {
+        *((uint8_t *) &arrowRotationSignedYaw),
+        *((uint8_t *) &arrowRotationSignedPitch),
+    };
+
+    const float playerHeight = 1.8f;
+    const float playerEyePosition = playerHeight * 0.85;
+    // This is some random value taken from some old forge forum post, I have absolutely no idea what it is, but it works
+    // https://forums.minecraftforge.net/topic/33114-solved-18-change-eye-height-amp-held-item-sizelocation/
+    const float startingArrowPosition = user.getPosition().y + playerEyePosition - 0.10000000149011612;
+
+    arr->forceSetPosition(user.getPosition().x, startingArrowPosition, user.getPosition().z);
+    arr->setRotation(arrowRotation);
+    arr->setVelocity(weightedVector);
     dim->spawnEntity(arr);
+    arr->setRotation(arrowRotation);
+
+    for (auto &player : dim->getPlayers()) {
+        player->sendEntityVelocity({
+            arr->getId(),
+            weightedVector.x,
+            weightedVector.y,
+            weightedVector.z,
+        });
+    }
 }

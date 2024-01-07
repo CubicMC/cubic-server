@@ -11,5 +11,5 @@ void Arrow::appendMetadataPacket(std::vector<uint8_t> &data) const
 
     using namespace protocol::entity_metadata;
 
-    // addMByte(data, 8, 0x01); // Critical arrow
+    addMByte(data, 8, 0x01); // Critical arrow
 }
