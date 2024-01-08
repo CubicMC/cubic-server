@@ -106,6 +106,12 @@ void Player::tick()
 {
     _keepAliveClock.tick();
     _synchronizeClock.tick();
+
+    if (_health <= 0) {
+        _deathClock.tick();
+        return;
+    }
+
     if (_nbTickBeforeNextAttack > 0)
         _nbTickBeforeNextAttack--;
 
@@ -1477,7 +1483,7 @@ void Player::_respawn()
 {
     this->setIsReadyToRemove(false);
     this->_dim->addEntity(shared_from_this());
-    this->_dim->addPlayer(dynamic_pointer_cast<Player>(shared_from_this()));
+    //this->_dim->addPlayer(dynamic_pointer_cast<Player>(shared_from_this()));
 
     // Perform the respawn
     this->sendRespawn({

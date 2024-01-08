@@ -194,16 +194,18 @@ void Dimension::removeDeadEntities()
 void Dimension::removeDeadPlayers()
 {
     std::lock_guard _(_playersMutex);
+    std::vector<int32_t> players_to_remove_buf;
 
-    _players.erase(
-        std::remove_if(
-            _players.begin(), _players.end(),
-            [](const std::shared_ptr<Player> player) {
-                return player->isReadyToRemove();
-            }
-        ),
-        _players.end()
-    );
+    for (auto player : this->_players) {
+        if (player->isReadyToRemove()) {
+            players_to_remove_buf.push_back(player->getId());
+            player->setIsReadyToRemove(false);
+        }
+    }
+
+    for (auto player : this->_players) {
+        player->sendRemoveEntities(players_to_remove_buf);
+    }
 }
 
 void Dimension::addEntity(std::shared_ptr<Entity> entity)
@@ -331,6 +333,9 @@ void Dimension::spawnPlayer(Player &current)
                 );
                 LDEBUG("send spawn player to {}", current.getUsername());
                 //}
+                if (player->getHealth() <= 0) {
+                    current.sendRemoveEntities({player->getId()});
+                }
             }
             player->sendEntityMetadata(current);
             current.sendEntityMetadata(*player);
