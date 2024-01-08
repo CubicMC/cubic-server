@@ -1482,8 +1482,10 @@ void Player::teleport(const Vector3<double> &pos)
 void Player::_respawn()
 {
     this->setIsReadyToRemove(false);
+    this->_dim->removePlayer(this->_id);
+    this->_dim = this->_dim->getWorld()->getDimension("overworld");
     this->_dim->addEntity(shared_from_this());
-    //this->_dim->addPlayer(dynamic_pointer_cast<Player>(shared_from_this()));
+    this->_dim->addPlayer(dynamic_pointer_cast<Player>(shared_from_this()));
 
     // Perform the respawn
     this->sendRespawn({
