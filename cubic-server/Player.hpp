@@ -64,7 +64,7 @@ public:
     void setKeepAliveId(long id);
     void updatePlayerInfo(const protocol::PlayerInfoUpdate &data);
     void playerPickupItem();
-    void damage(float damage) override;
+    void updateEquipment(bool mainHand, bool offHand, bool boots, bool leggings, bool chestplate, bool helmet);
 
     template<isBaseOf<protocol::container::Container> Container, typename... Args>
     std::shared_ptr<Container> openContainer(Args &...);

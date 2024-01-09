@@ -1522,22 +1522,6 @@ void Player::appendMetadataPacket(std::vector<uint8_t> &data) const
     // Right shoulder
 }
 
-/*
- * @brief Inflict damage to the player
- *
- * @param damage The damage to deal
- */
-void Player::damage(float damage)
-{
-    bool canceled = false;
-
-    onEventCancelable(Server::getInstance()->getPluginManager(), onEntityDamage, canceled, this, damage);
-
-    if (canceled)
-        return;
-    _health -= damage;
-    sendHealth();
-}
 bool Player::takesFalldmg(void) // is player vulnerable to fall damage?
 {
     return _gamemode == player_attributes::Gamemode::Survival || _gamemode == player_attributes::Gamemode::Adventure;
