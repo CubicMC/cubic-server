@@ -7,8 +7,8 @@ void Piston::retract(void)
     Position chunkPos = {this->_pos.x % 16, this->_pos.y % 16, this->_pos.z % 16};
     Position pos = chunkPos +
         Position(
-                       {this->facing == Facing::East - this->facing == Facing::West, this->facing == Facing::Ceiling - this->facing == Facing::Floor,
-                        this->facing == Facing::South - this->facing == Facing::North}
+                       {this->_facing == Facing::East - this->_facing == Facing::West, this->_facing == Facing::Ceiling - this->_facing == Facing::Floor,
+                        this->_facing == Facing::South - this->_facing == Facing::North}
         );
 
     this->_dim->getLevel().getChunkColumnFromBlockPos(Position2D(pos.x, pos.z)).updateBlock(chunkPos, 0); // air
@@ -21,8 +21,8 @@ void Piston::extend(void)
     Position chunkPos = {this->_pos.x % 16, this->_pos.y % 16, this->_pos.z % 16};
     Position pos = chunkPos +
         Position(
-                       {this->facing == Facing::East - this->facing == Facing::West, this->facing == Facing::Ceiling - this->facing == Facing::Floor,
-                        this->facing == Facing::South - this->facing == Facing::North}
+                       {this->_facing == Facing::East - this->_facing == Facing::West, this->_facing == Facing::Ceiling - this->_facing == Facing::Floor,
+                        this->_facing == Facing::South - this->_facing == Facing::North}
         );
 
     if (0) // TODO extend denied = there are 15 blocks in front of the piston // or rigid blocks

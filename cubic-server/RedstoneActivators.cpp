@@ -105,7 +105,7 @@ Button::~Button(void) { }
 
 void Lever::feedPower(int xOffset, int yOffset, int zOffset, bool giving)
 {
-    Position pos = this->_pos + Position({xOffset + 1, yOffset, zOffset});
+    Position pos = this->_pos + Position(xOffset, yOffset, zOffset);
 
     // TODO awaiting BlockId::power();
     //    this->_dim->getLevel().getChunkColumnFromBlockPos(Position2D(pos.x % 16, pos.z % 16)).getBlock(pos)->power(giving ? 15 : 0);
