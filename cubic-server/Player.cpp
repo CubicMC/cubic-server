@@ -35,9 +35,9 @@
 #include <variant>
 #include <vector>
 
-#define GET_CLIENT()                   \
-    auto client = this -> _cli.lock(); \
-    if (client == nullptr)             \
+#define GET_CLIENT()                 \
+    auto client = this->_cli.lock(); \
+    if (client == nullptr)           \
     return
 
 Player::Player(std::weak_ptr<Client> cli, std::shared_ptr<Dimension> dim, u128 uuid, const std::string &username):
