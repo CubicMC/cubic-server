@@ -64,7 +64,9 @@ void command_parser::Armor::execute(std::vector<std::string> &args, UNUSED Playe
                         player->setDefense(defense);
                         player->setToughness(toughness);
                         if (invoker)
-                            invoker->getDimension()->getWorld()->getChat()->sendSystemMessage("Set " + args[0] + "'s defense to " + args[1] + " and toughness to " + args[2] + ".", *invoker);
+                            invoker->getDimension()->getWorld()->getChat()->sendSystemMessage(
+                                "Set " + args[0] + "'s defense to " + args[1] + " and toughness to " + args[2] + ".", *invoker
+                            );
                         else
                             LINFO("Set " + args[0] + "'s defense to " + args[1] + " and toughness to " + args[2] + ".");
                         return;

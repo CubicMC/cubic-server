@@ -8,8 +8,8 @@
 #include "events/Events.hpp"
 #include "protocol/ClientPackets.hpp"
 #include "protocol/metadata.hpp"
-#include <optional>
 #include <algorithm>
+#include <optional>
 
 void LivingEntity::attack(float damage, const Vector3<double> &source)
 {
@@ -65,7 +65,7 @@ void LivingEntity::addDefense(float value) { this->_armorDefense += value; }
 void LivingEntity::removeDefense(float value) { this->_armorDefense -= value; }
 
 float LivingEntity::getDefense() const noexcept { return (this->_armorDefense); }
-    
+
 void LivingEntity::setToughness(float value) { this->_armorToughness = value; }
 
 void LivingEntity::addToughness(float value) { this->_armorToughness += value; }

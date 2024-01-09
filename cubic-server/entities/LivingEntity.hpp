@@ -59,7 +59,7 @@ public:
     virtual void addDefense(float value);
     virtual void removeDefense(float value);
     NODISCARD virtual float getDefense() const noexcept;
-    
+
     virtual void setToughness(float value);
     virtual void addToughness(float value);
     virtual void removeToughness(float value);
