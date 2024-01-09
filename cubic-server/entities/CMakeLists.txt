@@ -9,4 +9,5 @@ target_sources(${CMAKE_PROJECT_NAME} PRIVATE
     Mob.hpp
     Chicken.cpp
     Chicken.hpp
+    ArmorStats.hpp
 )
