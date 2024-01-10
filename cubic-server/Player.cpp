@@ -8,6 +8,7 @@
 #include "Server.hpp"
 #include "World.hpp"
 #include "command_parser/CommandParser.hpp"
+#include "entities/ArmorStats.hpp"
 #include "entities/Entity.hpp"
 #include "entities/Item.hpp"
 #include "entities/LivingEntity.hpp"
@@ -132,7 +133,27 @@ player_attributes::Gamemode Player::getGamemode() const { return _gamemode; }
 
 const protocol::ClientInformation::ChatVisibility &Player::getChatVisibility() const { return this->_chatVisibility; }
 
-void Player::setGamemode(player_attributes::Gamemode gamemode) { _gamemode = gamemode; }
+void Player::setGamemode(player_attributes::Gamemode gamemode)
+{
+    _gamemode = gamemode;
+
+    int8_t defense = 0;
+    int8_t toughness = 0;
+
+    for (int16_t armorPos = 0; armorPos < 4; armorPos++) {
+        if (!this->getInventory()->armor()[armorPos].present)
+            continue;
+        for (const armor::ArmorPiece &gear : armor::armors) {
+            if (this->getInventory()->armor()[armorPos].itemID == ITEM_CONVERTER.fromItemToProtocolId(gear.item)) {
+                defense += gear.protectionLevel;
+                toughness += gear.toughnessLevel;
+            }
+        }
+    }
+    this->setDefense(defense);
+    this->setToughness(toughness);
+    LINFO("{}'s defense is now {} ({} toughness)", this->getUsername(), defense, toughness);
+}
 
 void Player::setOperator(const bool isOp) { this->_isOperator = isOp; }
 
