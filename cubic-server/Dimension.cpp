@@ -46,9 +46,17 @@ void Dimension::tick()
 {
     auto startTickTime = std::chrono::high_resolution_clock::now();
     {
-        std::lock_guard _(_entitiesMutex);
+        std::unique_lock a(_entitiesMutex, std::defer_lock);
+        std::unique_lock b(_newEntitiesMutex, std::defer_lock);
+        std::lock(a, b);
+
         for (auto ent : _entities) {
             ent->tick();
+        }
+
+        if (_newEntities.size() != 0) {
+            _entities.insert(_entities.end(), _newEntities.begin(), _newEntities.end());
+            _newEntities.clear();
         }
     }
     uint32_t rts = CONFIG["randomtickspeed"].as<uint32_t>();
@@ -76,16 +84,7 @@ void Dimension::tick()
             }
         }
     }
-    {
-        std::unique_lock a(_entitiesMutex, std::defer_lock);
-        std::unique_lock b(_newEntitiesMutex, std::defer_lock);
-        std::lock(a, b);
 
-        if (_newEntities.size() != 0) {
-            _entities.insert(_entities.end(), _newEntities.begin(), _newEntities.end());
-            _newEntities.clear();
-        }
-    }
     auto endTime = std::chrono::high_resolution_clock::now();
     auto compute_time = endTime - _previousTickTime;
     auto msptTime = endTime - startTickTime;
