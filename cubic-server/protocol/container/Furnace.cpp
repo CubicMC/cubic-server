@@ -6,7 +6,7 @@
 #include <memory>
 
 protocol::container::Furnace::Furnace(std::weak_ptr<Player> player, std::shared_ptr<tile_entity::Furnace> furnace):
-    Container(player.lock()->getWindowId(), protocol::container::InventoryType::TypeFurnace, "Furnace"),
+    Container(player.lock()->getWindowId(), (int32_t) protocol::container::InventoryType::Furnace, "Furnace"),
     _ingredient(furnace->ingredient()),
     _fuel(furnace->fuel()),
     _result(furnace->result()),
