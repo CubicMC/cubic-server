@@ -158,9 +158,9 @@ public:
     /**
      * @brief Get the Tile Entities object as a vector
      *
-     * @return const std::vector<std::shared_ptr<TileEntity>>&
+     * @return const std::unordered_map<Position, std::shared_ptr<TileEntity>>&
      */
-    constexpr const std::vector<std::shared_ptr<tile_entity::TileEntity>> &getTileEntities() const { return _tileEntities; }
+    constexpr const std::unordered_map<Position, std::shared_ptr<tile_entity::TileEntity>> &getTileEntities() const { return _tileEntities; }
 
     /**
      * @brief Get the Tile Entity object at the given position
@@ -235,7 +235,7 @@ private:
     GenerationState _currentState;
     std::mutex _generationLock;
     std::shared_ptr<Dimension> _dimension;
-    std::vector<std::shared_ptr<tile_entity::TileEntity>> _tileEntities;
+    std::unordered_map<Position, std::shared_ptr<tile_entity::TileEntity>> _tileEntities;
     std::vector<std::pair<Position, BlockId>> _blocksToBeUpdated;
 };
 
