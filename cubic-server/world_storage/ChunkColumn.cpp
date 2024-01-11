@@ -309,7 +309,7 @@ void ChunkColumn::_generateNether(UNUSED GenerationState goalState)
     for (int x = 0; x < SECTION_WIDTH; x++) {
         for (int z = 0; z < SECTION_WIDTH; z++) {
             updateBlock({x, 0 + CHUNK_HEIGHT_MIN, z}, Blocks::Bedrock::toProtocol()); // last bedrock layer
-            updateBlock({x, CHUNK_HEIGHT_MAX - 1, z}, Blocks::Bedrock::toProtocol()); // top bedrock layer
+            updateBlock({x, NETHER_ROOF, z}, Blocks::Bedrock::toProtocol()); // top bedrock layer
             for (int y = 1 + CHUNK_HEIGHT_MIN; y <= 4 + CHUNK_HEIGHT_MIN; y++) {
                 Position pos = {x + this->_chunkPos.x * SECTION_WIDTH, y, z + this->_chunkPos.z * SECTION_WIDTH};
                 generator.setRandomizer(pos);
@@ -332,25 +332,29 @@ void ChunkColumn::_generateNether(UNUSED GenerationState goalState)
                     }
                 }
             }
-            for (int y = 0; y <= 4; y++) {
-                Position pos = {x + this->_chunkPos.x * SECTION_WIDTH, CHUNK_HEIGHT_MAX - 5, z + this->_chunkPos.z * SECTION_WIDTH};
+            for (int y = 1; y < 5; y++) {
+                Position pos = {x + this->_chunkPos.x * SECTION_WIDTH, NETHER_ROOF - y, z + this->_chunkPos.z * SECTION_WIDTH};
                 generator.setRandomizer(pos);
                 if (generator.getRandomizer() != 0) {
                     if ((abs(pos.x % 8) >= abs(pos.z % 4) && pos.y % 2 != 0)) {
                         if (abs(pos.x) % 3 != abs(pos.z % 5)) {
-                            updateBlock({x, CHUNK_HEIGHT_MAX - 1, z}, Blocks::Bedrock::toProtocol());
-                            updateBlock({(x - 2) % SECTION_WIDTH, pos.y + y, (z + 1) % SECTION_WIDTH}, Blocks::Bedrock::toProtocol());
-                        } else if ((abs(pos.z - x) % generator.getRandomizer() != 0 || abs(pos.x - z) % 2 != 0) && abs(pos.y) % 4 != abs(z - x) % 8 && pos.y % 2 == 0)
-                            updateBlock({x, pos.y + y, (z + 1) % SECTION_WIDTH}, Blocks::Bedrock::toProtocol());
+                            updateBlock({x, NETHER_ROOF - 1, z}, Blocks::Bedrock::toProtocol());
+                            updateBlock({(x - 2) % SECTION_WIDTH, NETHER_ROOF - y, (z + 1) % SECTION_WIDTH}, Blocks::Bedrock::toProtocol());
+                        } else if (abs(pos.y) % 4 != abs(z - x) % 8 && pos.y % 2 == 0) {
+                            updateBlock({x, NETHER_ROOF - y, (z + 1) % SECTION_WIDTH}, Blocks::Bedrock::toProtocol());
+                            updateBlock({x, NETHER_ROOF - 4, (z + 1) % SECTION_WIDTH}, Blocks::Bedrock::toProtocol());
+                        }
                         if ((abs(pos.z) % 2 != 0 || abs(pos.x) % 2 != 0) || x == z) {
-                            updateBlock({x, CHUNK_HEIGHT_MAX - 2, (z + 1) % SECTION_WIDTH}, Blocks::Bedrock::toProtocol());
+                            updateBlock({x, NETHER_ROOF - 2, (z + 1) % SECTION_WIDTH}, Blocks::Bedrock::toProtocol());
                         } else if ((abs(pos.z) != abs(pos.x) + x && abs(pos.z % 4) != z % 2) && pos.y % 2 != 0) {
-                            updateBlock({(x + 5) % SECTION_WIDTH, CHUNK_HEIGHT_MAX - 3, (z - 3) % SECTION_WIDTH}, Blocks::Bedrock::toProtocol());
-                            updateBlock({x, pos.y + y, (z + 2) % SECTION_WIDTH}, Blocks::Bedrock::toProtocol());
+                            updateBlock({(x + 5) % SECTION_WIDTH, NETHER_ROOF - 3, (z - 3) % SECTION_WIDTH}, Blocks::Bedrock::toProtocol());
+                            updateBlock({x, NETHER_ROOF - y, (z + 2) % SECTION_WIDTH}, Blocks::Bedrock::toProtocol());
                         }
                     } else {
-                        if (abs(pos.x) % 3 != 0 && (generator.getRandomizer() == z % 5 && abs(pos.z) % 3 == 2) && abs(pos.y) % 2 == 0)
-                            updateBlock({x, pos.y + y, z}, Blocks::Bedrock::toProtocol());
+                        if (abs(pos.x) % 3 != 0 || ((abs(pos.z) % 3 <= 2) && abs(pos.y) % 2 == 0)) {
+                            updateBlock({x, NETHER_ROOF - 4, (z + 1) % SECTION_WIDTH}, Blocks::Bedrock::toProtocol());
+                            updateBlock({x, NETHER_ROOF - y, z}, Blocks::Bedrock::toProtocol());
+                        }
                     }
                 }
             }

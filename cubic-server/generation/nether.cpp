@@ -3,6 +3,7 @@
 #include "blocks.hpp"
 #include "options.hpp"
 #include "types.hpp"
+#include "world_storage/Section.hpp"
 
 generation::Nether::Nether(Seed seed):
     Generator(seed)
@@ -16,14 +17,12 @@ BlockId generation::Nether::getBlock(positionType x, positionType y, positionTyp
 
     auto density = noise.noise3D.density * 1.5;
     if (y >= 100)
-        density *= 0.75;
-    if (y >= 200)
-        density *= 1.5;
-    if (y >= 270)
         density *= 5;
-    if (y >= 310)
+    if (y >= 110)
         density *= 100;
-    if (blockId == Blocks::Netherrack::toProtocol() && density >= -0.5 && density <= 0.1)
+
+    // carve some of the netherrack
+    if ((blockId == Blocks::Netherrack::toProtocol() && density >= -0.5 && density <= 0.1) || (y >= world_storage::NETHER_ROOF))
         blockId = Blocks::Air::toProtocol();
 
     return blockId;
