@@ -7,6 +7,7 @@
 #include "PluginManager.hpp"
 #include "Server.hpp"
 #include "World.hpp"
+#include "blocks.hpp"
 #include "command_parser/CommandParser.hpp"
 #include "entities/ArmorStats.hpp"
 #include "entities/Entity.hpp"
@@ -1271,6 +1272,23 @@ void Player::_onUseItemOn(protocol::UseItemOn &pck)
         pck.location.x++;
         break;
     }
+
+    if (this->_inventory->hotbar().at(this->_heldItem).itemID == ITEM_CONVERTER.fromItemToProtocolId("minecraft:wheat_seeds")) {
+        Position below = {pck.location.x, pck.location.y - 1, pck.location.z};
+
+        if (this->getDimension()->getBlock(below) == Blocks::Farmland::toProtocol(Blocks::Farmland::Properties::Moisture::ZERO) ||
+            this->getDimension()->getBlock(below) == Blocks::Farmland::toProtocol(Blocks::Farmland::Properties::Moisture::ONE) ||
+            this->getDimension()->getBlock(below) == Blocks::Farmland::toProtocol(Blocks::Farmland::Properties::Moisture::TWO) ||
+            this->getDimension()->getBlock(below) == Blocks::Farmland::toProtocol(Blocks::Farmland::Properties::Moisture::THREE) ||
+            this->getDimension()->getBlock(below) == Blocks::Farmland::toProtocol(Blocks::Farmland::Properties::Moisture::FOUR) ||
+            this->getDimension()->getBlock(below) == Blocks::Farmland::toProtocol(Blocks::Farmland::Properties::Moisture::FIVE) ||
+            this->getDimension()->getBlock(below) == Blocks::Farmland::toProtocol(Blocks::Farmland::Properties::Moisture::SIX) ||
+            this->getDimension()->getBlock(below) == Blocks::Farmland::toProtocol(Blocks::Farmland::Properties::Moisture::SEVEN)) {
+            this->getDimension()->updateBlock(pck.location, Blocks::Wheat::toProtocol(Blocks::Wheat::Properties::Age::ZERO));
+            this->_inventory->hotbar().at(this->_heldItem).takeOne();
+        }
+    }
+
     auto item = this->_inventory->hotbar().at(this->_heldItem).getUsableItemFromSlot();
     if (Items::Hoe *usedItem = std::get_if<Items::Hoe>(&item)) {
         if (usedItem->_usabilityType == Items::UsabilityType::RightMouseClickUsable || usedItem->_usabilityType == Items::UsabilityType::BothMouseClicksUsable) {
