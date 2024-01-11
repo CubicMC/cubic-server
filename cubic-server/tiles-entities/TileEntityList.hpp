@@ -5,6 +5,7 @@
 #include <array>
 #include <memory>
 #include <string>
+#include <string_view>
 
 namespace tile_entity {
 enum class TileEntityType : int {
@@ -49,84 +50,54 @@ enum class TileEntityType : int {
     ChiseledBookshelf = 37,
 };
 
+static constexpr std::array<std::pair<std::string_view, TileEntityType>, 39> tileEntityNamesToTypes = {
+    std::pair<std::string_view, TileEntityType> {"bee", TileEntityType::Beehive},
+    std::pair<std::string_view, TileEntityType> {"hanging_sign", TileEntityType::HangingSign},
+    std::pair<std::string_view, TileEntityType> {"sign", TileEntityType::Sign},
+    std::pair<std::string_view, TileEntityType> {"sculk_sensor", TileEntityType::SculkSensor},
+    std::pair<std::string_view, TileEntityType> {"sculk_catalyst", TileEntityType::SculkCatalyst},
+    std::pair<std::string_view, TileEntityType> {"sculk_shrieker", TileEntityType::SculkShrieker},
+    std::pair<std::string_view, TileEntityType> {"banner", TileEntityType::Banner},
+    std::pair<std::string_view, TileEntityType> {"trapped_chest", TileEntityType::TrappedChest},
+    std::pair<std::string_view, TileEntityType> {"ender_chest", TileEntityType::EnderChest},
+    std::pair<std::string_view, TileEntityType> {"chest", TileEntityType::Chest},
+    std::pair<std::string_view, TileEntityType> {"dispenser", TileEntityType::Dispenser},
+    std::pair<std::string_view, TileEntityType> {"furnace", TileEntityType::Furnace},
+    std::pair<std::string_view, TileEntityType> {"brewing_stand", TileEntityType::BrewingStand},
+    std::pair<std::string_view, TileEntityType> {"hopper", TileEntityType::Hopper},
+    std::pair<std::string_view, TileEntityType> {"dropper", TileEntityType::Dropper},
+    std::pair<std::string_view, TileEntityType> {"shulker_box", TileEntityType::ShulkerBox},
+    std::pair<std::string_view, TileEntityType> {"barrel", TileEntityType::Barrel},
+    std::pair<std::string_view, TileEntityType> {"smoker", TileEntityType::Smoker},
+    std::pair<std::string_view, TileEntityType> {"blast_furnace", TileEntityType::BlastFurnace},
+    std::pair<std::string_view, TileEntityType> {"campfire", TileEntityType::Campfire},
+    std::pair<std::string_view, TileEntityType> {"lectern", TileEntityType::Lectern},
+    std::pair<std::string_view, TileEntityType> {"chiseled_bookshelf", TileEntityType::ChiseledBookshelf},
+    std::pair<std::string_view, TileEntityType> {"beacon", TileEntityType::Beacon},
+    std::pair<std::string_view, TileEntityType> {"spawner", TileEntityType::Spawner},
+    std::pair<std::string_view, TileEntityType> {"moving_piston", TileEntityType::MovingPiston},
+    std::pair<std::string_view, TileEntityType> {"jukebox", TileEntityType::Jukebox},
+    std::pair<std::string_view, TileEntityType> {"enchanting_table", TileEntityType::EnchantingTable},
+    std::pair<std::string_view, TileEntityType> {"end_portal", TileEntityType::EndPortal},
+    std::pair<std::string_view, TileEntityType> {"skull", TileEntityType::Skull},
+    std::pair<std::string_view, TileEntityType> {"head", TileEntityType::Skull},
+    std::pair<std::string_view, TileEntityType> {"command_block", TileEntityType::CommandBlock},
+    std::pair<std::string_view, TileEntityType> {"end_gateway", TileEntityType::EndGateway},
+    std::pair<std::string_view, TileEntityType> {"structure_block", TileEntityType::StructureBlock},
+    std::pair<std::string_view, TileEntityType> {"jigsaw", TileEntityType::Jigsaw},
+    std::pair<std::string_view, TileEntityType> {"daylight_detector", TileEntityType::DaylightDetector},
+    std::pair<std::string_view, TileEntityType> {"comparator", TileEntityType::Comparator},
+    std::pair<std::string_view, TileEntityType> {"bed", TileEntityType::Bed},
+    std::pair<std::string_view, TileEntityType> {"conduit", TileEntityType::Conduit},
+    std::pair<std::string_view, TileEntityType> {"bell", TileEntityType::Bell}};
+
 constexpr TileEntityType convertBlockNameToBlockEntityType(const std::string &name)
 {
-    if (name.find("bee") != std::string::npos)
-        return TileEntityType::Beehive;
-    if (name.find("hanging_sign") != std::string::npos)
-        return TileEntityType::HangingSign;
-    if (name.find("sign") != std::string::npos)
-        return TileEntityType::Sign;
-    if (name.find("sculk_sensor") != std::string::npos)
-        return TileEntityType::SculkSensor;
-    if (name.find("sculk_catalyst") != std::string::npos)
-        return TileEntityType::SculkCatalyst;
-    if (name.find("sculk_shrieker") != std::string::npos)
-        return TileEntityType::SculkShrieker;
-    if (name.find("banner") != std::string::npos)
-        return TileEntityType::Banner;
-    if (name.find("trapped_chest") != std::string::npos)
-        return TileEntityType::TrappedChest;
-    if (name.find("ender_chest") != std::string::npos)
-        return TileEntityType::EnderChest;
-    if (name.find("chest") != std::string::npos)
-        return TileEntityType::Chest;
-    if (name.find("dispenser") != std::string::npos)
-        return TileEntityType::Dispenser;
-    if (name.find("furnace") != std::string::npos)
-        return TileEntityType::Furnace;
-    if (name.find("brewing_stand") != std::string::npos)
-        return TileEntityType::BrewingStand;
-    if (name.find("hopper") != std::string::npos)
-        return TileEntityType::Hopper;
-    if (name.find("dropper") != std::string::npos)
-        return TileEntityType::Dropper;
-    if (name.find("shulker_box") != std::string::npos)
-        return TileEntityType::ShulkerBox;
-    if (name.find("barrel") != std::string::npos)
-        return TileEntityType::Barrel;
-    if (name.find("smoker") != std::string::npos)
-        return TileEntityType::Smoker;
-    if (name.find("blast_furnace") != std::string::npos)
-        return TileEntityType::BlastFurnace;
-    if (name.find("campfire") != std::string::npos)
-        return TileEntityType::Campfire;
-    if (name.find("lectern") != std::string::npos)
-        return TileEntityType::Lectern;
-    if (name.find("chiseled_bookshelf") != std::string::npos)
-        return TileEntityType::ChiseledBookshelf;
-    if (name.find("beacon") != std::string::npos)
-        return TileEntityType::Beacon;
-    if (name.find("spawner") != std::string::npos)
-        return TileEntityType::Spawner;
-    if (name.find("moving_piston") != std::string::npos)
-        return TileEntityType::MovingPiston;
-    if (name.find("jukebox") != std::string::npos)
-        return TileEntityType::Jukebox;
-    if (name.find("enchanting_table") != std::string::npos)
-        return TileEntityType::EnchantingTable;
-    if (name.find("end_portal") != std::string::npos)
-        return TileEntityType::EndPortal;
-    if (name.find("skull") != std::string::npos || name.find("head") != std::string::npos)
-        return TileEntityType::Skull;
-    if (name.find("command_block") != std::string::npos)
-        return TileEntityType::CommandBlock;
-    if (name.find("end_gateway") != std::string::npos)
-        return TileEntityType::EndGateway;
-    if (name.find("structure_block") != std::string::npos)
-        return TileEntityType::StructureBlock;
-    if (name.find("jigsaw") != std::string::npos)
-        return TileEntityType::Jigsaw;
-    if (name.find("daylight_detector") != std::string::npos)
-        return TileEntityType::DaylightDetector;
-    if (name.find("comparator") != std::string::npos)
-        return TileEntityType::Comparator;
-    if (name.find("bed") != std::string::npos)
-        return TileEntityType::Bed;
-    if (name.find("conduit") != std::string::npos)
-        return TileEntityType::Conduit;
-    if (name.find("bell") != std::string::npos)
-        return TileEntityType::Bell;
+    for (const auto &[tileEntityName, tileEntityType] : tileEntityNamesToTypes) {
+        if (name.find(tileEntityName) != std::string::npos) {
+            return tileEntityType;
+        }
+    }
     return TileEntityType::UnknownType;
 };
 
