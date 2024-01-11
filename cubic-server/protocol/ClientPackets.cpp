@@ -738,7 +738,7 @@ std::unique_ptr<std::vector<uint8_t>> protocol::createHeadRotation(const HeadRot
 std::unique_ptr<std::vector<uint8_t>> protocol::createUpdateSectionBlock(const UpdateSectionBlock &in)
 {
     std::vector<uint8_t> payload;
-    int sectionY = world_storage::getSectionIndex(in.blocks[0].first) - 5;
+    int sectionY = world_storage::getSectionIndex(in.pos);
     long chunkSectionPosition = ((in.chunkData.getChunkPos().x & 0x3FFFFF) << 42) | (sectionY & 0xFFFFF) | ((in.chunkData.getChunkPos().z & 0x3FFFFF) << 20);
     std::vector<long> blocks;
     for (auto [block, id] : in.blocks) {

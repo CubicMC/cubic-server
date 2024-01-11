@@ -67,13 +67,13 @@ Frame NetherPortal::getFrame(Position pos)
     auto topNextBlockX = _chunk.getBlock({(pos.x + 1), pos.y + 1, pos.z});
     auto topNextBlockZ = _chunk.getBlock({pos.x, pos.y + 1, (pos.z + 1)});
 
-    if (nextBlockX == Blocks::Obsidian::toProtocol() && topNextBlockX == Blocks::Air::toProtocol()) {
+    if (nextBlockX == Blocks::Obsidian::toProtocol() && topNextBlockX == Blocks::Air::toProtocol() && nextBlockZ != Blocks::Obsidian::toProtocol()) {
         return {AXIS_X, POSITIVE_POS};
-    } else if (nextBlockZ == Blocks::Obsidian::toProtocol() && topNextBlockZ == Blocks::Air::toProtocol()) {
+    } else if (nextBlockZ == Blocks::Obsidian::toProtocol() && topNextBlockZ == Blocks::Air::toProtocol() && nextBlockX != Blocks::Obsidian::toProtocol()) {
         return {AXIS_Z, POSITIVE_POS};
-    } else if (nextBlockX == Blocks::Obsidian::toProtocol() && topNextBlockX == Blocks::Obsidian::toProtocol()) {
+    } else if (nextBlockX == Blocks::Obsidian::toProtocol() && topNextBlockX == Blocks::Obsidian::toProtocol() && topNextBlockZ != Blocks::Obsidian::toProtocol()) {
         return {AXIS_X, NEGATIVE_POS};
-    } else if (nextBlockZ == Blocks::Obsidian::toProtocol() && topNextBlockZ == Blocks::Obsidian::toProtocol()) {
+    } else if (nextBlockZ == Blocks::Obsidian::toProtocol() && topNextBlockZ == Blocks::Obsidian::toProtocol() && topNextBlockX != Blocks::Obsidian::toProtocol()) {
         return {AXIS_Z, NEGATIVE_POS};
     }
     return {AXIS_UNDEFINED, UNDEFINED_POS};
@@ -134,10 +134,10 @@ void NetherPortal::buildPortal(Position pos)
         auto &chunk = _dim->getLevel().getChunkColumnFromBlockPos(position.x, position.z);
         auto chunkPosition = world_storage::convertPositionToChunkPosition(position);
         chunk.updateBlock(chunkPosition, id);
-    }
-    for (auto player : _dim->getPlayers()) {
-        player->sendBlockUpdate({pos, _chunk.getBlock(pos)});
-        player->sendBlockUpdate({{pos.x, pos.y + 1, pos.z}, _chunk.getBlock({pos.x, pos.y + 1, pos.z})});
-        player->sendUpdateSectionBlock({_chunk, true, blocksArray});
+        for (auto player : _dim->getPlayers()) {
+            player->sendBlockUpdate({pos, chunk.getBlock(pos)});
+            player->sendBlockUpdate({position, id});
+            // player->sendUpdateSectionBlock({position,chunk, true, blocksArray});
+        }
     }
 }

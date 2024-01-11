@@ -545,6 +545,7 @@ struct HeadRotation {
 std::unique_ptr<std::vector<uint8_t>> createHeadRotation(const HeadRotation &in);
 
 struct UpdateSectionBlock {
+    const Position pos;
     const world_storage::ChunkColumn &chunkData;
     bool suppressLightUpdates;
     std::vector<std::pair<Position, BlockId>> blocks;
