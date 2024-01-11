@@ -1,5 +1,7 @@
 #include "Inventory.hpp"
 #include "Player.hpp"
+#include "Server.hpp"
+#include "entities/ArmorStats.hpp"
 #include "protocol/container/Container.hpp"
 #include <variant>
 
@@ -186,4 +188,22 @@ void Inventory::onClick(std::shared_ptr<Player> player, int16_t index, uint8_t b
         player->updateEquipment(true, true, true, true, true, true);
         break;
     }
+
+    int8_t defense = 0;
+    int8_t toughness = 0;
+
+    for (int16_t armorPos = 0; armorPos < 4; armorPos++) {
+        if (!this->_armor[armorPos].present)
+            continue;
+        for (const armor::ArmorPiece &gear : armor::armors) {
+            if (this->_armor[armorPos].itemID == ITEM_CONVERTER.fromItemToProtocolId(gear.item)) {
+                defense += gear.protectionLevel;
+                toughness += gear.toughnessLevel;
+                LINFO("{} equiped {}", player->getUsername(), gear.item);
+            }
+        }
+    }
+    player->setDefense(defense);
+    player->setToughness(toughness);
+    LINFO("{}'s defense is now {} ({} toughness)", player->getUsername(), defense, toughness);
 }

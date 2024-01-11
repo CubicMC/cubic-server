@@ -75,6 +75,7 @@ Server::Server():
     _commands.emplace_back(std::make_unique<command_parser::Title>());
     _commands.emplace_back(std::make_unique<command_parser::Subtitle>());
     _commands.emplace_back(std::make_unique<command_parser::TitleTimes>());
+    _commands.emplace_back(std::make_unique<command_parser::Armor>());
 }
 
 Server::~Server() { }

@@ -1,3 +1,4 @@
+#include "command_parser/commands/Armor.hpp"
 #include "command_parser/commands/Deop.hpp"
 #include "command_parser/commands/DumpChunk.hpp"
 #include "command_parser/commands/Gamemode.hpp"

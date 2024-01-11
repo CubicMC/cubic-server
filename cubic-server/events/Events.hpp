@@ -1,6 +1,7 @@
 #ifndef CUBICSERVER_PLUGINMANAGER_EVENTS_HPP
 #define CUBICSERVER_PLUGINMANAGER_EVENTS_HPP
 
+#include "protocol/container/Inventory.hpp"
 #include <cstdint>
 #include <string>
 
@@ -10,7 +11,7 @@ class Player;
 class Chat;
 class Block;
 class Item;
-class Inventory;
+using Inventory = protocol::container::Inventory;
 
 class World;
 class Dimension;
