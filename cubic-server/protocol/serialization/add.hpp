@@ -148,7 +148,6 @@ constexpr void addChunkColumn(std::vector<uint8_t> &out, const world_storage::Ch
     addArray<uint8_t, addByte>(out, chunkData);
 
     // Block Entities
-    // addBlockEntities(out, data.getBlockEntities());
     addBlockEntities(out, data.getTileEntities());
     addLight(out, data);
 }
