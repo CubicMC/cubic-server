@@ -167,7 +167,7 @@ bool Inventory::canInsert(const protocol::Slot &slot)
 void Inventory::onClick(std::shared_ptr<Player> player, int16_t index, uint8_t buttonId, uint8_t mode, const std::vector<protocol::ClickContainer::SlotWithIndex> &updates)
 {
     switch (mode) {
-    case ClickMode::ShiftClick:
+    case (int32_t) ClickMode::ShiftClick:
         if (index >= 9 && index < 36)
             swapContainer(at(index), _hotbar);
         else
@@ -175,7 +175,7 @@ void Inventory::onClick(std::shared_ptr<Player> player, int16_t index, uint8_t b
         player->updateEquipment(true, true, false, false, false, false);
         break;
 
-    case ClickMode::Keys:
+    case (int32_t) ClickMode::Keys:
         if (buttonId == 40)
             std::swap(_offhand, at(index));
         else

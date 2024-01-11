@@ -29,7 +29,7 @@ static void swapContainer(protocol::Slot &slot, std::array<protocol::Slot, N> &c
 }
 
 CraftingTable::CraftingTable(std::weak_ptr<Player> player):
-    Container(player.lock()->getWindowId(), protocol::container::InventoryType::TypeCrafting, "Crafting"),
+    Container(player.lock()->getWindowId(), (int32_t) protocol::container::InventoryType::Crafting, "Crafting"),
     _playerInventory(player.lock()->getInventory()->playerInventory()),
     _hotbar(player.lock()->getInventory()->hotbar()),
     _offhand(player.lock()->getInventory()->offhand())
@@ -157,14 +157,14 @@ bool CraftingTable::canInsert(const protocol::Slot &slot)
 void CraftingTable::onClick(std::shared_ptr<Player> player, int16_t index, uint8_t buttonId, uint8_t mode, const std::vector<protocol::ClickContainer::SlotWithIndex> &updates)
 {
     switch (mode) {
-    case ClickMode::ShiftClick:
+    case (int32_t) ClickMode::ShiftClick:
         if (index >= 9 && index < 36)
             swapContainer(at(index), _hotbar);
         else
             swapContainer(at(index), _craftingGrid);
         break;
 
-    case ClickMode::Keys:
+    case (int32_t) ClickMode::Keys:
         if (buttonId == 40)
             std::swap(_offhand, at(index));
         else
