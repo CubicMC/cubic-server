@@ -23,12 +23,7 @@ constexpr void addBlockEntity(std::vector<uint8_t> &out, const BlockEntity &data
     addNBT(out, data.data);
 }
 
-constexpr void addBlockEntities(std::vector<uint8_t> &out, const std::vector<std::shared_ptr<tile_entity::TileEntity>> &data)
-{
-    addVarInt(out, data.size());
-    for (auto &i : data)
-        addBlockEntity(out, i->updateNbt()->toBlockEntity());
-}
+void addBlockEntities(std::vector<uint8_t> &out, const std::unordered_map<Position, std::shared_ptr<tile_entity::TileEntity>> &data);
 
 constexpr void addPalette(std::vector<uint8_t> &out, const world_storage::Palette &palette)
 {

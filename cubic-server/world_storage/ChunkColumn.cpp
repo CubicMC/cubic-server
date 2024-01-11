@@ -615,7 +615,7 @@ void ChunkColumn::processRandomTick(uint32_t rts)
 
 void ChunkColumn::tick()
 {
-    for (auto &tileEntity : _tileEntities) {
+    for (auto &[_, tileEntity] : _tileEntities) {
         tileEntity->tick();
         if (tileEntity->needBlockUpdate()) {
             updateBlock(world_storage::convertPositionToChunkPosition(tileEntity->position), tileEntity->getBlockId());
@@ -626,35 +626,23 @@ void ChunkColumn::tick()
 
 const std::shared_ptr<tile_entity::TileEntity> ChunkColumn::getTileEntity(const Position &pos) const
 {
-    auto tileEntity = std::find_if(_tileEntities.begin(), _tileEntities.end(), [&pos](const std::shared_ptr<tile_entity::TileEntity> &tileEntity) {
-        return tileEntity->position == pos;
-    });
-
-    if (tileEntity != _tileEntities.end())
-        return *tileEntity;
+    if (_tileEntities.contains(pos))
+        return _tileEntities.at(pos);
     return nullptr;
 }
 
 std::shared_ptr<tile_entity::TileEntity> ChunkColumn::getTileEntity(const Position &pos)
 {
-    auto tileEntity = std::find_if(_tileEntities.begin(), _tileEntities.end(), [&pos](const std::shared_ptr<tile_entity::TileEntity> &tileEntity) {
-        return tileEntity->position == pos;
-    });
-
-    if (tileEntity != _tileEntities.end())
-        return *tileEntity;
+    if (_tileEntities.contains(pos))
+        return _tileEntities.at(pos);
     return nullptr;
 }
 
-void ChunkColumn::addTileEntity(std::shared_ptr<tile_entity::TileEntity> tileEntity) { _tileEntities.push_back(std::move(tileEntity)); }
+void ChunkColumn::addTileEntity(std::shared_ptr<tile_entity::TileEntity> tileEntity) { _tileEntities.emplace(std::make_pair(tileEntity->position, std::move(tileEntity))); }
 
 void ChunkColumn::removeTileEntity(const Position &pos)
 {
-    auto tileEntity = std::find_if(_tileEntities.begin(), _tileEntities.end(), [&pos](const std::shared_ptr<tile_entity::TileEntity> &tileEntity) {
-        return tileEntity->position == pos;
-    });
-
-    if (tileEntity != _tileEntities.end())
-        _tileEntities.erase(tileEntity);
+    if (_tileEntities.contains(pos))
+        _tileEntities.erase(pos);
 }
 } // namespace world_storage
