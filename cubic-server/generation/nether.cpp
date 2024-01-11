@@ -31,7 +31,7 @@ BlockId generation::Nether::getBlock(positionType x, positionType y, positionTyp
 
 BlockId generation::Nether::getBlock(const Position &pos) { return getBlock(pos.x, pos.y, pos.z); }
 
-BiomeId generation::Nether::getBiome(positionType x, positionType y, positionType z) { return 2; }
+BiomeId generation::Nether::getBiome(UNUSED positionType x, UNUSED positionType y, UNUSED positionType z) { return 2; }
 
 BiomeId generation::Nether::getBiome(const Position &pos) { return getBiome(pos.x, pos.y, pos.z); }
 
