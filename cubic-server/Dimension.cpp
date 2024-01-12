@@ -103,7 +103,6 @@ void Dimension::tick()
     for (auto &[_, chunk] : _level.getChunkColumns()) {
         if (!chunk.isReady())
             continue;
-        chunk.tick();
         if (auto &blocks = chunk.getBlocksToBeUpdated(); !blocks.empty()) {
             std::lock_guard _(_playersMutex);
             for (auto player : _players) {
@@ -115,6 +114,11 @@ void Dimension::tick()
                 }
             }
         }
+    }
+    for (auto &[_, chunk] : _level.getChunkColumns()) {
+        if (!chunk.isReady())
+            continue;
+        chunk.tick();
     }
 
     auto endTime = std::chrono::high_resolution_clock::now();
@@ -398,7 +402,6 @@ void Dimension::updateBlock(Position position, int32_t id)
     }
     std::lock_guard _(_playersMutex);
     for (auto player : _players) {
-        player->sendBlockUpdate({position, id});
         if (tileEntity)
             player->sendBlockEntityData(tileEntity->toBlockEntityData());
         else
