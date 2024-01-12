@@ -40,7 +40,8 @@ constexpr const Position calculateAbsolutePosition(const uint32_t blockIndex, co
     int sectionY = blockIndex / SECTION_2D_SIZE;
     int sectionZ = (blockIndex / SECTION_WIDTH) % SECTION_WIDTH;
     int y = sectionY + (sectionIndex * SECTION_WIDTH);
-    return {chunkPosition.x * SECTION_WIDTH + sectionX, y + CHUNK_HEIGHT_MIN, chunkPosition.z * SECTION_WIDTH + sectionZ};
+    // y -16 is because of the playable sections (one below the minimum height and one above the maximum height)
+    return {chunkPosition.x * SECTION_WIDTH + sectionX, y + CHUNK_HEIGHT_MIN - 16, chunkPosition.z * SECTION_WIDTH + sectionZ};
 }
 
 class ChunkColumn;

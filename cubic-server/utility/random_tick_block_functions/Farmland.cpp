@@ -1,8 +1,8 @@
-#include "utility/RandomTickBlockFunctions.hpp"
 #include "Dimension.hpp"
 #include "Server.hpp"
 #include "blocks.hpp"
 #include "types.hpp"
+#include "utility/RandomTickBlockFunctions.hpp"
 #include "world_storage/ChunkColumn.hpp"
 #include <memory>
 
@@ -80,5 +80,4 @@ void utility::farmland(BlockId blockId, world_storage::ChunkColumn &chunkColumn,
             chunkColumn.updateBlock(world_storage::convertPositionToChunkPosition(ablsolutePosition), Blocks::Farmland::toProtocol(Blocks::Farmland::Properties::Moisture::SIX));
         }
     }
-
 }
