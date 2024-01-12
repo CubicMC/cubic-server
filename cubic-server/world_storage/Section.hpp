@@ -34,6 +34,17 @@ constexpr int BIOME_PER_CHUNK = BIOME_SECTION_3D_SIZE * NB_OF_PLAYABLE_SECTIONS;
 constexpr uint64_t calculateSectionBlockIdx(const Position &pos) { return pos.x + (pos.z * SECTION_WIDTH) + (pos.y * SECTION_2D_SIZE); }
 constexpr uint64_t calculateSectionBiomeIdx(const Position &pos) { return pos.x + (pos.z * BIOME_SECTION_WIDTH) + (pos.y * BIOME_SECTION_2D_SIZE); }
 
+constexpr const Position calculateAbsolutePosition(const uint32_t blockIndex, const Position2D &chunkPosition, const size_t sectionIndex)
+{
+    int sectionX = blockIndex % SECTION_WIDTH;
+    int sectionY = blockIndex / SECTION_2D_SIZE;
+    int sectionZ = (blockIndex / SECTION_WIDTH) % SECTION_WIDTH;
+    int y = sectionY + (sectionIndex * SECTION_WIDTH);
+    return {chunkPosition.x * SECTION_WIDTH + sectionX, y + CHUNK_HEIGHT_MIN, chunkPosition.z * SECTION_WIDTH + sectionZ};
+}
+
+class ChunkColumn;
+
 class Section {
 public:
     typedef DynamicStorage<uint64_t, SECTION_3D_SIZE> BlockStorage;
@@ -101,9 +112,10 @@ public:
      * @brief Process a random tick on a section
      *
      * @param rts The value of randomtickspeed
-     * @param chunkPos The position of the chunk the section is in
+     * @param chunkColumn The chunk column the section is in
+     * @param sectionIndex The index of the section in the chunk column
      */
-    void processRandomTick(uint32_t rts, Position2D chunkPos);
+    void processRandomTick(uint32_t rts, ChunkColumn &chunkColumn, size_t sectionIndex);
 
 private:
     void _reCalculatePalette();
@@ -114,7 +126,7 @@ private:
      * @param blockIndex The block index on the BlockStorage
      * @param chunkPos The position of the chunk the section is in
      */
-    void _processBlockRandomTick(uint32_t blockIndex, Position2D chunkPos);
+    void _processBlockRandomTick(uint32_t blockIndex, ChunkColumn &chunkColumn, size_t sectionIndex);
 
 private:
     BlockStorage _blocks;

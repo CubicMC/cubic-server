@@ -610,8 +610,8 @@ void ChunkColumn::_generateTopLayerModification(UNUSED generation::Generator &ge
 
 void ChunkColumn::processRandomTick(uint32_t rts)
 {
-    for (auto &section : _sections) {
-        section.processRandomTick(rts, _chunkPos);
+    for (size_t i = 0; i < _sections.size(); i++) {
+        _sections[i].processRandomTick(rts, *this, i);
     }
 }
 
