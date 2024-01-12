@@ -50,8 +50,8 @@ public:
 
     virtual void setLevelData(const world_storage::LevelData &value) { _levelData = value; }
     virtual void updateTime();
-    virtual void sendPlayerInfoAddPlayer(Player *);
-    virtual void sendPlayerInfoRemovePlayer(const Player *current);
+    virtual void sendPlayerInfoAddPlayer(std::shared_ptr<Player> current);
+    virtual void sendPlayerInfoRemovePlayer(std::shared_ptr<const Player> current);
 
     /*
     **  Used in the /time command.

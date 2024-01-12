@@ -101,7 +101,7 @@ Player::Player(std::weak_ptr<Client> cli, std::shared_ptr<Dimension> dim, u128 u
 
 Player::~Player()
 {
-    this->_dim->getWorld()->sendPlayerInfoRemovePlayer(this);
+    this->_dim->getWorld()->sendPlayerInfoRemovePlayer(this->dynamicSharedFromThis<Player>());
     PEXP(decrementPlayerCountGlobal);
 
     // Send a disconnect message
@@ -210,7 +210,7 @@ void Player::updatePlayerInfo(const protocol::PlayerInfoUpdate &data)
     }
 }
 
-void Player::updateEquipment(bool mainHand, bool offHand, bool boots, bool leggings, bool chestplate, bool helmet)
+void Player::updateEquipment(bool mainHand, UNUSED bool offHand, UNUSED bool boots, UNUSED bool leggings, UNUSED bool chestplate, UNUSED bool helmet)
 {
     protocol::SetEquipment equip;
 
@@ -1406,7 +1406,7 @@ void Player::_continueLoginSequence()
     _dim->addEntity(shared_from_this());
     _dim->addPlayer(dynamic_pointer_cast<Player>(shared_from_this()));
     LDEBUG("Added entity player to dimension");
-    getDimension()->getWorld()->sendPlayerInfoAddPlayer(this);
+    getDimension()->getWorld()->sendPlayerInfoAddPlayer(this->dynamicSharedFromThis<Player>());
 
     this->sendSetCenterChunk({0, 0});
 
