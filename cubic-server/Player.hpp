@@ -24,7 +24,6 @@
 #include <type_traits>
 
 class Client;
-// class Entity;
 
 class Player : public LivingEntity {
     friend class Client;
@@ -94,6 +93,20 @@ public:
      */
     void appendMetadataPacket(std::vector<uint8_t> &data) const override;
 
+    /**
+     * @brief Get the Window Id of the next screen / window / inventory
+     *
+     * @return uint8_t The window id
+     */
+    uint8_t getWindowId() { return ++_windowId; }
+
+    /**
+     * @brief Get a container by its window id
+     *
+     * @param windowId The window id of the container
+     */
+    std::shared_ptr<protocol::container::Container> getContainer(uint8_t windowId);
+
 public:
     /**
      * @brief Synchronize the player with the server
@@ -135,6 +148,7 @@ public:
     void sendChunkAndLightUpdate(const world_storage::ChunkColumn &chunk);
     void sendUnloadChunk(int32_t x, int32_t z);
     void sendBlockUpdate(const protocol::BlockUpdate &packet);
+    void sendBlockEntityData(const protocol::BlockEntityData &packet);
     void sendOpenScreen(const protocol::OpenScreen &packet);
     void sendPlayerAbilities(const protocol::PlayerAbilitiesClient &packet);
     void sendFeatureFlags(const protocol::FeatureFlags &packet);
@@ -143,6 +157,7 @@ public:
     void sendEntityAnimation(protocol::EntityAnimation::ID animId, int32_t entityID);
     void sendCloseContainer(uint8_t containerId);
     void sendSetContainerContent(const protocol::SetContainerContent &packet);
+    void sendSetContainerProperty(const protocol::SetContainerProperty &packet);
     void sendSetContainerSlot(const protocol::SetContainerSlot &packet);
     void sendUpdateRecipes(const protocol::UpdateRecipes &packet);
     void sendUpdateTags(const protocol::UpdateTags &packet);
@@ -270,6 +285,7 @@ private:
         Right = 1,
     } _mainHand;
     int _nbTickBeforeNextAttack;
+    uint8_t _windowId;
 };
 
 template<isBaseOf<protocol::container::Container> Container, typename... Args>

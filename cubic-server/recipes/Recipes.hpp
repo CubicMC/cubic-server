@@ -8,6 +8,7 @@
 
 #include <nlohmann/json.hpp>
 
+#include "concept.hpp"
 #include "exceptions.hpp"
 #include "types.hpp"
 
@@ -48,7 +49,7 @@ private:
   Minecraft default's recipe types include :
   crafting_shapeless, crafting_shaped, smelting, stonecutting...
 */
-typedef std::unique_ptr<Recipe> (*Creator)(const nlohmann::json &recipe);
+typedef std::shared_ptr<Recipe> (*Creator)(const nlohmann::json &recipe);
 };
 
 /*
@@ -66,11 +67,27 @@ public:
     void initialize(void);
     void reload(void);
     void clear(void);
+    const std::unordered_map<std::string, std::shared_ptr<Recipe::Recipe>> &getRecipes(const std::string &_namespace) const noexcept { return _recipes.at(_namespace); }
+
+    template<isBaseOf<Recipe::Recipe> T>
+    const std::unordered_map<std::string, std::shared_ptr<T>> getRecipesByType(const std::string &_namespace) const noexcept;
 
 private:
-    std::unordered_map<std::string, std::unordered_map<std::string, std::unique_ptr<Recipe::Recipe>>> _recipes;
+    std::unordered_map<std::string, std::unordered_map<std::string, std::shared_ptr<Recipe::Recipe>>> _recipes;
     std::unordered_map<std::string, std::unordered_map<std::string, Recipe::Creator>> _recipeCreators;
     std::unordered_map<std::string, std::vector<std::string>> _folderPaths;
 };
+
+template<isBaseOf<Recipe::Recipe> T>
+const std::unordered_map<std::string, std::shared_ptr<T>> Recipes::getRecipesByType(const std::string &_namespace) const noexcept
+{
+    std::unordered_map<std::string, std::shared_ptr<T>> recipes;
+    for (const auto &[name, recipe] : this->_recipes.at(_namespace)) {
+        auto recipePtr = std::dynamic_pointer_cast<T>(recipe);
+        if (recipePtr != nullptr)
+            recipes[name] = recipePtr;
+    }
+    return (recipes);
+}
 
 #endif // CUBICSERVER_RECIPES_HPP

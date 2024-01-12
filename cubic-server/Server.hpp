@@ -58,6 +58,7 @@ constexpr uint16_t MS_PER_TICK = 50;
 #define SOUND_EVENT_CONVERTER Server::getInstance()->getSoundEventConverter()
 #define BLOCK_DATA_CONVERTER Server::getInstance()->getBlockDataConverter()
 #define CONFIG Server::getInstance()->getConfig()
+#define RECIPES Server::getInstance()->getRecipeSystem()
 
 #if PROMETHEUS_SUPPORT == 1
 #define PROMETHEUS Server::getInstance()->getPrometheusExporter()

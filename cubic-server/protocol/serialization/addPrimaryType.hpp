@@ -153,7 +153,7 @@ inline size_t _nbtWriter(void *userData, uint8_t *data, size_t size)
     return size;
 }
 
-inline void addNBT(std::vector<uint8_t> &out, nbt_tag_t *tag)
+constexpr inline void addNBT(std::vector<uint8_t> &out, nbt_tag_t *tag)
 {
     if (tag == nullptr) {
         addByte(out, 0);
