@@ -44,9 +44,9 @@ void Vegetation::generateVegetation(std::vector<world_storage::ChunkColumn *>)
         for (const auto &block : Vegetation) {
             auto blockID = _chunk.getBlock(VegetationEmplacement);
             if (blockID == Blocks::Air::toProtocol() || (blockID != Blocks::TallGrass::toProtocol(Blocks::TallGrass::Properties::Half::LOWER) && randomizer >= 3)) {
-                _chunk.updateBlock({block.pos.x, block.pos.y, block.pos.z}, block.block);
+                _chunk.modifyBlock({block.pos.x, block.pos.y, block.pos.z}, block.block);
             } else if (block.block == Blocks::TallGrass::toProtocol(Blocks::TallGrass::Properties::Half::UPPER) && blockID == Blocks::TallGrass::toProtocol(Blocks::TallGrass::Properties::Half::LOWER)) {
-                _chunk.updateBlock({block.pos.x, block.pos.y, block.pos.z}, block.block);
+                _chunk.modifyBlock({block.pos.x, block.pos.y, block.pos.z}, block.block);
             }
         }
         _positions.pop_front();

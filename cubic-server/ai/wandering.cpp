@@ -35,7 +35,7 @@ void Wandering::think()
 
     /* DEBUG CODE
     // place a bedrock block at the final position
-    // _entity.getDimension()->updateBlock({int(finalPos.x), int(finalPos.y), int(finalPos.z)}, Blocks::Bedrock::toProtocol());
+    // _entity.getDimension()->modifyBlock({int(finalPos.x), int(finalPos.y), int(finalPos.z)}, Blocks::Bedrock::toProtocol());
 
     // display some important informations
     // LINFO(Vector3<double> {finalPos.x, finalPos.y - 1, finalPos.z});
