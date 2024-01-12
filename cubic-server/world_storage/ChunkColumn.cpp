@@ -386,6 +386,20 @@ void ChunkColumn::_generateNether(UNUSED GenerationState goalState)
                     break;
                 }
             }
+            if (getBlock({x, lavaLevel, z}) == Blocks::Netherrack::toProtocol() &&
+                getBlock({x, lavaLevel - 1, z}) != Blocks::Lava::toProtocol(Blocks::Lava::Properties::Level::ZERO) &&
+                lastBlock == Blocks::Lava::toProtocol(Blocks::Lava::Properties::Level::ZERO)) {
+                updateBlock({x, lavaLevel, z}, Blocks::SoulSand::toProtocol());
+                for (int a = -1; a <= 1; a++) {
+                    if ((z + a) < (SECTION_WIDTH - 1) && (x + a) < (SECTION_WIDTH - 1) && (z - a) < (SECTION_WIDTH - 1) && (x - a) < (SECTION_WIDTH - 1) && x > 0 && z > 0) {
+                        updateBlock({x, lavaLevel, (z + a)}, Blocks::SoulSand::toProtocol());
+                        updateBlock({(x + a), lavaLevel, z}, Blocks::SoulSand::toProtocol());
+                        updateBlock({(x + a), lavaLevel, (z - a)}, Blocks::SoulSand::toProtocol());
+                        updateBlock({(x - a), lavaLevel, (z - a)}, Blocks::SoulSand::toProtocol());
+                    }
+                }
+                break;
+            }
         }
     }
 
