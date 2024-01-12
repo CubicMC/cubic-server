@@ -59,7 +59,7 @@ Player::Player(std::weak_ptr<Client> cli, std::shared_ptr<Dimension> dim, u128 u
     _foodSaturationLevel(player_attributes::DEFAULT_FOOD_SATURATION_LEVEL), // TODO: Take this from the saved data
     _foodTickTimer(0), // TODO: Take this from the saved data
     _foodExhaustionLevel(0.0f), // TODO: Take this from the saved data
-    _respawnPoint(0, 120, 0), // TODO: Take this from the saved data
+    _respawnPoint(0, 75, 0), // TODO: Take this from the saved data
     _chatVisibility(protocol::ClientInformation::ChatVisibility::Enabled),
     _isFlying(true), // TODO: Take this from the saved data
     _isJumping(false),
@@ -1461,7 +1461,7 @@ void Player::_continueLoginSequence()
     this->sendUpdateRecipiesBook({});
 
     // TODO: change that to player_attributes::DEFAULT_SPAWN_POINT
-    this->teleport({8.5, 70, 8.5});
+    this->teleport({8.5, 75, 8.5});
 
     this->sendServerData({false, "", false, "", false});
 

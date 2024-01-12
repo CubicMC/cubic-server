@@ -313,101 +313,74 @@ void Entity::teleportEntityThroughPortal(std::shared_ptr<Dimension> currentDimen
 
 void Entity::teleportPlayerThroughPortal(std::shared_ptr<Dimension> currentDimension)
 {
-    auto thisPlayer = this->dynamicSharedFromThis<Player>();
-    if (currentDimension->getDimensionType() == world_storage::DimensionType::OVERWORLD) {
-        currentDimension->removePlayer(_id);
-        auto nextDimension = currentDimension->getWorld()->getDimensions().at("nether");
-        thisPlayer->setDimension(nextDimension);
-        thisPlayer->sendRespawn({
-            "minecraft:the_nether", // Dimension Type
-            "the_nether", // Dimension name
-            0, // Hashed seed
-            thisPlayer->getGamemode(), // Gamemode
-            thisPlayer->getGamemode(), // Previous gamemode
-            0, // Is debug
-            0, // Is flat
-            0, // Copy metadata
-            false, // Has death location
-        });
-        thisPlayer->sendFeatureFlags({{"minecraft:vanilla"}});
-        thisPlayer->sendChangeDifficulty({1, true});
-        thisPlayer->sendPlayerAbilities({player_attributes::getAbilitiesByGamemode(thisPlayer->getGamemode()), 0.05, 0.1});
-        thisPlayer->sendSetHeldItem({thisPlayer->getHeldItem()});
-        thisPlayer->sendUpdateRecipes({});
-        thisPlayer->sendUpdateTags({});
-        thisPlayer->sendEntityEvent({thisPlayer->_id, 24});
-        thisPlayer->sendCommands({{}, 0});
-        thisPlayer->sendUpdateRecipiesBook({});
-        thisPlayer->sendServerData({false, "", false, "", false});
-        nextDimension->addEntity(this->dynamicSharedFromThis<Entity>());
-        nextDimension->addPlayer(thisPlayer);
-        thisPlayer->sendSetCenterChunk({0, 0});
-        auto renderDistance = nextDimension->getWorld()->getRenderDistance();
-        thisPlayer->sendChunkAndLightUpdate(0, 0);
-        for (int32_t x = -renderDistance; x < renderDistance + 1; x++) {
-            for (int32_t z = -renderDistance; z < renderDistance + 1; z++) {
-                if (x == 0 && z == 0)
-                    continue;
-                thisPlayer->sendChunkAndLightUpdate(x, z);
-            }
+    auto nextDimension = currentDimension->getWorld()->getDimensions().at("nether");
+    std::shared_ptr<Player> thisPlayer = nullptr;
+    for (auto player : currentDimension->getPlayers()) {
+        if (player->getUuid() == this->getUuid()) {
+            thisPlayer = player;
+            break;
         }
-        thisPlayer->sendInitializeWorldBorder({0, 0, 0, CONFIG["world-border"].as<double>(), 0, 29999984, 10, 10});
-        thisPlayer->sendSetDefaultSpawnPosition({{0, 70, 0}, 0.0f});
-        thisPlayer->sendSetContainerContent({thisPlayer->getInventory()});
-        thisPlayer->sendEntityMetadata(*thisPlayer);
-        thisPlayer->sendUpdateAttributes({thisPlayer->getId(), {}});
-        thisPlayer->sendUpdateAdvancements({false, {}, {}, {}});
-        thisPlayer->sendHealth();
-        thisPlayer->sendSetExperience({0, 0, 0});
-        nextDimension->spawnPlayer(*thisPlayer);
-        nextDimension->getWorld()->getWorldGroup()->getScoreboard().sendScoreboardStatus(*thisPlayer);
-
-    } else if (currentDimension->getDimensionType() == world_storage::DimensionType::NETHER) {
-        currentDimension->removePlayer(_id);
-        auto nextDimension = currentDimension->getWorld()->getDimensions().at("overworld");
-        thisPlayer->setDimension(nextDimension);
-        thisPlayer->sendRespawn({
-            "minecraft:overworld", // Dimension Type
-            "overworld", // Dimension name
-            0, // Hashed seed
-            thisPlayer->getGamemode(), // Gamemode
-            thisPlayer->getGamemode(), // Previous gamemode
-            0, // Is debug
-            0, // Is flat
-            0, // Copy metadata
-            false, // Has death location
-        });
-        thisPlayer->sendFeatureFlags({{"minecraft:vanilla"}});
-        thisPlayer->sendChangeDifficulty({1, true});
-        thisPlayer->sendPlayerAbilities({player_attributes::getAbilitiesByGamemode(thisPlayer->getGamemode()), 0.05, 0.1});
-        thisPlayer->sendSetHeldItem({thisPlayer->getHeldItem()});
-        thisPlayer->sendUpdateRecipes({});
-        thisPlayer->sendUpdateTags({});
-        thisPlayer->sendEntityEvent({thisPlayer->_id, 24});
-        thisPlayer->sendCommands({{}, 0});
-        thisPlayer->sendUpdateRecipiesBook({});
-        thisPlayer->sendServerData({false, "", false, "", false});
-        nextDimension->addEntity(this->dynamicSharedFromThis<Entity>());
-        nextDimension->addPlayer(thisPlayer);
-        thisPlayer->sendSetCenterChunk({0, 0});
-        auto renderDistance = nextDimension->getWorld()->getRenderDistance();
-        thisPlayer->sendChunkAndLightUpdate(0, 0);
-        for (int32_t x = -renderDistance; x < renderDistance + 1; x++) {
-            for (int32_t z = -renderDistance; z < renderDistance + 1; z++) {
-                if (x == 0 && z == 0)
-                    continue;
-                thisPlayer->sendChunkAndLightUpdate(x, z);
-            }
-        }
-        thisPlayer->sendInitializeWorldBorder({0, 0, 0, CONFIG["world-border"].as<double>(), 0, 29999984, 10, 10});
-        thisPlayer->sendSetDefaultSpawnPosition({{0, 70, 0}, 0.0f});
-        thisPlayer->sendSetContainerContent({thisPlayer->getInventory()});
-        thisPlayer->sendEntityMetadata(*thisPlayer);
-        thisPlayer->sendUpdateAttributes({thisPlayer->getId(), {}});
-        thisPlayer->sendUpdateAdvancements({false, {}, {}, {}});
-        thisPlayer->sendHealth();
-        thisPlayer->sendSetExperience({0, 0, 0});
-        nextDimension->spawnPlayer(*thisPlayer);
-        nextDimension->getWorld()->getWorldGroup()->getScoreboard().sendScoreboardStatus(*thisPlayer);
     }
+    if (thisPlayer == nullptr)
+        return;
+    LDEBUG("Player name: {}", thisPlayer->getUsername());
+
+    if (currentDimension->getDimensionType() == world_storage::DimensionType::OVERWORLD) {
+        nextDimension = currentDimension->getWorld()->getDimensions().at("nether");
+    } else if (currentDimension->getDimensionType() == world_storage::DimensionType::NETHER) {
+        nextDimension = currentDimension->getWorld()->getDimensions().at("overworld");
+    } else {
+        return;
+    }
+    currentDimension->removeEntity(_id);
+    currentDimension->removePlayer(thisPlayer->_id);
+    thisPlayer->setDimension(nextDimension);
+    thisPlayer->sendRespawn({
+        nextDimension->getDimensionTypeName(),
+        nextDimension->getDimensionName(),
+        0,
+        thisPlayer->getGamemode(),
+        thisPlayer->getGamemode(),
+        0,
+        0,
+        0,
+        false,
+    });
+    thisPlayer->sendFeatureFlags({{"minecraft:vanilla"}});
+    thisPlayer->sendPlayerAbilities({player_attributes::getAbilitiesByGamemode(thisPlayer->getGamemode()), 0.05, 0.1});
+    thisPlayer->sendSetHeldItem({thisPlayer->getHeldItem()});
+    thisPlayer->sendUpdateRecipes({});
+    thisPlayer->sendUpdateTags({});
+    thisPlayer->sendEntityEvent({thisPlayer->_id, 24});
+    thisPlayer->sendCommands({{}, 0});
+    thisPlayer->sendUpdateRecipiesBook({});
+    thisPlayer->sendServerData({false, "", false, "", false});
+    nextDimension->addEntity(this->dynamicSharedFromThis<Entity>());
+    nextDimension->addPlayer(thisPlayer);
+    auto renderDistance = nextDimension->getWorld()->getRenderDistance();
+    thisPlayer->sendChunkAndLightUpdate(0, 0);
+    for (int32_t x = -renderDistance; x < renderDistance + 1; x++) {
+        for (int32_t z = -renderDistance; z < renderDistance + 1; z++) {
+            if (x == 0 && z == 0)
+                continue;
+            thisPlayer->sendChunkAndLightUpdate(x, z);
+        }
+    }
+    thisPlayer->sendSetContainerContent({thisPlayer->getInventory()});
+    thisPlayer->sendEntityMetadata(*thisPlayer);
+    thisPlayer->sendUpdateAttributes({thisPlayer->getId(), {}});
+    thisPlayer->sendUpdateAdvancements({false, {}, {}, {}});
+    thisPlayer->sendHealth();
+    thisPlayer->sendSetExperience({0, 0, 0});
+    // thisPlayer->sendSynchronizePlayerPosition();
+    nextDimension->spawnPlayer(*thisPlayer);
+    // nextDimension->getWorld()->getWorldGroup()->getScoreboard().sendScoreboardStatus(*thisPlayer);
+    // for (std::shared_ptr<Player> other : nextDimension->getPlayers()) {
+    //     if (other->getInventory()->hotbar().at(other->getHeldItem()).present) {
+    //         protocol::SetEquipment equip;
+    //         equip.entityId = other->getId();
+    //         equip.equipment.push_back(std::make_pair(protocol::SetEquipment::EquipmentPosition::MainHand, other->getInventory()->hotbar().at(other->getHeldItem())));
+    //         thisPlayer->sendSetEquipment(equip);
+    //     }
+    // }
 }
