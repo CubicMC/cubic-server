@@ -5,6 +5,7 @@
 #include <cstdint>
 #include <memory>
 #include <mutex>
+#include <vector>
 
 #include "Palette.hpp"
 #include "Section.hpp"
@@ -13,6 +14,9 @@
 #include "types.hpp"
 
 class Dimension;
+namespace tile_entity {
+class TileEntity;
+}
 
 namespace world_storage {
 
@@ -26,6 +30,11 @@ inline Position convertPositionToChunkPosition(const Position &position)
     if (z < 0)
         z += 16;
     return {x, position.y, z};
+}
+
+inline Position convertChunkPositionToPosition(const Position2D &chunkPos, const Position &blockPos)
+{
+    return {chunkPos.x * 16 + blockPos.x, blockPos.y, chunkPos.z * 16 + blockPos.z};
 }
 
 // Heightmap
@@ -141,6 +150,55 @@ public:
      */
     void processRandomTick(uint32_t rts);
 
+    /**
+     * @brief Process a tick on the chunk
+     */
+    void tick();
+
+    /**
+     * @brief Get the Tile Entities object as a vector
+     *
+     * @return const std::unordered_map<Position, std::shared_ptr<TileEntity>>&
+     */
+    constexpr const std::unordered_map<Position, std::shared_ptr<tile_entity::TileEntity>> &getTileEntities() const { return _tileEntities; }
+
+    /**
+     * @brief Get the Tile Entity object at the given position
+     *
+     * @param pos The position of the Tile Entity
+     * @return const std::shared_ptr<TileEntity>
+     */
+    const std::shared_ptr<tile_entity::TileEntity> getTileEntity(const Position &pos) const;
+
+    /**
+     * @brief Get the Tile Entity object at the given position
+     *
+     * @param pos The position of the Tile Entity
+     * @return std::shared_ptr<TileEntity>
+     */
+    std::shared_ptr<tile_entity::TileEntity> getTileEntity(const Position &pos);
+
+    /**
+     * @brief Add a Tile Entity to the chunk
+     *
+     * @param std::shared_ptr<TileEntity>
+     */
+    void addTileEntity(std::shared_ptr<tile_entity::TileEntity> tileEntity);
+
+    /**
+     * @brief Remove a Tile Entity from the chunk
+     *
+     * @param pos The position of the Tile Entity
+     */
+    void removeTileEntity(const Position &pos);
+
+    /**
+     * @brief Get the Blocks To Be Updated object
+     *
+     * @return const std::vector<std::pair<Position, BlockId>>&
+     */
+    constexpr std::vector<std::pair<Position, BlockId>> &getBlocksToBeUpdated() { return _blocksToBeUpdated; }
+
     friend class Persistence;
 
 private:
@@ -177,6 +235,8 @@ private:
     GenerationState _currentState;
     std::mutex _generationLock;
     std::shared_ptr<Dimension> _dimension;
+    std::unordered_map<Position, std::shared_ptr<tile_entity::TileEntity>> _tileEntities;
+    std::vector<std::pair<Position, BlockId>> _blocksToBeUpdated;
 };
 
 } // namespace world_storage

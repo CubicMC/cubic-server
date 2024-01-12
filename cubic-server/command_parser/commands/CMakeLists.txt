@@ -38,4 +38,6 @@ target_sources (${CMAKE_PROJECT_NAME} PRIVATE
     Title.hpp
     TitleTimes.cpp
     TitleTimes.hpp
+    Armor.cpp
+    Armor.hpp
 )

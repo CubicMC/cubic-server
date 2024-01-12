@@ -10,7 +10,7 @@ SpecialTippedArrow::SpecialTippedArrow(const nlohmann::json &recipe):
     this->setValidity(false);
 }
 
-void SpecialTippedArrow::dump(void) const { LINFO("recipe special tipped arrow"); }
+void SpecialTippedArrow::dump(void) const { LTRACE("recipe special tipped arrow"); }
 
-std::unique_ptr<Recipe> SpecialTippedArrow::create(const nlohmann::json &recipe) { return (std::make_unique<SpecialTippedArrow>(SpecialTippedArrow(recipe))); }
+std::shared_ptr<Recipe> SpecialTippedArrow::create(const nlohmann::json &recipe) { return (std::make_shared<SpecialTippedArrow>(SpecialTippedArrow(recipe))); }
 } // namespace Recipe

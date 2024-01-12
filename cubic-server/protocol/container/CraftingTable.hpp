@@ -1,7 +1,6 @@
 #ifndef PROTOCOL_WINDOW_CRAFTING_HPP
 #define PROTOCOL_WINDOW_CRAFTING_HPP
 
-#include "Player.hpp"
 #include "protocol/container/Container.hpp"
 #include <cstdint>
 
@@ -14,12 +13,14 @@ constexpr const int16_t CRAFTINGTABLE_CRAFTING_GRID_OFFSET = CRAFTINGTABLE_CRAFT
 constexpr const int16_t CRAFTINGTABLE_INVENTORY_OFFSET = CRAFTINGTABLE_CRAFTED_ITEM_SIZE + CRAFTINGTABLE_CRAFTING_GRID_3X3;
 constexpr const int16_t CRAFTINGTABLE_HOTBAR_OFFSET = CRAFTINGTABLE_CRAFTED_ITEM_SIZE + CRAFTINGTABLE_CRAFTING_GRID_3X3 + CRAFTINGTABLE_INVENTORY_SIZE;
 
+class Player;
+
 namespace protocol::container {
 // Note that this is different from inventory items stored in a player.dat file.
 // This may help: https://gist.github.com/459a1691c3dd751db160
 class CraftingTable : public Container {
 public:
-    explicit CraftingTable(Player &player);
+    explicit CraftingTable(std::weak_ptr<Player> player);
     virtual ~CraftingTable() = default;
 
     protocol::Slot &at(int16_t index) override;

@@ -10,7 +10,7 @@ SpecialArmorDye::SpecialArmorDye(const nlohmann::json &recipe):
     this->setValidity(false);
 }
 
-void SpecialArmorDye::dump(void) const { LINFO("recipe special armor dye"); }
+void SpecialArmorDye::dump(void) const { LTRACE("recipe special armor dye"); }
 
-std::unique_ptr<Recipe> SpecialArmorDye::create(const nlohmann::json &recipe) { return (std::make_unique<SpecialArmorDye>(SpecialArmorDye(recipe))); }
+std::shared_ptr<Recipe> SpecialArmorDye::create(const nlohmann::json &recipe) { return (std::make_shared<SpecialArmorDye>(SpecialArmorDye(recipe))); }
 } // namespace Recipe

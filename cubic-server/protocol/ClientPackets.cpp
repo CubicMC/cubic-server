@@ -170,6 +170,21 @@ std::unique_ptr<std::vector<uint8_t>> protocol::createEntityAnimation(EntityAnim
     return packet;
 }
 
+std::unique_ptr<std::vector<uint8_t>> protocol::createBlockEntityData(const BlockEntityData &in)
+{
+    std::vector<uint8_t> payload;
+    // clang-format off
+    serialize(payload,
+        in.location, addPosition,
+        in.type, addVarInt
+    );
+    addNBT((std::vector<uint8_t> &)payload, (nbt_tag_t *)in.nbtData);
+    // clang-format on
+    auto packet = std::make_unique<std::vector<uint8_t>>();
+    finalize(*packet, payload, ClientPacketID::BlockEntityData);
+    return packet;
+}
+
 std::unique_ptr<std::vector<uint8_t>> protocol::createBlockUpdate(const BlockUpdate &in)
 {
     std::vector<uint8_t> payload;
@@ -238,6 +253,21 @@ std::unique_ptr<std::vector<uint8_t>> protocol::createSetContainerContent(const 
     // clang-format on
     auto packet = std::make_unique<std::vector<uint8_t>>();
     finalize(*packet, payload, ClientPacketID::SetContainerContent);
+    return packet;
+}
+
+std::unique_ptr<std::vector<uint8_t>> protocol::createSetContainerProperty(const SetContainerProperty &in)
+{
+    std::vector<uint8_t> payload;
+    // clang-format off
+    serialize(payload,
+        in.windowId, addByte,
+        in.property, addShort,
+        in.value, addShort
+    );
+    // clang-format on
+    auto packet = std::make_unique<std::vector<uint8_t>>();
+    finalize(*packet, payload, ClientPacketID::SetContainerProperty);
     return packet;
 }
 

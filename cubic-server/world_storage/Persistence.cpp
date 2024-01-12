@@ -27,29 +27,6 @@
 #include <vector>
 #include <zlib.h>
 
-// TODO(huntears): Add better error messages
-#define GET_VALUE(t, type_accessor, dst, src, root)    \
-    do {                                               \
-        auto *__tmp = nbt_tag_compound_get(root, src); \
-        assert(__tmp);                                 \
-        assert(__tmp->type == t);                      \
-        dest.dst = __tmp->type_accessor.value;         \
-    } while (0)
-
-#define GET_VALUE_BYTE(dst, src, root) GET_VALUE(NBT_TYPE_BYTE, tag_byte, dst, src, root)
-#define GET_VALUE_INT(dst, src, root) GET_VALUE(NBT_TYPE_INT, tag_int, dst, src, root)
-#define GET_VALUE_SHORT(dst, src, root) GET_VALUE(NBT_TYPE_SHORT, tag_short, dst, src, root)
-#define GET_VALUE_LONG(dst, src, root) GET_VALUE(NBT_TYPE_LONG, tag_long, dst, src, root)
-#define GET_VALUE_FLOAT(dst, src, root) GET_VALUE(NBT_TYPE_FLOAT, tag_float, dst, src, root)
-#define GET_VALUE_DOUBLE(dst, src, root) GET_VALUE(NBT_TYPE_DOUBLE, tag_double, dst, src, root)
-#define GET_VALUE_STRING(dst, src, root)                                         \
-    do {                                                                         \
-        auto *__tmp = nbt_tag_compound_get(root, src);                           \
-        assert(__tmp);                                                           \
-        assert(__tmp->type == NBT_TYPE_STRING);                                  \
-        dest.dst = std::string(__tmp->tag_string.value, __tmp->tag_string.size); \
-    } while (0)
-
 #define GET_VALUE_TO(t, type_accessor, dst, src, root, dstroot) \
     do {                                                        \
         auto *__tmp = nbt_tag_compound_get(root, src);          \
@@ -167,27 +144,27 @@ void Persistence::loadLevelData(LevelData &dest)
     assert(data->type == NBT_TYPE_COMPOUND);
 
     // TODO(huntears): Find a better way to map the values
-    GET_VALUE_DOUBLE(borderCenterX, "BorderCenterX", data);
-    GET_VALUE_DOUBLE(borderCenterZ, "BorderCenterZ", data);
-    GET_VALUE_DOUBLE(borderDamagePerBlock, "BorderDamagePerBlock", data);
-    GET_VALUE_DOUBLE(borderSafeZone, "BorderSafeZone", data);
-    GET_VALUE_DOUBLE(borderSize, "BorderSize", data);
-    GET_VALUE_DOUBLE(borderSizeLerpTarget, "BorderSizeLerpTarget", data);
-    GET_VALUE_LONG(borderSizeLerpTime, "BorderSizeLerpTime", data);
-    GET_VALUE_DOUBLE(borderWarningBlocks, "BorderWarningBlocks", data);
-    GET_VALUE_DOUBLE(borderWarningTime, "BorderWarningTime", data);
-    GET_VALUE_INT(dataVersion, "DataVersion", data);
-    GET_VALUE_LONG(dayTime, "DayTime", data);
-    GET_VALUE_BYTE(difficulty, "Difficulty", data);
-    GET_VALUE_BYTE(difficultyLocked, "DifficultyLocked", data);
-    GET_VALUE_INT(gameType, "GameType", data);
-    GET_VALUE_LONG(lastPlayed, "LastPlayed", data);
-    GET_VALUE_STRING(levelName, "LevelName", data);
-    GET_VALUE_FLOAT(spawnAngle, "SpawnAngle", data);
-    GET_VALUE_INT(spawnX, "SpawnX", data);
-    GET_VALUE_INT(spawnY, "SpawnY", data);
-    GET_VALUE_INT(spawnZ, "SpawnZ", data);
-    GET_VALUE_LONG(time, "Time", data);
+    GET_VALUE_DOUBLE(dest.borderCenterX, "BorderCenterX", data);
+    GET_VALUE_DOUBLE(dest.borderCenterZ, "BorderCenterZ", data);
+    GET_VALUE_DOUBLE(dest.borderDamagePerBlock, "BorderDamagePerBlock", data);
+    GET_VALUE_DOUBLE(dest.borderSafeZone, "BorderSafeZone", data);
+    GET_VALUE_DOUBLE(dest.borderSize, "BorderSize", data);
+    GET_VALUE_DOUBLE(dest.borderSizeLerpTarget, "BorderSizeLerpTarget", data);
+    GET_VALUE_LONG(dest.borderSizeLerpTime, "BorderSizeLerpTime", data);
+    GET_VALUE_DOUBLE(dest.borderWarningBlocks, "BorderWarningBlocks", data);
+    GET_VALUE_DOUBLE(dest.borderWarningTime, "BorderWarningTime", data);
+    GET_VALUE_INT(dest.dataVersion, "DataVersion", data);
+    GET_VALUE_LONG(dest.dayTime, "DayTime", data);
+    GET_VALUE_BYTE(dest.difficulty, "Difficulty", data);
+    GET_VALUE_BYTE(dest.difficultyLocked, "DifficultyLocked", data);
+    GET_VALUE_INT(dest.gameType, "GameType", data);
+    GET_VALUE_LONG(dest.lastPlayed, "LastPlayed", data);
+    GET_VALUE_STRING(dest.levelName, "LevelName", data);
+    GET_VALUE_FLOAT(dest.spawnAngle, "SpawnAngle", data);
+    GET_VALUE_INT(dest.spawnX, "SpawnX", data);
+    GET_VALUE_INT(dest.spawnY, "SpawnY", data);
+    GET_VALUE_INT(dest.spawnZ, "SpawnZ", data);
+    GET_VALUE_LONG(dest.time, "Time", data);
 
     {
         // const auto __tmpCompound = getConstElement<nbt::Compound, nbt::TagType::Compound>(data, "Version");
@@ -201,9 +178,9 @@ void Persistence::loadLevelData(LevelData &dest)
         GET_VALUE_TO_BYTE(snapshot, "Snapshot", __tmpCompound, dest.mcVersion);
     }
 
-    GET_VALUE_INT(wanderingTraderSpawnChance, "WanderingTraderSpawnChance", data);
-    GET_VALUE_INT(wanderingTraderSpawnDelay, "WanderingTraderSpawnDelay", data);
-    GET_VALUE_BYTE(wasModded, "WasModded", data);
+    GET_VALUE_INT(dest.wanderingTraderSpawnChance, "WanderingTraderSpawnChance", data);
+    GET_VALUE_INT(dest.wanderingTraderSpawnDelay, "WanderingTraderSpawnDelay", data);
+    GET_VALUE_BYTE(dest.wasModded, "WasModded", data);
 
     {
         auto *__tmpCompound = nbt_tag_compound_get(data, "WorldGenSettings");
@@ -215,15 +192,15 @@ void Persistence::loadLevelData(LevelData &dest)
         GET_VALUE_TO_LONG(seed, "seed", __tmpCompound, dest.worldGenSettings);
     }
 
-    GET_VALUE_BYTE(allowCommands, "allowCommands", data);
-    GET_VALUE_INT(clearWeatherTime, "clearWeatherTime", data);
-    GET_VALUE_BYTE(hardcore, "hardcore", data);
-    GET_VALUE_BYTE(initialized, "initialized", data);
-    GET_VALUE_INT(rainTime, "rainTime", data);
-    GET_VALUE_BYTE(raining, "raining", data);
-    GET_VALUE_INT(thunderTime, "thunderTime", data);
-    GET_VALUE_BYTE(thundering, "thundering", data);
-    GET_VALUE_INT(version, "version", data);
+    GET_VALUE_BYTE(dest.allowCommands, "allowCommands", data);
+    GET_VALUE_INT(dest.clearWeatherTime, "clearWeatherTime", data);
+    GET_VALUE_BYTE(dest.hardcore, "hardcore", data);
+    GET_VALUE_BYTE(dest.initialized, "initialized", data);
+    GET_VALUE_INT(dest.rainTime, "rainTime", data);
+    GET_VALUE_BYTE(dest.raining, "raining", data);
+    GET_VALUE_INT(dest.thunderTime, "thunderTime", data);
+    GET_VALUE_BYTE(dest.thundering, "thundering", data);
+    GET_VALUE_INT(dest.version, "version", data);
 }
 
 LevelData Persistence::loadLevelData()
@@ -261,18 +238,18 @@ void Persistence::loadPlayerData(u128 uuid, PlayerData &dest)
     assert(root->type == NBT_TYPE_COMPOUND);
 
     // TODO(huntears): Map the values to the destination object
-    GET_VALUE_FLOAT(absorptionAmount, "AbsorptionAmount", root);
-    GET_VALUE_SHORT(air, "Air", root);
-    GET_VALUE_INT(dataVersion, "DataVersion", root);
-    GET_VALUE_SHORT(deathTime, "DeathTime", root);
-    GET_VALUE_STRING(dimension, "Dimension", root);
-    GET_VALUE_FLOAT(fallDistance, "FallDistance", root);
-    GET_VALUE_BYTE(fallFlying, "FallFlying", root);
-    GET_VALUE_SHORT(fire, "Fire", root);
-    GET_VALUE_FLOAT(health, "Health", root);
-    GET_VALUE_INT(hurtByTimestamp, "HurtByTimestamp", root);
-    GET_VALUE_SHORT(hurtTime, "HurtTime", root);
-    GET_VALUE_BYTE(invulnerable, "Invulnerable", root);
+    GET_VALUE_FLOAT(dest.absorptionAmount, "AbsorptionAmount", root);
+    GET_VALUE_SHORT(dest.air, "Air", root);
+    GET_VALUE_INT(dest.dataVersion, "DataVersion", root);
+    GET_VALUE_SHORT(dest.deathTime, "DeathTime", root);
+    GET_VALUE_STRING(dest.dimension, "Dimension", root);
+    GET_VALUE_FLOAT(dest.fallDistance, "FallDistance", root);
+    GET_VALUE_BYTE(dest.fallFlying, "FallFlying", root);
+    GET_VALUE_SHORT(dest.fire, "Fire", root);
+    GET_VALUE_FLOAT(dest.health, "Health", root);
+    GET_VALUE_INT(dest.hurtByTimestamp, "HurtByTimestamp", root);
+    GET_VALUE_SHORT(dest.hurtTime, "HurtTime", root);
+    GET_VALUE_BYTE(dest.invulnerable, "Invulnerable", root);
     {
         auto *__tmpList = nbt_tag_compound_get(root, "Motion");
         assert(__tmpList);
@@ -283,8 +260,8 @@ void Persistence::loadPlayerData(u128 uuid, PlayerData &dest)
         dest.motion.y = __tmpList->tag_list.value[1]->tag_double.value;
         dest.motion.z = __tmpList->tag_list.value[2]->tag_double.value;
     }
-    GET_VALUE_BYTE(onGround, "OnGround", root);
-    GET_VALUE_INT(portalCooldown, "PortalCooldown", root);
+    GET_VALUE_BYTE(dest.onGround, "OnGround", root);
+    GET_VALUE_INT(dest.portalCooldown, "PortalCooldown", root);
     {
         auto *__tmpList = nbt_tag_compound_get(root, "Pos");
         assert(__tmpList);
@@ -304,9 +281,9 @@ void Persistence::loadPlayerData(u128 uuid, PlayerData &dest)
         dest.rotation.yaw = __tmpList->tag_list.value[0]->tag_float.value;
         dest.rotation.pitch = __tmpList->tag_list.value[1]->tag_float.value;
     }
-    GET_VALUE_INT(score, "Score", root);
-    GET_VALUE_INT(selectedItemSlot, "SelectedItemSlot", root);
-    GET_VALUE_SHORT(sleepTimer, "SleepTimer", root);
+    GET_VALUE_INT(dest.score, "Score", root);
+    GET_VALUE_INT(dest.selectedItemSlot, "SelectedItemSlot", root);
+    GET_VALUE_SHORT(dest.sleepTimer, "SleepTimer", root);
     {
         auto *__tmpArray = nbt_tag_compound_get(root, "Rotation");
         assert(__tmpArray);
@@ -316,16 +293,16 @@ void Persistence::loadPlayerData(u128 uuid, PlayerData &dest)
         dest.uuid.least = *(uint64_t *) &__tmpArray->tag_int_array.value[2];
         dest.uuid.swapEndianness();
     }
-    GET_VALUE_INT(xpLevel, "XpLevel", root);
-    GET_VALUE_FLOAT(xpP, "XpP", root);
-    GET_VALUE_INT(xpSeed, "XpSeed", root);
-    GET_VALUE_INT(xpTotal, "XpTotal", root);
-    GET_VALUE_FLOAT(foodExhaustionLevel, "foodExhaustionLevel", root);
-    GET_VALUE_INT(foodLevel, "foodLevel", root);
-    GET_VALUE_FLOAT(foodSaturationLevel, "foodSaturationLevel", root);
-    GET_VALUE_INT(foodTickTimer, "foodTickTimer", root);
-    GET_VALUE_INT(playerGameType, "playerGameType", root);
-    GET_VALUE_BYTE(seenCredits, "seenCredits", root);
+    GET_VALUE_INT(dest.xpLevel, "XpLevel", root);
+    GET_VALUE_FLOAT(dest.xpP, "XpP", root);
+    GET_VALUE_INT(dest.xpSeed, "XpSeed", root);
+    GET_VALUE_INT(dest.xpTotal, "XpTotal", root);
+    GET_VALUE_FLOAT(dest.foodExhaustionLevel, "foodExhaustionLevel", root);
+    GET_VALUE_INT(dest.foodLevel, "foodLevel", root);
+    GET_VALUE_FLOAT(dest.foodSaturationLevel, "foodSaturationLevel", root);
+    GET_VALUE_INT(dest.foodTickTimer, "foodTickTimer", root);
+    GET_VALUE_INT(dest.playerGameType, "playerGameType", root);
+    GET_VALUE_BYTE(dest.seenCredits, "seenCredits", root);
 }
 
 PlayerData Persistence::loadPlayerData(u128 uuid)

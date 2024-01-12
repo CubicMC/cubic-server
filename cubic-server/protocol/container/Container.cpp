@@ -45,7 +45,7 @@ void Container::onClick(std::shared_ptr<Player> player, int16_t index, uint8_t b
     bool isCreative = player->getGamemode() == player_attributes::Gamemode::Creative;
 
     switch (mode) {
-    case ClickMode::Click:
+    case (int32_t) ClickMode::Click:
         if (index == -999) {
             if (!_cursor.present)
                 break;
@@ -66,16 +66,16 @@ void Container::onClick(std::shared_ptr<Player> player, int16_t index, uint8_t b
         }
         break;
 
-    case ClickMode::ShiftClick:
+    case (int32_t) ClickMode::ShiftClick:
         // TODO: I can't do this here, I don't know what diff
         break;
 
     // numbers and offhand swap
-    case ClickMode::Keys:
+    case (int32_t) ClickMode::Keys:
         // TODO: I con't do this here, I don't know what diff
         break;
 
-    case ClickMode::MiddleClick:
+    case (int32_t) ClickMode::MiddleClick:
         LDEBUG("Middle click {} {}", _cursor.itemID, at(index).itemID);
         if (!isCreative)
             break;
@@ -83,7 +83,7 @@ void Container::onClick(std::shared_ptr<Player> player, int16_t index, uint8_t b
         _cursor.itemCount = 64;
         break;
 
-    case ClickMode::DropButton:
+    case (int32_t) ClickMode::DropButton:
         // We need this because of a bug in the client
         // The client sends a drop packet when you click outside of the inventory instead of a click packet
         if (index == -999)
@@ -100,31 +100,31 @@ void Container::onClick(std::shared_ptr<Player> player, int16_t index, uint8_t b
         }
         break;
 
-    case ClickMode::Drag:
+    case (int32_t) ClickMode::Drag:
         // Start drag
-        if (buttonId == 0 && index == -999 && _state == State::Normal) {
+        if (buttonId == 0 && index == -999 && _state == (int32_t) State::Normal) {
             if (!_cursor.present)
                 break;
-            _state = State::LeftDrag;
-        } else if (buttonId == 4 && index == -999 && _state == State::Normal) {
+            _state = (int32_t) State::LeftDrag;
+        } else if (buttonId == 4 && index == -999 && _state == (int32_t) State::Normal) {
             if (!_cursor.present)
                 break;
-            _state = State::RightDrag;
-        } else if (buttonId == 8 && index == -999 && _state == State::Normal && isCreative) {
+            _state = (int32_t) State::RightDrag;
+        } else if (buttonId == 8 && index == -999 && _state == (int32_t) State::Normal && isCreative) {
             if (!_cursor.present)
                 break;
-            _state = State::MiddleDrag;
+            _state = (int32_t) State::MiddleDrag;
         }
 
         // Dragging
-        else if (buttonId == 1 && _state == State::LeftDrag) {
+        else if (buttonId == 1 && _state == (int32_t) State::LeftDrag) {
             if (!_cursor.present)
                 break;
             LDEBUG("Dragging left click with update size {}", updates.size());
         }
 
         // End drag
-        else if (buttonId == 2 && index == -999 && _state == State::LeftDrag) {
+        else if (buttonId == 2 && index == -999 && _state == (int32_t) State::LeftDrag) {
             LDEBUG("End left drag with update size {}", updates.size());
             int16_t rest = _cursor.itemCount % updates.size();
             int16_t addedStack = _cursor.itemCount / updates.size();
@@ -149,13 +149,13 @@ void Container::onClick(std::shared_ptr<Player> player, int16_t index, uint8_t b
             else
                 _cursor.reset();
 
-            _state = State::Normal;
+            _state = (int32_t) State::Normal;
         } else
             // Something went wrong (packet out of order or something)
-            _state = State::Normal;
+            _state = (int32_t) State::Normal;
         break;
 
-    case ClickMode::DoubleClick:
+    case (int32_t) ClickMode::DoubleClick:
         if (at(index).present || _cursor.itemCount == 64 || !_cursor.present)
             break;
 

@@ -75,6 +75,7 @@ Server::Server():
     _commands.emplace_back(std::make_unique<command_parser::Title>());
     _commands.emplace_back(std::make_unique<command_parser::Subtitle>());
     _commands.emplace_back(std::make_unique<command_parser::TitleTimes>());
+    _commands.emplace_back(std::make_unique<command_parser::Armor>());
 }
 
 Server::~Server() { }
@@ -126,6 +127,9 @@ void Server::launch(const configuration::ConfigHandler &config)
 
     // Initialize loot tables
     _lootTables.initialize();
+
+    // Initialize recipes
+    _recipes.initialize();
 
     // Initialize default world group
     auto defaultChat = std::make_shared<Chat>();

@@ -5,4 +5,6 @@ target_sources (${CMAKE_PROJECT_NAME} PRIVATE
     CraftingTable.hpp
     Container.cpp
     Container.hpp
+    Furnace.cpp
+    Furnace.hpp
 )

@@ -8,8 +8,11 @@
 #include "logging/logging.hpp"
 #include "math/Vector3.hpp"
 #include "protocol/ClientPackets.hpp"
+#include "tiles-entities/TileEntity.hpp"
+#include "tiles-entities/TileEntityList.hpp"
 #include "types.hpp"
 #include "world_storage/ChunkColumn.hpp"
+#include "world_storage/Level.hpp"
 #include <chrono>
 #include <cstdint>
 #include <memory>
@@ -55,6 +58,22 @@ void Dimension::tick()
             if (!chunk.isReady())
                 continue;
             chunk.processRandomTick(rts);
+        }
+    }
+    for (auto &[pos, chunk] : _level.getChunkColumns()) {
+        if (!chunk.isReady())
+            continue;
+        chunk.tick();
+        if (auto &blocks = chunk.getBlocksToBeUpdated(); !blocks.empty()) {
+            std::lock_guard _(_playersMutex);
+            for (auto player : _players) {
+                while (!blocks.empty()) {
+                    auto [pos, id] = blocks.back();
+                    LTRACE("Sending block update to player {} for block {} with id {}", player->getUsername(), pos, id);
+                    player->sendBlockUpdate({pos, id});
+                    blocks.pop_back();
+                }
+            }
         }
     }
     {
@@ -336,10 +355,63 @@ void Dimension::updateBlock(Position position, int32_t id)
 
     auto chunkPosition = world_storage::convertPositionToChunkPosition(position);
     chunk.updateBlock(chunkPosition, id);
+    std::shared_ptr<const tile_entity::TileEntity> tileEntity = nullptr;
+    if (id == 0)
+        chunk.removeTileEntity(position);
+    else {
+        using namespace tile_entity;
+        if (convertBlockNameToBlockEntityType(GLOBAL_PALETTE.fromProtocolIdToBlock(id).name) != TileEntityType::UnknownType) {
+            chunk.addTileEntity(createTileEntity(id, position));
+            tileEntity = chunk.getTileEntity(position);
+        }
+    }
     std::lock_guard _(_playersMutex);
     for (auto player : _players) {
         player->sendBlockUpdate({position, id});
+        if (tileEntity)
+            player->sendBlockEntityData(tileEntity->toBlockEntityData());
+        else
+            player->sendBlockEntityData({position, -1, nullptr});
     }
+}
+
+void Dimension::addTileEntity(const Position &position, BlockId type)
+{
+    auto &chunk = this->_level.getChunkColumnFromBlockPos(position.x, position.z);
+
+    auto chunkPosition = world_storage::convertPositionToChunkPosition(position);
+    chunk.updateBlock(chunkPosition, type);
+    chunk.addTileEntity(tile_entity::createTileEntity(type, position));
+    for (auto player : _players) {
+        player->sendBlockUpdate({position, type});
+        player->sendBlockEntityData(chunk.getTileEntity(position)->toBlockEntityData());
+    }
+}
+
+void Dimension::removeTileEntity(const Position &position)
+{
+    auto &chunk = this->_level.getChunkColumnFromBlockPos(position.x, position.z);
+
+    auto chunkPosition = world_storage::convertPositionToChunkPosition(position);
+
+    auto type = chunk.getBlock(chunkPosition);
+    chunk.updateBlock(chunkPosition, 0);
+    chunk.removeTileEntity(position);
+    for (auto player : _players) {
+        player->sendBlockUpdate({position, type});
+    }
+}
+
+std::shared_ptr<tile_entity::TileEntity> Dimension::getTileEntity(const Position &position)
+{
+    auto &chunk = this->_level.getChunkColumnFromBlockPos(position.x, position.z);
+    return chunk.getTileEntity(position);
+}
+
+std::shared_ptr<const tile_entity::TileEntity> Dimension::getTileEntity(const Position &position) const
+{
+    auto &chunk = this->_level.getChunkColumnFromBlockPos(position.x, position.z);
+    return chunk.getTileEntity(position);
 }
 
 void Dimension::updateEntityAttributes(const protocol::UpdateAttributes &attributes)

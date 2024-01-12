@@ -10,8 +10,10 @@
 #include "generation/overworld.hpp"
 #include "logging/logging.hpp"
 #include "nbt.hpp"
+#include "tiles-entities/TileEntity.hpp"
 #include "types.hpp"
 #include "world_storage/Section.hpp"
+#include <algorithm>
 #include <cstdlib>
 #include <memory>
 
@@ -735,4 +737,36 @@ void ChunkColumn::processRandomTick(uint32_t rts)
     }
 }
 
+void ChunkColumn::tick()
+{
+    for (auto &[_, tileEntity] : _tileEntities) {
+        tileEntity->tick();
+        if (tileEntity->needBlockUpdate()) {
+            updateBlock(world_storage::convertPositionToChunkPosition(tileEntity->position), tileEntity->getBlockId());
+            _blocksToBeUpdated.push_back({tileEntity->position, tileEntity->getBlockId()});
+        }
+    }
+}
+
+const std::shared_ptr<tile_entity::TileEntity> ChunkColumn::getTileEntity(const Position &pos) const
+{
+    if (_tileEntities.contains(pos))
+        return _tileEntities.at(pos);
+    return nullptr;
+}
+
+std::shared_ptr<tile_entity::TileEntity> ChunkColumn::getTileEntity(const Position &pos)
+{
+    if (_tileEntities.contains(pos))
+        return _tileEntities.at(pos);
+    return nullptr;
+}
+
+void ChunkColumn::addTileEntity(std::shared_ptr<tile_entity::TileEntity> tileEntity) { _tileEntities.emplace(std::make_pair(tileEntity->position, std::move(tileEntity))); }
+
+void ChunkColumn::removeTileEntity(const Position &pos)
+{
+    if (_tileEntities.contains(pos))
+        _tileEntities.erase(pos);
+}
 } // namespace world_storage
