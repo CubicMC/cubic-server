@@ -45,7 +45,9 @@ public:
     Section(Section &&section) noexcept;
 
     void updateBlock(const Position &pos, int32_t block);
+    void updateBlock(uint64_t idx, int32_t block);
     void setBlock(const Position &pos, int32_t block);
+    void setBlock(uint64_t idx, int32_t block);
 
     void updateBiome(const Position &pos, int32_t biome);
     void setBiome(const Position &pos, int32_t biome);

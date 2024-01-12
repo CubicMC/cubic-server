@@ -199,11 +199,9 @@ void Inventory::onClick(std::shared_ptr<Player> player, int16_t index, uint8_t b
             if (this->_armor[armorPos].itemID == ITEM_CONVERTER.fromItemToProtocolId(gear.item)) {
                 defense += gear.protectionLevel;
                 toughness += gear.toughnessLevel;
-                LINFO("{} equiped {}", player->getUsername(), gear.item);
             }
         }
     }
     player->setDefense(defense);
     player->setToughness(toughness);
-    LINFO("{}'s defense is now {} ({} toughness)", player->getUsername(), defense, toughness);
 }

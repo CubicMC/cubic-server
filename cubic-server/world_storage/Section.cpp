@@ -1,4 +1,5 @@
 #include "Section.hpp"
+#include "blocks.hpp"
 #include "logging/logging.hpp"
 #include "types.hpp"
 #include "utility/PseudoRandomGenerator.hpp"
@@ -37,12 +38,26 @@ void world_storage::Section::updateBlock(const Position &pos, int32_t block)
     this->setBlock(pos, block);
 }
 
+void world_storage::Section::updateBlock(uint64_t idx, int32_t block)
+{
+    if (idx >= SECTION_3D_SIZE)
+        throw std::out_of_range("Position is out of range");
+    // TODO: Update the blocklight, heightmap, etc...
+    this->setBlock(idx, block);
+}
+
 void world_storage::Section::setBlock(const Position &pos, int32_t block)
 {
     if (pos >= SECTION_WIDTH || pos < 0)
         throw std::out_of_range("Position is out of range");
 
-    auto idx = calculateSectionBlockIdx(pos);
+    this->setBlock(calculateSectionBlockIdx(pos), block);
+}
+
+void world_storage::Section::setBlock(uint64_t idx, int32_t block)
+{
+    if (idx >= SECTION_3D_SIZE)
+        throw std::out_of_range("Position is out of range");
 
     auto oldBits = this->_blockPalette.getBits();
     // if (this->_blocks.canContainData())
@@ -213,4 +228,20 @@ void world_storage::Section::processRandomTick(uint32_t rts, Position2D chunkPos
 void world_storage::Section::_processBlockRandomTick(uint32_t blockIndex, Position2D chunkPos)
 {
     // TODO(huntears): Add the randomtick events here (Grass/fire spreading, crops growth, etc...)
+    if (this->getBlockLight(blockIndex) < 10)
+        return;
+    if (Blocks::Wheat::toProtocol(Blocks::Wheat::Properties::Age::ZERO))
+        this->updateBlock(blockIndex, Blocks::Wheat::toProtocol(Blocks::Wheat::Properties::Age::ONE));
+    else if (Blocks::Wheat::toProtocol(Blocks::Wheat::Properties::Age::ONE))
+        this->updateBlock(blockIndex, Blocks::Wheat::toProtocol(Blocks::Wheat::Properties::Age::TWO));
+    else if (Blocks::Wheat::toProtocol(Blocks::Wheat::Properties::Age::TWO))
+        this->updateBlock(blockIndex, Blocks::Wheat::toProtocol(Blocks::Wheat::Properties::Age::THREE));
+    else if (Blocks::Wheat::toProtocol(Blocks::Wheat::Properties::Age::THREE))
+        this->updateBlock(blockIndex, Blocks::Wheat::toProtocol(Blocks::Wheat::Properties::Age::FOUR));
+    else if (Blocks::Wheat::toProtocol(Blocks::Wheat::Properties::Age::FOUR))
+        this->updateBlock(blockIndex, Blocks::Wheat::toProtocol(Blocks::Wheat::Properties::Age::FIVE));
+    else if (Blocks::Wheat::toProtocol(Blocks::Wheat::Properties::Age::FIVE))
+        this->updateBlock(blockIndex, Blocks::Wheat::toProtocol(Blocks::Wheat::Properties::Age::SIX));
+    else if (Blocks::Wheat::toProtocol(Blocks::Wheat::Properties::Age::SIX))
+        this->updateBlock(blockIndex, Blocks::Wheat::toProtocol(Blocks::Wheat::Properties::Age::SEVEN));
 }

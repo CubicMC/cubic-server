@@ -74,6 +74,7 @@ Player::Player(std::weak_ptr<Client> cli, std::shared_ptr<Dimension> dim, u128 u
     this->setOperator(Server::getInstance()->permissions.isOperator(username));
     this->_inventory->playerInventory().at(12) = protocol::Slot(true, 734, 42);
     this->_inventory->playerInventory().at(13) = protocol::Slot(true, 1, 12);
+    this->_inventory->playerInventory().at(15) = protocol::Slot(true, 788, 64);
 
     // {display:{Name:'[{"text":"Cubic","italic":false}]'}}
     constexpr std::string_view NAME = "[{\"text\":\"Cubic\",\"italic\":false}]";
@@ -153,7 +154,6 @@ void Player::setGamemode(player_attributes::Gamemode gamemode)
     }
     this->setDefense(defense);
     this->setToughness(toughness);
-    LINFO("{}'s defense is now {} ({} toughness)", this->getUsername(), defense, toughness);
 }
 
 void Player::setOperator(const bool isOp) { this->_isOperator = isOp; }
@@ -1276,16 +1276,20 @@ void Player::_onUseItemOn(protocol::UseItemOn &pck)
     if (this->_inventory->hotbar().at(this->_heldItem).itemID == ITEM_CONVERTER.fromItemToProtocolId("minecraft:wheat_seeds")) {
         Position below = {pck.location.x, pck.location.y - 1, pck.location.z};
 
-        if (this->getDimension()->getBlock(below) == Blocks::Farmland::toProtocol(Blocks::Farmland::Properties::Moisture::ZERO) ||
+        if (this->getDimension()->getBlock(pck.location) == Blocks::Air::toProtocol() && (
+            this->getDimension()->getBlock(below) == Blocks::Farmland::toProtocol(Blocks::Farmland::Properties::Moisture::ZERO) ||
             this->getDimension()->getBlock(below) == Blocks::Farmland::toProtocol(Blocks::Farmland::Properties::Moisture::ONE) ||
             this->getDimension()->getBlock(below) == Blocks::Farmland::toProtocol(Blocks::Farmland::Properties::Moisture::TWO) ||
             this->getDimension()->getBlock(below) == Blocks::Farmland::toProtocol(Blocks::Farmland::Properties::Moisture::THREE) ||
             this->getDimension()->getBlock(below) == Blocks::Farmland::toProtocol(Blocks::Farmland::Properties::Moisture::FOUR) ||
             this->getDimension()->getBlock(below) == Blocks::Farmland::toProtocol(Blocks::Farmland::Properties::Moisture::FIVE) ||
             this->getDimension()->getBlock(below) == Blocks::Farmland::toProtocol(Blocks::Farmland::Properties::Moisture::SIX) ||
-            this->getDimension()->getBlock(below) == Blocks::Farmland::toProtocol(Blocks::Farmland::Properties::Moisture::SEVEN)) {
+            this->getDimension()->getBlock(below) == Blocks::Farmland::toProtocol(Blocks::Farmland::Properties::Moisture::SEVEN))) {
+//            this->getDimension()->updateBlock(pck.location, Blocks::Stone::toProtocol());
             this->getDimension()->updateBlock(pck.location, Blocks::Wheat::toProtocol(Blocks::Wheat::Properties::Age::ZERO));
             this->_inventory->hotbar().at(this->_heldItem).takeOne();
+            LINFO("planted seeds!, {} at {}", Blocks::Wheat::toProtocol(Blocks::Wheat::Properties::Age::ZERO), pck.location);
+            return;
         }
     }
 
@@ -1300,6 +1304,8 @@ void Player::_onUseItemOn(protocol::UseItemOn &pck)
         }
         return;
     }
+    if (this->getDimension()->getBlock(pck.location) != Blocks::Air::toProtocol())
+        return;
     if (_inventory->hotbar().at(this->_heldItem).present)
         this->getDimension()->updateBlock(pck.location, GLOBAL_PALETTE.fromBlockToProtocolId(ITEM_CONVERTER.fromProtocolIdToItem(_inventory->hotbar().at(this->_heldItem).itemID)));
     if (_gamemode == player_attributes::Gamemode::Creative)
