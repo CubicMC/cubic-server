@@ -376,28 +376,21 @@ void Entity::teleportPlayerThroughPortal(std::shared_ptr<Dimension> currentDimen
             0, // Is flat
             0, // Copy metadata
             false, // Has death location
-            "overworld", // Dimension name
-            {
-                static_cast<long>(thisPlayer->_pos.x), // death X
-                static_cast<long>(thisPlayer->_pos.y), // death Y
-                static_cast<long>(thisPlayer->_pos.z) // death Z
-            }, // Position
         });
         thisPlayer->sendFeatureFlags({{"minecraft:vanilla"}});
         thisPlayer->sendChangeDifficulty({1, true});
         thisPlayer->sendPlayerAbilities({player_attributes::getAbilitiesByGamemode(thisPlayer->getGamemode()), 0.05, 0.1});
-        thisPlayer->sendSetHeldItem({4});
+        thisPlayer->sendSetHeldItem({thisPlayer->getHeldItem()});
         thisPlayer->sendUpdateRecipes({});
         thisPlayer->sendUpdateTags({});
         thisPlayer->sendEntityEvent({thisPlayer->_id, 24});
         thisPlayer->sendCommands({{}, 0});
         thisPlayer->sendUpdateRecipiesBook({});
-        thisPlayer->teleport({8.5, 70, 8.5});
         thisPlayer->sendServerData({false, "", false, "", false});
-        currentDimension->addEntity(this->dynamicSharedFromThis<Entity>());
-        currentDimension->addPlayer(thisPlayer);
+        nextDimension->addEntity(this->dynamicSharedFromThis<Entity>());
+        nextDimension->addPlayer(thisPlayer);
         thisPlayer->sendSetCenterChunk({0, 0});
-        auto renderDistance = currentDimension->getWorld()->getRenderDistance();
+        auto renderDistance = nextDimension->getWorld()->getRenderDistance();
         thisPlayer->sendChunkAndLightUpdate(0, 0);
         for (int32_t x = -renderDistance; x < renderDistance + 1; x++) {
             for (int32_t z = -renderDistance; z < renderDistance + 1; z++) {
@@ -414,7 +407,7 @@ void Entity::teleportPlayerThroughPortal(std::shared_ptr<Dimension> currentDimen
         thisPlayer->sendUpdateAdvancements({false, {}, {}, {}});
         thisPlayer->sendHealth();
         thisPlayer->sendSetExperience({0, 0, 0});
-        currentDimension->spawnPlayer(*thisPlayer);
-        currentDimension->getWorld()->getWorldGroup()->getScoreboard().sendScoreboardStatus(*thisPlayer);
+        nextDimension->spawnPlayer(*thisPlayer);
+        nextDimension->getWorld()->getWorldGroup()->getScoreboard().sendScoreboardStatus(*thisPlayer);
     }
 }
