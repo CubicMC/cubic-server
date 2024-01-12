@@ -168,9 +168,10 @@ void Entity::tick()
                 teleportPlayerThroughPortal(_dim);
                 _tickCounter = 0;
             }
-        } else {
-            teleportEntityThroughPortal(_dim);
         }
+        // else {
+        //     teleportEntityThroughPortal(_dim);
+        // }
     } else {
         _tickCounter = 0;
     }
