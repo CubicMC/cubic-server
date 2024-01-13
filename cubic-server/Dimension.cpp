@@ -75,21 +75,23 @@ void Dimension::tick()
             if (ent->getPosition().y < minYLevelForEntities)
                 idsToRemove.push_back(ent->getId());
         }
-        for (auto player : _players) {
-            player->sendRemoveEntities(idsToRemove);
+        if (!idsToRemove.empty()) {
+            for (auto player : _players) {
+                player->sendRemoveEntities(idsToRemove);
+            }
+            _entities.erase(
+                std::remove_if(
+                    _entities.begin(), _entities.end(),
+                    [&idsToRemove](const std::shared_ptr<Entity> ent) {
+                        int32_t entId = ent->getId();
+                        return std::find_if(idsToRemove.begin(), idsToRemove.end(), [entId](int32_t id) {
+                                   return id == entId;
+                               }) != idsToRemove.end();
+                    }
+                ),
+                _entities.end()
+            );
         }
-        _entities.erase(
-            std::remove_if(
-                _entities.begin(), _entities.end(),
-                [&idsToRemove](const std::shared_ptr<Entity> ent) {
-                    int32_t entId = ent->getId();
-                    return std::find_if(idsToRemove.begin(), idsToRemove.end(), [entId](int32_t id) {
-                               return id == entId;
-                           }) != idsToRemove.end();
-                }
-            ),
-            _entities.end()
-        );
     }
     uint32_t rts = CONFIG["randomtickspeed"].as<uint32_t>();
     if (rts != 0) {
