@@ -16,6 +16,7 @@
 #include "protocol/metadata.hpp"
 #include "types.hpp"
 #include "world_storage/ChunkColumn.hpp"
+#include "world_storage/Level.hpp"
 #include <memory>
 #include <optional>
 #include <utility>

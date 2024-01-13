@@ -95,7 +95,7 @@ void World::updateTime()
     }
 }
 
-void World::sendPlayerInfoAddPlayer(std::shared_ptr<Player> current)
+void World::sendPlayerInfoAddPlayer(Player *current)
 {
     // get list of players
     std::vector<protocol::PlayerInfoUpdate::Action> playersInfo;
@@ -176,7 +176,7 @@ void World::sendPlayerInfoAddPlayer(std::shared_ptr<Player> current)
     LDEBUG("Sent player info to {}", current->getUsername());
 }
 
-void World::sendPlayerInfoRemovePlayer(std::shared_ptr<const Player> current)
+void World::sendPlayerInfoRemovePlayer(const Player *current)
 {
     for (auto [_, dim] : _dimensions) {
         for (auto &player : dim->getPlayers()) {
