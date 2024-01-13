@@ -1365,7 +1365,7 @@ void Player::_onUseItemOn(protocol::UseItemOn &pck)
         }
         return;
     } else if (Items::FlintAndSteel *usedItem = std::get_if<Items::FlintAndSteel>(&item)) {
-        usedItem->onUse(this->getDimension(), pck.location, Items::UsabilityType::RightMouseClickUsable, (int32_t) pck.face);
+        usedItem->onUseOn(this->getDimension(), pck.location, Items::UsabilityType::RightMouseClickUsable, (int32_t) pck.face, *this);
         this->_inventory->hotbar().at(this->_heldItem).updateDamage();
         this->sendSetContainerSlot({this->_inventory, static_cast<int16_t>(this->_heldItem + HOTBAR_OFFSET)});
         return;
