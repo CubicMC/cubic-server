@@ -5,8 +5,9 @@
 
 class Arrow : public Entity {
 public:
-    Arrow(std::shared_ptr<Dimension> dim):
-        Entity(dim, EntityType::Arrow)
+    Arrow(std::shared_ptr<Dimension> dim, int32_t shotByEntity):
+        Entity(dim, EntityType::Arrow),
+        _shotByEntity(shotByEntity)
     {
     }
     ~Arrow() { }
@@ -21,6 +22,7 @@ public:
     void appendMetadataPacket(std::vector<uint8_t> &data) const override;
 
 private:
+    int32_t _shotByEntity;
 };
 
 #endif // CUBICSERVER_ENTITIES_ARROW_HPP

@@ -54,9 +54,9 @@ static Vector3<double> convertAnglesToHeadingVector(uint8_t yaw, uint8_t pitch)
 void Items::Bow::onUse(std::shared_ptr<Dimension> dim, Entity &user, UNUSED UsabilityType usage)
 {
     auto &entityRotation = user.getRotation();
-    auto arr = dim->makeEntity<Arrow>();
+    auto arr = dim->makeEntity<Arrow>(user.getId());
 
-    const double arrowSpeed = 24000.0f; // Close enough to vanilla
+    const double arrowSpeed = 20000.0f; // Close enough to vanilla
     const Vector3<double> directionVector = convertAnglesToHeadingVector(entityRotation.x, entityRotation.z);
     const Vector3<double> weightedVector = directionVector * arrowSpeed;
     const uint8_t arrowRotationSignedYaw = -*((int8_t *) &user.getRotation().x);
