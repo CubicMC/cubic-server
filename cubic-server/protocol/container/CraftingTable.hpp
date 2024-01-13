@@ -2,7 +2,10 @@
 #define PROTOCOL_WINDOW_CRAFTING_HPP
 
 #include "protocol/container/Container.hpp"
+#include "recipes/CraftingShaped.hpp"
+#include "recipes/CraftingShapeless.hpp"
 #include <cstdint>
+#include <variant>
 
 constexpr const int16_t CRAFTINGTABLE_CRAFTED_ITEM_SIZE = 1;
 constexpr const int16_t CRAFTINGTABLE_CRAFTING_GRID_3X3 = 9;
@@ -21,7 +24,7 @@ namespace protocol::container {
 class CraftingTable : public Container {
 public:
     explicit CraftingTable(std::weak_ptr<Player> player);
-    virtual ~CraftingTable() = default;
+    ~CraftingTable() = default;
 
     protocol::Slot &at(int16_t index) override;
     const protocol::Slot &at(int16_t index) const override;
@@ -33,6 +36,7 @@ public:
     bool canInsert(const protocol::Slot &slot) override;
 
     void onClick(std::shared_ptr<Player> player, int16_t index, uint8_t buttonId, uint8_t mode, const std::vector<protocol::ClickContainer::SlotWithIndex> &updates) override;
+    void close(UNUSED std::shared_ptr<Player> player);
 
     NODISCARD constexpr inline protocol::Slot &craftedItem() { return _craftedItem; }
     NODISCARD constexpr inline std::array<protocol::Slot, CRAFTINGTABLE_CRAFTING_GRID_3X3> &craftingGrid() { return _craftingGrid; }
@@ -50,6 +54,17 @@ private:
     std::array<protocol::Slot, CRAFTINGTABLE_INVENTORY_SIZE> &_playerInventory;
     std::array<protocol::Slot, CRAFTINGTABLE_HOTBAR_SIZE> &_hotbar;
     protocol::Slot &_offhand;
+
+public:
+    bool checkRecipe();
+    bool checkCraftingShaped(const std::shared_ptr<Recipe::CraftingShaped> craft);
+    bool checkCraftingShapeless(const std::shared_ptr<Recipe::CraftingShapeless> craft);
+
+private:
+    size_t getXCraftingOffset() const;
+    size_t getYCraftingOffset() const;
+    protocol::Slot craftOne();
+    int8_t maxCraftable() const;
 };
 
 } // namespace protocol::window
