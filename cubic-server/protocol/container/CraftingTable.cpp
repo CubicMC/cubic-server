@@ -1,6 +1,9 @@
 #include "CraftingTable.hpp"
+#include "Dimension.hpp"
 #include "Player.hpp"
+#include "entities/Item.hpp"
 #include "protocol/container/Container.hpp"
+#include <algorithm>
 #include <variant>
 
 using CraftingTable = protocol::container::CraftingTable;
@@ -35,16 +38,6 @@ CraftingTable::CraftingTable(std::weak_ptr<Player> player):
     _offhand(player.lock()->getInventory()->offhand())
 {
     player.lock()->sendOpenScreen({this->id(), this->type(), this->title()});
-}
-
-CraftingTable::~CraftingTable()
-{
-    for (protocol::Slot &craftingSlot : this->_craftingGrid) {
-        if (craftingSlot.present)
-            swapContainer(craftingSlot, this->_hotbar);
-        if (craftingSlot.present)
-            swapContainer(craftingSlot, this->_playerInventory);
-    }
 }
 
 protocol::Slot &CraftingTable::at(int16_t index)
@@ -182,16 +175,38 @@ void CraftingTable::onClick(std::shared_ptr<Player> player, int16_t index, uint8
         else
             std::swap(_hotbar.at(buttonId), at(index));
         break;
-
+    case (int32_t) ClickMode::Click:
+        if (index == -999) {
+            if (!this->cursor().present)
+                break;
+            if (buttonId == 0) {
+                player->getDimension()->makeEntity<Item>(cursor())->dropItem(player->getPosition());
+                cursor().reset();
+            } else {
+                player->getDimension()->makeEntity<Item>(cursor().takeOne())->dropItem(player->getPosition());
+            }
+        } else if (buttonId == 0) {
+            if (index == 0) { // clicked on crafted item
+                if (this->cursor().present) { // already item on cursor
+                    if (this->cursor() == this->_craftedItem && this->_craftedItem.itemCount + this->cursor().itemCount <= 64) // same item with enough stack space
+                        this->cursor().itemCount += this->craftOne().itemCount;
+                    else // different item or not enough stack space
+                        break;
+                } else // no item on cursor
+                    this->cursor() = this->craftOne();
+                player->sendSetContainerContent({thisTable});
+            } else
+                at(index).swap(cursor());
+        } else {
+            if (!cursor().present) {
+                at(index).swap(cursor(), at(index).itemCount / 2);
+            } else {
+                cursor().swap(at(index), 1);
+            }
+        }
+        break;
     default:
         Container::onClick(player, index, buttonId, mode, updates);
-        if (index == 0 && this->_craftedItem.present) {
-            for (protocol::Slot &craftingSlot : this->_craftingGrid) {
-                if (craftingSlot.present)
-                    craftingSlot.takeOne();
-            }
-            player->sendSetContainerContent({thisTable});
-        }
         break;
     }
 
@@ -199,9 +214,19 @@ void CraftingTable::onClick(std::shared_ptr<Player> player, int16_t index, uint8
     player->sendSetContainerSlot({thisTable, 0});
 }
 
+void CraftingTable::close(UNUSED std::shared_ptr<Player> player)
+{
+    for (protocol::Slot &craftingSlot : this->_craftingGrid) {
+        if (craftingSlot.present)
+            swapContainer(craftingSlot, this->_hotbar);
+        if (craftingSlot.present)
+            swapContainer(craftingSlot, this->_playerInventory);
+    }
+}
+
 bool CraftingTable::checkRecipe()
 {
-    // check crafting shaped
+    // check shaped crafts
     const std::unordered_map<std::string, std::shared_ptr<Recipe::CraftingShaped>> shapedCrafts = RECIPES.getRecipesByType<Recipe::CraftingShaped>("minecraft");
     for (const auto &[_, recipe] : shapedCrafts) {
         if (this->checkCraftingShaped(recipe)) {
@@ -209,14 +234,14 @@ bool CraftingTable::checkRecipe()
         }
     }
 
-    // no crafting shaped, check crafting shapeless
+    // no shaped craft, check shapeless crafts
     const std::unordered_map<std::string, std::shared_ptr<Recipe::CraftingShapeless>> shapelessCrafts = RECIPES.getRecipesByType<Recipe::CraftingShapeless>("minecraft");
     for (const auto &[_, recipe] : shapelessCrafts) { // every
         if (this->checkCraftingShapeless(recipe)) {
             return (true);
         }
     }
-    // no recipe found, empty crafted item slot
+    // no craft found, empty crafted item slot
     this->_craftedItem.reset();
     return (false);
 }
@@ -324,4 +349,28 @@ size_t CraftingTable::getYCraftingOffset() const
             return (pos / 3);
     }
     return (0);
+}
+
+protocol::Slot CraftingTable::craftOne()
+{
+    if (!this->_craftedItem.present)
+        return (protocol::Slot());
+    for (protocol::Slot &craftingSlot : this->_craftingGrid) {
+        if (craftingSlot.present)
+            craftingSlot.takeOne();
+    }
+    return (this->_craftedItem);
+}
+
+int8_t CraftingTable::maxCraftable() const
+{
+    int8_t count = 64;
+
+    if (!this->_craftedItem.present)
+        return (0);
+    for (const protocol::Slot &craftingSlot : this->_craftingGrid) {
+        if (craftingSlot.present)
+            count = std::min(count, craftingSlot.itemCount);
+    }
+    return (count);
 }
