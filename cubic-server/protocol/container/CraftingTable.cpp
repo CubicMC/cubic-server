@@ -37,6 +37,17 @@ CraftingTable::CraftingTable(std::weak_ptr<Player> player):
     player.lock()->sendOpenScreen({this->id(), this->type(), this->title()});
 }
 
+CraftingTable::~CraftingTable()
+{
+    for (protocol::Slot &craftingSlot : this->_craftingGrid) {
+        if (craftingSlot.present)
+            swapContainer(craftingSlot, this->_hotbar);
+        if (craftingSlot.present)
+            swapContainer(craftingSlot, this->_playerInventory);
+        
+    }
+}
+
 protocol::Slot &CraftingTable::at(int16_t index)
 {
     if (index == -1)
