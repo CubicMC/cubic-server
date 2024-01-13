@@ -1,3 +1,16 @@
+#include "Persistence.hpp"
+#include "Dimension.hpp"
+#include "Server.hpp"
+#include "logging/logging.hpp"
+#include "nbt.hpp"
+#include "nnbt.hpp"
+#include "protocol/serialization/addPrimaryType.hpp"
+#include "types.hpp"
+#include "world_storage/ChunkColumn.hpp"
+#include "world_storage/Level.hpp"
+#include "world_storage/LevelData.hpp"
+#include "world_storage/PlayerData.hpp"
+#include "world_storage/Section.hpp"
 #include <algorithm>
 #include <cassert>
 #include <cstddef>
@@ -16,19 +29,6 @@
 #include <sys/stat.h>
 #include <vector>
 #include <zlib.h>
-#include "nbt.hpp"
-#include "Persistence.hpp"
-#include "logging/logging.hpp"
-#include "nnbt.hpp"
-#include "Dimension.hpp"
-#include "Server.hpp"
-#include "protocol/serialization/addPrimaryType.hpp"
-#include "types.hpp"
-#include "world_storage/ChunkColumn.hpp"
-#include "world_storage/Level.hpp"
-#include "world_storage/LevelData.hpp"
-#include "world_storage/PlayerData.hpp"
-#include "world_storage/Section.hpp"
 
 #define GET_VALUE_TO(t, type_accessor, dst, src, root, dstroot) \
     do {                                                        \
@@ -472,7 +472,6 @@ void Persistence::saveRegion(Dimension &dim, int x, int z)
 
     std::vector<uint8_t> finalData(sizeof(RegionHeader), 0);
     RegionHeader header;
-    memset(&header, 0, sizeof(header));
     uint32_t lastOffset = sizeof(header) / regionChunkAlignment; // This needs to take the regino header into account
     uint8_t lastSize = 0;
 

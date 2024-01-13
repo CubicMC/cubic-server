@@ -78,7 +78,7 @@ struct Tag {
         else if (data->type == NBT_TYPE_LIST)
             nbt_tag_list_append(this->data, new_data);
         return Tag {.data = new_data};
-    };
+    }
 
     /**
      * @brief Add a list to another tag

@@ -20,7 +20,7 @@
 
 namespace world_storage {
 
-struct RegionLocation {
+struct __attribute__((__packed__)) RegionLocation {
     uint32_t data;
 
     inline uint32_t getOffset() const { return ((data & 0x00FF0000) >> 16) | (data & 0x0000FF00) | ((data & 0x000000FF) << 16); }
@@ -40,7 +40,12 @@ struct RegionLocation {
     }
 };
 
-struct RegionTimestamp {
+struct __attribute__((__packed__)) RegionTimestamp {
+    RegionTimestamp():
+        data(0)
+    {
+    }
+
     uint32_t data;
 };
 
@@ -52,7 +57,7 @@ constexpr uint64_t regionChunkAlignmentMask = 0xFFF;
 
 struct __attribute__((__packed__)) RegionHeader {
     RegionLocation locationTable[numChunksPerRegion];
-    RegionLocation timestampTable[numChunksPerRegion];
+    RegionTimestamp timestampTable[numChunksPerRegion];
 };
 
 enum class RegionChunkCompressionScheme : uint8_t {
