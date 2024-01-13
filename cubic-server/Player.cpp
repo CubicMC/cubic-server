@@ -7,6 +7,7 @@
 #include "PluginManager.hpp"
 #include "Server.hpp"
 #include "World.hpp"
+#include "blocks.hpp"
 #include "command_parser/CommandParser.hpp"
 #include "entities/ArmorStats.hpp"
 #include "entities/Entity.hpp"
@@ -79,6 +80,7 @@ Player::Player(std::weak_ptr<Client> cli, std::shared_ptr<Dimension> dim, u128 u
     this->setOperator(Server::getInstance()->permissions.isOperator(username));
     this->_inventory->playerInventory().at(12) = protocol::Slot(true, 734, 42);
     this->_inventory->playerInventory().at(13) = protocol::Slot(true, 1, 12);
+    this->_inventory->playerInventory().at(15) = protocol::Slot(true, 788, 64);
 
     // {display:{Name:'[{"text":"Cubic","italic":false}]'}}
     constexpr std::string_view NAME = "[{\"text\":\"Cubic\",\"italic\":false}]";
@@ -1353,6 +1355,25 @@ void Player::_onUseItemOn(protocol::UseItemOn &pck)
         pck.location.x++;
         break;
     }
+
+    if (this->_inventory->hotbar().at(this->_heldItem).itemID == ITEM_CONVERTER.fromItemToProtocolId("minecraft:wheat_seeds")) {
+        const BlockId &belowBlock = this->getDimension()->getBlock({pck.location.x, pck.location.y - 1, pck.location.z});
+
+        if (this->getDimension()->getBlock(pck.location) == Blocks::Air::toProtocol() &&
+            (belowBlock == Blocks::Farmland::toProtocol(Blocks::Farmland::Properties::Moisture::ZERO) ||
+             belowBlock == Blocks::Farmland::toProtocol(Blocks::Farmland::Properties::Moisture::ONE) ||
+             belowBlock == Blocks::Farmland::toProtocol(Blocks::Farmland::Properties::Moisture::TWO) ||
+             belowBlock == Blocks::Farmland::toProtocol(Blocks::Farmland::Properties::Moisture::THREE) ||
+             belowBlock == Blocks::Farmland::toProtocol(Blocks::Farmland::Properties::Moisture::FOUR) ||
+             belowBlock == Blocks::Farmland::toProtocol(Blocks::Farmland::Properties::Moisture::FIVE) ||
+             belowBlock == Blocks::Farmland::toProtocol(Blocks::Farmland::Properties::Moisture::SIX) ||
+             belowBlock == Blocks::Farmland::toProtocol(Blocks::Farmland::Properties::Moisture::SEVEN))) {
+            this->getDimension()->updateBlock(pck.location, Blocks::Wheat::toProtocol(Blocks::Wheat::Properties::Age::ZERO));
+            this->_inventory->hotbar().at(this->_heldItem).takeOne();
+            return;
+        }
+    }
+
     auto item = this->_inventory->hotbar().at(this->_heldItem).getUsableItemFromSlot();
     if (Items::Hoe *usedItem = std::get_if<Items::Hoe>(&item)) {
         if (usedItem->_usabilityType == Items::UsabilityType::RightMouseClickUsable || usedItem->_usabilityType == Items::UsabilityType::BothMouseClicksUsable) {
