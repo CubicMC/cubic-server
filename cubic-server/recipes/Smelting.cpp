@@ -4,8 +4,8 @@
 #include "logging/logging.hpp"
 
 namespace Recipe {
-Smelting::Smelting(const nlohmann::json &recipe):
-    Recipe(recipe)
+Smelting::Smelting(const std::string &identifier, const nlohmann::json &recipe):
+    Recipe(identifier, recipe)
 {
     // returns if any value is missing or does not have the right type
     // clang-format off
@@ -37,5 +37,5 @@ void Smelting::dump(void) const
     );
 }
 
-std::shared_ptr<Recipe> Smelting::create(const nlohmann::json &recipe) { return (std::make_shared<Smelting>(Smelting(recipe))); }
+std::shared_ptr<Recipe> Smelting::create(const std::string &identifier, const nlohmann::json &recipe) { return (std::make_shared<Smelting>(Smelting(identifier, recipe))); }
 } // namespace Recipe

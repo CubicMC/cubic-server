@@ -2,7 +2,10 @@
 #define PROTOCOL_WINDOW_CRAFTING_HPP
 
 #include "protocol/container/Container.hpp"
+#include "recipes/CraftingShaped.hpp"
+#include "recipes/CraftingShapeless.hpp"
 #include <cstdint>
+#include <variant>
 
 constexpr const int16_t CRAFTINGTABLE_CRAFTED_ITEM_SIZE = 1;
 constexpr const int16_t CRAFTINGTABLE_CRAFTING_GRID_3X3 = 9;
@@ -50,6 +53,15 @@ private:
     std::array<protocol::Slot, CRAFTINGTABLE_INVENTORY_SIZE> &_playerInventory;
     std::array<protocol::Slot, CRAFTINGTABLE_HOTBAR_SIZE> &_hotbar;
     protocol::Slot &_offhand;
+
+public:
+    bool checkRecipe();
+    bool checkCraftingShaped(const std::shared_ptr<Recipe::CraftingShaped> craft);
+    bool checkCraftingShapeless(const std::shared_ptr<Recipe::CraftingShapeless> craft);
+
+private:
+    size_t getXCraftingOffset() const;
+    size_t getYCraftingOffset() const;
 };
 
 } // namespace protocol::window

@@ -8,12 +8,12 @@
 namespace Recipe {
 class SpecialSuspiciousStew : public Recipe {
 public:
-    SpecialSuspiciousStew(const nlohmann::json &recipe);
+    SpecialSuspiciousStew(const std::string &identifier, const nlohmann::json &recipe);
     ~SpecialSuspiciousStew() = default;
 
     void dump(void) const override;
 
-    static std::shared_ptr<Recipe> create(const nlohmann::json &recipe);
+    static std::shared_ptr<Recipe> create(const std::string &identifier, const nlohmann::json &recipe);
 };
 };
 
