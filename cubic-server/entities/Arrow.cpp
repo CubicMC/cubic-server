@@ -1,6 +1,7 @@
 #include "Arrow.hpp"
 #include "Dimension.hpp"
 #include "Player.hpp"
+#include "PlayerAttributes.hpp"
 #include "logging/logging.hpp"
 #include "protocol/ClientPackets.hpp"
 #include "protocol/metadata.hpp"
@@ -120,7 +121,9 @@ void Arrow::tick()
         // But I clearly don't care enough to implement this properly :)
         if (player->getId() == _shotByEntity)
             continue;
-        // TODO(huntears): Check gamemode
+        auto playerGamemode = player->getGamemode();
+        if (playerGamemode == player_attributes::Gamemode::Creative || playerGamemode == player_attributes::Gamemode::Spectator)
+            continue;
         if (isArrowCollidingPlayer(position, newPosition, *player)) {
             constexpr float baseArrowDamage = 2.0;
             const float arrowSpeed = ((float) _velocity.magnitude()) / 8000.0f;
