@@ -24,7 +24,7 @@ namespace protocol::container {
 class CraftingTable : public Container {
 public:
     explicit CraftingTable(std::weak_ptr<Player> player);
-    virtual ~CraftingTable() = default;
+    virtual ~CraftingTable();
 
     protocol::Slot &at(int16_t index) override;
     const protocol::Slot &at(int16_t index) const override;
