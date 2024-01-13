@@ -44,7 +44,6 @@ CraftingTable::~CraftingTable()
             swapContainer(craftingSlot, this->_hotbar);
         if (craftingSlot.present)
             swapContainer(craftingSlot, this->_playerInventory);
-        
     }
 }
 
