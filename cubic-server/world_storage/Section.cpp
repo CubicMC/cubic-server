@@ -223,4 +223,9 @@ void world_storage::Section::_processBlockRandomTick(uint32_t blockIndex, ChunkC
         utility::farmland(block, chunkColumn, ablsolutePosition);
         LTRACE("Farmland random tick at {}", ablsolutePosition);
     }
+    if (Blocks::Wheat::toProtocol(Blocks::Wheat::Properties::Age::ZERO) <= block && block <= Blocks::Wheat::toProtocol(Blocks::Wheat::Properties::Age::SIX)) {
+        auto ablsolutePosition = world_storage::calculateAbsolutePosition(blockIndex, chunkColumn.getChunkPos(), sectionIndex);
+        utility::wheat(block, chunkColumn, ablsolutePosition);
+        LTRACE("Wheat random tick at {}", ablsolutePosition);
+    }
 }
