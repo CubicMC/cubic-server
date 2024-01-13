@@ -1335,17 +1335,17 @@ void Player::_onUseItemOn(protocol::UseItemOn &pck)
     }
 
     if (this->_inventory->hotbar().at(this->_heldItem).itemID == ITEM_CONVERTER.fromItemToProtocolId("minecraft:wheat_seeds")) {
-        Position below = {pck.location.x, pck.location.y - 1, pck.location.z};
+        const BlockId &belowBlock = this->getDimension()->getBlock({pck.location.x, pck.location.y - 1, pck.location.z});
 
         if (this->getDimension()->getBlock(pck.location) == Blocks::Air::toProtocol() &&
-            (this->getDimension()->getBlock(below) == Blocks::Farmland::toProtocol(Blocks::Farmland::Properties::Moisture::ZERO) ||
-             this->getDimension()->getBlock(below) == Blocks::Farmland::toProtocol(Blocks::Farmland::Properties::Moisture::ONE) ||
-             this->getDimension()->getBlock(below) == Blocks::Farmland::toProtocol(Blocks::Farmland::Properties::Moisture::TWO) ||
-             this->getDimension()->getBlock(below) == Blocks::Farmland::toProtocol(Blocks::Farmland::Properties::Moisture::THREE) ||
-             this->getDimension()->getBlock(below) == Blocks::Farmland::toProtocol(Blocks::Farmland::Properties::Moisture::FOUR) ||
-             this->getDimension()->getBlock(below) == Blocks::Farmland::toProtocol(Blocks::Farmland::Properties::Moisture::FIVE) ||
-             this->getDimension()->getBlock(below) == Blocks::Farmland::toProtocol(Blocks::Farmland::Properties::Moisture::SIX) ||
-             this->getDimension()->getBlock(below) == Blocks::Farmland::toProtocol(Blocks::Farmland::Properties::Moisture::SEVEN))) {
+            (belowBlock == Blocks::Farmland::toProtocol(Blocks::Farmland::Properties::Moisture::ZERO) ||
+             belowBlock == Blocks::Farmland::toProtocol(Blocks::Farmland::Properties::Moisture::ONE) ||
+             belowBlock == Blocks::Farmland::toProtocol(Blocks::Farmland::Properties::Moisture::TWO) ||
+             belowBlock == Blocks::Farmland::toProtocol(Blocks::Farmland::Properties::Moisture::THREE) ||
+             belowBlock == Blocks::Farmland::toProtocol(Blocks::Farmland::Properties::Moisture::FOUR) ||
+             belowBlock == Blocks::Farmland::toProtocol(Blocks::Farmland::Properties::Moisture::FIVE) ||
+             belowBlock == Blocks::Farmland::toProtocol(Blocks::Farmland::Properties::Moisture::SIX) ||
+             belowBlock == Blocks::Farmland::toProtocol(Blocks::Farmland::Properties::Moisture::SEVEN))) {
             this->getDimension()->updateBlock(pck.location, Blocks::Wheat::toProtocol(Blocks::Wheat::Properties::Age::ZERO));
             this->_inventory->hotbar().at(this->_heldItem).takeOne();
             return;
