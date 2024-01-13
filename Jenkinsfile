@@ -13,7 +13,7 @@ pipeline {
                         label "cubic-gnu"
                     }
                     options {
-                        timeout(time: 30, unit: 'MINUTES')
+                        timeout(time: 60, unit: 'MINUTES')
                     }
                     stages {
                         stage ('Build GNU/Linux') {
@@ -73,7 +73,7 @@ pipeline {
                         label "cubic-musl"
                     }
                     options {
-                        timeout(time: 30, unit: 'MINUTES')
+                        timeout(time: 60, unit: 'MINUTES')
                     }
                     stages {
                         stage ('Build MUSL/Linux') {

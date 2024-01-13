@@ -6,6 +6,7 @@
 #include <variant>
 
 #include "items/UsableItem.hpp"
+#include "items/usable-items/Bow.hpp"
 #include "items/usable-items/FlintAndSteel.hpp"
 #include "items/usable-items/Hoe.hpp"
 #include "nbt.h"
@@ -45,7 +46,7 @@ namespace protocol {
 
 #define SET_VALUE_INT(dst, src, root) SET_VALUE(NBT_TYPE_INT, tag_int, dst, src, root)
 
-typedef std::variant<Items::UsableItem, Items::FlintAndSteel, Items::Hoe>
+typedef std::variant<Items::UsableItem, Items::FlintAndSteel, Items::Hoe, Items::Bow>
     ItemType; /**< Used to get the right type of Usable item, to be able to use the right functions afterwards */
 struct Slot {
     constexpr ~Slot()
