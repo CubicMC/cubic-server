@@ -313,7 +313,7 @@ void Entity::teleportEntityThroughPortal(std::shared_ptr<Dimension> currentDimen
 
 void Entity::teleportPlayerThroughPortal(std::shared_ptr<Dimension> currentDimension)
 {
-    auto nextDimension = currentDimension->getWorld()->getDimensions().at("nether");
+    std::shared_ptr<Dimension> nextDimension = nullptr;
     std::shared_ptr<Player> thisPlayer = nullptr;
     for (auto player : currentDimension->getPlayers()) {
         if (player->getUuid() == this->getUuid()) {
@@ -372,15 +372,6 @@ void Entity::teleportPlayerThroughPortal(std::shared_ptr<Dimension> currentDimen
     thisPlayer->sendUpdateAdvancements({false, {}, {}, {}});
     thisPlayer->sendHealth();
     thisPlayer->sendSetExperience({0, 0, 0});
-    // thisPlayer->sendSynchronizePlayerPosition();
+    thisPlayer->teleport({8.5, 70 , 8.5});
     nextDimension->spawnPlayer(*thisPlayer);
-    // nextDimension->getWorld()->getWorldGroup()->getScoreboard().sendScoreboardStatus(*thisPlayer);
-    // for (std::shared_ptr<Player> other : nextDimension->getPlayers()) {
-    //     if (other->getInventory()->hotbar().at(other->getHeldItem()).present) {
-    //         protocol::SetEquipment equip;
-    //         equip.entityId = other->getId();
-    //         equip.equipment.push_back(std::make_pair(protocol::SetEquipment::EquipmentPosition::MainHand, other->getInventory()->hotbar().at(other->getHeldItem())));
-    //         thisPlayer->sendSetEquipment(equip);
-    //     }
-    // }
 }
