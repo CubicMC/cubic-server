@@ -8,12 +8,12 @@
 namespace Recipe {
 class SpecialRepairItem : public Recipe {
 public:
-    SpecialRepairItem(const nlohmann::json &recipe);
+    SpecialRepairItem(const std::string &identifier, const nlohmann::json &recipe);
     ~SpecialRepairItem() = default;
 
     void dump(void) const override;
 
-    static std::shared_ptr<Recipe> create(const nlohmann::json &recipe);
+    static std::shared_ptr<Recipe> create(const std::string &identifier, const nlohmann::json &recipe);
 };
 };
 
