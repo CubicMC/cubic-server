@@ -472,7 +472,8 @@ void Persistence::saveRegion(Dimension &dim, int x, int z)
 
     std::vector<uint8_t> finalData(sizeof(RegionHeader), 0);
     RegionHeader header;
-    uint32_t lastOffset = sizeof(header) / regionChunkAlignment; // This needs to take the regino header into account
+    memset(&header, 0, sizeof(RegionHeader));
+    uint32_t lastOffset = sizeof(header) / regionChunkAlignment; // This needs to take the region header into account
     uint8_t lastSize = 0;
 
     // TODO(huntears): Check if the region is loaded, else just exit here
@@ -482,6 +483,9 @@ void Persistence::saveRegion(Dimension &dim, int x, int z)
 
     const std::string regionSlice = "r." + std::to_string(x) + "." + std::to_string(z) + ".mca";
     const std::filesystem::path file = std::filesystem::path(_folder) / "region" / regionSlice;
+    const std::filesystem::path regionFolder = std::filesystem::path(_folder) / "region/";
+    if (!std::filesystem::exists(regionFolder))
+        std::filesystem::create_directories(regionFolder);
 
     for (uint16_t cx = 0; cx < maxXPerRegion; cx++) {
         for (uint16_t cz = 0; cz < maxZPerRegion; cz++) {
@@ -586,6 +590,7 @@ void Persistence::loadRegion(Dimension &dim, int x, int z)
             assert(data->type == NBT_TYPE_COMPOUND);
 
             _regionLoadChunk(dim, cx, cz, x, z, data);
+            nbt_free_tag(data);
         }
     }
     free(fileContents);
@@ -619,8 +624,6 @@ void Persistence::_regionLoadChunk(Dimension &dim, uint16_t cx, uint16_t cz, int
     _regionLoadHeightmaps(chunk, data);
 
     chunk._currentState = GenerationState::READY;
-
-    nbt_free_tag(data);
 }
 
 void Persistence::_regionLoadSection(ChunkColumn &chunk, nbt_tag_t *section)
