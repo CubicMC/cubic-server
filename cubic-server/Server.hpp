@@ -108,6 +108,7 @@ public:
     NODISCARD const std::unordered_map<std::string_view, std::shared_ptr<WorldGroup>> &getWorldGroups() const { return _worldGroups; }
     NODISCARD const std::vector<std::unique_ptr<CommandBase>> &getCommands() const { return _commands; }
     NODISCARD bool isRunning() const { return _running; }
+    NODISCARD Blocks::GlobalPalette &getGlobalPalette() { return _globalPalette; }
     NODISCARD const Blocks::GlobalPalette &getGlobalPalette() const { return _globalPalette; }
     NODISCARD const Items::ItemConverter &getItemConverter() const { return _itemConverter; }
     NODISCARD const SoundEvents::SoundEventConverter &getSoundEventConverter() const { return _soundEventConverter; }

@@ -153,14 +153,14 @@ inline size_t _nbtWriter(void *userData, uint8_t *data, size_t size)
     return size;
 }
 
-constexpr inline void addNBT(std::vector<uint8_t> &out, nbt_tag_t *tag)
+inline void addNBT(std::vector<uint8_t> &out, nbt_tag_t *tag, nbt_write_flags_t writeFlag = NBT_WRITE_FLAG_USE_RAW)
 {
     if (tag == nullptr) {
         addByte(out, 0);
         return;
     }
     nbt_writer_t writer {_nbtWriter, &out};
-    nbt_write(writer, tag, NBT_WRITE_FLAG_USE_RAW);
+    nbt_write(writer, tag, writeFlag);
 }
 
 template<isBaseOf<nbt::Base> T>

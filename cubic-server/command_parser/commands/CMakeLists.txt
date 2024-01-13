@@ -40,4 +40,6 @@ target_sources (${CMAKE_PROJECT_NAME} PRIVATE
     TitleTimes.hpp
     Armor.cpp
     Armor.hpp
+    SaveRegion.hpp
+    SaveRegion.cpp
 )
