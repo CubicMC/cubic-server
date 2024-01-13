@@ -65,7 +65,7 @@ static inline bool isArrowCollidingPlayer(const Vector3<double> &previousArrowPo
 
     // The player will always have a standing hitbox
     // So the hitbox won't change if the player is crouching
-    // I don't think that woud be a problem though as Minecraft
+    // I don't think that would be a problem though as Minecraft
     // arrows are already kinda scuffed in their own way :3
     constexpr double playerWidth = 0.6;
     constexpr double playerHeight = 1.8;
