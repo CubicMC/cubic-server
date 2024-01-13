@@ -160,7 +160,6 @@ void Player::setGamemode(player_attributes::Gamemode gamemode)
     }
     this->setDefense(defense);
     this->setToughness(toughness);
-    LINFO("{}'s defense is now {} ({} toughness)", this->getUsername(), defense, toughness);
 }
 
 void Player::setOperator(const bool isOp) { this->_isOperator = isOp; }

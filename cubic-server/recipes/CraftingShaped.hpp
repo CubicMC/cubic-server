@@ -8,35 +8,28 @@
 namespace Recipe {
 class CraftingShaped : public Recipe {
 public:
-    CraftingShaped(const nlohmann::json &recipe);
+    CraftingShaped(const std::string &identifier, const nlohmann::json &recipe);
     ~CraftingShaped() = default;
 
     void dump(void) const override;
 
-    static std::shared_ptr<Recipe> create(const nlohmann::json &recipe);
+    static std::shared_ptr<Recipe> create(const std::string &identifier, const nlohmann::json &recipe);
+
+    const std::unordered_map<char, std::shared_ptr<std::unordered_set<ItemId>>> &getKeys() const;
+    const std::vector<char> &getPattern() const;
+    size_t getXSize() const noexcept;
+    size_t getYSize() const noexcept;
+    ItemId getCraftedItem() const noexcept;
+    uint64_t getCraftedItemCount() const noexcept;
 
 private:
-    // class containing or not any list of item
-    class MaybeItems {
-    public:
-        MaybeItems(void);
-        MaybeItems(const std::shared_ptr<std::vector<ItemId>> &item);
-        ~MaybeItems() = default;
-
-        bool isEmpty(void) const noexcept;
-        const std::weak_ptr<std::vector<ItemId>> &getItems(void) const noexcept;
-
-    private:
-        bool _empty;
-        // refering to an entry of the "key" map, will always be valid
-        std::weak_ptr<std::vector<ItemId>> _items;
-    };
-
-    // get the corresponding indexed items
+    // get the corresponding indexed items from recipe json
     bool getKey(char key, const nlohmann::json &content);
 
-    std::unordered_map<char, std::shared_ptr<std::vector<ItemId>>> _key; // list of item to be placed on the table
-    std::vector<std::vector<MaybeItems>> _pattern; // pattern of the craft
+    size_t _x; // horizontal crafting size requiered
+    size_t _y; // vertical crafting size requiered
+    std::unordered_map<char, std::shared_ptr<std::unordered_set<ItemId>>> _key; // list of item to be placed on the table
+    std::vector<char> _pattern; // pattern of the craft
     ItemId _result; // item crafted
     uint64_t _count; // number of items crafted
 };

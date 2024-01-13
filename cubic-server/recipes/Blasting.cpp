@@ -4,25 +4,31 @@
 #include "logging/logging.hpp"
 
 namespace Recipe {
-Blasting::Blasting(const nlohmann::json &recipe):
-    Recipe(recipe)
+Blasting::Blasting(const std::string &identifier, const nlohmann::json &recipe):
+    Recipe(identifier, recipe)
 {
     // returns if any value is missing or does not have the right type
-    // clang-format off
-    if (!recipe.contains("ingredient") || \
-        !recipe.contains("result") || \
-        !recipe.contains("experience") || \
-        !recipe.contains("cookingtime") || \
-        !recipe["ingredient"].is_object() || \
-        !recipe["result"].is_string() || \
-        !recipe["experience"].is_number() || \
-        !recipe["cookingtime"].is_number_unsigned() || \
-        !recipe["ingredient"].contains("item") || \
-        !recipe["ingredient"]["item"].is_string())
+    if (!recipe.contains("ingredient") || !recipe.contains("result") || !recipe.contains("experience") || !recipe.contains("cookingtime") ||
+        (!recipe["ingredient"].is_object() && !recipe["ingredient"].is_array()) || !recipe["result"].is_string() || !recipe["experience"].is_number() ||
+        !recipe["cookingtime"].is_number_unsigned())
         return;
-    // clang-format on
+
     // get the recipe values
-    this->_ingredient = ITEM_CONVERTER.fromItemToProtocolId(recipe["ingredient"]["item"].get<std::string>());
+    if (recipe["ingredient"].is_object()) { // if only one ingredient
+        if (recipe["ingredient"].contains("item") && recipe["ingredient"]["item"].is_string())
+            this->_ingredients.insert(ITEM_CONVERTER.fromItemToProtocolId(recipe["ingredient"]["item"].get<std::string>()));
+        else
+            return;
+    } else if (recipe["ingredient"].is_array()) {
+        for (const auto &ingredient : recipe["ingredient"]) { // if multiple ingredients
+            if (ingredient.is_object() && ingredient.contains("item") && ingredient["item"].is_string())
+                this->_ingredients.insert(ITEM_CONVERTER.fromItemToProtocolId(ingredient["item"].get<std::string>()));
+            else
+                return;
+        }
+    } else
+        return;
+
     this->_result = ITEM_CONVERTER.fromItemToProtocolId(recipe["result"].get<std::string>());
     this->_experience = recipe["experience"].get<nlohmann::json::number_float_t>();
     this->_cookingTime = recipe["cookingtime"].get<nlohmann::json::number_unsigned_t>();
@@ -31,11 +37,20 @@ Blasting::Blasting(const nlohmann::json &recipe):
 
 void Blasting::dump(void) const
 {
-    LTRACE(
-        "\"{}\" -> \"{}\" (cooking for {} ticks and get {} xp)", ITEM_CONVERTER.fromProtocolIdToItem(this->_ingredient), ITEM_CONVERTER.fromProtocolIdToItem(this->_result),
-        this->_cookingTime, this->_experience
-    );
+    std::stringstream stream;
+    bool first = true;
+
+    stream << '[';
+    for (const auto &ingredient : this->_ingredients) {
+        if (first)
+            first = false;
+        else
+            stream << ", ";
+        stream << "\"" << ITEM_CONVERTER.fromProtocolIdToItem(ingredient) << "\"";
+    }
+    stream << "] -> \"" << ITEM_CONVERTER.fromProtocolIdToItem(this->_result) << "\" (cooking for " << this->_cookingTime << " ticks and get " << this->_experience << " xp)";
+    LTRACE(stream.str());
 }
 
-std::shared_ptr<Recipe> Blasting::create(const nlohmann::json &recipe) { return (std::make_shared<Blasting>(Blasting(recipe))); }
+std::shared_ptr<Recipe> Blasting::create(const std::string &identifier, const nlohmann::json &recipe) { return (std::make_shared<Blasting>(Blasting(identifier, recipe))); }
 } // namespace Recipe
