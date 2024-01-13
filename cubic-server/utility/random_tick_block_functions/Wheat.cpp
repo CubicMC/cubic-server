@@ -10,7 +10,7 @@
 void utility::wheat(BlockId blockId, world_storage::ChunkColumn &chunkColumn, const Position &absolutePosition)
 {
     auto *rgen = utility::PseudoRandomGenerator::getInstance();
-    
+
     if (rgen->generateNumber(0, 2) > 0)
         return;
     if (blockId == Blocks::Wheat::toProtocol(Blocks::Wheat::Properties::Age::ZERO)) {
