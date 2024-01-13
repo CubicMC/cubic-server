@@ -221,6 +221,6 @@ void world_storage::Section::_processBlockRandomTick(uint32_t blockIndex, ChunkC
         block <= Blocks::Farmland::toProtocol(Blocks::Farmland::Properties::Moisture::SEVEN)) {
         auto ablsolutePosition = world_storage::calculateAbsolutePosition(blockIndex, chunkColumn.getChunkPos(), sectionIndex);
         utility::farmland(block, chunkColumn, ablsolutePosition);
-        LINFO("Farmland random tick at {}", ablsolutePosition);
+        LTRACE("Farmland random tick at {}", ablsolutePosition);
     }
 }

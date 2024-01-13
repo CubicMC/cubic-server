@@ -24,13 +24,13 @@ bool checkWater(const world_storage::ChunkColumn &chunkColumn, const Position &a
 void utility::farmland(BlockId blockId, world_storage::ChunkColumn &chunkColumn, const Position &absolutePosition)
 {
     if (blockId == Blocks::Farmland::toProtocol(Blocks::Farmland::Properties::Moisture::ZERO)) {
-        LINFO("Farmland type 0");
+        LTRACE("Farmland type 0");
         if (checkWater(chunkColumn, absolutePosition)) {
             chunkColumn.updateBlock(world_storage::convertPositionToChunkPosition(absolutePosition), Blocks::Farmland::toProtocol(Blocks::Farmland::Properties::Moisture::SEVEN));
-            LINFO("Farmland has water");
+            LTRACE("Farmland has water");
         } else {
             chunkColumn.updateBlock(world_storage::convertPositionToChunkPosition(absolutePosition), Blocks::Dirt::toProtocol());
-            LINFO("Farmland has no water");
+            LTRACE("Farmland has no water");
         }
     }
     if (blockId == Blocks::Farmland::toProtocol(Blocks::Farmland::Properties::Moisture::ONE)) {
