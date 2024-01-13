@@ -67,7 +67,7 @@ void Recipe::setGroup(const nlohmann::json &recipe)
 const std::string &Recipe::getGroup(void) const noexcept { return (this->_group); }
 
 // debug purpose: writes the recipe content to the standard output
-void Recipe::dump(void) const { LINFO("No data for this recipe."); }
+void Recipe::dump(void) const { LTRACE("No data for this recipe."); }
 
 bool Recipe::isValid(void) const noexcept { return (this->_isValid); }
 
@@ -112,18 +112,19 @@ void Recipes::loadFolder(const std::string &_namespace, const std::string &folde
         }
     }
     LINFO("Loaded {} recipes from path {} into namespace \"{}\"", this->_recipes[_namespace].size(), folder, _namespace);
-    /* // prints the recipes loaded into the given namespace (includes previously loaded recipes from other sources)
+    // prints the recipes loaded into the given namespace (includes previously loaded recipes from other sources)
     for (const auto &[name, recipe] : this->_recipes[_namespace]) {
-        LINFO("\"{}:{}\":", _namespace, name);
+        LTRACE("\"{}:{}\":", _namespace, name);
+        LTRACE("category: {}", recipe->hasCategory() ? recipe->getCategory() : "none");
+        LTRACE("group: {}", recipe->hasGroup() ? recipe->getGroup() : "none");
+        LTRACE("valid: {}", recipe->isValid() ? "true" : "false");
         recipe->dump();
-        LINFO("");
+        LTRACE("");
     }
-    */
 }
 
 void Recipes::initialize(void)
 {
-    return;
     // adding default's minecraft recipes
     addRecipeCreator("minecraft", "blasting", Recipe::Blasting::create);
     addRecipeCreator("minecraft", "campfire_cooking", Recipe::CampfireCooking::create);

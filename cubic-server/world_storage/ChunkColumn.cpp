@@ -1,6 +1,7 @@
 #include "ChunkColumn.hpp"
 
 #include "Dimension.hpp"
+#include "Server.hpp"
 #include "World.hpp"
 #include "blocks.hpp"
 #include "generation/features/surface/Vegetation.hpp"
@@ -8,7 +9,11 @@
 #include "generation/features/underground/OreVein.hpp"
 #include "generation/overworld.hpp"
 #include "logging/logging.hpp"
+#include "nbt.h"
 #include "nbt.hpp"
+#include "nnbt.hpp"
+#include "protocol_id_converter/blockIdConverter.hpp"
+#include "tiles-entities/TileEntity.hpp"
 #include "types.hpp"
 #include "world_storage/Section.hpp"
 #include <cstdlib>
@@ -54,11 +59,10 @@ ChunkColumn::ChunkColumn(const Position2D &chunkPos, std::shared_ptr<Dimension> 
 {
     // OOF
     for (auto idx = 0; HEIGHTMAP_ENTRY[idx] != nullptr; idx++) {
-        auto listBase = NBT_MAKE(nbt::List, HEIGHTMAP_ENTRY[idx]);
-        auto list = std::dynamic_pointer_cast<nbt::List>(listBase);
+        auto listBase = NBT_MAKE(nbt::LongArray, HEIGHTMAP_ENTRY[idx]);
+        auto list = std::dynamic_pointer_cast<nbt::LongArray>(listBase);
 
-        for (auto i = 0; i < HEIGHTMAP_ARRAY_SIZE; i++)
-            list->push_back(std::make_shared<nbt::Long>("", 0));
+        list->getValues().insert(list->getValues().end(), HEIGHTMAP_ARRAY_SIZE, 0);
 
         _heightMap.addValue(listBase);
     }
@@ -609,6 +613,112 @@ void ChunkColumn::processRandomTick(uint32_t rts)
     for (auto &section : _sections) {
         section.processRandomTick(rts, _chunkPos);
     }
+}
+
+void ChunkColumn::tick()
+{
+    for (auto &[_, tileEntity] : _tileEntities) {
+        tileEntity->tick();
+        if (tileEntity->needBlockUpdate()) {
+            updateBlock(world_storage::convertPositionToChunkPosition(tileEntity->position), tileEntity->getBlockId());
+            _blocksToBeUpdated.push_back({tileEntity->position, tileEntity->getBlockId()});
+        }
+    }
+}
+
+const std::shared_ptr<tile_entity::TileEntity> ChunkColumn::getTileEntity(const Position &pos) const
+{
+    if (_tileEntities.contains(pos))
+        return _tileEntities.at(pos);
+    return nullptr;
+}
+
+std::shared_ptr<tile_entity::TileEntity> ChunkColumn::getTileEntity(const Position &pos)
+{
+    if (_tileEntities.contains(pos))
+        return _tileEntities.at(pos);
+    return nullptr;
+}
+
+void ChunkColumn::addTileEntity(std::shared_ptr<tile_entity::TileEntity> tileEntity) { _tileEntities.emplace(std::make_pair(tileEntity->position, std::move(tileEntity))); }
+
+void ChunkColumn::removeTileEntity(const Position &pos)
+{
+    if (_tileEntities.contains(pos))
+        _tileEntities.erase(pos);
+}
+
+nbt_tag_t *ChunkColumn::toRegionCompatibleFormat()
+{
+    int32_t dataVersion = 3218; // Hardcoded version number for 1.19.3
+    nbt_tag_t *root_raw = nbt_new_tag_compound();
+    nnbt::Tag root = nnbt::Tag::fromRaw(root_raw);
+
+    root.add(dataVersion, "DataVersion");
+
+    // TODO (huntears): Change that when we will handle semi generated chunks
+    std::string full("full");
+    root.add(full, "Status");
+
+    // Add sections
+    nnbt::Tag sections = root.addList(NBT_TYPE_COMPOUND, "sections");
+    for (size_t i = 0; i < this->getSections().size(); i++) {
+        const auto &sec = this->getSections().at(i);
+        nnbt::Tag section = sections.addCompound(nullptr);
+        int8_t y = (int8_t) i - 5;
+        section.add(y, "Y");
+
+        // Load blocks_states
+        nnbt::Tag block_states = section.addCompound("block_states");
+        // Save palette
+        nnbt::Tag palette = block_states.addList(NBT_TYPE_COMPOUND, "palette");
+        for (auto raw_entry : sec.getBlockPalette()) {
+            nnbt::Tag block_entry = palette.addCompound(nullptr);
+            auto cached_entry = GLOBAL_PALETTE.fetchFromCache(raw_entry);
+            if (!cached_entry.has_value()) {
+                auto entry = GLOBAL_PALETTE.fromProtocolIdToBlock(raw_entry);
+                block_entry.add(entry.name, "Name");
+                if (entry.properties.size() != 0) {
+                    nnbt::Tag props = block_entry.addCompound("Properties");
+                    for (auto &prop : entry.properties)
+                        props.add(prop.second, prop.first.c_str());
+                }
+            } else {
+                auto &entry = const_cast<Blocks::Block &>(cached_entry->get()); // Yeah I know that is crazy bad, but for now it will do
+                block_entry.add(entry.name, "Name");
+                if (entry.properties.size() != 0) {
+                    nnbt::Tag props = block_entry.addCompound("Properties");
+                    for (auto &prop : entry.properties)
+                        props.add(prop.second, prop.first.c_str());
+                }
+            }
+        }
+
+        // Save blocks
+        nbt_tag_t *blocks = nbt_new_tag_long_array((int64_t *) sec.getBlocks().data().data(), sec.getBlocks().data().size());
+        nbt_set_tag_name(blocks, "data", 4);
+        nbt_tag_compound_append(block_states.data, blocks);
+
+        // TODO(huntears): Save lights (Not strictly needed)
+    }
+
+    // Save heightmaps
+    nnbt::Tag heightmaps = root.addCompound("Heightmaps");
+
+    nbt_tag_t *motion_blocking = nbt_new_tag_long_array(
+        (int64_t *) _heightMap.getValue("MOTION_BLOCKING")->as<nbt::LongArray>()->getValues().data(),
+        _heightMap.getValue("MOTION_BLOCKING")->as<nbt::LongArray>()->getValues().size()
+    );
+    nbt_set_tag_name(motion_blocking, "MOTION_BLOCKING", 15);
+    nbt_tag_compound_append(heightmaps.data, motion_blocking);
+
+    nbt_tag_t *world_surface = nbt_new_tag_long_array(
+        (int64_t *) _heightMap.getValue("WORLD_SURFACE")->as<nbt::LongArray>()->getValues().data(), _heightMap.getValue("WORLD_SURFACE")->as<nbt::LongArray>()->getValues().size()
+    );
+    nbt_set_tag_name(world_surface, "WORLD_SURFACE", 13);
+    nbt_tag_compound_append(heightmaps.data, world_surface);
+
+    return root_raw;
 }
 
 } // namespace world_storage

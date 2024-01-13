@@ -42,8 +42,7 @@ debug
 build*
 .kdev4
 *.kdev4
-world
-world2
+world*
 
 # Symbolic link
 compile_commands.json

@@ -58,6 +58,7 @@ constexpr uint16_t MS_PER_TICK = 50;
 #define SOUND_EVENT_CONVERTER Server::getInstance()->getSoundEventConverter()
 #define BLOCK_DATA_CONVERTER Server::getInstance()->getBlockDataConverter()
 #define CONFIG Server::getInstance()->getConfig()
+#define RECIPES Server::getInstance()->getRecipeSystem()
 
 #if PROMETHEUS_SUPPORT == 1
 #define PROMETHEUS Server::getInstance()->getPrometheusExporter()
@@ -107,6 +108,7 @@ public:
     NODISCARD const std::unordered_map<std::string_view, std::shared_ptr<WorldGroup>> &getWorldGroups() const { return _worldGroups; }
     NODISCARD const std::vector<std::unique_ptr<CommandBase>> &getCommands() const { return _commands; }
     NODISCARD bool isRunning() const { return _running; }
+    NODISCARD Blocks::GlobalPalette &getGlobalPalette() { return _globalPalette; }
     NODISCARD const Blocks::GlobalPalette &getGlobalPalette() const { return _globalPalette; }
     NODISCARD const Items::ItemConverter &getItemConverter() const { return _itemConverter; }
     NODISCARD const SoundEvents::SoundEventConverter &getSoundEventConverter() const { return _soundEventConverter; }

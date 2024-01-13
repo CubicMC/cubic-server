@@ -28,8 +28,8 @@ StoneCutting::StoneCutting(const nlohmann::json &recipe):
 
 void StoneCutting::dump(void) const
 {
-    LINFO("\"{}\" -> \"{}\" (x{})", ITEM_CONVERTER.fromProtocolIdToItem(this->_ingredient), ITEM_CONVERTER.fromProtocolIdToItem(this->_result), this->_count);
+    LTRACE("\"{}\" -> \"{}\" (x{})", ITEM_CONVERTER.fromProtocolIdToItem(this->_ingredient), ITEM_CONVERTER.fromProtocolIdToItem(this->_result), this->_count);
 }
 
-std::unique_ptr<Recipe> StoneCutting::create(const nlohmann::json &recipe) { return (std::make_unique<StoneCutting>(StoneCutting(recipe))); }
+std::shared_ptr<Recipe> StoneCutting::create(const nlohmann::json &recipe) { return (std::make_shared<StoneCutting>(StoneCutting(recipe))); }
 } // namespace Recipe

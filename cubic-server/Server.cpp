@@ -25,6 +25,7 @@
 #include "WorldGroup.hpp"
 #include "command_parser/commands/Gamemode.hpp"
 #include "command_parser/commands/InventoryDump.hpp"
+#include "command_parser/commands/SaveRegion.hpp"
 #include "command_parser/commands/Teleport.hpp"
 #include "command_parser/commands/Tps.hpp"
 #include "default/DefaultWorldGroup.hpp"
@@ -72,6 +73,11 @@ Server::Server():
     _commands.emplace_back(std::make_unique<command_parser::Teleport>());
     _commands.emplace_back(std::make_unique<command_parser::Tps>());
     _commands.emplace_back(std::make_unique<command_parser::MSPT>());
+    _commands.emplace_back(std::make_unique<command_parser::Title>());
+    _commands.emplace_back(std::make_unique<command_parser::Subtitle>());
+    _commands.emplace_back(std::make_unique<command_parser::TitleTimes>());
+    _commands.emplace_back(std::make_unique<command_parser::Armor>());
+    _commands.emplace_back(std::make_unique<command_parser::SaveRegion>());
 }
 
 Server::~Server() { }
@@ -123,6 +129,9 @@ void Server::launch(const configuration::ConfigHandler &config)
 
     // Initialize loot tables
     _lootTables.initialize();
+
+    // Initialize recipes
+    _recipes.initialize();
 
     // Initialize default world group
     auto defaultChat = std::make_shared<Chat>();

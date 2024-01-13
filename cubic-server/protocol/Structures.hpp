@@ -6,13 +6,14 @@
 #include <variant>
 
 #include "items/UsableItem.hpp"
+#include "items/usable-items/Bow.hpp"
 #include "items/usable-items/FlintAndSteel.hpp"
 #include "items/usable-items/Hoe.hpp"
 #include "nbt.h"
 #include "nbt.hpp"
 
 namespace protocol {
-
+// TODO(huntears): Add better error messages
 #define GET_VALUE(t, type_accessor, dst, src, root)    \
     do {                                               \
         auto *__tmp = nbt_tag_compound_get(root, src); \
@@ -22,6 +23,18 @@ namespace protocol {
     } while (0)
 
 #define GET_VALUE_INT(dst, src, root) GET_VALUE(NBT_TYPE_INT, tag_int, dst, src, root)
+#define GET_VALUE_BYTE(dst, src, root) GET_VALUE(NBT_TYPE_BYTE, tag_byte, dst, src, root)
+#define GET_VALUE_SHORT(dst, src, root) GET_VALUE(NBT_TYPE_SHORT, tag_short, dst, src, root)
+#define GET_VALUE_LONG(dst, src, root) GET_VALUE(NBT_TYPE_LONG, tag_long, dst, src, root)
+#define GET_VALUE_FLOAT(dst, src, root) GET_VALUE(NBT_TYPE_FLOAT, tag_float, dst, src, root)
+#define GET_VALUE_DOUBLE(dst, src, root) GET_VALUE(NBT_TYPE_DOUBLE, tag_double, dst, src, root)
+#define GET_VALUE_STRING(dst, src, root)                                    \
+    do {                                                                    \
+        auto *__tmp = nbt_tag_compound_get(root, src);                      \
+        assert(__tmp);                                                      \
+        assert(__tmp->type == NBT_TYPE_STRING);                             \
+        dst = std::string(__tmp->tag_string.value, __tmp->tag_string.size); \
+    } while (0)
 
 #define SET_VALUE(t, type_accessor, dst, src, root)    \
     do {                                               \
@@ -33,7 +46,7 @@ namespace protocol {
 
 #define SET_VALUE_INT(dst, src, root) SET_VALUE(NBT_TYPE_INT, tag_int, dst, src, root)
 
-typedef std::variant<Items::UsableItem, Items::FlintAndSteel, Items::Hoe>
+typedef std::variant<Items::UsableItem, Items::FlintAndSteel, Items::Hoe, Items::Bow>
     ItemType; /**< Used to get the right type of Usable item, to be able to use the right functions afterwards */
 struct Slot {
     constexpr ~Slot()
@@ -173,7 +186,7 @@ struct BlockEntity {
     int8_t sectionCoordinate;
     int16_t height;
     int32_t type;
-    nbt::Compound data;
+    nbt_tag_t *data;
 };
 } // namespace protocol
 

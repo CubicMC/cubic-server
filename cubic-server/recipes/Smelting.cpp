@@ -31,11 +31,11 @@ Smelting::Smelting(const nlohmann::json &recipe):
 
 void Smelting::dump(void) const
 {
-    LINFO(
+    LTRACE(
         "\"{}\" -> \"{}\" (cooking for {} ticks and get {} xp)", ITEM_CONVERTER.fromProtocolIdToItem(this->_ingredient), ITEM_CONVERTER.fromProtocolIdToItem(this->_result),
         this->_cookingTime, this->_experience
     );
 }
 
-std::unique_ptr<Recipe> Smelting::create(const nlohmann::json &recipe) { return (std::make_unique<Smelting>(Smelting(recipe))); }
+std::shared_ptr<Recipe> Smelting::create(const nlohmann::json &recipe) { return (std::make_shared<Smelting>(Smelting(recipe))); }
 } // namespace Recipe
