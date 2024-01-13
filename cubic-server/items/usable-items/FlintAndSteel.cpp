@@ -21,7 +21,7 @@ nbt_tag_t *Items::FlintAndSteel::setNbtTag()
     return root;
 }
 
-void Items::FlintAndSteel::onUse(std::shared_ptr<Dimension> dim, Position &pos, UNUSED UsabilityType usage, UNUSED int32_t face)
+void Items::FlintAndSteel::onUseOn(std::shared_ptr<Dimension> dim, Position &pos, UNUSED UsabilityType usage, UNUSED int32_t face, UNUSED Entity &user)
 {
     auto portal = NetherPortal(dim);
     dim->updateBlock(

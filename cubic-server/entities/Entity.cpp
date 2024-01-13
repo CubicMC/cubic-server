@@ -41,7 +41,8 @@ Entity::Entity(std::shared_ptr<Dimension> dim,
     Vector3<double> pos,
     Vector2<uint8_t> rot,
     Vector3<double> lastPos,
-    Vector2<uint8_t> lastRot):
+    Vector2<uint8_t> lastRot,
+    Vector3<double> vel):
     _dim(dim)
 {
     static std::atomic<int32_t> currentID = 0;
@@ -67,6 +68,7 @@ Entity::Entity(std::shared_ptr<Dimension> dim,
     _rot = rot;
     _lastRot = lastRot;
     _type = type;
+    _velocity = vel;
 }
 // clang-format on
 
@@ -90,6 +92,15 @@ void Entity::setDimension(std::shared_ptr<Dimension> dim)
 void Entity::setPosition(const Vector3<double> &pos, UNUSED bool onGround) { _pos = pos; }
 
 void Entity::setPosition(double x, double y, double z, bool onGround) { this->setPosition({x, y, z}, onGround); }
+
+void Entity::setVelocity(const Vector3<double> &vel) { this->setVelocity(vel.x, vel.y, vel.z); };
+
+void Entity::setVelocity(double x, double y, double z)
+{
+    _velocity.x = x;
+    _velocity.y = y;
+    _velocity.z = z;
+};
 
 void Entity::forceSetPosition(const Vector3<double> &pos)
 {

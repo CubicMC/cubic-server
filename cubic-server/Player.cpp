@@ -1162,7 +1162,7 @@ void Player::_onPlayerAction(protocol::PlayerAction &pck)
         auto item = this->_inventory->hotbar().at(this->_heldItem).getUsableItemFromSlot();
         if (Items::Hoe *usedItem = std::get_if<Items::Hoe>(&item)) {
             if (usedItem->_usabilityType == Items::UsabilityType::LeftMouseClickUsable || usedItem->_usabilityType == Items::UsabilityType::BothMouseClicksUsable) {
-                usedItem->onUse(this->getDimension(), pck.location, Items::UsabilityType::LeftMouseClickUsable, 1);
+                usedItem->onUseOn(this->getDimension(), pck.location, Items::UsabilityType::LeftMouseClickUsable, 1, *this);
                 if (usedItem->canUpdateDamage) {
                     this->_inventory->hotbar().at(this->_heldItem).updateDamage();
                 }
@@ -1194,6 +1194,8 @@ void Player::_onPlayerAction(protocol::PlayerAction &pck)
         }
         break;
     case protocol::PlayerAction::Status::ShootArrowOrFinishEating:
+        // TODO(huntears): Cancel eating if shooting succeeded
+        _shoot();
         _eat();
         break;
     case protocol::PlayerAction::Status::SwapItemInHand:
@@ -1202,6 +1204,24 @@ void Player::_onPlayerAction(protocol::PlayerAction &pck)
     default:
         N_LERROR("Got a Player Action with an unknown status: {}", pck.status);
         break;
+    }
+}
+
+void Player::_shoot()
+{
+    if (this->_inventory->hotbar().at(this->_heldItem).present == false)
+        return;
+
+    // Check if the item in hand is a bow or a crossbox
+    // Yes this is hardcoded, but it will do
+    auto heldItem = this->_inventory->hotbar().at(this->_heldItem).itemID;
+    auto item = this->_inventory->hotbar().at(this->_heldItem).getUsableItemFromSlot();
+    if (heldItem == 735) {
+        // Bow
+        Items::Bow *usedItem = std::get_if<Items::Bow>(&item);
+        usedItem->onUse(_dim, *this, Items::UsabilityType::RightMouseClickUsable);
+    } else if (heldItem == 1112) {
+        // Crossbow
     }
 }
 
@@ -1337,7 +1357,7 @@ void Player::_onUseItemOn(protocol::UseItemOn &pck)
     auto item = this->_inventory->hotbar().at(this->_heldItem).getUsableItemFromSlot();
     if (Items::Hoe *usedItem = std::get_if<Items::Hoe>(&item)) {
         if (usedItem->_usabilityType == Items::UsabilityType::RightMouseClickUsable || usedItem->_usabilityType == Items::UsabilityType::BothMouseClicksUsable) {
-            usedItem->onUse(this->getDimension(), pck.location, Items::UsabilityType::RightMouseClickUsable, (int32_t) pck.face);
+            usedItem->onUseOn(this->getDimension(), pck.location, Items::UsabilityType::RightMouseClickUsable, (int32_t) pck.face, *this);
             if (usedItem->canUpdateDamage) {
                 this->_inventory->hotbar().at(this->_heldItem).updateDamage();
             }
@@ -1606,7 +1626,6 @@ void Player::_eat()
         return item.id == this->_inventory->hotbar().at(this->_heldItem).itemID;
     });
     if (food == Items::foodItems.end()) {
-        LERROR("Trying to eat an item that is not food");
         return;
     }
     if (_foodLevel >= MAX_FOOD_LEVEL) {

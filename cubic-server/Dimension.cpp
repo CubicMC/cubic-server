@@ -46,10 +46,50 @@ void Dimension::tick()
 {
     auto startTickTime = std::chrono::high_resolution_clock::now();
     {
-        std::lock_guard _(_entitiesMutex);
+        std::unique_lock a(_entitiesMutex, std::defer_lock);
+        std::unique_lock b(_newEntitiesMutex, std::defer_lock);
+        std::lock(a, b);
+
         for (auto ent : _entities) {
             ent->tick();
         }
+
+        if (_newEntities.size() != 0) {
+            _entities.insert(_entities.end(), _newEntities.begin(), _newEntities.end());
+            _newEntities.clear();
+        }
+    }
+    {
+        std::unique_lock a(_entitiesMutex, std::defer_lock);
+        std::unique_lock b(_playersMutex, std::defer_lock);
+        std::lock(a, b);
+
+        // We remove all entities below a certain threshold
+        // Especially useful for arrows that currently go
+        // through blocks
+        std::vector<int32_t> idsToRemove;
+        constexpr float minYLevelForEntities = -200.0f;
+        for (auto &ent : _entities) {
+            if (ent->getType() == EntityType::Player)
+                continue;
+            if (ent->getPosition().y < minYLevelForEntities)
+                idsToRemove.push_back(ent->getId());
+        }
+        for (auto player : _players) {
+            player->sendRemoveEntities(idsToRemove);
+        }
+        _entities.erase(
+            std::remove_if(
+                _entities.begin(), _entities.end(),
+                [&idsToRemove](const std::shared_ptr<Entity> ent) {
+                    int32_t entId = ent->getId();
+                    return std::find_if(idsToRemove.begin(), idsToRemove.end(), [entId](int32_t id) {
+                               return id == entId;
+                           }) != idsToRemove.end();
+                }
+            ),
+            _entities.end()
+        );
     }
     uint32_t rts = CONFIG["randomtickspeed"].as<uint32_t>();
     if (rts != 0) {
@@ -76,16 +116,7 @@ void Dimension::tick()
             }
         }
     }
-    {
-        std::unique_lock a(_entitiesMutex, std::defer_lock);
-        std::unique_lock b(_newEntitiesMutex, std::defer_lock);
-        std::lock(a, b);
 
-        if (_newEntities.size() != 0) {
-            _entities.insert(_entities.end(), _newEntities.begin(), _newEntities.end());
-            _newEntities.clear();
-        }
-    }
     auto endTime = std::chrono::high_resolution_clock::now();
     auto compute_time = endTime - _previousTickTime;
     auto msptTime = endTime - startTickTime;
@@ -336,13 +367,13 @@ void Dimension::spawnEntity(const std::shared_ptr<const Entity> current)
             current->getPosition().x, // Entity Position X
             current->getPosition().y, // Entity Position Y
             current->getPosition().z, // Entity Position Z
-            0, // Entity Pitch
-            0, // Entity Yaw
+            current->getRotation().z, // Entity Pitch
+            current->getRotation().x, // Entity Yaw
             0, // Entity Head Yaw
             0, // Entity data
-            0, // Entity Velocity X
-            0, // Entity Velocity Y
-            0 // Entity Velocity Z
+            (int16_t) current->getVelocity().x, // Entity Velocity X
+            (int16_t) current->getVelocity().y, // Entity Velocity Y
+            (int16_t) current->getVelocity().z // Entity Velocity Z
         });
         player->sendEntityMetadata(*current);
     }
