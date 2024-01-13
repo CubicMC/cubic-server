@@ -10,6 +10,7 @@
 #include "Palette.hpp"
 #include "Section.hpp"
 #include "generation/generator.hpp"
+#include "nbt.h"
 #include "nbt.hpp"
 #include "types.hpp"
 
@@ -39,7 +40,10 @@ inline Position convertChunkPositionToPosition(const Position2D &chunkPos, const
 
 // Heightmap
 constexpr int HEIGHTMAP_BITS = bitsNeeded(CHUNK_HEIGHT + 1);
-constexpr int HEIGHTMAP_ARRAY_SIZE = (SECTION_2D_SIZE * HEIGHTMAP_BITS / 64) + ((SECTION_2D_SIZE * HEIGHTMAP_BITS % 64) != 0);
+// TODO(huntears): This + 1 here makes me wanna cry, but somehow we are off by one
+// So if a kind soul out here wants to go around to figure out why and fix this it
+// would be fucking awesome
+constexpr int HEIGHTMAP_ARRAY_SIZE = (SECTION_2D_SIZE * HEIGHTMAP_BITS / 64) + ((SECTION_2D_SIZE * HEIGHTMAP_BITS % 64) != 0) + 1;
 constexpr const char *const HEIGHTMAP_ENTRY[] = {"MOTION_BLOCKING", "WORLD_SURFACE", nullptr};
 
 constexpr uint8_t getSectionIndex(const Position &pos) { return (pos.y - CHUNK_HEIGHT_MIN + SECTION_WIDTH) / SECTION_WIDTH; }
@@ -198,6 +202,13 @@ public:
      * @return const std::vector<std::pair<Position, BlockId>>&
      */
     constexpr std::vector<std::pair<Position, BlockId>> &getBlocksToBeUpdated() { return _blocksToBeUpdated; }
+
+    /*
+     * @brief Gets an nbt formatted to be saved to disk in a region file
+     *
+     * @return nbt_tag_t* The formatted nbt tag
+     */
+    nbt_tag_t *toRegionCompatibleFormat();
 
     friend class Persistence;
 
