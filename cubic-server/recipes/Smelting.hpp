@@ -6,7 +6,7 @@
 namespace Recipe {
 class Smelting : public Recipe {
 public:
-    Smelting(const nlohmann::json &recipe);
+    Smelting(const std::string &identifier, const nlohmann::json &recipe);
     ~Smelting() = default;
 
     void dump(void) const override;
@@ -14,7 +14,7 @@ public:
     ItemId getResult(void) const noexcept { return _result; };
     uint64_t getCookingTime(void) const noexcept { return _cookingTime; };
 
-    static std::shared_ptr<Recipe> create(const nlohmann::json &recipe);
+    static std::shared_ptr<Recipe> create(const std::string &identifier, const nlohmann::json &recipe);
 
 private:
     ItemId _ingredient; // what to cook

@@ -21,9 +21,10 @@ DEFINE_EXCEPTION(UnknownRecipeType);
 namespace Recipe {
 class Recipe {
 public:
-    Recipe(const nlohmann::json &recipe);
+    Recipe(const std::string &identifier, const nlohmann::json &recipe);
     virtual ~Recipe() = default;
 
+    const std::string &getIdentifier(void) const noexcept;
     bool hasCategory(void) const noexcept;
     void setCategory(const nlohmann::json &recipe);
     const std::string &getCategory(void) const noexcept;
@@ -37,6 +38,7 @@ public:
     virtual void dump(void) const;
 
 private:
+    const std::string _identifier;
     bool _hasCategory;
     std::string _category;
     bool _hasGroup;
@@ -49,7 +51,7 @@ private:
   Minecraft default's recipe types include :
   crafting_shapeless, crafting_shaped, smelting, stonecutting...
 */
-typedef std::shared_ptr<Recipe> (*Creator)(const nlohmann::json &recipe);
+typedef std::shared_ptr<Recipe> (*Creator)(const std::string &identifier, const nlohmann::json &recipe);
 };
 
 /*

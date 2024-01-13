@@ -82,7 +82,7 @@ ChunkColumn::ChunkColumn(ChunkColumn &&chunk):
 
 ChunkColumn::~ChunkColumn() { }
 
-void ChunkColumn::updateBlock(const Position &pos, BlockId id)
+void ChunkColumn::modifyBlock(const Position &pos, BlockId id)
 {
     // TODO: Move the bitStoring to a separate class
     // Heightmap update
@@ -99,10 +99,16 @@ void ChunkColumn::updateBlock(const Position &pos, BlockId id)
     // }
 
     // Block update
-    // LINFO("ChunkColumn updateBlock: ", pos, "[", getSectionIndex(pos), "] -> ", id);
+    // LINFO("ChunkColumn modifyBlock: ", pos, "[", getSectionIndex(pos), "] -> ", id);
     // LINFO("wtf: " << pos << " " << id);
     _sections.at(getSectionIndex(pos)).updateBlock(Position {pos.x, pos.y - CHUNK_HEIGHT_MIN, pos.z} % SECTION_WIDTH, id);
     // _blocks.at(calculateBlockIdx(pos)) = id;
+}
+
+void ChunkColumn::updateBlock(const Position &pos, BlockId id)
+{
+    modifyBlock(pos, id);
+    _blocksToBeUpdated.push_back({convertChunkPositionToPosition(_chunkPos, pos), id});
 }
 
 BlockId ChunkColumn::getBlock(const Position &pos) const { return _sections.at(getSectionIndex(pos)).getBlock(Position {pos.x, pos.y - CHUNK_HEIGHT_MIN, pos.z} % SECTION_WIDTH); }
@@ -428,11 +434,11 @@ void ChunkColumn::_generateFlat(UNUSED GenerationState goalState)
         for (int z = 0; z < SECTION_WIDTH; z++) {
             for (int x = 0; x < SECTION_WIDTH; x++) {
                 if (y == 0) {
-                    updateBlock({x, y + CHUNK_HEIGHT_MIN, z}, Blocks::Bedrock::toProtocol());
+                    modifyBlock({x, y + CHUNK_HEIGHT_MIN, z}, Blocks::Bedrock::toProtocol());
                 } else if (y == 1 || y == 2) {
-                    updateBlock({x, y + CHUNK_HEIGHT_MIN, z}, Blocks::Dirt::toProtocol());
+                    modifyBlock({x, y + CHUNK_HEIGHT_MIN, z}, Blocks::Dirt::toProtocol());
                 } else if (y == 3) {
-                    updateBlock({x, y + CHUNK_HEIGHT_MIN, z}, Blocks::GrassBlock::toProtocol(Blocks::GrassBlock::Properties::Snowy::FALSE));
+                    modifyBlock({x, y + CHUNK_HEIGHT_MIN, z}, Blocks::GrassBlock::toProtocol(Blocks::GrassBlock::Properties::Snowy::FALSE));
                 }
             }
         }
@@ -444,7 +450,7 @@ void ChunkColumn::_generateDebug(UNUSED GenerationState goalState)
 {
     static size_t block = 0;
     for (int i = 0; i < world_storage::NB_OF_PLAYABLE_SECTIONS; i++) {
-        updateBlock({7, 7 + (i << 4) - 64, 7}, block++);
+        modifyBlock({7, 7 + (i << 4) - 64, 7}, block++);
         if (block > 23231)
             block = 0;
     }
@@ -457,13 +463,13 @@ void ChunkColumn::_generateFlatCubicServer(UNUSED GenerationState goalState)
         for (int z = 0; z < SECTION_WIDTH; z++) {
             for (int x = 0; x < SECTION_WIDTH; x++) {
                 if (y == 0) {
-                    updateBlock({x, y + CHUNK_HEIGHT_MIN, z}, Blocks::Bedrock::toProtocol());
+                    modifyBlock({x, y + CHUNK_HEIGHT_MIN, z}, Blocks::Bedrock::toProtocol());
                 } else if (y == 1 || y == 2) {
-                    updateBlock({x, y + CHUNK_HEIGHT_MIN, z}, Blocks::Dirt::toProtocol());
+                    modifyBlock({x, y + CHUNK_HEIGHT_MIN, z}, Blocks::Dirt::toProtocol());
                 } else if (y == 3) {
-                    updateBlock({x, y + CHUNK_HEIGHT_MIN, z}, Blocks::GrassBlock::toProtocol(Blocks::GrassBlock::Properties::Snowy::FALSE));
+                    modifyBlock({x, y + CHUNK_HEIGHT_MIN, z}, Blocks::GrassBlock::toProtocol(Blocks::GrassBlock::Properties::Snowy::FALSE));
                 } else if ((y == 4 || y == 5 || y == 6) && z == 8 && x == 8) {
-                    updateBlock({x, y + CHUNK_HEIGHT_MIN, z}, Blocks::OakLog::toProtocol(Blocks::OakLog::Properties::Axis::Y));
+                    modifyBlock({x, y + CHUNK_HEIGHT_MIN, z}, Blocks::OakLog::toProtocol(Blocks::OakLog::Properties::Axis::Y));
                 } else if (y == 7 || y == 8) {
                     switch (x + (z * 16)) {
                     case 6 + 6 * 16:
@@ -471,7 +477,7 @@ void ChunkColumn::_generateFlatCubicServer(UNUSED GenerationState goalState)
                     case 8 + 6 * 16:
                     case 9 + 6 * 16:
                     case 10 + 6 * 16:
-                        updateBlock(
+                        modifyBlock(
                             {x, y + CHUNK_HEIGHT_MIN, z},
                             Blocks::OakLeaves::toProtocol(
                                 Blocks::OakLeaves::Properties::Distance::ONE, Blocks::OakLeaves::Properties::Persistent::FALSE, Blocks::OakLeaves::Properties::Waterlogged::FALSE
@@ -483,7 +489,7 @@ void ChunkColumn::_generateFlatCubicServer(UNUSED GenerationState goalState)
                     case 8 + 7 * 16:
                     case 9 + 7 * 16:
                     case 10 + 7 * 16:
-                        updateBlock(
+                        modifyBlock(
                             {x, y + CHUNK_HEIGHT_MIN, z},
                             Blocks::OakLeaves::toProtocol(
                                 Blocks::OakLeaves::Properties::Distance::ONE, Blocks::OakLeaves::Properties::Persistent::FALSE, Blocks::OakLeaves::Properties::Waterlogged::FALSE
@@ -494,7 +500,7 @@ void ChunkColumn::_generateFlatCubicServer(UNUSED GenerationState goalState)
                     case 7 + 8 * 16:
                     case 9 + 8 * 16:
                     case 10 + 8 * 16:
-                        updateBlock(
+                        modifyBlock(
                             {x, y + CHUNK_HEIGHT_MIN, z},
                             Blocks::OakLeaves::toProtocol(
                                 Blocks::OakLeaves::Properties::Distance::ONE, Blocks::OakLeaves::Properties::Persistent::FALSE, Blocks::OakLeaves::Properties::Waterlogged::FALSE
@@ -506,7 +512,7 @@ void ChunkColumn::_generateFlatCubicServer(UNUSED GenerationState goalState)
                     case 8 + 9 * 16:
                     case 9 + 9 * 16:
                     case 10 + 9 * 16:
-                        updateBlock(
+                        modifyBlock(
                             {x, y + CHUNK_HEIGHT_MIN, z},
                             Blocks::OakLeaves::toProtocol(
                                 Blocks::OakLeaves::Properties::Distance::ONE, Blocks::OakLeaves::Properties::Persistent::FALSE, Blocks::OakLeaves::Properties::Waterlogged::FALSE
@@ -518,7 +524,7 @@ void ChunkColumn::_generateFlatCubicServer(UNUSED GenerationState goalState)
                     case 8 + 10 * 16:
                     case 9 + 10 * 16:
                     case 10 + 10 * 16:
-                        updateBlock(
+                        modifyBlock(
                             {x, y + CHUNK_HEIGHT_MIN, z},
                             Blocks::OakLeaves::toProtocol(
                                 Blocks::OakLeaves::Properties::Distance::ONE, Blocks::OakLeaves::Properties::Persistent::FALSE, Blocks::OakLeaves::Properties::Waterlogged::FALSE
@@ -526,7 +532,7 @@ void ChunkColumn::_generateFlatCubicServer(UNUSED GenerationState goalState)
                         );
                         break;
                     case 8 + 8 * 16:
-                        updateBlock({x, y + CHUNK_HEIGHT_MIN, z}, Blocks::OakLog::toProtocol(Blocks::OakLog::Properties::Axis::Y));
+                        modifyBlock({x, y + CHUNK_HEIGHT_MIN, z}, Blocks::OakLog::toProtocol(Blocks::OakLog::Properties::Axis::Y));
                         break;
                     }
                 } else if (y == 9 || y == 10) {
@@ -536,7 +542,7 @@ void ChunkColumn::_generateFlatCubicServer(UNUSED GenerationState goalState)
                     case 9 + 8 * 16:
                     case 8 + 9 * 16:
                     case 8 + 8 * 16:
-                        updateBlock(
+                        modifyBlock(
                             {x, y + CHUNK_HEIGHT_MIN, z},
                             Blocks::OakLeaves::toProtocol(
                                 Blocks::OakLeaves::Properties::Distance::ONE, Blocks::OakLeaves::Properties::Persistent::FALSE, Blocks::OakLeaves::Properties::Waterlogged::FALSE
@@ -560,14 +566,14 @@ void ChunkColumn::_generateRawGeneration(generation::Generator &generator)
             for (int x = 0; x < SECTION_WIDTH; x++) {
                 auto block = generator.getBlock(x + this->_chunkPos.x * SECTION_WIDTH, y, z + this->_chunkPos.z * SECTION_WIDTH);
                 // if (block != Blocks::Air::toProtocol())
-                updateBlock({x, y, z}, block);
+                modifyBlock({x, y, z}, block);
             }
         }
     }
     // generate bedrock
     for (int x = 0; x < SECTION_WIDTH; x++) {
         for (int z = 0; z < SECTION_WIDTH; z++) {
-            updateBlock({x, 0 + CHUNK_HEIGHT_MIN, z}, Blocks::Bedrock::toProtocol()); // last bedrock layer
+            modifyBlock({x, 0 + CHUNK_HEIGHT_MIN, z}, Blocks::Bedrock::toProtocol()); // last bedrock layer
             for (int y = 1 + CHUNK_HEIGHT_MIN; y <= 4 + CHUNK_HEIGHT_MIN; y++) {
                 Position pos = {x + this->_chunkPos.x * SECTION_WIDTH, y, z + this->_chunkPos.z * SECTION_WIDTH};
                 generator.setRandomizer(pos);
@@ -575,19 +581,19 @@ void ChunkColumn::_generateRawGeneration(generation::Generator &generator)
                 if (generator.getRandomizer() != 0) {
                     if (block == Blocks::Air::toProtocol() || (abs(pos.x % 8) >= abs(pos.z % 4) && pos.y % 2 != 0)) {
                         if (abs(pos.x) % 3 != abs(pos.z % 5)) {
-                            updateBlock({x, 1 + CHUNK_HEIGHT_MIN, z}, Blocks::Bedrock::toProtocol());
-                            updateBlock({(x - 2) % SECTION_WIDTH, 1 + CHUNK_HEIGHT_MIN, (z + 1) % SECTION_WIDTH}, Blocks::Bedrock::toProtocol());
+                            modifyBlock({x, 1 + CHUNK_HEIGHT_MIN, z}, Blocks::Bedrock::toProtocol());
+                            modifyBlock({(x - 2) % SECTION_WIDTH, 1 + CHUNK_HEIGHT_MIN, (z + 1) % SECTION_WIDTH}, Blocks::Bedrock::toProtocol());
                         } else if ((abs(pos.z - x) % generator.getRandomizer() != 0 || abs(pos.x - z) % 2 != 0) && abs(pos.y) % 4 != abs(z - x) % 8 && pos.y % 2 == 0)
-                            updateBlock({x, y, (z + 1) % SECTION_WIDTH}, Blocks::Bedrock::toProtocol());
+                            modifyBlock({x, y, (z + 1) % SECTION_WIDTH}, Blocks::Bedrock::toProtocol());
                         if ((abs(pos.z) % 2 != 0 || abs(pos.x) % 2 != 0) || x == z) {
-                            updateBlock({x, 2 + CHUNK_HEIGHT_MIN, (z + 1) % SECTION_WIDTH}, Blocks::Bedrock::toProtocol());
+                            modifyBlock({x, 2 + CHUNK_HEIGHT_MIN, (z + 1) % SECTION_WIDTH}, Blocks::Bedrock::toProtocol());
                         } else if ((abs(pos.z) != abs(pos.x) + x && abs(pos.z % 4) != z % 2) && pos.y % 2 != 0) {
-                            updateBlock({(x + 5) % SECTION_WIDTH, 3 + CHUNK_HEIGHT_MIN, (z - 3) % SECTION_WIDTH}, Blocks::Bedrock::toProtocol());
-                            updateBlock({x, y, (z + 2) % SECTION_WIDTH}, Blocks::Bedrock::toProtocol());
+                            modifyBlock({(x + 5) % SECTION_WIDTH, 3 + CHUNK_HEIGHT_MIN, (z - 3) % SECTION_WIDTH}, Blocks::Bedrock::toProtocol());
+                            modifyBlock({x, y, (z + 2) % SECTION_WIDTH}, Blocks::Bedrock::toProtocol());
                         }
                     } else {
                         if (abs(pos.x) % 3 != 0 && (generator.getRandomizer() == z % 5 && abs(pos.z) % 3 == 2) && abs(pos.y) % 2 == 0)
-                            updateBlock({x, y, z}, Blocks::Bedrock::toProtocol());
+                            modifyBlock({x, y, z}, Blocks::Bedrock::toProtocol());
                     }
                 }
             }
@@ -617,7 +623,7 @@ void ChunkColumn::_generateLakes(UNUSED generation::Generator &generator)
             for (int y = waterLevel; 0 < y; y--) {
                 if (getBlock({x, y, z}) == 1)
                     break;
-                updateBlock({x, y, z}, Blocks::Water::toProtocol(Blocks::Water::Properties::Level::ZERO));
+                modifyBlock({x, y, z}, Blocks::Water::toProtocol(Blocks::Water::Properties::Level::ZERO));
             }
         }
     }
@@ -640,15 +646,15 @@ void ChunkColumn::_generateLocalModifications(UNUSED generation::Generator &gene
                     continue;
                 }
                 if (block == Blocks::Stone::toProtocol() && lastBlock == Blocks::Water::toProtocol(Blocks::Water::Properties::Level::ZERO)) {
-                    updateBlock({x, y, z}, Blocks::Sand::toProtocol()); // sand
+                    modifyBlock({x, y, z}, Blocks::Sand::toProtocol()); // sand
                     break;
                 }
                 if (block == Blocks::Stone::toProtocol() && lastBlock == Blocks::Air::toProtocol()) {
-                    updateBlock({x, y, z}, Blocks::GrassBlock::toProtocol(Blocks::GrassBlock::Properties::Snowy::FALSE)); // grass
+                    modifyBlock({x, y, z}, Blocks::GrassBlock::toProtocol(Blocks::GrassBlock::Properties::Snowy::FALSE)); // grass
                     if (y - 1 >= CHUNK_HEIGHT_MIN)
-                        updateBlock({x, y - 1, z}, Blocks::Dirt::toProtocol()); // dirt
+                        modifyBlock({x, y - 1, z}, Blocks::Dirt::toProtocol()); // dirt
                     if (y - 2 >= CHUNK_HEIGHT_MIN)
-                        updateBlock({x, y - 2, z}, Blocks::Dirt::toProtocol()); // dirt
+                        modifyBlock({x, y - 2, z}, Blocks::Dirt::toProtocol()); // dirt
                     break;
                 }
             }
@@ -734,8 +740,8 @@ void ChunkColumn::_generateTopLayerModification(UNUSED generation::Generator &ge
 
 void ChunkColumn::processRandomTick(uint32_t rts)
 {
-    for (auto &section : _sections) {
-        section.processRandomTick(rts, _chunkPos);
+    for (size_t i = 0; i < _sections.size(); i++) {
+        _sections[i].processRandomTick(rts, *this, i);
     }
 }
 
@@ -743,10 +749,8 @@ void ChunkColumn::tick()
 {
     for (auto &[_, tileEntity] : _tileEntities) {
         tileEntity->tick();
-        if (tileEntity->needBlockUpdate()) {
+        if (tileEntity->needBlockUpdate())
             updateBlock(world_storage::convertPositionToChunkPosition(tileEntity->position), tileEntity->getBlockId());
-            _blocksToBeUpdated.push_back({tileEntity->position, tileEntity->getBlockId()});
-        }
     }
 }
 
