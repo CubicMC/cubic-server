@@ -3,8 +3,8 @@
 #include "logging/logging.hpp"
 #include "options.hpp"
 #include "types.hpp"
-#include "utility//RandomTickBlockFunctions.hpp"
 #include "utility/PseudoRandomGenerator.hpp"
+#include "utility/RandomTickBlockFunctions.hpp"
 #include "world_storage/ChunkColumn.hpp"
 #include <cstdint>
 #include <stdexcept>
