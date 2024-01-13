@@ -24,16 +24,12 @@ nbt_tag_t *Items::FlintAndSteel::setNbtTag()
 void Items::FlintAndSteel::onUse(std::shared_ptr<Dimension> dim, Position &pos, UNUSED UsabilityType usage, UNUSED int32_t face)
 {
     auto portal = NetherPortal(dim);
-    if (portal.isFrame({pos.x, pos.y - 1, pos.z})) {
-        portal.buildPortal({pos.x, pos.y - 1, pos.z});
-        return;
-    } else {
-        dim->updateBlock(
-            pos,
-            Blocks::Fire::toProtocol(
-                Blocks::Fire::Properties::Age::ZERO, Blocks::Fire::Properties::East::FALSE, Blocks::Fire::Properties::North::FALSE, Blocks::Fire::Properties::South::FALSE,
-                Blocks::Fire::Properties::Up::FALSE, Blocks::Fire::Properties::West::FALSE
-            )
-        );
-    }
+    dim->updateBlock(
+        pos,
+        Blocks::Fire::toProtocol(
+            Blocks::Fire::Properties::Age::ZERO, Blocks::Fire::Properties::East::FALSE, Blocks::Fire::Properties::North::FALSE, Blocks::Fire::Properties::South::FALSE,
+            Blocks::Fire::Properties::Up::FALSE, Blocks::Fire::Properties::West::FALSE
+        )
+    );
+    portal.buildPortal({pos.x, pos.y - 1, pos.z});
 }

@@ -46,15 +46,6 @@ public:
     }
 
     /**
-     * @brief Tests if a frame is built
-     *
-     * @param pos       Position of the alleged frame
-     * @return true     There is a frame
-     * @return false    There isn't a frame
-     */
-    bool isFrame(Position pos);
-
-    /**
      * @brief Get the axis on which the frame is built (x or z)
      *
      * @param pos   The position of the frame

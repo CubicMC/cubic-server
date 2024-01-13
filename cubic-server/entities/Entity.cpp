@@ -372,6 +372,6 @@ void Entity::teleportPlayerThroughPortal(std::shared_ptr<Dimension> currentDimen
     thisPlayer->sendUpdateAdvancements({false, {}, {}, {}});
     thisPlayer->sendHealth();
     thisPlayer->sendSetExperience({0, 0, 0});
-    thisPlayer->teleport({8.5, 70 , 8.5});
+    thisPlayer->teleport({8.5, 70, 8.5});
     nextDimension->spawnPlayer(*thisPlayer);
 }
