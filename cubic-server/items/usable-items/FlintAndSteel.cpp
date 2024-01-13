@@ -31,5 +31,14 @@ void Items::FlintAndSteel::onUseOn(std::shared_ptr<Dimension> dim, Position &pos
             Blocks::Fire::Properties::Up::FALSE, Blocks::Fire::Properties::West::FALSE
         )
     );
+    for (auto player : dim->getPlayers()) {
+        player->sendBlockUpdate(
+            {pos,
+             Blocks::Fire::toProtocol(
+                 Blocks::Fire::Properties::Age::ZERO, Blocks::Fire::Properties::East::FALSE, Blocks::Fire::Properties::North::FALSE, Blocks::Fire::Properties::South::FALSE,
+                 Blocks::Fire::Properties::Up::FALSE, Blocks::Fire::Properties::West::FALSE
+             )}
+        );
+    }
     portal.buildPortal({pos.x, pos.y - 1, pos.z});
 }

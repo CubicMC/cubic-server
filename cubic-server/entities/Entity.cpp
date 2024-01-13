@@ -171,7 +171,17 @@ void Entity::tick()
     this->tickPosition();
     Position2D chunkPos = {transformBlockPosToChunkPos(_pos.x), transformBlockPosToChunkPos(_pos.z)};
     if (_dim->hasChunkLoaded(chunkPos.x, chunkPos.z)) {
-        auto block = _dim->getBlock({static_cast<int>(_pos.x), static_cast<int>(_pos.y), static_cast<int>(_pos.z)});
+
+        // here is an error arising from the '%' in the 'getBlock' below, so in negative positions, the gotten block position is 1 block less than needed
+        Position pos = _pos;
+        if (_pos.x < 0)
+            pos.x -= 1;
+        if (_pos.z < 0) {
+            pos.z -= 1;
+        }
+        auto block = _dim->getBlock(pos);
+
+        // LTRACE("Block: {}, {} . {} . {}", block, _pos.x, _pos.y, _pos.z);
 
         if (block == Blocks::NetherPortal::toProtocol(Blocks::NetherPortal::Properties::Axis::Z) ||
             block == Blocks::NetherPortal::toProtocol(Blocks::NetherPortal::Properties::Axis::X)) {
@@ -331,7 +341,7 @@ void Entity::teleportPlayerThroughPortal(std::shared_ptr<Dimension> currentDimen
     std::shared_ptr<Dimension> nextDimension = nullptr;
     std::shared_ptr<Player> thisPlayer = nullptr;
     for (auto player : currentDimension->getPlayers()) {
-        if (player->getUuid() == this->getUuid()) {
+        if (player->_id == _id) {
             thisPlayer = player;
             break;
         }
