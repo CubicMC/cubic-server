@@ -4,4 +4,6 @@ target_sources(${CMAKE_PROJECT_NAME} PRIVATE
     TileEntityList.cpp
     Furnace.hpp
     Furnace.cpp
+    ShulkerBox.hpp
+    ShulkerBox.cpp
 )
