@@ -4,6 +4,8 @@
 #include "options.hpp"
 #include "types.hpp"
 #include "utility/PseudoRandomGenerator.hpp"
+#include "utility/RandomTickBlockFunctions.hpp"
+#include "world_storage/ChunkColumn.hpp"
 #include <cstdint>
 #include <stdexcept>
 
@@ -217,41 +219,22 @@ uint8_t world_storage::Section::getBlockLight(const Position &pos) const
 
 uint8_t world_storage::Section::getBlockLight(uint64_t idx) const { return this->_blockLight.get(idx); }
 
-void world_storage::Section::processRandomTick(uint32_t rts, Position2D chunkPos)
+void world_storage::Section::processRandomTick(uint32_t rts, ChunkColumn &chunkColumn, size_t sectionIndex)
 {
     auto *rgen = utility::PseudoRandomGenerator::getInstance();
     for (uint32_t i = 0; i < rts; i++) {
         auto index = rgen->generateNumber(0, SECTION_3D_SIZE - 1);
-        _processBlockRandomTick(index, chunkPos);
+        _processBlockRandomTick(index, chunkColumn, sectionIndex);
     }
 }
 
-void world_storage::Section::_processBlockRandomTick(UNUSED uint32_t blockIndex, UNUSED Position2D chunkPos)
+void world_storage::Section::_processBlockRandomTick(uint32_t blockIndex, ChunkColumn &chunkColumn, size_t sectionIndex)
 {
-    // TODO(huntears): Add the randomtick events here (Grass/fire spreading, crops growth, etc...)
-
-//    if (this->getBlockLight(blockIndex) < 10)
-//        return;
-    if (this->getBlock(blockIndex) == Blocks::Wheat::toProtocol(Blocks::Wheat::Properties::Age::ZERO)) {
-        this->updateBlock(blockIndex, Blocks::Wheat::toProtocol(Blocks::Wheat::Properties::Age::ONE));
-        LINFO("Wheat growth at {}, {}", chunkPos, blockIndex);
-    } else if (this->getBlock(blockIndex) == Blocks::Wheat::toProtocol(Blocks::Wheat::Properties::Age::ONE)) {
-        this->updateBlock(blockIndex, Blocks::Wheat::toProtocol(Blocks::Wheat::Properties::Age::TWO));
-        LINFO("Wheat growth at {}, {}", chunkPos, blockIndex);
-    } else if (this->getBlock(blockIndex) == Blocks::Wheat::toProtocol(Blocks::Wheat::Properties::Age::TWO)) {
-        this->updateBlock(blockIndex, Blocks::Wheat::toProtocol(Blocks::Wheat::Properties::Age::THREE));
-        LINFO("Wheat growth at {}, {}", chunkPos, blockIndex);
-    } else if (this->getBlock(blockIndex) == Blocks::Wheat::toProtocol(Blocks::Wheat::Properties::Age::THREE)) {
-        this->updateBlock(blockIndex, Blocks::Wheat::toProtocol(Blocks::Wheat::Properties::Age::FOUR));
-        LINFO("Wheat growth at {}, {}", chunkPos, blockIndex);
-    } else if (this->getBlock(blockIndex) == Blocks::Wheat::toProtocol(Blocks::Wheat::Properties::Age::FOUR)) {
-        this->updateBlock(blockIndex, Blocks::Wheat::toProtocol(Blocks::Wheat::Properties::Age::FIVE));
-        LINFO("Wheat growth at {}, {}", chunkPos, blockIndex);
-    } else if (this->getBlock(blockIndex) == Blocks::Wheat::toProtocol(Blocks::Wheat::Properties::Age::FIVE)) {
-        this->updateBlock(blockIndex, Blocks::Wheat::toProtocol(Blocks::Wheat::Properties::Age::SIX));
-        LINFO("Wheat growth at {}, {}", chunkPos, blockIndex);
-    } else if (this->getBlock(blockIndex) == Blocks::Wheat::toProtocol(Blocks::Wheat::Properties::Age::SIX)) {
-        this->updateBlock(blockIndex, Blocks::Wheat::toProtocol(Blocks::Wheat::Properties::Age::SEVEN));
-        LINFO("Wheat growth at {}, {}", chunkPos, blockIndex);
+    BlockId block = getBlock(blockIndex);
+    if (Blocks::Farmland::toProtocol(Blocks::Farmland::Properties::Moisture::ZERO) <= block &&
+        block <= Blocks::Farmland::toProtocol(Blocks::Farmland::Properties::Moisture::SEVEN)) {
+        auto ablsolutePosition = world_storage::calculateAbsolutePosition(blockIndex, chunkColumn.getChunkPos(), sectionIndex);
+        utility::farmland(block, chunkColumn, ablsolutePosition);
+        LTRACE("Farmland random tick at {}", ablsolutePosition);
     }
 }
