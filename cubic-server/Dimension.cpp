@@ -93,17 +93,16 @@ void Dimension::tick()
     }
     uint32_t rts = CONFIG["randomtickspeed"].as<uint32_t>();
     if (rts != 0) {
-        for (auto &[pos, chunk] : _level.getChunkColumns()) {
+        for (auto &[_, chunk] : _level.getChunkColumns()) {
             // TODO(huntears): Test if a chunk is within simulation distance of a player
             if (!chunk.isReady())
                 continue;
             chunk.processRandomTick(rts);
         }
     }
-    for (auto &[pos, chunk] : _level.getChunkColumns()) {
+    for (auto &[_, chunk] : _level.getChunkColumns()) {
         if (!chunk.isReady())
             continue;
-        chunk.tick();
         if (auto &blocks = chunk.getBlocksToBeUpdated(); !blocks.empty()) {
             std::lock_guard _(_playersMutex);
             for (auto player : _players) {
@@ -115,6 +114,11 @@ void Dimension::tick()
                 }
             }
         }
+    }
+    for (auto &[_, chunk] : _level.getChunkColumns()) {
+        if (!chunk.isReady())
+            continue;
+        chunk.tick();
     }
 
     auto endTime = std::chrono::high_resolution_clock::now();
@@ -398,7 +402,6 @@ void Dimension::updateBlock(Position position, int32_t id)
     }
     std::lock_guard _(_playersMutex);
     for (auto player : _players) {
-        player->sendBlockUpdate({position, id});
         if (tileEntity)
             player->sendBlockEntityData(tileEntity->toBlockEntityData());
         else
@@ -411,7 +414,7 @@ void Dimension::addTileEntity(const Position &position, BlockId type)
     auto &chunk = this->_level.getChunkColumnFromBlockPos(position.x, position.z);
 
     auto chunkPosition = world_storage::convertPositionToChunkPosition(position);
-    chunk.updateBlock(chunkPosition, type);
+    chunk.modifyBlock(chunkPosition, type);
     chunk.addTileEntity(tile_entity::createTileEntity(type, position));
     for (auto player : _players) {
         player->sendBlockUpdate({position, type});
@@ -426,7 +429,7 @@ void Dimension::removeTileEntity(const Position &position)
     auto chunkPosition = world_storage::convertPositionToChunkPosition(position);
 
     auto type = chunk.getBlock(chunkPosition);
-    chunk.updateBlock(chunkPosition, 0);
+    chunk.modifyBlock(chunkPosition, 0);
     chunk.removeTileEntity(position);
     for (auto player : _players) {
         player->sendBlockUpdate({position, type});

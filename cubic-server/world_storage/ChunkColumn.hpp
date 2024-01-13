@@ -105,6 +105,20 @@ public:
     ChunkColumn(ChunkColumn &&chunk);
     ~ChunkColumn();
 
+    /*
+     * @brief Modify a block in the chunk
+     *
+     * @param pos The position of the block
+     * @param id The new block id
+     */
+    void modifyBlock(const Position &pos, BlockId id);
+
+    /*
+     * @brief Modify a block in the chunk and add it to the list of blocks to be updated
+     *
+     * @param pos The position of the block
+     * @param id The new block id
+     */
     void updateBlock(const Position &pos, BlockId id);
     BlockId getBlock(const Position &pos) const;
 
