@@ -229,20 +229,29 @@ void world_storage::Section::processRandomTick(uint32_t rts, Position2D chunkPos
 void world_storage::Section::_processBlockRandomTick(UNUSED uint32_t blockIndex, UNUSED Position2D chunkPos)
 {
     // TODO(huntears): Add the randomtick events here (Grass/fire spreading, crops growth, etc...)
-    if (this->getBlockLight(blockIndex) < 10)
-        return;
-    if (Blocks::Wheat::toProtocol(Blocks::Wheat::Properties::Age::ZERO))
+
+//    if (this->getBlockLight(blockIndex) < 10)
+//        return;
+    if (this->getBlock(blockIndex) == Blocks::Wheat::toProtocol(Blocks::Wheat::Properties::Age::ZERO)) {
         this->updateBlock(blockIndex, Blocks::Wheat::toProtocol(Blocks::Wheat::Properties::Age::ONE));
-    else if (Blocks::Wheat::toProtocol(Blocks::Wheat::Properties::Age::ONE))
+        LINFO("Wheat growth at {}, {}", chunkPos, blockIndex);
+    } else if (this->getBlock(blockIndex) == Blocks::Wheat::toProtocol(Blocks::Wheat::Properties::Age::ONE)) {
         this->updateBlock(blockIndex, Blocks::Wheat::toProtocol(Blocks::Wheat::Properties::Age::TWO));
-    else if (Blocks::Wheat::toProtocol(Blocks::Wheat::Properties::Age::TWO))
+        LINFO("Wheat growth at {}, {}", chunkPos, blockIndex);
+    } else if (this->getBlock(blockIndex) == Blocks::Wheat::toProtocol(Blocks::Wheat::Properties::Age::TWO)) {
         this->updateBlock(blockIndex, Blocks::Wheat::toProtocol(Blocks::Wheat::Properties::Age::THREE));
-    else if (Blocks::Wheat::toProtocol(Blocks::Wheat::Properties::Age::THREE))
+        LINFO("Wheat growth at {}, {}", chunkPos, blockIndex);
+    } else if (this->getBlock(blockIndex) == Blocks::Wheat::toProtocol(Blocks::Wheat::Properties::Age::THREE)) {
         this->updateBlock(blockIndex, Blocks::Wheat::toProtocol(Blocks::Wheat::Properties::Age::FOUR));
-    else if (Blocks::Wheat::toProtocol(Blocks::Wheat::Properties::Age::FOUR))
+        LINFO("Wheat growth at {}, {}", chunkPos, blockIndex);
+    } else if (this->getBlock(blockIndex) == Blocks::Wheat::toProtocol(Blocks::Wheat::Properties::Age::FOUR)) {
         this->updateBlock(blockIndex, Blocks::Wheat::toProtocol(Blocks::Wheat::Properties::Age::FIVE));
-    else if (Blocks::Wheat::toProtocol(Blocks::Wheat::Properties::Age::FIVE))
+        LINFO("Wheat growth at {}, {}", chunkPos, blockIndex);
+    } else if (this->getBlock(blockIndex) == Blocks::Wheat::toProtocol(Blocks::Wheat::Properties::Age::FIVE)) {
         this->updateBlock(blockIndex, Blocks::Wheat::toProtocol(Blocks::Wheat::Properties::Age::SIX));
-    else if (Blocks::Wheat::toProtocol(Blocks::Wheat::Properties::Age::SIX))
+        LINFO("Wheat growth at {}, {}", chunkPos, blockIndex);
+    } else if (this->getBlock(blockIndex) == Blocks::Wheat::toProtocol(Blocks::Wheat::Properties::Age::SIX)) {
         this->updateBlock(blockIndex, Blocks::Wheat::toProtocol(Blocks::Wheat::Properties::Age::SEVEN));
+        LINFO("Wheat growth at {}, {}", chunkPos, blockIndex);
+    }
 }
