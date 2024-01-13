@@ -1,10 +1,10 @@
 #include "Persistence.hpp"
 #include "Dimension.hpp"
 #include "Server.hpp"
-#include "World.hpp"
 #include "logging/logging.hpp"
-#include "nbt.h"
 #include "nbt.hpp"
+#include "nnbt.hpp"
+#include "protocol/serialization/addPrimaryType.hpp"
 #include "types.hpp"
 #include "world_storage/ChunkColumn.hpp"
 #include "world_storage/Level.hpp"
@@ -13,42 +13,22 @@
 #include "world_storage/Section.hpp"
 #include <algorithm>
 #include <cassert>
+#include <cstddef>
 #include <cstdint>
 #include <cstdio>
 #include <cstring>
 #include <filesystem>
+#include <fstream>
+#include <ios>
+#include <iostream>
 #include <memory>
 #include <mutex>
 #include <netinet/in.h>
 #include <stdexcept>
 #include <string>
-#include <string_view>
 #include <sys/stat.h>
 #include <vector>
 #include <zlib.h>
-
-// TODO(huntears): Add better error messages
-#define GET_VALUE(t, type_accessor, dst, src, root)    \
-    do {                                               \
-        auto *__tmp = nbt_tag_compound_get(root, src); \
-        assert(__tmp);                                 \
-        assert(__tmp->type == t);                      \
-        dest.dst = __tmp->type_accessor.value;         \
-    } while (0)
-
-#define GET_VALUE_BYTE(dst, src, root) GET_VALUE(NBT_TYPE_BYTE, tag_byte, dst, src, root)
-#define GET_VALUE_INT(dst, src, root) GET_VALUE(NBT_TYPE_INT, tag_int, dst, src, root)
-#define GET_VALUE_SHORT(dst, src, root) GET_VALUE(NBT_TYPE_SHORT, tag_short, dst, src, root)
-#define GET_VALUE_LONG(dst, src, root) GET_VALUE(NBT_TYPE_LONG, tag_long, dst, src, root)
-#define GET_VALUE_FLOAT(dst, src, root) GET_VALUE(NBT_TYPE_FLOAT, tag_float, dst, src, root)
-#define GET_VALUE_DOUBLE(dst, src, root) GET_VALUE(NBT_TYPE_DOUBLE, tag_double, dst, src, root)
-#define GET_VALUE_STRING(dst, src, root)                                         \
-    do {                                                                         \
-        auto *__tmp = nbt_tag_compound_get(root, src);                           \
-        assert(__tmp);                                                           \
-        assert(__tmp->type == NBT_TYPE_STRING);                                  \
-        dest.dst = std::string(__tmp->tag_string.value, __tmp->tag_string.size); \
-    } while (0)
 
 #define GET_VALUE_TO(t, type_accessor, dst, src, root, dstroot) \
     do {                                                        \
@@ -104,6 +84,14 @@ static size_t _readMem(void *ud, uint8_t *d, size_t s)
     memcpy(d, u->start, toCopy);
     u->start += toCopy;
     return toCopy;
+}
+
+static size_t _writeToFile(void *ud, uint8_t *d, size_t s)
+{
+    std::ofstream *u = (std::ofstream *) ud;
+    u->write((const char *) d, s);
+
+    return s;
 }
 
 static int64_t getFileSize(const std::string &filename)
@@ -167,27 +155,27 @@ void Persistence::loadLevelData(LevelData &dest)
     assert(data->type == NBT_TYPE_COMPOUND);
 
     // TODO(huntears): Find a better way to map the values
-    GET_VALUE_DOUBLE(borderCenterX, "BorderCenterX", data);
-    GET_VALUE_DOUBLE(borderCenterZ, "BorderCenterZ", data);
-    GET_VALUE_DOUBLE(borderDamagePerBlock, "BorderDamagePerBlock", data);
-    GET_VALUE_DOUBLE(borderSafeZone, "BorderSafeZone", data);
-    GET_VALUE_DOUBLE(borderSize, "BorderSize", data);
-    GET_VALUE_DOUBLE(borderSizeLerpTarget, "BorderSizeLerpTarget", data);
-    GET_VALUE_LONG(borderSizeLerpTime, "BorderSizeLerpTime", data);
-    GET_VALUE_DOUBLE(borderWarningBlocks, "BorderWarningBlocks", data);
-    GET_VALUE_DOUBLE(borderWarningTime, "BorderWarningTime", data);
-    GET_VALUE_INT(dataVersion, "DataVersion", data);
-    GET_VALUE_LONG(dayTime, "DayTime", data);
-    GET_VALUE_BYTE(difficulty, "Difficulty", data);
-    GET_VALUE_BYTE(difficultyLocked, "DifficultyLocked", data);
-    GET_VALUE_INT(gameType, "GameType", data);
-    GET_VALUE_LONG(lastPlayed, "LastPlayed", data);
-    GET_VALUE_STRING(levelName, "LevelName", data);
-    GET_VALUE_FLOAT(spawnAngle, "SpawnAngle", data);
-    GET_VALUE_INT(spawnX, "SpawnX", data);
-    GET_VALUE_INT(spawnY, "SpawnY", data);
-    GET_VALUE_INT(spawnZ, "SpawnZ", data);
-    GET_VALUE_LONG(time, "Time", data);
+    GET_VALUE_DOUBLE(dest.borderCenterX, "BorderCenterX", data);
+    GET_VALUE_DOUBLE(dest.borderCenterZ, "BorderCenterZ", data);
+    GET_VALUE_DOUBLE(dest.borderDamagePerBlock, "BorderDamagePerBlock", data);
+    GET_VALUE_DOUBLE(dest.borderSafeZone, "BorderSafeZone", data);
+    GET_VALUE_DOUBLE(dest.borderSize, "BorderSize", data);
+    GET_VALUE_DOUBLE(dest.borderSizeLerpTarget, "BorderSizeLerpTarget", data);
+    GET_VALUE_LONG(dest.borderSizeLerpTime, "BorderSizeLerpTime", data);
+    GET_VALUE_DOUBLE(dest.borderWarningBlocks, "BorderWarningBlocks", data);
+    GET_VALUE_DOUBLE(dest.borderWarningTime, "BorderWarningTime", data);
+    GET_VALUE_INT(dest.dataVersion, "DataVersion", data);
+    GET_VALUE_LONG(dest.dayTime, "DayTime", data);
+    GET_VALUE_BYTE(dest.difficulty, "Difficulty", data);
+    GET_VALUE_BYTE(dest.difficultyLocked, "DifficultyLocked", data);
+    GET_VALUE_INT(dest.gameType, "GameType", data);
+    GET_VALUE_LONG(dest.lastPlayed, "LastPlayed", data);
+    GET_VALUE_STRING(dest.levelName, "LevelName", data);
+    GET_VALUE_FLOAT(dest.spawnAngle, "SpawnAngle", data);
+    GET_VALUE_INT(dest.spawnX, "SpawnX", data);
+    GET_VALUE_INT(dest.spawnY, "SpawnY", data);
+    GET_VALUE_INT(dest.spawnZ, "SpawnZ", data);
+    GET_VALUE_LONG(dest.time, "Time", data);
 
     {
         // const auto __tmpCompound = getConstElement<nbt::Compound, nbt::TagType::Compound>(data, "Version");
@@ -201,9 +189,9 @@ void Persistence::loadLevelData(LevelData &dest)
         GET_VALUE_TO_BYTE(snapshot, "Snapshot", __tmpCompound, dest.mcVersion);
     }
 
-    GET_VALUE_INT(wanderingTraderSpawnChance, "WanderingTraderSpawnChance", data);
-    GET_VALUE_INT(wanderingTraderSpawnDelay, "WanderingTraderSpawnDelay", data);
-    GET_VALUE_BYTE(wasModded, "WasModded", data);
+    GET_VALUE_INT(dest.wanderingTraderSpawnChance, "WanderingTraderSpawnChance", data);
+    GET_VALUE_INT(dest.wanderingTraderSpawnDelay, "WanderingTraderSpawnDelay", data);
+    GET_VALUE_BYTE(dest.wasModded, "WasModded", data);
 
     {
         auto *__tmpCompound = nbt_tag_compound_get(data, "WorldGenSettings");
@@ -215,15 +203,85 @@ void Persistence::loadLevelData(LevelData &dest)
         GET_VALUE_TO_LONG(seed, "seed", __tmpCompound, dest.worldGenSettings);
     }
 
-    GET_VALUE_BYTE(allowCommands, "allowCommands", data);
-    GET_VALUE_INT(clearWeatherTime, "clearWeatherTime", data);
-    GET_VALUE_BYTE(hardcore, "hardcore", data);
-    GET_VALUE_BYTE(initialized, "initialized", data);
-    GET_VALUE_INT(rainTime, "rainTime", data);
-    GET_VALUE_BYTE(raining, "raining", data);
-    GET_VALUE_INT(thunderTime, "thunderTime", data);
-    GET_VALUE_BYTE(thundering, "thundering", data);
-    GET_VALUE_INT(version, "version", data);
+    GET_VALUE_BYTE(dest.allowCommands, "allowCommands", data);
+    GET_VALUE_INT(dest.clearWeatherTime, "clearWeatherTime", data);
+    GET_VALUE_BYTE(dest.hardcore, "hardcore", data);
+    GET_VALUE_BYTE(dest.initialized, "initialized", data);
+    GET_VALUE_INT(dest.rainTime, "rainTime", data);
+    GET_VALUE_BYTE(dest.raining, "raining", data);
+    GET_VALUE_INT(dest.thunderTime, "thunderTime", data);
+    GET_VALUE_BYTE(dest.thundering, "thundering", data);
+    GET_VALUE_INT(dest.version, "version", data);
+
+    nbt_free_tag(root);
+}
+
+void Persistence::saveLevelData(LevelData &src)
+{
+    std::unique_lock<std::mutex> lock(_accessMutex);
+
+    const std::filesystem::path file = std::filesystem::path(_folder) / "level.dat";
+    std::ofstream output_file(file, std::ios::out | std::ios::binary);
+    if (!output_file.is_open())
+        throw std::runtime_error("Could not open file " + _folder);
+
+    auto root = nnbt::Tag::fromRaw(nbt_new_tag_compound());
+    auto data = root.addCompound("Data");
+
+    data.add(src.borderCenterX, "BorderCenterX");
+    data.add(src.borderCenterZ, "BorderCenterZ");
+    data.add(src.borderDamagePerBlock, "BorderDamagePerBlock");
+    data.add(src.borderSafeZone, "BorderSafeZone");
+    data.add(src.borderSize, "BorderSize");
+    data.add(src.borderSizeLerpTarget, "BorderSizeLerpTarget");
+    data.add(src.borderSizeLerpTime, "BorderSizeLerpTime");
+    data.add(src.borderWarningBlocks, "BorderWarningBlocks");
+    data.add(src.borderWarningTime, "BorderWarningTime");
+    data.add(src.dataVersion, "DataVersion");
+    data.add(src.dayTime, "DayTime");
+    data.add(src.difficulty, "Difficulty");
+    data.add(src.difficultyLocked, "DifficultyLocked");
+    data.add(src.gameType, "GameType");
+    data.add(src.lastPlayed, "LastPlayed");
+    data.add(src.levelName, "LevelName");
+    data.add(src.spawnAngle, "SpawnAngle");
+    data.add(src.spawnX, "SpawnX");
+    data.add(src.spawnY, "SpawnY");
+    data.add(src.spawnZ, "SpawnZ");
+    data.add(src.time, "Time");
+
+    auto version = data.addCompound("Version");
+    version.add(src.mcVersion.id, "Id");
+    version.add(src.mcVersion.name, "Name");
+    version.add(src.mcVersion.series, "Series");
+    version.add(src.mcVersion.snapshot, "Snapshot");
+
+    data.add(src.wanderingTraderSpawnChance, "WanderingTraderSpawnChance");
+    data.add(src.wanderingTraderSpawnDelay, "WanderingTraderSpawnDelay");
+    data.add(src.wasModded, "WasModded");
+
+    auto worldGenSettings = data.addCompound("WorldGenSettings");
+    worldGenSettings.add(src.worldGenSettings.bonus_chest, "bonus_chest");
+    worldGenSettings.add(src.worldGenSettings.generateFeatures, "generate_features");
+    worldGenSettings.add(src.worldGenSettings.seed, "seed");
+
+    data.add(src.allowCommands, "allowCommands");
+    data.add(src.clearWeatherTime, "clearWeatherTime");
+    data.add(src.hardcore, "hardcore");
+    data.add(src.initialized, "initialized");
+    data.add(src.rainTime, "rainTime");
+    data.add(src.raining, "raining");
+    data.add(src.thunderTime, "thunderTime");
+    data.add(src.thundering, "thundering");
+    data.add(src.version, "version");
+
+    nbt_writer_t writer {
+        .write = _writeToFile,
+        .userdata = &output_file,
+    };
+    nbt_write(writer, root.data, NBT_WRITE_FLAG_USE_ZLIB);
+
+    root.destroy();
 }
 
 LevelData Persistence::loadLevelData()
@@ -261,18 +319,18 @@ void Persistence::loadPlayerData(u128 uuid, PlayerData &dest)
     assert(root->type == NBT_TYPE_COMPOUND);
 
     // TODO(huntears): Map the values to the destination object
-    GET_VALUE_FLOAT(absorptionAmount, "AbsorptionAmount", root);
-    GET_VALUE_SHORT(air, "Air", root);
-    GET_VALUE_INT(dataVersion, "DataVersion", root);
-    GET_VALUE_SHORT(deathTime, "DeathTime", root);
-    GET_VALUE_STRING(dimension, "Dimension", root);
-    GET_VALUE_FLOAT(fallDistance, "FallDistance", root);
-    GET_VALUE_BYTE(fallFlying, "FallFlying", root);
-    GET_VALUE_SHORT(fire, "Fire", root);
-    GET_VALUE_FLOAT(health, "Health", root);
-    GET_VALUE_INT(hurtByTimestamp, "HurtByTimestamp", root);
-    GET_VALUE_SHORT(hurtTime, "HurtTime", root);
-    GET_VALUE_BYTE(invulnerable, "Invulnerable", root);
+    GET_VALUE_FLOAT(dest.absorptionAmount, "AbsorptionAmount", root);
+    GET_VALUE_SHORT(dest.air, "Air", root);
+    GET_VALUE_INT(dest.dataVersion, "DataVersion", root);
+    GET_VALUE_SHORT(dest.deathTime, "DeathTime", root);
+    GET_VALUE_STRING(dest.dimension, "Dimension", root);
+    GET_VALUE_FLOAT(dest.fallDistance, "FallDistance", root);
+    GET_VALUE_BYTE(dest.fallFlying, "FallFlying", root);
+    GET_VALUE_SHORT(dest.fire, "Fire", root);
+    GET_VALUE_FLOAT(dest.health, "Health", root);
+    GET_VALUE_INT(dest.hurtByTimestamp, "HurtByTimestamp", root);
+    GET_VALUE_SHORT(dest.hurtTime, "HurtTime", root);
+    GET_VALUE_BYTE(dest.invulnerable, "Invulnerable", root);
     {
         auto *__tmpList = nbt_tag_compound_get(root, "Motion");
         assert(__tmpList);
@@ -283,8 +341,8 @@ void Persistence::loadPlayerData(u128 uuid, PlayerData &dest)
         dest.motion.y = __tmpList->tag_list.value[1]->tag_double.value;
         dest.motion.z = __tmpList->tag_list.value[2]->tag_double.value;
     }
-    GET_VALUE_BYTE(onGround, "OnGround", root);
-    GET_VALUE_INT(portalCooldown, "PortalCooldown", root);
+    GET_VALUE_BYTE(dest.onGround, "OnGround", root);
+    GET_VALUE_INT(dest.portalCooldown, "PortalCooldown", root);
     {
         auto *__tmpList = nbt_tag_compound_get(root, "Pos");
         assert(__tmpList);
@@ -304,11 +362,11 @@ void Persistence::loadPlayerData(u128 uuid, PlayerData &dest)
         dest.rotation.yaw = __tmpList->tag_list.value[0]->tag_float.value;
         dest.rotation.pitch = __tmpList->tag_list.value[1]->tag_float.value;
     }
-    GET_VALUE_INT(score, "Score", root);
-    GET_VALUE_INT(selectedItemSlot, "SelectedItemSlot", root);
-    GET_VALUE_SHORT(sleepTimer, "SleepTimer", root);
+    GET_VALUE_INT(dest.score, "Score", root);
+    GET_VALUE_INT(dest.selectedItemSlot, "SelectedItemSlot", root);
+    GET_VALUE_SHORT(dest.sleepTimer, "SleepTimer", root);
     {
-        auto *__tmpArray = nbt_tag_compound_get(root, "Rotation");
+        auto *__tmpArray = nbt_tag_compound_get(root, "UUID");
         assert(__tmpArray);
         assert(__tmpArray->type == NBT_TYPE_INT_ARRAY);
         assert(__tmpArray->tag_int_array.size == 4);
@@ -316,16 +374,16 @@ void Persistence::loadPlayerData(u128 uuid, PlayerData &dest)
         dest.uuid.least = *(uint64_t *) &__tmpArray->tag_int_array.value[2];
         dest.uuid.swapEndianness();
     }
-    GET_VALUE_INT(xpLevel, "XpLevel", root);
-    GET_VALUE_FLOAT(xpP, "XpP", root);
-    GET_VALUE_INT(xpSeed, "XpSeed", root);
-    GET_VALUE_INT(xpTotal, "XpTotal", root);
-    GET_VALUE_FLOAT(foodExhaustionLevel, "foodExhaustionLevel", root);
-    GET_VALUE_INT(foodLevel, "foodLevel", root);
-    GET_VALUE_FLOAT(foodSaturationLevel, "foodSaturationLevel", root);
-    GET_VALUE_INT(foodTickTimer, "foodTickTimer", root);
-    GET_VALUE_INT(playerGameType, "playerGameType", root);
-    GET_VALUE_BYTE(seenCredits, "seenCredits", root);
+    GET_VALUE_INT(dest.xpLevel, "XpLevel", root);
+    GET_VALUE_FLOAT(dest.xpP, "XpP", root);
+    GET_VALUE_INT(dest.xpSeed, "XpSeed", root);
+    GET_VALUE_INT(dest.xpTotal, "XpTotal", root);
+    GET_VALUE_FLOAT(dest.foodExhaustionLevel, "foodExhaustionLevel", root);
+    GET_VALUE_INT(dest.foodLevel, "foodLevel", root);
+    GET_VALUE_FLOAT(dest.foodSaturationLevel, "foodSaturationLevel", root);
+    GET_VALUE_INT(dest.foodTickTimer, "foodTickTimer", root);
+    GET_VALUE_INT(dest.playerGameType, "playerGameType", root);
+    GET_VALUE_BYTE(dest.seenCredits, "seenCredits", root);
 }
 
 PlayerData Persistence::loadPlayerData(u128 uuid)
@@ -339,6 +397,152 @@ PlayerData Persistence::loadPlayerData(u128 uuid)
 void Persistence::loadPlayerData(const Player &player, PlayerData &dest) { loadPlayerData(player.getUuid(), dest); }
 
 PlayerData Persistence::loadPlayerData(const Player &player) { return loadPlayerData(player.getUuid()); }
+
+void Persistence::savePlayerData(u128 uuid, const PlayerData &src)
+{
+    std::unique_lock<std::mutex> lock(_accessMutex);
+
+    const std::filesystem::path file = std::filesystem::path(_folder) / "playerdata" / (uuid.toString() + ".dat");
+    std::ofstream output_file(file, std::ios::out | std::ios::binary);
+    if (!output_file.is_open())
+        throw std::runtime_error("Could not open file " + std::string(file));
+
+    auto root = nnbt::Tag::fromRaw(nbt_new_tag_compound());
+
+    root.add(src.absorptionAmount, "AbsorptionAmount");
+    root.add(src.air, "Air");
+    root.add(src.dataVersion, "DataVersion");
+    root.add(src.deathTime, "DeathTime");
+    root.add(src.dimension, "Dimension");
+    root.add(src.fallDistance, "FallDistance");
+    root.add(src.fallFlying, "FallFlying");
+    root.add(src.fire, "Fire");
+    root.add(src.health, "Health");
+    root.add(src.hurtByTimestamp, "HurtByTimestamp");
+    root.add(src.hurtTime, "HurtTime");
+    root.add(src.invulnerable, "Invulnerable");
+
+    auto motion = root.addList(NBT_TYPE_DOUBLE, "Motion");
+    motion.add(src.motion.x, nullptr);
+    motion.add(src.motion.y, nullptr);
+    motion.add(src.motion.z, nullptr);
+
+    root.add(src.onGround, "OnGround");
+    root.add(src.portalCooldown, "PortalCooldown");
+
+    auto pos = root.addList(NBT_TYPE_DOUBLE, "Pos");
+    pos.add(src.pos.x, nullptr);
+    pos.add(src.pos.y, nullptr);
+    pos.add(src.pos.z, nullptr);
+
+    auto rotation = root.addList(NBT_TYPE_DOUBLE, "Rotation");
+    rotation.add(src.rotation.yaw, nullptr);
+    rotation.add(src.rotation.pitch, nullptr);
+
+    root.add(src.score, "Score");
+    root.add(src.selectedItemSlot, "SelectedItemSlot");
+    root.add(src.sleepTimer, "SleepTimer");
+
+    std::vector<int32_t> to_add_uuid = src.uuid.toVector();
+    root.add(to_add_uuid, "UUID");
+
+    root.add(src.xpLevel, "XpLevel");
+    root.add(src.xpP, "XpP");
+    root.add(src.xpSeed, "XpSeed");
+    root.add(src.xpTotal, "XpTotal");
+    root.add(src.foodExhaustionLevel, "foodExhaustionLevel");
+    root.add(src.foodLevel, "foodLevel");
+    root.add(src.foodSaturationLevel, "foodSaturationLevel");
+    root.add(src.foodTickTimer, "foodTickTimer");
+    root.add(src.playerGameType, "playerGameType");
+    root.add(src.seenCredits, "seenCredits");
+
+    nbt_writer_t writer {
+        .write = _writeToFile,
+        .userdata = &output_file,
+    };
+    nbt_write(writer, root.data, NBT_WRITE_FLAG_USE_ZLIB);
+
+    root.destroy();
+}
+
+void Persistence::saveRegion(Dimension &dim, int x, int z)
+{
+    std::unique_lock<std::mutex> lock(_accessMutex);
+
+    std::vector<uint8_t> finalData(sizeof(RegionHeader), 0);
+    RegionHeader header;
+    memset(&header, 0, sizeof(RegionHeader));
+    uint32_t lastOffset = sizeof(header) / regionChunkAlignment; // This needs to take the region header into account
+    uint8_t lastSize = 0;
+
+    // TODO(huntears): Check if the region is loaded, else just exit here
+    // EDIT: Is that really needed? This depends on how this is called, but it might not need to be done
+
+    LDEBUG("Saving region {} {}...", x, z);
+
+    const std::string regionSlice = "r." + std::to_string(x) + "." + std::to_string(z) + ".mca";
+    const std::filesystem::path file = std::filesystem::path(_folder) / "region" / regionSlice;
+    const std::filesystem::path regionFolder = std::filesystem::path(_folder) / "region/";
+    if (!std::filesystem::exists(regionFolder))
+        std::filesystem::create_directories(regionFolder);
+
+    for (uint16_t cx = 0; cx < maxXPerRegion; cx++) {
+        for (uint16_t cz = 0; cz < maxZPerRegion; cz++) {
+            if (!dim.hasChunkLoaded(cx + x * 32, cz + z * 32))
+                continue;
+
+            world_storage::ChunkColumn &chunk = dim.getChunk(cx + x * 32, cz + z * 32);
+            const uint16_t currentOffset = cx + cz * maxXPerRegion;
+
+            // Nothing here can be const for some fucking reason
+            nbt_tag_t *chunkData = chunk.toRegionCompatibleFormat();
+            std::vector<uint8_t> dataToAdd;
+            protocol::addNBT(dataToAdd, chunkData, NBT_WRITE_FLAG_USE_ZLIB);
+            nbt_free_tag(chunkData);
+
+            // Add the chunk header
+            ChunkHeader cHeader = {
+                .length = ntohl((uint32_t) dataToAdd.size() + 1), // That + 1 is here because you also need to count the compression scheme
+                .compressionScheme = RegionChunkCompressionScheme::ZLIB,
+            };
+            dataToAdd.insert(dataToAdd.begin(), (uint8_t *) &cHeader, ((uint8_t *) &cHeader) + sizeof(cHeader));
+
+            // Fill in the location table with the chunk's offset and size
+            const size_t actualChunkSize = dataToAdd.size();
+            const size_t chunkSize =
+                !(actualChunkSize & regionChunkAlignmentMask) ? actualChunkSize : actualChunkSize + regionChunkAlignment - (actualChunkSize & regionChunkAlignmentMask);
+            const uint32_t chunkOffset = lastOffset + lastSize;
+            // Only uncomment this if there is heavy debug to do, cause this will absolutely fill your logs with nonsense
+            // LDEBUG("Location Offset: {} | Chunk Offset: {} | ChunkSize: {}", currentOffset, chunkOffset, chunkSize / regionChunkAlignment);
+            header.locationTable[currentOffset] = RegionLocation(chunkOffset, chunkSize / regionChunkAlignment);
+
+            // Add padding if necessary to the chunk's data
+            const uint32_t chunkPadding = chunkSize - actualChunkSize;
+            if (chunkPadding)
+                dataToAdd.insert(dataToAdd.end(), chunkPadding, 0);
+
+            // Add the chunk to the list of chunks to fill in
+            finalData.insert(finalData.end(), dataToAdd.begin(), dataToAdd.end());
+
+            // Update last location table values
+            lastOffset = chunkOffset;
+            lastSize = chunkSize / regionChunkAlignment;
+        }
+    }
+    // Copy the region header to the final data
+    memcpy(finalData.data(), &header, sizeof(header));
+
+    // Flush to disk
+    // TODO (huntears): Error handling
+    FILE *f = fopen(file.c_str(), "w");
+    if (!f)
+        throw std::runtime_error("Could not open file " + std::string(file));
+    fwrite(finalData.data(), 1, finalData.size(), f);
+    fclose(f);
+
+    LDEBUG("Saved region {} {}", x, z);
+}
 
 void Persistence::loadRegion(Dimension &dim, int x, int z)
 {
@@ -372,24 +576,21 @@ void Persistence::loadRegion(Dimension &dim, int x, int z)
 
             const ChunkHeader *cHeader = (const ChunkHeader *) (fileContents + chunkOffset);
 
-            // clang-format off
             _userData ud = {
                 ((char *) cHeader) + sizeof(*cHeader),
-                ((char *) cHeader) + sizeof(*cHeader) + cHeader->getLength() - 1
+                ((char *) cHeader) + sizeof(*cHeader) + cHeader->getLength() - 1,
             };
-            // clang-format on
 
-            // clang-format off
             nbt_reader_t reader = {
                 _readMem,
-                &ud
+                &ud,
             };
-            // clang-format on
 
             auto *data = nbt_parse(reader, NBT_PARSE_FLAG_USE_ZLIB);
             assert(data->type == NBT_TYPE_COMPOUND);
 
             _regionLoadChunk(dim, cx, cz, x, z, data);
+            nbt_free_tag(data);
         }
     }
     free(fileContents);
@@ -423,8 +624,6 @@ void Persistence::_regionLoadChunk(Dimension &dim, uint16_t cx, uint16_t cz, int
     _regionLoadHeightmaps(chunk, data);
 
     chunk._currentState = GenerationState::READY;
-
-    nbt_free_tag(data);
 }
 
 void Persistence::_regionLoadSection(ChunkColumn &chunk, nbt_tag_t *section)

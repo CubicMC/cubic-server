@@ -4,6 +4,7 @@
 #include <string>
 #include <vector>
 
+#include "protocol/container/Inventory.hpp"
 #include "types.hpp"
 
 class Server;
@@ -12,7 +13,7 @@ class Player;
 class Entity;
 class LivingEntity;
 class Block;
-class Inventory;
+using Inventory = protocol::container::Inventory;
 class Chat;
 
 template<typename T>

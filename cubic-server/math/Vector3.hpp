@@ -192,8 +192,15 @@ public:
      *
      * @return Position
      */
-    constexpr operator Position() const noexcept;
+    operator Position() const noexcept;
+    operator Position() noexcept;
 };
+
+template<>
+Vector3<double>::operator Position() const noexcept;
+
+template<>
+Vector3<double>::operator Position() noexcept;
 
 template<typename T>
 std::ostream &operator<<(std::ostream &o, const Vector3<T> &v)

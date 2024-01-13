@@ -145,7 +145,7 @@ public:
      * @param pos The position of the block
      * @return BlockId The block ID
      */
-    virtual BlockId getBlock(const Position &pos) const { return getLevel().getChunkColumnFromBlockPos(pos.x, pos.z).getBlock(pos); }
+    virtual BlockId getBlock(const Position &pos) const { return getLevel().getChunkColumnFromBlockPos(pos.x, pos.z).getBlock(world_storage::convertPositionToChunkPosition(pos)); }
 
     /**
      * @brief Get the tps of the dimension
@@ -160,6 +160,37 @@ public:
      * @return MSPTInfos
      */
     virtual MSPTInfos getMSPTInfos() const;
+
+    /**
+     * @brief Add a new tile entity to the dimension
+     *
+     * @param position The position of the tile entity (in absolute coordinates)
+     * @param type The type of the tile entity (as a BlockId)
+     */
+    virtual void addTileEntity(const Position &position, BlockId type);
+
+    /**
+     * @brief Remove a tile entity from the dimension
+     *
+     * @param position The position of the tile entity (in absolute coordinates)
+     */
+    virtual void removeTileEntity(const Position &position);
+
+    /**
+     * @brief Get a tile entity from the dimension using its position
+     *
+     * @param position The position of the tile entity (in absolute coordinates)
+     * @return std::shared_ptr<tile_entity::TileEntity>
+     */
+    virtual std::shared_ptr<tile_entity::TileEntity> getTileEntity(const Position &position);
+
+    /**
+     * @brief Get a tile entity from the dimension using its position
+     *
+     * @param position The position of the tile entity (in absolute coordinates)
+     * @return std::shared_ptr<const tile_entity::TileEntity>
+     */
+    virtual std::shared_ptr<const tile_entity::TileEntity> getTileEntity(const Position &position) const;
 
 protected:
     virtual void _run();

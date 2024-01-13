@@ -2,12 +2,14 @@
 #define CUBICSERVER_TYPES_HPP
 
 #include "math/Vector3.hpp"
+#include <cstddef>
 #include <cstdint>
 #include <iomanip>
 #include <iostream>
 #include <ostream>
 #include <sstream>
 #include <string>
+#include <vector>
 
 struct u128 {
     uint64_t most;
@@ -19,6 +21,13 @@ struct u128 {
      * @return std::string The string version of the UUID
      */
     std::string toString() const;
+
+    /**
+     * @brief Returs a vector of ints representing the uuid
+     *
+     * @return std::vector<int32_t> The vector of ints representing the uuid
+     */
+    std::vector<int32_t> toVector() const;
 
     /**
      * @brief Swaps the endianness of the current UUID
@@ -173,6 +182,17 @@ constexpr bool Position::operator<(valueType i) const { return x < i && y < i &&
 
 constexpr bool Position::operator>=(valueType i) const { return x >= i && y >= i && z >= i; }
 constexpr bool Position::operator<=(valueType i) const { return x <= i && y <= i && z <= i; }
+
+template<>
+struct std::hash<Position> {
+    std::size_t operator()(const Position &pos) const noexcept
+    {
+        std::size_t h1 = std::hash<Position::valueType> {}(pos.x);
+        std::size_t h2 = std::hash<Position::valueType> {}(pos.y);
+        std::size_t h3 = std::hash<Position::valueType> {}(pos.z);
+        return h1 ^ (h2 << 1) ^ (h3 << 2);
+    }
+};
 
 // Position2D
 

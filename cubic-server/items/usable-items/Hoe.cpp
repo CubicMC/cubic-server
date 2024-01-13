@@ -4,6 +4,7 @@
 #include "blocks.hpp"
 #include "entities/Item.hpp"
 #include "items/UsableItem.hpp"
+#include "options.hpp"
 #include <exception>
 
 nbt_tag_t *Items::Hoe::setNbtTag()
@@ -23,7 +24,7 @@ nbt_tag_t *Items::Hoe::setNbtTag()
     return root;
 }
 
-void Items::Hoe::onUse(std::shared_ptr<Dimension> dim, Position &pos, UsabilityType usage, int32_t face)
+void Items::Hoe::onUseOn(std::shared_ptr<Dimension> dim, Position &pos, UsabilityType usage, int32_t face, UNUSED Entity &user)
 {
     auto blockPos = pos;
 
