@@ -1346,10 +1346,8 @@ void Player::_onUseItemOn(protocol::UseItemOn &pck)
             this->getDimension()->getBlock(below) == Blocks::Farmland::toProtocol(Blocks::Farmland::Properties::Moisture::FIVE) ||
             this->getDimension()->getBlock(below) == Blocks::Farmland::toProtocol(Blocks::Farmland::Properties::Moisture::SIX) ||
             this->getDimension()->getBlock(below) == Blocks::Farmland::toProtocol(Blocks::Farmland::Properties::Moisture::SEVEN))) {
-//            this->getDimension()->updateBlock(pck.location, Blocks::Stone::toProtocol());
             this->getDimension()->updateBlock(pck.location, Blocks::Wheat::toProtocol(Blocks::Wheat::Properties::Age::ZERO));
             this->_inventory->hotbar().at(this->_heldItem).takeOne();
-            LINFO("planted seeds!, {} at {}", Blocks::Wheat::toProtocol(Blocks::Wheat::Properties::Age::ZERO), pck.location);
             return;
         }
     }
