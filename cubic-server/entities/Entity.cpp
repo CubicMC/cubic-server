@@ -168,23 +168,26 @@ const std::shared_ptr<Entity> Entity::pickupItem()
 void Entity::tick()
 {
     this->tickPosition();
-    auto block = _dim->getBlock({static_cast<int>(_pos.x), static_cast<int>(_pos.y), static_cast<int>(_pos.z)});
+    Position2D chunkPos = {transformBlockPosToChunkPos(_pos.x), transformBlockPosToChunkPos(_pos.z)};
+    if (_dim->hasChunkLoaded(chunkPos.x, chunkPos.z)) {
+        auto block = _dim->getBlock({static_cast<int>(_pos.x), static_cast<int>(_pos.y), static_cast<int>(_pos.z)});
 
-    if (block == Blocks::NetherPortal::toProtocol(Blocks::NetherPortal::Properties::Axis::Z) ||
-        block == Blocks::NetherPortal::toProtocol(Blocks::NetherPortal::Properties::Axis::X)) {
-        if (_type == EntityType::Player) {
-            _tickCounter++;
-            // LINFO("Counter: {}", _tickCounter);
-            if (_tickCounter >= 4 * 20) {
-                teleportPlayerThroughPortal(_dim);
-                _tickCounter = 0;
+        if (block == Blocks::NetherPortal::toProtocol(Blocks::NetherPortal::Properties::Axis::Z) ||
+            block == Blocks::NetherPortal::toProtocol(Blocks::NetherPortal::Properties::Axis::X)) {
+            if (_type == EntityType::Player) {
+                _tickCounter++;
+                LTRACE("Counter: {}", _tickCounter);
+                if (_tickCounter >= 4 * 20) {
+                    teleportPlayerThroughPortal(_dim);
+                    _tickCounter = 0;
+                }
             }
+            // else {
+            //     teleportEntityThroughPortal(_dim);
+            // }
+        } else {
+            _tickCounter = 0;
         }
-        // else {
-        //     teleportEntityThroughPortal(_dim);
-        // }
-    } else {
-        _tickCounter = 0;
     }
 }
 
