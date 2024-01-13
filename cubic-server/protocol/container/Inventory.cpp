@@ -1,4 +1,7 @@
 #include "Inventory.hpp"
+#include "Player.hpp"
+#include "Server.hpp"
+#include "entities/ArmorStats.hpp"
 #include "protocol/container/Container.hpp"
 #include <variant>
 
@@ -164,22 +167,43 @@ bool Inventory::canInsert(const protocol::Slot &slot)
 void Inventory::onClick(std::shared_ptr<Player> player, int16_t index, uint8_t buttonId, uint8_t mode, const std::vector<protocol::ClickContainer::SlotWithIndex> &updates)
 {
     switch (mode) {
-    case ClickMode::ShiftClick:
+    case (int32_t) ClickMode::ShiftClick:
         if (index >= 9 && index < 36)
             swapContainer(at(index), _hotbar);
         else
             swapContainer(at(index), _playerInventory);
+        player->updateEquipment(true, true, false, false, false, false);
         break;
 
-    case ClickMode::Keys:
+    case (int32_t) ClickMode::Keys:
         if (buttonId == 40)
             std::swap(_offhand, at(index));
         else
             std::swap(_hotbar.at(buttonId), at(index));
+        player->updateEquipment(true, true, false, false, false, false);
         break;
 
     default:
         Container::onClick(player, index, buttonId, mode, updates);
+        player->updateEquipment(true, true, true, true, true, true);
         break;
     }
+
+    int8_t defense = 0;
+    int8_t toughness = 0;
+
+    for (int16_t armorPos = 0; armorPos < 4; armorPos++) {
+        if (!this->_armor[armorPos].present)
+            continue;
+        for (const armor::ArmorPiece &gear : armor::armors) {
+            if (this->_armor[armorPos].itemID == ITEM_CONVERTER.fromItemToProtocolId(gear.item)) {
+                defense += gear.protectionLevel;
+                toughness += gear.toughnessLevel;
+                LINFO("{} equiped {}", player->getUsername(), gear.item);
+            }
+        }
+    }
+    player->setDefense(defense);
+    player->setToughness(toughness);
+    LINFO("{}'s defense is now {} ({} toughness)", player->getUsername(), defense, toughness);
 }

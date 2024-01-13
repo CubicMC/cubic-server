@@ -32,4 +32,14 @@ target_sources (${CMAKE_PROJECT_NAME} PRIVATE
     Tps.hpp
     MSPT.cpp
     MSPT.hpp
+    Subtitle.cpp
+    Subtitle.hpp
+    Title.cpp
+    Title.hpp
+    TitleTimes.cpp
+    TitleTimes.hpp
+    Armor.cpp
+    Armor.hpp
+    SaveRegion.hpp
+    SaveRegion.cpp
 )

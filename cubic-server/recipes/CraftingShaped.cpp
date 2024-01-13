@@ -84,7 +84,7 @@ void CraftingShaped::dump(void) const
                     stream << '!';
             }
         }
-        LINFO(stream.str());
+        LTRACE(stream.str());
         stream.str("");
     }
     for (const auto &[key, items] : this->_key) {
@@ -99,11 +99,11 @@ void CraftingShaped::dump(void) const
             stream << '\"' << ITEM_CONVERTER.fromProtocolIdToItem(item) << '\"';
         }
         stream << ']';
-        LINFO(stream.str());
+        LTRACE(stream.str());
         stream.str("");
     }
     stream << " -> " << ITEM_CONVERTER.fromProtocolIdToItem(this->_result) << " (x" << this->_count << ')';
-    LINFO(stream.str());
+    LTRACE(stream.str());
 }
 
 bool CraftingShaped::getKey(char key, const nlohmann::json &content)
@@ -128,5 +128,5 @@ bool CraftingShaped::getKey(char key, const nlohmann::json &content)
     return (false);
 }
 
-std::unique_ptr<Recipe> CraftingShaped::create(const nlohmann::json &recipe) { return (std::make_unique<CraftingShaped>(CraftingShaped(recipe))); }
+std::shared_ptr<Recipe> CraftingShaped::create(const nlohmann::json &recipe) { return (std::make_shared<CraftingShaped>(CraftingShaped(recipe))); }
 } // namespace Recipe

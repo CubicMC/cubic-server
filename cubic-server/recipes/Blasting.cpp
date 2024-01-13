@@ -31,11 +31,11 @@ Blasting::Blasting(const nlohmann::json &recipe):
 
 void Blasting::dump(void) const
 {
-    LINFO(
+    LTRACE(
         "\"{}\" -> \"{}\" (cooking for {} ticks and get {} xp)", ITEM_CONVERTER.fromProtocolIdToItem(this->_ingredient), ITEM_CONVERTER.fromProtocolIdToItem(this->_result),
         this->_cookingTime, this->_experience
     );
 }
 
-std::unique_ptr<Recipe> Blasting::create(const nlohmann::json &recipe) { return (std::make_unique<Blasting>(Blasting(recipe))); }
+std::shared_ptr<Recipe> Blasting::create(const nlohmann::json &recipe) { return (std::make_shared<Blasting>(Blasting(recipe))); }
 } // namespace Recipe

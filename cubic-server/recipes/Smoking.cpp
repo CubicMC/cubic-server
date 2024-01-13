@@ -31,11 +31,11 @@ Smoking::Smoking(const nlohmann::json &recipe):
 
 void Smoking::dump(void) const
 {
-    LINFO(
+    LTRACE(
         "\"{}\" -> \"{}\" (cooking for {} ticks and get {} xp)", ITEM_CONVERTER.fromProtocolIdToItem(this->_ingredient), ITEM_CONVERTER.fromProtocolIdToItem(this->_result),
         this->_cookingTime, this->_experience
     );
 }
 
-std::unique_ptr<Recipe> Smoking::create(const nlohmann::json &recipe) { return (std::make_unique<Smoking>(Smoking(recipe))); }
+std::shared_ptr<Recipe> Smoking::create(const nlohmann::json &recipe) { return (std::make_shared<Smoking>(Smoking(recipe))); }
 } // namespace Recipe

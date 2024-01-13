@@ -167,6 +167,21 @@ std::unique_ptr<std::vector<uint8_t>> protocol::createEntityAnimation(EntityAnim
     return packet;
 }
 
+std::unique_ptr<std::vector<uint8_t>> protocol::createBlockEntityData(const BlockEntityData &in)
+{
+    std::vector<uint8_t> payload;
+    // clang-format off
+    serialize(payload,
+        in.location, addPosition,
+        in.type, addVarInt
+    );
+    addNBT((std::vector<uint8_t> &)payload, (nbt_tag_t *)in.nbtData);
+    // clang-format on
+    auto packet = std::make_unique<std::vector<uint8_t>>();
+    finalize(*packet, payload, ClientPacketID::BlockEntityData);
+    return packet;
+}
+
 std::unique_ptr<std::vector<uint8_t>> protocol::createBlockUpdate(const BlockUpdate &in)
 {
     std::vector<uint8_t> payload;
@@ -235,6 +250,21 @@ std::unique_ptr<std::vector<uint8_t>> protocol::createSetContainerContent(const 
     // clang-format on
     auto packet = std::make_unique<std::vector<uint8_t>>();
     finalize(*packet, payload, ClientPacketID::SetContainerContent);
+    return packet;
+}
+
+std::unique_ptr<std::vector<uint8_t>> protocol::createSetContainerProperty(const SetContainerProperty &in)
+{
+    std::vector<uint8_t> payload;
+    // clang-format off
+    serialize(payload,
+        in.windowId, addByte,
+        in.property, addShort,
+        in.value, addShort
+    );
+    // clang-format on
+    auto packet = std::make_unique<std::vector<uint8_t>>();
+    finalize(*packet, payload, ClientPacketID::SetContainerProperty);
     return packet;
 }
 
@@ -797,6 +827,34 @@ std::unique_ptr<std::vector<uint8_t>> protocol::createUpdateTime(const UpdateTim
     return packet;
 }
 
+std::unique_ptr<std::vector<uint8_t>> protocol::createSetTitleText(const SetTitleText &in)
+{
+    std::vector<uint8_t> payload;
+    // clang-format off
+    serialize(payload,
+        in.title, addChat
+    );
+    // clang-format on
+    auto packet = std::make_unique<std::vector<uint8_t>>();
+    finalize(*packet, payload, ClientPacketID::SetTitleText);
+    return packet;
+}
+
+std::unique_ptr<std::vector<uint8_t>> protocol::createSetTitleAnimationTimes(const SetTitleAnimationTimes &in)
+{
+    std::vector<uint8_t> payload;
+    // clang-format off
+    serialize(payload,
+        in.fadeIn, addInt,
+        in.stay, addInt,
+        in.fadeOut, addInt
+    );
+    // clang-format on
+    auto packet = std::make_unique<std::vector<uint8_t>>();
+    finalize(*packet, payload, ClientPacketID::SetTitleAnimationTimes);
+    return packet;
+}
+
 std::unique_ptr<std::vector<uint8_t>> protocol::createEntitySoundEffect(const EntitySoundEffect &in)
 {
     std::vector<uint8_t> payload;
@@ -905,6 +963,24 @@ std::unique_ptr<std::vector<uint8_t>> protocol::createEntityVelocity(const Entit
     return packet;
 }
 
+std::unique_ptr<std::vector<uint8_t>> protocol::createSetEquipment(const SetEquipment &in)
+{
+    std::vector<uint8_t> payload;
+
+    serialize(payload, in.entityId, addVarInt);
+    for (const auto &it : in.equipment) {
+        // clang-format off
+        serialize(payload,
+            it.first, addByte,
+            it.second, addSlot
+        );
+        // clang-format on
+    }
+    auto packet = std::make_unique<std::vector<uint8_t>>();
+    finalize(*packet, payload, ClientPacketID::SetEquipment);
+    return packet;
+}
+
 std::unique_ptr<std::vector<uint8_t>> protocol::createSetExperience(const SetExperience &in)
 {
     std::vector<uint8_t> payload;
@@ -1003,6 +1079,19 @@ std::unique_ptr<std::vector<uint8_t>> protocol::createUpdateScore(const UpdateSc
     // clang-format on
     auto packet = std::make_unique<std::vector<uint8_t>>();
     finalize(*packet, payload, ClientPacketID::UpdateScore);
+    return packet;
+}
+
+std::unique_ptr<std::vector<uint8_t>> protocol::createSetSubtitleText(const SetSubtitleText &in)
+{
+    std::vector<uint8_t> payload;
+    // clang-format off
+    serialize(payload,
+        in.subtitle, addChat
+    );
+    // clang-format on
+    auto packet = std::make_unique<std::vector<uint8_t>>();
+    finalize(*packet, payload, ClientPacketID::SetSubtitleText);
     return packet;
 }
 

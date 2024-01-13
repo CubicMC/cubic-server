@@ -13,7 +13,7 @@ public:
 
     void dump(void) const override;
 
-    static std::unique_ptr<Recipe> create(const nlohmann::json &recipe);
+    static std::shared_ptr<Recipe> create(const nlohmann::json &recipe);
 
 private:
     ItemId _base; // first item

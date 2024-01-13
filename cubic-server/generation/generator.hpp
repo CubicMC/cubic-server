@@ -21,6 +21,8 @@ public:
         double weirdness;
         double trees;
         double rocks;
+        double flowers;
+        double grass;
     } GenerationNoise2D;
 
     typedef struct {

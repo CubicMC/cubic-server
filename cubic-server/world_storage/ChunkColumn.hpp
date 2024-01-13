@@ -5,20 +5,45 @@
 #include <cstdint>
 #include <memory>
 #include <mutex>
+#include <vector>
 
 #include "Palette.hpp"
 #include "Section.hpp"
 #include "generation/generator.hpp"
+#include "nbt.h"
 #include "nbt.hpp"
 #include "types.hpp"
 
 class Dimension;
+namespace tile_entity {
+class TileEntity;
+}
 
 namespace world_storage {
 
+// Weird ass modulo to get the correct block position in the chunk
+inline Position convertPositionToChunkPosition(const Position &position)
+{
+    auto x = position.x % 16;
+    auto z = position.z % 16;
+    if (x < 0)
+        x += 16;
+    if (z < 0)
+        z += 16;
+    return {x, position.y, z};
+}
+
+inline Position convertChunkPositionToPosition(const Position2D &chunkPos, const Position &blockPos)
+{
+    return {chunkPos.x * 16 + blockPos.x, blockPos.y, chunkPos.z * 16 + blockPos.z};
+}
+
 // Heightmap
 constexpr int HEIGHTMAP_BITS = bitsNeeded(CHUNK_HEIGHT + 1);
-constexpr int HEIGHTMAP_ARRAY_SIZE = (SECTION_2D_SIZE * HEIGHTMAP_BITS / 64) + ((SECTION_2D_SIZE * HEIGHTMAP_BITS % 64) != 0);
+// TODO(huntears): This + 1 here makes me wanna cry, but somehow we are off by one
+// So if a kind soul out here wants to go around to figure out why and fix this it
+// would be fucking awesome
+constexpr int HEIGHTMAP_ARRAY_SIZE = (SECTION_2D_SIZE * HEIGHTMAP_BITS / 64) + ((SECTION_2D_SIZE * HEIGHTMAP_BITS % 64) != 0) + 1;
 constexpr const char *const HEIGHTMAP_ENTRY[] = {"MOTION_BLOCKING", "WORLD_SURFACE", nullptr};
 
 constexpr uint8_t getSectionIndex(const Position &pos) { return (pos.y - CHUNK_HEIGHT_MIN + SECTION_WIDTH) / SECTION_WIDTH; }
@@ -129,6 +154,62 @@ public:
      */
     void processRandomTick(uint32_t rts);
 
+    /**
+     * @brief Process a tick on the chunk
+     */
+    void tick();
+
+    /**
+     * @brief Get the Tile Entities object as a vector
+     *
+     * @return const std::unordered_map<Position, std::shared_ptr<TileEntity>>&
+     */
+    constexpr const std::unordered_map<Position, std::shared_ptr<tile_entity::TileEntity>> &getTileEntities() const { return _tileEntities; }
+
+    /**
+     * @brief Get the Tile Entity object at the given position
+     *
+     * @param pos The position of the Tile Entity
+     * @return const std::shared_ptr<TileEntity>
+     */
+    const std::shared_ptr<tile_entity::TileEntity> getTileEntity(const Position &pos) const;
+
+    /**
+     * @brief Get the Tile Entity object at the given position
+     *
+     * @param pos The position of the Tile Entity
+     * @return std::shared_ptr<TileEntity>
+     */
+    std::shared_ptr<tile_entity::TileEntity> getTileEntity(const Position &pos);
+
+    /**
+     * @brief Add a Tile Entity to the chunk
+     *
+     * @param std::shared_ptr<TileEntity>
+     */
+    void addTileEntity(std::shared_ptr<tile_entity::TileEntity> tileEntity);
+
+    /**
+     * @brief Remove a Tile Entity from the chunk
+     *
+     * @param pos The position of the Tile Entity
+     */
+    void removeTileEntity(const Position &pos);
+
+    /**
+     * @brief Get the Blocks To Be Updated object
+     *
+     * @return const std::vector<std::pair<Position, BlockId>>&
+     */
+    constexpr std::vector<std::pair<Position, BlockId>> &getBlocksToBeUpdated() { return _blocksToBeUpdated; }
+
+    /*
+     * @brief Gets an nbt formatted to be saved to disk in a region file
+     *
+     * @return nbt_tag_t* The formatted nbt tag
+     */
+    nbt_tag_t *toRegionCompatibleFormat();
+
     friend class Persistence;
 
 private:
@@ -165,6 +246,8 @@ private:
     GenerationState _currentState;
     std::mutex _generationLock;
     std::shared_ptr<Dimension> _dimension;
+    std::unordered_map<Position, std::shared_ptr<tile_entity::TileEntity>> _tileEntities;
+    std::vector<std::pair<Position, BlockId>> _blocksToBeUpdated;
 };
 
 } // namespace world_storage
