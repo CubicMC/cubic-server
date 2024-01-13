@@ -120,14 +120,15 @@ BlockId Blocks::GlobalPalette::fromBlockToProtocolId(Blocks::Block &block) const
 
 Blocks::Block Blocks::GlobalPalette::fromProtocolIdToBlock(BlockId id)
 {
+    BlockId originalId = id;
     for (auto b : this->_blocks) {
         if (id < b.baseProtocolId || id > b.maxProtocolId)
             continue;
         Blocks::Block block;
         block.name = b.name;
         if (b.properties.size() == 0) {
-            if (!_cache.contains(id))
-                _cache.emplace(id, block);
+            if (!_cache.contains(originalId))
+                _cache.emplace(originalId, block);
             return block;
         }
         id -= b.baseProtocolId;
@@ -136,8 +137,8 @@ Blocks::Block Blocks::GlobalPalette::fromProtocolIdToBlock(BlockId id)
             block.properties.push_back({property.name, property.values[id / property.baseWeight]});
             id %= property.baseWeight;
         }
-        if (!_cache.contains(id))
-            _cache.emplace(id, block);
+        if (!_cache.contains(originalId))
+            _cache.emplace(originalId, block);
         return block;
     }
     LERROR("Block not found in palette (id: {})", id);
