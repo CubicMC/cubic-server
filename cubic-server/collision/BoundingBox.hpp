@@ -3,7 +3,9 @@
 
 class BoundingBox {
 public:
-    BoundingBox(const Vector3d &position = Vector3d(0, 0, 0), const Vector3f &dimensions = Vector3f(1, 1, 1));
+    constexpr BoundingBox(const Vector3d &position = Vector3d(0, 0, 0), const Vector3f &dimensions = Vector3f(1, 1, 1)):
+        _pos(position),
+        _dim(dimensions) {};
 
     bool contains(const Vector3d &point) const;
     bool contains(const BoundingBox &other) const;
