@@ -187,6 +187,10 @@ public:
      */
     void teleportPlayerThroughPortal(std::shared_ptr<Dimension> currentDimension);
 
+    bool isReadyToBeRemoved() const { return _readyToRemove; }
+
+    void setReadyToRemove(bool value) { _readyToRemove = value; }
+
 protected:
     std::shared_ptr<Dimension> _dim;
     bool _onFire;
@@ -212,6 +216,7 @@ protected:
     Vector3<double> _velocity;
     EntityType _type;
     int _tickCounter = 0;
+    bool _readyToRemove;
 };
 
 #endif // CUBICSERVER_ENTITIES_ENTITY_HPP

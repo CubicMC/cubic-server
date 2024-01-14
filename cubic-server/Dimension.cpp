@@ -45,6 +45,10 @@ Dimension::Dimension(std::shared_ptr<World> world, world_storage::DimensionType 
 void Dimension::tick()
 {
     auto startTickTime = std::chrono::high_resolution_clock::now();
+
+    _removeDeadEntities();
+    _removeDeadPlayers();
+
     {
         std::unique_lock a(_entitiesMutex, std::defer_lock);
         std::unique_lock b(_newEntitiesMutex, std::defer_lock);
@@ -67,30 +71,42 @@ void Dimension::tick()
         // We remove all entities below a certain threshold
         // Especially useful for arrows that currently go
         // through blocks
-        std::vector<int32_t> idsToRemove;
         constexpr float minYLevelForEntities = -200.0f;
         for (auto &ent : _entities) {
             if (ent->getType() == EntityType::Player)
                 continue;
             if (ent->getPosition().y < minYLevelForEntities)
-                idsToRemove.push_back(ent->getId());
+                _idsToRemove.push_back(ent->getId());
         }
-        if (!idsToRemove.empty()) {
+        if (!_idsToRemove.empty()) {
             for (auto player : _players) {
-                player->sendRemoveEntities(idsToRemove);
+                player->sendRemoveEntities(_idsToRemove);
             }
             _entities.erase(
                 std::remove_if(
                     _entities.begin(), _entities.end(),
-                    [&idsToRemove](const std::shared_ptr<Entity> ent) {
+                    [this](const std::shared_ptr<Entity> ent) {
                         int32_t entId = ent->getId();
-                        return std::find_if(idsToRemove.begin(), idsToRemove.end(), [entId](int32_t id) {
+                        return std::find_if(_idsToRemove.begin(), _idsToRemove.end(), [entId](int32_t id) {
                                    return id == entId;
-                               }) != idsToRemove.end();
+                               }) != _idsToRemove.end();
                     }
                 ),
                 _entities.end()
             );
+            _players.erase(
+                std::remove_if(
+                    _players.begin(), _players.end(),
+                    [this](const std::shared_ptr<Player> player) {
+                        int32_t playerId = player->getId();
+                        return std::find_if(_idsToRemove.begin(), _idsToRemove.end(), [playerId](int32_t id) {
+                                   return id == playerId;
+                               }) != _idsToRemove.end();
+                    }
+                ),
+                _players.end()
+            );
+            _idsToRemove.clear();
         }
     }
     uint32_t rts = CONFIG["randomtickspeed"].as<uint32_t>();
@@ -141,6 +157,44 @@ void Dimension::tick()
     case world_storage::DimensionType::END:
         PEXPP(addMsptEnd, msptTime_micro / MILLIS_IN_ONE_SEC)
         break;
+    }
+}
+
+void Dimension::_removeDeadEntities()
+{
+    std::lock_guard _(_entitiesMutex);
+
+    _entities.erase(
+        std::remove_if(
+            _entities.begin(), _entities.end(),
+            [this](const std::shared_ptr<Entity> ent) {
+                if (ent->isReadyToBeRemoved()) {
+                    LDEBUG("Entity {} removed from dimension {}", ent->getId(), this->_dimensionType);
+                    for (auto player : this->_players)
+                        player->sendRemoveEntities({ent->getId()});
+                    return true;
+                }
+                return false;
+            }
+        ),
+        _entities.end()
+    );
+}
+
+void Dimension::_removeDeadPlayers()
+{
+    std::lock_guard _(_playersMutex);
+    std::vector<int32_t> players_to_remove_buf;
+
+    for (auto player : this->_players) {
+        if (player->isReadyToBeRemoved()) {
+            players_to_remove_buf.push_back(player->getId());
+            player->setReadyToRemove(false);
+        }
+    }
+
+    for (auto player : this->_players) {
+        player->sendRemoveEntities(players_to_remove_buf);
     }
 }
 

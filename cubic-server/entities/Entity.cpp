@@ -70,6 +70,7 @@ Entity::Entity(std::shared_ptr<Dimension> dim,
     _lastRot = lastRot;
     _type = type;
     _velocity = vel;
+    _readyToRemove = false;
 }
 // clang-format on
 
@@ -357,8 +358,7 @@ void Entity::teleportPlayerThroughPortal(std::shared_ptr<Dimension> currentDimen
     } else {
         return;
     }
-    currentDimension->removeEntity(_id);
-    currentDimension->removePlayer(thisPlayer->_id);
+    currentDimension->pushBackIdToRemove(_id);
     thisPlayer->setDimension(nextDimension);
     thisPlayer->sendRespawn({
         nextDimension->getDimensionTypeName(),
