@@ -358,7 +358,9 @@ void Entity::teleportPlayerThroughPortal(std::shared_ptr<Dimension> currentDimen
     } else {
         return;
     }
+    auto augh = this->dynamicSharedFromThis<Entity>();
     currentDimension->pushBackIdToRemove(_id);
+    thisPlayer->sendRemoveEntities({_id});
     thisPlayer->setDimension(nextDimension);
     thisPlayer->sendRespawn({
         nextDimension->getDimensionTypeName(),
@@ -380,7 +382,7 @@ void Entity::teleportPlayerThroughPortal(std::shared_ptr<Dimension> currentDimen
     thisPlayer->sendCommands({{}, 0});
     thisPlayer->sendUpdateRecipiesBook({});
     thisPlayer->sendServerData({false, "", false, "", false});
-    nextDimension->addEntity(this->dynamicSharedFromThis<Entity>());
+    nextDimension->addEntity(augh);
     nextDimension->addPlayer(thisPlayer);
     auto renderDistance = nextDimension->getWorld()->getRenderDistance();
     thisPlayer->sendChunkAndLightUpdate(0, 0);

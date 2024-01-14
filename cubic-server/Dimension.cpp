@@ -124,13 +124,12 @@ void Dimension::tick()
         if (auto &blocks = chunk.getBlocksToBeUpdated(); !blocks.empty()) {
             std::lock_guard _(_playersMutex);
             for (auto player : _players) {
-                while (!blocks.empty()) {
-                    auto [pos, id] = blocks.back();
+                for (auto [pos, id] : blocks) {
                     LTRACE("Sending block update to player {} for block {} with id {}", player->getUsername(), pos, id);
                     player->sendBlockUpdate({pos, id});
-                    blocks.pop_back();
                 }
             }
+            blocks.clear();
         }
     }
     for (auto &[_, chunk] : _level.getChunkColumns()) {
