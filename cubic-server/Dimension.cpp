@@ -79,6 +79,18 @@ void Dimension::tick()
                 _idsToRemove.push_back(ent->getId());
         }
         if (!_idsToRemove.empty()) {
+            _players.erase(
+                std::remove_if(
+                    _players.begin(), _players.end(),
+                    [this](const std::shared_ptr<Player> player) {
+                        int32_t playerId = player->getId();
+                        return std::find_if(_idsToRemove.begin(), _idsToRemove.end(), [playerId](int32_t id) {
+                                   return id == playerId;
+                               }) != _idsToRemove.end();
+                    }
+                ),
+                _players.end()
+            );
             for (auto player : _players) {
                 player->sendRemoveEntities(_idsToRemove);
             }
@@ -93,18 +105,6 @@ void Dimension::tick()
                     }
                 ),
                 _entities.end()
-            );
-            _players.erase(
-                std::remove_if(
-                    _players.begin(), _players.end(),
-                    [this](const std::shared_ptr<Player> player) {
-                        int32_t playerId = player->getId();
-                        return std::find_if(_idsToRemove.begin(), _idsToRemove.end(), [playerId](int32_t id) {
-                                   return id == playerId;
-                               }) != _idsToRemove.end();
-                    }
-                ),
-                _players.end()
             );
             _idsToRemove.clear();
         }
