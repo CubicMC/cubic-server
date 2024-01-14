@@ -64,7 +64,9 @@ enum class ClientPacketID : int32_t {
     SynchronizePlayerPosition = 0x38,
     UpdateRecipesBook = 0x39,
     RemoveEntities = 0x3A,
+    Respawn = 0x3D,
     HeadRotation = 0x3E,
+    UpdateSectionBlocks = 0x3F,
     ServerData = 0x41,
     SetHeldItem = 0x49,
     CenterChunk = 0x4a,
@@ -537,11 +539,34 @@ struct RemoveEntities {
 };
 std::unique_ptr<std::vector<uint8_t>> createRemoveEntities(const RemoveEntities &in);
 
+struct Respawn {
+    std::string dimensionType;
+    std::string dimensionName;
+    long hashedSeed;
+    player_attributes::Gamemode gamemode;
+    player_attributes::Gamemode previousGamemode;
+    bool isDebug;
+    bool isFlat;
+    bool copyMetadata;
+    bool hasDeathLocation;
+    std::string deathDimensionName;
+    Position deathLocation;
+};
+std::unique_ptr<std::vector<uint8_t>> createRespawn(const Respawn &in);
+
 struct HeadRotation {
     int32_t entityID;
     uint8_t headYaw;
 };
 std::unique_ptr<std::vector<uint8_t>> createHeadRotation(const HeadRotation &in);
+
+struct UpdateSectionBlock {
+    const Position pos;
+    const world_storage::ChunkColumn &chunkData;
+    bool suppressLightUpdates;
+    std::vector<std::pair<Position, BlockId>> blocks;
+};
+std::unique_ptr<std::vector<uint8_t>> createUpdateSectionBlock(const UpdateSectionBlock &in);
 
 struct ServerData {
     bool hasMotd;

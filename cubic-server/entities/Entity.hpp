@@ -173,6 +173,24 @@ public:
      */
     void broadcastMetadata() const;
 
+    /**
+     * @brief Teleports the entity through the Nether Portal, to either the Nether or the Overworld
+     *
+     * @param currentDimension the dimension the entity is in
+     */
+    void teleportEntityThroughPortal(std::shared_ptr<Dimension> currentDimension);
+
+    /**
+     * @brief Teleports the player through the Nether Portal, to either the Nether or the Overworld
+     *
+     * @param currentDimension the dimension the entity is in
+     */
+    void teleportPlayerThroughPortal(std::shared_ptr<Dimension> currentDimension);
+
+    bool isReadyToBeRemoved() const { return _readyToRemove; }
+
+    void setReadyToRemove(bool value) { _readyToRemove = value; }
+
 protected:
     std::shared_ptr<Dimension> _dim;
     bool _onFire;
@@ -197,6 +215,8 @@ protected:
     Vector2<uint8_t> _lastRot;
     Vector3<double> _velocity;
     EntityType _type;
+    int _tickCounter = 0;
+    bool _readyToRemove;
 };
 
 #endif // CUBICSERVER_ENTITIES_ENTITY_HPP

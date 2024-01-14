@@ -134,7 +134,21 @@ public:
      *
      * @return world_storage::DimensionType
      */
-    [[nodiscard]] virtual world_storage::DimensionType getDimensionType() const { return _dimensionType; }
+    NODISCARD virtual world_storage::DimensionType getDimensionType() const { return _dimensionType; }
+
+    /**
+     * @brief Get the dimension type
+     *
+     * @return std::string dimension type
+     */
+    NODISCARD virtual const std::string getDimensionTypeName() const = 0;
+
+    /**
+     * @brief Get the dimension name
+     *
+     * @return std::string dimension name
+     */
+    NODISCARD virtual const std::string getDimensionName() const = 0;
 
     virtual void lockLoadingChunksMutex() { _loadingChunksMutex.lock(); };
     virtual void unlockLoadingChunksMutex() { _loadingChunksMutex.unlock(); };
@@ -192,8 +206,12 @@ public:
      */
     virtual std::shared_ptr<const tile_entity::TileEntity> getTileEntity(const Position &position) const;
 
+    virtual void pushBackIdToRemove(int32_t id) { _idsToRemove.push_back(id); }
+
 protected:
     virtual void _run();
+    virtual void _removeDeadEntities();
+    virtual void _removeDeadPlayers();
 
 public:
     mutable std::recursive_mutex _playersMutex;
@@ -217,6 +235,7 @@ protected:
     boost::circular_buffer_space_optimized<float> _circularBufferTps;
     std::chrono::time_point<std::chrono::system_clock, std::chrono::duration<long, std::ratio<1, 1000000000>>> _previousTickTime;
     boost::circular_buffer_space_optimized<float> _circularBufferMSPT;
+    std::vector<int32_t> _idsToRemove;
 };
 
 template<isBaseOf<Entity> T, typename... Args>

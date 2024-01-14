@@ -15,6 +15,8 @@ constexpr int CHUNK_HEIGHT_MIN = -64;
 constexpr int CHUNK_HEIGHT_MAX = 320;
 constexpr int CHUNK_HEIGHT = CHUNK_HEIGHT_MAX - CHUNK_HEIGHT_MIN;
 
+constexpr int NETHER_ROOF = 125;
+
 // Section
 constexpr int SECTION_WIDTH = 16;
 constexpr int SECTION_2D_SIZE = SECTION_WIDTH * SECTION_WIDTH;
