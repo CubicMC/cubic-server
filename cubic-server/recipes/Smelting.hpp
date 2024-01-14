@@ -3,17 +3,18 @@
 
 #include "Recipes.hpp"
 
-#include "Server.hpp"
-
 namespace Recipe {
 class Smelting : public Recipe {
 public:
-    Smelting(const nlohmann::json &recipe);
+    Smelting(const std::string &identifier, const nlohmann::json &recipe);
     ~Smelting() = default;
 
     void dump(void) const override;
+    ItemId getIngredient(void) const noexcept { return _ingredient; };
+    ItemId getResult(void) const noexcept { return _result; };
+    uint64_t getCookingTime(void) const noexcept { return _cookingTime; };
 
-    static std::unique_ptr<Recipe> create(const nlohmann::json &recipe);
+    static std::shared_ptr<Recipe> create(const std::string &identifier, const nlohmann::json &recipe);
 
 private:
     ItemId _ingredient; // what to cook

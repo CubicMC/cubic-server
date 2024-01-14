@@ -34,7 +34,6 @@
 .vscode
 cmake-build-debug
 cmake-build-release
-.idea
 logs
 config.yml
 .cache
@@ -42,8 +41,11 @@ debug
 build*
 .kdev4
 *.kdev4
-world
-world2
+world*
 
 # Symbolic link
 compile_commands.json
+
+# CLion
+cmake-build-*
+.idea

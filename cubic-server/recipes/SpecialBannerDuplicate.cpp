@@ -4,13 +4,16 @@
 #include "Server.hpp"
 
 namespace Recipe {
-SpecialBannerDuplicate::SpecialBannerDuplicate(const nlohmann::json &recipe):
-    Recipe(recipe)
+SpecialBannerDuplicate::SpecialBannerDuplicate(const std::string &identifier, const nlohmann::json &recipe):
+    Recipe(identifier, recipe)
 {
     this->setValidity(false);
 }
 
-void SpecialBannerDuplicate::dump(void) const { LINFO("recipe special banner duplicate"); }
+void SpecialBannerDuplicate::dump(void) const { LTRACE("recipe special banner duplicate"); }
 
-std::unique_ptr<Recipe> SpecialBannerDuplicate::create(const nlohmann::json &recipe) { return (std::make_unique<SpecialBannerDuplicate>(SpecialBannerDuplicate(recipe))); }
+std::shared_ptr<Recipe> SpecialBannerDuplicate::create(const std::string &identifier, const nlohmann::json &recipe)
+{
+    return (std::make_shared<SpecialBannerDuplicate>(SpecialBannerDuplicate(identifier, recipe)));
+}
 } // namespace Recipe

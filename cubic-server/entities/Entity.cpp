@@ -7,11 +7,16 @@
 #include "World.hpp"
 #include "WorldGroup.hpp"
 #include "chat/Message.hpp"
+#include "default/Overworld.hpp"
+#include "default/TheNether.hpp"
+#include "entities/EntityType.hpp"
 #include "logging/logging.hpp"
 #include "math/Vector3.hpp"
 #include "options.hpp"
 #include "protocol/metadata.hpp"
 #include "types.hpp"
+#include "world_storage/ChunkColumn.hpp"
+#include "world_storage/Level.hpp"
 #include <memory>
 #include <optional>
 #include <utility>
@@ -37,7 +42,8 @@ Entity::Entity(std::shared_ptr<Dimension> dim,
     Vector3<double> pos,
     Vector2<uint8_t> rot,
     Vector3<double> lastPos,
-    Vector2<uint8_t> lastRot):
+    Vector2<uint8_t> lastRot,
+    Vector3<double> vel):
     _dim(dim)
 {
     static std::atomic<int32_t> currentID = 0;
@@ -63,6 +69,8 @@ Entity::Entity(std::shared_ptr<Dimension> dim,
     _rot = rot;
     _lastRot = lastRot;
     _type = type;
+    _velocity = vel;
+    _readyToRemove = false;
 }
 // clang-format on
 
@@ -86,6 +94,15 @@ void Entity::setDimension(std::shared_ptr<Dimension> dim)
 void Entity::setPosition(const Vector3<double> &pos, UNUSED bool onGround) { _pos = pos; }
 
 void Entity::setPosition(double x, double y, double z, bool onGround) { this->setPosition({x, y, z}, onGround); }
+
+void Entity::setVelocity(const Vector3<double> &vel) { this->setVelocity(vel.x, vel.y, vel.z); };
+
+void Entity::setVelocity(double x, double y, double z)
+{
+    _velocity.x = x;
+    _velocity.y = y;
+    _velocity.z = z;
+};
 
 void Entity::forceSetPosition(const Vector3<double> &pos)
 {
@@ -150,7 +167,41 @@ const std::shared_ptr<Entity> Entity::pickupItem()
     return nullptr;
 }
 
-void Entity::tick() { this->tickPosition(); }
+void Entity::tick()
+{
+    this->tickPosition();
+    Position2D chunkPos = {transformBlockPosToChunkPos(_pos.x), transformBlockPosToChunkPos(_pos.z)};
+    if (_dim->hasChunkLoaded(chunkPos.x, chunkPos.z)) {
+
+        // here is an error arising from the '%' in the 'getBlock' below, so in negative positions, the gotten block position is 1 block less than needed
+        Position pos = _pos;
+        if (_pos.x < 0)
+            pos.x -= 1;
+        if (_pos.z < 0) {
+            pos.z -= 1;
+        }
+        auto block = _dim->getBlock(pos);
+
+        // LTRACE("Block: {}, {} . {} . {}", block, _pos.x, _pos.y, _pos.z);
+
+        if (block == Blocks::NetherPortal::toProtocol(Blocks::NetherPortal::Properties::Axis::Z) ||
+            block == Blocks::NetherPortal::toProtocol(Blocks::NetherPortal::Properties::Axis::X)) {
+            if (_type == EntityType::Player) {
+                _tickCounter++;
+                LTRACE("Counter: {}", _tickCounter);
+                if (_tickCounter >= 4 * 20) {
+                    teleportPlayerThroughPortal(_dim);
+                    _tickCounter = 0;
+                }
+            }
+            // else {
+            //     teleportEntityThroughPortal(_dim);
+            // }
+        } else {
+            _tickCounter = 0;
+        }
+    }
+}
 
 void Entity::tickPosition()
 {
@@ -269,4 +320,85 @@ void Entity::broadcastMetadata() const
             continue;
         player->sendEntityMetadata(*this);
     }
+}
+
+void Entity::teleportEntityThroughPortal(std::shared_ptr<Dimension> currentDimension)
+{
+    if (currentDimension->getDimensionType() == world_storage::DimensionType::OVERWORLD) {
+        auto dim = currentDimension->getWorld()->getDimensions().at("nether");
+        dim->addEntity(this->dynamicSharedFromThis<Entity>());
+        dim->spawnEntity(this->dynamicSharedFromThis<Entity>());
+        currentDimension->removeEntity(_id);
+    } else if (currentDimension->getDimensionType() == world_storage::DimensionType::NETHER) {
+        auto dim = currentDimension->getWorld()->getDimensions().at("overworld");
+        dim->addEntity(this->dynamicSharedFromThis<Entity>());
+        dim->spawnEntity(this->dynamicSharedFromThis<Entity>());
+        currentDimension->removeEntity(_id);
+    }
+}
+
+void Entity::teleportPlayerThroughPortal(std::shared_ptr<Dimension> currentDimension)
+{
+    std::shared_ptr<Dimension> nextDimension = nullptr;
+    std::shared_ptr<Player> thisPlayer = nullptr;
+    for (auto player : currentDimension->getPlayers()) {
+        if (player->_id == _id) {
+            thisPlayer = player;
+            break;
+        }
+    }
+    if (thisPlayer == nullptr)
+        return;
+    LDEBUG("Player name: {}", thisPlayer->getUsername());
+
+    if (currentDimension->getDimensionType() == world_storage::DimensionType::OVERWORLD) {
+        nextDimension = currentDimension->getWorld()->getDimensions().at("nether");
+    } else if (currentDimension->getDimensionType() == world_storage::DimensionType::NETHER) {
+        nextDimension = currentDimension->getWorld()->getDimensions().at("overworld");
+    } else {
+        return;
+    }
+    auto augh = this->dynamicSharedFromThis<Entity>();
+    currentDimension->pushBackIdToRemove(_id);
+    thisPlayer->sendRemoveEntities({_id});
+    thisPlayer->setDimension(nextDimension);
+    thisPlayer->sendRespawn({
+        nextDimension->getDimensionTypeName(),
+        nextDimension->getDimensionName(),
+        0,
+        thisPlayer->getGamemode(),
+        thisPlayer->getGamemode(),
+        0,
+        0,
+        0,
+        false,
+    });
+    thisPlayer->sendFeatureFlags({{"minecraft:vanilla"}});
+    thisPlayer->sendPlayerAbilities({player_attributes::getAbilitiesByGamemode(thisPlayer->getGamemode()), 0.05, 0.1});
+    thisPlayer->sendSetHeldItem({thisPlayer->getHeldItem()});
+    thisPlayer->sendUpdateRecipes({});
+    thisPlayer->sendUpdateTags({});
+    thisPlayer->sendEntityEvent({thisPlayer->_id, 24});
+    thisPlayer->sendCommands({{}, 0});
+    thisPlayer->sendUpdateRecipiesBook({});
+    thisPlayer->sendServerData({false, "", false, "", false});
+    nextDimension->addEntity(augh);
+    nextDimension->addPlayer(thisPlayer);
+    auto renderDistance = nextDimension->getWorld()->getRenderDistance();
+    thisPlayer->sendChunkAndLightUpdate(0, 0);
+    for (int32_t x = -renderDistance; x < renderDistance + 1; x++) {
+        for (int32_t z = -renderDistance; z < renderDistance + 1; z++) {
+            if (x == 0 && z == 0)
+                continue;
+            thisPlayer->sendChunkAndLightUpdate(x, z);
+        }
+    }
+    thisPlayer->sendSetContainerContent({thisPlayer->getInventory()});
+    thisPlayer->sendEntityMetadata(*thisPlayer);
+    thisPlayer->sendUpdateAttributes({thisPlayer->getId(), {}});
+    thisPlayer->sendUpdateAdvancements({false, {}, {}, {}});
+    thisPlayer->sendHealth();
+    thisPlayer->sendSetExperience({0, 0, 0});
+    thisPlayer->teleport({8.5, 70, 8.5});
+    nextDimension->spawnPlayer(*thisPlayer);
 }

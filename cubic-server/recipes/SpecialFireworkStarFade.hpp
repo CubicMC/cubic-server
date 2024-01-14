@@ -8,12 +8,12 @@
 namespace Recipe {
 class SpecialFireworkStarFade : public Recipe {
 public:
-    SpecialFireworkStarFade(const nlohmann::json &recipe);
+    SpecialFireworkStarFade(const std::string &identifier, const nlohmann::json &recipe);
     ~SpecialFireworkStarFade() = default;
 
     void dump(void) const override;
 
-    static std::unique_ptr<Recipe> create(const nlohmann::json &recipe);
+    static std::shared_ptr<Recipe> create(const std::string &identifier, const nlohmann::json &recipe);
 };
 };
 

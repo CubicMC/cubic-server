@@ -10,6 +10,7 @@
 #include "options.hpp"
 #include "protocol/ClientPackets.hpp"
 #include "protocol/metadata.hpp"
+#include <algorithm>
 #include <optional>
 
 void LivingEntity::tick()
@@ -38,7 +39,7 @@ void LivingEntity::damage(float damage, int32_t sourceId)
 
     if (canceled)
         return;
-    _health -= damage;
+    _health -= damage * (1.0f - ((std::min(20.0f, std::max(this->_armorDefense / 5.0f, this->_armorDefense - ((4.0f * damage) / (this->_armorToughness + 8.0f))))) / 25));
     if (_health <= 0) {
         this->kill(sourceId);
     }
@@ -79,6 +80,22 @@ void LivingEntity::setHealth(float health) { _health = health; }
 float &LivingEntity::getHealth() { return _health; }
 
 const float &LivingEntity::getHealth() const { return _health; }
+
+void LivingEntity::setDefense(float value) { this->_armorDefense = value; }
+
+void LivingEntity::addDefense(float value) { this->_armorDefense += value; }
+
+void LivingEntity::removeDefense(float value) { this->_armorDefense -= value; }
+
+float LivingEntity::getDefense() const noexcept { return (this->_armorDefense); }
+
+void LivingEntity::setToughness(float value) { this->_armorToughness = value; }
+
+void LivingEntity::addToughness(float value) { this->_armorToughness += value; }
+
+void LivingEntity::removeToughness(float value) { this->_armorToughness -= value; }
+
+float LivingEntity::getToughness() const noexcept { return (this->_armorToughness); }
 
 void LivingEntity::appendMetadataPacket(std::vector<uint8_t> &data) const
 {

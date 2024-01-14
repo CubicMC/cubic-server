@@ -60,7 +60,8 @@ public:
         Vector3<double> pos = {0, 0, 0},
         Vector2<uint8_t> rot = {0, 0},
         Vector3<double> lastPos = {0, 0, 0},
-        Vector2<uint8_t> lastRot = {0, 0});
+        Vector2<uint8_t> lastRot = {0, 0},
+        Vector3<double> velocity = {0, 0, 0});
     // clang-format on
     /**
      * @brief Destroy the Entity object
@@ -97,6 +98,10 @@ public:
      */
     virtual void setPosition(double x, double y, double z, bool on_ground);
 
+    virtual void setVelocity(const Vector3<double> &vel);
+
+    virtual void setVelocity(double x, double y, double z);
+
     /**
      * @brief Set the position and the last position of the entity
      *
@@ -127,6 +132,7 @@ public:
     NODISCARD virtual const u128 &getUuid() const { return _uuid; }
     NODISCARD virtual const Vector3<double> &getPosition() const { return _pos; }
     NODISCARD virtual const Vector2<uint8_t> &getRotation() const { return _rot; }
+    NODISCARD virtual const Vector3<double> &getVelocity() const { return _velocity; }
     NODISCARD virtual const Vector2<float> getRotationDegree() const { return {(float) _rot.x / (256.0f / 360.0f), (float) _rot.z / (256.0f / 360.0f)}; }
     NODISCARD virtual EntityType getType() const { return _type; }
 
@@ -167,6 +173,24 @@ public:
      */
     void broadcastMetadata() const;
 
+    /**
+     * @brief Teleports the entity through the Nether Portal, to either the Nether or the Overworld
+     *
+     * @param currentDimension the dimension the entity is in
+     */
+    void teleportEntityThroughPortal(std::shared_ptr<Dimension> currentDimension);
+
+    /**
+     * @brief Teleports the player through the Nether Portal, to either the Nether or the Overworld
+     *
+     * @param currentDimension the dimension the entity is in
+     */
+    void teleportPlayerThroughPortal(std::shared_ptr<Dimension> currentDimension);
+
+    bool isReadyToBeRemoved() const { return _readyToRemove; }
+
+    void setReadyToRemove(bool value) { _readyToRemove = value; }
+
 protected:
     std::shared_ptr<Dimension> _dim;
     bool _onFire;
@@ -189,7 +213,10 @@ protected:
     Vector2<uint8_t> _rot;
     Vector3<double> _lastPos;
     Vector2<uint8_t> _lastRot;
+    Vector3<double> _velocity;
     EntityType _type;
+    int _tickCounter = 0;
+    bool _readyToRemove;
 };
 
 #endif // CUBICSERVER_ENTITIES_ENTITY_HPP

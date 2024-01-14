@@ -4,8 +4,8 @@
 #include "logging/logging.hpp"
 
 namespace Recipe {
-Smelting::Smelting(const nlohmann::json &recipe):
-    Recipe(recipe)
+Smelting::Smelting(const std::string &identifier, const nlohmann::json &recipe):
+    Recipe(identifier, recipe)
 {
     // returns if any value is missing or does not have the right type
     // clang-format off
@@ -31,11 +31,11 @@ Smelting::Smelting(const nlohmann::json &recipe):
 
 void Smelting::dump(void) const
 {
-    LINFO(
+    LTRACE(
         "\"{}\" -> \"{}\" (cooking for {} ticks and get {} xp)", ITEM_CONVERTER.fromProtocolIdToItem(this->_ingredient), ITEM_CONVERTER.fromProtocolIdToItem(this->_result),
         this->_cookingTime, this->_experience
     );
 }
 
-std::unique_ptr<Recipe> Smelting::create(const nlohmann::json &recipe) { return (std::make_unique<Smelting>(Smelting(recipe))); }
+std::shared_ptr<Recipe> Smelting::create(const std::string &identifier, const nlohmann::json &recipe) { return (std::make_shared<Smelting>(Smelting(identifier, recipe))); }
 } // namespace Recipe

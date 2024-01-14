@@ -71,7 +71,7 @@ void ForestRock::generateRock(std::vector<world_storage::ChunkColumn *>)
         // the following if may change/disappear
         if (_chunk.getBlock({rockEmplacement.x + block.pos.x, rockEmplacement.y + block.pos.y, rockEmplacement.z + block.pos.z}) == Blocks::MossyCobblestone::toProtocol())
             continue;
-        _chunk.updateBlock({rockEmplacement.x + block.pos.x, rockEmplacement.y + block.pos.y, rockEmplacement.z + block.pos.z}, block.block);
+        _chunk.modifyBlock({rockEmplacement.x + block.pos.x, rockEmplacement.y + block.pos.y, rockEmplacement.z + block.pos.z}, block.block);
     }
     _positions.pop_front();
 }

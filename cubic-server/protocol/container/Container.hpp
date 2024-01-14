@@ -8,14 +8,14 @@
 
 namespace protocol::container {
 
-enum State {
+enum class State {
     Normal = 0,
     LeftDrag = 1,
     RightDrag = 2,
     MiddleDrag = 3,
 };
 
-enum ClickMode {
+enum class ClickMode {
     Click = 0,
     ShiftClick = 1,
     Keys = 2,
@@ -25,15 +25,42 @@ enum ClickMode {
     DoubleClick = 6,
 };
 
+enum class InventoryType {
+    Generic9x1 = 0,
+    Generic9x2 = 1,
+    Generic9x3 = 2,
+    Generic9x4 = 3,
+    Generic9x5 = 4,
+    Generic9x6 = 5,
+    Generic3x3 = 6,
+    Anvil = 7,
+    Beacon = 8,
+    BlastFurnace = 9,
+    BrewingStand = 10,
+    Crafting = 11,
+    Enchantment = 12,
+    Furnace = 13,
+    Grindstone = 14,
+    Hopper = 15,
+    Lectern = 16,
+    Loom = 17,
+    Merchant = 18,
+    ShulkerBox = 19,
+    Smothing = 20,
+    Smoker = 21,
+    Cartography = 22,
+    StoneCutter = 23
+};
+
 class Container {
 public:
-    Container(int32_t id, int32_t type, chat::Message title):
+    Container(uint8_t id, int32_t type, chat::Message title):
         _id(id),
         _type(type),
-        _state(State::Normal),
+        _state((int32_t) State::Normal),
         _title(std::move(title)),
         _cursor(false),
-        _cariedItemIndex(0)
+        _cariedItemIndex(-1)
     {
     }
 
@@ -63,7 +90,7 @@ public:
     virtual void onButtonClick(UNUSED std::shared_ptr<Player> player, UNUSED uint8_t buttonId) {};
     virtual void close(UNUSED std::shared_ptr<Player> player);
 
-    NODISCARD constexpr inline int32_t id() const { return _id; }
+    NODISCARD constexpr inline uint8_t id() const { return _id; }
     NODISCARD constexpr inline int32_t type() const { return _type; }
     NODISCARD constexpr inline int32_t state() const { return _state; }
     NODISCARD constexpr inline const chat::Message &title() const { return _title; }
@@ -71,8 +98,8 @@ public:
     NODISCARD constexpr inline const protocol::Slot &cariedItem() const { return at(_cariedItemIndex); }
 
 private:
-    int32_t _id;
-    int32_t _type;
+    const uint8_t _id;
+    const int32_t _type;
     int32_t _state;
     chat::Message _title;
     protocol::Slot _cursor;

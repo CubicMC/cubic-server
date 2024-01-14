@@ -110,12 +110,25 @@ inline void registry::setupDefaultsBiome(registry::Biome &registry)
         .name("cubsrv:my_super_cool_biome_lol_haha")
         .id(1)
         .precipitation("none")
-        .temperature(0.8)
-        .downfall(0.4)
+        .temperature(0)
+        .downfall(1)
         .effects({
-            .skyColor = 7907327,
-            .waterFogColor = 329011,
-            .fogColor = 12638463,
+            .skyColor = 0,
+            .waterFogColor = 0,
+            .fogColor = 0,
+            .waterColor = 0,
+        });
+
+    registry.addEntry()
+        .name("minecraft:nether_wastes")
+        .id(2)
+        .precipitation("none")
+        .temperature(2.0)
+        .downfall(0)
+        .effects({
+            .skyColor = 0,
+            .waterFogColor = 3344392,
+            .fogColor = 3344392,
             .waterColor = 4159204,
         });
 }

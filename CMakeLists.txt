@@ -100,7 +100,7 @@ FetchContent_Declare(
 FetchContent_Declare(
     spdlog
     GIT_REPOSITORY https://github.com/gabime/spdlog.git
-    GIT_TAG v1.11.0
+    GIT_TAG v1.12.0
     GIT_PROGRESS TRUE
     GIT_SHALLOW TRUE
 )
@@ -201,7 +201,7 @@ find_package(ZLIB REQUIRED)
 find_package(PkgConfig REQUIRED)
 pkg_check_modules(GTKMM gtkmm-3.0)
 
-if(NOT GTKMM_FOUND)
+if(NOT GTKMM_FOUND AND NOT NO_GUI)
     message(WARNING "Gtkmm not found! Building without GUI.")
     set(NO_GUI ON)
 endif()

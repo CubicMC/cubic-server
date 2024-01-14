@@ -1,4 +1,5 @@
 #include "generator.hpp"
+#include "generation/nether.hpp"
 #include "generation/overworld.hpp"
 
 bool generation::Generator::isCached(positionType x, positionType y, positionType z) { return isCached2D(x, z) && _noiseCache[x][z].second.contains(y); }
@@ -33,9 +34,11 @@ generation::Generator::GenerationNoise generation::Generator::getNoise(positionT
     noise.noise2D.continentalness = _noiseMaker.octave2D_11(_x, _z, octaves);
     // noise.noise2D.erosion = _noiseMaker.octave2D_11(_x, _z, octaves);
     // noise.noise2D.peaksAndValley = _noiseMaker.octave2D_11(_x, _z, octaves);
-    noise.noise2D.weirdness = _noiseMaker.octave2D_11(_x, _z, octaves);
-    noise.noise2D.trees = _noiseMaker.octave2D_11(x * 0.5, z * 0.5, 1);
+    noise.noise2D.weirdness = _noiseMaker.octave2D_11(_x * 0.5, _z * 0.8, 6);
+    noise.noise2D.trees = _noiseMaker.octave2D_11(x * 0.5, z * 0.4, 1);
     noise.noise2D.rocks = _noiseMaker.octave2D_11(x * 0.7, z * 0.4, 1);
+    noise.noise2D.flowers = _noiseMaker.octave2D_11(x * 0.4, z * 0.2, 2);
+    noise.noise2D.grass = _noiseMaker.octave2D_11(x * 0.3, z * 0.3, 2);
 
     _noiseCache[x][z].first = noise.noise2D;
     noise.noise3D = _noiseCache[x][z].second[y];

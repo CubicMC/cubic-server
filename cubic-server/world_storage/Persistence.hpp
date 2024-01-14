@@ -20,7 +20,7 @@
 
 namespace world_storage {
 
-struct RegionLocation {
+struct __attribute__((__packed__)) RegionLocation {
     uint32_t data;
 
     inline uint32_t getOffset() const { return ((data & 0x00FF0000) >> 16) | (data & 0x0000FF00) | ((data & 0x000000FF) << 16); }
@@ -28,9 +28,24 @@ struct RegionLocation {
     inline uint8_t getSize() const { return data >> 24; }
 
     inline bool isEmpty() const { return data == 0; }
+
+    RegionLocation(uint32_t offset, uint8_t size):
+        data(((offset & 0x00FF0000) >> 16) | (offset & 0x0000FF00) | ((offset & 0x000000FF) << 16) | (size << 24))
+    {
+    }
+
+    RegionLocation():
+        data(0)
+    {
+    }
 };
 
-struct RegionTimestamp {
+struct __attribute__((__packed__)) RegionTimestamp {
+    RegionTimestamp():
+        data(0)
+    {
+    }
+
     uint32_t data;
 };
 
@@ -38,19 +53,25 @@ constexpr uint32_t maxXPerRegion = 32;
 constexpr uint32_t maxZPerRegion = 32;
 constexpr uint32_t numChunksPerRegion = maxXPerRegion * maxZPerRegion;
 constexpr uint64_t regionChunkAlignment = 0x1000;
+constexpr uint64_t regionChunkAlignmentMask = 0xFFF;
 
 struct __attribute__((__packed__)) RegionHeader {
     RegionLocation locationTable[numChunksPerRegion];
-    RegionLocation timestampTable[numChunksPerRegion];
+    RegionTimestamp timestampTable[numChunksPerRegion];
+};
+
+enum class RegionChunkCompressionScheme : uint8_t {
+    GZIP = 1,
+    ZLIB = 2,
 };
 
 struct __attribute__((__packed__)) ChunkHeader {
     uint32_t length;
-    uint8_t compressionScheme;
+    RegionChunkCompressionScheme compressionScheme;
 
     inline uint32_t getLength() const { return ntohl(length); }
 
-    inline uint8_t getCompressionScheme() const { return compressionScheme; }
+    inline RegionChunkCompressionScheme getCompressionScheme() const { return compressionScheme; }
 };
 
 /**
@@ -96,6 +117,13 @@ public:
      * @param dest The LevelData object to fill
      */
     void loadLevelData(LevelData &dest);
+
+    /**
+     * @brief Saves level data to disk
+     *
+     * @param src The level data to save
+     */
+    void saveLevelData(LevelData &src);
 
     /**
      * @brief Loads the level.dat from disk
@@ -147,6 +175,23 @@ public:
      * @return PlayerData The loaded player data
      */
     PlayerData loadPlayerData(const Player &player);
+
+    /**
+     * @brief Saves player data to disk
+     *
+     * @param uuid The uuid of the player
+     * @param src The player data to save
+     */
+    void savePlayerData(u128 uuid, const PlayerData &src);
+
+    /**
+     * @brief Saves a region to disk
+     *
+     * @param dim The dimension to save the region from
+     * @param x X coordinate of the region
+     * @param z Z coordinate of the region
+     */
+    void saveRegion(Dimension &dim, int x, int z);
 
     /**
      * @brief Loads a region from disk

@@ -8,8 +8,11 @@
 #include "logging/logging.hpp"
 #include "math/Vector3.hpp"
 #include "protocol/ClientPackets.hpp"
+#include "tiles-entities/TileEntity.hpp"
+#include "tiles-entities/TileEntityList.hpp"
 #include "types.hpp"
 #include "world_storage/ChunkColumn.hpp"
+#include "world_storage/Level.hpp"
 #include <chrono>
 #include <cstdint>
 #include <memory>
@@ -43,35 +46,99 @@ void Dimension::tick()
 {
     auto startTickTime = std::chrono::high_resolution_clock::now();
 
-    this->removeDeadEntities();
-    this->removeDeadPlayers();
+    _removeDeadEntities();
+    _removeDeadPlayers();
 
-    {
-        std::lock_guard _(_entitiesMutex);
-        for (auto ent : _entities) {
-            ent->tick();
-        }
-    }
-
-    uint32_t rts = CONFIG["randomtickspeed"].as<uint32_t>();
-    if (rts != 0) {
-        for (auto &[pos, chunk] : _level.getChunkColumns()) {
-            // TODO(huntears): Test if a chunk is within simulation distance of a player
-            if (!chunk.isReady())
-                continue;
-            chunk.processRandomTick(rts);
-        }
-    }
     {
         std::unique_lock a(_entitiesMutex, std::defer_lock);
         std::unique_lock b(_newEntitiesMutex, std::defer_lock);
         std::lock(a, b);
+
+        for (auto ent : _entities) {
+            ent->tick();
+        }
 
         if (_newEntities.size() != 0) {
             _entities.insert(_entities.end(), _newEntities.begin(), _newEntities.end());
             _newEntities.clear();
         }
     }
+    {
+        std::unique_lock a(_entitiesMutex, std::defer_lock);
+        std::unique_lock b(_playersMutex, std::defer_lock);
+        std::lock(a, b);
+
+        // We remove all entities below a certain threshold
+        // Especially useful for arrows that currently go
+        // through blocks
+        constexpr float minYLevelForEntities = -200.0f;
+        for (auto &ent : _entities) {
+            if (ent->getType() == EntityType::Player)
+                continue;
+            if (ent->getPosition().y < minYLevelForEntities)
+                _idsToRemove.push_back(ent->getId());
+        }
+        if (!_idsToRemove.empty()) {
+            _players.erase(
+                std::remove_if(
+                    _players.begin(), _players.end(),
+                    [this](const std::shared_ptr<Player> player) {
+                        int32_t playerId = player->getId();
+                        return std::find_if(_idsToRemove.begin(), _idsToRemove.end(), [playerId](int32_t id) {
+                                   return id == playerId;
+                               }) != _idsToRemove.end();
+                    }
+                ),
+                _players.end()
+            );
+            for (auto player : _players) {
+                player->sendRemoveEntities(_idsToRemove);
+            }
+            _entities.erase(
+                std::remove_if(
+                    _entities.begin(), _entities.end(),
+                    [this](const std::shared_ptr<Entity> ent) {
+                        int32_t entId = ent->getId();
+                        return std::find_if(_idsToRemove.begin(), _idsToRemove.end(), [entId](int32_t id) {
+                                   return id == entId;
+                               }) != _idsToRemove.end();
+                    }
+                ),
+                _entities.end()
+            );
+            _idsToRemove.clear();
+        }
+    }
+
+    uint32_t rts = CONFIG["randomtickspeed"].as<uint32_t>();
+    if (rts != 0) {
+        for (auto &[_, chunk] : _level.getChunkColumns()) {
+            // TODO(huntears): Test if a chunk is within simulation distance of a player
+            if (!chunk.isReady())
+                continue;
+            chunk.processRandomTick(rts);
+        }
+    }
+    for (auto &[_, chunk] : _level.getChunkColumns()) {
+        if (!chunk.isReady())
+            continue;
+        if (auto &blocks = chunk.getBlocksToBeUpdated(); !blocks.empty()) {
+            std::lock_guard _(_playersMutex);
+            for (auto player : _players) {
+                for (auto [pos, id] : blocks) {
+                    LTRACE("Sending block update to player {} for block {} with id {}", player->getUsername(), pos, id);
+                    player->sendBlockUpdate({pos, id});
+                }
+            }
+            blocks.clear();
+        }
+    }
+    for (auto &[_, chunk] : _level.getChunkColumns()) {
+        if (!chunk.isReady())
+            continue;
+        chunk.tick();
+    }
+
     auto endTime = std::chrono::high_resolution_clock::now();
     auto compute_time = endTime - _previousTickTime;
     auto msptTime = endTime - startTickTime;
@@ -90,6 +157,44 @@ void Dimension::tick()
     case world_storage::DimensionType::END:
         PEXPP(addMsptEnd, msptTime_micro / MILLIS_IN_ONE_SEC)
         break;
+    }
+}
+
+void Dimension::_removeDeadEntities()
+{
+    std::lock_guard _(_entitiesMutex);
+
+    _entities.erase(
+        std::remove_if(
+            _entities.begin(), _entities.end(),
+            [this](const std::shared_ptr<Entity> ent) {
+                if (ent->isReadyToBeRemoved()) {
+                    LDEBUG("Entity {} removed from dimension {}", ent->getId(), this->_dimensionType);
+                    for (auto player : this->_players)
+                        player->sendRemoveEntities({ent->getId()});
+                    return true;
+                }
+                return false;
+            }
+        ),
+        _entities.end()
+    );
+}
+
+void Dimension::_removeDeadPlayers()
+{
+    std::lock_guard _(_playersMutex);
+    std::vector<int32_t> players_to_remove_buf;
+
+    for (auto player : this->_players) {
+        if (player->isReadyToBeRemoved()) {
+            players_to_remove_buf.push_back(player->getId());
+            player->setReadyToRemove(false);
+        }
+    }
+
+    for (auto player : this->_players) {
+        player->sendRemoveEntities(players_to_remove_buf);
     }
 }
 
@@ -364,13 +469,13 @@ void Dimension::spawnEntity(const std::shared_ptr<const Entity> current)
             current->getPosition().x, // Entity Position X
             current->getPosition().y, // Entity Position Y
             current->getPosition().z, // Entity Position Z
-            0, // Entity Pitch
-            0, // Entity Yaw
+            current->getRotation().z, // Entity Pitch
+            current->getRotation().x, // Entity Yaw
             0, // Entity Head Yaw
             0, // Entity data
-            0, // Entity Velocity X
-            0, // Entity Velocity Y
-            0 // Entity Velocity Z
+            (int16_t) current->getVelocity().x, // Entity Velocity X
+            (int16_t) current->getVelocity().y, // Entity Velocity Y
+            (int16_t) current->getVelocity().z // Entity Velocity Z
         });
         player->sendEntityMetadata(*current);
     }
@@ -381,19 +486,64 @@ void Dimension::updateBlock(Position position, int32_t id)
     LDEBUG("Dimension block update {} -> {}", position, id);
     auto &chunk = this->_level.getChunkColumnFromBlockPos(position.x, position.z);
 
-    // Weird ass modulo to get the correct block position in the chunk
-    auto x = position.x % 16;
-    auto z = position.z % 16;
-    if (x < 0)
-        x += 16;
-    if (z < 0)
-        z += 16;
-
-    chunk.updateBlock({x, position.y, z}, id);
+    auto chunkPosition = world_storage::convertPositionToChunkPosition(position);
+    chunk.updateBlock(chunkPosition, id);
+    std::shared_ptr<const tile_entity::TileEntity> tileEntity = nullptr;
+    if (id == 0)
+        chunk.removeTileEntity(position);
+    else {
+        using namespace tile_entity;
+        if (convertBlockNameToBlockEntityType(GLOBAL_PALETTE.fromProtocolIdToBlock(id).name) != TileEntityType::UnknownType) {
+            chunk.addTileEntity(createTileEntity(id, position));
+            tileEntity = chunk.getTileEntity(position);
+        }
+    }
     std::lock_guard _(_playersMutex);
     for (auto player : _players) {
-        player->sendBlockUpdate({position, id});
+        if (tileEntity)
+            player->sendBlockEntityData(tileEntity->toBlockEntityData());
+        else
+            player->sendBlockEntityData({position, -1, nullptr});
     }
+}
+
+void Dimension::addTileEntity(const Position &position, BlockId type)
+{
+    auto &chunk = this->_level.getChunkColumnFromBlockPos(position.x, position.z);
+
+    auto chunkPosition = world_storage::convertPositionToChunkPosition(position);
+    chunk.modifyBlock(chunkPosition, type);
+    chunk.addTileEntity(tile_entity::createTileEntity(type, position));
+    for (auto player : _players) {
+        player->sendBlockUpdate({position, type});
+        player->sendBlockEntityData(chunk.getTileEntity(position)->toBlockEntityData());
+    }
+}
+
+void Dimension::removeTileEntity(const Position &position)
+{
+    auto &chunk = this->_level.getChunkColumnFromBlockPos(position.x, position.z);
+
+    auto chunkPosition = world_storage::convertPositionToChunkPosition(position);
+
+    auto type = chunk.getBlock(chunkPosition);
+    chunk.modifyBlock(chunkPosition, 0);
+    chunk.removeTileEntity(position);
+    for (auto player : _players) {
+        player->sendBlockUpdate({position, type});
+    }
+}
+
+std::shared_ptr<tile_entity::TileEntity> Dimension::getTileEntity(const Position &position)
+{
+    auto &chunk = this->_level.getChunkColumnFromBlockPos(position.x, position.z);
+    return chunk.getTileEntity(position);
+}
+
+std::shared_ptr<const tile_entity::TileEntity> Dimension::getTileEntity(const Position &position) const
+{
+    auto &chunk = this->_level.getChunkColumnFromBlockPos(position.x, position.z);
+    return chunk.getTileEntity(position);
 }
 
 void Dimension::updateEntityAttributes(const protocol::UpdateAttributes &attributes)

@@ -18,6 +18,8 @@ public:
         Entity(dim, type, uuid),
         _health(health),
         _maxHealth(maxHealth),
+        _armorDefense(0),
+        _armorToughness(0),
         _handState(false, HandState::ActiveHand::MainHand, false),
         _potionEffectColor(0),
         _isPotionEffectAmbient(false),
@@ -71,6 +73,16 @@ public:
     NODISCARD virtual float &getHealth();
     NODISCARD virtual const float &getHealth() const;
 
+    virtual void setDefense(float value);
+    virtual void addDefense(float value);
+    virtual void removeDefense(float value);
+    NODISCARD virtual float getDefense() const noexcept;
+
+    virtual void setToughness(float value);
+    virtual void addToughness(float value);
+    virtual void removeToughness(float value);
+    NODISCARD virtual float getToughness() const noexcept;
+
     /**
      * @brief Sets the isReadyToRemove boolean
      * @param readyToRemove The new value
@@ -91,6 +103,9 @@ public:
 protected:
     float _health;
     float _maxHealth;
+
+    float _armorDefense;
+    float _armorToughness;
 
     struct HandState {
         bool isHandActive;

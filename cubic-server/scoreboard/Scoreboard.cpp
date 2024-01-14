@@ -184,6 +184,7 @@ void Scoreboard::sendAddTeam(const Team::Team &team) const
     if (team.isSeeingFriendlyInvisibles())
         friendlyFlags += 0x00000010;
 
+    // clang-format off
     const protocol::UpdateTeams update {
         team.getName(),
         0,
@@ -193,8 +194,9 @@ void Scoreboard::sendAddTeam(const Team::Team &team) const
         Team::CollisionRule::getProtocolFlag(team.getCollisionRule()),
         team.getColor(),
         team.getPrefix(),
-        team.getSuffix(),
-        {}};
+        team.getSuffix()
+    };
+    // clang-format on
     for (const auto &[_, world] : this->_worldGroup.getWorlds()) {
         for (const auto &[_, dimension] : world->getDimensions()) {
             for (const auto &player : dimension->getPlayers()) {
@@ -252,6 +254,7 @@ void Scoreboard::sendScoreboardStatus(Player &player) const
         if (team->isSeeingFriendlyInvisibles())
             friendlyFlags += 0x00000010;
 
+        // clang-format off
         const protocol::UpdateTeams update {
             team->getName(),
             0,
@@ -262,7 +265,9 @@ void Scoreboard::sendScoreboardStatus(Player &player) const
             team->getColor(),
             team->getPrefix(),
             team->getSuffix(),
-            members};
+            members
+        };
+        // clang-format on
         player.sendUpdateTeams(update);
     }
 }

@@ -161,7 +161,7 @@ public:
      * @param pos The position of the block
      * @return BlockId The block ID
      */
-    virtual BlockId getBlock(const Position &pos) const { return getLevel().getChunkColumnFromBlockPos(pos.x, pos.z).getBlock(pos); }
+    virtual BlockId getBlock(const Position &pos) const { return getLevel().getChunkColumnFromBlockPos(pos.x, pos.z).getBlock(world_storage::convertPositionToChunkPosition(pos)); }
 
     /**
      * @brief Get the tps of the dimension
@@ -177,8 +177,43 @@ public:
      */
     virtual MSPTInfos getMSPTInfos() const;
 
+    /**
+     * @brief Add a new tile entity to the dimension
+     *
+     * @param position The position of the tile entity (in absolute coordinates)
+     * @param type The type of the tile entity (as a BlockId)
+     */
+    virtual void addTileEntity(const Position &position, BlockId type);
+
+    /**
+     * @brief Remove a tile entity from the dimension
+     *
+     * @param position The position of the tile entity (in absolute coordinates)
+     */
+    virtual void removeTileEntity(const Position &position);
+
+    /**
+     * @brief Get a tile entity from the dimension using its position
+     *
+     * @param position The position of the tile entity (in absolute coordinates)
+     * @return std::shared_ptr<tile_entity::TileEntity>
+     */
+    virtual std::shared_ptr<tile_entity::TileEntity> getTileEntity(const Position &position);
+
+    /**
+     * @brief Get a tile entity from the dimension using its position
+     *
+     * @param position The position of the tile entity (in absolute coordinates)
+     * @return std::shared_ptr<const tile_entity::TileEntity>
+     */
+    virtual std::shared_ptr<const tile_entity::TileEntity> getTileEntity(const Position &position) const;
+
+    virtual void pushBackIdToRemove(int32_t id) { _idsToRemove.push_back(id); }
+
 protected:
     virtual void _run();
+    virtual void _removeDeadEntities();
+    virtual void _removeDeadPlayers();
 
 public:
     mutable std::recursive_mutex _playersMutex;
@@ -202,6 +237,7 @@ protected:
     boost::circular_buffer_space_optimized<float> _circularBufferTps;
     std::chrono::time_point<std::chrono::system_clock, std::chrono::duration<long, std::ratio<1, 1000000000>>> _previousTickTime;
     boost::circular_buffer_space_optimized<float> _circularBufferMSPT;
+    std::vector<int32_t> _idsToRemove;
 };
 
 template<isBaseOf<Entity> T, typename... Args>

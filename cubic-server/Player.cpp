@@ -7,7 +7,9 @@
 #include "PluginManager.hpp"
 #include "Server.hpp"
 #include "World.hpp"
+#include "blocks.hpp"
 #include "command_parser/CommandParser.hpp"
+#include "entities/ArmorStats.hpp"
 #include "entities/Entity.hpp"
 #include "entities/Item.hpp"
 #include "entities/LivingEntity.hpp"
@@ -15,16 +17,21 @@
 #include "items/UsableItem.hpp"
 #include "items/foodItems.hpp"
 #include "items/toolsDamage.hpp"
+#include "items/usable-items/FlintAndSteel.hpp"
 #include "items/usable-items/Hoe.hpp"
 #include "logging/logging.hpp"
 #include "nbt.h"
+#include "options.hpp"
 #include "protocol/ClientPackets.hpp"
 #include "protocol/ServerPackets.hpp"
 #include "protocol/Structures.hpp"
 #include "protocol/common.hpp"
 #include "protocol/container/Container.hpp"
+#include "protocol/container/CraftingTable.hpp"
+#include "protocol/container/Furnace.hpp"
 #include "protocol/container/Inventory.hpp"
 #include "protocol/metadata.hpp"
+#include "tiles-entities/Furnace.hpp"
 #include "world_storage/Level.hpp"
 
 #include <algorithm>
@@ -53,7 +60,7 @@ Player::Player(std::weak_ptr<Client> cli, std::shared_ptr<Dimension> dim, u128 u
     _foodSaturationLevel(player_attributes::DEFAULT_FOOD_SATURATION_LEVEL), // TODO: Take this from the saved data
     _foodTickTimer(0), // TODO: Take this from the saved data
     _foodExhaustionLevel(0.0f), // TODO: Take this from the saved data
-    _respawnPoint(0, 120, 0), // TODO: Take this from the saved data
+    _respawnPoint(0, 75, 0), // TODO: Take this from the saved data
     _chatVisibility(protocol::ClientInformation::ChatVisibility::Enabled),
     _isFlying(true), // TODO: Take this from the saved data
     _isJumping(false),
@@ -61,7 +68,8 @@ Player::Player(std::weak_ptr<Client> cli, std::shared_ptr<Dimension> dim, u128 u
     _score(0),
     _skinParts(true, true, true, true, true, true, true),
     _mainHand(MainHand::Right),
-    _nbTickBeforeNextAttack(0)
+    _nbTickBeforeNextAttack(0),
+    _windowId(0)
 {
     _keepAliveClock.start();
     _heldItem = 0;
@@ -72,6 +80,7 @@ Player::Player(std::weak_ptr<Client> cli, std::shared_ptr<Dimension> dim, u128 u
     this->setOperator(Server::getInstance()->permissions.isOperator(username));
     this->_inventory->playerInventory().at(12) = protocol::Slot(true, 734, 42);
     this->_inventory->playerInventory().at(13) = protocol::Slot(true, 1, 12);
+    this->_inventory->playerInventory().at(15) = protocol::Slot(true, 788, 64);
 
     // {display:{Name:'[{"text":"Cubic","italic":false}]'}}
     constexpr std::string_view NAME = "[{\"text\":\"Cubic\",\"italic\":false}]";
@@ -86,10 +95,17 @@ Player::Player(std::weak_ptr<Client> cli, std::shared_ptr<Dimension> dim, u128 u
     nbt_tag_compound_append(root, display);
     Items::Hoe hoe = Items::Hoe("minecraft:wooden_hoe", 756, Items::ItemMaxDurabilityByType::WoodenItem, false, Items::UsabilityType::BothMouseClicksUsable);
     auto hoeRoot = hoe.setNbtTag();
+    Items::FlintAndSteel flint = Items::FlintAndSteel();
+    auto flintRoot = flint.setNbtTag();
 
     this->_inventory->playerInventory().at(14) = protocol::Slot(true, 1, 12, root);
-    this->_inventory->playerInventory().at(16) = protocol::Slot(true, hoe._numeralId, 1, hoeRoot);
-    this->_inventory->playerInventory().at(17) = protocol::Slot(true, ITEM_CONVERTER.fromItemToProtocolId("minecraft:wooden_sword"), 1);
+    this->_inventory->playerInventory().at(15) = protocol::Slot(true, ITEM_CONVERTER.fromItemToProtocolId("minecraft:obsidian"), 40);
+    this->_inventory->playerInventory().at(16) = protocol::Slot(true, flint._numeralId, 1, flintRoot);
+    this->_inventory->playerInventory().at(17) = protocol::Slot(true, hoe._numeralId, 1, hoeRoot);
+    this->_inventory->playerInventory().at(18) = protocol::Slot(true, ITEM_CONVERTER.fromItemToProtocolId("minecraft:wooden_sword"), 1);
+    this->_inventory->playerInventory().at(19) = protocol::Slot(true, ITEM_CONVERTER.fromItemToProtocolId("minecraft:coal"), 1);
+    this->_inventory->playerInventory().at(20) = protocol::Slot(true, ITEM_CONVERTER.fromItemToProtocolId("minecraft:oak_log"), 1);
+    this->_inventory->playerInventory().at(21) = protocol::Slot(true, ITEM_CONVERTER.fromItemToProtocolId("minecraft:cobblestone"), 10);
     PEXP(incrementPlayerCountGlobal);
 }
 
@@ -132,13 +148,32 @@ std::weak_ptr<Client> Player::getClient() const { return _cli; }
 
 const std::string &Player::getUsername() const { return _username; }
 
-uint16_t Player::getHeldItem() const { return this->_heldItem; }
+uint8_t Player::getHeldItem() const { return this->_heldItem; }
 
 player_attributes::Gamemode Player::getGamemode() const { return _gamemode; }
 
 const protocol::ClientInformation::ChatVisibility &Player::getChatVisibility() const { return this->_chatVisibility; }
 
-void Player::setGamemode(player_attributes::Gamemode gamemode) { _gamemode = gamemode; }
+void Player::setGamemode(player_attributes::Gamemode gamemode)
+{
+    _gamemode = gamemode;
+
+    int8_t defense = 0;
+    int8_t toughness = 0;
+
+    for (int16_t armorPos = 0; armorPos < 4; armorPos++) {
+        if (!this->getInventory()->armor()[armorPos].present)
+            continue;
+        for (const armor::ArmorPiece &gear : armor::armors) {
+            if (this->getInventory()->armor()[armorPos].itemID == ITEM_CONVERTER.fromItemToProtocolId(gear.item)) {
+                defense += gear.protectionLevel;
+                toughness += gear.toughnessLevel;
+            }
+        }
+    }
+    this->setDefense(defense);
+    this->setToughness(toughness);
+}
 
 void Player::setOperator(const bool isOp) { this->_isOperator = isOp; }
 
@@ -207,6 +242,21 @@ void Player::updatePlayerInfo(const protocol::PlayerInfoUpdate &data)
         for (auto &player : dim->getPlayers()) {
             player->sendPlayerInfoUpdate(data);
         }
+    }
+}
+
+void Player::updateEquipment(bool mainHand, UNUSED bool offHand, UNUSED bool boots, UNUSED bool leggings, UNUSED bool chestplate, UNUSED bool helmet)
+{
+    protocol::SetEquipment equip;
+
+    equip.entityId = this->getId();
+
+    if (mainHand)
+        equip.equipment.push_back(std::make_pair(protocol::SetEquipment::EquipmentPosition::MainHand, this->_inventory->hotbar().at(this->_heldItem)));
+
+    for (const auto &player : this->getDimension()->getPlayers()) {
+        if (player->getId() != this->getId())
+            player->sendSetEquipment(equip);
     }
 }
 
@@ -286,6 +336,24 @@ void Player::sendBlockUpdate(const protocol::BlockUpdate &packet)
     client->doWrite(std::move(pck));
 
     N_LDEBUG("Sent a block update at {} = {} to {}", packet.location, packet.blockId, this->getUsername());
+}
+
+void Player::sendBlockEntityData(const protocol::BlockEntityData &packet)
+{
+    GET_CLIENT();
+    auto pck = protocol::createBlockEntityData(packet);
+    client->doWrite(std::move(pck));
+
+    N_LDEBUG("Sent a block entity data packet");
+}
+
+void Player::sendOpenScreen(const protocol::OpenScreen &packet)
+{
+    GET_CLIENT();
+    auto pck = protocol::createOpenScreen(packet);
+    client->doWrite(std::move(pck));
+
+    N_LDEBUG("Sent a open screen");
 }
 
 void Player::sendFeatureFlags(const protocol::FeatureFlags &packet)
@@ -380,6 +448,15 @@ void Player::sendEntityVelocity(const protocol::EntityVelocity &data)
     N_LDEBUG("Sent an Entity Velocity packet with velocity: x -> {} | y -> {} | z -> {}", data.velocityX, data.velocityY, data.velocityZ);
 }
 
+void Player::sendSetEquipment(const protocol::SetEquipment &data)
+{
+    GET_CLIENT();
+    auto pck = protocol::createSetEquipment(data);
+    client->doWrite(std::move(pck));
+
+    N_LDEBUG("Sent a Set Equipment packet");
+}
+
 void Player::sendHealth(void)
 {
     GET_CLIENT();
@@ -463,6 +540,14 @@ void Player::sendHeadRotation(const protocol::HeadRotation &data)
     auto pck = protocol::createHeadRotation(data);
     client->doWrite(std::move(pck));
     N_LDEBUG("Sent an entity head rotation packet");
+}
+
+void Player::sendUpdateSectionBlock(const protocol::UpdateSectionBlock &data)
+{
+    GET_CLIENT();
+    auto pck = protocol::createUpdateSectionBlock(data);
+    client->doWrite(std::move(pck));
+    N_LDEBUG("Sent an UpdateSectionBlock packet");
 }
 
 void Player::sendSetCenterChunk(const Position2D &pos)
@@ -642,6 +727,14 @@ void Player::sendSetContainerContent(const protocol::SetContainerContent &packet
     N_LDEBUG("Sent set container content packet");
 }
 
+void Player::sendSetContainerProperty(const protocol::SetContainerProperty &packet)
+{
+    GET_CLIENT();
+    auto pck = protocol::createSetContainerProperty(packet);
+    client->doWrite(std::move(pck));
+    N_LDEBUG("Sent set container property packet");
+}
+
 void Player::sendSetContainerSlot(const protocol::SetContainerSlot &packet)
 {
     GET_CLIENT();
@@ -792,6 +885,30 @@ void Player::sendPickupItem(const protocol::PickupItem &packet)
     auto pck = protocol::createPickupItem(packet);
     client->doWrite(std::move(pck));
     LDEBUG("Sent pickup item packet");
+}
+
+void Player::sendSubtitleText(const protocol::SetSubtitleText &packet)
+{
+    GET_CLIENT();
+    auto pck = protocol::createSetSubtitleText(packet);
+    client->doWrite(std::move(pck));
+    LDEBUG("Sent subtitle text packet");
+}
+
+void Player::sendTitleText(const protocol::SetTitleText &packet)
+{
+    GET_CLIENT();
+    auto pck = protocol::createSetTitleText(packet);
+    client->doWrite(std::move(pck));
+    LDEBUG("Sent title text packet");
+}
+
+void Player::sendTitleAnimationTimes(const protocol::SetTitleAnimationTimes &packet)
+{
+    GET_CLIENT();
+    auto pck = protocol::createSetTitleAnimationTimes(packet);
+    client->doWrite(std::move(pck));
+    LDEBUG("Sent title animation times packet");
 }
 
 #pragma endregion
@@ -974,6 +1091,7 @@ void Player::playerPickupItem()
         this->_inventory->insert(item);
         this->sendSetContainerContent({_inventory});
         this->getDimension()->removeEntity(entity->getId());
+        this->updateEquipment(true, false, false, false, false, false);
     }
 }
 
@@ -1028,6 +1146,7 @@ void Player::_onPlayerAction(protocol::PlayerAction &pck)
 {
     bool canceled = false;
     Vector3<int> tmp(pck.location.x, pck.location.y, pck.location.z);
+    BlockId targetedBlock = this->getDimension()->getBlock(pck.location);
 
     // N_LINFO("Got a Player Action {} at {}", pck.status, pck.location);
     N_LDEBUG("Got a Player Action and player is in gamemode {} and status is {}", this->getGamemode(), pck.status);
@@ -1036,7 +1155,7 @@ void Player::_onPlayerAction(protocol::PlayerAction &pck)
         if (this->getGamemode() == player_attributes::Gamemode::Creative) {
             onEventCancelable(Server::getInstance()->getPluginManager(), onBlockDestroy, canceled, 0, tmp);
             if (canceled) {
-                Event::cancelBlockDestroy(this, this->getDimension()->getLevel().getChunkColumnFromBlockPos(pck.location.x, pck.location.z).getBlock(pck.location), pck.location);
+                Event::cancelBlockDestroy(this, targetedBlock, pck.location);
                 return;
             }
             this->getDimension()->updateBlock(pck.location, 0);
@@ -1044,11 +1163,11 @@ void Player::_onPlayerAction(protocol::PlayerAction &pck)
         if (this->getGamemode() == player_attributes::Gamemode::Survival) {
             onEventCancelable(Server::getInstance()->getPluginManager(), onBlockDestroy, canceled, 0, tmp);
             if (canceled) {
-                Event::cancelBlockDestroy(this, this->getDimension()->getLevel().getChunkColumnFromBlockPos(pck.location.x, pck.location.z).getBlock(pck.location), pck.location);
+                Event::cancelBlockDestroy(this, targetedBlock, pck.location);
                 return;
             }
-            if (BLOCK_DATA_CONVERTER.fromBlockIdToBlockData(this->getDimension()->getBlock(pck.location)).hardness == 0) {
-                int id = ITEM_CONVERTER.fromItemToProtocolId(GLOBAL_PALETTE.fromProtocolIdToBlock(this->getDimension()->getBlock(pck.location)).name);
+            if (BLOCK_DATA_CONVERTER.fromBlockIdToBlockData(targetedBlock).hardness == 0) {
+                int id = ITEM_CONVERTER.fromItemToProtocolId(GLOBAL_PALETTE.fromProtocolIdToBlock(targetedBlock).name);
                 this->getDimension()->updateBlock(pck.location, 0);
                 _foodExhaustionLevel += 0.005;
                 _dim->makeEntity<Item>(protocol::Slot {true, id, 1})
@@ -1061,19 +1180,19 @@ void Player::_onPlayerAction(protocol::PlayerAction &pck)
     case protocol::PlayerAction::Status::FinishedDigging: {
         onEventCancelable(Server::getInstance()->getPluginManager(), onBlockDestroy, canceled, 0, tmp);
         if (canceled) {
-            Event::cancelBlockDestroy(this, this->getDimension()->getLevel().getChunkColumnFromBlockPos(pck.location.x, pck.location.z).getBlock(pck.location), pck.location);
+            Event::cancelBlockDestroy(this, targetedBlock, pck.location);
             return;
         }
         auto item = this->_inventory->hotbar().at(this->_heldItem).getUsableItemFromSlot();
         if (Items::Hoe *usedItem = std::get_if<Items::Hoe>(&item)) {
             if (usedItem->_usabilityType == Items::UsabilityType::LeftMouseClickUsable || usedItem->_usabilityType == Items::UsabilityType::BothMouseClicksUsable) {
-                usedItem->onUse(this->getDimension(), pck.location, Items::UsabilityType::LeftMouseClickUsable, 1);
+                usedItem->onUseOn(this->getDimension(), pck.location, Items::UsabilityType::LeftMouseClickUsable, 1, *this);
                 if (usedItem->canUpdateDamage) {
                     this->_inventory->hotbar().at(this->_heldItem).updateDamage();
                 }
             }
         }
-        int id = ITEM_CONVERTER.fromItemToProtocolId(GLOBAL_PALETTE.fromProtocolIdToBlock(this->getDimension()->getBlock(pck.location)).name);
+        int id = ITEM_CONVERTER.fromItemToProtocolId(GLOBAL_PALETTE.fromProtocolIdToBlock(targetedBlock).name);
         this->getDimension()->updateBlock(pck.location, 0);
         _foodExhaustionLevel += 0.005;
         _dim->makeEntity<Item>(protocol::Slot {true, id, 1})
@@ -1083,13 +1202,24 @@ void Player::_onPlayerAction(protocol::PlayerAction &pck)
     case protocol::PlayerAction::Status::DropItemStack:
         getDimension()->makeEntity<Item>(_inventory->hotbar().at(this->_heldItem))->dropItem(this->getPosition());
         _inventory->hotbar().at(this->_heldItem).reset();
+        // update item in hand for other players
+        this->updateEquipment(true, false, false, false, false, false);
         break;
     case protocol::PlayerAction::Status::DropItem:
         if (!_inventory->hotbar().at(this->_heldItem).present)
             break;
         getDimension()->makeEntity<Item>(_inventory->hotbar().at(this->_heldItem).takeOne())->dropItem(this->getPosition());
+        _inventory->hotbar().at(this->_heldItem).itemCount--;
+        if (_inventory->hotbar().at(this->_heldItem).itemCount == 0) {
+            _inventory->hotbar().at(this->_heldItem).reset();
+
+            // update item in hand for other players
+            this->updateEquipment(true, false, false, false, false, false);
+        }
         break;
     case protocol::PlayerAction::Status::ShootArrowOrFinishEating:
+        // TODO(huntears): Cancel eating if shooting succeeded
+        _shoot();
         _eat();
         break;
     case protocol::PlayerAction::Status::SwapItemInHand:
@@ -1098,6 +1228,24 @@ void Player::_onPlayerAction(protocol::PlayerAction &pck)
     default:
         N_LERROR("Got a Player Action with an unknown status: {}", pck.status);
         break;
+    }
+}
+
+void Player::_shoot()
+{
+    if (this->_inventory->hotbar().at(this->_heldItem).present == false)
+        return;
+
+    // Check if the item in hand is a bow or a crossbox
+    // Yes this is hardcoded, but it will do
+    auto heldItem = this->_inventory->hotbar().at(this->_heldItem).itemID;
+    auto item = this->_inventory->hotbar().at(this->_heldItem).getUsableItemFromSlot();
+    if (heldItem == 735) {
+        // Bow
+        Items::Bow *usedItem = std::get_if<Items::Bow>(&item);
+        usedItem->onUse(_dim, *this, Items::UsabilityType::RightMouseClickUsable);
+    } else if (heldItem == 1112) {
+        // Crossbow
     }
 }
 
@@ -1146,6 +1294,8 @@ void Player::_onSetBeaconEffect(UNUSED protocol::SetBeaconEffect &pck) { N_LDEBU
 void Player::_onSetHeldItem(protocol::SetHeldItem &pck)
 {
     this->_heldItem = pck.slot;
+
+    this->updateEquipment(true, false, false, false, false, false);
     N_LDEBUG("Got a Set Held Item");
 }
 
@@ -1183,6 +1333,31 @@ void Player::_onTeleportToEntity(UNUSED protocol::TeleportToEntity &pck) { N_LDE
 void Player::_onUseItemOn(protocol::UseItemOn &pck)
 {
     N_LDEBUG("Got a Use Item On {} -> {}", pck.location, this->_heldItem);
+
+    if (!this->_crouching) {
+        if (GLOBAL_PALETTE.fromProtocolIdToBlock(this->getDimension()->getBlock(pck.location)).name == "minecraft:crafting_table") {
+            _containers.emplace_back(std::make_shared<protocol::container::CraftingTable>(this->dynamicWeakFromThis<Player>()));
+            return;
+        }
+        if (auto tileEntity = this->getDimension()->getTileEntity(pck.location); tileEntity != nullptr) {
+            switch (tileEntity->blockEntityType) {
+            case tile_entity::TileEntityType::UnknownType:
+                LERROR("tile entity at {} has type UnknownType", pck.location);
+                break;
+            case tile_entity::TileEntityType::Furnace: {
+                auto &container = _containers.emplace_back(
+                    std::make_shared<protocol::container::Furnace>(this->dynamicWeakFromThis<Player>(), std::dynamic_pointer_cast<tile_entity::Furnace>(tileEntity))
+                );
+                this->sendSetContainerContent({container});
+                break;
+            }
+            default:
+                LERROR("tile entity at {} has unhandled type {}", pck.location, tileEntity->blockEntityType);
+                break;
+            }
+        }
+    }
+
     switch (pck.face) {
     case protocol::UseItemOn::Face::Bottom:
         pck.location.y--;
@@ -1203,24 +1378,53 @@ void Player::_onUseItemOn(protocol::UseItemOn &pck)
         pck.location.x++;
         break;
     }
+
+    if (this->_inventory->hotbar().at(this->_heldItem).itemID == ITEM_CONVERTER.fromItemToProtocolId("minecraft:wheat_seeds")) {
+        const BlockId &belowBlock = this->getDimension()->getBlock({pck.location.x, pck.location.y - 1, pck.location.z});
+
+        if (this->getDimension()->getBlock(pck.location) == Blocks::Air::toProtocol() &&
+            (belowBlock == Blocks::Farmland::toProtocol(Blocks::Farmland::Properties::Moisture::ZERO) ||
+             belowBlock == Blocks::Farmland::toProtocol(Blocks::Farmland::Properties::Moisture::ONE) ||
+             belowBlock == Blocks::Farmland::toProtocol(Blocks::Farmland::Properties::Moisture::TWO) ||
+             belowBlock == Blocks::Farmland::toProtocol(Blocks::Farmland::Properties::Moisture::THREE) ||
+             belowBlock == Blocks::Farmland::toProtocol(Blocks::Farmland::Properties::Moisture::FOUR) ||
+             belowBlock == Blocks::Farmland::toProtocol(Blocks::Farmland::Properties::Moisture::FIVE) ||
+             belowBlock == Blocks::Farmland::toProtocol(Blocks::Farmland::Properties::Moisture::SIX) ||
+             belowBlock == Blocks::Farmland::toProtocol(Blocks::Farmland::Properties::Moisture::SEVEN))) {
+            this->getDimension()->updateBlock(pck.location, Blocks::Wheat::toProtocol(Blocks::Wheat::Properties::Age::ZERO));
+            this->_inventory->hotbar().at(this->_heldItem).takeOne();
+            return;
+        }
+    }
+
     auto item = this->_inventory->hotbar().at(this->_heldItem).getUsableItemFromSlot();
     if (Items::Hoe *usedItem = std::get_if<Items::Hoe>(&item)) {
         if (usedItem->_usabilityType == Items::UsabilityType::RightMouseClickUsable || usedItem->_usabilityType == Items::UsabilityType::BothMouseClicksUsable) {
-            usedItem->onUse(this->getDimension(), pck.location, Items::UsabilityType::RightMouseClickUsable, (int32_t) pck.face);
+            usedItem->onUseOn(this->getDimension(), pck.location, Items::UsabilityType::RightMouseClickUsable, (int32_t) pck.face, *this);
             if (usedItem->canUpdateDamage) {
                 this->_inventory->hotbar().at(this->_heldItem).updateDamage();
             }
             this->sendSetContainerSlot({this->_inventory, static_cast<int16_t>(this->_heldItem + HOTBAR_OFFSET)});
         }
         return;
+    } else if (Items::FlintAndSteel *usedItem = std::get_if<Items::FlintAndSteel>(&item)) {
+        usedItem->onUseOn(this->getDimension(), pck.location, Items::UsabilityType::RightMouseClickUsable, (int32_t) pck.face, *this);
+        this->_inventory->hotbar().at(this->_heldItem).updateDamage();
+        this->sendSetContainerSlot({this->_inventory, static_cast<int16_t>(this->_heldItem + HOTBAR_OFFSET)});
+        return;
     }
-    if (_inventory->hotbar().at(this->_heldItem).present)
+    if (_inventory->hotbar().at(this->_heldItem).present) {
         this->getDimension()->updateBlock(pck.location, GLOBAL_PALETTE.fromBlockToProtocolId(ITEM_CONVERTER.fromProtocolIdToItem(_inventory->hotbar().at(this->_heldItem).itemID)));
+    }
     if (_gamemode == player_attributes::Gamemode::Creative)
         return;
     this->_inventory->hotbar().at(this->_heldItem).itemCount--;
-    if (_inventory->hotbar().at(this->_heldItem).itemCount == 0)
+    if (_inventory->hotbar().at(this->_heldItem).itemCount == 0) {
         _inventory->hotbar().at(this->_heldItem).reset();
+
+        // update item in hand for other players
+        this->updateEquipment(true, false, false, false, false, false);
+    }
 }
 
 void Player::_onUseItem(UNUSED protocol::UseItem &pck) { N_LDEBUG("Got a Use Item"); }
@@ -1320,7 +1524,7 @@ void Player::_continueLoginSequence()
     this->sendUpdateRecipiesBook({});
 
     // TODO: change that to player_attributes::DEFAULT_SPAWN_POINT
-    this->teleport({8.5, 100, 8.5});
+    this->teleport({8.5, 75, 8.5});
 
     this->sendServerData({false, "", false, "", false});
 
@@ -1373,6 +1577,17 @@ void Player::_continueLoginSequence()
 
     // send scoreboard status (objectives and teams)
     _dim->getWorld()->getWorldGroup()->getScoreboard().sendScoreboardStatus(*this);
+
+    // send other player's held item
+    for (std::shared_ptr<Player> other : _dim->getPlayers()) {
+        if (other->getInventory()->hotbar().at(other->getHeldItem()).present) {
+            protocol::SetEquipment equip;
+
+            equip.entityId = other->getId();
+            equip.equipment.push_back(std::make_pair(protocol::SetEquipment::EquipmentPosition::MainHand, other->getInventory()->hotbar().at(other->getHeldItem())));
+            this->sendSetEquipment(equip);
+        }
+    }
 
     // Send login message
     chat::Message connectionMsg = chat::Message::fromTranslationKey<chat::message::TranslationKey::MultiplayerPlayerJoined>(*this);
@@ -1454,7 +1669,6 @@ void Player::_eat()
         return item.id == this->_inventory->hotbar().at(this->_heldItem).itemID;
     });
     if (food == Items::foodItems.end()) {
-        LERROR("Trying to eat an item that is not food");
         return;
     }
     if (_foodLevel >= MAX_FOOD_LEVEL) {
@@ -1470,6 +1684,12 @@ void Player::_eat()
     this->sendHealth();
     _inventory->hotbar().at(this->_heldItem).itemCount--;
     this->sendSetContainerSlot({_inventory, static_cast<int16_t>(this->_heldItem + HOTBAR_OFFSET)});
+    if (_inventory->hotbar().at(this->_heldItem).itemCount == 0) {
+        _inventory->hotbar().at(this->_heldItem).reset();
+
+        // update item in hand for other players
+        this->updateEquipment(true, false, false, false, false, false);
+    }
 }
 
 void Player::teleport(const Vector3<double> &pos)
@@ -1575,4 +1795,18 @@ void Player::appendMetadataPacket(std::vector<uint8_t> &data) const
     // Left shoulder
 
     // Right shoulder
+}
+
+std::shared_ptr<protocol::container::Container> Player::getContainer(uint8_t windowId)
+{
+    if (windowId == 0)
+        return _inventory;
+    auto it = std::find_if(_containers.begin(), _containers.end(), [&](const auto &container) {
+        if (container->id() == windowId)
+            return true;
+        return false;
+    });
+    if (it == _containers.end())
+        return nullptr;
+    return *it;
 }

@@ -4,39 +4,77 @@
 #include "logging/logging.hpp"
 
 namespace Recipe {
-Smithing::Smithing(const nlohmann::json &recipe):
-    Recipe(recipe)
+Smithing::Smithing(const std::string &identifier, const nlohmann::json &recipe):
+    Recipe(identifier, recipe)
 {
     // returns if any value is missing or does not have the right type
-    // clang-format off
-    if (!recipe.contains("base") || \
-        !recipe.contains("addition") || \
-        !recipe.contains("result") || \
-        !recipe["base"].is_object() || \
-        !recipe["addition"].is_object() || \
-        !recipe["result"].is_object() || \
-        !recipe["base"].contains("item") || \
-        !recipe["base"]["item"].is_string() || \
-        !recipe["addition"].contains("item") || \
-        !recipe["addition"]["item"].is_string() || \
-        !recipe["result"].contains("item") || \
+    if (!recipe.contains("base") || !recipe.contains("addition") || !recipe.contains("result") || (!recipe["base"].is_object() && !recipe["base"].is_array()) ||
+        (!recipe["addition"].is_object() && !recipe["addition"].is_array()) || !recipe["result"].is_object() || !recipe["result"].contains("item") ||
         !recipe["result"]["item"].is_string())
         return;
-    // clang-format on
+
     // get the recipe values
-    this->_base = ITEM_CONVERTER.fromItemToProtocolId(recipe["base"]["item"].get<std::string>());
-    this->_addition = ITEM_CONVERTER.fromItemToProtocolId(recipe["addition"]["item"].get<std::string>());
+    // get base items
+    if (recipe["base"].is_object()) { // if only one base
+        if (recipe["base"].contains("item") && recipe["base"]["item"].is_string())
+            this->_bases.insert(ITEM_CONVERTER.fromItemToProtocolId(recipe["base"]["item"].get<std::string>()));
+        else
+            return;
+    } else if (recipe["base"].is_array()) {
+        for (const auto &base : recipe["base"]) { // if multiple base items
+            if (base.is_object() && base.contains("item") && base["item"].is_string())
+                this->_bases.insert(ITEM_CONVERTER.fromItemToProtocolId(base["item"].get<std::string>()));
+            else
+                return;
+        }
+    } else
+        return;
+
+    // get addition items
+    if (recipe["addition"].is_object()) { // if only one addition
+        if (recipe["addition"].contains("item") && recipe["addition"]["item"].is_string())
+            this->_additions.insert(ITEM_CONVERTER.fromItemToProtocolId(recipe["addition"]["item"].get<std::string>()));
+        else
+            return;
+    } else if (recipe["addition"].is_array()) {
+        for (const auto &addition : recipe["addition"]) { // if multiple addition items
+            if (addition.is_object() && addition.contains("item") && addition["item"].is_string())
+                this->_additions.insert(ITEM_CONVERTER.fromItemToProtocolId(addition["item"].get<std::string>()));
+            else
+                return;
+        }
+    } else
+        return;
+
     this->_result = ITEM_CONVERTER.fromItemToProtocolId(recipe["result"]["item"].get<std::string>());
     this->setValidity(true);
 }
 
 void Smithing::dump(void) const
 {
-    LINFO(
-        "\"{}\" + \"{}\" = {}", ITEM_CONVERTER.fromProtocolIdToItem(this->_base), ITEM_CONVERTER.fromProtocolIdToItem(this->_addition),
-        ITEM_CONVERTER.fromProtocolIdToItem(this->_result)
-    );
+    std::stringstream stream;
+    bool first = true;
+
+    stream << '[';
+    for (const auto &base : this->_bases) {
+        if (first)
+            first = false;
+        else
+            stream << ", ";
+        stream << "\"" << ITEM_CONVERTER.fromProtocolIdToItem(base) << "\"";
+    }
+    stream << "] + [";
+    for (const auto &addition : this->_additions) {
+        if (first)
+            first = false;
+        else
+            stream << ", ";
+        stream << "\"" << ITEM_CONVERTER.fromProtocolIdToItem(addition) << "\"";
+    }
+
+    stream << "] -> \"" << ITEM_CONVERTER.fromProtocolIdToItem(this->_result);
+    LTRACE(stream.str());
 }
 
-std::unique_ptr<Recipe> Smithing::create(const nlohmann::json &recipe) { return (std::make_unique<Smithing>(Smithing(recipe))); }
+std::shared_ptr<Recipe> Smithing::create(const std::string &identifier, const nlohmann::json &recipe) { return (std::make_shared<Smithing>(Smithing(identifier, recipe))); }
 } // namespace Recipe

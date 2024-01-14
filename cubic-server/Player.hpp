@@ -24,7 +24,6 @@
 #include <type_traits>
 
 class Client;
-// class Entity;
 
 class Player : public LivingEntity {
     friend class Client;
@@ -44,13 +43,14 @@ public:
 
     std::weak_ptr<Client> getClient() const;
     const std::string &getUsername() const;
-    uint16_t getHeldItem() const;
+    uint8_t getHeldItem() const;
     player_attributes::Gamemode getGamemode() const;
     const protocol::ClientInformation::ChatVisibility &getChatVisibility() const;
     long keepAliveId() const;
     uint8_t keepAliveIgnored() const;
     bool isOperator() const;
     NODISCARD const std::vector<protocol::PlayerProperty> &getProperties() const;
+    std::shared_ptr<protocol::container::Inventory> getInventory() { return _inventory; };
     std::shared_ptr<const protocol::container::Inventory> getInventory() const { return _inventory; };
 
 public:
@@ -70,6 +70,7 @@ public:
      */
     void kill(int32_t killerId) override;
     void playerPickupItem();
+    void updateEquipment(bool mainHand, UNUSED bool offHand, UNUSED bool boots, UNUSED bool leggings, UNUSED bool chestplate, UNUSED bool helmet);
 
     template<isBaseOf<protocol::container::Container> Container, typename... Args>
     std::shared_ptr<Container> openContainer(Args &...);
@@ -99,6 +100,20 @@ public:
      */
     void appendMetadataPacket(std::vector<uint8_t> &data) const override;
 
+    /**
+     * @brief Get the Window Id of the next screen / window / inventory
+     *
+     * @return uint8_t The window id
+     */
+    uint8_t getWindowId() { return ++_windowId; }
+
+    /**
+     * @brief Get a container by its window id
+     *
+     * @param windowId The window id of the container
+     */
+    std::shared_ptr<protocol::container::Container> getContainer(uint8_t windowId);
+
 public:
     /**
      * @brief Synchronize the player with the server
@@ -112,6 +127,7 @@ public:
     void sendSpawnEntity(const Entity &data);
     void sendSpawnPlayer(const protocol::SpawnPlayer &data);
     void sendEntityVelocity(const protocol::EntityVelocity &data);
+    void sendSetEquipment(const protocol::SetEquipment &data);
     void sendHealth(void);
     void sendUpdateTime(const protocol::UpdateTime &data);
     void sendChatMessageResponse(const protocol::PlayerChatMessage &packet);
@@ -140,12 +156,15 @@ public:
     void sendUpdateEntityPositionAndRotation(const protocol::UpdateEntityPositionRotation &data);
     void sendUpdateEntityRotation(const protocol::UpdateEntityRotation &data);
     void sendHeadRotation(const protocol::HeadRotation &data);
+    void sendUpdateSectionBlock(const protocol::UpdateSectionBlock &data);
     void sendSetCenterChunk(const Position2D &pos);
     void sendChunkAndLightUpdate(const Position2D &pos);
     void sendChunkAndLightUpdate(int32_t x, int32_t z);
     void sendChunkAndLightUpdate(const world_storage::ChunkColumn &chunk);
     void sendUnloadChunk(int32_t x, int32_t z);
     void sendBlockUpdate(const protocol::BlockUpdate &packet);
+    void sendBlockEntityData(const protocol::BlockEntityData &packet);
+    void sendOpenScreen(const protocol::OpenScreen &packet);
     void sendPlayerAbilities(const protocol::PlayerAbilitiesClient &packet);
     void sendFeatureFlags(const protocol::FeatureFlags &packet);
     void sendServerData(const protocol::ServerData &packet);
@@ -153,6 +172,7 @@ public:
     void sendEntityAnimation(protocol::EntityAnimation::ID animId, int32_t entityID);
     void sendCloseContainer(uint8_t containerId);
     void sendSetContainerContent(const protocol::SetContainerContent &packet);
+    void sendSetContainerProperty(const protocol::SetContainerProperty &packet);
     void sendSetContainerSlot(const protocol::SetContainerSlot &packet);
     void sendUpdateRecipes(const protocol::UpdateRecipes &packet);
     void sendUpdateTags(const protocol::UpdateTags &packet);
@@ -178,6 +198,9 @@ public:
      */
     void sendCombatDeath(const protocol::CombatDeath &packet);
     void sendPickupItem(const protocol::PickupItem &packet);
+    void sendSubtitleText(const protocol::SetSubtitleText &data);
+    void sendTitleText(const protocol::SetTitleText &data);
+    void sendTitleAnimationTimes(const protocol::SetTitleAnimationTimes &data);
 
 private:
     void _onConfirmTeleportation(protocol::ConfirmTeleportation &pck);
@@ -239,13 +262,12 @@ private:
     void _unloadChunk(int32_t x, int32_t z);
     void _foodTick();
     void _eat();
-    void _respawn();
 
     std::weak_ptr<Client> _cli;
     std::string _username;
     long _keepAliveId;
     uint8_t _keepAliveIgnored;
-    int16_t _heldItem;
+    int8_t _heldItem;
     player_attributes::Gamemode _gamemode;
     TickClock _keepAliveClock;
     TickClock _synchronizeClock;
@@ -261,6 +283,7 @@ private:
     float _foodSaturationLevel;
     int _foodTickTimer;
     float _foodExhaustionLevel;
+    FloatingPosition _respawnPoint;
 
     FloatingPosition _respawnPoint;
 
@@ -287,6 +310,7 @@ private:
         Right = 1,
     } _mainHand;
     int _nbTickBeforeNextAttack;
+    uint8_t _windowId;
 };
 
 template<isBaseOf<protocol::container::Container> Container, typename... Args>

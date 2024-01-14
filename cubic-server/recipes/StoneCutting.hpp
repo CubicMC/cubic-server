@@ -8,15 +8,15 @@
 namespace Recipe {
 class StoneCutting : public Recipe {
 public:
-    StoneCutting(const nlohmann::json &recipe);
+    StoneCutting(const std::string &identifier, const nlohmann::json &recipe);
     ~StoneCutting() = default;
 
     void dump(void) const override;
 
-    static std::unique_ptr<Recipe> create(const nlohmann::json &recipe);
+    static std::shared_ptr<Recipe> create(const std::string &identifier, const nlohmann::json &recipe);
 
 private:
-    ItemId _ingredient; // item to be cut
+    std::unordered_set<ItemId> _ingredients; // item to be cut
     ItemId _result; // item obtained
     uint64_t _count; // number of items obtained
 };
