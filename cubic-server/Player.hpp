@@ -285,8 +285,6 @@ private:
     float _foodExhaustionLevel;
     FloatingPosition _respawnPoint;
 
-    FloatingPosition _respawnPoint;
-
     // player status
     protocol::ClientInformation::ChatVisibility _chatVisibility;
     bool _isFlying;
