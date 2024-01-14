@@ -208,7 +208,6 @@ public:
 
     virtual void pushBackIdToRemove(int32_t id) { _idsToRemove.push_back(id); }
 
-
 protected:
     virtual void _run();
     virtual void _removeDeadEntities();
