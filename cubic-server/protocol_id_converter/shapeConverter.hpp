@@ -15,9 +15,6 @@ namespace Shapes {
  */
 class ShapeConverter {
 public:
-    static const BoundingBox BLOCK_SHAPE;
-    static const BoundingBox EMPTY_SHAPE;
-public:
     ShapeConverter() {};
     ~ShapeConverter() {};
 
@@ -36,7 +33,7 @@ public:
     bool initialize(const std::string &path = "shapes.json");
 
 private:
-    std::unordered_map<uint16_t, std::string &> _shapes; // The internal representation of the shapes
+    std::unordered_map<uint16_t, std::string> _shapes; // The internal representation of the shapes
 };
 };
 #endif // SHAPE_CONVERTER_HPP

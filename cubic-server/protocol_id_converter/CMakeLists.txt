@@ -5,4 +5,6 @@ target_sources (${CMAKE_PROJECT_NAME} PRIVATE
     itemConverter.hpp
     soundEventConverter.cpp
     soundEventConverter.hpp
+    shapeConverter.cpp
+    shapeConverter.hpp
 )

@@ -7,9 +7,6 @@
 
 #include "logging/logging.hpp"
 
-const BoundingBox Shapes::ShapeConverter::BLOCK_SHAPE({1, 1, 1});
-const BoundingBox Shapes::ShapeConverter::EMPTY_SHAPE({0, 0, 0});
-
 bool Shapes::ShapeConverter::initialize(const std::string &path)
 {
     if (!std::filesystem::exists(path)) {
@@ -23,3 +20,11 @@ bool Shapes::ShapeConverter::initialize(const std::string &path)
     return true;
 }
 
+std::string Shapes::ShapeConverter::fromBlockIdToShape(BlockId blockId) const
+{
+    if (this->_shapes.find(blockId) == this->_shapes.end()) {
+        LERROR("Block id {} not found !", blockId);
+        return "empty";
+    }
+    return this->_shapes.at(blockId);
+}
