@@ -110,6 +110,14 @@ void Server::launch(const configuration::ConfigHandler &config)
         exit(1);
     }
 
+    // Initialize the shape converter
+    if (_shapesConverter.initialize(std::string("shapes-") + MC_VERSION + ".json"))
+        LINFO("ShapeConverter initialized");
+    else {
+        LFATAL("ShapeConverter failed to initialize");
+        exit(1);
+    }
+
     // Initialize loot tables
     _lootTables.initialize();
 

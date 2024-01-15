@@ -12,6 +12,7 @@
 #include "protocol/ClientPackets.hpp"
 #include "world_storage/ChunkColumn.hpp"
 #include "world_storage/Level.hpp"
+#include "collision/CollisionSystem.hpp"
 
 // TODO(huntears): Fix whatever this is
 constexpr int SEMAPHORE_MAX = 1000;
@@ -48,6 +49,7 @@ public:
     NODISCARD virtual const std::vector<std::shared_ptr<Entity>> &getEntities() const { return _entities; }
     NODISCARD virtual std::shared_ptr<const Entity> getEntityByID(int32_t id) const;
     NODISCARD const world_storage::Level &getLevel() const { return _level; }
+    NODISCARD const CollisionSystem &getCollisionSystem() const { return _collisionSystem; }
 
     virtual void removeEntity(int32_t entity_id);
     virtual void removePlayer(int32_t entity_id);
@@ -165,6 +167,7 @@ protected:
     std::unordered_map<Position2D, ChunkRequest> _loadingChunks;
     std::thread _processingThread;
     world_storage::DimensionType _dimensionType;
+    CollisionSystem _collisionSystem;
 };
 
 template<isBaseOf<Entity> T, typename... Args>

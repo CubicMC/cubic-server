@@ -9,6 +9,7 @@
 #include "math/Vector3.hpp"
 #include "protocol/ClientPackets.hpp"
 #include "types.hpp"
+#include "collision/CollisionSystem.hpp"
 #include <cstdint>
 #include <memory>
 #include <mutex>
@@ -68,6 +69,7 @@ void Dimension::initialize()
 {
     this->_isRunning = true;
     this->_processingThread = std::thread(&Dimension::_run, this);
+    this->_collisionSystem.setDimension(shared_from_this());
 }
 
 std::shared_ptr<Entity> Dimension::getEntityByID(int32_t id)

@@ -38,7 +38,8 @@ Entity::Entity(std::shared_ptr<Dimension> dim,
     Vector2<uint8_t> rot,
     Vector3<double> lastPos,
     Vector2<uint8_t> lastRot):
-    _dim(dim)
+    _dim(dim),
+    _bb({0, 0, 0}, {1, 1, 1})
 {
     static std::atomic<int32_t> currentID = 0;
 
@@ -63,6 +64,7 @@ Entity::Entity(std::shared_ptr<Dimension> dim,
     _rot = rot;
     _lastRot = lastRot;
     _type = type;
+    _bb.setPosition(pos);
 }
 // clang-format on
 
@@ -166,6 +168,7 @@ void Entity::tickPosition()
         deltaY = static_cast<int16_t>((this->_pos.y * 32.0 - this->_lastPos.y * 32.0) * 128.0);
         deltaZ = static_cast<int16_t>((this->_pos.z * 32.0 - this->_lastPos.z * 32.0) * 128.0);
         _lastPos = _pos;
+        _bb.setPosition(_pos);
     }
     if (_rot != _lastRot) {
         updateRot = true;

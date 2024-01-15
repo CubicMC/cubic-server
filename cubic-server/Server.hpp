@@ -30,6 +30,7 @@
 #include "protocol_id_converter/blockStates.hpp"
 #include "protocol_id_converter/itemConverter.hpp"
 #include "protocol_id_converter/soundEventConverter.hpp"
+#include "protocol_id_converter/shapeConverter.hpp"
 
 #include "Permissions.hpp"
 #include "loot_tables/LootTables.hpp"
@@ -55,6 +56,7 @@ constexpr uint16_t MS_PER_TICK = 50;
 #define GLOBAL_PALETTE Server::getInstance()->getGlobalPalette()
 #define ITEM_CONVERTER Server::getInstance()->getItemConverter()
 #define SOUND_EVENT_CONVERTER Server::getInstance()->getSoundEventConverter()
+#define SHAPE_CONVERTER Server::getInstance()->getShapeConverter()
 #define CONFIG Server::getInstance()->getConfig()
 
 #if PROMETHEUS_SUPPORT == 1
@@ -108,6 +110,7 @@ public:
     NODISCARD const Blocks::GlobalPalette &getGlobalPalette() const { return _globalPalette; }
     NODISCARD const Items::ItemConverter &getItemConverter() const { return _itemConverter; }
     NODISCARD const SoundEvents::SoundEventConverter &getSoundEventConverter() const { return _soundEventConverter; }
+    NODISCARD const Shapes::ShapeConverter &getShapeConverter() const { return _shapesConverter; }
 
     NODISCARD registry::MasterRegistry &getRegistry() noexcept { return _registry; }
     NODISCARD std::shared_ptr<WorldGroup> getWorldGroup(const std::string_view &name) { return this->_worldGroups.at(name); }
@@ -156,6 +159,7 @@ private:
     Blocks::GlobalPalette _globalPalette;
     Items::ItemConverter _itemConverter;
     SoundEvents::SoundEventConverter _soundEventConverter;
+    Shapes::ShapeConverter _shapesConverter;
     Recipes _recipes;
     PluginManager _pluginManager;
     LootTables _lootTables;

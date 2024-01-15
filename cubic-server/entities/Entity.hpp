@@ -8,6 +8,7 @@
 #include "protocol/ClientPackets.hpp"
 #include "types.hpp"
 #include "utility/SharedFromThis.hpp"
+#include "collision/BoundingBox.hpp"
 #include <memory>
 #include <utility>
 
@@ -130,6 +131,9 @@ public:
     NODISCARD virtual const Vector2<float> getRotationDegree() const { return {(float) _rot.x / (256.0f / 360.0f), (float) _rot.z / (256.0f / 360.0f)}; }
     NODISCARD virtual EntityType getType() const { return _type; }
 
+    NODISCARD virtual const BoundingBox &getBoundingBox() const { return _bb; }
+    // NODISCARD virtual BoundingBox getBoundingBox() { return _bb; }
+
     virtual void teleport(const Vector3<double> &pos);
 
     // Drop an item when necessary (death of the entity, broken block, ...)
@@ -190,6 +194,7 @@ protected:
     Vector3<double> _lastPos;
     Vector2<uint8_t> _lastRot;
     EntityType _type;
+    BoundingBox _bb;
 };
 
 #endif // CUBICSERVER_ENTITIES_ENTITY_HPP
