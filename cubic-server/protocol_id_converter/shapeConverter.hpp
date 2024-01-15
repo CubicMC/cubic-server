@@ -9,7 +9,6 @@
 #include "collision/BoundingBox.hpp"
 #include "types.hpp"
 
-
 namespace Shapes {
 /**
  * @brief Global palette of shapes used to convert from block id to shape
