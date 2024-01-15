@@ -1,3 +1,6 @@
+#ifndef BOUNDINGBOX_HPP
+#define BOUNDINGBOX_HPP
+
 #include "math/Vector3.hpp"
 #include <optional>
 
@@ -20,3 +23,5 @@ private:
     Vector3d _pos;
     Vector3f _dim;
 };
+
+#endif // BOUNDINGBOX_HPP
