@@ -6,8 +6,9 @@
 #include <unordered_map>
 #include <vector>
 
-#include "types.hpp"
 #include "collision/BoundingBox.hpp"
+#include "types.hpp"
+
 
 namespace Shapes {
 /**

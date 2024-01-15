@@ -8,11 +8,12 @@
 #include <thread>
 #include <vector>
 
+#include "collision/CollisionSystem.hpp"
 #include "options.hpp"
 #include "protocol/ClientPackets.hpp"
 #include "world_storage/ChunkColumn.hpp"
 #include "world_storage/Level.hpp"
-#include "collision/CollisionSystem.hpp"
+
 
 // TODO(huntears): Fix whatever this is
 constexpr int SEMAPHORE_MAX = 1000;

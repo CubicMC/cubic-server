@@ -9,7 +9,8 @@ class Dimension;
 class CollisionSystem {
 public:
     CollisionSystem() {};
-    CollisionSystem(std::shared_ptr<Dimension> dim) : _dim(dim) {};
+    CollisionSystem(std::shared_ptr<Dimension> dim):
+        _dim(dim) {};
     ~CollisionSystem() = default;
 
     void setDimension(std::shared_ptr<Dimension> dim) { _dim = dim; }

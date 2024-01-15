@@ -2,15 +2,16 @@
 #define CUBICSERVER_ENTITIES_ENTITY_HPP
 
 #include "EntityType.hpp"
+#include "collision/BoundingBox.hpp"
 #include "math/Vector2.hpp"
 #include "math/Vector3.hpp"
 #include "options.hpp"
 #include "protocol/ClientPackets.hpp"
 #include "types.hpp"
 #include "utility/SharedFromThis.hpp"
-#include "collision/BoundingBox.hpp"
 #include <memory>
 #include <utility>
+
 
 class World;
 class WorldGroup;

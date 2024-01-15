@@ -29,8 +29,8 @@
 
 #include "protocol_id_converter/blockStates.hpp"
 #include "protocol_id_converter/itemConverter.hpp"
-#include "protocol_id_converter/soundEventConverter.hpp"
 #include "protocol_id_converter/shapeConverter.hpp"
+#include "protocol_id_converter/soundEventConverter.hpp"
 
 #include "Permissions.hpp"
 #include "loot_tables/LootTables.hpp"

@@ -1,7 +1,7 @@
 #include "BoundingBox.hpp"
 #include "math/Vector3.hpp"
 #include <optional>
-    
+
 bool BoundingBox::contains(const Vector3d &point) const
 {
     return (point.x >= _pos.x && point.x <= _pos.x + _dim.x) && (point.y >= _pos.y && point.y <= _pos.y + _dim.y) && (point.z >= _pos.z && point.z <= _pos.z + _dim.z);
