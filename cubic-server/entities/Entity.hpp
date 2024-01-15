@@ -12,7 +12,6 @@
 #include <memory>
 #include <utility>
 
-
 class World;
 class WorldGroup;
 class Dimension;

@@ -15,7 +15,6 @@
 #include <mutex>
 #include <thread>
 
-
 Dimension::Dimension(std::shared_ptr<World> world, world_storage::DimensionType dimensionType):
     _dimensionLock(std::counting_semaphore<1000>(0)),
     _world(world),

@@ -14,7 +14,6 @@
 #include "world_storage/ChunkColumn.hpp"
 #include "world_storage/Level.hpp"
 
-
 // TODO(huntears): Fix whatever this is
 constexpr int SEMAPHORE_MAX = 1000;
 
