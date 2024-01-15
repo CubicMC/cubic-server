@@ -65,6 +65,7 @@ enum class ClientPacketID : int32_t {
     SynchronizePlayerPosition = 0x38,
     UpdateRecipesBook = 0x39,
     RemoveEntities = 0x3A,
+    Respawn = 0x3D,
     HeadRotation = 0x3E,
     UpdateSectionBlocks = 0x3F,
     ServerData = 0x41,
