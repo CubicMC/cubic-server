@@ -308,16 +308,7 @@ void Dimension::tickGravity(void)
         auto living_ent = std::reinterpret_pointer_cast<LivingEntity>(ent);
 
         if (living_ent != nullptr && living_ent->getType() != EntityType::Player) {
-            std::vector<BoundingBox> collisions;
-            int max_y = 0;
-
             living_ent->applyGravity(_gravity);
-            collisions = _collisionSystem.getCollisionsWithBlocks(*living_ent);
-            for (auto col : collisions) {
-                if (col.getDimensions().y > max_y)
-                    max_y = col.getDimensions().y;
-            }
-            living_ent->forceSetPosition({living_ent->getPosition().x, living_ent->getPosition().y - max_y, living_ent->getPosition().z});
         }
     }
 }

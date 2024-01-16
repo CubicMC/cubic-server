@@ -4,6 +4,7 @@
 #include "Player.hpp"
 #include "PluginManager.hpp"
 #include "Server.hpp"
+#include "collision/BoundingBox.hpp"
 #include "events/CancelEvents.hpp"
 #include "events/Events.hpp"
 #include "protocol/ClientPackets.hpp"
@@ -76,21 +77,31 @@ void LivingEntity::knockback(const Vector3<double> &source, float force)
 }
 
 /*
- * @brief Apply gravity to the entity
+ * @ Apply gravity to the entity
  *
  * @param gravity The intensity of the gravity (default: 1)
  */
 void LivingEntity::applyGravity(float gravity, float drag) {
+    std::vector<BoundingBox> collisions;
+    int max_y = 0;
+    
     _velocity.y = this->computeGravity(gravity, drag);
+    forceSetPosition({_pos.x, _pos.y + _velocity.y, _pos.z});
+    collisions = _dim->getCollisionSystem().getCollisionsWithBlocks(*this);
+    for (auto col : collisions) {
+        if (col.getDimensions().y > max_y)
+            max_y = col.getDimensions().y;
+        }
+    forceSetPosition({_pos.x, _pos.y - max_y, _pos.z});
 
-    for (auto player : _dim->getPlayers()) {
-        player->sendEntityVelocity({
-            _id,
-            static_cast<int16_t>(_velocity.x * 8000),
-            static_cast<int16_t>(_velocity.y * 8000),
-            static_cast<int16_t>(_velocity.z * 8000),
-        });
-    }
+    // for (auto player : _dim->getPlayers()) {
+    //     player->sendEntityVelocity({
+    //         _id,
+    //         static_cast<int16_t>(_velocity.x * 8000),
+    //         static_cast<int16_t>(_velocity.y * 8000),
+    //         static_cast<int16_t>(_velocity.z * 8000),
+    //     });
+    // }
 }
 
 /*

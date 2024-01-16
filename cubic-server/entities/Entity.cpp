@@ -93,6 +93,7 @@ void Entity::forceSetPosition(const Vector3<double> &pos)
 {
     _pos = pos;
     _lastPos = _pos;
+    _bb.setPosition(pos);
 }
 
 void Entity::forceSetPosition(double x, double y, double z) { this->forceSetPosition({x, y, z}); }
