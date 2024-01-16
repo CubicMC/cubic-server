@@ -62,6 +62,7 @@ public:
     void updateEntityAttributes(const protocol::UpdateAttributes &attributes);
     virtual void spawnPlayer(Player &player);
     virtual void spawnEntity(const std::shared_ptr<const Entity> entity);
+    virtual void tickGravity(void);
 
     template<isBaseOf<Entity> T, typename... Args>
     std::shared_ptr<T> makeEntity(Args &&...);
@@ -168,6 +169,7 @@ protected:
     std::thread _processingThread;
     world_storage::DimensionType _dimensionType;
     CollisionSystem _collisionSystem;
+    float _gravity;
 };
 
 template<isBaseOf<Entity> T, typename... Args>

@@ -3,9 +3,11 @@
 #include "Player.hpp"
 #include "Server.hpp"
 #include "World.hpp"
+#include "collision/BoundingBox.hpp"
 #include "collision/CollisionSystem.hpp"
 #include "entities/Entity.hpp"
 #include "entities/EntityType.hpp"
+#include "entities/LivingEntity.hpp"
 #include "logging/logging.hpp"
 #include "math/Vector3.hpp"
 #include "protocol/ClientPackets.hpp"
@@ -20,7 +22,8 @@ Dimension::Dimension(std::shared_ptr<World> world, world_storage::DimensionType 
     _world(world),
     _isInitialized(false),
     _isRunning(false),
-    _dimensionType(dimensionType)
+    _dimensionType(dimensionType),
+    _gravity(0.0784)
 {
 }
 
@@ -51,6 +54,8 @@ void Dimension::tick()
             _newEntities.clear();
         }
     }
+
+    tickGravity();
 }
 
 void Dimension::stop()
@@ -292,6 +297,28 @@ void Dimension::spawnEntity(const std::shared_ptr<const Entity> current)
             0 // Entity Velocity Z
         });
         player->sendEntityMetadata(*current);
+    }
+}
+
+void Dimension::tickGravity(void)
+{
+    std::lock_guard _(_entitiesMutex);
+
+    for (auto ent : _entities) {
+        auto living_ent = std::reinterpret_pointer_cast<LivingEntity>(ent);
+
+        if (living_ent != nullptr && living_ent->getType() != EntityType::Player) {
+            std::vector<BoundingBox> collisions;
+            int max_y = 0;
+
+            living_ent->applyGravity(_gravity);
+            collisions = _collisionSystem.getCollisionsWithBlocks(*living_ent);
+            for (auto col : collisions) {
+                if (col.getDimensions().y > max_y)
+                    max_y = col.getDimensions().y;
+            }
+            living_ent->forceSetPosition({living_ent->getPosition().x, living_ent->getPosition().y - max_y, living_ent->getPosition().z});
+        }
     }
 }
 
