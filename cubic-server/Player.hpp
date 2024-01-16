@@ -43,7 +43,7 @@ public:
 
     std::weak_ptr<Client> getClient() const;
     const std::string &getUsername() const;
-    uint16_t getHeldItem() const;
+    uint8_t getHeldItem() const;
     player_attributes::Gamemode getGamemode() const;
     const protocol::ClientInformation::ChatVisibility &getChatVisibility() const;
     long keepAliveId() const;
@@ -63,7 +63,7 @@ public:
     void setKeepAliveId(long id);
     void updatePlayerInfo(const protocol::PlayerInfoUpdate &data);
     void playerPickupItem();
-    void updateEquipment(bool mainHand, bool offHand, bool boots, bool leggings, bool chestplate, bool helmet);
+    void updateEquipment(bool mainHand, UNUSED bool offHand, UNUSED bool boots, UNUSED bool leggings, UNUSED bool chestplate, UNUSED bool helmet);
 
     template<isBaseOf<protocol::container::Container> Container, typename... Args>
     std::shared_ptr<Container> openContainer(Args &...);
@@ -138,10 +138,12 @@ public:
     void sendSwingArm(bool mainHand, int32_t swingerId);
     void sendTeleportEntity(int32_t id, const Vector3<double> &pos, const Vector2<uint8_t> &rot);
     void sendRemoveEntities(const std::vector<int32_t> &entities);
+    void sendRespawn(const protocol::Respawn &data);
     void sendUpdateEntityPosition(const protocol::UpdateEntityPosition &data);
     void sendUpdateEntityPositionAndRotation(const protocol::UpdateEntityPositionRotation &data);
     void sendUpdateEntityRotation(const protocol::UpdateEntityRotation &data);
     void sendHeadRotation(const protocol::HeadRotation &data);
+    void sendUpdateSectionBlock(const protocol::UpdateSectionBlock &data);
     void sendSetCenterChunk(const Position2D &pos);
     void sendChunkAndLightUpdate(const Position2D &pos);
     void sendChunkAndLightUpdate(int32_t x, int32_t z);
@@ -240,13 +242,14 @@ private:
     void _unloadChunk(int32_t x, int32_t z);
     void _foodTick();
     void _eat();
+    void _respawn();
     void _shoot();
 
     std::weak_ptr<Client> _cli;
     std::string _username;
     long _keepAliveId;
     uint8_t _keepAliveIgnored;
-    int16_t _heldItem;
+    int8_t _heldItem;
     player_attributes::Gamemode _gamemode;
     TickClock _keepAliveClock;
     TickClock _synchronizeClock;
@@ -262,6 +265,7 @@ private:
     float _foodSaturationLevel;
     int _foodTickTimer;
     float _foodExhaustionLevel;
+    FloatingPosition _respawnPoint;
 
     // player status
     protocol::ClientInformation::ChatVisibility _chatVisibility;

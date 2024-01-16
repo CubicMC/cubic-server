@@ -38,7 +38,6 @@ COMPILE.sh
 .vscode
 cmake-build-debug
 cmake-build-release
-.idea
 logs
 config.yml
 .cache
@@ -50,3 +49,7 @@ world*
 
 # Symbolic link
 compile_commands.json
+
+# CLion
+cmake-build-*
+.idea

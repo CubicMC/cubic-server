@@ -7,6 +7,7 @@
 #include "PluginManager.hpp"
 #include "Server.hpp"
 #include "World.hpp"
+#include "blocks.hpp"
 #include "command_parser/CommandParser.hpp"
 #include "entities/ArmorStats.hpp"
 #include "entities/Entity.hpp"
@@ -16,6 +17,7 @@
 #include "items/UsableItem.hpp"
 #include "items/foodItems.hpp"
 #include "items/toolsDamage.hpp"
+#include "items/usable-items/FlintAndSteel.hpp"
 #include "items/usable-items/Hoe.hpp"
 #include "logging/logging.hpp"
 #include "nbt.h"
@@ -58,6 +60,7 @@ Player::Player(std::weak_ptr<Client> cli, std::shared_ptr<Dimension> dim, u128 u
     _foodSaturationLevel(player_attributes::DEFAULT_FOOD_SATURATION_LEVEL), // TODO: Take this from the saved data
     _foodTickTimer(0), // TODO: Take this from the saved data
     _foodExhaustionLevel(0.0f), // TODO: Take this from the saved data
+    _respawnPoint(0, 75, 0), // TODO: Take this from the saved data
     _chatVisibility(protocol::ClientInformation::ChatVisibility::Enabled),
     _isFlying(true), // TODO: Take this from the saved data
     _isJumping(false),
@@ -77,6 +80,7 @@ Player::Player(std::weak_ptr<Client> cli, std::shared_ptr<Dimension> dim, u128 u
     this->setOperator(Server::getInstance()->permissions.isOperator(username));
     this->_inventory->playerInventory().at(12) = protocol::Slot(true, 734, 42);
     this->_inventory->playerInventory().at(13) = protocol::Slot(true, 1, 12);
+    this->_inventory->playerInventory().at(15) = protocol::Slot(true, 788, 64);
 
     // {display:{Name:'[{"text":"Cubic","italic":false}]'}}
     constexpr std::string_view NAME = "[{\"text\":\"Cubic\",\"italic\":false}]";
@@ -91,13 +95,17 @@ Player::Player(std::weak_ptr<Client> cli, std::shared_ptr<Dimension> dim, u128 u
     nbt_tag_compound_append(root, display);
     Items::Hoe hoe = Items::Hoe("minecraft:wooden_hoe", 756, Items::ItemMaxDurabilityByType::WoodenItem, false, Items::UsabilityType::BothMouseClicksUsable);
     auto hoeRoot = hoe.setNbtTag();
+    Items::FlintAndSteel flint = Items::FlintAndSteel();
+    auto flintRoot = flint.setNbtTag();
 
     this->_inventory->playerInventory().at(14) = protocol::Slot(true, 1, 12, root);
-    this->_inventory->playerInventory().at(16) = protocol::Slot(true, hoe._numeralId, 1, hoeRoot);
-    this->_inventory->playerInventory().at(17) = protocol::Slot(true, ITEM_CONVERTER.fromItemToProtocolId("minecraft:wooden_sword"), 1);
-    this->_inventory->hotbar().at(0) = protocol::Slot(true, ITEM_CONVERTER.fromItemToProtocolId("minecraft:coal"), 1);
-    this->_inventory->hotbar().at(1) = protocol::Slot(true, ITEM_CONVERTER.fromItemToProtocolId("minecraft:oak_log"), 1);
-    this->_inventory->hotbar().at(2) = protocol::Slot(true, ITEM_CONVERTER.fromItemToProtocolId("minecraft:cobblestone"), 10);
+    this->_inventory->playerInventory().at(15) = protocol::Slot(true, ITEM_CONVERTER.fromItemToProtocolId("minecraft:obsidian"), 40);
+    this->_inventory->playerInventory().at(16) = protocol::Slot(true, flint._numeralId, 1, flintRoot);
+    this->_inventory->playerInventory().at(17) = protocol::Slot(true, hoe._numeralId, 1, hoeRoot);
+    this->_inventory->playerInventory().at(18) = protocol::Slot(true, ITEM_CONVERTER.fromItemToProtocolId("minecraft:wooden_sword"), 1);
+    this->_inventory->playerInventory().at(19) = protocol::Slot(true, ITEM_CONVERTER.fromItemToProtocolId("minecraft:coal"), 1);
+    this->_inventory->playerInventory().at(20) = protocol::Slot(true, ITEM_CONVERTER.fromItemToProtocolId("minecraft:oak_log"), 1);
+    this->_inventory->playerInventory().at(21) = protocol::Slot(true, ITEM_CONVERTER.fromItemToProtocolId("minecraft:cobblestone"), 10);
     PEXP(incrementPlayerCountGlobal);
 }
 
@@ -134,7 +142,7 @@ std::weak_ptr<Client> Player::getClient() const { return _cli; }
 
 const std::string &Player::getUsername() const { return _username; }
 
-uint16_t Player::getHeldItem() const { return this->_heldItem; }
+uint8_t Player::getHeldItem() const { return this->_heldItem; }
 
 player_attributes::Gamemode Player::getGamemode() const { return _gamemode; }
 
@@ -528,6 +536,14 @@ void Player::sendHeadRotation(const protocol::HeadRotation &data)
     N_LDEBUG("Sent an entity head rotation packet");
 }
 
+void Player::sendUpdateSectionBlock(const protocol::UpdateSectionBlock &data)
+{
+    GET_CLIENT();
+    auto pck = protocol::createUpdateSectionBlock(data);
+    client->doWrite(std::move(pck));
+    N_LDEBUG("Sent an UpdateSectionBlock packet");
+}
+
 void Player::sendSetCenterChunk(const Position2D &pos)
 {
     GET_CLIENT();
@@ -641,6 +657,14 @@ void Player::sendRemoveEntities(const std::vector<int32_t> &entities)
     auto pck = protocol::createRemoveEntities({entities});
     client->doWrite(std::move(pck));
     N_LDEBUG("Sent a Remove Entities packet");
+}
+
+void Player::sendRespawn(const protocol::Respawn &packet)
+{
+    GET_CLIENT();
+    auto pck = protocol::createRespawn(packet);
+    client->doWrite(std::move(pck));
+    N_LDEBUG("Sent a Respawn packet");
 }
 
 void Player::sendSwingArm(bool mainHand, int32_t swingerId)
@@ -1331,6 +1355,25 @@ void Player::_onUseItemOn(protocol::UseItemOn &pck)
         pck.location.x++;
         break;
     }
+
+    if (this->_inventory->hotbar().at(this->_heldItem).itemID == ITEM_CONVERTER.fromItemToProtocolId("minecraft:wheat_seeds")) {
+        const BlockId &belowBlock = this->getDimension()->getBlock({pck.location.x, pck.location.y - 1, pck.location.z});
+
+        if (this->getDimension()->getBlock(pck.location) == Blocks::Air::toProtocol() &&
+            (belowBlock == Blocks::Farmland::toProtocol(Blocks::Farmland::Properties::Moisture::ZERO) ||
+             belowBlock == Blocks::Farmland::toProtocol(Blocks::Farmland::Properties::Moisture::ONE) ||
+             belowBlock == Blocks::Farmland::toProtocol(Blocks::Farmland::Properties::Moisture::TWO) ||
+             belowBlock == Blocks::Farmland::toProtocol(Blocks::Farmland::Properties::Moisture::THREE) ||
+             belowBlock == Blocks::Farmland::toProtocol(Blocks::Farmland::Properties::Moisture::FOUR) ||
+             belowBlock == Blocks::Farmland::toProtocol(Blocks::Farmland::Properties::Moisture::FIVE) ||
+             belowBlock == Blocks::Farmland::toProtocol(Blocks::Farmland::Properties::Moisture::SIX) ||
+             belowBlock == Blocks::Farmland::toProtocol(Blocks::Farmland::Properties::Moisture::SEVEN))) {
+            this->getDimension()->updateBlock(pck.location, Blocks::Wheat::toProtocol(Blocks::Wheat::Properties::Age::ZERO));
+            this->_inventory->hotbar().at(this->_heldItem).takeOne();
+            return;
+        }
+    }
+
     auto item = this->_inventory->hotbar().at(this->_heldItem).getUsableItemFromSlot();
     if (Items::Hoe *usedItem = std::get_if<Items::Hoe>(&item)) {
         if (usedItem->_usabilityType == Items::UsabilityType::RightMouseClickUsable || usedItem->_usabilityType == Items::UsabilityType::BothMouseClicksUsable) {
@@ -1341,9 +1384,15 @@ void Player::_onUseItemOn(protocol::UseItemOn &pck)
             this->sendSetContainerSlot({this->_inventory, static_cast<int16_t>(this->_heldItem + HOTBAR_OFFSET)});
         }
         return;
+    } else if (Items::FlintAndSteel *usedItem = std::get_if<Items::FlintAndSteel>(&item)) {
+        usedItem->onUseOn(this->getDimension(), pck.location, Items::UsabilityType::RightMouseClickUsable, (int32_t) pck.face, *this);
+        this->_inventory->hotbar().at(this->_heldItem).updateDamage();
+        this->sendSetContainerSlot({this->_inventory, static_cast<int16_t>(this->_heldItem + HOTBAR_OFFSET)});
+        return;
     }
-    if (_inventory->hotbar().at(this->_heldItem).present)
+    if (_inventory->hotbar().at(this->_heldItem).present) {
         this->getDimension()->updateBlock(pck.location, GLOBAL_PALETTE.fromBlockToProtocolId(ITEM_CONVERTER.fromProtocolIdToItem(_inventory->hotbar().at(this->_heldItem).itemID)));
+    }
     if (_gamemode == player_attributes::Gamemode::Creative)
         return;
     this->_inventory->hotbar().at(this->_heldItem).itemCount--;
@@ -1452,7 +1501,7 @@ void Player::_continueLoginSequence()
     this->sendUpdateRecipiesBook({});
 
     // TODO: change that to player_attributes::DEFAULT_SPAWN_POINT
-    this->teleport({8.5, 70, 8.5});
+    this->teleport({8.5, 75, 8.5});
 
     this->sendServerData({false, "", false, "", false});
 
@@ -1625,6 +1674,39 @@ void Player::teleport(const Vector3<double> &pos)
     this->sendSynchronizePosition(pos);
     LDEBUG("Synchronize player position");
     Entity::teleport(pos);
+}
+
+void Player::_respawn()
+{
+    // this->setIsReadyToRemove(false);
+    this->_dim->addEntity(shared_from_this());
+    this->_dim->addPlayer(dynamic_pointer_cast<Player>(shared_from_this()));
+
+    // Perform the respawn
+    this->sendRespawn({
+        this->_dim->getDimensionTypeName(), // Dimension Type
+        this->_dim->getDimensionName(), // Dimension name
+        0, // Hashed seed
+        this->_gamemode, // Gamemode
+        this->_gamemode, // Previous gamemode
+        0, // Is debug
+        0, // Is flat
+        0, // Copy metadata
+        true, // Has death location
+        this->_dim->getDimensionName(), // Dimension name
+        {
+            static_cast<long>(this->_pos.x), // death X
+            static_cast<long>(this->_pos.y), // death Y
+            static_cast<long>(this->_pos.z) // death Z
+        }, // Position
+    });
+
+    _health = 20;
+
+    this->forceSetPosition(this->_respawnPoint);
+    this->sendSynchronizePlayerPosition();
+    this->_pose = Pose::Standing;
+    this->_dim->spawnPlayer(*this);
 }
 
 bool Player::isInRenderDistance(UNUSED const Vector2<double> &pos) const { return true; }

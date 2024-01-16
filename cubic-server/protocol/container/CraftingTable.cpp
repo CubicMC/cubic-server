@@ -304,7 +304,7 @@ bool CraftingTable::checkCraftingShapeless(const std::shared_ptr<Recipe::Craftin
     if (count != craft->getIngredients().size()) {
         return (false);
     }
-    LINFO("could be shapeless craft {} ({}/{})", craft->getIdentifier(), count, craft->getIngredients().size());
+    LTRACE("could be shapeless craft {} ({}/{})", craft->getIdentifier(), count, craft->getIngredients().size());
 
     std::unordered_set<size_t> foundItems;
     for (size_t pos = 0; pos < 9; pos++) {
@@ -315,7 +315,7 @@ bool CraftingTable::checkCraftingShapeless(const std::shared_ptr<Recipe::Craftin
             if (!foundItems.contains(ingredient)) {
                 if (craft->getIngredients().at(ingredient).contains(this->_craftingGrid.at(pos).itemID)) {
                     foundItems.insert(ingredient);
-                    LINFO("in crafting shapeless {}, found item {}", craft->getIdentifier(), ITEM_CONVERTER.fromProtocolIdToItem(this->_craftingGrid.at(pos).itemID));
+                    LTRACE("in crafting shapeless {}, found item {}", craft->getIdentifier(), ITEM_CONVERTER.fromProtocolIdToItem(this->_craftingGrid.at(pos).itemID));
                     break;
                 }
             }

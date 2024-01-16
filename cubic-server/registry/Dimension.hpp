@@ -239,6 +239,34 @@ inline void registry::setupDefaultsDimension(registry::Dimension &registry)
         .coordinateScale(1.0)
         .bedWorks(true);
 
+    registry.addEntry()
+        .name("minecraft:the_nether")
+        .id(2)
+        .ultrawarm(true)
+        .logicalHeight(256)
+        .infiniburn("#minecraft:infiniburn_end")
+        .piglinSafe(false)
+        .ambientLight(0.1)
+        .hasSkylight(false)
+        .effects("minecraft:the_nether")
+        .hasRaids(false)
+        .monsterSpawnBlockLightLimit(0)
+        .respawnAnchorWorks(true)
+        .height(384)
+        .hasCeiling(true)
+        .monsterSpawnLightLevel({
+            .type = "uniform",
+            .value =
+                {
+                    .maxInclusive = 7,
+                    .minInclusive = 0,
+                },
+        })
+        .natural(true)
+        .minY(-64)
+        .coordinateScale(1.0)
+        .bedWorks(false);
+
     // TODO: Add the rest of the dimensions
 }
 

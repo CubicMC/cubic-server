@@ -118,6 +118,19 @@ inline void registry::setupDefaultsBiome(registry::Biome &registry)
             .fogColor = 0,
             .waterColor = 0,
         });
+
+    registry.addEntry()
+        .name("minecraft:nether_wastes")
+        .id(2)
+        .precipitation("none")
+        .temperature(2.0)
+        .downfall(0)
+        .effects({
+            .skyColor = 0,
+            .waterFogColor = 3344392,
+            .fogColor = 3344392,
+            .waterColor = 4159204,
+        });
 }
 
 #endif // CUBICSERVER_REGISTRY_BIOME_HPP

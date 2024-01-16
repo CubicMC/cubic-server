@@ -79,7 +79,7 @@ void JungleTree::generateTree(UNUSED std::vector<world_storage::ChunkColumn *> n
         if (_chunk.getBlock({treeEmplacement.x + block.pos.x, treeEmplacement.y + block.pos.y, treeEmplacement.z + block.pos.z}) ==
             Blocks::JungleLog::toProtocol(Blocks::JungleLog::Properties::Axis::Y))
             continue;
-        _chunk.updateBlock({treeEmplacement.x + block.pos.x, treeEmplacement.y + block.pos.y, treeEmplacement.z + block.pos.z}, block.block);
+        _chunk.modifyBlock({treeEmplacement.x + block.pos.x, treeEmplacement.y + block.pos.y, treeEmplacement.z + block.pos.z}, block.block);
     }
     _positions.pop_front();
 }
