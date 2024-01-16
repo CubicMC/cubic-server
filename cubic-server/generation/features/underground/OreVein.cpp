@@ -128,7 +128,7 @@ void OreVein::createBlob(const BlockId &blockID, const int spawnSize, const Posi
                 // TODO: When the generation will support decoration, block = stone has to be changed so every "stone" block is taken into account
                 if ((x - pos.x < r && z - pos.z < r) && r / 2 > customSkipRate && nb < nbOfBlocksInBlob && (block == Blocks::Stone::toProtocol()) &&
                     (y > CHUNK_HEIGHT_MIN && y < CHUNK_HEIGHT_MAX)) {
-                    _chunk.updateBlock({x, y, z}, blockID);
+                    _chunk.modifyBlock({x, y, z}, blockID);
                     nb++;
                 }
             }
