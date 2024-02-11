@@ -1,0 +1,17 @@
+.{
+    .name = "cubic-server",
+    .version = "0.4.0",
+    .dependencies = .{
+      .logz = .{
+        .url = "https://github.com/karlseguin/log.zig/archive/c927400c5f2dff63b0f09587949371289e3dec22.tar.gz",
+        .hash = "12205f67f2f390d324a9ec97d9260650f29497f2b8819ccc2f9b2b72280ba4e5355d",
+      },
+    },
+    .paths = .{
+        "LICENSE",
+        "README.md",
+        "build.zig",
+        "build.zig.zon",
+        "src",
+    },
+}
