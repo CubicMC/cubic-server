@@ -1489,16 +1489,16 @@ void Player::_continueLoginSequence()
     this->sendUpdateRecipes({});
 
     // TODO: send the tags
-    this->sendUpdateTags({});
+    // this->sendUpdateTags({});
 
     // TODO: implement the event Statues correctly // 24 (set op permission level)
     this->sendEntityEvent({this->_id, 24});
 
     // TODO: send all the commands avaliable in the server
-    this->sendCommands({{}, 0});
+    // this->sendCommands({{}, 0});
 
     // TODO: send the player recipies book
-    this->sendUpdateRecipiesBook({});
+    // this->sendUpdateRecipiesBook({});
 
     // TODO: change that to player_attributes::DEFAULT_SPAWN_POINT
     this->teleport({8.5, 75, 8.5});
