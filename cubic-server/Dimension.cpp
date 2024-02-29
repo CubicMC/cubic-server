@@ -191,6 +191,8 @@ void Dimension::_removeDeadPlayers()
             player->setReadyToRemove(false);
         }
     }
+    if (players_to_remove_buf.empty())
+        return;
 
     for (auto player : this->_players) {
         player->sendRemoveEntities(players_to_remove_buf);
