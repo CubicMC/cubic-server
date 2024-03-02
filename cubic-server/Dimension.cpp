@@ -191,6 +191,8 @@ void Dimension::_removeDeadPlayers()
             player->setReadyToRemove(false);
         }
     }
+    if (players_to_remove_buf.empty())
+        return;
 
     for (auto player : this->_players) {
         player->sendRemoveEntities(players_to_remove_buf);
@@ -455,12 +457,10 @@ void Dimension::updateBlock(Position position, int32_t id)
             tileEntity = chunk.getTileEntity(position);
         }
     }
-    std::lock_guard _(_playersMutex);
-    for (auto player : _players) {
-        if (tileEntity)
+    if (tileEntity) {
+        std::lock_guard _(_playersMutex);
+        for (auto player : _players)
             player->sendBlockEntityData(tileEntity->toBlockEntityData());
-        else
-            player->sendBlockEntityData({position, -1, nullptr});
     }
 }
 

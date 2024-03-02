@@ -44,7 +44,7 @@ Registry::Registry()
 #ifdef NDEBUG
     spdlog::set_level(spdlog::level::info);
 #else
-    spdlog::set_level(spdlog::level::trace);
+    spdlog::set_level(spdlog::level::debug);
 #endif
     spdlog::cfg::load_env_levels();
 }
