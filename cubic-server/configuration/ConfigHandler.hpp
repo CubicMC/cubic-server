@@ -1,10 +1,10 @@
 #ifndef CUBICSERVER_CONFIGURATION_CONFIGHANDLER_HPP
 #define CUBICSERVER_CONFIGURATION_CONFIGHANDLER_HPP
 
-#include "Node.hpp"
-#include "Value.hpp"
 #include "concept.hpp"
 #include "errors.hpp"
+#include "Node.hpp"
+#include "Value.hpp"
 #include <argparse/argparse.hpp>
 #include <map>
 #include <optional>
@@ -82,9 +82,15 @@ private:
 
 std::ostream &operator<<(std::ostream &os, const ConfigHandler &config);
 
-Value &ConfigHandler::operator[](const auto &key) { return this->_values.at(_details::Convertor<std::string>()(key)); }
+Value &ConfigHandler::operator[](const auto &key)
+{
+    return this->_values.at(_details::Convertor<std::string>()(key));
+}
 
-const Value &ConfigHandler::operator[](const auto &key) const { return this->_values.at(_details::Convertor<std::string>()(key)); }
+const Value &ConfigHandler::operator[](const auto &key) const
+{
+    return this->_values.at(_details::Convertor<std::string>()(key));
+}
 
 } // namespace configuration
 

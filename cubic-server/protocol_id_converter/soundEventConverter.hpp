@@ -20,8 +20,8 @@ struct InternalSoundEvent {
  */
 class SoundEventConverter {
 public:
-    SoundEventConverter() {};
-    ~SoundEventConverter() {};
+    SoundEventConverter(){};
+    ~SoundEventConverter(){};
 
     /**
      * @brief Convert a sound event name to a protocol id
@@ -47,6 +47,6 @@ public:
 private:
     std::vector<InternalSoundEvent> _soundEvents; // The internal representation of the sound events
 };
-}
+} // namespace SoundEvents
 
 #endif // CUBICSERVER_PROTOCOLIDCONVERTER_SOUNDEVENTCONVERTER_HPP

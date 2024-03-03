@@ -9,5 +9,5 @@ Fishing::Fishing(const FloatingPosition &origin, const ItemId &tool, const Entit
     entity(entity)
 {
 }
-}
-}
+} // namespace Context
+} // namespace LootTable

@@ -4,8 +4,14 @@
 #include <filesystem>
 #include <fstream>
 
-const std::vector<std::string> &configuration::Value::values() const { return _value.size() > 0 ? _value : _defaultValue; }
-std::ostream &configuration::operator<<(std::ostream &os, const configuration::Value &value) { return os << value.value(); }
+const std::vector<std::string> &configuration::Value::values() const
+{
+    return _value.size() > 0 ? _value : _defaultValue;
+}
+std::ostream &configuration::operator<<(std::ostream &os, const configuration::Value &value)
+{
+    return os << value.value();
+}
 
 configuration::Value::Value(const std::string &name, configuration::ArgumentsParser &parser):
     _required(false),
@@ -41,7 +47,7 @@ configuration::Value &configuration::Value::valueFromEnvironmentVariable(const s
 
 configuration::Value &configuration::Value::valueFromConfig(const std::string &key)
 {
-    _defaultValueConfig = {key};
+    _defaultValueConfig = { key };
     return *this;
 }
 
@@ -54,7 +60,7 @@ configuration::Value &configuration::Value::help(const std::string &help)
 configuration::Value &configuration::Value::implicit()
 {
     _implicit = true;
-    _defaultValue = {"false"};
+    _defaultValue = { "false" };
     return *this;
 }
 
@@ -86,7 +92,7 @@ void configuration::Value::parse(const Node &rootNode)
     // First argument has the highest priority
     if (!_defaultValueArgument.empty()) {
         if (_arguments.has(_defaultValueArgument))
-            _value = {_arguments.get(_defaultValueArgument)};
+            _value = { _arguments.get(_defaultValueArgument) };
     }
 
     // Then environment variable
@@ -100,13 +106,13 @@ void configuration::Value::parse(const Node &rootNode)
                 auto stream = std::ifstream(__tmpSecret);
                 std::ostringstream sstr;
                 sstr << stream.rdbuf();
-                _value = {sstr.str()};
+                _value = { sstr.str() };
             }
         }
         if (_value.empty()) {
             auto envValue = std::getenv(_defaultValueEnvironmentVariable.c_str());
             if (envValue != nullptr)
-                _value = {envValue};
+                _value = { envValue };
         }
     }
 
@@ -125,7 +131,7 @@ void configuration::Value::parse(const Node &rootNode)
         if (node->isArray())
             _value = node->getArray();
         else if (node->isScalar())
-            _value = {node->get()};
+            _value = { node->get() };
     }
 
     // Check if required
@@ -138,7 +144,8 @@ void configuration::Value::parse(const Node &rootNode)
 
     if (_rangeValues.has_value() && _rangeChecker.has_value() && !_rangeChecker.value()(value()))
         throw ConfigurationError(
-            "Invalid value: " + _name + " value '" + value() + "' is not in the range (" + _rangeValues.value().first + ", " + _rangeValues.value().second + ")"
+            "Invalid value: " + _name + " value '" + value() + "' is not in the range (" + _rangeValues.value().first
+            + ", " + _rangeValues.value().second + ")"
         );
 
     // Check if the value is in the possible values list
@@ -149,6 +156,8 @@ void configuration::Value::parse(const Node &rootNode)
         return;
     for (auto &value : _value) {
         if (std::find(_possibleValue.begin(), _possibleValue.end(), value) == _possibleValue.end())
-            throw ConfigurationError("Invalid value: " + _name + " value '" + value + "' is not in the possible values list");
+            throw ConfigurationError(
+                "Invalid value: " + _name + " value '" + value + "' is not in the possible values list"
+            );
     }
 }

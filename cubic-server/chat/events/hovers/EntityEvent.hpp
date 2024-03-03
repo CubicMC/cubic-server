@@ -17,7 +17,7 @@ class EntityHover : public OnHover {
 public:
     EntityHover() = default;
     EntityHover(const Entity &entity):
-        _entity(entity) {};
+        _entity(entity){};
 
     ~EntityHover() override = default;
 
@@ -28,6 +28,6 @@ public:
 private:
     std::optional<std::reference_wrapper<const Entity>> _entity;
 };
-} // namespace chat::message
+} // namespace chat::message::event
 
 #endif // CHAT_EVENTS_HOVER_ENTITY_HPP

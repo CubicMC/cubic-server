@@ -1,11 +1,11 @@
 #include "Gamemode.hpp"
 
+#include "logging/logging.hpp"
 #include "Player.hpp"
 #include "PlayerAttributes.hpp"
+#include "protocol/ClientPackets.hpp"
 #include "Server.hpp"
 #include "World.hpp"
-#include "logging/logging.hpp"
-#include "protocol/ClientPackets.hpp"
 #include <cstdint>
 
 void command_parser::Gamemode::autocomplete(UNUSED std::vector<std::string> &args, Player *invoker) const

@@ -97,6 +97,6 @@ std::shared_ptr<Task> Pool::add(F &&taskFunction, Args &&...args)
     return task;
 }
 
-} // namespace ThreadPool
+} // namespace thread_pool
 
 #endif // CUBICSERVER_THREADPOOL_POOL_HPP

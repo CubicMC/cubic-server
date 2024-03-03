@@ -34,7 +34,7 @@ struct InternalBlock {
  * @brief Representation of a block with a name and a list of properties
  */
 struct Block {
-    Block() {};
+    Block(){};
     Block(std::string name, std::vector<std::pair<std::string, std::string>> properties):
         name(std::move(name)),
         properties(std::move(properties))
@@ -51,8 +51,8 @@ struct Block {
  */
 class GlobalPalette {
 public:
-    GlobalPalette() {};
-    ~GlobalPalette() {};
+    GlobalPalette(){};
+    ~GlobalPalette(){};
 
     /**
      * @brief Convert a block to a protocol id
@@ -89,6 +89,6 @@ private:
 
     boost::container::flat_map<BlockId, Block> _cache;
 };
-}
+} // namespace Blocks
 
 #endif // CUBICSERVER_PROTOCOLIDCONVERTER_BLOCKSTATES_HPP

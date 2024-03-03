@@ -1,7 +1,7 @@
 #include "Text.hpp"
 
 chat::message::event::TextHover::TextHover(const chat::Message &message):
-    messages({message})
+    messages({ message })
 {
 }
 

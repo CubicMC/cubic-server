@@ -20,7 +20,7 @@ public:
 private:
     std::uint64_t _rolls;
 };
-};
-};
+}; // namespace Roll
+}; // namespace LootTable
 
 #endif // CUBIC_SERVER_LOOT_TABLES_ROOLS_ROLL_CONSTANT_HPP

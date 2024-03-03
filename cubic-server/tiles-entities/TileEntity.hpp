@@ -1,10 +1,10 @@
 #ifndef CUBICSERVER_TILEENTITY_HPP
 #define CUBICSERVER_TILEENTITY_HPP
 
-#include "TileEntityList.hpp"
 #include "nbt.h"
 #include "protocol/ClientPackets.hpp"
 #include "protocol/Structures.hpp"
+#include "TileEntityList.hpp"
 #include "types.hpp"
 #include <cstdint>
 #include <string>
@@ -33,14 +33,20 @@ public:
      *
      * @return TileEntity*
      */
-    virtual TileEntity *updateNbt() { return this; };
+    virtual TileEntity *updateNbt()
+    {
+        return this;
+    };
 
     /**
      * @brief Get the nbt of the tile entity
      *
      * @return const nbt_tag_t*
      */
-    const nbt_tag_t *getNbt() const { return _nbt; }
+    const nbt_tag_t *getNbt() const
+    {
+        return _nbt;
+    }
 
     /**
      * @brief Tick the tile entity
@@ -54,7 +60,7 @@ public:
      */
     virtual const protocol::BlockEntity toBlockEntity() const final
     {
-        return protocol::BlockEntity {
+        return protocol::BlockEntity{
             .sectionCoordinate = int8_t(((position.x & 15) << 4) | (position.z & 15)),
             .height = int16_t(position.y),
             .type = static_cast<int>(blockEntityType),
@@ -69,7 +75,7 @@ public:
      */
     virtual const protocol::BlockEntityData toBlockEntityData() const final
     {
-        return protocol::BlockEntityData {
+        return protocol::BlockEntityData{
             .location = position,
             .type = static_cast<int>(blockEntityType),
             .nbtData = _nbt,
@@ -106,6 +112,6 @@ protected:
     nbt_tag_t *_nbt = nullptr;
     bool _needBlockUpdate = false;
 };
-}
+} // namespace tile_entity
 
 #endif // CUBICSERVER_TILEENTITY_HPP

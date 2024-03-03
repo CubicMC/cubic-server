@@ -20,21 +20,21 @@
 
 #include "Chat.hpp"
 #include "Client.hpp"
-#include "Dimension.hpp"
-#include "Player.hpp"
-#include "WorldGroup.hpp"
 #include "command_parser/commands/Gamemode.hpp"
 #include "command_parser/commands/InventoryDump.hpp"
 #include "command_parser/commands/SaveRegion.hpp"
 #include "command_parser/commands/Teleport.hpp"
 #include "command_parser/commands/Tps.hpp"
 #include "default/DefaultWorldGroup.hpp"
+#include "Dimension.hpp"
 #include "logging/logging.hpp"
+#include "Player.hpp"
 #include "registry/Biome.hpp"
 #include "registry/Chat.hpp"
 #include "registry/Dimension.hpp"
 #include "registry/MasterRegistry.hpp"
 #include "scoreboard/ScoreboardSystem.hpp"
+#include "WorldGroup.hpp"
 
 using boost::asio::ip::tcp;
 
@@ -153,7 +153,9 @@ void Server::launch(const configuration::ConfigHandler &config)
     this->_running = true;
 
     boost::asio::ip::tcp::resolver resolver(_io_context);
-    auto it = resolver.resolve(boost::asio::ip::tcp::resolver::query(_config["ip"].as<std::string>(), std::to_string(_config["port"].as<uint16_t>())));
+    auto it = resolver.resolve(boost::asio::ip::tcp::resolver::query(
+        _config["ip"].as<std::string>(), std::to_string(_config["port"].as<uint16_t>())
+    ));
     boost::asio::ip::address addr = it->endpoint().address();
 
     // This force ipv6 for any and loopback
@@ -178,8 +180,10 @@ void Server::launch(const configuration::ConfigHandler &config)
 
 #if PROMETHEUS_SUPPORT == 1
     if (CONFIG["monitoring-prometheus-enable"].as<bool>()) {
-        _prometheusExporter =
-            std::make_unique<PrometheusExporter>(CONFIG["monitoring-prometheus-ip"].as<std::string>() + std::string(":") + CONFIG["monitoring-prometheus-port"].as<std::string>());
+        _prometheusExporter = std::make_unique<PrometheusExporter>(
+            CONFIG["monitoring-prometheus-ip"].as<std::string>() + std::string(":")
+            + CONFIG["monitoring-prometheus-port"].as<std::string>()
+        );
         _prometheusExporter->registerMetrics();
         _prometheusExporterOn = true;
     }
@@ -193,7 +197,10 @@ void Server::launch(const configuration::ConfigHandler &config)
     this->_stop();
 }
 
-void Server::sendData(size_t clientID, std::unique_ptr<std::vector<uint8_t>> &&data) { _toSend.push({clientID, data.release()}); }
+void Server::sendData(size_t clientID, std::unique_ptr<std::vector<uint8_t>> &&data)
+{
+    _toSend.push({ clientID, data.release() });
+}
 
 void Server::_writeLoop()
 {
@@ -207,7 +214,7 @@ void Server::_writeLoop()
                 return;
         }
 
-        OutboundClientData data = {0, nullptr};
+        OutboundClientData data = { 0, nullptr };
         if (!_toSend.pop(data))
             continue;
         {
@@ -256,7 +263,10 @@ void Server::triggerClientCleanup(size_t clientID)
     });
 }
 
-void Server::addCommand(std::unique_ptr<CommandBase> command) { this->_commands.emplace_back(std::move(command)); }
+void Server::addCommand(std::unique_ptr<CommandBase> command)
+{
+    this->_commands.emplace_back(std::move(command));
+}
 
 void Server::_doAccept()
 {
@@ -315,7 +325,7 @@ void Server::_stop()
         this->_writeThread.join();
 
     while (!_toSend.empty()) {
-        OutboundClientData data = {0, nullptr};
+        OutboundClientData data = { 0, nullptr };
         _toSend.pop(data);
         if (data.data)
             delete data.data;

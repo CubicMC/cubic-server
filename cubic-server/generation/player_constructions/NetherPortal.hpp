@@ -24,13 +24,9 @@ struct Frame {
 };
 
 /**
- * @brief A Nether Portal is a player construction that acts as a gateway between the Overworld and the Nether dimensions. It is made of Obsidian and ignited with a Flint&Steel.
- * The portal is built like this :
- *      0 0 0 0
- *      0 1 1 0
- *      0 1 1 0
- *      0 1 1 0
- *      0 0 0 0
+ * @brief A Nether Portal is a player construction that acts as a gateway between the Overworld and the Nether
+ * dimensions. It is made of Obsidian and ignited with a Flint&Steel. The portal is built like this : 0 0 0 0 0 1 1 0 0
+ * 1 1 0 0 1 1 0 0 0 0 0
  *
  * 0 = Obsidian
  * 1 = Air

@@ -1,16 +1,17 @@
 #include "Smithing.hpp"
 
-#include "Server.hpp"
 #include "logging/logging.hpp"
+#include "Server.hpp"
 
 namespace Recipe {
 Smithing::Smithing(const std::string &identifier, const nlohmann::json &recipe):
     Recipe(identifier, recipe)
 {
     // returns if any value is missing or does not have the right type
-    if (!recipe.contains("base") || !recipe.contains("addition") || !recipe.contains("result") || (!recipe["base"].is_object() && !recipe["base"].is_array()) ||
-        (!recipe["addition"].is_object() && !recipe["addition"].is_array()) || !recipe["result"].is_object() || !recipe["result"].contains("item") ||
-        !recipe["result"]["item"].is_string())
+    if (!recipe.contains("base") || !recipe.contains("addition") || !recipe.contains("result")
+        || (!recipe["base"].is_object() && !recipe["base"].is_array())
+        || (!recipe["addition"].is_object() && !recipe["addition"].is_array()) || !recipe["result"].is_object()
+        || !recipe["result"].contains("item") || !recipe["result"]["item"].is_string())
         return;
 
     // get the recipe values
@@ -76,5 +77,8 @@ void Smithing::dump(void) const
     LTRACE(stream.str());
 }
 
-std::shared_ptr<Recipe> Smithing::create(const std::string &identifier, const nlohmann::json &recipe) { return (std::make_shared<Smithing>(Smithing(identifier, recipe))); }
+std::shared_ptr<Recipe> Smithing::create(const std::string &identifier, const nlohmann::json &recipe)
+{
+    return (std::make_shared<Smithing>(Smithing(identifier, recipe)));
+}
 } // namespace Recipe

@@ -91,7 +91,9 @@ void PriorityThreadWorker::doJob()
     _toolBox.library.decrement();
 }
 
-PriorityThreadWorker::PriorityThreadWorker(size_t index, PriorityThreadPoolUtility &toolBox, const std::string_view name):
+PriorityThreadWorker::PriorityThreadWorker(
+    size_t index, PriorityThreadPoolUtility &toolBox, const std::string_view name
+):
     _toolBox(toolBox),
     _name(name),
     _threadWorkerId(index)

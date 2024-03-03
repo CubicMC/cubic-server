@@ -7,11 +7,11 @@ namespace Math_Testing {
  */
 class Math {
 public:
-    static long factorial(int n); // a factorial function
-    static long fibonacci(int n); // a fibonacci function
+    static long factorial(int n);  // a factorial function
+    static long fibonacci(int n);  // a fibonacci function
     static bool isPositive(int n); // a function to check if a number is positive
-    static int square(int n); // a function to square a number
+    static int square(int n);      // a function to square a number
 };
-}
+} // namespace Math_Testing
 
 #endif // CUBICSERVER_MATH_MATH_HPP

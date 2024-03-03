@@ -10,7 +10,9 @@ nlohmann::json chat::message::event::OpenUrlClick::toJson() const
     return response;
 }
 
-std::shared_ptr<chat::message::event::OpenUrlClick> chat::message::event::OpenUrlClick::fromJson(const nlohmann::json &json)
+std::shared_ptr<chat::message::event::OpenUrlClick> chat::message::event::OpenUrlClick::fromJson(
+    const nlohmann::json &json
+)
 {
     return std::make_shared<OpenUrlClick>(json["value"].get<std::string>());
 }

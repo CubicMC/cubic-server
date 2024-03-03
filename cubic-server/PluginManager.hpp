@@ -35,16 +35,17 @@ constexpr char onInventoryChange[] = "onInventoryChange";
 constexpr char onWorldLoad[] = "onWorldLoad";
 constexpr char onDimensionLoad[] = "onDimensionLoad";
 constexpr char onChunkLoad[] = "onChunkLoad";
-}
+} // namespace EventKey
 
 #define onEvent(plugin_manager, key, ...)                                                                \
     for (const auto &event : plugin_manager._events[EventKey::key]) {                                    \
         ((EventType::key) event.rawptr)(plugin_manager.getInterface().get() __VA_OPT__(, ) __VA_ARGS__); \
     }
 
-#define onEventCancelable(plugin_manager, key, is_canceled, ...)                                                                      \
-    for (const auto &event : plugin_manager._events[EventKey::key]) {                                                                 \
-        is_canceled = is_canceled || ((EventType::key) event.rawptr)(plugin_manager.getInterface().get() __VA_OPT__(, ) __VA_ARGS__); \
+#define onEventCancelable(plugin_manager, key, is_canceled, ...)                                                \
+    for (const auto &event : plugin_manager._events[EventKey::key]) {                                           \
+        is_canceled = is_canceled                                                                               \
+            || ((EventType::key) event.rawptr)(plugin_manager.getInterface().get() __VA_OPT__(, ) __VA_ARGS__); \
     }
 
 class PluginManager {
@@ -56,8 +57,14 @@ public:
     void reload();
     void unload();
 
-    std::shared_ptr<const PluginInterface> getInterface() const { return this->_interface; }
-    std::shared_ptr<PluginInterface> getInterface() { return this->_interface; }
+    std::shared_ptr<const PluginInterface> getInterface() const
+    {
+        return this->_interface;
+    }
+    std::shared_ptr<PluginInterface> getInterface()
+    {
+        return this->_interface;
+    }
 
     std::unordered_map<std::string, std::vector<EventType::AllTypes>> _events;
 

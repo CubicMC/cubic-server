@@ -22,4 +22,4 @@ std::ostream &operator<<(std::ostream &os, const Gamemode &gamemode)
     }
     return os;
 }
-}
+} // namespace player_attributes

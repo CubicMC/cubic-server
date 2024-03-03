@@ -11,6 +11,6 @@ DEFINE_EXCEPTION(MaxLengthString);
 DEFINE_EXCEPTION(OutOfRangeEnum);
 DEFINE_EXCEPTION(OutOfRangeBoolean);
 DEFINE_EXCEPTION(WrongObjectType);
-}
+} // namespace protocol
 
 #endif // CUBICSERVER_PROTOCOL_PARSEEXCEPTIONS_HPP

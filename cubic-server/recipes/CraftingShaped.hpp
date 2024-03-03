@@ -28,11 +28,12 @@ private:
 
     size_t _x; // horizontal crafting size requiered
     size_t _y; // vertical crafting size requiered
-    std::unordered_map<char, std::shared_ptr<std::unordered_set<ItemId>>> _key; // list of item to be placed on the table
+    std::unordered_map<char, std::shared_ptr<std::unordered_set<ItemId>>>
+        _key;                   // list of item to be placed on the table
     std::vector<char> _pattern; // pattern of the craft
-    ItemId _result; // item crafted
-    uint64_t _count; // number of items crafted
+    ItemId _result;             // item crafted
+    uint64_t _count;            // number of items crafted
 };
-};
+}; // namespace Recipe
 
 #endif // CUBICSERVER_RECIPES_CRAFTING_SHAPED_HPP

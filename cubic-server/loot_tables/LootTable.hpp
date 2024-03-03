@@ -9,8 +9,8 @@
 
 #include "types.hpp"
 
-#include "Pool.hpp"
 #include "functions/Function.hpp"
+#include "Pool.hpp"
 
 namespace LootTable {
 /**
@@ -60,6 +60,6 @@ private:
     std::list<std::unique_ptr<Function::Function>> _functions;
     bool _validity;
 };
-};
+}; // namespace LootTable
 
 #endif // CUBIC_SERVER_LOOT_TABLES_LOOT_TABLE_HPP

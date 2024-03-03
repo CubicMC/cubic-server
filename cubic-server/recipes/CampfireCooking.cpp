@@ -1,22 +1,24 @@
 #include "CampfireCooking.hpp"
 
-#include "Server.hpp"
 #include "logging/logging.hpp"
+#include "Server.hpp"
 
 namespace Recipe {
 CampfireCooking::CampfireCooking(const std::string &identifier, const nlohmann::json &recipe):
     Recipe(identifier, recipe)
 {
     // returns if any value is missing or does not have the right type
-    if (!recipe.contains("ingredient") || !recipe.contains("result") || !recipe.contains("experience") || !recipe.contains("cookingtime") ||
-        (!recipe["ingredient"].is_object() && !recipe["ingredient"].is_array()) || !recipe["result"].is_string() || !recipe["experience"].is_number() ||
-        !recipe["cookingtime"].is_number_unsigned())
+    if (!recipe.contains("ingredient") || !recipe.contains("result") || !recipe.contains("experience")
+        || !recipe.contains("cookingtime") || (!recipe["ingredient"].is_object() && !recipe["ingredient"].is_array())
+        || !recipe["result"].is_string() || !recipe["experience"].is_number()
+        || !recipe["cookingtime"].is_number_unsigned())
         return;
 
     // get the recipe values
     if (recipe["ingredient"].is_object()) { // if only one ingredient
         if (recipe["ingredient"].contains("item") && recipe["ingredient"]["item"].is_string())
-            this->_ingredients.insert(ITEM_CONVERTER.fromItemToProtocolId(recipe["ingredient"]["item"].get<std::string>()));
+            this->_ingredients.insert(ITEM_CONVERTER.fromItemToProtocolId(recipe["ingredient"]["item"].get<std::string>(
+            )));
         else
             return;
     } else if (recipe["ingredient"].is_array()) {
@@ -48,7 +50,8 @@ void CampfireCooking::dump(void) const
             stream << ", ";
         stream << "\"" << ITEM_CONVERTER.fromProtocolIdToItem(ingredient) << "\"";
     }
-    stream << "] -> \"" << ITEM_CONVERTER.fromProtocolIdToItem(this->_result) << "\" (cooking for " << this->_cookingTime << " ticks and get " << this->_experience << " xp)";
+    stream << "] -> \"" << ITEM_CONVERTER.fromProtocolIdToItem(this->_result) << "\" (cooking for "
+           << this->_cookingTime << " ticks and get " << this->_experience << " xp)";
     LTRACE(stream.str());
 }
 

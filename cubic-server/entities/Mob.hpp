@@ -4,14 +4,15 @@
 #include <memory>
 #include <vector>
 
-#include "LivingEntity.hpp"
 #include "ai/ai.hpp"
 #include "concept.hpp"
 #include "entities/Entity.hpp"
+#include "LivingEntity.hpp"
 
 class Mob : public LivingEntity {
 public:
-    Mob(std::shared_ptr<Dimension> dim, EntityType type, u128 uuid, float health = 20, float maxHealth = 20, bool leftHanded = false, bool aggressive = false):
+    Mob(std::shared_ptr<Dimension> dim, EntityType type, u128 uuid, float health = 20, float maxHealth = 20,
+        bool leftHanded = false, bool aggressive = false):
         LivingEntity(dim, type, uuid, health, maxHealth),
         _leftHanded(leftHanded),
         _aggressive(aggressive)

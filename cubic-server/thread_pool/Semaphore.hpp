@@ -8,8 +8,8 @@ namespace thread_pool {
 
 class ReverseSemaphore {
 private:
-    std::atomic<bool> _notifier {true};
-    int _books {0};
+    std::atomic<bool> _notifier{ true };
+    int _books{ 0 };
     std::mutex _bookMutex;
 
 public:
@@ -44,11 +44,14 @@ public:
 // light semaphore recoded. might have some bugs
 class Semaphore {
 private:
-    std::atomic<std::ptrdiff_t> _counter {};
-    std::mutex _counterMutex {};
+    std::atomic<std::ptrdiff_t> _counter{};
+    std::mutex _counterMutex{};
 
 public:
-    std::ptrdiff_t getCounter() const noexcept { return _counter; }
+    std::ptrdiff_t getCounter() const noexcept
+    {
+        return _counter;
+    }
 
     void release(std::ptrdiff_t n = 1)
     {
@@ -79,6 +82,6 @@ public:
         }
     }
 };
-}
+} // namespace thread_pool
 
 #endif /* ZENITH_SEMAPHORE_HPP */

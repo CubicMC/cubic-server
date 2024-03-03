@@ -36,7 +36,7 @@ bool Blocks::BlockDataConverter::initialize(const std::string &path)
         b.maxStateId = block.value()["maxStateId"];
         // states
         for (auto tool = block.value()["harvestTools"].rbegin(); tool != block.value()["harvestTools"].rend(); ++tool)
-            b.harvestTool.push_back({stoi(tool.key()), tool.value()});
+            b.harvestTool.push_back({ stoi(tool.key()), tool.value() });
         // b.drops = block.value()["drops"];
         b.boundingBox = block.value()["boundingBox"];
         this->_blocks.push_back(b);
@@ -46,16 +46,18 @@ bool Blocks::BlockDataConverter::initialize(const std::string &path)
 
 const Blocks::BlockData Blocks::BlockDataConverter::fromBlockNameToBlockData(const std::string &blockName) const
 {
-    const auto block = std::find_if(this->_blocks.begin(), this->_blocks.end(), [blockName](const Blocks::BlockData &block) {
-        return block.name == blockName;
-    });
+    const auto block = std::find_if(
+        this->_blocks.begin(), this->_blocks.end(),
+        [blockName](const Blocks::BlockData &block) { return block.name == blockName; }
+    );
     return *(block != this->_blocks.end() ? block : this->_blocks.begin());
 }
 
 const Blocks::BlockData Blocks::BlockDataConverter::fromBlockIdToBlockData(const BlockId &blockId) const
 {
-    const auto block = std::find_if(this->_blocks.begin(), this->_blocks.end(), [blockId](const Blocks::BlockData &block) {
-        return block.minStateId <= blockId && blockId <= block.maxStateId;
-    });
+    const auto block = std::find_if(
+        this->_blocks.begin(), this->_blocks.end(),
+        [blockId](const Blocks::BlockData &block) { return block.minStateId <= blockId && blockId <= block.maxStateId; }
+    );
     return *(block != this->_blocks.end() ? block : this->_blocks.begin());
 }

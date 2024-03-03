@@ -2,9 +2,9 @@
 #define CONFIG_VALUE_HPP
 
 #include "ArgumentsParser.hpp"
-#include "Node.hpp"
 #include "concept.hpp"
 #include "conversion.hpp"
+#include "Node.hpp"
 #include "options.hpp"
 #include <optional>
 #include <string>
@@ -126,7 +126,10 @@ public:
      *
      * @return bool
      */
-    NODISCARD inline bool isDefault() const { return _value.size() <= 0; }
+    NODISCARD inline bool isDefault() const
+    {
+        return _value.size() <= 0;
+    }
 
     /**
      * @brief Check if the stored value is an array.
@@ -135,21 +138,57 @@ public:
      *
      * @return bool
      */
-    NODISCARD inline bool isArray() const { return _value.size() > 1; }
+    NODISCARD inline bool isArray() const
+    {
+        return _value.size() > 1;
+    }
 
 public:
     // Operators
-    operator bool() const { return configuration::_details::Convertor<bool>()(value()); }
-    operator std::nullptr_t() const { return configuration::_details::Convertor<std::nullptr_t>()(value()); }
-    operator std::string() const { return configuration::_details::Convertor<std::string>()(value()); }
-    operator float() const { return configuration::_details::Convertor<float>()(value()); }
-    operator double() const { return configuration::_details::Convertor<double>()(value()); }
-    operator int8_t() const { return configuration::_details::Convertor<int8_t>()(value()); }
-    operator uint8_t() const { return configuration::_details::Convertor<uint8_t>()(value()); }
-    operator int32_t() const { return configuration::_details::Convertor<int32_t>()(value()); }
-    operator uint32_t() const { return configuration::_details::Convertor<uint32_t>()(value()); }
-    operator int64_t() const { return configuration::_details::Convertor<int64_t>()(value()); }
-    operator uint64_t() const { return configuration::_details::Convertor<uint64_t>()(value()); }
+    operator bool() const
+    {
+        return configuration::_details::Convertor<bool>()(value());
+    }
+    operator std::nullptr_t() const
+    {
+        return configuration::_details::Convertor<std::nullptr_t>()(value());
+    }
+    operator std::string() const
+    {
+        return configuration::_details::Convertor<std::string>()(value());
+    }
+    operator float() const
+    {
+        return configuration::_details::Convertor<float>()(value());
+    }
+    operator double() const
+    {
+        return configuration::_details::Convertor<double>()(value());
+    }
+    operator int8_t() const
+    {
+        return configuration::_details::Convertor<int8_t>()(value());
+    }
+    operator uint8_t() const
+    {
+        return configuration::_details::Convertor<uint8_t>()(value());
+    }
+    operator int32_t() const
+    {
+        return configuration::_details::Convertor<int32_t>()(value());
+    }
+    operator uint32_t() const
+    {
+        return configuration::_details::Convertor<uint32_t>()(value());
+    }
+    operator int64_t() const
+    {
+        return configuration::_details::Convertor<int64_t>()(value());
+    }
+    operator uint64_t() const
+    {
+        return configuration::_details::Convertor<uint64_t>()(value());
+    }
 
     template<typename T>
     NODISCARD bool operator==(const T &key) const
@@ -206,14 +245,14 @@ Value &Value::inRange(const T &min, const T &max)
         auto v = _details::Convertor<T>()(value);
         return v >= min && v <= max;
     };
-    _rangeValues = {_details::Convertor<std::string>()(min), _details::Convertor<std::string>()(max)};
+    _rangeValues = { _details::Convertor<std::string>()(min), _details::Convertor<std::string>()(max) };
     return *this;
 }
 
 template<typename... T>
 Value &Value::valueFromConfig(const std::string &node, T... keys)
 {
-    _defaultValueConfig = {node, _details::Convertor<std::string>()(std::forward<T>(keys))...};
+    _defaultValueConfig = { node, _details::Convertor<std::string>()(std::forward<T>(keys))... };
     for (auto &key : _defaultValueConfig) {
         if (key.empty())
             throw ConfigurationError("Invalid configuration value");

@@ -26,7 +26,8 @@ bool Blocks::GlobalPalette::initialize(const std::string &path)
             int maxThingy = 0; // Sorry for the name I don't how to call it
             int weight = 1;
 
-            for (auto property = block.value()["properties"].rbegin(); property != block.value()["properties"].rend(); ++property) {
+            for (auto property = block.value()["properties"].rbegin(); property != block.value()["properties"].rend();
+                 ++property) {
                 Blocks::InternalProperty p;
                 p.name = property.key();
                 p.baseWeight = weight;
@@ -41,16 +42,17 @@ bool Blocks::GlobalPalette::initialize(const std::string &path)
         b.maxProtocolId = block.value()["states"][block.value()["states"].size() - 1]["id"];
 
         // Init default state
-        auto defaultState = std::find_if(block.value()["states"].begin(), block.value()["states"].end(), [](const nlohmann::json &state) {
-            return state.contains("default") && state["default"] == true;
-        });
+        auto defaultState = std::find_if(
+            block.value()["states"].begin(), block.value()["states"].end(),
+            [](const nlohmann::json &state) { return state.contains("default") && state["default"] == true; }
+        );
         if (defaultState == block.value()["states"].end()) {
             LERROR("Default state not found for block {}", block.key());
             return false;
         }
         if (defaultState.value().contains("properties")) {
             for (auto property : defaultState.value()["properties"].items())
-                b.defaultProperties.push_back({property.key(), property.value()});
+                b.defaultProperties.push_back({ property.key(), property.value() });
         }
         this->_blocks.push_back(b);
     }
@@ -59,26 +61,28 @@ bool Blocks::GlobalPalette::initialize(const std::string &path)
 
 BlockId Blocks::GlobalPalette::fromBlockToProtocolId(const std::string &blockName) const
 {
-    Blocks::Block block = {blockName, {}};
+    Blocks::Block block = { blockName, {} };
 
-    auto internalBlock = std::find_if(this->_blocks.begin(), this->_blocks.end(), [&block](const Blocks::InternalBlock &b) {
-        return b.name == block.name;
-    });
+    auto internalBlock = std::find_if(
+        this->_blocks.begin(), this->_blocks.end(),
+        [&block](const Blocks::InternalBlock &b) { return b.name == block.name; }
+    );
 
     if (internalBlock == this->_blocks.end())
         return 0;
 
     for (auto property : internalBlock->defaultProperties)
-        block.properties.push_back({property.first, property.second});
+        block.properties.push_back({ property.first, property.second });
 
     return this->fromBlockToProtocolId(block);
 }
 
 BlockId Blocks::GlobalPalette::fromBlockToProtocolId(Blocks::Block &block) const
 {
-    auto internalBlock = std::find_if(this->_blocks.begin(), this->_blocks.end(), [&block](const Blocks::InternalBlock &b) {
-        return b.name == block.name;
-    });
+    auto internalBlock = std::find_if(
+        this->_blocks.begin(), this->_blocks.end(),
+        [&block](const Blocks::InternalBlock &b) { return b.name == block.name; }
+    );
     if (internalBlock == this->_blocks.end()) {
         LERROR("Block not found in palette (name: {})", block.name);
         return 0;
@@ -93,7 +97,7 @@ BlockId Blocks::GlobalPalette::fromBlockToProtocolId(Blocks::Block &block) const
                 }
             }
             if (!found)
-                block.properties.push_back({h, hh});
+                block.properties.push_back({ h, hh });
         }
     }
     if (block.properties.size() == 0 && internalBlock->properties.size() == 0)
@@ -101,9 +105,10 @@ BlockId Blocks::GlobalPalette::fromBlockToProtocolId(Blocks::Block &block) const
 
     BlockId id = internalBlock->baseProtocolId;
     for (auto property : block.properties) {
-        auto internalProperty = std::find_if(internalBlock->properties.begin(), internalBlock->properties.end(), [&property](const Blocks::InternalProperty &p) {
-            return p.name == property.first;
-        });
+        auto internalProperty = std::find_if(
+            internalBlock->properties.begin(), internalBlock->properties.end(),
+            [&property](const Blocks::InternalProperty &p) { return p.name == property.first; }
+        );
         if (internalProperty == internalBlock->properties.end()) {
             LERROR("Property not found (name: {})", property.first);
             return 0;
@@ -134,7 +139,7 @@ Blocks::Block Blocks::GlobalPalette::fromProtocolIdToBlock(BlockId id)
         id -= b.baseProtocolId;
         for (auto it = b.properties.rbegin(); it != b.properties.rend(); ++it) {
             auto property = *it;
-            block.properties.push_back({property.name, property.values[id / property.baseWeight]});
+            block.properties.push_back({ property.name, property.values[id / property.baseWeight] });
             id %= property.baseWeight;
         }
         if (!_cache.contains(originalId))
@@ -142,12 +147,15 @@ Blocks::Block Blocks::GlobalPalette::fromProtocolIdToBlock(BlockId id)
         return block;
     }
     LERROR("Block not found in palette (id: {})", id);
-    return {"minecraft:air", {}};
+    return { "minecraft:air", {} };
 }
 
-std::optional<std::reference_wrapper<const Blocks::Block>> Blocks::GlobalPalette::fetchFromCache(BlockId protocolID) const
+std::optional<std::reference_wrapper<const Blocks::Block>> Blocks::GlobalPalette::fetchFromCache(BlockId protocolID
+) const
 {
     if (!_cache.contains(protocolID))
         return std::nullopt;
-    return std::optional<std::reference_wrapper<const Blocks::Block>>(std::reference_wrapper<const Blocks::Block>(_cache.at(protocolID)));
+    return std::optional<std::reference_wrapper<const Blocks::Block>>(
+        std::reference_wrapper<const Blocks::Block>(_cache.at(protocolID))
+    );
 }

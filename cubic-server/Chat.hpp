@@ -28,7 +28,8 @@ public:
      *
      * @param message
      * @param to
-     * @param overlay A normal message will be displayed in the chat, an overlay message will be displayed in the middle of the screen
+     * @param overlay A normal message will be displayed in the chat, an overlay message will be displayed in the middle
+     * of the screen
      */
     void sendSystemMessage(const chat::Message &message, Player &to, bool overlay = false);
 
@@ -37,7 +38,8 @@ public:
      *
      * @param message
      * @param worldGroup
-     * @param overlay A normal message will be displayed in the chat, an overlay message will be displayed in the middle of the screen
+     * @param overlay A normal message will be displayed in the chat, an overlay message will be displayed in the middle
+     * of the screen
      */
     void sendSystemMessage(const chat::Message &message, const WorldGroup &worldGroup, bool overlay = false);
 
@@ -46,9 +48,12 @@ public:
      *
      * @param message
      * @param to
-     * @param overlay A normal message will be displayed in the chat, an overlay message will be displayed in the middle of the screen
+     * @param overlay A normal message will be displayed in the chat, an overlay message will be displayed in the middle
+     * of the screen
      */
-    void sendSystemMessage(const chat::Message &message, const std::vector<std::reference_wrapper<Player>> &to, bool overlay = false);
+    void sendSystemMessage(
+        const chat::Message &message, const std::vector<std::reference_wrapper<Player>> &to, bool overlay = false
+    );
 
     /**
      * @brief What is this?
@@ -98,11 +103,17 @@ public:
 private:
     void _sendMessage(const chat::Message &message, Player &from, Player &to, const chat::message::Type &type);
     void _sendMessage(const chat::Message &message, Player &from, const WorldGroup &, const chat::message::Type &type);
-    void _sendMessage(const chat::Message &message, Player &from, const std::vector<std::reference_wrapper<Player>> &, const chat::message::Type &type);
+    void _sendMessage(
+        const chat::Message &message, Player &from, const std::vector<std::reference_wrapper<Player>> &,
+        const chat::message::Type &type
+    );
 
-    //! I am using the packet System Chat Message, but to send a system message the wiki says to use the packet Disguised Chat Message
+    //! I am using the packet System Chat Message, but to send a system message the wiki says to use the packet
+    //! Disguised Chat Message
     void _sendSystem(const chat::Message &message, const WorldGroup &worldGroup, bool overlay = false);
-    void _sendSystem(const chat::Message &message, const std::vector<std::reference_wrapper<Player>> &players, bool overlay = false);
+    void _sendSystem(
+        const chat::Message &message, const std::vector<std::reference_wrapper<Player>> &players, bool overlay = false
+    );
     void _sendSystem(const chat::Message &message, Player &player, bool overlay = false);
 
 private:

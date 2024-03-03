@@ -18,9 +18,9 @@
 #include "nbt.hpp"
 #include <utility>
 
+#include "protocol/common.hpp"
 #include "protocol/ParseExceptions.hpp"
 #include "protocol/Structures.hpp"
-#include "protocol/common.hpp"
 #include "types.hpp"
 
 namespace protocol {
@@ -213,7 +213,10 @@ constexpr std::string popString(uint8_t *&at, uint8_t *eof)
     return value;
 }
 
-constexpr std::string popChat(uint8_t *&at, uint8_t *eof) { return popString(at, eof); }
+constexpr std::string popChat(uint8_t *&at, uint8_t *eof)
+{
+    return popString(at, eof);
+}
 
 // TODO: Fucking hell, this is a mess, why is this not an nbt ?
 // constexpr EntityMetadata popEntityMetadata(uint8_t *&at, uint8_t *eof)
@@ -242,7 +245,7 @@ inline nbt_tag_t *popNbt(uint8_t *&at, uint8_t *eof)
     auto savedAt = at;
     auto t = nbt::parse(savedAt, eof);
     std::pair<uint8_t **, uint8_t *> packet = std::make_pair(&at, at + (savedAt - at));
-    nbt_reader_t reader = {_readMem, &packet};
+    nbt_reader_t reader = { _readMem, &packet };
     return nbt_parse(reader, NBT_PARSE_FLAG_USE_RAW);
 }
 

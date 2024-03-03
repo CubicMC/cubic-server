@@ -44,11 +44,21 @@ LogsInterface::LogsInterface():
 
     _VBoxLogs.pack_end(_logsContainer);
 
-    _debug.signal_clicked().connect(sigc::bind(sigc::mem_fun(*this, &LogsInterface::_onFilterSelected), logging::Registry::LogLevel::debug));
-    _info.signal_clicked().connect(sigc::bind(sigc::mem_fun(*this, &LogsInterface::_onFilterSelected), logging::Registry::LogLevel::info));
-    _warn.signal_clicked().connect(sigc::bind(sigc::mem_fun(*this, &LogsInterface::_onFilterSelected), logging::Registry::LogLevel::warn));
-    _error.signal_clicked().connect(sigc::bind(sigc::mem_fun(*this, &LogsInterface::_onFilterSelected), logging::Registry::LogLevel::err));
-    _fatal.signal_clicked().connect(sigc::bind(sigc::mem_fun(*this, &LogsInterface::_onFilterSelected), logging::Registry::LogLevel::critical));
+    _debug.signal_clicked().connect(
+        sigc::bind(sigc::mem_fun(*this, &LogsInterface::_onFilterSelected), logging::Registry::LogLevel::debug)
+    );
+    _info.signal_clicked().connect(
+        sigc::bind(sigc::mem_fun(*this, &LogsInterface::_onFilterSelected), logging::Registry::LogLevel::info)
+    );
+    _warn.signal_clicked().connect(
+        sigc::bind(sigc::mem_fun(*this, &LogsInterface::_onFilterSelected), logging::Registry::LogLevel::warn)
+    );
+    _error.signal_clicked().connect(
+        sigc::bind(sigc::mem_fun(*this, &LogsInterface::_onFilterSelected), logging::Registry::LogLevel::err)
+    );
+    _fatal.signal_clicked().connect(
+        sigc::bind(sigc::mem_fun(*this, &LogsInterface::_onFilterSelected), logging::Registry::LogLevel::critical)
+    );
     _reset.signal_clicked().connect(sigc::mem_fun(*this, &LogsInterface::_onResetFilters));
 
     _logsContainer.add(_logsView);
@@ -148,7 +158,9 @@ void LogsInterface::_scrollToEnd()
 void LogsInterface::_onFilterSelected(logging::Registry::LogLevel logLevel)
 {
     auto logLevelFilter = std::string(logging::levelToString(logLevel));
-    _selectedFilter.set_text(std::string(logLevelFilter + "has been selected. Only " + logLevelFilter + "messages are shown.").c_str());
+    _selectedFilter.set_text(
+        std::string(logLevelFilter + "has been selected. Only " + logLevelFilter + "messages are shown.").c_str()
+    );
     _reset.set_sensitive(true);
     _selectedLogLevel = logLevel;
 }

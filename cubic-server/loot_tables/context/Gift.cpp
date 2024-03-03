@@ -8,5 +8,5 @@ Gift::Gift(const FloatingPosition &origin, const Entity &gifter):
     gifter(gifter)
 {
 }
-}
-}
+} // namespace Context
+} // namespace LootTable

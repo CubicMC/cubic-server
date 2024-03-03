@@ -1,10 +1,10 @@
+#include "chat/Message.hpp"
 #include "Dimension.hpp"
+#include "logging/logging.hpp"
 #include "Player.hpp"
+#include "protocol/ClientPackets.hpp"
 #include "World.hpp"
 #include "WorldGroup.hpp"
-#include "chat/Message.hpp"
-#include "logging/logging.hpp"
-#include "protocol/ClientPackets.hpp"
 
 #include "Teams.hpp"
 
@@ -32,7 +32,7 @@ const std::string getProtocolFlag(const NametagVisibility &flag)
     }
     return ("always");
 }
-}
+} // namespace NametagVisibility
 
 namespace CollisionRule {
 const std::string getProtocolFlag(const CollisionRule &flag)
@@ -55,7 +55,7 @@ const std::string getProtocolFlag(const CollisionRule &flag)
     }
     return ("always");
 }
-}
+} // namespace CollisionRule
 
 Team::Team(const Scoreboard &scoreboard, const std::string &name):
     _scoreboard(scoreboard),
@@ -121,31 +121,70 @@ Team::Team(const Scoreboard &scoreboard, const std::string &name, const Color &c
     LDEBUG("Added team \"{}\"", name);
 }
 
-Team::~Team() { LDEBUG("Removed team \"{}\"", this->_name); }
+Team::~Team()
+{
+    LDEBUG("Removed team \"{}\"", this->_name);
+}
 
-const std::unordered_set<std::string> &Team::getMembers(void) const noexcept { return (this->_members); }
+const std::unordered_set<std::string> &Team::getMembers(void) const noexcept
+{
+    return (this->_members);
+}
 
-bool Team::isMember(const std::string &name) const { return (this->_members.contains(name)); }
+bool Team::isMember(const std::string &name) const
+{
+    return (this->_members.contains(name));
+}
 
-bool Team::isAllowingFriendlyFire(void) const noexcept { return (this->_allowFriendlyFire); }
+bool Team::isAllowingFriendlyFire(void) const noexcept
+{
+    return (this->_allowFriendlyFire);
+}
 
-bool Team::isSeeingFriendlyInvisibles(void) const noexcept { return (this->_seeFriendlyInvisibles); }
+bool Team::isSeeingFriendlyInvisibles(void) const noexcept
+{
+    return (this->_seeFriendlyInvisibles);
+}
 
-NametagVisibility::NametagVisibility Team::getNametagVisibility(void) const noexcept { return (this->_nametagVisibility); }
+NametagVisibility::NametagVisibility Team::getNametagVisibility(void) const noexcept
+{
+    return (this->_nametagVisibility);
+}
 
-DeathMessageVisibility::DeathMessageVisibility Team::getDeathMessageVisibility(void) const noexcept { return (this->_deathMessageVisibility); }
+DeathMessageVisibility::DeathMessageVisibility Team::getDeathMessageVisibility(void) const noexcept
+{
+    return (this->_deathMessageVisibility);
+}
 
-const CollisionRule::CollisionRule &Team::getCollisionRule(void) const noexcept { return (this->_collisionRule); }
+const CollisionRule::CollisionRule &Team::getCollisionRule(void) const noexcept
+{
+    return (this->_collisionRule);
+}
 
-const std::string &Team::getName(void) const noexcept { return (this->_name); }
+const std::string &Team::getName(void) const noexcept
+{
+    return (this->_name);
+}
 
-const chat::Message &Team::getDisplayName(void) const noexcept { return (this->_displayName); }
+const chat::Message &Team::getDisplayName(void) const noexcept
+{
+    return (this->_displayName);
+}
 
-const chat::Message &Team::getPrefix(void) const noexcept { return (this->_memberNamePrefix); }
+const chat::Message &Team::getPrefix(void) const noexcept
+{
+    return (this->_memberNamePrefix);
+}
 
-const chat::Message &Team::getSuffix(void) const noexcept { return (this->_memberNameSuffix); }
+const chat::Message &Team::getSuffix(void) const noexcept
+{
+    return (this->_memberNameSuffix);
+}
 
-const Color &Team::getColor(void) const noexcept { return (this->_color); }
+const Color &Team::getColor(void) const noexcept
+{
+    return (this->_color);
+}
 
 void Team::addMember(const std::string &name)
 {

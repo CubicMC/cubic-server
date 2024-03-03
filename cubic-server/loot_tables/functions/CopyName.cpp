@@ -8,8 +8,14 @@ CopyName::CopyName(const nlohmann::json &function):
     this->setValidity(true);
 }
 
-void CopyName::apply(const LootContext &context) { (void) context; }
+void CopyName::apply(const LootContext &context)
+{
+    (void) context;
+}
 
-std::unique_ptr<Function> CopyName::create(const nlohmann::json &function) { return (std::make_unique<CopyName>(function)); }
-};
-};
+std::unique_ptr<Function> CopyName::create(const nlohmann::json &function)
+{
+    return (std::make_unique<CopyName>(function));
+}
+}; // namespace Function
+}; // namespace LootTable

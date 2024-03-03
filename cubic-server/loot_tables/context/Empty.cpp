@@ -6,5 +6,5 @@ Empty::Empty():
     LootContext("minecraft:empty")
 {
 }
-}
-}
+} // namespace Context
+} // namespace LootTable

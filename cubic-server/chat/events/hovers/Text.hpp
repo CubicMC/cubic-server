@@ -1,8 +1,8 @@
 #ifndef CHAT_EVENTS_HOVER_TEXT_HPP
 #define CHAT_EVENTS_HOVER_TEXT_HPP
 
-#include "chat/Message.hpp"
 #include "chat/events/Hover.hpp"
+#include "chat/Message.hpp"
 
 namespace chat::message::event {
 /**
@@ -39,6 +39,6 @@ public:
 private:
     std::vector<chat::Message> messages;
 };
-} // namespace chat::message
+} // namespace chat::message::event
 
 #endif // CHAT_EVENTS_HOVER_SHOWTEXT_HPP

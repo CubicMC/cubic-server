@@ -8,8 +8,14 @@ ApplyBonus::ApplyBonus(const nlohmann::json &function):
     this->setValidity(true);
 }
 
-void ApplyBonus::apply(const LootContext &context) { (void) context; }
+void ApplyBonus::apply(const LootContext &context)
+{
+    (void) context;
+}
 
-std::unique_ptr<Function> ApplyBonus::create(const nlohmann::json &function) { return (std::make_unique<ApplyBonus>(function)); }
-};
-};
+std::unique_ptr<Function> ApplyBonus::create(const nlohmann::json &function)
+{
+    return (std::make_unique<ApplyBonus>(function));
+}
+}; // namespace Function
+}; // namespace LootTable

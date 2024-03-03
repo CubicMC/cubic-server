@@ -14,10 +14,10 @@ BlockId generation::Nether::getBlock(positionType x, positionType y, positionTyp
 {
     BlockId blockId = Blocks::Netherrack::toProtocol();
     auto noise = getNoise(x, y, z);
-    auto density = noise.noise3D.density; // increase to add more netherrack, decrease to add more air
+    auto density = noise.noise3D.density;  // increase to add more netherrack, decrease to add more air
     auto densityCoef = std::abs(y) * 0.03; // coefficient to accentuate the variations of the terrain according to y
-    auto seaLevel = 32; // lava sea level
-    auto offset = 42; // arbitrary value for a flatter generation at sea level
+    auto seaLevel = 32;                    // lava sea level
+    auto offset = 42;                      // arbitrary value for a flatter generation at sea level
     auto continentalness = seaLevel + (noise.noise2D.continentalness * (offset * 0.5));
 
     // adjusting the coefficient for smallest y values (y ∈ [-6 ; 6])
@@ -45,7 +45,8 @@ BlockId generation::Nether::getBlock(positionType x, positionType y, positionTyp
         continentalness = seaLevel + (noise.noise2D.continentalness * offset);
 
     // carve some of the netherrack
-    if ((blockId == Blocks::Netherrack::toProtocol() && density >= -0.5 && density <= 0.1) || (y >= world_storage::NETHER_ROOF))
+    if ((blockId == Blocks::Netherrack::toProtocol() && density >= -0.5 && density <= 0.1)
+        || (y >= world_storage::NETHER_ROOF))
         blockId = Blocks::Air::toProtocol();
     // add some flatter surfaces of netherrack at sea level
     if (y < continentalness && y > seaLevel - (offset * 0.4))
@@ -57,12 +58,29 @@ BlockId generation::Nether::getBlock(positionType x, positionType y, positionTyp
     return blockId;
 }
 
-BlockId generation::Nether::getBlock(const Position &pos) { return getBlock(pos.x, pos.y, pos.z); }
+BlockId generation::Nether::getBlock(const Position &pos)
+{
+    return getBlock(pos.x, pos.y, pos.z);
+}
 
-BiomeId generation::Nether::getBiome(UNUSED positionType x, UNUSED positionType y, UNUSED positionType z) { return 2; }
+BiomeId generation::Nether::getBiome(UNUSED positionType x, UNUSED positionType y, UNUSED positionType z)
+{
+    return 2;
+}
 
-BiomeId generation::Nether::getBiome(const Position &pos) { return getBiome(pos.x, pos.y, pos.z); }
+BiomeId generation::Nether::getBiome(const Position &pos)
+{
+    return getBiome(pos.x, pos.y, pos.z);
+}
 
-int generation::Nether::getTreeSize(UNUSED positionType x, UNUSED positionType y, UNUSED positionType z, UNUSED const TreeSize &treeSize) { return 0; }
+int generation::Nether::getTreeSize(
+    UNUSED positionType x, UNUSED positionType y, UNUSED positionType z, UNUSED const TreeSize &treeSize
+)
+{
+    return 0;
+}
 
-int generation::Nether::getTreeSize(UNUSED const Position &pos, UNUSED const TreeSize &treeSize) { return 0; }
+int generation::Nether::getTreeSize(UNUSED const Position &pos, UNUSED const TreeSize &treeSize)
+{
+    return 0;
+}

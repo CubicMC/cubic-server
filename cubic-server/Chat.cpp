@@ -1,14 +1,16 @@
 #include "Chat.hpp"
 
 #include "Dimension.hpp"
+#include "logging/logging.hpp"
 #include "Player.hpp"
 #include "Server.hpp"
 #include "World.hpp"
 #include "WorldGroup.hpp"
-#include "logging/logging.hpp"
 #include <functional>
 
-static protocol::PlayerChatMessage buildPacket(const Player &from, size_t messageLogSize, const chat::Message &message, const chat::message::Type &type)
+static protocol::PlayerChatMessage buildPacket(
+    const Player &from, size_t messageLogSize, const chat::Message &message, const chat::message::Type &type
+)
 {
     auto userName = chat::Message(from.getUsername());
 
@@ -16,7 +18,7 @@ static protocol::PlayerChatMessage buildPacket(const Player &from, size_t messag
     if (userName.message() == "STMiki")
         userName.style().color = "gold";
 
-    return protocol::PlayerChatMessage {
+    return protocol::PlayerChatMessage{
         from.getUuid(),
         (int32_t) messageLogSize,
         // TODO: Message signature
@@ -39,13 +41,24 @@ static protocol::PlayerChatMessage buildPacket(const Player &from, size_t messag
 
 Chat::Chat() { }
 
-void Chat::sendPlayerMessage(const chat::Message &message, Player &sender) { this->_sendMessage(message, sender, *sender.getWorldGroup(), chat::message::Type::Chat); }
+void Chat::sendPlayerMessage(const chat::Message &message, Player &sender)
+{
+    this->_sendMessage(message, sender, *sender.getWorldGroup(), chat::message::Type::Chat);
+}
 
-void Chat::sendSystemMessage(const chat::Message &message, Player &to, bool overlay) { this->_sendSystem(message, to, overlay); }
+void Chat::sendSystemMessage(const chat::Message &message, Player &to, bool overlay)
+{
+    this->_sendSystem(message, to, overlay);
+}
 
-void Chat::sendSystemMessage(const chat::Message &message, const WorldGroup &worldGroup, bool overlay) { this->_sendSystem(message, worldGroup, overlay); }
+void Chat::sendSystemMessage(const chat::Message &message, const WorldGroup &worldGroup, bool overlay)
+{
+    this->_sendSystem(message, worldGroup, overlay);
+}
 
-void Chat::sendSystemMessage(const chat::Message &message, const std::vector<std::reference_wrapper<Player>> &players, bool overlay)
+void Chat::sendSystemMessage(
+    const chat::Message &message, const std::vector<std::reference_wrapper<Player>> &players, bool overlay
+)
 {
     this->_sendSystem(message, players, overlay);
 }
@@ -59,8 +72,11 @@ void Chat::sendSayMessage(const chat::Message &raw, Player &from)
 
 void Chat::sendWhisperMessage(const chat::Message &message, Player &sender, Player &to)
 {
-    chat::Message in = chat::Message::fromTranslationKey<chat::message::TranslationKey::CommandsMessageDisplayIncoming>(sender, message);
-    chat::Message out = chat::Message::fromTranslationKey<chat::message::TranslationKey::CommandsMessageDisplayOutgoing>(to, message);
+    chat::Message in = chat::Message::fromTranslationKey<chat::message::TranslationKey::CommandsMessageDisplayIncoming>(
+        sender, message
+    );
+    chat::Message out = chat::Message::fromTranslationKey<
+        chat::message::TranslationKey::CommandsMessageDisplayOutgoing>(to, message);
 
     this->_sendMessage(out, sender, sender, chat::message::Type::WhisperOut);
     this->_sendMessage(in, sender, to, chat::message::Type::WhisperIn);
@@ -72,7 +88,10 @@ void Chat::sendTeamMessage(const chat::Message &message, Player &sender)
     this->_sendMessage(message, sender, *sender.getWorldGroup(), chat::message::Type::TeamSent);
 }
 
-void Chat::sendTellrawMessage(const chat::Message &message, Player &from, UNUSED const std::string &selector) { this->_sendSystem(message, *from.getWorldGroup()); }
+void Chat::sendTellrawMessage(const chat::Message &message, Player &from, UNUSED const std::string &selector)
+{
+    this->_sendSystem(message, *from.getWorldGroup());
+}
 
 void Chat::_sendMessage(const chat::Message &message, Player &from, Player &to, const chat::message::Type &type)
 {
@@ -87,7 +106,9 @@ void Chat::_sendMessage(const chat::Message &message, Player &from, Player &to, 
     to.sendChatMessageResponse(pck);
 }
 
-void Chat::_sendMessage(const chat::Message &message, Player &from, const WorldGroup &worldGroup, const chat::message::Type &type)
+void Chat::_sendMessage(
+    const chat::Message &message, Player &from, const WorldGroup &worldGroup, const chat::message::Type &type
+)
 {
     protocol::PlayerChatMessage pck = buildPacket(from, this->_messagesLog.size(), message, type);
 
@@ -104,7 +125,10 @@ void Chat::_sendMessage(const chat::Message &message, Player &from, const WorldG
     }
 }
 
-void Chat::_sendMessage(const chat::Message &message, Player &from, const std::vector<std::reference_wrapper<Player>> &players, const chat::message::Type &type)
+void Chat::_sendMessage(
+    const chat::Message &message, Player &from, const std::vector<std::reference_wrapper<Player>> &players,
+    const chat::message::Type &type
+)
 {
     if (from.getChatVisibility() != protocol::ClientInformation::ChatVisibility::Enabled)
         return;
@@ -126,7 +150,7 @@ void Chat::_sendSystem(const chat::Message &message, const WorldGroup &worldGrou
         for (auto [_, dim] : world->getDimensions()) {
             for (auto &player : dim->getPlayers()) {
                 if (player->getChatVisibility() <= protocol::ClientInformation::ChatVisibility::CommandsOnly)
-                    player->sendSystemChatMessage({message.serialize(), overlay});
+                    player->sendSystemChatMessage({ message.serialize(), overlay });
             }
         }
     }
@@ -135,13 +159,15 @@ void Chat::_sendSystem(const chat::Message &message, const WorldGroup &worldGrou
 void Chat::_sendSystem(const chat::Message &message, Player &player, bool overlay)
 {
     if (player.getChatVisibility() <= protocol::ClientInformation::ChatVisibility::CommandsOnly)
-        player.sendSystemChatMessage({message.serialize(), overlay});
+        player.sendSystemChatMessage({ message.serialize(), overlay });
 }
 
-void Chat::_sendSystem(const chat::Message &message, const std::vector<std::reference_wrapper<Player>> &players, bool overlay)
+void Chat::_sendSystem(
+    const chat::Message &message, const std::vector<std::reference_wrapper<Player>> &players, bool overlay
+)
 {
     for (auto &player : players) {
         if (player.get().getChatVisibility() <= protocol::ClientInformation::ChatVisibility::CommandsOnly)
-            player.get().sendSystemChatMessage({message.serialize(), overlay});
+            player.get().sendSystemChatMessage({ message.serialize(), overlay });
     }
 }

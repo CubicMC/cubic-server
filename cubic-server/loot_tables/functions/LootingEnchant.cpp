@@ -8,8 +8,14 @@ LootingEnchant::LootingEnchant(const nlohmann::json &function):
     this->setValidity(true);
 }
 
-void LootingEnchant::apply(const LootContext &context) { (void) context; }
+void LootingEnchant::apply(const LootContext &context)
+{
+    (void) context;
+}
 
-std::unique_ptr<Function> LootingEnchant::create(const nlohmann::json &function) { return (std::make_unique<LootingEnchant>(function)); }
-};
-};
+std::unique_ptr<Function> LootingEnchant::create(const nlohmann::json &function)
+{
+    return (std::make_unique<LootingEnchant>(function));
+}
+}; // namespace Function
+}; // namespace LootTable

@@ -30,6 +30,6 @@ struct Time : public CommandBase {
     void execute(std::vector<std::string> &args, Player *invoker) const override;
     void help(std::vector<std::string> &args, Player *invoker) const override;
 };
-}
+} // namespace command_parser
 
 #endif // CUBICSERVER_COMMANDPARSER_COMMANDS_TIME_HPP

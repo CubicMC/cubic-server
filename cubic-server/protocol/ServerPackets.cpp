@@ -20,7 +20,10 @@ std::unique_ptr<Handshake> protocol::parseHandshake(std::vector<uint8_t> &buffer
     return h;
 }
 
-std::unique_ptr<StatusRequest> protocol::parseStatusRequest(UNUSED std::vector<uint8_t> &buffer) { return {}; }
+std::unique_ptr<StatusRequest> protocol::parseStatusRequest(UNUSED std::vector<uint8_t> &buffer)
+{
+    return {};
+}
 
 std::unique_ptr<PingRequest> protocol::parsePingRequest(std::vector<uint8_t> &buffer)
 {

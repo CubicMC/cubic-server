@@ -22,7 +22,7 @@ public:
 private:
     ItemId _item;
 };
-};
-};
+}; // namespace Entry
+}; // namespace LootTable
 
 #endif // CUBIC_SERVER_LOOT_TABLES_ENTRIES_ITEM_HPP

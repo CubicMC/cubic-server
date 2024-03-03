@@ -9,7 +9,10 @@ configuration::ConfigHandler::ConfigHandler(const std::string &name, const std::
 {
 }
 
-void configuration::ConfigHandler::load(const std::filesystem::path &path) { this->_config.load(path); }
+void configuration::ConfigHandler::load(const std::filesystem::path &path)
+{
+    this->_config.load(path);
+}
 
 void configuration::ConfigHandler::save(const std::filesystem::path &path)
 {
@@ -40,7 +43,10 @@ configuration::Value &configuration::ConfigHandler::add(const std::string &key)
     return this->_values.at(key);
 }
 
-void configuration::ConfigHandler::parse(int argc, const char *const argv[]) { this->parse({argv, argv + argc}); }
+void configuration::ConfigHandler::parse(int argc, const char *const argv[])
+{
+    this->parse({ argv, argv + argc });
+}
 
 void configuration::ConfigHandler::parse(const std::vector<std::string> &args)
 {
@@ -58,4 +64,7 @@ void configuration::ConfigHandler::parse()
         value.parse(this->_config);
 }
 
-std::ostream &configuration::operator<<(std::ostream &os, const configuration::ConfigHandler &config) { return os << config._arguments; }
+std::ostream &configuration::operator<<(std::ostream &os, const configuration::ConfigHandler &config)
+{
+    return os << config._arguments;
+}

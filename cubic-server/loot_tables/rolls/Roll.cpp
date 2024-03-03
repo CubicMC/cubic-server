@@ -13,8 +13,14 @@ Roll::Roll(void):
 {
 }
 
-bool Roll::isValid(void) const noexcept { return (this->_validity); }
+bool Roll::isValid(void) const noexcept
+{
+    return (this->_validity);
+}
 
-void Roll::setValidity(bool validity) noexcept { this->_validity = validity; }
+void Roll::setValidity(bool validity) noexcept
+{
+    this->_validity = validity;
 }
-}
+} // namespace Roll
+} // namespace LootTable

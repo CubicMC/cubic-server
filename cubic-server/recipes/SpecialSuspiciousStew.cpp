@@ -10,7 +10,10 @@ SpecialSuspiciousStew::SpecialSuspiciousStew(const std::string &identifier, cons
     this->setValidity(false);
 }
 
-void SpecialSuspiciousStew::dump(void) const { LTRACE("recipe special suspicious stew"); }
+void SpecialSuspiciousStew::dump(void) const
+{
+    LTRACE("recipe special suspicious stew");
+}
 
 std::shared_ptr<Recipe> SpecialSuspiciousStew::create(const std::string &identifier, const nlohmann::json &recipe)
 {

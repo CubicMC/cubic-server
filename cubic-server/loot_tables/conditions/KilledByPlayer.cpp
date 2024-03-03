@@ -15,6 +15,9 @@ bool KilledByPlayer::verify(const LootContext *context) const
     return (true);
 }
 
-std::unique_ptr<Condition> KilledByPlayer::create(const nlohmann::json &condition) { return (std::make_unique<KilledByPlayer>(condition)); }
-};
-};
+std::unique_ptr<Condition> KilledByPlayer::create(const nlohmann::json &condition)
+{
+    return (std::make_unique<KilledByPlayer>(condition));
+}
+}; // namespace Condition
+}; // namespace LootTable

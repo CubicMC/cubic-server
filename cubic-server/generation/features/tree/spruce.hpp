@@ -20,17 +20,35 @@ public:
 
 private:
     const std::vector<Generator::FeatureBlock> getTree(const Position &pos) const override;
-    const std::vector<Generator::FeatureBlock> getTree(Generator::positionType x, Generator::positionType y, Generator::positionType z) const override;
+    const std::vector<Generator::FeatureBlock> getTree(
+        Generator::positionType x, Generator::positionType y, Generator::positionType z
+    ) const override;
 
-    void buildTree(const int treeSize, std::vector<generation::Generator::FeatureBlock> &tree, const BlockId &leaf, const BlockId &log) const;
-    void bigLayer(std::vector<generation::Generator::FeatureBlock> &tree, int y, const BlockId &leaf, const BlockId &log) const;
-    void biggerLayer(std::vector<generation::Generator::FeatureBlock> &tree, int y, const BlockId &leaf, const BlockId &log) const;
-    void starLayer(std::vector<generation::Generator::FeatureBlock> &tree, int y, const BlockId &leaf, const BlockId &log) const;
-    void topStarLayers(std::vector<generation::Generator::FeatureBlock> &tree, int y, const BlockId &leaf, const BlockId &log) const;
-    void repetitivePattern(std::vector<generation::Generator::FeatureBlock> &tree, int y, const BlockId &leaf, const BlockId &log, int treeSize) const;
-    void bottomLeaves(std::vector<generation::Generator::FeatureBlock> &tree, int y, const BlockId &leaf, const BlockId &log) const;
+    void buildTree(
+        const int treeSize, std::vector<generation::Generator::FeatureBlock> &tree, const BlockId &leaf,
+        const BlockId &log
+    ) const;
+    void bigLayer(
+        std::vector<generation::Generator::FeatureBlock> &tree, int y, const BlockId &leaf, const BlockId &log
+    ) const;
+    void biggerLayer(
+        std::vector<generation::Generator::FeatureBlock> &tree, int y, const BlockId &leaf, const BlockId &log
+    ) const;
+    void starLayer(
+        std::vector<generation::Generator::FeatureBlock> &tree, int y, const BlockId &leaf, const BlockId &log
+    ) const;
+    void topStarLayers(
+        std::vector<generation::Generator::FeatureBlock> &tree, int y, const BlockId &leaf, const BlockId &log
+    ) const;
+    void repetitivePattern(
+        std::vector<generation::Generator::FeatureBlock> &tree, int y, const BlockId &leaf, const BlockId &log,
+        int treeSize
+    ) const;
+    void bottomLeaves(
+        std::vector<generation::Generator::FeatureBlock> &tree, int y, const BlockId &leaf, const BlockId &log
+    ) const;
 
-    generation::Generator::TreeSize _treeSize = {5, 9};
+    generation::Generator::TreeSize _treeSize = { 5, 9 };
 };
 } // namespace generation::trees
 

@@ -23,6 +23,9 @@ bool Empty::poll(LootTablePoll &poll, LootContext *context) const
     return (true);
 }
 
-std::unique_ptr<Entry> Empty::creator(const nlohmann::json &entry) { return (std::make_unique<Empty>(entry)); }
-};
-};
+std::unique_ptr<Entry> Empty::creator(const nlohmann::json &entry)
+{
+    return (std::make_unique<Empty>(entry));
+}
+}; // namespace Entry
+}; // namespace LootTable

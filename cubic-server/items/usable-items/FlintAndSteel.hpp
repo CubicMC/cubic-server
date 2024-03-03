@@ -7,7 +7,8 @@
 namespace Items {
 
 /**
- * @brief The 'Flint & Steel' is an item used to put fire to everything, especially your friends' houses (and Nether Portals, but that's not really important there)
+ * @brief The 'Flint & Steel' is an item used to put fire to everything, especially your friends' houses (and Nether
+ * Portals, but that's not really important there)
  *
  */
 struct FlintAndSteel : public UsableItem {
@@ -19,7 +20,9 @@ struct FlintAndSteel : public UsableItem {
      * @note See Item::UsableItem::onUse() for more info
      *
      */
-    void onUseOn(std::shared_ptr<Dimension> dim, Position &pos, UNUSED UsabilityType usage, UNUSED int32_t face, Entity &user) override;
+    void onUseOn(
+        std::shared_ptr<Dimension> dim, Position &pos, UNUSED UsabilityType usage, UNUSED int32_t face, Entity &user
+    ) override;
 
     /**
      * @note See Item::UsableItem::setNbtTag() for more info

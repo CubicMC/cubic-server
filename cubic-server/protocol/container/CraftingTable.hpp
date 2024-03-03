@@ -13,8 +13,10 @@ constexpr const int16_t CRAFTINGTABLE_INVENTORY_SIZE = 27;
 constexpr const int16_t CRAFTINGTABLE_HOTBAR_SIZE = 9;
 constexpr const int16_t CRAFTINGTABLE_CRAFTED_ITEM_OFFSET = 0;
 constexpr const int16_t CRAFTINGTABLE_CRAFTING_GRID_OFFSET = CRAFTINGTABLE_CRAFTED_ITEM_SIZE;
-constexpr const int16_t CRAFTINGTABLE_INVENTORY_OFFSET = CRAFTINGTABLE_CRAFTED_ITEM_SIZE + CRAFTINGTABLE_CRAFTING_GRID_3X3;
-constexpr const int16_t CRAFTINGTABLE_HOTBAR_OFFSET = CRAFTINGTABLE_CRAFTED_ITEM_SIZE + CRAFTINGTABLE_CRAFTING_GRID_3X3 + CRAFTINGTABLE_INVENTORY_SIZE;
+constexpr const int16_t CRAFTINGTABLE_INVENTORY_OFFSET = CRAFTINGTABLE_CRAFTED_ITEM_SIZE
+    + CRAFTINGTABLE_CRAFTING_GRID_3X3;
+constexpr const int16_t CRAFTINGTABLE_HOTBAR_OFFSET = CRAFTINGTABLE_CRAFTED_ITEM_SIZE + CRAFTINGTABLE_CRAFTING_GRID_3X3
+    + CRAFTINGTABLE_INVENTORY_SIZE;
 
 class Player;
 
@@ -30,23 +32,51 @@ public:
     const protocol::Slot &at(int16_t index) const override;
     NODISCARD constexpr inline uint64_t size() const override
     {
-        return CRAFTINGTABLE_CRAFTED_ITEM_SIZE + CRAFTINGTABLE_CRAFTING_GRID_3X3 + CRAFTINGTABLE_INVENTORY_SIZE + CRAFTINGTABLE_HOTBAR_SIZE;
+        return CRAFTINGTABLE_CRAFTED_ITEM_SIZE + CRAFTINGTABLE_CRAFTING_GRID_3X3 + CRAFTINGTABLE_INVENTORY_SIZE
+            + CRAFTINGTABLE_HOTBAR_SIZE;
     }
     void insert(protocol::Slot &slot) override;
     bool canInsert(const protocol::Slot &slot) override;
 
-    void onClick(std::shared_ptr<Player> player, int16_t index, uint8_t buttonId, uint8_t mode, const std::vector<protocol::ClickContainer::SlotWithIndex> &updates) override;
+    void onClick(
+        std::shared_ptr<Player> player, int16_t index, uint8_t buttonId, uint8_t mode,
+        const std::vector<protocol::ClickContainer::SlotWithIndex> &updates
+    ) override;
     void close(UNUSED std::shared_ptr<Player> player);
 
-    NODISCARD constexpr inline protocol::Slot &craftedItem() { return _craftedItem; }
-    NODISCARD constexpr inline std::array<protocol::Slot, CRAFTINGTABLE_CRAFTING_GRID_3X3> &craftingGrid() { return _craftingGrid; }
-    NODISCARD constexpr inline std::array<protocol::Slot, CRAFTINGTABLE_INVENTORY_SIZE> &playerInventory() { return _playerInventory; }
-    NODISCARD constexpr inline std::array<protocol::Slot, CRAFTINGTABLE_HOTBAR_SIZE> &hotbar() { return _hotbar; }
+    NODISCARD constexpr inline protocol::Slot &craftedItem()
+    {
+        return _craftedItem;
+    }
+    NODISCARD constexpr inline std::array<protocol::Slot, CRAFTINGTABLE_CRAFTING_GRID_3X3> &craftingGrid()
+    {
+        return _craftingGrid;
+    }
+    NODISCARD constexpr inline std::array<protocol::Slot, CRAFTINGTABLE_INVENTORY_SIZE> &playerInventory()
+    {
+        return _playerInventory;
+    }
+    NODISCARD constexpr inline std::array<protocol::Slot, CRAFTINGTABLE_HOTBAR_SIZE> &hotbar()
+    {
+        return _hotbar;
+    }
 
-    NODISCARD constexpr inline const protocol::Slot &craftedItem() const { return _craftedItem; }
-    NODISCARD constexpr inline const std::array<protocol::Slot, CRAFTINGTABLE_CRAFTING_GRID_3X3> &craftingGrid() const { return _craftingGrid; }
-    NODISCARD constexpr inline const std::array<protocol::Slot, CRAFTINGTABLE_INVENTORY_SIZE> &playerInventory() const { return _playerInventory; }
-    NODISCARD constexpr inline const std::array<protocol::Slot, CRAFTINGTABLE_HOTBAR_SIZE> &hotbar() const { return _hotbar; }
+    NODISCARD constexpr inline const protocol::Slot &craftedItem() const
+    {
+        return _craftedItem;
+    }
+    NODISCARD constexpr inline const std::array<protocol::Slot, CRAFTINGTABLE_CRAFTING_GRID_3X3> &craftingGrid() const
+    {
+        return _craftingGrid;
+    }
+    NODISCARD constexpr inline const std::array<protocol::Slot, CRAFTINGTABLE_INVENTORY_SIZE> &playerInventory() const
+    {
+        return _playerInventory;
+    }
+    NODISCARD constexpr inline const std::array<protocol::Slot, CRAFTINGTABLE_HOTBAR_SIZE> &hotbar() const
+    {
+        return _hotbar;
+    }
 
 private:
     protocol::Slot _craftedItem;
@@ -67,6 +97,6 @@ private:
     int8_t maxCraftable() const;
 };
 
-} // namespace protocol::window
+} // namespace protocol::container
 
 #endif // PROTOCOL_WINDOW_CRAFTING_HPP

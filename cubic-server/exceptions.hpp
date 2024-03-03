@@ -5,6 +5,7 @@
 #include <string>
 
 #define POPULATE_BASIC_EXCEPTION(name, exception) \
+                                                  \
 public:                                           \
     name(char const *const message) throw():      \
         exception(message)                        \

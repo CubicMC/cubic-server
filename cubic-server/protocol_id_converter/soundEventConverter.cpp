@@ -25,9 +25,10 @@ bool SoundEvents::SoundEventConverter::initialize(const std::string &path)
 
 SoundEventId SoundEvents::SoundEventConverter::fromSoundEventToProtocolId(const std::string &name) const
 {
-    auto soundEvent = std::find_if(this->_soundEvents.begin(), this->_soundEvents.end(), [&name](const SoundEvents::InternalSoundEvent &i) {
-        return i.name == name;
-    });
+    auto soundEvent = std::find_if(
+        this->_soundEvents.begin(), this->_soundEvents.end(),
+        [&name](const SoundEvents::InternalSoundEvent &i) { return i.name == name; }
+    );
     if (soundEvent == this->_soundEvents.end()) {
         LERROR("Sound event not found in palette (name: {})", name);
         return 0;
@@ -37,9 +38,10 @@ SoundEventId SoundEvents::SoundEventConverter::fromSoundEventToProtocolId(const 
 
 std::string SoundEvents::SoundEventConverter::fromProtocolIdToSoundEvent(SoundEventId id) const
 {
-    auto soundEvent = std::find_if(this->_soundEvents.begin(), this->_soundEvents.end(), [&id](const SoundEvents::InternalSoundEvent &i) {
-        return i.protocolId == id;
-    });
+    auto soundEvent = std::find_if(
+        this->_soundEvents.begin(), this->_soundEvents.end(),
+        [&id](const SoundEvents::InternalSoundEvent &i) { return i.protocolId == id; }
+    );
     if (soundEvent == this->_soundEvents.end()) {
         LERROR("Sound event not found in palette (id: {})", id);
         return "minecraft:ui.button.click";

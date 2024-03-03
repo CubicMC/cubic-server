@@ -9,7 +9,8 @@ std::string u128::toString() const
     std::stringstream uuidsstr;
     std::string uuidstr;
 
-    uuidsstr << std::setfill('0') << std::setw(16) << std::hex << this->most << std::setfill('0') << std::setw(16) << this->least;
+    uuidsstr << std::setfill('0') << std::setw(16) << std::hex << this->most << std::setfill('0') << std::setw(16)
+             << this->least;
     uuidstr = uuidsstr.str();
     uuidstr.insert(8, "-");
     uuidstr.insert(13, "-");
@@ -22,7 +23,7 @@ std::vector<int32_t> u128::toVector() const
 {
     u128 result(*this);
     result.swapEndianness();
-    return std::vector<int32_t> {
+    return std::vector<int32_t>{
         (int32_t) ((result.most & 0xffffffff00000000) >> 32),
         (int32_t) (result.most & 0x00000000ffffffff),
         (int32_t) ((result.least & 0xffffffff00000000) >> 32),
@@ -43,14 +44,14 @@ u128 u128::fromShortString(const std::string &str)
     std::advance(it, 16);
     std::string first = std::string(str.begin(), it);
     std::string second = std::string(it, str.end());
-    return u128({std::stoull(first, 0, 16), std::stoull(second, 0, 16)});
+    return u128({ std::stoull(first, 0, 16), std::stoull(second, 0, 16) });
 }
 
 u128 u128::random()
 {
     return u128(
-        {utility::PseudoRandomGenerator::getInstance()->generateNumber<long unsigned int>(0, 0xffffffffffffffff),
-         utility::PseudoRandomGenerator::getInstance()->generateNumber<long unsigned int>(0, 0xffffffffffffffff)}
+        { utility::PseudoRandomGenerator::getInstance()->generateNumber<long unsigned int>(0, 0xffffffffffffffff),
+          utility::PseudoRandomGenerator::getInstance()->generateNumber<long unsigned int>(0, 0xffffffffffffffff) }
     );
 }
 
@@ -65,12 +66,18 @@ u128 u128::fromOfflinePlayerName(const std::string &name)
         most = (most << 8) | result[i];
     for (int i = 8; i < 16; i++)
         least = (least << 8) | result[i];
-    return {most, least};
+    return { most, least };
 }
 
-bool u128::operator==(const u128 &other) const { return this->most == other.most && this->least == other.least; }
+bool u128::operator==(const u128 &other) const
+{
+    return this->most == other.most && this->least == other.least;
+}
 
-Position::valueType Position::manhattanDistance(const Position &other) const { return std::abs(x - other.x) + std::abs(y - other.y) + std::abs(z - other.z); }
+Position::valueType Position::manhattanDistance(const Position &other) const
+{
+    return std::abs(x - other.x) + std::abs(y - other.y) + std::abs(z - other.z);
+}
 
 std::string Tps::toString() const
 {

@@ -5,7 +5,10 @@
 #include "hovers/Text.hpp"
 #include "logging/logging.hpp"
 
-std::shared_ptr<chat::message::event::OnHover> chat::message::event::OnHover::deserialize(const std::string &message) { return fromJson(nlohmann::json::parse(message)); }
+std::shared_ptr<chat::message::event::OnHover> chat::message::event::OnHover::deserialize(const std::string &message)
+{
+    return fromJson(nlohmann::json::parse(message));
+}
 
 std::shared_ptr<chat::message::event::OnHover> chat::message::event::OnHover::fromJson(const nlohmann::json &json)
 {

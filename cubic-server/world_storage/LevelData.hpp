@@ -68,6 +68,6 @@ struct LevelData {
     int32_t version;
 };
 
-}
+} // namespace world_storage
 
 #endif // LEVELDATA_HPP

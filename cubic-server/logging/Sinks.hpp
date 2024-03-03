@@ -3,8 +3,8 @@
 
 #include <queue>
 
-#include "Registry.hpp"
 #include "formating.hpp"
+#include "Registry.hpp"
 #include <spdlog/common.h>
 #include <spdlog/sinks/base_sink.h>
 #include <spdlog/sinks/stdout_color_sinks.h>
@@ -17,7 +17,10 @@ public:
     using level_enum = Registry::LogLevel;
 
 public:
-    NODISCARD constexpr inline const std::queue<Registry::Message> &messages() const noexcept { return _messages; }
+    NODISCARD constexpr inline const std::queue<Registry::Message> &messages() const noexcept
+    {
+        return _messages;
+    }
 
 protected:
     void sink_it_(const spdlog::details::log_msg &msg) override;

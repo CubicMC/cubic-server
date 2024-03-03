@@ -1,7 +1,7 @@
 #include "CraftingTable.hpp"
 #include "Dimension.hpp"
-#include "Player.hpp"
 #include "entities/Item.hpp"
+#include "Player.hpp"
 #include "protocol/container/Container.hpp"
 #include <algorithm>
 #include <variant>
@@ -37,7 +37,7 @@ CraftingTable::CraftingTable(std::weak_ptr<Player> player):
     _hotbar(player.lock()->getInventory()->hotbar()),
     _offhand(player.lock()->getInventory()->offhand())
 {
-    player.lock()->sendOpenScreen({this->id(), this->type(), this->title()});
+    player.lock()->sendOpenScreen({ this->id(), this->type(), this->title() });
 }
 
 protocol::Slot &CraftingTable::at(int16_t index)
@@ -157,7 +157,10 @@ bool CraftingTable::canInsert(const protocol::Slot &slot)
     return false;
 }
 
-void CraftingTable::onClick(std::shared_ptr<Player> player, int16_t index, uint8_t buttonId, uint8_t mode, const std::vector<protocol::ClickContainer::SlotWithIndex> &updates)
+void CraftingTable::onClick(
+    std::shared_ptr<Player> player, int16_t index, uint8_t buttonId, uint8_t mode,
+    const std::vector<protocol::ClickContainer::SlotWithIndex> &updates
+)
 {
     std::shared_ptr<protocol::container::Container> thisTable = player->getContainer(this->id());
 
@@ -186,15 +189,17 @@ void CraftingTable::onClick(std::shared_ptr<Player> player, int16_t index, uint8
                 player->getDimension()->makeEntity<Item>(cursor().takeOne())->dropItem(player->getPosition());
             }
         } else if (buttonId == 0) {
-            if (index == 0) { // clicked on crafted item
+            if (index == 0) {                 // clicked on crafted item
                 if (this->cursor().present) { // already item on cursor
-                    if (this->cursor() == this->_craftedItem && this->_craftedItem.itemCount + this->cursor().itemCount <= 64) // same item with enough stack space
+                    if (this->cursor() == this->_craftedItem
+                        && this->_craftedItem.itemCount + this->cursor().itemCount
+                            <= 64) // same item with enough stack space
                         this->cursor().itemCount += this->craftOne().itemCount;
                     else // different item or not enough stack space
                         break;
                 } else // no item on cursor
                     this->cursor() = this->craftOne();
-                player->sendSetContainerContent({thisTable});
+                player->sendSetContainerContent({ thisTable });
             } else
                 at(index).swap(cursor());
         } else {
@@ -211,7 +216,7 @@ void CraftingTable::onClick(std::shared_ptr<Player> player, int16_t index, uint8
     }
 
     this->checkRecipe();
-    player->sendSetContainerSlot({thisTable, 0});
+    player->sendSetContainerSlot({ thisTable, 0 });
 }
 
 void CraftingTable::close(UNUSED std::shared_ptr<Player> player)
@@ -227,7 +232,8 @@ void CraftingTable::close(UNUSED std::shared_ptr<Player> player)
 bool CraftingTable::checkRecipe()
 {
     // check shaped crafts
-    const std::unordered_map<std::string, std::shared_ptr<Recipe::CraftingShaped>> shapedCrafts = RECIPES.getRecipesByType<Recipe::CraftingShaped>("minecraft");
+    const std::unordered_map<std::string, std::shared_ptr<Recipe::CraftingShaped>>
+        shapedCrafts = RECIPES.getRecipesByType<Recipe::CraftingShaped>("minecraft");
     for (const auto &[_, recipe] : shapedCrafts) {
         if (this->checkCraftingShaped(recipe)) {
             return (true);
@@ -235,7 +241,8 @@ bool CraftingTable::checkRecipe()
     }
 
     // no shaped craft, check shapeless crafts
-    const std::unordered_map<std::string, std::shared_ptr<Recipe::CraftingShapeless>> shapelessCrafts = RECIPES.getRecipesByType<Recipe::CraftingShapeless>("minecraft");
+    const std::unordered_map<std::string, std::shared_ptr<Recipe::CraftingShapeless>>
+        shapelessCrafts = RECIPES.getRecipesByType<Recipe::CraftingShapeless>("minecraft");
     for (const auto &[_, recipe] : shapelessCrafts) { // every
         if (this->checkCraftingShapeless(recipe)) {
             return (true);
@@ -269,7 +276,9 @@ bool CraftingTable::checkCraftingShaped(const std::shared_ptr<Recipe::CraftingSh
                 if (!this->_craftingGrid.at(((y + y_offset) * 3) + x + x_offset).present)
                     return (false);
                 // not right item at (x,y)
-                if (!(craft->getKeys().at((craft->getPattern()).at((y * craft->getXSize()) + x))->contains(this->_craftingGrid.at(((y + y_offset) * 3) + x + x_offset).itemID)))
+                if (!(craft->getKeys()
+                          .at((craft->getPattern()).at((y * craft->getXSize()) + x))
+                          ->contains(this->_craftingGrid.at(((y + y_offset) * 3) + x + x_offset).itemID)))
                     return (false);
             }
         }
@@ -315,7 +324,10 @@ bool CraftingTable::checkCraftingShapeless(const std::shared_ptr<Recipe::Craftin
             if (!foundItems.contains(ingredient)) {
                 if (craft->getIngredients().at(ingredient).contains(this->_craftingGrid.at(pos).itemID)) {
                     foundItems.insert(ingredient);
-                    LTRACE("in crafting shapeless {}, found item {}", craft->getIdentifier(), ITEM_CONVERTER.fromProtocolIdToItem(this->_craftingGrid.at(pos).itemID));
+                    LTRACE(
+                        "in crafting shapeless {}, found item {}", craft->getIdentifier(),
+                        ITEM_CONVERTER.fromProtocolIdToItem(this->_craftingGrid.at(pos).itemID)
+                    );
                     break;
                 }
             }

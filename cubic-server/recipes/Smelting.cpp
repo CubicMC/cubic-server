@@ -1,7 +1,7 @@
 #include "Smelting.hpp"
 
-#include "Server.hpp"
 #include "logging/logging.hpp"
+#include "Server.hpp"
 
 namespace Recipe {
 Smelting::Smelting(const std::string &identifier, const nlohmann::json &recipe):
@@ -32,10 +32,13 @@ Smelting::Smelting(const std::string &identifier, const nlohmann::json &recipe):
 void Smelting::dump(void) const
 {
     LTRACE(
-        "\"{}\" -> \"{}\" (cooking for {} ticks and get {} xp)", ITEM_CONVERTER.fromProtocolIdToItem(this->_ingredient), ITEM_CONVERTER.fromProtocolIdToItem(this->_result),
-        this->_cookingTime, this->_experience
+        "\"{}\" -> \"{}\" (cooking for {} ticks and get {} xp)", ITEM_CONVERTER.fromProtocolIdToItem(this->_ingredient),
+        ITEM_CONVERTER.fromProtocolIdToItem(this->_result), this->_cookingTime, this->_experience
     );
 }
 
-std::shared_ptr<Recipe> Smelting::create(const std::string &identifier, const nlohmann::json &recipe) { return (std::make_shared<Smelting>(Smelting(identifier, recipe))); }
+std::shared_ptr<Recipe> Smelting::create(const std::string &identifier, const nlohmann::json &recipe)
+{
+    return (std::make_shared<Smelting>(Smelting(identifier, recipe)));
+}
 } // namespace Recipe

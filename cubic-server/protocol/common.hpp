@@ -25,6 +25,6 @@ struct PlayerProperty {
     bool isSigned;
     std::string signature;
 };
-}
+} // namespace protocol
 
 #endif // CUBICSERVER_COMMON_HPP

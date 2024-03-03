@@ -15,7 +15,7 @@ public:
 private:
     const std::string _type;
 };
-}
-}
+} // namespace Context
+} // namespace LootTable
 
 #endif // CUBIC_SERVER_LOOT_TABLES_LOOT_CONTEXT_HPP

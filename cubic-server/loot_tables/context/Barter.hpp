@@ -16,7 +16,7 @@ public:
 
     const Entity &barterer;
 };
-}
-}
+} // namespace Context
+} // namespace LootTable
 
 #endif // CUBIC_SERVER_LOOT_TABLES_CONTEXT_BARTER_HPP

@@ -16,7 +16,10 @@ public:
     static std::string digestToProtocol(const uint8_t *data);
     void reset();
 
-    NODISCARD inline bool isDone() const { return _isDone; }
+    NODISCARD inline bool isDone() const
+    {
+        return _isDone;
+    }
 
 private:
     bool _isDone;

@@ -8,8 +8,14 @@ SetCount::SetCount(const nlohmann::json &function):
     this->setValidity(true);
 }
 
-void SetCount::apply(const LootContext &context) { (void) context; }
+void SetCount::apply(const LootContext &context)
+{
+    (void) context;
+}
 
-std::unique_ptr<Function> SetCount::create(const nlohmann::json &function) { return (std::make_unique<SetCount>(function)); }
-};
-};
+std::unique_ptr<Function> SetCount::create(const nlohmann::json &function)
+{
+    return (std::make_unique<SetCount>(function));
+}
+}; // namespace Function
+}; // namespace LootTable

@@ -2,10 +2,10 @@
 
 #include "Chat.hpp"
 #include "Dimension.hpp"
+#include "logging/logging.hpp"
 #include "Player.hpp"
 #include "Server.hpp"
 #include "World.hpp"
-#include "logging/logging.hpp"
 
 void command_parser::Armor::autocomplete(UNUSED std::vector<std::string> &args, UNUSED Player *invoker) const { }
 
@@ -28,13 +28,17 @@ void command_parser::Armor::execute(std::vector<std::string> &args, UNUSED Playe
         defense = std::stoi(args[1]);
     } catch (const std::invalid_argument &err) {
         if (invoker)
-            invoker->getDimension()->getWorld()->getChat()->sendSystemMessage("armor: " + args[1] + " is not a number", *invoker);
+            invoker->getDimension()->getWorld()->getChat()->sendSystemMessage(
+                "armor: " + args[1] + " is not a number", *invoker
+            );
         else
             LINFO("armor: " + args[1] + " is not a number");
         return;
     } catch (const std::out_of_range &err) {
         if (invoker)
-            invoker->getDimension()->getWorld()->getChat()->sendSystemMessage("titletimes: " + args[1] + " is not a number", *invoker);
+            invoker->getDimension()->getWorld()->getChat()->sendSystemMessage(
+                "titletimes: " + args[1] + " is not a number", *invoker
+            );
         else
             LINFO("armor: " + args[1] + " is not a number");
         return;
@@ -44,13 +48,17 @@ void command_parser::Armor::execute(std::vector<std::string> &args, UNUSED Playe
         toughness = std::stoi(args[2]);
     } catch (const std::invalid_argument &err) {
         if (invoker)
-            invoker->getDimension()->getWorld()->getChat()->sendSystemMessage("armor: " + args[2] + " is not a number", *invoker);
+            invoker->getDimension()->getWorld()->getChat()->sendSystemMessage(
+                "armor: " + args[2] + " is not a number", *invoker
+            );
         else
             LINFO("armor: " + args[2] + " is not a number");
         return;
     } catch (const std::out_of_range &err) {
         if (invoker)
-            invoker->getDimension()->getWorld()->getChat()->sendSystemMessage("armor: " + args[2] + " is not a number", *invoker);
+            invoker->getDimension()->getWorld()->getChat()->sendSystemMessage(
+                "armor: " + args[2] + " is not a number", *invoker
+            );
         else
             LINFO("armor: " + args[2] + " is not a number");
         return;
@@ -65,7 +73,8 @@ void command_parser::Armor::execute(std::vector<std::string> &args, UNUSED Playe
                         player->setToughness(toughness);
                         if (invoker)
                             invoker->getDimension()->getWorld()->getChat()->sendSystemMessage(
-                                "Set " + args[0] + "'s defense to " + args[1] + " and toughness to " + args[2] + ".", *invoker
+                                "Set " + args[0] + "'s defense to " + args[1] + " and toughness to " + args[2] + ".",
+                                *invoker
                             );
                         else
                             LINFO("Set " + args[0] + "'s defense to " + args[1] + " and toughness to " + args[2] + ".");

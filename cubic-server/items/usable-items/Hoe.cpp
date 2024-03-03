@@ -1,10 +1,10 @@
 #include "Hoe.hpp"
-#include "Dimension.hpp"
-#include "Server.hpp"
 #include "blocks.hpp"
+#include "Dimension.hpp"
 #include "entities/Item.hpp"
 #include "items/UsableItem.hpp"
 #include "options.hpp"
+#include "Server.hpp"
 #include <exception>
 
 nbt_tag_t *Items::Hoe::setNbtTag()
@@ -24,7 +24,9 @@ nbt_tag_t *Items::Hoe::setNbtTag()
     return root;
 }
 
-void Items::Hoe::onUseOn(std::shared_ptr<Dimension> dim, Position &pos, UsabilityType usage, int32_t face, UNUSED Entity &user)
+void Items::Hoe::onUseOn(
+    std::shared_ptr<Dimension> dim, Position &pos, UsabilityType usage, int32_t face, UNUSED Entity &user
+)
 {
     auto blockPos = pos;
 
@@ -53,9 +55,10 @@ void Items::Hoe::onUseOn(std::shared_ptr<Dimension> dim, Position &pos, Usabilit
         auto Topblock = dim->getBlock(pos);
         auto block = dim->getBlock(blockPos);
         if (usage == UsabilityType::RightMouseClickUsable) {
-            if (Topblock == Blocks::Air::toProtocol() &&
-                (block == Blocks::Dirt::toProtocol() || block == Blocks::GrassBlock::toProtocol(Blocks::GrassBlock::Properties::Snowy::FALSE) ||
-                 block == Blocks::DirtPath::toProtocol())) {
+            if (Topblock == Blocks::Air::toProtocol()
+                && (block == Blocks::Dirt::toProtocol()
+                    || block == Blocks::GrassBlock::toProtocol(Blocks::GrassBlock::Properties::Snowy::FALSE)
+                    || block == Blocks::DirtPath::toProtocol())) {
                 dim->updateBlock(blockPos, Blocks::Farmland::toProtocol(Blocks::Farmland::Properties::Moisture::ZERO));
                 canUpdateDamage = true;
                 return;
@@ -65,8 +68,9 @@ void Items::Hoe::onUseOn(std::shared_ptr<Dimension> dim, Position &pos, Usabilit
                 return;
             } else if (Topblock == Blocks::Air::toProtocol() && block == Blocks::RootedDirt::toProtocol()) {
                 dim->updateBlock(blockPos, Blocks::Dirt::toProtocol());
-                dim->makeEntity<Item>(protocol::Slot {true, 214, 1})
-                    ->dropItem({static_cast<double>(pos.x) + 0.5, static_cast<double>(pos.y), static_cast<double>(pos.z) + 0.5}); // hanging roots
+                dim->makeEntity<Item>(protocol::Slot{ true, 214, 1 })
+                    ->dropItem({ static_cast<double>(pos.x) + 0.5, static_cast<double>(pos.y),
+                                 static_cast<double>(pos.z) + 0.5 }); // hanging roots
                 canUpdateDamage = true;
                 return;
             }

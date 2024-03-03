@@ -8,8 +8,14 @@ CopyBlockStates::CopyBlockStates(const nlohmann::json &function):
     this->setValidity(true);
 }
 
-void CopyBlockStates::apply(const LootContext &context) { (void) context; }
+void CopyBlockStates::apply(const LootContext &context)
+{
+    (void) context;
+}
 
-std::unique_ptr<Function> CopyBlockStates::create(const nlohmann::json &function) { return (std::make_unique<CopyBlockStates>(function)); }
-};
-};
+std::unique_ptr<Function> CopyBlockStates::create(const nlohmann::json &function)
+{
+    return (std::make_unique<CopyBlockStates>(function));
+}
+}; // namespace Function
+}; // namespace LootTable

@@ -10,7 +10,10 @@ SpecialBookCloning::SpecialBookCloning(const std::string &identifier, const nloh
     this->setValidity(false);
 }
 
-void SpecialBookCloning::dump(void) const { LTRACE("recipe special book cloning"); }
+void SpecialBookCloning::dump(void) const
+{
+    LTRACE("recipe special book cloning");
+}
 
 std::shared_ptr<Recipe> SpecialBookCloning::create(const std::string &identifier, const nlohmann::json &recipe)
 {

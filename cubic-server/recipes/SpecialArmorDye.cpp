@@ -10,7 +10,10 @@ SpecialArmorDye::SpecialArmorDye(const std::string &identifier, const nlohmann::
     this->setValidity(false);
 }
 
-void SpecialArmorDye::dump(void) const { LTRACE("recipe special armor dye"); }
+void SpecialArmorDye::dump(void) const
+{
+    LTRACE("recipe special armor dye");
+}
 
 std::shared_ptr<Recipe> SpecialArmorDye::create(const std::string &identifier, const nlohmann::json &recipe)
 {

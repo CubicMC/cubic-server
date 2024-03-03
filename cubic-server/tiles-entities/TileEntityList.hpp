@@ -51,45 +51,46 @@ enum class TileEntityType : int {
 };
 
 static constexpr std::array<std::pair<std::string_view, TileEntityType>, 39> tileEntityNamesToTypes = {
-    std::pair<std::string_view, TileEntityType> {"bee", TileEntityType::Beehive},
-    std::pair<std::string_view, TileEntityType> {"hanging_sign", TileEntityType::HangingSign},
-    std::pair<std::string_view, TileEntityType> {"sign", TileEntityType::Sign},
-    std::pair<std::string_view, TileEntityType> {"sculk_sensor", TileEntityType::SculkSensor},
-    std::pair<std::string_view, TileEntityType> {"sculk_catalyst", TileEntityType::SculkCatalyst},
-    std::pair<std::string_view, TileEntityType> {"sculk_shrieker", TileEntityType::SculkShrieker},
-    std::pair<std::string_view, TileEntityType> {"banner", TileEntityType::Banner},
-    std::pair<std::string_view, TileEntityType> {"trapped_chest", TileEntityType::TrappedChest},
-    std::pair<std::string_view, TileEntityType> {"ender_chest", TileEntityType::EnderChest},
-    std::pair<std::string_view, TileEntityType> {"chest", TileEntityType::Chest},
-    std::pair<std::string_view, TileEntityType> {"dispenser", TileEntityType::Dispenser},
-    std::pair<std::string_view, TileEntityType> {"furnace", TileEntityType::Furnace},
-    std::pair<std::string_view, TileEntityType> {"brewing_stand", TileEntityType::BrewingStand},
-    std::pair<std::string_view, TileEntityType> {"hopper", TileEntityType::Hopper},
-    std::pair<std::string_view, TileEntityType> {"dropper", TileEntityType::Dropper},
-    std::pair<std::string_view, TileEntityType> {"shulker_box", TileEntityType::ShulkerBox},
-    std::pair<std::string_view, TileEntityType> {"barrel", TileEntityType::Barrel},
-    std::pair<std::string_view, TileEntityType> {"smoker", TileEntityType::Smoker},
-    std::pair<std::string_view, TileEntityType> {"blast_furnace", TileEntityType::BlastFurnace},
-    std::pair<std::string_view, TileEntityType> {"campfire", TileEntityType::Campfire},
-    std::pair<std::string_view, TileEntityType> {"lectern", TileEntityType::Lectern},
-    std::pair<std::string_view, TileEntityType> {"chiseled_bookshelf", TileEntityType::ChiseledBookshelf},
-    std::pair<std::string_view, TileEntityType> {"beacon", TileEntityType::Beacon},
-    std::pair<std::string_view, TileEntityType> {"spawner", TileEntityType::Spawner},
-    std::pair<std::string_view, TileEntityType> {"moving_piston", TileEntityType::MovingPiston},
-    std::pair<std::string_view, TileEntityType> {"jukebox", TileEntityType::Jukebox},
-    std::pair<std::string_view, TileEntityType> {"enchanting_table", TileEntityType::EnchantingTable},
-    std::pair<std::string_view, TileEntityType> {"end_portal", TileEntityType::EndPortal},
-    std::pair<std::string_view, TileEntityType> {"skull", TileEntityType::Skull},
-    std::pair<std::string_view, TileEntityType> {"head", TileEntityType::Skull},
-    std::pair<std::string_view, TileEntityType> {"command_block", TileEntityType::CommandBlock},
-    std::pair<std::string_view, TileEntityType> {"end_gateway", TileEntityType::EndGateway},
-    std::pair<std::string_view, TileEntityType> {"structure_block", TileEntityType::StructureBlock},
-    std::pair<std::string_view, TileEntityType> {"jigsaw", TileEntityType::Jigsaw},
-    std::pair<std::string_view, TileEntityType> {"daylight_detector", TileEntityType::DaylightDetector},
-    std::pair<std::string_view, TileEntityType> {"comparator", TileEntityType::Comparator},
-    std::pair<std::string_view, TileEntityType> {"bed", TileEntityType::Bed},
-    std::pair<std::string_view, TileEntityType> {"conduit", TileEntityType::Conduit},
-    std::pair<std::string_view, TileEntityType> {"bell", TileEntityType::Bell}};
+    std::pair<std::string_view, TileEntityType>{"bee",                 TileEntityType::Beehive          },
+    std::pair<std::string_view, TileEntityType>{ "hanging_sign",       TileEntityType::HangingSign      },
+    std::pair<std::string_view, TileEntityType>{ "sign",               TileEntityType::Sign             },
+    std::pair<std::string_view, TileEntityType>{ "sculk_sensor",       TileEntityType::SculkSensor      },
+    std::pair<std::string_view, TileEntityType>{ "sculk_catalyst",     TileEntityType::SculkCatalyst    },
+    std::pair<std::string_view, TileEntityType>{ "sculk_shrieker",     TileEntityType::SculkShrieker    },
+    std::pair<std::string_view, TileEntityType>{ "banner",             TileEntityType::Banner           },
+    std::pair<std::string_view, TileEntityType>{ "trapped_chest",      TileEntityType::TrappedChest     },
+    std::pair<std::string_view, TileEntityType>{ "ender_chest",        TileEntityType::EnderChest       },
+    std::pair<std::string_view, TileEntityType>{ "chest",              TileEntityType::Chest            },
+    std::pair<std::string_view, TileEntityType>{ "dispenser",          TileEntityType::Dispenser        },
+    std::pair<std::string_view, TileEntityType>{ "furnace",            TileEntityType::Furnace          },
+    std::pair<std::string_view, TileEntityType>{ "brewing_stand",      TileEntityType::BrewingStand     },
+    std::pair<std::string_view, TileEntityType>{ "hopper",             TileEntityType::Hopper           },
+    std::pair<std::string_view, TileEntityType>{ "dropper",            TileEntityType::Dropper          },
+    std::pair<std::string_view, TileEntityType>{ "shulker_box",        TileEntityType::ShulkerBox       },
+    std::pair<std::string_view, TileEntityType>{ "barrel",             TileEntityType::Barrel           },
+    std::pair<std::string_view, TileEntityType>{ "smoker",             TileEntityType::Smoker           },
+    std::pair<std::string_view, TileEntityType>{ "blast_furnace",      TileEntityType::BlastFurnace     },
+    std::pair<std::string_view, TileEntityType>{ "campfire",           TileEntityType::Campfire         },
+    std::pair<std::string_view, TileEntityType>{ "lectern",            TileEntityType::Lectern          },
+    std::pair<std::string_view, TileEntityType>{ "chiseled_bookshelf", TileEntityType::ChiseledBookshelf},
+    std::pair<std::string_view, TileEntityType>{ "beacon",             TileEntityType::Beacon           },
+    std::pair<std::string_view, TileEntityType>{ "spawner",            TileEntityType::Spawner          },
+    std::pair<std::string_view, TileEntityType>{ "moving_piston",      TileEntityType::MovingPiston     },
+    std::pair<std::string_view, TileEntityType>{ "jukebox",            TileEntityType::Jukebox          },
+    std::pair<std::string_view, TileEntityType>{ "enchanting_table",   TileEntityType::EnchantingTable  },
+    std::pair<std::string_view, TileEntityType>{ "end_portal",         TileEntityType::EndPortal        },
+    std::pair<std::string_view, TileEntityType>{ "skull",              TileEntityType::Skull            },
+    std::pair<std::string_view, TileEntityType>{ "head",               TileEntityType::Skull            },
+    std::pair<std::string_view, TileEntityType>{ "command_block",      TileEntityType::CommandBlock     },
+    std::pair<std::string_view, TileEntityType>{ "end_gateway",        TileEntityType::EndGateway       },
+    std::pair<std::string_view, TileEntityType>{ "structure_block",    TileEntityType::StructureBlock   },
+    std::pair<std::string_view, TileEntityType>{ "jigsaw",             TileEntityType::Jigsaw           },
+    std::pair<std::string_view, TileEntityType>{ "daylight_detector",  TileEntityType::DaylightDetector },
+    std::pair<std::string_view, TileEntityType>{ "comparator",         TileEntityType::Comparator       },
+    std::pair<std::string_view, TileEntityType>{ "bed",                TileEntityType::Bed              },
+    std::pair<std::string_view, TileEntityType>{ "conduit",            TileEntityType::Conduit          },
+    std::pair<std::string_view, TileEntityType>{ "bell",               TileEntityType::Bell             }
+};
 
 constexpr TileEntityType convertBlockNameToBlockEntityType(const std::string &name)
 {
@@ -102,7 +103,7 @@ constexpr TileEntityType convertBlockNameToBlockEntityType(const std::string &na
 };
 
 class TileEntity;
-}
+} // namespace tile_entity
 
 namespace tile_entity {
 std::shared_ptr<tile_entity::TileEntity> createTileEntity(BlockId blockId, Position position);

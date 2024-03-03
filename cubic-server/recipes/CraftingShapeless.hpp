@@ -21,9 +21,9 @@ public:
 
 private:
     std::vector<std::unordered_set<ItemId>> _ingredients; // list of alternative items to craft
-    ItemId _result; // crafted item
-    uint64_t _count; // number of crafted items
+    ItemId _result;                                       // crafted item
+    uint64_t _count;                                      // number of crafted items
 };
-};
+}; // namespace Recipe
 
 #endif // CUBICSERVER_RECIPES_CRAFTING_SHAPELESS_HPP

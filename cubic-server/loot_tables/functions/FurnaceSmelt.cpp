@@ -8,8 +8,14 @@ FurnaceSmelt::FurnaceSmelt(const nlohmann::json &function):
     this->setValidity(true);
 }
 
-void FurnaceSmelt::apply(const LootContext &context) { (void) context; }
+void FurnaceSmelt::apply(const LootContext &context)
+{
+    (void) context;
+}
 
-std::unique_ptr<Function> FurnaceSmelt::create(const nlohmann::json &function) { return (std::make_unique<FurnaceSmelt>(function)); }
-};
-};
+std::unique_ptr<Function> FurnaceSmelt::create(const nlohmann::json &function)
+{
+    return (std::make_unique<FurnaceSmelt>(function));
+}
+}; // namespace Function
+}; // namespace LootTable

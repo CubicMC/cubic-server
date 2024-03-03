@@ -19,7 +19,7 @@ public:
 private:
     std::list<std::unique_ptr<Condition>> _conditions;
 };
-};
-};
+}; // namespace Condition
+}; // namespace LootTable
 
 #endif // CUBIC_SERVER_LOOT_TABLES_CONDITIONS_WEATHERCHECK_HPP

@@ -6,5 +6,5 @@ Generic::Generic():
     LootContext("minecraft:generic")
 {
 }
-}
-}
+} // namespace Context
+} // namespace LootTable

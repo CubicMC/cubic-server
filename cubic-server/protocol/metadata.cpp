@@ -60,4 +60,4 @@ void addMSlot(std::vector<uint8_t> &data, uint8_t index, const Slot &value)
     addSlot(data, value);
 }
 
-}
+} // namespace protocol::entity_metadata

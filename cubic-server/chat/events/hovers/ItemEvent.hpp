@@ -14,7 +14,7 @@ namespace chat::message::event {
 class ItemHover : public OnHover {
 public:
     ItemHover(const world_storage::Item &item):
-        _item(item) {};
+        _item(item){};
 
     ~ItemHover() override = default;
 
@@ -25,6 +25,6 @@ public:
 private:
     world_storage::Item _item;
 };
-} // namespace chat::message
+} // namespace chat::message::event
 
 #endif // CHAT_EVENTS_HOVER_SHOWITEM_HPP

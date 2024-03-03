@@ -1,9 +1,9 @@
 #include "Container.hpp"
 #include "Dimension.hpp"
-#include "Player.hpp"
-#include "PlayerAttributes.hpp"
 #include "entities/Item.hpp"
 #include "logging/logging.hpp"
+#include "Player.hpp"
+#include "PlayerAttributes.hpp"
 #include "protocol/Structures.hpp"
 #include <nbt.h>
 
@@ -40,7 +40,10 @@ void Container::close(std::shared_ptr<Player> player)
     }
 }
 
-void Container::onClick(std::shared_ptr<Player> player, int16_t index, uint8_t buttonId, uint8_t mode, const std::vector<protocol::ClickContainer::SlotWithIndex> &updates)
+void Container::onClick(
+    std::shared_ptr<Player> player, int16_t index, uint8_t buttonId, uint8_t mode,
+    const std::vector<protocol::ClickContainer::SlotWithIndex> &updates
+)
 {
     bool isCreative = player->getGamemode() == player_attributes::Gamemode::Creative;
 

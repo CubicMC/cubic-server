@@ -54,11 +54,18 @@ private:
      * @param rockSize The maximum size the rock can take
      * @param pos The position of the feature (here, a rock)
      */
-    void buildDiversifiedRocks(std::vector<generation::Generator::FeatureBlock> &rock, const int rockSize, const Position &pos) const;
+    void buildDiversifiedRocks(
+        std::vector<generation::Generator::FeatureBlock> &rock, const int rockSize, const Position &pos
+    ) const;
     void starLayer(std::vector<generation::Generator::FeatureBlock> &rock, int y, const BlockId &mossy) const;
     void fullLayer(std::vector<generation::Generator::FeatureBlock> &rock, int y, const BlockId &mossy) const;
-    void placeBits(std::vector<generation::Generator::FeatureBlock> &rock, const BlockId &mossy, const int rockSize, const Position &pos) const;
-    void placeTinyBits(std::vector<generation::Generator::FeatureBlock> &rock, const BlockId &mossy, const Position &pos) const;
+    void placeBits(
+        std::vector<generation::Generator::FeatureBlock> &rock, const BlockId &mossy, const int rockSize,
+        const Position &pos
+    ) const;
+    void placeTinyBits(
+        std::vector<generation::Generator::FeatureBlock> &rock, const BlockId &mossy, const Position &pos
+    ) const;
 
     /**
      * The chunks where to generate rocks

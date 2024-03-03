@@ -15,6 +15,9 @@ bool WeatherCheck::verify(const LootContext *context) const
     return (true);
 }
 
-std::unique_ptr<Condition> WeatherCheck::create(const nlohmann::json &condition) { return (std::make_unique<WeatherCheck>(condition)); }
-};
-};
+std::unique_ptr<Condition> WeatherCheck::create(const nlohmann::json &condition)
+{
+    return (std::make_unique<WeatherCheck>(condition));
+}
+}; // namespace Condition
+}; // namespace LootTable

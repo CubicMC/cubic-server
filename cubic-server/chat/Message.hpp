@@ -52,13 +52,16 @@ struct Options {
 class Message {
 public:
     Message(
-        const std::string &message = "", const chat::message::Style &style = {}, const chat::message::Options &options = {},
-        const std::shared_ptr<const chat::message::event::OnClick> &clickEvent = nullptr, const std::shared_ptr<const chat::message::event::OnHover> &hoverEvent = nullptr
+        const std::string &message = "", const chat::message::Style &style = {},
+        const chat::message::Options &options = {},
+        const std::shared_ptr<const chat::message::event::OnClick> &clickEvent = nullptr,
+        const std::shared_ptr<const chat::message::event::OnHover> &hoverEvent = nullptr
     );
 
     Message(
         const char message[], const chat::message::Style &style = {}, const chat::message::Options &options = {},
-        const std::shared_ptr<const chat::message::event::OnClick> &clickEvent = nullptr, const std::shared_ptr<const chat::message::event::OnHover> &hoverEvent = nullptr
+        const std::shared_ptr<const chat::message::event::OnClick> &clickEvent = nullptr,
+        const std::shared_ptr<const chat::message::event::OnHover> &hoverEvent = nullptr
     );
     ~Message() = default;
 

@@ -30,7 +30,9 @@ Registry::Registry()
 
     _sinks.emplace_back(std::make_shared<StoreLogMessage>());
     _sinks.emplace_back(std::make_shared<spdlog::sinks::stdout_color_sink_mt>());
-    _sinks.emplace_back(std::make_shared<spdlog::sinks::daily_file_format_sink_mt>("logs/cubic-server.log", 0, 0, false, 0, handlers));
+    _sinks.emplace_back(
+        std::make_shared<spdlog::sinks::daily_file_format_sink_mt>("logs/cubic-server.log", 0, 0, false, 0, handlers)
+    );
     _sinks.emplace_back(std::make_shared<spdlog::sinks::basic_file_sink_mt>("logs/latest.log", true));
 
     auto console = this->registerLogger("main");
@@ -70,9 +72,7 @@ std::shared_ptr<Registry::Logger> Registry::registerLogger(std::shared_ptr<Logge
 
     _loggers.emplace(logger->name(), logger);
 
-    logger->set_error_handler([](const std::string_view &msg) {
-        spdlog::error("*** LOGGER ERROR ***: {}", msg);
-    });
+    logger->set_error_handler([](const std::string_view &msg) { spdlog::error("*** LOGGER ERROR ***: {}", msg); });
 
     spdlog::details::registry::instance().initialize_logger(logger);
     return logger;
@@ -92,13 +92,14 @@ void Registry::unregisterLogger(const std::string_view &name)
 
     _loggers.erase(std::string(name));
 
-    std::erase_if(_threadLoggers, [&name](const auto &pair) {
-        return pair.second == name;
-    });
+    std::erase_if(_threadLoggers, [&name](const auto &pair) { return pair.second == name; });
     spdlog::details::registry::instance().drop(std::string(name));
 }
 
-std::shared_ptr<Registry::Logger> Registry::defaultLogger() { return spdlog::default_logger(); }
+std::shared_ptr<Registry::Logger> Registry::defaultLogger()
+{
+    return spdlog::default_logger();
+}
 
 std::shared_ptr<Registry::Logger> Registry::threadDefaultLogger()
 {
@@ -132,6 +133,9 @@ void Registry::removeThreadDefaultLogger()
         _threadLoggers.erase(std::this_thread::get_id());
 }
 
-void Registry::setLevel(LogLevel level) { spdlog::set_level(static_cast<spdlog::level::level_enum>(level)); }
+void Registry::setLevel(LogLevel level)
+{
+    spdlog::set_level(static_cast<spdlog::level::level_enum>(level));
+}
 
 } // namespace logging

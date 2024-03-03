@@ -10,7 +10,10 @@ SpecialShulkerboxColoring::SpecialShulkerboxColoring(const std::string &identifi
     this->setValidity(false);
 }
 
-void SpecialShulkerboxColoring::dump(void) const { LTRACE("recipe special shulkerbox coloring"); }
+void SpecialShulkerboxColoring::dump(void) const
+{
+    LTRACE("recipe special shulkerbox coloring");
+}
 
 std::shared_ptr<Recipe> SpecialShulkerboxColoring::create(const std::string &identifier, const nlohmann::json &recipe)
 {

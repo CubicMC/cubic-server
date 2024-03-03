@@ -23,7 +23,13 @@ long Math::fibonacci(int n)
     return fibonacci(n - 1) + fibonacci(n - 2);
 }
 
-bool Math::isPositive(int n) { return n >= 0; }
-
-int Math::square(int n) { return n * n; }
+bool Math::isPositive(int n)
+{
+    return n >= 0;
 }
+
+int Math::square(int n)
+{
+    return n * n;
+}
+} // namespace Math_Testing

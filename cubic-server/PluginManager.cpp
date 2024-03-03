@@ -1,7 +1,7 @@
 #include "PluginManager.hpp"
+#include "logging/logging.hpp"
 #include "PluginInterface.hpp"
 #include "Server.hpp"
-#include "logging/logging.hpp"
 
 #include <array>
 #include <dlfcn.h>
@@ -14,7 +14,10 @@ PluginManager::PluginManager(Server *server, const std::string &folder):
     _interface->load(server);
 }
 
-PluginManager::~PluginManager() { this->unload(); }
+PluginManager::~PluginManager()
+{
+    this->unload();
+}
 
 void PluginManager::loadPlugin(std::string filepath)
 {

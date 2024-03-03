@@ -7,5 +7,5 @@ Barter::Barter(const Entity &barterer):
     barterer(barterer)
 {
 }
-}
-}
+} // namespace Context
+} // namespace LootTable

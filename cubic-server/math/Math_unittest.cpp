@@ -8,13 +8,14 @@ namespace Math_Testing {
  * @param TestSuiteName The name of the test suite (in that case MathTest) this allow to group different tests
  * @param TestName The name of the test (in this case Factorial) this allow to group test
  *
- * @note I choose to use EXPECT instead of ASSERT because I want to test all the cases and not to stop at the first error
+ * @note I choose to use EXPECT instead of ASSERT because I want to test all the cases and not to stop at the first
+ * error
  *
  */
 TEST(MathTest, Factorial)
 {
     EXPECT_ANY_THROW(Math::factorial(-1)); // Test if the function throw an exception when n is negative
-    EXPECT_EQ(Math::factorial(0), 1); // Test an equality if the function return 1 when n is 0
+    EXPECT_EQ(Math::factorial(0), 1);      // Test an equality if the function return 1 when n is 0
     EXPECT_EQ(Math::factorial(1), 1);
     EXPECT_EQ(Math::factorial(2), 2);
     EXPECT_EQ(Math::factorial(3), 6);
@@ -36,7 +37,7 @@ TEST(MathTest, Fibonacci)
 TEST(MathTest, IsPositive)
 {
     EXPECT_FALSE(Math::isPositive(-1)); // Test if the function return false when n is negative
-    EXPECT_TRUE(Math::isPositive(0)); // Test if the function return true when n is 0
+    EXPECT_TRUE(Math::isPositive(0));   // Test if the function return true when n is 0
     EXPECT_TRUE(Math::isPositive(1));
 }
 
@@ -51,4 +52,4 @@ TEST(MathTest, Square)
     EXPECT_EQ(Math::square(4), 16);
     EXPECT_EQ(Math::square(5), 25);
 }
-}
+} // namespace Math_Testing

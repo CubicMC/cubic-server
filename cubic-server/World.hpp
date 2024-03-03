@@ -6,9 +6,9 @@
 #include <thread>
 #include <vector>
 
-#include "TickClock.hpp"
 #include "options.hpp"
 #include "thread_pool/PriorityThreadPool.hpp"
+#include "TickClock.hpp"
 #include "types.hpp"
 #include "world_storage/ChunkColumn.hpp"
 #include "world_storage/LevelData.hpp"
@@ -31,24 +31,72 @@ public:
     virtual void stop();
 
     NODISCARD virtual bool isInitialized() const;
-    NODISCARD virtual std::shared_ptr<const WorldGroup> getWorldGroup() const { return _worldGroup; }
-    NODISCARD virtual std::shared_ptr<const Chat> getChat() const { return _chat; }
-    NODISCARD virtual std::shared_ptr<const Dimension> getDimension(const std::string_view &name) const { return _dimensions.at(name); }
-    NODISCARD virtual const std::unordered_map<std::string_view, std::shared_ptr<Dimension>> &getDimensions() const { return _dimensions; }
-    NODISCARD virtual const world_storage::LevelData &getLevelData() const { return _levelData; }
-    NODISCARD virtual Seed getSeed() const { return _seed; }
-    NODISCARD virtual uint8_t getRenderDistance() const { return _renderDistance; }
-    NODISCARD virtual long getTime() const { return _time; }
-    NODISCARD virtual long getAge() const { return _age; }
-    NODISCARD virtual world_storage::WorldType getWorldType() const { return _worldType; }
+    NODISCARD virtual std::shared_ptr<const WorldGroup> getWorldGroup() const
+    {
+        return _worldGroup;
+    }
+    NODISCARD virtual std::shared_ptr<const Chat> getChat() const
+    {
+        return _chat;
+    }
+    NODISCARD virtual std::shared_ptr<const Dimension> getDimension(const std::string_view &name) const
+    {
+        return _dimensions.at(name);
+    }
+    NODISCARD virtual const std::unordered_map<std::string_view, std::shared_ptr<Dimension>> &getDimensions() const
+    {
+        return _dimensions;
+    }
+    NODISCARD virtual const world_storage::LevelData &getLevelData() const
+    {
+        return _levelData;
+    }
+    NODISCARD virtual Seed getSeed() const
+    {
+        return _seed;
+    }
+    NODISCARD virtual uint8_t getRenderDistance() const
+    {
+        return _renderDistance;
+    }
+    NODISCARD virtual long getTime() const
+    {
+        return _time;
+    }
+    NODISCARD virtual long getAge() const
+    {
+        return _age;
+    }
+    NODISCARD virtual world_storage::WorldType getWorldType() const
+    {
+        return _worldType;
+    }
 
-    NODISCARD virtual std::shared_ptr<WorldGroup> getWorldGroup() { return _worldGroup; }
-    NODISCARD virtual std::shared_ptr<Chat> getChat() { return _chat; }
-    NODISCARD virtual std::shared_ptr<Dimension> getDimension(const std::string_view &name) { return _dimensions.at(name); }
-    NODISCARD virtual std::unordered_map<std::string_view, std::shared_ptr<Dimension>> &getDimensions() { return _dimensions; }
-    NODISCARD virtual thread_pool::PriorityThreadPool &getGenerationPool() { return _generationPool; }
+    NODISCARD virtual std::shared_ptr<WorldGroup> getWorldGroup()
+    {
+        return _worldGroup;
+    }
+    NODISCARD virtual std::shared_ptr<Chat> getChat()
+    {
+        return _chat;
+    }
+    NODISCARD virtual std::shared_ptr<Dimension> getDimension(const std::string_view &name)
+    {
+        return _dimensions.at(name);
+    }
+    NODISCARD virtual std::unordered_map<std::string_view, std::shared_ptr<Dimension>> &getDimensions()
+    {
+        return _dimensions;
+    }
+    NODISCARD virtual thread_pool::PriorityThreadPool &getGenerationPool()
+    {
+        return _generationPool;
+    }
 
-    virtual void setLevelData(const world_storage::LevelData &value) { _levelData = value; }
+    virtual void setLevelData(const world_storage::LevelData &value)
+    {
+        _levelData = value;
+    }
     virtual void updateTime();
     virtual void sendPlayerInfoAddPlayer(Player *);
     virtual void sendPlayerInfoRemovePlayer(const Player *current);

@@ -13,7 +13,8 @@ namespace Items {
  *
  */
 struct Hoe : public UsableItem {
-    Hoe(const std::string_view stringId, const int32_t numeralId, const ItemMaxDurabilityByType maxDurability, bool isUnbreakable, const UsabilityType usabilityType):
+    Hoe(const std::string_view stringId, const int32_t numeralId, const ItemMaxDurabilityByType maxDurability,
+        bool isUnbreakable, const UsabilityType usabilityType):
         UsableItem(stringId, numeralId, maxDurability, isUnbreakable, usabilityType)
     {
     }
@@ -27,7 +28,8 @@ struct Hoe : public UsableItem {
      * @note See Item::UsableItem::onUse() for more info
      *
      */
-    void onUseOn(std::shared_ptr<Dimension> dim, Position &pos, UsabilityType usage, int32_t face, Entity &user) override;
+    void onUseOn(std::shared_ptr<Dimension> dim, Position &pos, UsabilityType usage, int32_t face, Entity &user)
+        override;
 
     /**
      * @note See Item::UsableItem::setNbtTag() for more info
@@ -38,23 +40,22 @@ struct Hoe : public UsableItem {
     bool canUpdateDamage = false;
 };
 
-const std::array<std::string, 16> breakableWithHoe {
-    "minecraft:sculk_catalyst",
-    "minecraft:sculk_shrieker",
-    "minecraft:sculk_sensor",
-    "minecraft:calibrated_sculk_sensor",
-    "minecraft:nether_wart_block",
-    "minecraft:warped_wart_block",
-    "minecraft:shroomlight",
-    "minecraft:hay_bale",
-    "minecraft:target",
-    "minecraft:dried_kelp_block",
-    "minecraft:sponge",
-    "minecraft:wet_sponge",
-    "minecraft:leaves",
-    "minecraft:sculk",
-    "minecraft:sculk_vein",
-    "minecraft:moss_block"};
+const std::array<std::string, 16> breakableWithHoe{ "minecraft:sculk_catalyst",
+                                                    "minecraft:sculk_shrieker",
+                                                    "minecraft:sculk_sensor",
+                                                    "minecraft:calibrated_sculk_sensor",
+                                                    "minecraft:nether_wart_block",
+                                                    "minecraft:warped_wart_block",
+                                                    "minecraft:shroomlight",
+                                                    "minecraft:hay_bale",
+                                                    "minecraft:target",
+                                                    "minecraft:dried_kelp_block",
+                                                    "minecraft:sponge",
+                                                    "minecraft:wet_sponge",
+                                                    "minecraft:leaves",
+                                                    "minecraft:sculk",
+                                                    "minecraft:sculk_vein",
+                                                    "minecraft:moss_block" };
 
 } // namespace Items
 

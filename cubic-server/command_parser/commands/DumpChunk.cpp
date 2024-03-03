@@ -1,20 +1,23 @@
 #include "DumpChunk.hpp"
 
 #include "Dimension.hpp"
-#include "Player.hpp"
-#include "Server.hpp"
-#include "World.hpp"
-#include "WorldGroup.hpp"
 #include "logging/logging.hpp"
 #include "nbt.hpp"
+#include "Player.hpp"
 #include "protocol/serialization/add.hpp"
 #include "protocol/serialization/popPrimaryType.hpp"
 #include "protocol_id_converter/blockIdConverter.hpp"
+#include "Server.hpp"
+#include "World.hpp"
 #include "world_storage/Palette.hpp"
 #include "world_storage/Section.hpp"
+#include "WorldGroup.hpp"
 #include <cstdint>
 
-void command_parser::DumpChunk::autocomplete(UNUSED std::vector<std::string> &args, UNUSED Player *invoker) const { return; }
+void command_parser::DumpChunk::autocomplete(UNUSED std::vector<std::string> &args, UNUSED Player *invoker) const
+{
+    return;
+}
 
 void command_parser::DumpChunk::execute(std::vector<std::string> &args, Player *invoker) const
 {
@@ -53,7 +56,8 @@ void command_parser::DumpChunk::execute(std::vector<std::string> &args, Player *
     //         auto block = section.getBlock(idx);
     //         auto name = GLOBAL_PALETTE.fromProtocolIdToBlock(block).name;
     //         if (GLOBAL_PALETTE.fromBlockToProtocolId({name, {}}) != block || (block == 0 && name != "minecraft:air"))
-    //             LDEBUG("ERROR: " << name << " has id " << block << " but should have id " << GLOBAL_PALETTE.fromBlockToProtocolId({name, {}}));
+    //             LDEBUG("ERROR: " << name << " has id " << block << " but should have id " <<
+    //             GLOBAL_PALETTE.fromBlockToProtocolId({name, {}}));
     //     }
     // }
     LDEBUG("Dumping palette...");
@@ -85,7 +89,8 @@ void command_parser::DumpChunk::execute(std::vector<std::string> &args, Player *
 
         for (uint16_t i = 0; i < world_storage::SECTION_3D_SIZE; i++) {
             auto block = section.getBlock(i);
-            if (std::find(section.getBlockPalette().begin(), section.getBlockPalette().end(), block) == section.getBlockPalette().end())
+            if (std::find(section.getBlockPalette().begin(), section.getBlockPalette().end(), block)
+                == section.getBlockPalette().end())
                 LWARN("Block {} is not in the palette", block);
         }
     }
@@ -170,22 +175,37 @@ void command_parser::DumpChunk::execute(std::vector<std::string> &args, Player *
     LDEBUG("Trust edges: {}", trustEdges);
 
     auto skyLightMask = protocol::popArray<int64_t, protocol::popLong>(at, eof);
-    LDEBUG("Sky light mask: {}: {}", skyLightMask.size(), (skyLightMask.size() != 1 ? "Somthing wrong btw" : std::to_string(skyLightMask.at(0))));
+    LDEBUG(
+        "Sky light mask: {}: {}", skyLightMask.size(),
+        (skyLightMask.size() != 1 ? "Somthing wrong btw" : std::to_string(skyLightMask.at(0)))
+    );
 
     auto blockLightMask = protocol::popArray<int64_t, protocol::popLong>(at, eof);
-    LDEBUG("Block light mask: {}: {}", blockLightMask.size(), (blockLightMask.size() != 1 ? "Somthing wrong btw" : std::to_string(blockLightMask.at(0))));
+    LDEBUG(
+        "Block light mask: {}: {}", blockLightMask.size(),
+        (blockLightMask.size() != 1 ? "Somthing wrong btw" : std::to_string(blockLightMask.at(0)))
+    );
 
     auto emptySkyLightMask = protocol::popArray<int64_t, protocol::popLong>(at, eof);
-    LDEBUG("Empty sky light mask: {}: {}", emptySkyLightMask.size(), (emptySkyLightMask.size() != 1 ? "Somthing wrong btw" : std::to_string(emptySkyLightMask.at(0))));
+    LDEBUG(
+        "Empty sky light mask: {}: {}", emptySkyLightMask.size(),
+        (emptySkyLightMask.size() != 1 ? "Somthing wrong btw" : std::to_string(emptySkyLightMask.at(0)))
+    );
 
     auto emptyBlockLightMask = protocol::popArray<int64_t, protocol::popLong>(at, eof);
-    LDEBUG("Empty block light mask: {}: {}", emptyBlockLightMask.size(), (emptyBlockLightMask.size() != 1 ? "Somthing wrong btw" : std::to_string(emptyBlockLightMask.at(0))));
+    LDEBUG(
+        "Empty block light mask: {}: {}", emptyBlockLightMask.size(),
+        (emptyBlockLightMask.size() != 1 ? "Somthing wrong btw" : std::to_string(emptyBlockLightMask.at(0)))
+    );
 
     // Sky light array parsing
     auto SkylightArrayLenght = protocol::popVarInt(at, eof);
     for (int32_t i = 0; i < SkylightArrayLenght; i++) {
         auto value = protocol::popArray<uint8_t, protocol::popByte>(at, eof);
-        LDEBUG("Sky light Array[{}]: {}{}", i, value.size(), (value.size() != world_storage::SECTION_3D_SIZE / 2 ? "Somthing wrong btw" : ""));
+        LDEBUG(
+            "Sky light Array[{}]: {}{}", i, value.size(),
+            (value.size() != world_storage::SECTION_3D_SIZE / 2 ? "Somthing wrong btw" : "")
+        );
         for (uint64_t j = 0; j < value.size(); j++) {
             if (value[j] != 15)
                 LDEBUG("\tSky light Array[{}]: -> {}: {}", i, j, value[j]);
@@ -196,7 +216,10 @@ void command_parser::DumpChunk::execute(std::vector<std::string> &args, Player *
     auto BlocklightArrayLength = protocol::popVarInt(at, eof);
     for (int32_t i = 0; i < BlocklightArrayLength; i++) {
         auto value = protocol::popArray<uint8_t, protocol::popByte>(at, eof);
-        LDEBUG("Block light Array[{}]: {}{}", i, value.size(), (value.size() != world_storage::SECTION_3D_SIZE / 2 ? "Somthing wrong btw" : ""));
+        LDEBUG(
+            "Block light Array[{}]: {}{}", i, value.size(),
+            (value.size() != world_storage::SECTION_3D_SIZE / 2 ? "Somthing wrong btw" : "")
+        );
         for (uint64_t j = 0; j < value.size(); j++) {
             if (value[j] != 15)
                 LDEBUG("\tBlock light Array[{}]: -> {}{}", i, j, value[j]);

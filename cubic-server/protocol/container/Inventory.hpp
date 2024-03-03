@@ -21,23 +21,59 @@ public:
 
     protocol::Slot &at(int16_t index) override;
     const protocol::Slot &at(int16_t index) const override;
-    NODISCARD constexpr inline uint64_t size() const override { return INVENTORY_SIZE + HOTBAR_SIZE + ARMOR_SIZE + CRAFTING_GRID_2X2 + 1; }
+    NODISCARD constexpr inline uint64_t size() const override
+    {
+        return INVENTORY_SIZE + HOTBAR_SIZE + ARMOR_SIZE + CRAFTING_GRID_2X2 + 1;
+    }
     void insert(protocol::Slot &slot) override;
     bool canInsert(const protocol::Slot &slot) override;
 
-    void onClick(std::shared_ptr<Player> player, int16_t index, uint8_t buttonId, uint8_t mode, const std::vector<protocol::ClickContainer::SlotWithIndex> &updates) override;
+    void onClick(
+        std::shared_ptr<Player> player, int16_t index, uint8_t buttonId, uint8_t mode,
+        const std::vector<protocol::ClickContainer::SlotWithIndex> &updates
+    ) override;
 
-    NODISCARD constexpr inline std::array<protocol::Slot, INVENTORY_SIZE> &playerInventory() { return _playerInventory; }
-    NODISCARD constexpr inline std::array<protocol::Slot, HOTBAR_SIZE> &hotbar() { return _hotbar; }
-    NODISCARD constexpr inline std::array<protocol::Slot, ARMOR_SIZE> &armor() { return _armor; };
-    NODISCARD constexpr inline protocol::Slot &offhand() { return _offhand; }
-    NODISCARD constexpr inline std::array<protocol::Slot, CRAFTING_GRID_2X2> &craftingGrid() { return _craftingGrid; }
+    NODISCARD constexpr inline std::array<protocol::Slot, INVENTORY_SIZE> &playerInventory()
+    {
+        return _playerInventory;
+    }
+    NODISCARD constexpr inline std::array<protocol::Slot, HOTBAR_SIZE> &hotbar()
+    {
+        return _hotbar;
+    }
+    NODISCARD constexpr inline std::array<protocol::Slot, ARMOR_SIZE> &armor()
+    {
+        return _armor;
+    };
+    NODISCARD constexpr inline protocol::Slot &offhand()
+    {
+        return _offhand;
+    }
+    NODISCARD constexpr inline std::array<protocol::Slot, CRAFTING_GRID_2X2> &craftingGrid()
+    {
+        return _craftingGrid;
+    }
 
-    NODISCARD constexpr inline const std::array<protocol::Slot, INVENTORY_SIZE> &playerInventory() const { return _playerInventory; }
-    NODISCARD constexpr inline const std::array<protocol::Slot, HOTBAR_SIZE> &hotbar() const { return _hotbar; }
-    NODISCARD constexpr inline const std::array<protocol::Slot, ARMOR_SIZE> &armor() const { return _armor; };
-    NODISCARD constexpr inline const protocol::Slot &offhand() const { return _offhand; }
-    NODISCARD constexpr inline const std::array<protocol::Slot, CRAFTING_GRID_2X2> &craftingGrid() const { return _craftingGrid; }
+    NODISCARD constexpr inline const std::array<protocol::Slot, INVENTORY_SIZE> &playerInventory() const
+    {
+        return _playerInventory;
+    }
+    NODISCARD constexpr inline const std::array<protocol::Slot, HOTBAR_SIZE> &hotbar() const
+    {
+        return _hotbar;
+    }
+    NODISCARD constexpr inline const std::array<protocol::Slot, ARMOR_SIZE> &armor() const
+    {
+        return _armor;
+    };
+    NODISCARD constexpr inline const protocol::Slot &offhand() const
+    {
+        return _offhand;
+    }
+    NODISCARD constexpr inline const std::array<protocol::Slot, CRAFTING_GRID_2X2> &craftingGrid() const
+    {
+        return _craftingGrid;
+    }
 
 private:
     std::array<protocol::Slot, INVENTORY_SIZE> _playerInventory;
@@ -47,6 +83,6 @@ private:
     std::array<protocol::Slot, CRAFTING_GRID_2X2> _craftingGrid;
 };
 
-} // namespace protocol::window
+} // namespace protocol::container
 
 #endif // PROTOCOL_WINDOW_INVENTORY_HPP

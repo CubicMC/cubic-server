@@ -51,7 +51,7 @@ typedef std::unique_ptr<Roll> (*Creator)(const nlohmann::json &roll);
 typedef bool (*IsOfType)(const nlohmann::json &roll);
 
 DEFINE_EXCEPTION(NoRollConstructor);
-};
-};
+}; // namespace Roll
+}; // namespace LootTable
 
 #endif // CUBIC_SERVER_LOOT_TABLES_ROOLS_ROLL_HPP

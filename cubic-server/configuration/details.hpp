@@ -11,8 +11,14 @@ public:
         _impl(impl)
     {
     }
-    virtual T &getImpl() { return this->_impl; }
-    _Impl &operator=(const auto &other) { this->_impl = other; }
+    virtual T &getImpl()
+    {
+        return this->_impl;
+    }
+    _Impl &operator=(const auto &other)
+    {
+        this->_impl = other;
+    }
     virtual ~_Impl() = default;
 
 protected:
@@ -26,8 +32,14 @@ public:
         _impl(impl)
     {
     }
-    T &getImpl() { return this->_impl; }
-    _ImplRef &operator=(const auto &&other) { this->_impl = std::move(other); }
+    T &getImpl()
+    {
+        return this->_impl;
+    }
+    _ImplRef &operator=(const auto &&other)
+    {
+        this->_impl = std::move(other);
+    }
     virtual ~_ImplRef() = default;
 
 protected:
@@ -43,9 +55,12 @@ public:
     }
     virtual ~_ImplShared() = default;
 
-    std::shared_ptr<T> &getImpl() override { return this->_impl; }
+    std::shared_ptr<T> &getImpl() override
+    {
+        return this->_impl;
+    }
 };
 
-} // namespace _details::configuration
+} // namespace configuration::_details
 
 #endif // CONFIGURATION_DETAILS_HPP

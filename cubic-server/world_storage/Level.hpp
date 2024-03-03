@@ -10,8 +10,14 @@
 
 class Dimension;
 
-constexpr int transformBlockPosToChunkPos(int64_t x) { return x < 0 ? -1 + int64_t((x + 1) / 16) : int64_t(x / 16); }
-constexpr int transformChunkPosToRegionPos(int64_t x) { return x < 0 ? -1 + int64_t(x + 1) / 32 : int64_t(x / 32); }
+constexpr int transformBlockPosToChunkPos(int64_t x)
+{
+    return x < 0 ? -1 + int64_t((x + 1) / 16) : int64_t(x / 16);
+}
+constexpr int transformChunkPosToRegionPos(int64_t x)
+{
+    return x < 0 ? -1 + int64_t(x + 1) / 32 : int64_t(x / 32);
+}
 
 namespace world_storage {
 
@@ -54,6 +60,6 @@ private:
     std::unordered_map<Position2D, ChunkColumn> _chunkColumns;
 };
 
-}
+} // namespace world_storage
 
 #endif // CUBICSERVER_WORLDSTORAGE_LEVEL_HPP

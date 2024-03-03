@@ -39,9 +39,15 @@ Recipe::Recipe(const std::string &identifier, const nlohmann::json &recipe):
     this->setGroup(recipe);
 }
 
-const std::string &Recipe::getIdentifier(void) const noexcept { return (this->_identifier); }
+const std::string &Recipe::getIdentifier(void) const noexcept
+{
+    return (this->_identifier);
+}
 
-bool Recipe::hasCategory(void) const noexcept { return (this->_hasCategory); }
+bool Recipe::hasCategory(void) const noexcept
+{
+    return (this->_hasCategory);
+}
 
 void Recipe::setCategory(const nlohmann::json &recipe)
 {
@@ -53,9 +59,15 @@ void Recipe::setCategory(const nlohmann::json &recipe)
     }
 }
 
-const std::string &Recipe::getCategory(void) const noexcept { return (this->_category); }
+const std::string &Recipe::getCategory(void) const noexcept
+{
+    return (this->_category);
+}
 
-bool Recipe::hasGroup(void) const noexcept { return (this->_hasGroup); }
+bool Recipe::hasGroup(void) const noexcept
+{
+    return (this->_hasGroup);
+}
 
 void Recipe::setGroup(const nlohmann::json &recipe)
 {
@@ -67,18 +79,33 @@ void Recipe::setGroup(const nlohmann::json &recipe)
     }
 }
 
-const std::string &Recipe::getGroup(void) const noexcept { return (this->_group); }
+const std::string &Recipe::getGroup(void) const noexcept
+{
+    return (this->_group);
+}
 
 // debug purpose: writes the recipe content to the standard output
-void Recipe::dump(void) const { LTRACE("No data for this recipe."); }
+void Recipe::dump(void) const
+{
+    LTRACE("No data for this recipe.");
+}
 
-bool Recipe::isValid(void) const noexcept { return (this->_isValid); }
+bool Recipe::isValid(void) const noexcept
+{
+    return (this->_isValid);
+}
 
 // set the recipe validity, invalid recipes will be removed
-void Recipe::setValidity(bool validity) noexcept { this->_isValid = validity; }
+void Recipe::setValidity(bool validity) noexcept
+{
+    this->_isValid = validity;
+}
 } // namespace Recipe
 
-void Recipes::addRecipeCreator(const std::string &_namespace, const std::string &type, Recipe::Creator creator) { this->_recipeCreators[_namespace][type] = creator; }
+void Recipes::addRecipeCreator(const std::string &_namespace, const std::string &type, Recipe::Creator creator)
+{
+    this->_recipeCreators[_namespace][type] = creator;
+}
 
 void Recipes::loadFolder(const std::string &_namespace, const std::string &folder)
 {
@@ -97,25 +124,40 @@ void Recipes::loadFolder(const std::string &_namespace, const std::string &folde
 
             // if the json contains "type", proceeds to creating the recipe
             if (recipeContent.contains("type") && recipeContent["type"].is_string()) {
-                std::string recipeType = recipeContent["type"].get<std::string>(); // "minecraft:smelting" ->
+                std::string recipeType = recipeContent["type"].get<std::string>();            // "minecraft:smelting" ->
                 std::string recipeTypeNamespace = recipeType.substr(0, recipeType.find(':')); // "minecraft"
-                std::string recipeTypeType = recipeType.substr(recipeType.find(':') + 1); // "smelting"
-                std::string identifier = _namespace + ':' + filepath.path().string().substr(path_length + 1, filepath.path().string().length() - (path_length + 1) - 5);
+                std::string recipeTypeType = recipeType.substr(recipeType.find(':') + 1);     // "smelting"
+                std::string identifier = _namespace + ':'
+                    + filepath.path().string().substr(
+                        path_length + 1, filepath.path().string().length() - (path_length + 1) - 5
+                    );
 
                 // if no valid creator is found, throws the UnknownRecipeType exception
-                if (!this->_recipeCreators.contains(recipeTypeNamespace) ||
-                    !this->_recipeCreators[recipeTypeNamespace].contains(recipeTypeType)) // checks if type creator exists for current recipe
-                    throw(UnknownRecipeType("No recipe creator found for recipe type " + recipeTypeNamespace + ":" + recipeTypeType));
+                if (!this->_recipeCreators.contains(recipeTypeNamespace)
+                    || !this->_recipeCreators[recipeTypeNamespace].contains(recipeTypeType
+                    )) // checks if type creator exists for current recipe
+                    throw(UnknownRecipeType(
+                        "No recipe creator found for recipe type " + recipeTypeNamespace + ":" + recipeTypeType
+                    ));
                 // creates a recipe using the right recipe creator
-                this->_recipes[_namespace][filepath.path().string().substr(path_length + 1, filepath.path().string().length() - (path_length + 1) - 5)] =
-                    this->_recipeCreators[recipeTypeNamespace][recipeTypeType](identifier, recipeContent);
+                this->_recipes[_namespace][filepath.path().string().substr(
+                    path_length + 1, filepath.path().string().length() - (path_length + 1) - 5
+                )] = this->_recipeCreators[recipeTypeNamespace][recipeTypeType](identifier, recipeContent);
                 // removes the recipe if it is not valid (call setValifity(true) to set as valid)
-                if (!this->_recipes[_namespace][filepath.path().string().substr(path_length + 1, filepath.path().string().length() - (path_length + 1) - 5)]->isValid())
-                    this->_recipes[_namespace].erase(filepath.path().string().substr(path_length + 1, filepath.path().string().length() - (path_length + 1) - 5));
+                if (!this
+                         ->_recipes[_namespace][filepath.path().string().substr(
+                             path_length + 1, filepath.path().string().length() - (path_length + 1) - 5
+                         )]
+                         ->isValid())
+                    this->_recipes[_namespace].erase(filepath.path().string().substr(
+                        path_length + 1, filepath.path().string().length() - (path_length + 1) - 5
+                    ));
             }
         }
     }
-    LINFO("Loaded {} recipes from path {} into namespace \"{}\"", this->_recipes[_namespace].size(), folder, _namespace);
+    LINFO(
+        "Loaded {} recipes from path {} into namespace \"{}\"", this->_recipes[_namespace].size(), folder, _namespace
+    );
     // prints the recipes loaded into the given namespace (includes previously loaded recipes from other sources)
     for (const auto &[name, recipe] : this->_recipes[_namespace]) {
         LTRACE("\"{}:{}\":", _namespace, name);

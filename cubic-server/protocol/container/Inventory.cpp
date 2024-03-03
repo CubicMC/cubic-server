@@ -1,8 +1,8 @@
 #include "Inventory.hpp"
-#include "Player.hpp"
-#include "Server.hpp"
 #include "entities/ArmorStats.hpp"
+#include "Player.hpp"
 #include "protocol/container/Container.hpp"
+#include "Server.hpp"
 #include <variant>
 
 using Inventory = protocol::container::Inventory;
@@ -31,8 +31,8 @@ static void swapContainer(protocol::Slot &slot, std::array<protocol::Slot, N> &c
 }
 
 Inventory::Inventory(
-    // std::array<protocol::Slot, INVENTORY_SIZE> &playerInventory, std::array<protocol::Slot, HOTBAR_SIZE> &hotbar, std::array<protocol::Slot, ARMOR_SIZE> &armor,
-    // protocol::Slot &offhand
+    // std::array<protocol::Slot, INVENTORY_SIZE> &playerInventory, std::array<protocol::Slot, HOTBAR_SIZE> &hotbar,
+    // std::array<protocol::Slot, ARMOR_SIZE> &armor, protocol::Slot &offhand
 ):
     Container(0, 0, "Inventory")
 //     Container(0, 0, "Inventory"),
@@ -164,7 +164,10 @@ bool Inventory::canInsert(const protocol::Slot &slot)
     return false;
 }
 
-void Inventory::onClick(std::shared_ptr<Player> player, int16_t index, uint8_t buttonId, uint8_t mode, const std::vector<protocol::ClickContainer::SlotWithIndex> &updates)
+void Inventory::onClick(
+    std::shared_ptr<Player> player, int16_t index, uint8_t buttonId, uint8_t mode,
+    const std::vector<protocol::ClickContainer::SlotWithIndex> &updates
+)
 {
     switch (mode) {
     case (int32_t) ClickMode::ShiftClick:

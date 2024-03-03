@@ -11,7 +11,8 @@ namespace Items {
  *
  */
 struct Bow : public UsableItem {
-    Bow(const std::string_view stringId, const int32_t numeralId, const ItemMaxDurabilityByType maxDurability, bool isUnbreakable, const UsabilityType usabilityType):
+    Bow(const std::string_view stringId, const int32_t numeralId, const ItemMaxDurabilityByType maxDurability,
+        bool isUnbreakable, const UsabilityType usabilityType):
         UsableItem(stringId, numeralId, maxDurability, isUnbreakable, usabilityType)
     {
     }
@@ -32,6 +33,6 @@ struct Bow : public UsableItem {
     bool canUpdateDamage = false;
 };
 
-}
+} // namespace Items
 
 #endif // CUBICSERVER_ITEMS_USABLE_ITEMS_BOW

@@ -19,14 +19,20 @@ ThreadPool::ThreadPool(uint16_t threadCount, std::string_view name)
 ThreadPool::~ThreadPool()
 {
     _toolBox.stayAlive.store(false);
-    _toolBox.jobSemaphore.release(_toolBox.targetSize); // we might end up releasing more than enough, however that's destructor so we don't care.
+    _toolBox.jobSemaphore.release(_toolBox.targetSize
+    ); // we might end up releasing more than enough, however that's destructor so we don't care.
 }
 
-[[maybe_unused]] void ThreadPool::waitUntilJobsDone() const { _toolBox.library.wait(); }
+[[maybe_unused]]
+void ThreadPool::waitUntilJobsDone() const
+{
+    _toolBox.library.wait();
+}
 
 // ThreadPool::operator bool() const { return safeQueueEmpty() && _toolBox.inactiveThreads == threadCount; }
 
-[[nodiscard]] bool ThreadPool::safeQueueEmpty() const
+[[nodiscard]]
+bool ThreadPool::safeQueueEmpty() const
 {
     const std::lock_guard<std::mutex> _guard(_toolBox.queueProtection);
     return _toolBox.jobQueue.empty();

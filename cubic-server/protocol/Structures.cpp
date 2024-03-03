@@ -1,14 +1,15 @@
 #include "Structures.hpp"
-#include "items/UsableItem.hpp"
 #include "items/usable-items/FlintAndSteel.hpp"
 #include "items/usable-items/Hoe.hpp"
+#include "items/UsableItem.hpp"
 #include "logging/logging.hpp"
 
 const protocol::ItemType protocol::Slot::getUsableItemFromSlot()
 {
-    auto item = std::find_if(Items::usableItems.begin(), Items::usableItems.end(), [this](const Items::UsableItem &uItem) {
-        return uItem._numeralId == this->itemID;
-    });
+    auto item = std::find_if(
+        Items::usableItems.begin(), Items::usableItems.end(),
+        [this](const Items::UsableItem &uItem) { return uItem._numeralId == this->itemID; }
+    );
     if (item == Items::usableItems.end()) {
         return Items::usableItems[40];
     }
@@ -23,9 +24,10 @@ const protocol::ItemType protocol::Slot::getUsableItemFromSlot()
 
 void protocol::Slot::updateDamage()
 {
-    auto item = std::find_if(Items::usableItems.begin(), Items::usableItems.end(), [this](const Items::UsableItem &uItem) {
-        return uItem._numeralId == this->itemID;
-    });
+    auto item = std::find_if(
+        Items::usableItems.begin(), Items::usableItems.end(),
+        [this](const Items::UsableItem &uItem) { return uItem._numeralId == this->itemID; }
+    );
     if (item == Items::usableItems.end()) {
         return;
     }

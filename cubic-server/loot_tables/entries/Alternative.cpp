@@ -31,6 +31,9 @@ bool Alternative::poll(LootTablePoll &poll, LootContext *context) const
     return (false);
 }
 
-std::unique_ptr<Entry> Alternative::creator(const nlohmann::json &entry) { return (std::make_unique<Alternative>(entry)); }
-};
-};
+std::unique_ptr<Entry> Alternative::creator(const nlohmann::json &entry)
+{
+    return (std::make_unique<Alternative>(entry));
+}
+}; // namespace Entry
+}; // namespace LootTable

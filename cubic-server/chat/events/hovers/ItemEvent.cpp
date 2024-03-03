@@ -4,7 +4,9 @@
 std::shared_ptr<chat::message::event::ItemHover> chat::message::event::ItemHover::fromJson(const nlohmann::json &json)
 {
     // TODO: Implement item
-    std::shared_ptr<ItemHover> event = std::make_shared<ItemHover>(world_storage::Item(json["contents"]["id"].get<std::string>()));
+    std::shared_ptr<ItemHover> event = std::make_shared<ItemHover>(
+        world_storage::Item(json["contents"]["id"].get<std::string>())
+    );
 
     return event;
 }

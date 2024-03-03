@@ -10,7 +10,10 @@ SpecialMapCloning::SpecialMapCloning(const std::string &identifier, const nlohma
     this->setValidity(false);
 }
 
-void SpecialMapCloning::dump(void) const { LTRACE("recipe special map cloning"); }
+void SpecialMapCloning::dump(void) const
+{
+    LTRACE("recipe special map cloning");
+}
 
 std::shared_ptr<Recipe> SpecialMapCloning::create(const std::string &identifier, const nlohmann::json &recipe)
 {

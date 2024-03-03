@@ -10,7 +10,9 @@ nlohmann::json chat::message::event::SuggestCommandClick::toJson() const
     return response;
 }
 
-std::shared_ptr<chat::message::event::SuggestCommandClick> chat::message::event::SuggestCommandClick::fromJson(const nlohmann::json &json)
+std::shared_ptr<chat::message::event::SuggestCommandClick> chat::message::event::SuggestCommandClick::fromJson(
+    const nlohmann::json &json
+)
 {
     return std::make_shared<SuggestCommandClick>(json["value"].get<std::string>());
 }

@@ -19,7 +19,7 @@ public:
     const Player &player;
     const FloatingPosition &origin;
 };
-}
-}
+} // namespace Context
+} // namespace LootTable
 
 #endif // CUBIC_SERVER_LOOT_TABLES_CONTEXT_ADVANCEMENTREWARD_HPP

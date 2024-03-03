@@ -2,11 +2,11 @@
 
 #include "Chat.hpp"
 #include "Dimension.hpp"
+#include "logging/logging.hpp"
+#include "scoreboard/Scoreboard.hpp"
 #include "Server.hpp"
 #include "SoundSystem.hpp"
 #include "World.hpp"
-#include "logging/logging.hpp"
-#include "scoreboard/Scoreboard.hpp"
 
 WorldGroup::WorldGroup(std::shared_ptr<Chat> chat):
     _chat(std::move(chat)),

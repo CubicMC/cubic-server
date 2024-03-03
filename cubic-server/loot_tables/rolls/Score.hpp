@@ -32,7 +32,7 @@ private:
     std::string _objective;
     double _scale;
 };
-};
-};
+}; // namespace Roll
+}; // namespace LootTable
 
 #endif // CUBIC_SERVER_LOOT_TABLES_ROOLS_ROLL_SCORE_HPP

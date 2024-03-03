@@ -12,7 +12,8 @@ struct FoodItem {
     const float saturation;
     // TODO: Add effects
 };
-// TODO: Change that to use a json file (https://github.com/PrismarineJS/minecraft-data/blob/master/data/pc/1.19.3/foods.json)
+// TODO: Change that to use a json file
+// (https://github.com/PrismarineJS/minecraft-data/blob/master/data/pc/1.19.3/foods.json)
 // clang-format off
 constexpr std::array<FoodItem, 41> foodItems {
     FoodItem {"Apple", 734, 4, 2.4f},
@@ -59,6 +60,6 @@ constexpr std::array<FoodItem, 41> foodItems {
     FoodItem {"Tropical Fish", 870, 1, 0.2f}
 };
 // clang-format on
-}
+} // namespace Items
 
 #endif // CUBICSERVER_ITEMS_FOODITEMS_HPP

@@ -15,8 +15,8 @@ namespace ai {
 class AI {
 public:
     AI(Entity &entity):
-        _entity(entity) {};
-    virtual ~AI() {};
+        _entity(entity){};
+    virtual ~AI(){};
 
     /**
      * @brief Check if the AI can do something

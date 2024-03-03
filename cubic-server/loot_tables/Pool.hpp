@@ -49,6 +49,6 @@ private:
     int64_t _totalWeight;
     bool _validity;
 };
-};
+}; // namespace LootTable
 
 #endif // CUBIC_SERVER_LOOT_TABLES_POOL_HPP

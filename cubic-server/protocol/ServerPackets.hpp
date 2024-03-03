@@ -9,8 +9,8 @@
 #include <unordered_map>
 #include <vector>
 
-#include "PlayerAttributes.hpp"
 #include "nbt.h"
+#include "PlayerAttributes.hpp"
 #include "protocol/Structures.hpp"
 #include "types.hpp"
 
@@ -599,73 +599,81 @@ std::unique_ptr<UseItem> parseUseItem(std::vector<uint8_t> &buffer);
 
 // Maps
 
-static const std::unordered_map<ServerPacketsID, std::function<std::unique_ptr<BaseServerPacket>(std::vector<uint8_t> &)>> packetIDToParseInitial = {
-    {ServerPacketsID::Handshake, parseHandshake},
+static const std::unordered_map<
+    ServerPacketsID, std::function<std::unique_ptr<BaseServerPacket>(std::vector<uint8_t> &)>>
+    packetIDToParseInitial = {
+        {ServerPacketsID::Handshake, parseHandshake},
 };
 
-static const std::unordered_map<ServerPacketsID, std::function<std::unique_ptr<BaseServerPacket>(std::vector<uint8_t> &)>> packetIDToParseStatus = {
-    {ServerPacketsID::StatusRequest, &parseStatusRequest},
-    {ServerPacketsID::PingRequest, &parsePingRequest},
+static const std::unordered_map<
+    ServerPacketsID, std::function<std::unique_ptr<BaseServerPacket>(std::vector<uint8_t> &)>>
+    packetIDToParseStatus = {
+        {ServerPacketsID::StatusRequest, &parseStatusRequest},
+        { ServerPacketsID::PingRequest,  &parsePingRequest  },
 };
 
-static const std::unordered_map<ServerPacketsID, std::function<std::unique_ptr<BaseServerPacket>(std::vector<uint8_t> &)>> packetIDToParseLogin = {
-    {ServerPacketsID::LoginStart, &parseLoginStart},
-    {ServerPacketsID::EncryptionResponse, &parseEncryptionResponse},
+static const std::unordered_map<
+    ServerPacketsID, std::function<std::unique_ptr<BaseServerPacket>(std::vector<uint8_t> &)>>
+    packetIDToParseLogin = {
+        {ServerPacketsID::LoginStart,          &parseLoginStart        },
+        { ServerPacketsID::EncryptionResponse, &parseEncryptionResponse},
 };
 
-static const std::unordered_map<ServerPacketsID, std::function<std::unique_ptr<BaseServerPacket>(std::vector<uint8_t> &)>> packetIDToParsePlay = {
-    {ServerPacketsID::ConfirmTeleportation, &parseConfirmTeleportation},
-    {ServerPacketsID::QueryBlockEntityTag, &parseQueryBlockEntityTag},
-    {ServerPacketsID::ChangeDifficulty, &parseChangeDifficulty},
-    {ServerPacketsID::MessageAcknowledgement, &parseMessageAcknowledgement},
-    {ServerPacketsID::ChatCommand, &parseChatCommand},
-    {ServerPacketsID::ChatMessage, &parseChatMessage},
-    {ServerPacketsID::ClientCommand, &parseClientCommand},
-    {ServerPacketsID::ClientInformation, &parseClientInformation},
-    {ServerPacketsID::CommandSuggestionRequest, &parseCommandSuggestionRequest},
-    {ServerPacketsID::ClickContainerButton, &parseClickContainerButton},
-    {ServerPacketsID::ClickContainer, &parseClickContainer},
-    {ServerPacketsID::CloseContainerRequest, &parseCloseContainerRequest},
-    {ServerPacketsID::PluginMessage, &parsePluginMessage},
-    {ServerPacketsID::EditBook, &parseEditBook},
-    {ServerPacketsID::QueryEntityTag, &parseQueryEntityTag},
-    {ServerPacketsID::Interact, &parseInteract},
-    {ServerPacketsID::JigsawGenerate, &parseJigsawGenerate},
-    {ServerPacketsID::KeepAliveResponse, &parseKeepAliveResponse},
-    {ServerPacketsID::LockDifficulty, &parseLockDifficulty},
-    {ServerPacketsID::SetPlayerPosition, &parseSetPlayerPosition},
-    {ServerPacketsID::SetPlayerPositionAndRotation, &parseSetPlayerPositionAndRotation},
-    {ServerPacketsID::SetPlayerRotation, &parseSetPlayerRotation},
-    {ServerPacketsID::SetPlayerOnGround, &parseSetPlayerOnGround},
-    {ServerPacketsID::MoveVehicle, &parseMoveVehicle},
-    {ServerPacketsID::PaddleBoat, &parsePaddleBoat},
-    {ServerPacketsID::PickItem, &parsePickItem},
-    {ServerPacketsID::PlaceRecipe, &parsePlaceRecipe},
-    {ServerPacketsID::PlayerAbilities, &parsePlayerAbilities},
-    {ServerPacketsID::PlayerAction, &parsePlayerAction},
-    {ServerPacketsID::PlayerCommand, &parsePlayerCommand},
-    {ServerPacketsID::PlayerInput, &parsePlayerInput},
-    {ServerPacketsID::Pong, &parsePong},
-    {ServerPacketsID::PlayerSession, &parsePlayerSession},
-    {ServerPacketsID::ChangeRecipeBookSettings, &parseChangeRecipeBookSettings},
-    {ServerPacketsID::SetSeenRecipe, &parseSetSeenRecipe},
-    {ServerPacketsID::RenameItem, &parseRenameItem},
-    {ServerPacketsID::ResourcePack, &parseResourcePack},
-    {ServerPacketsID::SeenAdvancements, &parseSeenAdvancements},
-    {ServerPacketsID::SelectTrade, &parseSelectTrade},
-    {ServerPacketsID::SetBeaconEffect, &parseSetBeaconEffect},
-    {ServerPacketsID::SetHeldItem, &parseSetHeldItem},
-    {ServerPacketsID::ProgramCommandBlock, &parseProgramCommandBlock},
-    {ServerPacketsID::ProgramCommandBlockMinecart, &parseProgramCommandBlockMinecart},
-    {ServerPacketsID::SetCreativeModeSlot, &parseSetCreativeModeSlot},
-    {ServerPacketsID::ProgramJigsawBlock, &parseProgramJigsawBlock},
-    {ServerPacketsID::ProgramStructureBlock, &parseProgramStructureBlock},
-    {ServerPacketsID::UpdateSign, &parseUpdateSign},
-    {ServerPacketsID::SwingArm, &parseSwingArm},
-    {ServerPacketsID::TeleportToEntity, &parseTeleportToEntity},
-    {ServerPacketsID::UseItemOn, &parseUseItemOn},
-    {ServerPacketsID::UseItem, &parseUseItem},
+static const std::unordered_map<
+    ServerPacketsID, std::function<std::unique_ptr<BaseServerPacket>(std::vector<uint8_t> &)>>
+    packetIDToParsePlay = {
+        {ServerPacketsID::ConfirmTeleportation,          &parseConfirmTeleportation        },
+        { ServerPacketsID::QueryBlockEntityTag,          &parseQueryBlockEntityTag         },
+        { ServerPacketsID::ChangeDifficulty,             &parseChangeDifficulty            },
+        { ServerPacketsID::MessageAcknowledgement,       &parseMessageAcknowledgement      },
+        { ServerPacketsID::ChatCommand,                  &parseChatCommand                 },
+        { ServerPacketsID::ChatMessage,                  &parseChatMessage                 },
+        { ServerPacketsID::ClientCommand,                &parseClientCommand               },
+        { ServerPacketsID::ClientInformation,            &parseClientInformation           },
+        { ServerPacketsID::CommandSuggestionRequest,     &parseCommandSuggestionRequest    },
+        { ServerPacketsID::ClickContainerButton,         &parseClickContainerButton        },
+        { ServerPacketsID::ClickContainer,               &parseClickContainer              },
+        { ServerPacketsID::CloseContainerRequest,        &parseCloseContainerRequest       },
+        { ServerPacketsID::PluginMessage,                &parsePluginMessage               },
+        { ServerPacketsID::EditBook,                     &parseEditBook                    },
+        { ServerPacketsID::QueryEntityTag,               &parseQueryEntityTag              },
+        { ServerPacketsID::Interact,                     &parseInteract                    },
+        { ServerPacketsID::JigsawGenerate,               &parseJigsawGenerate              },
+        { ServerPacketsID::KeepAliveResponse,            &parseKeepAliveResponse           },
+        { ServerPacketsID::LockDifficulty,               &parseLockDifficulty              },
+        { ServerPacketsID::SetPlayerPosition,            &parseSetPlayerPosition           },
+        { ServerPacketsID::SetPlayerPositionAndRotation, &parseSetPlayerPositionAndRotation},
+        { ServerPacketsID::SetPlayerRotation,            &parseSetPlayerRotation           },
+        { ServerPacketsID::SetPlayerOnGround,            &parseSetPlayerOnGround           },
+        { ServerPacketsID::MoveVehicle,                  &parseMoveVehicle                 },
+        { ServerPacketsID::PaddleBoat,                   &parsePaddleBoat                  },
+        { ServerPacketsID::PickItem,                     &parsePickItem                    },
+        { ServerPacketsID::PlaceRecipe,                  &parsePlaceRecipe                 },
+        { ServerPacketsID::PlayerAbilities,              &parsePlayerAbilities             },
+        { ServerPacketsID::PlayerAction,                 &parsePlayerAction                },
+        { ServerPacketsID::PlayerCommand,                &parsePlayerCommand               },
+        { ServerPacketsID::PlayerInput,                  &parsePlayerInput                 },
+        { ServerPacketsID::Pong,                         &parsePong                        },
+        { ServerPacketsID::PlayerSession,                &parsePlayerSession               },
+        { ServerPacketsID::ChangeRecipeBookSettings,     &parseChangeRecipeBookSettings    },
+        { ServerPacketsID::SetSeenRecipe,                &parseSetSeenRecipe               },
+        { ServerPacketsID::RenameItem,                   &parseRenameItem                  },
+        { ServerPacketsID::ResourcePack,                 &parseResourcePack                },
+        { ServerPacketsID::SeenAdvancements,             &parseSeenAdvancements            },
+        { ServerPacketsID::SelectTrade,                  &parseSelectTrade                 },
+        { ServerPacketsID::SetBeaconEffect,              &parseSetBeaconEffect             },
+        { ServerPacketsID::SetHeldItem,                  &parseSetHeldItem                 },
+        { ServerPacketsID::ProgramCommandBlock,          &parseProgramCommandBlock         },
+        { ServerPacketsID::ProgramCommandBlockMinecart,  &parseProgramCommandBlockMinecart },
+        { ServerPacketsID::SetCreativeModeSlot,          &parseSetCreativeModeSlot         },
+        { ServerPacketsID::ProgramJigsawBlock,           &parseProgramJigsawBlock          },
+        { ServerPacketsID::ProgramStructureBlock,        &parseProgramStructureBlock       },
+        { ServerPacketsID::UpdateSign,                   &parseUpdateSign                  },
+        { ServerPacketsID::SwingArm,                     &parseSwingArm                    },
+        { ServerPacketsID::TeleportToEntity,             &parseTeleportToEntity            },
+        { ServerPacketsID::UseItemOn,                    &parseUseItemOn                   },
+        { ServerPacketsID::UseItem,                      &parseUseItem                     },
 };
-}
+} // namespace protocol
 
 #endif // CUBICSERVER_PROTOCOL_SERVERPACKETS_HPP

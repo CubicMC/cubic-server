@@ -34,7 +34,7 @@ private:
 typedef std::unique_ptr<Condition> (*Creator)(const nlohmann::json &condition);
 
 DEFINE_EXCEPTION(NoConditionContructor);
-};
-};
+}; // namespace Condition
+}; // namespace LootTable
 
 #endif // CUBIC_SERVER_LOOT_TABLES_CONDITIONS_CONDITION_HPP

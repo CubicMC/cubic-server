@@ -10,7 +10,10 @@ SpecialFireworkStarFade::SpecialFireworkStarFade(const std::string &identifier, 
     this->setValidity(false);
 }
 
-void SpecialFireworkStarFade::dump(void) const { LTRACE("recipe special firework star fade"); }
+void SpecialFireworkStarFade::dump(void) const
+{
+    LTRACE("recipe special firework star fade");
+}
 
 std::shared_ptr<Recipe> SpecialFireworkStarFade::create(const std::string &identifier, const nlohmann::json &recipe)
 {

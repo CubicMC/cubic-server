@@ -3,14 +3,14 @@
 #include <stdexcept>
 #include <vector>
 
+#include "command_parser/selectors/selectors.hpp"
 #include "Dimension.hpp"
+#include "entities/Entity.hpp"
 #include "Player.hpp"
+#include "protocol/ClientPackets.hpp"
 #include "Server.hpp"
 #include "Teleport.hpp"
 #include "World.hpp"
-#include "command_parser/selectors/selectors.hpp"
-#include "entities/Entity.hpp"
-#include "protocol/ClientPackets.hpp"
 
 constexpr char TELEPORT_HELP[] = "/teleport (<location>|<destination>|<targets>)";
 constexpr char TP_HELP[] = "/tp -> teleport";
@@ -53,7 +53,10 @@ static void execute(const std::vector<std::string> &args, Player *invoker)
     else if (isSelector(args.at(0))) {
         if (!invoker)
             return; // TODO(huntears): Handle selectors in console
-        fillSelector(args.at(0), toTeleport, invoker->getDimension()->getEntities(), invoker->getDimension()->getPlayers(), invoker);
+        fillSelector(
+            args.at(0), toTeleport, invoker->getDimension()->getEntities(), invoker->getDimension()->getPlayers(),
+            invoker
+        );
     } else {
         for (auto &[_, client] : Server::getInstance()->getClients()) {
             if (client->getPlayer() && client->getPlayer()->getUsername() == args.at(0)) {
@@ -70,7 +73,10 @@ static void execute(const std::vector<std::string> &args, Player *invoker)
                 return; // TODO(huntears): Error message
             if (!invoker)
                 return; // TODO(huntears): Handle selectors in console
-            fillSingleSelector(args.at(0), *endPoint, invoker->getDimension()->getEntities(), invoker->getDimension()->getPlayers(), invoker);
+            fillSingleSelector(
+                args.at(0), *endPoint, invoker->getDimension()->getEntities(), invoker->getDimension()->getPlayers(),
+                invoker
+            );
         } else {
             for (auto &[_, client] : Server::getInstance()->getClients()) {
                 if (client->getPlayer() && client->getPlayer()->getUsername() == entityDest) {
@@ -117,7 +123,7 @@ static void execute(const std::vector<std::string> &args, Player *invoker)
 
         for (Entity &moving : toTeleport) {
             auto position = moving.getPosition();
-            auto finalPos = Vector3<double> {
+            auto finalPos = Vector3<double>{
                 isXRelative ? position.x + X : X,
                 isYRelative ? position.y + Y : Y,
                 isZRelative ? position.z + Z : Z,
@@ -137,9 +143,15 @@ static void execute(const std::vector<std::string> &args, Player *invoker)
     // LINFO("Called a tp!");
 }
 
-void command_parser::Teleport::execute(UNUSED std::vector<std::string> &args, Player *invoker) const { return ::execute(args, invoker); }
+void command_parser::Teleport::execute(UNUSED std::vector<std::string> &args, Player *invoker) const
+{
+    return ::execute(args, invoker);
+}
 
-void command_parser::Tp::execute(UNUSED std::vector<std::string> &args, Player *invoker) const { return ::execute(args, invoker); }
+void command_parser::Tp::execute(UNUSED std::vector<std::string> &args, Player *invoker) const
+{
+    return ::execute(args, invoker);
+}
 
 void command_parser::Teleport::help(UNUSED std::vector<std::string> &args, Player *invoker) const
 {

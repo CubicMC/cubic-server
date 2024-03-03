@@ -4,4 +4,7 @@ PluginInterface::PluginInterface() { }
 
 PluginInterface::~PluginInterface() { }
 
-void PluginInterface::load(Server *server) { this->server = server; }
+void PluginInterface::load(Server *server)
+{
+    this->server = server;
+}

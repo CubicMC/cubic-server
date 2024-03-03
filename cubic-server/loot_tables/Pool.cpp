@@ -1,10 +1,10 @@
 #include "Server.hpp"
 
-#include "Pool.hpp"
 #include "conditions/Condition.hpp"
 #include "context/LootContext.hpp"
 #include "entries/Entry.hpp"
 #include "functions/Function.hpp"
+#include "Pool.hpp"
 #include "rolls/Roll.hpp"
 
 namespace LootTable {
@@ -12,7 +12,8 @@ Pool::Pool(const nlohmann::json &pool):
     _totalWeight(0),
     _validity(false)
 {
-    if (!pool.is_object() || !pool.contains("entries") || !pool.contains("rolls") || !pool["entries"].is_array() || !(pool["entries"].size() > 0))
+    if (!pool.is_object() || !pool.contains("entries") || !pool.contains("rolls") || !pool["entries"].is_array()
+        || !(pool["entries"].size() > 0))
         return; // invalid pool
 
     // get rool and bonus roll
@@ -29,7 +30,8 @@ Pool::Pool(const nlohmann::json &pool):
     // get functions
     if (pool.contains("functions") && pool["functions"].is_array()) {
         for (const auto &function : pool["functions"]) {
-            std::unique_ptr<Function::Function> newFunction = Server::getInstance()->getLootTableSystem().createFunction(function);
+            std::unique_ptr<Function::Function>
+                newFunction = Server::getInstance()->getLootTableSystem().createFunction(function);
 
             const auto &it = this->_functions.insert(this->_functions.end(), nullptr);
             it->swap(newFunction);
@@ -39,7 +41,8 @@ Pool::Pool(const nlohmann::json &pool):
     // get conditions
     if (pool.contains("conditions") && pool["conditions"].is_array()) {
         for (const auto &condition : pool["conditions"]) {
-            std::unique_ptr<Condition::Condition> newCondition = Server::getInstance()->getLootTableSystem().createCondition(condition);
+            std::unique_ptr<Condition::Condition>
+                newCondition = Server::getInstance()->getLootTableSystem().createCondition(condition);
 
             const auto &it = this->_conditions.insert(this->_conditions.end(), nullptr);
             it->swap(newCondition);
@@ -52,7 +55,10 @@ Pool::Pool(const nlohmann::json &pool):
     this->setValidity();
 }
 
-bool Pool::isValid(void) const noexcept { return (this->_validity); }
+bool Pool::isValid(void) const noexcept
+{
+    return (this->_validity);
+}
 
 void Pool::setValidity(void) noexcept
 {
@@ -87,7 +93,8 @@ void Pool::poll(LootTablePoll &_poll, LootContext *context) const
     const Roll::RollResult roll = this->_roll->poll(context);
 
     for (int rolls = 0; rolls < roll.nbr; rolls++) {
-        // proceeds if probability is superior or equal to 1 or if probability rolled is inferior to probability generated
+        // proceeds if probability is superior or equal to 1 or if probability rolled is inferior to probability
+        // generated
         if (roll.probability >= 1.0 || static_cast<double>(rand() % 10000) < roll.probability * 10000.0) {
             int64_t rolledWeight = 0;
             int64_t elapsedWeight = 0;
@@ -115,4 +122,4 @@ int64_t Pool::getTotalWeight(void) const noexcept
         weight += entry->getWeight();
     return (weight);
 }
-};
+}; // namespace LootTable

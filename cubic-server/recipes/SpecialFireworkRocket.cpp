@@ -10,7 +10,10 @@ SpecialFireworkRocket::SpecialFireworkRocket(const std::string &identifier, cons
     this->setValidity(false);
 }
 
-void SpecialFireworkRocket::dump(void) const { LTRACE("recipe special firework rocket"); }
+void SpecialFireworkRocket::dump(void) const
+{
+    LTRACE("recipe special firework rocket");
+}
 
 std::shared_ptr<Recipe> SpecialFireworkRocket::create(const std::string &identifier, const nlohmann::json &recipe)
 {

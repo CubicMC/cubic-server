@@ -22,7 +22,8 @@ Entry::Entry(const nlohmann::json &entry):
     // get functions
     if (entry.contains("functions") && entry["functions"].is_array()) {
         for (const auto &function : entry["functions"]) {
-            std::unique_ptr<Function::Function> newFunction = Server::getInstance()->getLootTableSystem().createFunction(function);
+            std::unique_ptr<Function::Function>
+                newFunction = Server::getInstance()->getLootTableSystem().createFunction(function);
 
             const auto &it = this->_functions.insert(this->_functions.end(), nullptr);
             it->swap(newFunction);
@@ -32,7 +33,8 @@ Entry::Entry(const nlohmann::json &entry):
     // get conditions
     if (entry.contains("conditions") && entry["conditions"].is_array()) {
         for (const auto &condition : entry["conditions"]) {
-            std::unique_ptr<Condition::Condition> newCondition = Server::getInstance()->getLootTableSystem().createCondition(condition);
+            std::unique_ptr<Condition::Condition>
+                newCondition = Server::getInstance()->getLootTableSystem().createCondition(condition);
 
             const auto &it = this->_conditions.insert(this->_conditions.end(), nullptr);
             it->swap(newCondition);
@@ -40,7 +42,10 @@ Entry::Entry(const nlohmann::json &entry):
     }
 }
 
-bool Entry::isValid(void) const noexcept { return (this->_validity); }
+bool Entry::isValid(void) const noexcept
+{
+    return (this->_validity);
+}
 
 void Entry::setValidity(bool validity) noexcept
 {
@@ -63,12 +68,24 @@ void Entry::setValidity(bool validity) noexcept
     this->_validity = true;
 }
 
-const int64_t &Entry::getWeight(void) const noexcept { return (this->_weight); }
+const int64_t &Entry::getWeight(void) const noexcept
+{
+    return (this->_weight);
+}
 
-const int64_t &Entry::getQuality(void) const noexcept { return (this->_quality); }
+const int64_t &Entry::getQuality(void) const noexcept
+{
+    return (this->_quality);
+}
 
-void Entry::setWeight(int64_t weight) noexcept { this->_weight = weight; }
+void Entry::setWeight(int64_t weight) noexcept
+{
+    this->_weight = weight;
+}
 
-void Entry::setQuality(int64_t quality) noexcept { this->_quality = quality; }
-};
-};
+void Entry::setQuality(int64_t quality) noexcept
+{
+    this->_quality = quality;
+}
+}; // namespace Entry
+}; // namespace LootTable

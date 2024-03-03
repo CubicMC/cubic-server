@@ -17,16 +17,28 @@ void LootTables::initialize(const std::string &defaultFolder)
     this->importTableFolder("minecraft", defaultFolder);
 }
 
-void LootTables::addRollCreator(LootTable::Roll::Creator creator, LootTable::Roll::IsOfType check) { this->_rollCreator.push_back({creator, check}); }
+void LootTables::addRollCreator(LootTable::Roll::Creator creator, LootTable::Roll::IsOfType check)
+{
+    this->_rollCreator.push_back({ creator, check });
+}
 
-void LootTables::addEntryCreator(const std::string &_namespace, const std::string &_name, LootTable::Entry::Creator creator) { this->_entryCreator[_namespace][_name] = creator; }
+void LootTables::addEntryCreator(
+    const std::string &_namespace, const std::string &_name, LootTable::Entry::Creator creator
+)
+{
+    this->_entryCreator[_namespace][_name] = creator;
+}
 
-void LootTables::addFunctionCreator(const std::string &_namespace, const std::string &_name, LootTable::Function::Creator creator)
+void LootTables::addFunctionCreator(
+    const std::string &_namespace, const std::string &_name, LootTable::Function::Creator creator
+)
 {
     this->_functionCreator[_namespace][_name] = creator;
 }
 
-void LootTables::addConditionCreator(const std::string &_namespace, const std::string &_name, LootTable::Condition::Creator creator)
+void LootTables::addConditionCreator(
+    const std::string &_namespace, const std::string &_name, LootTable::Condition::Creator creator
+)
 {
     this->_conditionCreator[_namespace][_name] = creator;
 }
@@ -99,17 +111,31 @@ void LootTables::importTableFolder(const std::string &_namespace, const std::str
             std::ifstream filestream(filepath.path().string());
 
             // create new table from json
-            std::unique_ptr<LootTable::LootTable> newTable = std::make_unique<LootTable::LootTable>(nlohmann::json::parse(filestream));
+            std::unique_ptr<LootTable::LootTable> newTable = std::make_unique<LootTable::LootTable>(
+                nlohmann::json::parse(filestream)
+            );
 
             // keep table if valid, drop if not
             if (newTable->isValid()) {
-                this->_lootTables[_namespace][filepath.path().string().substr(path_length + 1, filepath.path().string().length() - (path_length + 1) - 5)].swap(newTable);
-                LDEBUG("loaded {} :{}", _namespace, filepath.path().string().substr(path_length + 1, filepath.path().string().length() - (path_length + 1) - 5));
+                this
+                    ->_lootTables[_namespace][filepath.path().string().substr(
+                        path_length + 1, filepath.path().string().length() - (path_length + 1) - 5
+                    )]
+                    .swap(newTable);
+                LDEBUG(
+                    "loaded {} :{}", _namespace,
+                    filepath.path().string().substr(
+                        path_length + 1, filepath.path().string().length() - (path_length + 1) - 5
+                    )
+                );
             } else
                 LDEBUG("invalid table " + filepath.path().string());
         }
     }
-    LINFO("Loaded {} loot tables from path {} into namespace \"{}\"", std::to_string(this->_lootTables[_namespace].size()), path, _namespace);
+    LINFO(
+        "Loaded {} loot tables from path {} into namespace \"{}\"",
+        std::to_string(this->_lootTables[_namespace].size()), path, _namespace
+    );
 }
 
 bool LootTables::exists(const std::string &_namespace, const std::string &table)
@@ -117,10 +143,26 @@ bool LootTables::exists(const std::string &_namespace, const std::string &table)
     return (this->_lootTables.contains(_namespace) && this->_lootTables[_namespace].contains(table));
 }
 
-LootTable::LootTable &LootTables::get(const std::string &_namespace, const std::string &table) { return (*this->_lootTables[_namespace][table]); }
+LootTable::LootTable &LootTables::get(const std::string &_namespace, const std::string &table)
+{
+    return (*this->_lootTables[_namespace][table]);
+}
 
-LootTable::LootTable &LootTables::getTable(const std::string &_namespace, const std::string &table) { return (*this->_lootTables[_namespace][table]); }
+LootTable::LootTable &LootTables::getTable(const std::string &_namespace, const std::string &table)
+{
+    return (*this->_lootTables[_namespace][table]);
+}
 
-std::unordered_map<std::string, std::unique_ptr<LootTable::LootTable>> &LootTables::getNamespace(const std::string &_namespace) { return (this->_lootTables[_namespace]); }
+std::unordered_map<std::string, std::unique_ptr<LootTable::LootTable>> &LootTables::getNamespace(
+    const std::string &_namespace
+)
+{
+    return (this->_lootTables[_namespace]);
+}
 
-std::unordered_map<std::string, std::unique_ptr<LootTable::LootTable>> &LootTables::operator[](const std::string &_namespace) { return (this->_lootTables[_namespace]); }
+std::unordered_map<std::string, std::unique_ptr<LootTable::LootTable>> &LootTables::operator[](
+    const std::string &_namespace
+)
+{
+    return (this->_lootTables[_namespace]);
+}

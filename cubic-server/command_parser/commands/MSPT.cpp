@@ -2,10 +2,10 @@
 
 #include "Chat.hpp"
 #include "Dimension.hpp"
+#include "logging/logging.hpp"
 #include "Player.hpp"
 #include "Server.hpp"
 #include "World.hpp"
-#include "logging/logging.hpp"
 #include <vector>
 
 using namespace command_parser;
@@ -30,18 +30,25 @@ void worldMSPTMessage(Player *invoker)
 
 void dimensionMSPTMessage(std::vector<std::string> &args, Player *invoker)
 {
-    if (auto search = Server::getInstance()->getWorldGroup("default")->getWorld("default")->getDimensions().find(args[0]);
+    if (auto search = Server::getInstance()->getWorldGroup("default")->getWorld("default")->getDimensions().find(args[0]
+        );
         search != Server::getInstance()->getWorldGroup("default")->getWorld("default")->getDimensions().end()) {
         if (invoker) {
-            invoker->getDimension()->getWorld()->getChat()->sendSystemMessage(chat::Message("Dimension MSPT: min avg max", {false, true}), *invoker);
-            invoker->getDimension()->getWorld()->getChat()->sendSystemMessage(chat::Message(args[0] + " " + search->second->getMSPTInfos().toString(), {false, true}), *invoker);
+            invoker->getDimension()->getWorld()->getChat()->sendSystemMessage(
+                chat::Message("Dimension MSPT: min avg max", { false, true }), *invoker
+            );
+            invoker->getDimension()->getWorld()->getChat()->sendSystemMessage(
+                chat::Message(args[0] + " " + search->second->getMSPTInfos().toString(), { false, true }), *invoker
+            );
         } else {
             LINFO("Dimension MSPT: min avg max");
             LINFO(args[0] + " " + search->second->getMSPTInfos().toString());
         }
     } else {
         if (invoker)
-            invoker->getDimension()->getWorld()->getChat()->sendSystemMessage("Dimension " + args[0] + " not found", *invoker);
+            invoker->getDimension()->getWorld()->getChat()->sendSystemMessage(
+                "Dimension " + args[0] + " not found", *invoker
+            );
         else
             LINFO("Dimension {} not found", args[0]);
     }

@@ -17,7 +17,7 @@ public:
 
     static std::unique_ptr<Entry> creator(const nlohmann::json &entry);
 };
-};
-};
+}; // namespace Entry
+}; // namespace LootTable
 
 #endif // CUBIC_SERVER_LOOT_TABLES_ENTRIES_EMPTY_HPP

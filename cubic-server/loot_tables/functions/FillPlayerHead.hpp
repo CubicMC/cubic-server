@@ -14,7 +14,7 @@ public:
 
     static std::unique_ptr<Function> create(const nlohmann::json &function);
 };
-};
-};
+}; // namespace Function
+}; // namespace LootTable
 
 #endif // CUBIC_SERVER_LOOT_TABLES_FUNCTIONS_FILLPLAYERHEAD_HPP

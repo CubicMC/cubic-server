@@ -19,6 +19,9 @@ bool ItemTag::poll(LootTablePoll &poll, LootContext *context) const
     return (true);
 }
 
-std::unique_ptr<Entry> ItemTag::creator(const nlohmann::json &entry) { return (std::make_unique<ItemTag>(entry)); }
-};
-};
+std::unique_ptr<Entry> ItemTag::creator(const nlohmann::json &entry)
+{
+    return (std::make_unique<ItemTag>(entry));
+}
+}; // namespace Entry
+}; // namespace LootTable

@@ -19,8 +19,16 @@ const RollResult Binomial::poll(LootContext *context) const
     return (RollResult(this->_n, this->_p));
 }
 
-std::unique_ptr<Roll> Binomial::creator(const nlohmann::json &roll) { return (std::make_unique<Binomial>(roll)); }
+std::unique_ptr<Roll> Binomial::creator(const nlohmann::json &roll)
+{
+    return (std::make_unique<Binomial>(roll));
+}
 
-bool Binomial::isOfType(const nlohmann::json &roll) { return (roll.is_object() && roll.contains("n") && roll.contains("p") && roll["p"].is_number() && roll["n"].is_number()); }
-};
-};
+bool Binomial::isOfType(const nlohmann::json &roll)
+{
+    return (
+        roll.is_object() && roll.contains("n") && roll.contains("p") && roll["p"].is_number() && roll["n"].is_number()
+    );
+}
+}; // namespace Roll
+}; // namespace LootTable

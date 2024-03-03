@@ -1,8 +1,8 @@
 #include "./Scoreboard.hpp"
 
+#include "logging/logging.hpp"
 #include "Server.hpp"
 #include "WorldGroup.hpp"
-#include "logging/logging.hpp"
 
 /*
     objectives
@@ -128,11 +128,16 @@ void command_parser::DisplayObjective::execute(std::vector<std::string> &args, U
     for (auto &[_, worldgroup] : Server::getInstance()->getWorldGroups()) {
         if (args.size() > 1) {
             if (worldgroup->getScoreboard().isObjective(args[1]))
-                worldgroup->getScoreboard().displayObjective(static_cast<Scoreboard::DisplaySlot>(std::stoi(args[0])), &worldgroup->getScoreboard().getObjective(args[1]));
+                worldgroup->getScoreboard().displayObjective(
+                    static_cast<Scoreboard::DisplaySlot>(std::stoi(args[0])),
+                    &worldgroup->getScoreboard().getObjective(args[1])
+                );
             else
                 LINFO("no objetive \"{}\"", args[1]);
         } else
-            worldgroup->getScoreboard().displayObjective(static_cast<Scoreboard::DisplaySlot>(std::stoi(args[0])), nullptr);
+            worldgroup->getScoreboard().displayObjective(
+                static_cast<Scoreboard::DisplaySlot>(std::stoi(args[0])), nullptr
+            );
     }
 }
 
@@ -241,7 +246,8 @@ void command_parser::ModifyTeam::execute(std::vector<std::string> &args, UNUSED 
         return;
     for (auto &[_, worldgroup] : Server::getInstance()->getWorldGroups()) {
         if (worldgroup->getScoreboard().isTeam(args[0]))
-            worldgroup->getScoreboard().getTeam(args[0]).setColor(static_cast<Scoreboard::Team::Color>(std::stoi(args[1])));
+            worldgroup->getScoreboard().getTeam(args[0]).setColor(static_cast<Scoreboard::Team::Color>(std::stoi(args[1]
+            )));
     }
 }
 

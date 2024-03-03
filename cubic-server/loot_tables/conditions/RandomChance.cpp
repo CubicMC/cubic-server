@@ -15,6 +15,9 @@ bool RandomChance::verify(const LootContext *context) const
     return (true);
 }
 
-std::unique_ptr<Condition> RandomChance::create(const nlohmann::json &condition) { return (std::make_unique<RandomChance>(condition)); }
-};
-};
+std::unique_ptr<Condition> RandomChance::create(const nlohmann::json &condition)
+{
+    return (std::make_unique<RandomChance>(condition));
+}
+}; // namespace Condition
+}; // namespace LootTable

@@ -15,6 +15,9 @@ bool ValueCheck::verify(const LootContext *context) const
     return (true);
 }
 
-std::unique_ptr<Condition> ValueCheck::create(const nlohmann::json &condition) { return (std::make_unique<ValueCheck>(condition)); }
-};
-};
+std::unique_ptr<Condition> ValueCheck::create(const nlohmann::json &condition)
+{
+    return (std::make_unique<ValueCheck>(condition));
+}
+}; // namespace Condition
+}; // namespace LootTable

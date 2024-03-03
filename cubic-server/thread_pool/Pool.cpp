@@ -13,7 +13,10 @@ thread_pool::Pool::Pool(size_t nbThreads, const std::string &name, const Behavio
     this->_queueMutex.unlock();
 }
 
-thread_pool::Pool::~Pool() { this->stop(); }
+thread_pool::Pool::~Pool()
+{
+    this->stop();
+}
 
 void thread_pool::Pool::cancel(Task::Id id)
 {
@@ -113,9 +116,7 @@ void thread_pool::Pool::runJob(int workerId)
 
         while (task == nullptr || task->status() != Task::Status::Waiting) {
             std::unique_lock<std::mutex> lock(this->_queueMutex);
-            this->_condition.wait(lock, [this] {
-                return this->_stop || !this->_tasks.empty();
-            });
+            this->_condition.wait(lock, [this] { return this->_stop || !this->_tasks.empty(); });
             if (this->_stop && this->_tasks.empty())
                 return;
             task = std::move(this->_tasks.front());
@@ -128,11 +129,20 @@ void thread_pool::Pool::runJob(int workerId)
     }
 }
 
-const std::string &thread_pool::Pool::name() const { return this->_name; }
+const std::string &thread_pool::Pool::name() const
+{
+    return this->_name;
+}
 
-size_t thread_pool::Pool::size() const { return this->_workers.size(); }
+size_t thread_pool::Pool::size() const
+{
+    return this->_workers.size();
+}
 
-const thread_pool::Pool::Behavior &thread_pool::Pool::behavior() const { return this->_behavior; }
+const thread_pool::Pool::Behavior &thread_pool::Pool::behavior() const
+{
+    return this->_behavior;
+}
 
 std::vector<std::shared_ptr<thread_pool::Task>> thread_pool::Pool::tasks()
 {

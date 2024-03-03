@@ -20,18 +20,41 @@ public:
     ~BiomeElement() = default;
 
     std::shared_ptr<nbt::Base> toNBT() const override;
-    inline bool operator==(const std::string &name) const override { return name == _name; }
+    inline bool operator==(const std::string &name) const override
+    {
+        return name == _name;
+    }
 
     // Getters
+
 public:
-    inline std::string name() const { return _name; };
-    inline int32_t id() const { return _id; };
-    inline std::string precipitation() const { return _precipitation; };
-    inline float temperature() const { return _temperature; };
-    inline float downfall() const { return _downfall; };
-    inline Effects effects() const { return _effects; };
+    inline std::string name() const
+    {
+        return _name;
+    };
+    inline int32_t id() const
+    {
+        return _id;
+    };
+    inline std::string precipitation() const
+    {
+        return _precipitation;
+    };
+    inline float temperature() const
+    {
+        return _temperature;
+    };
+    inline float downfall() const
+    {
+        return _downfall;
+    };
+    inline Effects effects() const
+    {
+        return _effects;
+    };
 
     // Setters
+
 public:
     inline BiomeElement &name(const std::string &value);
     inline BiomeElement &id(const int32_t &value);

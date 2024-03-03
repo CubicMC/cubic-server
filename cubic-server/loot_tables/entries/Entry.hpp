@@ -54,7 +54,7 @@ protected:
 typedef std::unique_ptr<Entry> (*Creator)(const nlohmann::json &entry);
 
 DEFINE_EXCEPTION(NoEntryContructor);
-};
-};
+}; // namespace Entry
+}; // namespace LootTable
 
 #endif // CUBIC_SERVER_LOOT_TABLES_ENTRIES_ENTRY_HPP

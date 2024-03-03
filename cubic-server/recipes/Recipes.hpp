@@ -52,7 +52,7 @@ private:
   crafting_shapeless, crafting_shaped, smelting, stonecutting...
 */
 typedef std::shared_ptr<Recipe> (*Creator)(const std::string &identifier, const nlohmann::json &recipe);
-};
+}; // namespace Recipe
 
 /*
   Recipes class holds every recipe, creators and recipe folder paths
@@ -69,10 +69,15 @@ public:
     void initialize(void);
     void reload(void);
     void clear(void);
-    const std::unordered_map<std::string, std::shared_ptr<Recipe::Recipe>> &getRecipes(const std::string &_namespace) const noexcept { return _recipes.at(_namespace); }
+    const std::unordered_map<std::string, std::shared_ptr<Recipe::Recipe>> &getRecipes(const std::string &_namespace
+    ) const noexcept
+    {
+        return _recipes.at(_namespace);
+    }
 
     template<isBaseOf<Recipe::Recipe> T>
-    const std::unordered_map<std::string, std::shared_ptr<T>> getRecipesByType(const std::string &_namespace) const noexcept;
+    const std::unordered_map<std::string, std::shared_ptr<T>> getRecipesByType(const std::string &_namespace
+    ) const noexcept;
 
 private:
     std::unordered_map<std::string, std::unordered_map<std::string, std::shared_ptr<Recipe::Recipe>>> _recipes;
@@ -81,7 +86,8 @@ private:
 };
 
 template<isBaseOf<Recipe::Recipe> T>
-const std::unordered_map<std::string, std::shared_ptr<T>> Recipes::getRecipesByType(const std::string &_namespace) const noexcept
+const std::unordered_map<std::string, std::shared_ptr<T>> Recipes::getRecipesByType(const std::string &_namespace
+) const noexcept
 {
     std::unordered_map<std::string, std::shared_ptr<T>> recipes;
     for (const auto &[name, recipe] : this->_recipes.at(_namespace)) {

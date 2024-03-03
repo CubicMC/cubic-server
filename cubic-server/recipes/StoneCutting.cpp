@@ -8,20 +8,25 @@ StoneCutting::StoneCutting(const std::string &identifier, const nlohmann::json &
     Recipe(identifier, recipe)
 {
     // returns if any value is missing or does not have the right type
-    if (!recipe.contains("ingredient") || !recipe.contains("result") || !recipe.contains("count") || (!recipe["ingredient"].is_object() && !recipe["ingredient"].is_array()) ||
-        !recipe["result"].is_string() || !recipe["count"].is_number_unsigned())
+    if (!recipe.contains("ingredient") || !recipe.contains("result") || !recipe.contains("count")
+        || (!recipe["ingredient"].is_object() && !recipe["ingredient"].is_array()) || !recipe["result"].is_string()
+        || !recipe["count"].is_number_unsigned())
         return;
 
     // get the recipe values
     if (recipe["ingredient"].is_object()) { // if only one ingredient
         if (recipe["ingredient"].contains("item") && recipe["ingredient"]["item"].is_string())
-            this->_ingredients.insert(Server::getInstance()->getItemConverter().fromItemToProtocolId(recipe["ingredient"]["item"].get<std::string>()));
+            this->_ingredients.insert(Server::getInstance()->getItemConverter().fromItemToProtocolId(
+                recipe["ingredient"]["item"].get<std::string>()
+            ));
         else
             return;
     } else if (recipe["ingredient"].is_array()) {
         for (const auto &ingredient : recipe["ingredient"]) { // if multiple ingredients
             if (ingredient.is_object() && ingredient.contains("item") && ingredient["item"].is_string())
-                this->_ingredients.insert(Server::getInstance()->getItemConverter().fromItemToProtocolId(ingredient["item"].get<std::string>()));
+                this->_ingredients.insert(Server::getInstance()->getItemConverter().fromItemToProtocolId(
+                    ingredient["item"].get<std::string>()
+                ));
             else
                 return;
         }
@@ -46,7 +51,8 @@ void StoneCutting::dump(void) const
             stream << ", ";
         stream << "\"" << Server::getInstance()->getItemConverter().fromProtocolIdToItem(ingredient) << "\"";
     }
-    stream << "] -> \"" << Server::getInstance()->getItemConverter().fromProtocolIdToItem(this->_result) << "\" (x" << this->_count << ")";
+    stream << "] -> \"" << Server::getInstance()->getItemConverter().fromProtocolIdToItem(this->_result) << "\" (x"
+           << this->_count << ")";
     LTRACE(stream.str());
 }
 

@@ -2,14 +2,14 @@
 #include <memory>
 #include <string>
 
+#include "default/DefaultWorld.hpp"
 #include "Dimension.hpp"
+#include "logging/logging.hpp"
+#include "options.hpp"
 #include "Player.hpp"
 #include "PlayerAttributes.hpp"
 #include "SaveRegion.hpp"
 #include "Server.hpp"
-#include "default/DefaultWorld.hpp"
-#include "logging/logging.hpp"
-#include "options.hpp"
 #include "world_storage/Persistence.hpp"
 
 void command_parser::SaveRegion::autocomplete(UNUSED std::vector<std::string> &args, Player *invoker) const
@@ -35,7 +35,9 @@ void command_parser::SaveRegion::execute(UNUSED std::vector<std::string> &args, 
     LDEBUG("Called save-region");
     if (invoker)
         invoker->getDimension()->getWorld()->getChat()->sendSystemMessage("Starting to save region", *invoker);
-    auto world = std::dynamic_pointer_cast<DefaultWorld>(Server::getInstance()->getWorldGroup("default")->getWorld("default"));
+    auto world = std::dynamic_pointer_cast<DefaultWorld>(
+        Server::getInstance()->getWorldGroup("default")->getWorld("default")
+    );
     auto &persistence = world->persistence;
     const auto dim = world->getDimension("overworld");
     persistence.saveRegion(*dim, std::stoi(args.at(0)), std::stoi(args.at(1)));

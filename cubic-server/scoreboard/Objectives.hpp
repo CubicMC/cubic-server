@@ -43,9 +43,17 @@ enum class RenderType : int32_t {
 class Objective {
 public:
     Objective(const Scoreboard &scoreboard, const std::string &name, const std::string &criteria);
-    Objective(const Scoreboard &scoreboard, const std::string &name, const std::string &criteria, const chat::Message &displayName);
-    Objective(const Scoreboard &scoreboard, const std::string &name, const std::string &criteria, const RenderType &renderType);
-    Objective(const Scoreboard &scoreboard, const std::string &name, const std::string &criteria, const chat::Message &displayName, const RenderType &renderType);
+    Objective(
+        const Scoreboard &scoreboard, const std::string &name, const std::string &criteria,
+        const chat::Message &displayName
+    );
+    Objective(
+        const Scoreboard &scoreboard, const std::string &name, const std::string &criteria, const RenderType &renderType
+    );
+    Objective(
+        const Scoreboard &scoreboard, const std::string &name, const std::string &criteria,
+        const chat::Message &displayName, const RenderType &renderType
+    );
     ~Objective();
 
     const std::string &getName(void) const noexcept;
@@ -76,7 +84,7 @@ private:
     RenderType _renderType;
     std::unordered_map<std::string, Score> _values;
 };
-}
-}
+} // namespace Objective
+} // namespace Scoreboard
 
 #endif /* CUBICSERVER_SCOREBOARD_OBJECTIVES_HPP */

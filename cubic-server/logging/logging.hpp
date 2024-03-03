@@ -1,8 +1,8 @@
 #ifndef LOGGING_MAIN_HPP
 #define LOGGING_MAIN_HPP
 
-#include "Registry.hpp"
 #include "formating.hpp"
+#include "Registry.hpp"
 
 namespace logging {
 
@@ -71,7 +71,10 @@ constexpr spdlog::string_view_t LEVEL_NAMES[] = SPDLOG_LEVEL_NAMES;
 
 #endif
 
-inline Registry &instance() noexcept { return Registry::instance(); }
+inline Registry &instance() noexcept
+{
+    return Registry::instance();
+}
 
 /**
  * @brief Convert string to a LogLevel @see Registry::LogLevel
@@ -79,7 +82,10 @@ inline Registry &instance() noexcept { return Registry::instance(); }
  * @param str
  * @return Registry::LogLevel
  */
-inline Registry::LogLevel stringToLevel(const std::string_view &str) noexcept { return static_cast<Registry::LogLevel>(spdlog::level::from_str(str.data())); }
+inline Registry::LogLevel stringToLevel(const std::string_view &str) noexcept
+{
+    return static_cast<Registry::LogLevel>(spdlog::level::from_str(str.data()));
+}
 
 /**
  * @brief Register a logger
@@ -87,21 +93,30 @@ inline Registry::LogLevel stringToLevel(const std::string_view &str) noexcept { 
  * @param logger
  * @return std::shared_ptr<Registry::Logger>
  */
-inline std::shared_ptr<Registry::Logger> registerLogger(std::shared_ptr<Registry::Logger> logger) { return instance().registerLogger(logger); }
+inline std::shared_ptr<Registry::Logger> registerLogger(std::shared_ptr<Registry::Logger> logger)
+{
+    return instance().registerLogger(logger);
+}
 
 /**
  * @brief Get the default logger
  *
  * @return std::shared_ptr<Registry::Logger>
  */
-inline std::shared_ptr<Registry::Logger> defaultLogger() { return instance().defaultLogger(); }
+inline std::shared_ptr<Registry::Logger> defaultLogger()
+{
+    return instance().defaultLogger();
+}
 
 /**
  * @brief Get the thread default logger, if no logger is set, return the default logger
  *
  * @return std::shared_ptr<Registry::Logger>
  */
-inline std::shared_ptr<Registry::Logger> threadDefaultLogger() { return instance().threadDefaultLogger(); }
+inline std::shared_ptr<Registry::Logger> threadDefaultLogger()
+{
+    return instance().threadDefaultLogger();
+}
 
 /**
  * @brief Get the logger with the given name
@@ -109,21 +124,30 @@ inline std::shared_ptr<Registry::Logger> threadDefaultLogger() { return instance
  * @param name
  * @return std::shared_ptr<Registry::Logger>
  */
-inline std::shared_ptr<Registry::Logger> get(const std::string &name) { return instance().get(name); }
+inline std::shared_ptr<Registry::Logger> get(const std::string &name)
+{
+    return instance().get(name);
+}
 
 /**
  * @brief Remove the logger with the given name
  *
  * @param name
  */
-inline void unregisterLogger(const std::string &name) { instance().unregisterLogger(name); }
+inline void unregisterLogger(const std::string &name)
+{
+    instance().unregisterLogger(name);
+}
 
 /**
  * @brief Set all loggers to the given level
  *
  * @param level
  */
-inline void setLevel(Registry::LogLevel level) { instance().setLevel(level); }
+inline void setLevel(Registry::LogLevel level)
+{
+    instance().setLevel(level);
+}
 
 /**
  * @brief Register a logger with the given name

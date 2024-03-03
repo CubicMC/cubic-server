@@ -23,6 +23,6 @@ void cancelInventoryChange(Player *player, Inventory *inventory);
 void cancelWorldLoad(Player *player, World *world);
 void cancelDimensionLoad(Player *player, Dimension *dimension);
 void cancelChunkLoad(Player *player, Chunk *chunk);
-}
+} // namespace Event
 
 #endif // CUBICSERVER_PLUGINMANAGER_CANCELEVENTS_HPP

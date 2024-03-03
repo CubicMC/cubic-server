@@ -15,6 +15,6 @@ public:
 
     static std::shared_ptr<Recipe> create(const std::string &identifier, const nlohmann::json &recipe);
 };
-};
+}; // namespace Recipe
 
 #endif // CUBICSERVER_RECIPES_SPECIAL_REPAIR_ITEM_HPP

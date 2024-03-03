@@ -45,7 +45,8 @@ protected:
 /**
  * @brief Actual implementation of the current parser: argparse
  */
-class ArgumentsParser : public _details::_ArgumentsParser<argparse::ArgumentParser, argparse::Argument, ArgumentHolder> {
+class ArgumentsParser
+    : public _details::_ArgumentsParser<argparse::ArgumentParser, argparse::Argument, ArgumentHolder> {
 public:
     friend std::ostream &operator<<(std::ostream &os, const ArgumentsParser &parser);
 
@@ -64,7 +65,7 @@ std::ostream &operator<<(std::ostream &os, const ArgumentsParser &parser);
 template<typename T, typename A, isBaseOf<configuration::_details::_ArgumentHolder<A>> H>
 void configuration::_details::_ArgumentsParser<T, A, H>::parse(int argc, const char *const *argv)
 {
-    this->parse({argv, argv + argc});
+    this->parse({ argv, argv + argc });
 }
 
 #endif // CONFIGURATION_ARGUMENTS_PARSER_HPP

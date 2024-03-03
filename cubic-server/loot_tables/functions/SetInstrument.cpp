@@ -8,8 +8,14 @@ SetInstrument::SetInstrument(const nlohmann::json &function):
     this->setValidity(true);
 }
 
-void SetInstrument::apply(const LootContext &context) { (void) context; }
+void SetInstrument::apply(const LootContext &context)
+{
+    (void) context;
+}
 
-std::unique_ptr<Function> SetInstrument::create(const nlohmann::json &function) { return (std::make_unique<SetInstrument>(function)); }
-};
-};
+std::unique_ptr<Function> SetInstrument::create(const nlohmann::json &function)
+{
+    return (std::make_unique<SetInstrument>(function));
+}
+}; // namespace Function
+}; // namespace LootTable

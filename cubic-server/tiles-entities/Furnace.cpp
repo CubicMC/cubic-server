@@ -1,9 +1,9 @@
 #include "Furnace.hpp"
-#include "Player.hpp"
-#include "Server.hpp"
 #include "items/fuels.hpp"
 #include "logging/logging.hpp"
+#include "Player.hpp"
 #include "recipes/Smelting.hpp"
+#include "Server.hpp"
 #include "types.hpp"
 #include <algorithm>
 
@@ -55,10 +55,16 @@ void Furnace::tick()
                 return ITEM_CONVERTER.fromProtocolIdToItem(_fuel.itemID).find(fuel.name) != std::string::npos;
             });
             if (fuel != Items::fuels.end()) {
-                LTRACE("Fuel {} (name: {}) found as a fuel. Using its burning time ({})", _fuel.itemID, ITEM_CONVERTER.fromProtocolIdToItem(_fuel.itemID), fuel->burnTime);
+                LTRACE(
+                    "Fuel {} (name: {}) found as a fuel. Using its burning time ({})", _fuel.itemID,
+                    ITEM_CONVERTER.fromProtocolIdToItem(_fuel.itemID), fuel->burnTime
+                );
                 _burnTimeCurrentFuel = _burningTime = fuel->burnTime;
             } else {
-                LERROR("Fuel {} (name: {}) not found as a fuel. Using coal burning time ({})", _fuel.itemID, ITEM_CONVERTER.fromProtocolIdToItem(_fuel.itemID), 1600);
+                LERROR(
+                    "Fuel {} (name: {}) not found as a fuel. Using coal burning time ({})", _fuel.itemID,
+                    ITEM_CONVERTER.fromProtocolIdToItem(_fuel.itemID), 1600
+                );
                 _burnTimeCurrentFuel = _burningTime = 1600;
             }
             _fuel.itemCount--;
@@ -91,7 +97,7 @@ void Furnace::tick()
                     return recipe.second->getIngredient() == _ingredient.itemID;
                 })->second->getResult();
                 // clang-format on
-                _result = {true, resultId, 1};
+                _result = { true, resultId, 1 };
             } else {
                 _result.itemCount += 1;
             }
@@ -111,15 +117,18 @@ void Furnace::tick()
                 continue;
             }
             if (updateFuelLeft)
-                player.lock()->sendSetContainerProperty({windowId, int16_t(ContainerProperty::FuelLeft), _burningTime});
+                player.lock()->sendSetContainerProperty({ windowId, int16_t(ContainerProperty::FuelLeft), _burningTime }
+                );
             if (updateMaximumFuelBurnTime) {
-                player.lock()->sendSetContainerProperty({windowId, int16_t(ContainerProperty::MaximumFuelBurnTime), _burnTimeCurrentFuel});
-                player.lock()->sendSetContainerSlot({player.lock()->getContainer(windowId), 1});
+                player.lock()->sendSetContainerProperty({ windowId, int16_t(ContainerProperty::MaximumFuelBurnTime),
+                                                          _burnTimeCurrentFuel });
+                player.lock()->sendSetContainerSlot({ player.lock()->getContainer(windowId), 1 });
             }
             if (updateProgressArrow)
-                player.lock()->sendSetContainerProperty({windowId, int16_t(ContainerProperty::ProgressArrow), _cookTime});
+                player.lock()->sendSetContainerProperty({ windowId, int16_t(ContainerProperty::ProgressArrow),
+                                                          _cookTime });
             if (updateIngredientSlot)
-                player.lock()->sendSetContainerContent({player.lock()->getContainer(windowId)});
+                player.lock()->sendSetContainerContent({ player.lock()->getContainer(windowId) });
         }
     }
     if (updatePlayerList)
@@ -131,11 +140,12 @@ void Furnace::tick()
 
 void Furnace::addPlayer(std::weak_ptr<Player> player, uint8_t windowId)
 {
-    _players.push_back({player, windowId});
-    player.lock()->sendSetContainerProperty({windowId, int16_t(ContainerProperty::FuelLeft), _burningTime});
-    player.lock()->sendSetContainerProperty({windowId, int16_t(ContainerProperty::MaximumFuelBurnTime), _burnTimeCurrentFuel});
-    player.lock()->sendSetContainerProperty({windowId, int16_t(ContainerProperty::ProgressArrow), _cookTime});
-    player.lock()->sendSetContainerProperty({windowId, int16_t(ContainerProperty::MaximumProgress), 200});
+    _players.push_back({ player, windowId });
+    player.lock()->sendSetContainerProperty({ windowId, int16_t(ContainerProperty::FuelLeft), _burningTime });
+    player.lock()->sendSetContainerProperty({ windowId, int16_t(ContainerProperty::MaximumFuelBurnTime),
+                                              _burnTimeCurrentFuel });
+    player.lock()->sendSetContainerProperty({ windowId, int16_t(ContainerProperty::ProgressArrow), _cookTime });
+    player.lock()->sendSetContainerProperty({ windowId, int16_t(ContainerProperty::MaximumProgress), 200 });
 }
 
 void Furnace::removePlayer(int id)

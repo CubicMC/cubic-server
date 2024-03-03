@@ -16,24 +16,24 @@
 #include <zlib.h>
 
 #include "Client.hpp"
-#include "PlayerAttributes.hpp"
 #include "nbt.hpp"
+#include "PlayerAttributes.hpp"
 
+#include "chat/ChatRegistry.hpp"
 #include "Checksum.hpp"
 #include "CompressionUtils.hpp"
 #include "Dimension.hpp"
-#include "Player.hpp"
-#include "Server.hpp"
-#include "World.hpp"
-#include "WorldGroup.hpp"
-#include "chat/ChatRegistry.hpp"
 #include "logging/logging.hpp"
 #include "nlohmann/json.hpp"
+#include "Player.hpp"
 #include "protocol/ClientPackets.hpp"
-#include "protocol/ServerPackets.hpp"
 #include "protocol/serialization/addPrimaryType.hpp"
 #include "protocol/serialization/popPrimaryType.hpp"
+#include "protocol/ServerPackets.hpp"
+#include "Server.hpp"
 #include "types.hpp"
+#include "World.hpp"
+#include "WorldGroup.hpp"
 
 using boost::asio::ip::tcp;
 
@@ -66,14 +66,18 @@ Client::~Client()
         if (chunkReq.second == Player::ChunkState::Loading)
             this->_player->getDimension()->removePlayerFromLoadingChunk(chunkReq.first, this->_player);
     }
-    chat::Message disconnectMsg = chat::Message::fromTranslationKey<chat::message::TranslationKey::MultiplayerPlayerLeft>(*_player);
+    chat::Message disconnectMsg = chat::Message::fromTranslationKey<
+        chat::message::TranslationKey::MultiplayerPlayerLeft>(*_player);
     this->_player->getWorld()->getChat()->sendSystemMessage(disconnectMsg, *_player->getWorldGroup());
     // if (_thread.joinable())
     // _thread.join();
     // _thread.detach();
 }
 
-void Client::run() { _thread = std::thread(&Client::doRead, this); }
+void Client::run()
+{
+    _thread = std::thread(&Client::doRead, this);
+}
 
 void Client::doRead()
 {
@@ -132,19 +136,27 @@ void Client::doWrite(std::unique_ptr<std::vector<uint8_t>> &&data)
     Server::getInstance()->sendData(_clientID, std::move(data));
 }
 
-bool Client::isDisconnected() const { return !_isRunning; }
+bool Client::isDisconnected() const
+{
+    return !_isRunning;
+}
 
 void Client::switchToPlayState(u128 playerUuid, const std::string &username)
 {
     this->setStatus(protocol::ClientStatus::Play);
     LDEBUG("Switched to play state");
     // TODO: get the player dimension from the world by his uuid
-    this->_player =
-        std::make_shared<Player>(weak_from_this(), Server::getInstance()->getWorldGroup("default")->getWorld("default")->getDimension("overworld"), playerUuid, username);
+    this->_player = std::make_shared<Player>(
+        weak_from_this(),
+        Server::getInstance()->getWorldGroup("default")->getWorld("default")->getDimension("overworld"), playerUuid,
+        username
+    );
     LDEBUG("Created player");
 }
 
-void Client::handleParsedClientPacket(std::unique_ptr<protocol::BaseServerPacket> &&packet, protocol::ServerPacketsID packetID)
+void Client::handleParsedClientPacket(
+    std::unique_ptr<protocol::BaseServerPacket> &&packet, protocol::ServerPacketsID packetID
+)
 {
     using namespace protocol;
 
@@ -282,7 +294,7 @@ void Client::_handlePacket()
             at = uncompressedData.data();
             eof = uncompressedData.data() + uncompressedData.size() - 1;
         }
-    packetNotCompressed:
+packetNotCompressed:
 
         bool error = false;
         // Handle the packet if the length is there
@@ -358,9 +370,12 @@ void Client::_onStatusRequest()
     json["players"]["max"] = conf["max-players"].as<int32_t>();
     {
         std::lock_guard _(srv->clientsMutex);
-        json["players"]["online"] = std::count_if(cli.begin(), cli.end(), [](std::pair<size_t, const std::shared_ptr<const Client>> each) {
-            return each.second->getStatus() == protocol::ClientStatus::Play;
-        });
+        json["players"]["online"] = std::count_if(
+            cli.begin(), cli.end(),
+            [](std::pair<size_t, const std::shared_ptr<const Client>> each) {
+                return each.second->getStatus() == protocol::ClientStatus::Play;
+            }
+        );
     }
 
     sendStatusResponse(json.dump());
@@ -457,7 +472,10 @@ bool Client::_handleOnline(const std::array<uint8_t, 16> &key)
 {
     Checksum cs;
     cs.update(key.data(), key.size());
-    cs.update(reinterpret_cast<const uint8_t *>(Server::getInstance()->getPrivateKey().getPublicKey().data()), Server::getInstance()->getPrivateKey().getPublicKey().size());
+    cs.update(
+        reinterpret_cast<const uint8_t *>(Server::getInstance()->getPrivateKey().getPublicKey().data()),
+        Server::getInstance()->getPrivateKey().getPublicKey().size()
+    );
     uint8_t digest[20];
     cs.finalize(digest);
     auto serverID = Checksum::digestToProtocol(digest);
@@ -472,7 +490,14 @@ bool Client::_handleOnline(const std::array<uint8_t, 16> &key)
         disconnect();
         return false;
     }
-    curl_easy_setopt(curl, CURLOPT_URL, std::string("https://sessionserver.mojang.com/session/minecraft/hasJoined?username=" + _resPck.username + "&serverId=" + serverID).c_str());
+    curl_easy_setopt(
+        curl, CURLOPT_URL,
+        std::string(
+            "https://sessionserver.mojang.com/session/minecraft/hasJoined?username=" + _resPck.username
+            + "&serverId=" + serverID
+        )
+            .c_str()
+    );
     curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, WriteCallback);
     curl_easy_setopt(curl, CURLOPT_WRITEDATA, &readBuffer);
     res = curl_easy_perform(curl);
@@ -488,7 +513,9 @@ bool Client::_handleOnline(const std::array<uint8_t, 16> &key)
 
     for (auto &i : result["properties"]) {
         if (i.contains("signature"))
-            _resPck.properties.emplace_back(i["name"].get<std::string>(), i["value"].get<std::string>(), true, i["signature"].get<std::string>());
+            _resPck.properties.emplace_back(
+                i["name"].get<std::string>(), i["value"].get<std::string>(), true, i["signature"].get<std::string>()
+            );
         else
             _resPck.properties.emplace_back(i["name"].get<std::string>(), i["value"].get<std::string>(), false, "");
     }
@@ -498,9 +525,10 @@ bool Client::_handleOnline(const std::array<uint8_t, 16> &key)
 
 void Client::sendEncryptionRequest()
 {
-    std::vector<uint8_t> verifyToken = {0, 0, 0, 0};
+    std::vector<uint8_t> verifyToken = { 0, 0, 0, 0 };
     ((uint32_t *) verifyToken.data())[0] = (uint32_t) (uintptr_t) this;
-    auto pck = protocol::createEncryptionRequest({"", Server::getInstance()->getPrivateKey().getPublicKey(), verifyToken});
+    auto pck = protocol::createEncryptionRequest({ "", Server::getInstance()->getPrivateKey().getPublicKey(),
+                                                   verifyToken });
     doWrite(std::move(pck));
 
     N_LDEBUG("Sent encryption request");
@@ -508,7 +536,7 @@ void Client::sendEncryptionRequest()
 
 void Client::sendStatusResponse(const std::string &json)
 {
-    auto pck = protocol::createStatusResponse({json});
+    auto pck = protocol::createStatusResponse({ json });
     doWrite(std::move(pck));
 
     N_LDEBUG("Sent status response");
@@ -516,7 +544,7 @@ void Client::sendStatusResponse(const std::string &json)
 
 void Client::sendPingResponse(int64_t payload)
 {
-    auto pck = protocol::createPingResponse({payload});
+    auto pck = protocol::createPingResponse({ payload });
     doWrite(std::move(pck));
 
     N_LDEBUG("Sent a ping response");
@@ -533,10 +561,12 @@ void Client::sendLoginPlay()
 {
     protocol::LoginPlay resPck = {
         .entityID = _player->getId(), // TODO: figure out what is this
-        .isHardcore = false, // TODO: something like this this->_player->_dim->getWorld()->getDifficulty(); Thats not difficulty tho (peaceful, easy, normal, hard)
+        .isHardcore = false, // TODO: something like this this->_player->_dim->getWorld()->getDifficulty(); Thats not
+  // difficulty tho (peaceful, easy, normal, hard)
         .gamemode = this->_player->getGamemode(),
         .previousGamemode = this->_player->getGamemode(),
-        .dimensionNames = std::vector<std::string>({"minecraft:overworld", "minecraft:the_nether"}), // TODO: something like this this->_player->_dim->getWorld()->getDimensions();
+        .dimensionNames = std::vector<std::string>({ "minecraft:overworld", "minecraft:the_nether" }
+        ), // TODO: something like this this->_player->_dim->getWorld()->getDimensions();
         .registryCodec = Server::getInstance()->getRegistry().toNBT(),
         .dimensionType = _player->getDimension()->getDimensionTypeName(),
         .dimensionName = _player->getDimension()->getDimensionName(),
@@ -545,12 +575,13 @@ void Client::sendLoginPlay()
         .viewDistance = this->_player->getWorld()->getRenderDistance(),
         .simulationDistance = 16, // TODO: something like this->_player->_dim->getWorld()->getSimulationDistance();
         .reducedDebugInfo = false, // false for developpment only
-        .enableRespawnScreen = true, // TODO: implement gamerules !this->_player->_dim->getWorld()->getGamerules()["doImmediateRespawn"];
+        .enableRespawnScreen = true, // TODO: implement gamerules
+  // !this->_player->_dim->getWorld()->getGamerules()["doImmediateRespawn"];
         .isDebug = false, // TODO: something like this->_player->_dim->getWorld()->isDebugModeWorld;
         .isFlat = false, // TODO: something like this->_player->_dim->isFlat;
         .hasDeathLocation = false, // TODO: something like this->_player->hasDeathLocation;
         .deathDimensionName = "",
-        .deathLocation = {0, 0, 0},
+        .deathLocation = { 0, 0, 0 },
     };
     _player->sendLoginPlay(resPck);
     // resPck.registryCodec.destroy();
@@ -563,7 +594,7 @@ void Client::disconnect(const chat::Message &reason)
         return;
     }
 
-    auto pck = protocol::createLoginDisconnect({reason.serialize()});
+    auto pck = protocol::createLoginDisconnect({ reason.serialize() });
     doWrite(std::move(pck));
     _isRunning = false;
     N_LDEBUG("Sent a disconnect login packet");
@@ -588,6 +619,12 @@ void Client::_loginSequence(const protocol::LoginSuccess &pck)
     this->_player->_continueLoginSequence();
 }
 
-std::shared_ptr<Player> Client::getPlayer() { return _player; }
+std::shared_ptr<Player> Client::getPlayer()
+{
+    return _player;
+}
 
-std::shared_ptr<const Player> Client::getPlayer() const { return _player; }
+std::shared_ptr<const Player> Client::getPlayer() const
+{
+    return _player;
+}

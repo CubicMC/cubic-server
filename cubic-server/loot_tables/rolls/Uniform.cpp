@@ -23,11 +23,17 @@ const RollResult Uniform::poll(LootContext *context) const
         return (RollResult(this->_min + (rand() % (this->_max - this->_min + 1)), 1.0));
 }
 
-std::unique_ptr<Roll> Uniform::creator(const nlohmann::json &roll) { return (std::make_unique<Uniform>(roll)); }
+std::unique_ptr<Roll> Uniform::creator(const nlohmann::json &roll)
+{
+    return (std::make_unique<Uniform>(roll));
+}
 
 bool Uniform::isOfType(const nlohmann::json &roll)
 {
-    return (roll.is_object() && roll.contains("min") && roll.contains("max") && roll["min"].is_number() && roll["max"].is_number());
+    return (
+        roll.is_object() && roll.contains("min") && roll.contains("max") && roll["min"].is_number()
+        && roll["max"].is_number()
+    );
 }
-};
-};
+}; // namespace Roll
+}; // namespace LootTable

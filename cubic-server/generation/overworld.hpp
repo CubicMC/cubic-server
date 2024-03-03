@@ -20,6 +20,6 @@ public:
     int getTreeSize(positionType x, positionType y, positionType z, const TreeSize &treeSize) override;
     int getTreeSize(const Position &pos, const TreeSize &treeSize) override;
 };
-}
+} // namespace generation
 
 #endif // CUBICSERVER_GENERATION_OVERWORLD_HPP

@@ -1,14 +1,16 @@
 #include "Arrow.hpp"
 #include "Dimension.hpp"
+#include "logging/logging.hpp"
 #include "Player.hpp"
 #include "PlayerAttributes.hpp"
-#include "logging/logging.hpp"
 #include "protocol/ClientPackets.hpp"
 #include "protocol/metadata.hpp"
 
 // For all that intersection code, thank you to that guy:
 // https://3dkingdoms.com/weekly/weekly.php?a=3
-static inline bool getIntersectionLineBox(double fDst1, double fDst2, Vector3<double> p1, Vector3<double> p2, Vector3<double> &hit)
+static inline bool getIntersectionLineBox(
+    double fDst1, double fDst2, Vector3<double> p1, Vector3<double> p2, Vector3<double> &hit
+)
 {
     if ((fDst1 * fDst2) >= 0.0f)
         return false;
@@ -29,7 +31,9 @@ static inline bool isHitInBox(Vector3<double> Hit, Vector3<double> B1, Vector3<d
     return false;
 }
 
-static bool isLineIntersectingWithBox(Vector3<double> B1, Vector3<double> B2, Vector3<double> L1, Vector3<double> L2, Vector3<double> &Hit)
+static bool isLineIntersectingWithBox(
+    Vector3<double> B1, Vector3<double> B2, Vector3<double> L1, Vector3<double> L2, Vector3<double> &Hit
+)
 {
     if (L2.x < B1.x && L1.x < B1.x)
         return false;
@@ -48,16 +52,18 @@ static bool isLineIntersectingWithBox(Vector3<double> B1, Vector3<double> B2, Ve
         return true;
     }
     return (
-        (getIntersectionLineBox(L1.x - B1.x, L2.x - B1.x, L1, L2, Hit) && isHitInBox(Hit, B1, B2, 1)) ||
-        (getIntersectionLineBox(L1.y - B1.y, L2.y - B1.y, L1, L2, Hit) && isHitInBox(Hit, B1, B2, 2)) ||
-        (getIntersectionLineBox(L1.z - B1.z, L2.z - B1.z, L1, L2, Hit) && isHitInBox(Hit, B1, B2, 3)) ||
-        (getIntersectionLineBox(L1.x - B2.x, L2.x - B2.x, L1, L2, Hit) && isHitInBox(Hit, B1, B2, 1)) ||
-        (getIntersectionLineBox(L1.y - B2.y, L2.y - B2.y, L1, L2, Hit) && isHitInBox(Hit, B1, B2, 2)) ||
-        (getIntersectionLineBox(L1.z - B2.z, L2.z - B2.z, L1, L2, Hit) && isHitInBox(Hit, B1, B2, 3))
+        (getIntersectionLineBox(L1.x - B1.x, L2.x - B1.x, L1, L2, Hit) && isHitInBox(Hit, B1, B2, 1))
+        || (getIntersectionLineBox(L1.y - B1.y, L2.y - B1.y, L1, L2, Hit) && isHitInBox(Hit, B1, B2, 2))
+        || (getIntersectionLineBox(L1.z - B1.z, L2.z - B1.z, L1, L2, Hit) && isHitInBox(Hit, B1, B2, 3))
+        || (getIntersectionLineBox(L1.x - B2.x, L2.x - B2.x, L1, L2, Hit) && isHitInBox(Hit, B1, B2, 1))
+        || (getIntersectionLineBox(L1.y - B2.y, L2.y - B2.y, L1, L2, Hit) && isHitInBox(Hit, B1, B2, 2))
+        || (getIntersectionLineBox(L1.z - B2.z, L2.z - B2.z, L1, L2, Hit) && isHitInBox(Hit, B1, B2, 3))
     );
 }
 
-static inline bool isArrowCollidingPlayer(const Vector3<double> &previousArrowPosition, const Vector3<double> &arrowPosition, const Player &player)
+static inline bool isArrowCollidingPlayer(
+    const Vector3<double> &previousArrowPosition, const Vector3<double> &arrowPosition, const Player &player
+)
 {
     // This whole function is fairly verbose, but the compiler will
     // optimize it out anyway (Or at least I hope, I don't care enough
@@ -80,10 +86,13 @@ static inline bool isArrowCollidingPlayer(const Vector3<double> &previousArrowPo
     const double leastYPos = playerPosition.y;
 
     Vector3<double> hit;
-    Vector3<double> B1 = {leastXPos, leastYPos, leastZPos};
-    Vector3<double> B2 = {mostXPos, mostYPos, mostZPos};
+    Vector3<double> B1 = { leastXPos, leastYPos, leastZPos };
+    Vector3<double> B2 = { mostXPos, mostYPos, mostZPos };
     if (isLineIntersectingWithBox(B1, B2, arrowPosition, previousArrowPosition, hit)) {
-        LDEBUG("Hit player at point {}, player with bounding box {} to {}, arrow with positions {} to {}", hit, B1, B2, previousArrowPosition, arrowPosition);
+        LDEBUG(
+            "Hit player at point {}, player with bounding box {} to {}, arrow with positions {} to {}", hit, B1, B2,
+            previousArrowPosition, arrowPosition
+        );
         return true;
     }
     return false;
@@ -122,7 +131,8 @@ void Arrow::tick()
         if (player->getId() == _shotByEntity)
             continue;
         auto playerGamemode = player->getGamemode();
-        if (playerGamemode == player_attributes::Gamemode::Creative || playerGamemode == player_attributes::Gamemode::Spectator)
+        if (playerGamemode == player_attributes::Gamemode::Creative
+            || playerGamemode == player_attributes::Gamemode::Spectator)
             continue;
         if (isArrowCollidingPlayer(position, newPosition, *player)) {
             constexpr float baseArrowDamage = 2.0;

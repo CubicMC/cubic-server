@@ -66,6 +66,6 @@ struct PlayerData {
     // TODO(huntears): warden_spawn_tracker
 };
 
-}
+} // namespace world_storage
 
 #endif /* BB29A0D8_B040_402D_94D4_111CCB889663 */

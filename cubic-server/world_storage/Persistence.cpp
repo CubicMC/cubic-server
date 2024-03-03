@@ -1,10 +1,10 @@
 #include "Persistence.hpp"
 #include "Dimension.hpp"
-#include "Server.hpp"
 #include "logging/logging.hpp"
 #include "nbt.hpp"
 #include "nnbt.hpp"
 #include "protocol/serialization/addPrimaryType.hpp"
+#include "Server.hpp"
 #include "types.hpp"
 #include "world_storage/ChunkColumn.hpp"
 #include "world_storage/Level.hpp"
@@ -53,7 +53,9 @@
     } while (0)
 
 template<typename T, nbt::TagType Tag>
-static inline const std::shared_ptr<T> getConstElement(const std::shared_ptr<nbt::Compound> root, const std::string &name)
+static inline const std::shared_ptr<T> getConstElement(
+    const std::shared_ptr<nbt::Compound> root, const std::string &name
+)
 {
     auto __tmp = root->getValue(name);
     if (!__tmp || __tmp->getType() != Tag)
@@ -275,7 +277,7 @@ void Persistence::saveLevelData(LevelData &src)
     data.add(src.thundering, "thundering");
     data.add(src.version, "version");
 
-    nbt_writer_t writer {
+    nbt_writer_t writer{
         .write = _writeToFile,
         .userdata = &output_file,
     };
@@ -394,9 +396,15 @@ PlayerData Persistence::loadPlayerData(u128 uuid)
     return data;
 }
 
-void Persistence::loadPlayerData(const Player &player, PlayerData &dest) { loadPlayerData(player.getUuid(), dest); }
+void Persistence::loadPlayerData(const Player &player, PlayerData &dest)
+{
+    loadPlayerData(player.getUuid(), dest);
+}
 
-PlayerData Persistence::loadPlayerData(const Player &player) { return loadPlayerData(player.getUuid()); }
+PlayerData Persistence::loadPlayerData(const Player &player)
+{
+    return loadPlayerData(player.getUuid());
+}
 
 void Persistence::savePlayerData(u128 uuid, const PlayerData &src)
 {
@@ -457,7 +465,7 @@ void Persistence::savePlayerData(u128 uuid, const PlayerData &src)
     root.add(src.playerGameType, "playerGameType");
     root.add(src.seenCredits, "seenCredits");
 
-    nbt_writer_t writer {
+    nbt_writer_t writer{
         .write = _writeToFile,
         .userdata = &output_file,
     };
@@ -503,18 +511,22 @@ void Persistence::saveRegion(Dimension &dim, int x, int z)
 
             // Add the chunk header
             ChunkHeader cHeader = {
-                .length = ntohl((uint32_t) dataToAdd.size() + 1), // That + 1 is here because you also need to count the compression scheme
+                .length = ntohl(
+                    (uint32_t) dataToAdd.size() + 1
+                ), // That + 1 is here because you also need to count the compression scheme
                 .compressionScheme = RegionChunkCompressionScheme::ZLIB,
             };
             dataToAdd.insert(dataToAdd.begin(), (uint8_t *) &cHeader, ((uint8_t *) &cHeader) + sizeof(cHeader));
 
             // Fill in the location table with the chunk's offset and size
             const size_t actualChunkSize = dataToAdd.size();
-            const size_t chunkSize =
-                !(actualChunkSize & regionChunkAlignmentMask) ? actualChunkSize : actualChunkSize + regionChunkAlignment - (actualChunkSize & regionChunkAlignmentMask);
+            const size_t chunkSize = !(actualChunkSize & regionChunkAlignmentMask)
+                ? actualChunkSize
+                : actualChunkSize + regionChunkAlignment - (actualChunkSize & regionChunkAlignmentMask);
             const uint32_t chunkOffset = lastOffset + lastSize;
-            // Only uncomment this if there is heavy debug to do, cause this will absolutely fill your logs with nonsense
-            // LDEBUG("Location Offset: {} | Chunk Offset: {} | ChunkSize: {}", currentOffset, chunkOffset, chunkSize / regionChunkAlignment);
+            // Only uncomment this if there is heavy debug to do, cause this will absolutely fill your logs with
+            // nonsense LDEBUG("Location Offset: {} | Chunk Offset: {} | ChunkSize: {}", currentOffset, chunkOffset,
+            // chunkSize / regionChunkAlignment);
             header.locationTable[currentOffset] = RegionLocation(chunkOffset, chunkSize / regionChunkAlignment);
 
             // Add padding if necessary to the chunk's data
@@ -780,4 +792,4 @@ bool Persistence::isChunkLoaded(Dimension &dim, int x, int z)
         cz += 32;
     return dim.hasChunkLoaded(x, z);
 }
-}
+} // namespace world_storage

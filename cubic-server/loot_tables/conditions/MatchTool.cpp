@@ -15,6 +15,9 @@ bool MatchTool::verify(const LootContext *context) const
     return (true);
 }
 
-std::unique_ptr<Condition> MatchTool::create(const nlohmann::json &condition) { return (std::make_unique<MatchTool>(condition)); }
-};
-};
+std::unique_ptr<Condition> MatchTool::create(const nlohmann::json &condition)
+{
+    return (std::make_unique<MatchTool>(condition));
+}
+}; // namespace Condition
+}; // namespace LootTable

@@ -17,7 +17,10 @@ public:
 
     void tick() override;
     void dropItem(const Vector3<double> &pos, bool isDroppedWillingly = true) override;
-    const protocol::Slot &getItem() const { return _slot; };
+    const protocol::Slot &getItem() const
+    {
+        return _slot;
+    };
 
     /**
      * @brief Adds serialized metadata to an output buffer
@@ -32,7 +35,10 @@ public:
      * @return true The item is pickable
      * @return false The item is not pickable
      */
-    inline bool isPickable() { return _nbTicksBeforePickable == 0; }
+    inline bool isPickable()
+    {
+        return _nbTicksBeforePickable == 0;
+    }
 
 private:
     protocol::Slot _slot;

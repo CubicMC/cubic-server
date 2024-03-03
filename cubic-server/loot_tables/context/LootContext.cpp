@@ -7,6 +7,9 @@ LootContext::LootContext(const std::string &type):
 {
 }
 
-const std::string &LootContext::getType() const noexcept { return (this->_type); }
+const std::string &LootContext::getType() const noexcept
+{
+    return (this->_type);
 }
-}
+} // namespace Context
+} // namespace LootTable

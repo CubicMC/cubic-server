@@ -25,7 +25,10 @@ struct Tag {
      * @param n The raw tag to embed in the nnbt tag
      * @return Tag The nnbt tag
      */
-    static Tag fromRaw(nbt_tag_t *n) { return Tag {.data = n}; }
+    static Tag fromRaw(nbt_tag_t *n)
+    {
+        return Tag{ .data = n };
+    }
 
     /**
      * @brief Adds a tag to another tag
@@ -65,9 +68,10 @@ struct Tag {
             new_data = nbt_new_tag_string(to_add.c_str(), to_add.size());
         else
             static_assert(
-                !(std::is_same_v<T, std::string> || std::is_same_v<T, std::vector<int64_t>> || std::is_same_v<T, std::vector<int32_t>> || std::is_same_v<T, std::vector<int8_t>> ||
-                  std::is_same_v<T, double> || std::is_same_v<T, float> || std::is_same_v<T, int8_t> || std::is_same_v<T, int16_t> || std::is_same_v<T, int64_t> ||
-                  std::is_same_v<T, int32_t>)
+                !(std::is_same_v<T, std::string> || std::is_same_v<T, std::vector<int64_t>>
+                  || std::is_same_v<T, std::vector<int32_t>> || std::is_same_v<T, std::vector<int8_t>>
+                  || std::is_same_v<T, double> || std::is_same_v<T, float> || std::is_same_v<T, int8_t>
+                  || std::is_same_v<T, int16_t> || std::is_same_v<T, int64_t> || std::is_same_v<T, int32_t>)
             );
 
         if (name)
@@ -77,7 +81,7 @@ struct Tag {
             nbt_tag_compound_append(this->data, new_data);
         else if (data->type == NBT_TYPE_LIST)
             nbt_tag_list_append(this->data, new_data);
-        return Tag {.data = new_data};
+        return Tag{ .data = new_data };
     }
 
     /**
@@ -100,7 +104,7 @@ struct Tag {
             nbt_tag_compound_append(this->data, new_data);
         else if (data->type == NBT_TYPE_LIST)
             nbt_tag_list_append(this->data, new_data);
-        return Tag {.data = new_data};
+        return Tag{ .data = new_data };
     }
 
     /**
@@ -122,7 +126,7 @@ struct Tag {
             nbt_tag_compound_append(this->data, new_data);
         else if (data->type == NBT_TYPE_LIST)
             nbt_tag_list_append(this->data, new_data);
-        return Tag {.data = new_data};
+        return Tag{ .data = new_data };
     }
 
     /**
@@ -137,6 +141,6 @@ struct Tag {
     }
 };
 
-}
+} // namespace nnbt
 
 #endif /* D3810A78_CAF6_41E0_8DD7_3868B560E694 */

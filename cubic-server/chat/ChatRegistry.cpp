@@ -28,7 +28,9 @@ std::shared_ptr<nbt::Compound> chat::_details::ChatType::toNBT() const
     if (_style.color.has_value())
         style->addValue(std::make_shared<nbt::String>("color", _style.color.value()));
 
-    auto chat = std::shared_ptr<nbt::Compound>(new nbt::Compound("chat", {std::make_shared<nbt::String>("translation_key", this->_chat.key), chatParameters}));
+    auto chat = std::shared_ptr<nbt::Compound>(
+        new nbt::Compound("chat", { std::make_shared<nbt::String>("translation_key", this->_chat.key), chatParameters })
+    );
 
     if (style->size() <= 0) {
         style = nullptr;
@@ -58,7 +60,9 @@ std::shared_ptr<nbt::Compound> chat::_details::Registry::toNBT() const
     for (const auto &chatType : _chatTypes)
         values->push_back(chatType.toNBT());
 
-    return std::shared_ptr<nbt::Compound>(new nbt::Compound("minecraft:chat_type", {std::make_shared<nbt::String>("type", "minecraft:chat_type"), values}));
+    return std::shared_ptr<nbt::Compound>(new nbt::Compound(
+        "minecraft:chat_type", { std::make_shared<nbt::String>("type", "minecraft:chat_type"), values }
+    ));
 }
 
 /**

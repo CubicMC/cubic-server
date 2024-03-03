@@ -15,6 +15,9 @@ bool TimeCheck::verify(const LootContext *context) const
     return (true);
 }
 
-std::unique_ptr<Condition> TimeCheck::create(const nlohmann::json &condition) { return (std::make_unique<TimeCheck>(condition)); }
-};
-};
+std::unique_ptr<Condition> TimeCheck::create(const nlohmann::json &condition)
+{
+    return (std::make_unique<TimeCheck>(condition));
+}
+}; // namespace Condition
+}; // namespace LootTable

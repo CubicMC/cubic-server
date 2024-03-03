@@ -81,21 +81,54 @@ public:
 
     NODISCARD virtual bool canInsert(const protocol::Slot &slot);
 
-    protocol::Slot &operator[](int16_t index) { return at(index); }
-    const protocol::Slot &operator[](int16_t index) const { return at(index); }
-    constexpr protocol::Slot &cursor() { return _cursor; }
-    constexpr void setCariedItemIndex(int16_t index) { _cariedItemIndex = index; }
+    protocol::Slot &operator[](int16_t index)
+    {
+        return at(index);
+    }
+    const protocol::Slot &operator[](int16_t index) const
+    {
+        return at(index);
+    }
+    constexpr protocol::Slot &cursor()
+    {
+        return _cursor;
+    }
+    constexpr void setCariedItemIndex(int16_t index)
+    {
+        _cariedItemIndex = index;
+    }
 
-    virtual void onClick(std::shared_ptr<Player> player, int16_t index, uint8_t buttonId, uint8_t mode, const std::vector<protocol::ClickContainer::SlotWithIndex> &updates);
-    virtual void onButtonClick(UNUSED std::shared_ptr<Player> player, UNUSED uint8_t buttonId) {};
+    virtual void onClick(
+        std::shared_ptr<Player> player, int16_t index, uint8_t buttonId, uint8_t mode,
+        const std::vector<protocol::ClickContainer::SlotWithIndex> &updates
+    );
+    virtual void onButtonClick(UNUSED std::shared_ptr<Player> player, UNUSED uint8_t buttonId){};
     virtual void close(UNUSED std::shared_ptr<Player> player);
 
-    NODISCARD constexpr inline uint8_t id() const { return _id; }
-    NODISCARD constexpr inline int32_t type() const { return _type; }
-    NODISCARD constexpr inline int32_t state() const { return _state; }
-    NODISCARD constexpr inline const chat::Message &title() const { return _title; }
-    NODISCARD constexpr inline const protocol::Slot &cursor() const { return _cursor; }
-    NODISCARD constexpr inline const protocol::Slot &cariedItem() const { return at(_cariedItemIndex); }
+    NODISCARD constexpr inline uint8_t id() const
+    {
+        return _id;
+    }
+    NODISCARD constexpr inline int32_t type() const
+    {
+        return _type;
+    }
+    NODISCARD constexpr inline int32_t state() const
+    {
+        return _state;
+    }
+    NODISCARD constexpr inline const chat::Message &title() const
+    {
+        return _title;
+    }
+    NODISCARD constexpr inline const protocol::Slot &cursor() const
+    {
+        return _cursor;
+    }
+    NODISCARD constexpr inline const protocol::Slot &cariedItem() const
+    {
+        return at(_cariedItemIndex);
+    }
 
 private:
     const uint8_t _id;
@@ -106,6 +139,6 @@ private:
     int16_t _cariedItemIndex;
 };
 
-} // namespace protocol::inventory_screen
+} // namespace protocol::container
 
 #endif // PROTOCOL_WINDOW_WINDOWCLASS_HPP

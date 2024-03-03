@@ -33,6 +33,9 @@ bool Sequence::poll(LootTablePoll &poll, LootContext *context) const
     return (polled);
 }
 
-std::unique_ptr<Entry> Sequence::creator(const nlohmann::json &entry) { return (std::make_unique<Sequence>(entry)); }
-};
-};
+std::unique_ptr<Entry> Sequence::creator(const nlohmann::json &entry)
+{
+    return (std::make_unique<Sequence>(entry));
+}
+}; // namespace Entry
+}; // namespace LootTable

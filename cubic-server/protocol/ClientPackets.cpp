@@ -1,8 +1,8 @@
 #include "ClientPackets.hpp"
 
-#include "PacketUtils.hpp"
 #include "entities/Entity.hpp"
 #include "logging/logging.hpp"
+#include "PacketUtils.hpp"
 #include "protocol/serialization/addPrimaryType.hpp"
 #include "serialization/add.hpp"
 #include "world_storage/ChunkColumn.hpp"
@@ -482,7 +482,9 @@ std::unique_ptr<std::vector<uint8_t>> protocol::createUpdateEntityPosition(const
     return packet;
 }
 
-std::unique_ptr<std::vector<uint8_t>> protocol::createUpdateEntityPositionRotation(const UpdateEntityPositionRotation &in)
+std::unique_ptr<std::vector<uint8_t>> protocol::createUpdateEntityPositionRotation(
+    const UpdateEntityPositionRotation &in
+)
 {
     std::vector<uint8_t> payload;
     // clang-format off
@@ -769,7 +771,8 @@ std::unique_ptr<std::vector<uint8_t>> protocol::createUpdateSectionBlock(const U
 {
     std::vector<uint8_t> payload;
     int sectionY = world_storage::getSectionIndex(in.pos);
-    long chunkSectionPosition = ((in.chunkData.getChunkPos().x & 0x3FFFFF) << 42) | (sectionY & 0xFFFFF) | ((in.chunkData.getChunkPos().z & 0x3FFFFF) << 20);
+    long chunkSectionPosition = ((in.chunkData.getChunkPos().x & 0x3FFFFF) << 42) | (sectionY & 0xFFFFF)
+        | ((in.chunkData.getChunkPos().z & 0x3FFFFF) << 20);
     std::vector<long> blocks;
     for (auto [block, id] : in.blocks) {
         blocks.push_back(id << 12 | (block.x << 8 | block.z << 4 | block.y));

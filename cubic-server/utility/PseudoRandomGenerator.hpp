@@ -59,6 +59,6 @@ T PseudoRandomGenerator::generateNumber(T min, T max)
     }
 }
 
-}
+} // namespace utility
 
 #endif // UTILITY_PSEUDO_RANDOM_GENERATOR_HPP

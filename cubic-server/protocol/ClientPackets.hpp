@@ -7,12 +7,12 @@
 #include <utility>
 #include <vector>
 
-#include "PlayerAttributes.hpp"
-#include "Structures.hpp"
 #include "chat/Message.hpp"
 #include "common.hpp"
 #include "entities/EntityType.hpp"
+#include "PlayerAttributes.hpp"
 #include "protocol/container/Container.hpp"
+#include "Structures.hpp"
 #include "types.hpp"
 #include "world_storage/ChunkColumn.hpp"
 
@@ -626,7 +626,10 @@ struct EntitySoundEffect {
         seed(seed)
     {
     }
-    EntitySoundEffect(std::string soundName, bool hasFixedRange, float range, int32_t category, int32_t entityId, float volume, float pitch):
+    EntitySoundEffect(
+        std::string soundName, bool hasFixedRange, float range, int32_t category, int32_t entityId, float volume,
+        float pitch
+    ):
         soundId(0), // see https://wiki.vg/index.php?title=Protocol&oldid=18067#Entity_Sound_Effect
         soundName(soundName),
         hasFixedRange(hasFixedRange),
@@ -651,7 +654,9 @@ struct EntitySoundEffect {
 std::unique_ptr<std::vector<uint8_t>> createEntitySoundEffect(const EntitySoundEffect &);
 
 struct SoundEffect {
-    SoundEffect(int32_t soundId, int32_t category, int32_t x, int32_t y, int32_t z, float volume, float pitch, long seed):
+    SoundEffect(
+        int32_t soundId, int32_t category, int32_t x, int32_t y, int32_t z, float volume, float pitch, long seed
+    ):
         soundId(soundId + 1), // see https://wiki.vg/index.php?title=Protocol&oldid=18067#Entity_Sound_Effect
         category(category),
         x(x),
@@ -662,7 +667,10 @@ struct SoundEffect {
         seed(seed)
     {
     }
-    SoundEffect(std::string soundName, bool hasFixedRange, float range, int32_t category, int32_t x, int32_t y, int32_t z, float volume, float pitch, long seed):
+    SoundEffect(
+        std::string soundName, bool hasFixedRange, float range, int32_t category, int32_t x, int32_t y, int32_t z,
+        float volume, float pitch, long seed
+    ):
         soundId(0), // see https://wiki.vg/index.php?title=Protocol&oldid=18067#Entity_Sound_Effect
         soundName(soundName),
         hasFixedRange(hasFixedRange),
@@ -904,6 +912,6 @@ struct UpdateTags {
     std::vector<int> tags;
 };
 std::unique_ptr<std::vector<uint8_t>> createUpdateTags(const UpdateTags &);
-}
+} // namespace protocol
 
 #endif // CUBICSERVER_PROTOCOL_CLIENTPACKETS_HPP

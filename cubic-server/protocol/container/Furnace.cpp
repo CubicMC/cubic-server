@@ -1,6 +1,6 @@
 #include "Furnace.hpp"
-#include "Player.hpp"
 #include "logging/logging.hpp"
+#include "Player.hpp"
 #include "protocol/ClientPackets.hpp"
 #include "tiles-entities/Furnace.hpp"
 #include <memory>
@@ -15,7 +15,7 @@ protocol::container::Furnace::Furnace(std::weak_ptr<Player> player, std::shared_
     _playerId(player.lock()->getId()),
     _furnace(furnace)
 {
-    player.lock()->sendOpenScreen({this->id(), this->type(), this->title()});
+    player.lock()->sendOpenScreen({ this->id(), this->type(), this->title() });
     furnace->addPlayer(player, this->id());
 }
 

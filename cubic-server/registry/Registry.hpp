@@ -32,8 +32,14 @@ public:
         explicit T() = default;                                             \
         ~T() = default;                                                     \
                                                                             \
-        std::string_view name() const override { return N; }                \
-        static std::string_view staticName() { return N; }                  \
+        std::string_view name() const override                              \
+        {                                                                   \
+            return N;                                                       \
+        }                                                                   \
+        static std::string_view staticName()                                \
+        {                                                                   \
+            return N;                                                       \
+        }                                                                   \
                                                                             \
         T##Element &addEntry() override                                     \
         {                                                                   \
@@ -54,12 +60,15 @@ public:
     virtual Entry &addEntry() = 0;
 
     std::shared_ptr<nbt::Base> toNBT() const;
-    bool operator==(const std::string_view &name) const { return name == this->name(); }
+    bool operator==(const std::string_view &name) const
+    {
+        return name == this->name();
+    }
 
 protected:
     std::vector<std::shared_ptr<Entry>> _entries;
 };
 
-} // namespace regsitry
+} // namespace registry
 
 #endif // CUBICSERVER_REGISTRY_HPP

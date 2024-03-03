@@ -15,6 +15,9 @@ bool Reference::verify(const LootContext *context) const
     return (true);
 }
 
-std::unique_ptr<Condition> Reference::create(const nlohmann::json &condition) { return (std::make_unique<Reference>(condition)); }
-};
-};
+std::unique_ptr<Condition> Reference::create(const nlohmann::json &condition)
+{
+    return (std::make_unique<Reference>(condition));
+}
+}; // namespace Condition
+}; // namespace LootTable

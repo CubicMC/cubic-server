@@ -30,6 +30,9 @@ bool Group::poll(LootTablePoll &poll, LootContext *context) const
     return (true);
 }
 
-std::unique_ptr<Entry> Group::creator(const nlohmann::json &entry) { return (std::make_unique<Group>(entry)); }
-};
-};
+std::unique_ptr<Entry> Group::creator(const nlohmann::json &entry)
+{
+    return (std::make_unique<Group>(entry));
+}
+}; // namespace Entry
+}; // namespace LootTable

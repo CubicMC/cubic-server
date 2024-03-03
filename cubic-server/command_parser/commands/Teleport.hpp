@@ -29,6 +29,6 @@ struct Tp : public CommandBase {
     void execute(std::vector<std::string> &args, Player *invoker) const override;
     void help(std::vector<std::string> &args, Player *invoker) const override;
 };
-}
+} // namespace command_parser
 
 #endif /* A5E95914_3DC3_4AC3_A2FB_9A3E3E2CB929 */

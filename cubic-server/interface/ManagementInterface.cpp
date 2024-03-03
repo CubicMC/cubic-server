@@ -61,6 +61,9 @@ bool ManagementInterface::onTimeout()
     return true;
 }
 
-void ManagementInterface::stop() { this->close(); }
+void ManagementInterface::stop()
+{
+    this->close();
+}
 
 ManagementInterface::~ManagementInterface() { }

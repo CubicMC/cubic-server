@@ -8,8 +8,14 @@ SetAttributes::SetAttributes(const nlohmann::json &function):
     this->setValidity(true);
 }
 
-void SetAttributes::apply(const LootContext &context) { (void) context; }
+void SetAttributes::apply(const LootContext &context)
+{
+    (void) context;
+}
 
-std::unique_ptr<Function> SetAttributes::create(const nlohmann::json &function) { return (std::make_unique<SetAttributes>(function)); }
-};
-};
+std::unique_ptr<Function> SetAttributes::create(const nlohmann::json &function)
+{
+    return (std::make_unique<SetAttributes>(function));
+}
+}; // namespace Function
+}; // namespace LootTable

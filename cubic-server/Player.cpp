@@ -1,37 +1,37 @@
 #include "Player.hpp"
 
+#include "blocks.hpp"
 #include "Chat.hpp"
 #include "Client.hpp"
-#include "Dimension.hpp"
-#include "PlayerAttributes.hpp"
-#include "PluginManager.hpp"
-#include "Server.hpp"
-#include "World.hpp"
-#include "blocks.hpp"
 #include "command_parser/CommandParser.hpp"
+#include "Dimension.hpp"
 #include "entities/ArmorStats.hpp"
 #include "entities/Entity.hpp"
 #include "entities/Item.hpp"
 #include "entities/LivingEntity.hpp"
 #include "events/CancelEvents.hpp"
-#include "items/UsableItem.hpp"
 #include "items/foodItems.hpp"
 #include "items/toolsDamage.hpp"
 #include "items/usable-items/FlintAndSteel.hpp"
 #include "items/usable-items/Hoe.hpp"
+#include "items/UsableItem.hpp"
 #include "logging/logging.hpp"
 #include "nbt.h"
 #include "options.hpp"
+#include "PlayerAttributes.hpp"
+#include "PluginManager.hpp"
 #include "protocol/ClientPackets.hpp"
-#include "protocol/ServerPackets.hpp"
-#include "protocol/Structures.hpp"
 #include "protocol/common.hpp"
 #include "protocol/container/Container.hpp"
 #include "protocol/container/CraftingTable.hpp"
 #include "protocol/container/Furnace.hpp"
 #include "protocol/container/Inventory.hpp"
 #include "protocol/metadata.hpp"
+#include "protocol/ServerPackets.hpp"
+#include "protocol/Structures.hpp"
+#include "Server.hpp"
 #include "tiles-entities/Furnace.hpp"
+#include "World.hpp"
 #include "world_storage/Level.hpp"
 
 #include <algorithm>
@@ -54,13 +54,13 @@ Player::Player(std::weak_ptr<Client> cli, std::shared_ptr<Dimension> dim, u128 u
     _keepAliveIgnored(0),
     _gamemode(player_attributes::gamemodeFromString(CONFIG["gamemode"].as<std::string>())),
     _keepAliveClock(200, std::bind(&Player::_processKeepAlive, this)), // 5 seconds for keep-alives
-    _synchronizeClock(20, std::bind(&Player::synchronize, this)), // 1 seconds for synchronization
+    _synchronizeClock(20, std::bind(&Player::synchronize, this)),      // 1 seconds for synchronization
     _inventory(std::make_shared<protocol::container::Inventory>()),
-    _foodLevel(player_attributes::MAX_FOOD_LEVEL - 4), // TODO: Take this from the saved data
+    _foodLevel(player_attributes::MAX_FOOD_LEVEL - 4),                      // TODO: Take this from the saved data
     _foodSaturationLevel(player_attributes::DEFAULT_FOOD_SATURATION_LEVEL), // TODO: Take this from the saved data
-    _foodTickTimer(0), // TODO: Take this from the saved data
-    _foodExhaustionLevel(0.0f), // TODO: Take this from the saved data
-    _respawnPoint(0, 75, 0), // TODO: Take this from the saved data
+    _foodTickTimer(0),                                                      // TODO: Take this from the saved data
+    _foodExhaustionLevel(0.0f),                                             // TODO: Take this from the saved data
+    _respawnPoint(0, 75, 0),                                                // TODO: Take this from the saved data
     _chatVisibility(protocol::ClientInformation::ChatVisibility::Enabled),
     _isFlying(true), // TODO: Take this from the saved data
     _isJumping(false),
@@ -93,19 +93,27 @@ Player::Player(std::weak_ptr<Client> cli, std::shared_ptr<Dimension> dim, u128 u
     nbt_set_tag_name(display, DISPLAY_TAG.data(), DISPLAY_TAG.size());
     nbt_tag_compound_append(display, name);
     nbt_tag_compound_append(root, display);
-    Items::Hoe hoe = Items::Hoe("minecraft:wooden_hoe", 756, Items::ItemMaxDurabilityByType::WoodenItem, false, Items::UsabilityType::BothMouseClicksUsable);
+    Items::Hoe hoe = Items::Hoe(
+        "minecraft:wooden_hoe", 756, Items::ItemMaxDurabilityByType::WoodenItem, false,
+        Items::UsabilityType::BothMouseClicksUsable
+    );
     auto hoeRoot = hoe.setNbtTag();
     Items::FlintAndSteel flint = Items::FlintAndSteel();
     auto flintRoot = flint.setNbtTag();
 
     this->_inventory->playerInventory().at(14) = protocol::Slot(true, 1, 12, root);
-    this->_inventory->playerInventory().at(15) = protocol::Slot(true, ITEM_CONVERTER.fromItemToProtocolId("minecraft:obsidian"), 40);
+    this->_inventory->playerInventory().at(15
+    ) = protocol::Slot(true, ITEM_CONVERTER.fromItemToProtocolId("minecraft:obsidian"), 40);
     this->_inventory->playerInventory().at(16) = protocol::Slot(true, flint._numeralId, 1, flintRoot);
     this->_inventory->playerInventory().at(17) = protocol::Slot(true, hoe._numeralId, 1, hoeRoot);
-    this->_inventory->playerInventory().at(18) = protocol::Slot(true, ITEM_CONVERTER.fromItemToProtocolId("minecraft:wooden_sword"), 1);
-    this->_inventory->playerInventory().at(19) = protocol::Slot(true, ITEM_CONVERTER.fromItemToProtocolId("minecraft:coal"), 1);
-    this->_inventory->playerInventory().at(20) = protocol::Slot(true, ITEM_CONVERTER.fromItemToProtocolId("minecraft:oak_log"), 1);
-    this->_inventory->playerInventory().at(21) = protocol::Slot(true, ITEM_CONVERTER.fromItemToProtocolId("minecraft:cobblestone"), 10);
+    this->_inventory->playerInventory().at(18
+    ) = protocol::Slot(true, ITEM_CONVERTER.fromItemToProtocolId("minecraft:wooden_sword"), 1);
+    this->_inventory->playerInventory().at(19
+    ) = protocol::Slot(true, ITEM_CONVERTER.fromItemToProtocolId("minecraft:coal"), 1);
+    this->_inventory->playerInventory().at(20
+    ) = protocol::Slot(true, ITEM_CONVERTER.fromItemToProtocolId("minecraft:oak_log"), 1);
+    this->_inventory->playerInventory().at(21
+    ) = protocol::Slot(true, ITEM_CONVERTER.fromItemToProtocolId("minecraft:cobblestone"), 10);
     PEXP(incrementPlayerCountGlobal);
 }
 
@@ -129,7 +137,7 @@ void Player::tick()
 
     Entity::tick();
     if (_pos.y < -100) // TODO: Change that
-        teleport({_pos.x, -58, _pos.z});
+        teleport({ _pos.x, -58, _pos.z });
 }
 
 void Player::synchronize()
@@ -138,15 +146,30 @@ void Player::synchronize()
     // TODO: synchronize further data (for example other entities)
 }
 
-std::weak_ptr<Client> Player::getClient() const { return _cli; }
+std::weak_ptr<Client> Player::getClient() const
+{
+    return _cli;
+}
 
-const std::string &Player::getUsername() const { return _username; }
+const std::string &Player::getUsername() const
+{
+    return _username;
+}
 
-uint8_t Player::getHeldItem() const { return this->_heldItem; }
+uint8_t Player::getHeldItem() const
+{
+    return this->_heldItem;
+}
 
-player_attributes::Gamemode Player::getGamemode() const { return _gamemode; }
+player_attributes::Gamemode Player::getGamemode() const
+{
+    return _gamemode;
+}
 
-const protocol::ClientInformation::ChatVisibility &Player::getChatVisibility() const { return this->_chatVisibility; }
+const protocol::ClientInformation::ChatVisibility &Player::getChatVisibility() const
+{
+    return this->_chatVisibility;
+}
 
 void Player::setGamemode(player_attributes::Gamemode gamemode)
 {
@@ -169,9 +192,15 @@ void Player::setGamemode(player_attributes::Gamemode gamemode)
     this->setToughness(toughness);
 }
 
-void Player::setOperator(const bool isOp) { this->_isOperator = isOp; }
+void Player::setOperator(const bool isOp)
+{
+    this->_isOperator = isOp;
+}
 
-bool Player::isOperator() const { return this->_isOperator; }
+bool Player::isOperator() const
+{
+    return this->_isOperator;
+}
 
 NODISCARD const std::vector<protocol::PlayerProperty> &Player::getProperties() const
 {
@@ -185,7 +214,7 @@ NODISCARD const std::vector<protocol::PlayerProperty> &Player::getProperties() c
 void Player::disconnect(const chat::Message &reason)
 {
     GET_CLIENT();
-    auto pck = protocol::createPlayDisconnect({reason.serialize()});
+    auto pck = protocol::createPlayDisconnect({ reason.serialize() });
     client->doWrite(std::move(pck));
     client->_isRunning = false;
     N_LDEBUG("Sent a disconnect play packet");
@@ -194,13 +223,25 @@ void Player::disconnect(const chat::Message &reason)
 
 #pragma region ClientBound
 
-long Player::keepAliveId() const { return _keepAliveId; }
+long Player::keepAliveId() const
+{
+    return _keepAliveId;
+}
 
-void Player::setKeepAliveId(long id) { _keepAliveId = id; }
+void Player::setKeepAliveId(long id)
+{
+    _keepAliveId = id;
+}
 
-void Player::setKeepAliveIgnored(uint8_t ign) { _keepAliveIgnored = ign; }
+void Player::setKeepAliveIgnored(uint8_t ign)
+{
+    _keepAliveIgnored = ign;
+}
 
-uint8_t Player::keepAliveIgnored() const { return _keepAliveIgnored; }
+uint8_t Player::keepAliveIgnored() const
+{
+    return _keepAliveIgnored;
+}
 
 void Player::setPosition(const Vector3<double> &pos, bool onGround)
 {
@@ -211,7 +252,8 @@ void Player::setPosition(const Vector3<double> &pos, bool onGround)
 
     if (onGround && _isFlying)
         _isFlying = false;
-    if (!onGround && !_isJumping && !_isFlying && ((pos.y + (-world_storage::CHUNK_HEIGHT_MIN)) - (_pos.y + (-world_storage::CHUNK_HEIGHT_MIN)) > 0)) {
+    if (!onGround && !_isJumping && !_isFlying
+        && ((pos.y + (-world_storage::CHUNK_HEIGHT_MIN)) - (_pos.y + (-world_storage::CHUNK_HEIGHT_MIN)) > 0)) {
         _isJumping = true;
         _isFlying = true;
     }
@@ -219,7 +261,8 @@ void Player::setPosition(const Vector3<double> &pos, bool onGround)
     if (_sprinting && !_isFlying)
         _foodExhaustionLevel += oldPos2d.distance(newPos2d) * player_attributes::FOOD_EXHAUSTION_SPRINTING_MULTIPLIER;
     if (_isJumping) {
-        _foodExhaustionLevel += _sprinting ? player_attributes::FOOD_EXHAUSTION_SPRINTING_JUMP : player_attributes::FOOD_EXHAUSTION_JUMP;
+        _foodExhaustionLevel += _sprinting ? player_attributes::FOOD_EXHAUSTION_SPRINTING_JUMP
+                                           : player_attributes::FOOD_EXHAUSTION_JUMP;
         _isJumping = false;
     }
 
@@ -228,7 +271,10 @@ void Player::setPosition(const Vector3<double> &pos, bool onGround)
     _updateRenderedChunks(oldChunkPos, newChunkPos);
 }
 
-void Player::setPosition(double x, double y, double z, bool onGround) { this->setPosition({x, y, z}, onGround); }
+void Player::setPosition(double x, double y, double z, bool onGround)
+{
+    this->setPosition({ x, y, z }, onGround);
+}
 
 void Player::updatePlayerInfo(const protocol::PlayerInfoUpdate &data)
 {
@@ -239,14 +285,19 @@ void Player::updatePlayerInfo(const protocol::PlayerInfoUpdate &data)
     }
 }
 
-void Player::updateEquipment(bool mainHand, UNUSED bool offHand, UNUSED bool boots, UNUSED bool leggings, UNUSED bool chestplate, UNUSED bool helmet)
+void Player::updateEquipment(
+    bool mainHand, UNUSED bool offHand, UNUSED bool boots, UNUSED bool leggings, UNUSED bool chestplate,
+    UNUSED bool helmet
+)
 {
     protocol::SetEquipment equip;
 
     equip.entityId = this->getId();
 
     if (mainHand)
-        equip.equipment.push_back(std::make_pair(protocol::SetEquipment::EquipmentPosition::MainHand, this->_inventory->hotbar().at(this->_heldItem)));
+        equip.equipment.push_back(std::make_pair(
+            protocol::SetEquipment::EquipmentPosition::MainHand, this->_inventory->hotbar().at(this->_heldItem)
+        ));
 
     for (const auto &player : this->getDimension()->getPlayers()) {
         if (player->getId() != this->getId())
@@ -261,9 +312,10 @@ void Player::closeContainer(uint8_t id)
         return;
     }
 
-    auto it = std::find_if(_containers.begin(), _containers.end(), [id](const std::shared_ptr<const protocol::container::Container> &container) {
-        return container->id() == id;
-    });
+    auto it = std::find_if(
+        _containers.begin(), _containers.end(),
+        [id](const std::shared_ptr<const protocol::container::Container> &container) { return container->id() == id; }
+    );
     if (it == _containers.end())
         return;
     (*it)->close(dynamicSharedFromThis<Player>());
@@ -277,10 +329,11 @@ void Player::playSoundEffect(SoundsList sound, FloatingPosition position, SoundC
     auto pck = protocol::createSoundEffect({
         (int32_t) sound, (int32_t) category,
         // https://wiki.vg/Data_types#Fixed-point_numbers
-        static_cast<int32_t>(position.x * 32.0), static_cast<int32_t>(position.y * 32.0), static_cast<int32_t>(position.z * 32.0),
+        static_cast<int32_t>(position.x * 32.0), static_cast<int32_t>(position.y * 32.0),
+        static_cast<int32_t>(position.z * 32.0),
         0.5, // TODO: get the right volume
         1.0, // TODO: get the right pitch
-        0 // TODO: get the right seed
+        0    // TODO: get the right seed
     });
     client->doWrite(std::move(pck));
     N_LDEBUG("Sent a sound effect packet");
@@ -301,7 +354,7 @@ void Player::playSoundEffect(SoundsList sound, const Entity &entity, SoundCatego
         (int32_t) sound, (int32_t) category, entity.getId(),
         1.0, // TODO: get the right volume
         1.0, // TODO: get the right pitch
-        1 // TODO: get the right seed
+        1    // TODO: get the right seed
     });
     client->doWrite(std::move(pck));
     N_LDEBUG("Sent a entity sound effect packet");
@@ -318,7 +371,7 @@ void Player::playSoundEffect(const protocol::EntitySoundEffect &packet)
 void Player::stopSound(uint8_t flags, SoundCategory category, std::string sound)
 {
     GET_CLIENT();
-    auto pck = protocol::createStopSound({flags, (int32_t) category, sound});
+    auto pck = protocol::createStopSound({ flags, (int32_t) category, sound });
     client->doWrite(std::move(pck));
     N_LDEBUG("Sent a stop sound packet");
 }
@@ -405,19 +458,19 @@ void Player::sendSpawnEntity(const Entity &data)
 {
     GET_CLIENT();
     auto pck = protocol::createSpawnEntity({
-        data.getId(), // Entity ID
-        data.getUuid(), // Entity UUID
-        data.getType(), // Entity Type
+        data.getId(),         // Entity ID
+        data.getUuid(),       // Entity UUID
+        data.getType(),       // Entity Type
         data.getPosition().x, // Entity Position X
         data.getPosition().y, // Entity Position Y
         data.getPosition().z, // Entity Position Z
-        0, // Entity Pitch
-        0, // Entity Yaw
-        0, // Entity Head Yaw
-        0, // Entity data
-        0, // Entity Velocity X
-        0, // Entity Velocity Y
-        0 // Entity Velocity Z
+        0,                    // Entity Pitch
+        0,                    // Entity Yaw
+        0,                    // Entity Head Yaw
+        0,                    // Entity data
+        0,                    // Entity Velocity X
+        0,                    // Entity Velocity Y
+        0                     // Entity Velocity Z
     });
     client->doWrite(std::move(pck));
 
@@ -439,7 +492,10 @@ void Player::sendEntityVelocity(const protocol::EntityVelocity &data)
     auto pck = protocol::createEntityVelocity(data);
     client->doWrite(std::move(pck));
 
-    N_LDEBUG("Sent an Entity Velocity packet with velocity: x -> {} | y -> {} | z -> {}", data.velocityX, data.velocityY, data.velocityZ);
+    N_LDEBUG(
+        "Sent an Entity Velocity packet with velocity: x -> {} | y -> {} | z -> {}", data.velocityX, data.velocityY,
+        data.velocityZ
+    );
 }
 
 void Player::sendSetEquipment(const protocol::SetEquipment &data)
@@ -454,7 +510,7 @@ void Player::sendSetEquipment(const protocol::SetEquipment &data)
 void Player::sendHealth(void)
 {
     GET_CLIENT();
-    auto pck = protocol::createHealth({_health, _foodLevel, _foodSaturationLevel});
+    auto pck = protocol::createHealth({ _health, _foodLevel, _foodSaturationLevel });
     client->doWrite(std::move(pck));
 
     N_LDEBUG("Sent a Health packet");
@@ -596,13 +652,16 @@ void Player::sendSynchronizePlayerPosition()
     LDEBUG("Synchronized player position");
 }
 
-void Player::sendChunkAndLightUpdate(const Position2D &pos) { this->sendChunkAndLightUpdate(pos.x, pos.z); }
+void Player::sendChunkAndLightUpdate(const Position2D &pos)
+{
+    this->sendChunkAndLightUpdate(pos.x, pos.z);
+}
 
 void Player::sendChunkAndLightUpdate(int32_t x, int32_t z)
 {
     if (!this->_dim->hasChunkLoaded(x, z)) {
         this->_dim->loadOrGenerateChunk(x, z, dynamic_pointer_cast<Player>(shared_from_this()));
-        this->_chunks[{x, z}] = ChunkState::Loading;
+        this->_chunks[{ x, z }] = ChunkState::Loading;
         return;
     }
 
@@ -630,9 +689,9 @@ void Player::sendChunkAndLightUpdate(const world_storage::ChunkColumn &chunk)
     // auto worldSurfaceList = NBT_MAKE(nbt::List, "WORLD_SURFACE", worldSurface);
 
     auto packet = protocol::createChunkDataAndLightUpdate(
-        {chunkPos.x, chunkPos.z,
-         // std::shared_ptr<nbt::Compound>(new nbt::Compound("", {motionBlockingList, worldSurfaceList})),
-         chunk}
+        { chunkPos.x, chunkPos.z,
+          // std::shared_ptr<nbt::Compound>(new nbt::Compound("", {motionBlockingList, worldSurfaceList})),
+          chunk }
     );
 
     client->doWrite(std::move(packet));
@@ -646,7 +705,7 @@ void Player::sendChunkAndLightUpdate(const world_storage::ChunkColumn &chunk)
 void Player::sendUnloadChunk(int32_t x, int32_t z)
 {
     GET_CLIENT();
-    auto pck = protocol::createUnloadChunk({x, z});
+    auto pck = protocol::createUnloadChunk({ x, z });
     client->doWrite(std::move(pck));
     N_LDEBUG("Sent an unload chunk packet ({}, {})", x, z);
 }
@@ -654,7 +713,7 @@ void Player::sendUnloadChunk(int32_t x, int32_t z)
 void Player::sendRemoveEntities(const std::vector<int32_t> &entities)
 {
     GET_CLIENT();
-    auto pck = protocol::createRemoveEntities({entities});
+    auto pck = protocol::createRemoveEntities({ entities });
     client->doWrite(std::move(pck));
     N_LDEBUG("Sent a Remove Entities packet");
 }
@@ -669,7 +728,9 @@ void Player::sendRespawn(const protocol::Respawn &packet)
 
 void Player::sendSwingArm(bool mainHand, int32_t swingerId)
 {
-    sendEntityAnimation(mainHand ? protocol::EntityAnimation::ID::SwingMainArm : protocol::EntityAnimation::ID::SwingOffHand, swingerId);
+    sendEntityAnimation(
+        mainHand ? protocol::EntityAnimation::ID::SwingMainArm : protocol::EntityAnimation::ID::SwingOffHand, swingerId
+    );
     N_LDEBUG("Sent a Swing Arm packet");
 }
 
@@ -684,7 +745,7 @@ void Player::sendEntityAnimation(protocol::EntityAnimation::ID animId, int32_t e
 void Player::sendTeleportEntity(int32_t id, const Vector3<double> &pos, const Vector2<uint8_t> &rot)
 {
     GET_CLIENT();
-    auto pck = protocol::createTeleportEntity({id, pos.x, pos.y, pos.z, rot.x, rot.z, false});
+    auto pck = protocol::createTeleportEntity({ id, pos.x, pos.y, pos.z, rot.x, rot.z, false });
     client->doWrite(std::move(pck));
     N_LDEBUG("Sent a Teleport Entity");
 }
@@ -708,7 +769,7 @@ void Player::sendGameEvent(const protocol::GameEvent &packet)
 void Player::sendCloseContainer(uint8_t containerId)
 {
     GET_CLIENT();
-    auto pck = protocol::createCloseContainer({containerId});
+    auto pck = protocol::createCloseContainer({ containerId });
     client->doWrite(std::move(pck));
     N_LDEBUG("Sent a Close Container packet");
 }
@@ -900,11 +961,20 @@ void Player::sendTitleAnimationTimes(const protocol::SetTitleAnimationTimes &pac
 #pragma endregion
 #pragma region ServerBound
 
-void Player::_onConfirmTeleportation(UNUSED protocol::ConfirmTeleportation &pck) { N_LDEBUG("Got a Confirm Teleportation"); }
+void Player::_onConfirmTeleportation(UNUSED protocol::ConfirmTeleportation &pck)
+{
+    N_LDEBUG("Got a Confirm Teleportation");
+}
 
-void Player::_onQueryBlockEntityTag(UNUSED protocol::QueryBlockEntityTag &pck) { N_LDEBUG("Got a Query Block Entity Tag"); }
+void Player::_onQueryBlockEntityTag(UNUSED protocol::QueryBlockEntityTag &pck)
+{
+    N_LDEBUG("Got a Query Block Entity Tag");
+}
 
-void Player::_onChangeDifficulty(UNUSED protocol::ChangeDifficulty &pck) { N_LDEBUG("Got a Change difficulty"); }
+void Player::_onChangeDifficulty(UNUSED protocol::ChangeDifficulty &pck)
+{
+    N_LDEBUG("Got a Change difficulty");
+}
 
 // Receive a chat message from the client, transmit it to the chat system.
 void Player::_onChatMessage(protocol::ChatMessage &pck)
@@ -914,7 +984,10 @@ void Player::_onChatMessage(protocol::ChatMessage &pck)
     N_LDEBUG("Got a Chat Message");
 }
 
-void Player::_onMessageAcknowledgement(UNUSED protocol::MessageAcknowledgement &pck) { N_LINFO("Got a Message Acknowledgement"); }
+void Player::_onMessageAcknowledgement(UNUSED protocol::MessageAcknowledgement &pck)
+{
+    N_LINFO("Got a Message Acknowledgement");
+}
 
 /**
  * @brief This function is called when a client sends a command in the chat.
@@ -928,7 +1001,10 @@ void Player::_onChatCommand(protocol::ChatCommand &pck)
     command_parser::parseCommand(pck.command, this);
 }
 
-void Player::_onClientCommand(UNUSED protocol::ClientCommand &pck) { N_LDEBUG("Got a Client Command"); }
+void Player::_onClientCommand(UNUSED protocol::ClientCommand &pck)
+{
+    N_LDEBUG("Got a Client Command");
+}
 
 void Player::_onClientInformation(protocol::ClientInformation &pck)
 {
@@ -936,7 +1012,10 @@ void Player::_onClientInformation(protocol::ClientInformation &pck)
     N_LDEBUG("Got a Client Information");
 }
 
-void Player::_onCommandSuggestionRequest(UNUSED protocol::CommandSuggestionRequest &pck) { N_LDEBUG("Got a Command Suggestion Request"); }
+void Player::_onCommandSuggestionRequest(UNUSED protocol::CommandSuggestionRequest &pck)
+{
+    N_LDEBUG("Got a Command Suggestion Request");
+}
 
 void Player::_onClickContainerButton(protocol::ClickContainerButton &pck)
 {
@@ -983,16 +1062,23 @@ void Player::_onPluginMessage(protocol::PluginMessage &pck)
     if (pck.channel == "minecraft:brand") {
         N_LDEBUG("Got a branding request");
         auto pck = protocol::createPluginMessageResponse({
-            "minecraft:brand", std::vector<uint8_t>({0x05, 0x43, 0x75, 0x62, 0x69, 0x63}) // 43 75 62 69 63 | "Cubic" in hex
+            "minecraft:brand",
+            std::vector<uint8_t>({ 0x05, 0x43, 0x75, 0x62, 0x69, 0x63 }) // 43 75 62 69 63 | "Cubic" in hex
         });
         client->doWrite(std::move(pck));
         return;
     }
 }
 
-void Player::_onEditBook(UNUSED protocol::EditBook &pck) { N_LDEBUG("Got a Edit Book"); }
+void Player::_onEditBook(UNUSED protocol::EditBook &pck)
+{
+    N_LDEBUG("Got a Edit Book");
+}
 
-void Player::_onQueryEntityTag(UNUSED protocol::QueryEntityTag &pck) { N_LDEBUG("Got a Query Entity Tag"); }
+void Player::_onQueryEntityTag(UNUSED protocol::QueryEntityTag &pck)
+{
+    N_LDEBUG("Got a Query Entity Tag");
+}
 
 /*
  * @brief Handle a player's interaction with an entity.
@@ -1016,9 +1102,10 @@ void Player::_onInteract(protocol::Interact &pck)
             return;
         }
         Items::ToolDescription tool;
-        const auto currentTool = std::find_if(Items::toolsDamage.begin(), Items::toolsDamage.end(), [&](const auto &tool) {
-            return tool.id == _inventory->hotbar().at(_heldItem).itemID;
-        });
+        const auto currentTool = std::find_if(
+            Items::toolsDamage.begin(), Items::toolsDamage.end(),
+            [&](const auto &tool) { return tool.id == _inventory->hotbar().at(_heldItem).itemID; }
+        );
         if (currentTool == Items::toolsDamage.end()) {
             tool.damage = 1;
             tool.attackSpeed = 4;
@@ -1043,7 +1130,10 @@ void Player::_onInteract(protocol::Interact &pck)
     N_LDEBUG("Got a Interact");
 }
 
-void Player::_onJigsawGenerate(UNUSED protocol::JigsawGenerate &pck) { N_LDEBUG("Got a Jigsaw Generate"); }
+void Player::_onJigsawGenerate(UNUSED protocol::JigsawGenerate &pck)
+{
+    N_LDEBUG("Got a Jigsaw Generate");
+}
 
 void Player::_onKeepAliveResponse(protocol::KeepAliveResponse &pck)
 {
@@ -1057,16 +1147,19 @@ void Player::_onKeepAliveResponse(protocol::KeepAliveResponse &pck)
     N_LDEBUG("Got a Keep Alive Response");
 }
 
-void Player::_onLockDifficulty(UNUSED protocol::LockDifficulty &pck) { N_LDEBUG("Got a Lock Difficulty"); }
+void Player::_onLockDifficulty(UNUSED protocol::LockDifficulty &pck)
+{
+    N_LDEBUG("Got a Lock Difficulty");
+}
 
 void Player::playerPickupItem()
 {
     auto entity = Entity::pickupItem();
     if (entity != nullptr) {
         auto item = std::dynamic_pointer_cast<Item>(entity)->getItem();
-        this->sendPickupItem({entity->getId(), this->getId(), item.itemCount});
+        this->sendPickupItem({ entity->getId(), this->getId(), item.itemCount });
         this->_inventory->insert(item);
-        this->sendSetContainerContent({_inventory});
+        this->sendSetContainerContent({ _inventory });
         this->getDimension()->removeEntity(entity->getId());
         this->updateEquipment(true, false, false, false, false, false);
     }
@@ -1076,7 +1169,7 @@ void Player::_onSetPlayerPosition(protocol::SetPlayerPosition &pck)
 {
     N_LDEBUG("Got a Set Player Position ({}, {}, {})", pck.x, pck.feetY, pck.z);
     // TODO: Validate the position
-    onEvent(Server::getInstance()->getPluginManager(), onEntityMove, this, _pos, {pck.x, pck.feetY, pck.z});
+    onEvent(Server::getInstance()->getPluginManager(), onEntityMove, this, _pos, { pck.x, pck.feetY, pck.z });
     this->setPosition(pck.x, pck.feetY, pck.z, pck.onGround);
     playerPickupItem();
 }
@@ -1086,8 +1179,11 @@ void Player::_onSetPlayerPositionAndRotation(protocol::SetPlayerPositionAndRotat
     N_LDEBUG("Got a Set Player Position And Rotation ({}, {}, {})", pck.x, pck.feetY, pck.z);
     // TODO: Validate the position
 
-    onEvent(Server::getInstance()->getPluginManager(), onEntityMove, this, _pos, {pck.x, pck.feetY, pck.z});
-    onEvent(Server::getInstance()->getPluginManager(), onEntityRotate, this, {_rot.x, _rot.z, 0}, {(uint8_t) pck.yaw, (uint8_t) pck.pitch, 0});
+    onEvent(Server::getInstance()->getPluginManager(), onEntityMove, this, _pos, { pck.x, pck.feetY, pck.z });
+    onEvent(
+        Server::getInstance()->getPluginManager(), onEntityRotate, this, { _rot.x, _rot.z, 0 },
+        { (uint8_t) pck.yaw, (uint8_t) pck.pitch, 0 }
+    );
     this->setPosition(pck.x, pck.feetY, pck.z, pck.onGround);
     this->setRotation(pck.yaw, pck.pitch);
     playerPickupItem();
@@ -1097,25 +1193,43 @@ void Player::_onSetPlayerRotation(protocol::SetPlayerRotation &pck)
 {
     N_LDEBUG("Got a Set Player Rotation");
     this->setRotation(pck.yaw, pck.pitch);
-    onEvent(Server::getInstance()->getPluginManager(), onEntityRotate, this, {_rot.x, _rot.z, 0}, {(uint8_t) pck.yaw, (uint8_t) pck.pitch, 0});
+    onEvent(
+        Server::getInstance()->getPluginManager(), onEntityRotate, this, { _rot.x, _rot.z, 0 },
+        { (uint8_t) pck.yaw, (uint8_t) pck.pitch, 0 }
+    );
 }
 
-void Player::_onSetPlayerOnGround(UNUSED protocol::SetPlayerOnGround &pck) { N_LDEBUG("Got a Set Player On Ground"); }
+void Player::_onSetPlayerOnGround(UNUSED protocol::SetPlayerOnGround &pck)
+{
+    N_LDEBUG("Got a Set Player On Ground");
+}
 
-void Player::_onMoveVehicle(UNUSED protocol::MoveVehicle &pck) { N_LDEBUG("Got a Move Vehicle"); }
+void Player::_onMoveVehicle(UNUSED protocol::MoveVehicle &pck)
+{
+    N_LDEBUG("Got a Move Vehicle");
+}
 
-void Player::_onPaddleBoat(UNUSED protocol::PaddleBoat &pck) { N_LDEBUG("Got a Paddle Boat"); }
+void Player::_onPaddleBoat(UNUSED protocol::PaddleBoat &pck)
+{
+    N_LDEBUG("Got a Paddle Boat");
+}
 
-void Player::_onPickItem(UNUSED protocol::PickItem &pck) { N_LDEBUG("Got a Pick Item"); }
+void Player::_onPickItem(UNUSED protocol::PickItem &pck)
+{
+    N_LDEBUG("Got a Pick Item");
+}
 
-void Player::_onPlaceRecipe(UNUSED protocol::PlaceRecipe &pck) { N_LDEBUG("Got a Place Recipe"); }
+void Player::_onPlaceRecipe(UNUSED protocol::PlaceRecipe &pck)
+{
+    N_LDEBUG("Got a Place Recipe");
+}
 
 void Player::_onPlayerAbilities(protocol::PlayerAbilities &pck)
 {
     this->_isFlying = pck.flags & player_attributes::AbilitiesFlags::Flying;
     uint8_t flags = this->_isFlying ? player_attributes::AbilitiesFlags::Flying : 0x00;
     flags |= player_attributes::getAbilitiesByGamemode(getGamemode());
-    this->sendPlayerAbilities({flags, 0.05f, 0.1f});
+    this->sendPlayerAbilities({ flags, 0.05f, 0.1f });
     N_LDEBUG("Got a Player Abilities");
 }
 
@@ -1147,8 +1261,9 @@ void Player::_onPlayerAction(protocol::PlayerAction &pck)
                 int id = ITEM_CONVERTER.fromItemToProtocolId(GLOBAL_PALETTE.fromProtocolIdToBlock(targetedBlock).name);
                 this->getDimension()->updateBlock(pck.location, 0);
                 _foodExhaustionLevel += 0.005;
-                _dim->makeEntity<Item>(protocol::Slot {true, id, 1})
-                    ->dropItem({static_cast<double>(pck.location.x) + 0.5, static_cast<double>(pck.location.y), static_cast<double>(pck.location.z) + 0.5});
+                _dim->makeEntity<Item>(protocol::Slot{ true, id, 1 })
+                    ->dropItem({ static_cast<double>(pck.location.x) + 0.5, static_cast<double>(pck.location.y),
+                                 static_cast<double>(pck.location.z) + 0.5 });
             }
         }
         break;
@@ -1162,8 +1277,11 @@ void Player::_onPlayerAction(protocol::PlayerAction &pck)
         }
         auto item = this->_inventory->hotbar().at(this->_heldItem).getUsableItemFromSlot();
         if (Items::Hoe *usedItem = std::get_if<Items::Hoe>(&item)) {
-            if (usedItem->_usabilityType == Items::UsabilityType::LeftMouseClickUsable || usedItem->_usabilityType == Items::UsabilityType::BothMouseClicksUsable) {
-                usedItem->onUseOn(this->getDimension(), pck.location, Items::UsabilityType::LeftMouseClickUsable, 1, *this);
+            if (usedItem->_usabilityType == Items::UsabilityType::LeftMouseClickUsable
+                || usedItem->_usabilityType == Items::UsabilityType::BothMouseClicksUsable) {
+                usedItem->onUseOn(
+                    this->getDimension(), pck.location, Items::UsabilityType::LeftMouseClickUsable, 1, *this
+                );
                 if (usedItem->canUpdateDamage) {
                     this->_inventory->hotbar().at(this->_heldItem).updateDamage();
                 }
@@ -1172,8 +1290,9 @@ void Player::_onPlayerAction(protocol::PlayerAction &pck)
         int id = ITEM_CONVERTER.fromItemToProtocolId(GLOBAL_PALETTE.fromProtocolIdToBlock(targetedBlock).name);
         this->getDimension()->updateBlock(pck.location, 0);
         _foodExhaustionLevel += 0.005;
-        _dim->makeEntity<Item>(protocol::Slot {true, id, 1})
-            ->dropItem({static_cast<double>(pck.location.x) + 0.5, static_cast<double>(pck.location.y), static_cast<double>(pck.location.z) + 0.5});
+        _dim->makeEntity<Item>(protocol::Slot{ true, id, 1 })
+            ->dropItem({ static_cast<double>(pck.location.x) + 0.5, static_cast<double>(pck.location.y),
+                         static_cast<double>(pck.location.z) + 0.5 });
         break;
     }
     case protocol::PlayerAction::Status::DropItemStack:
@@ -1185,7 +1304,9 @@ void Player::_onPlayerAction(protocol::PlayerAction &pck)
     case protocol::PlayerAction::Status::DropItem:
         if (!_inventory->hotbar().at(this->_heldItem).present)
             break;
-        getDimension()->makeEntity<Item>(_inventory->hotbar().at(this->_heldItem).takeOne())->dropItem(this->getPosition());
+        getDimension()
+            ->makeEntity<Item>(_inventory->hotbar().at(this->_heldItem).takeOne())
+            ->dropItem(this->getPosition());
         _inventory->hotbar().at(this->_heldItem).itemCount--;
         if (_inventory->hotbar().at(this->_heldItem).itemCount == 0) {
             _inventory->hotbar().at(this->_heldItem).reset();
@@ -1248,25 +1369,55 @@ void Player::_onPlayerCommand(protocol::PlayerCommand &pck)
     }
 }
 
-void Player::_onPlayerInput(UNUSED protocol::PlayerInput &pck) { N_LDEBUG("Got a Player Input"); }
+void Player::_onPlayerInput(UNUSED protocol::PlayerInput &pck)
+{
+    N_LDEBUG("Got a Player Input");
+}
 
-void Player::_onPong(UNUSED protocol::Pong &pck) { N_LDEBUG("Got a Pong"); }
+void Player::_onPong(UNUSED protocol::Pong &pck)
+{
+    N_LDEBUG("Got a Pong");
+}
 
-void Player::_onPlayerSession(UNUSED protocol::PlayerSession &pck) { N_LDEBUG("Got a Player Session"); }
+void Player::_onPlayerSession(UNUSED protocol::PlayerSession &pck)
+{
+    N_LDEBUG("Got a Player Session");
+}
 
-void Player::_onChangeRecipeBookSettings(UNUSED protocol::ChangeRecipeBookSettings &pck) { N_LDEBUG("Got a Change Recipe Book Settings"); }
+void Player::_onChangeRecipeBookSettings(UNUSED protocol::ChangeRecipeBookSettings &pck)
+{
+    N_LDEBUG("Got a Change Recipe Book Settings");
+}
 
-void Player::_onSetSeenRecipe(UNUSED protocol::SetSeenRecipe &pck) { N_LDEBUG("Got a Set Seen Recipe"); }
+void Player::_onSetSeenRecipe(UNUSED protocol::SetSeenRecipe &pck)
+{
+    N_LDEBUG("Got a Set Seen Recipe");
+}
 
-void Player::_onRenameItem(UNUSED protocol::RenameItem &pck) { N_LDEBUG("Got a Rename Item"); }
+void Player::_onRenameItem(UNUSED protocol::RenameItem &pck)
+{
+    N_LDEBUG("Got a Rename Item");
+}
 
-void Player::_onResourcePack(UNUSED protocol::ResourcePack &pck) { N_LDEBUG("Got a Resource Pack"); }
+void Player::_onResourcePack(UNUSED protocol::ResourcePack &pck)
+{
+    N_LDEBUG("Got a Resource Pack");
+}
 
-void Player::_onSeenAdvancements(UNUSED protocol::SeenAdvancements &pck) { N_LDEBUG("Got a Seen Advancements"); }
+void Player::_onSeenAdvancements(UNUSED protocol::SeenAdvancements &pck)
+{
+    N_LDEBUG("Got a Seen Advancements");
+}
 
-void Player::_onSelectTrade(UNUSED protocol::SelectTrade &pck) { N_LDEBUG("Got a Select Trade"); }
+void Player::_onSelectTrade(UNUSED protocol::SelectTrade &pck)
+{
+    N_LDEBUG("Got a Select Trade");
+}
 
-void Player::_onSetBeaconEffect(UNUSED protocol::SetBeaconEffect &pck) { N_LDEBUG("Got a Set Beacon Effect"); }
+void Player::_onSetBeaconEffect(UNUSED protocol::SetBeaconEffect &pck)
+{
+    N_LDEBUG("Got a Set Beacon Effect");
+}
 
 void Player::_onSetHeldItem(protocol::SetHeldItem &pck)
 {
@@ -1276,9 +1427,15 @@ void Player::_onSetHeldItem(protocol::SetHeldItem &pck)
     N_LDEBUG("Got a Set Held Item");
 }
 
-void Player::_onProgramCommandBlock(UNUSED protocol::ProgramCommandBlock &pck) { N_LDEBUG("Got a Program Command Block"); }
+void Player::_onProgramCommandBlock(UNUSED protocol::ProgramCommandBlock &pck)
+{
+    N_LDEBUG("Got a Program Command Block");
+}
 
-void Player::_onProgramCommandBlockMinecart(UNUSED protocol::ProgramCommandBlockMinecart &pck) { N_LDEBUG("Got a Program Command Block Minecart"); }
+void Player::_onProgramCommandBlockMinecart(UNUSED protocol::ProgramCommandBlockMinecart &pck)
+{
+    N_LDEBUG("Got a Program Command Block Minecart");
+}
 
 void Player::_onSetCreativeModeSlot(protocol::SetCreativeModeSlot &pck)
 {
@@ -1289,11 +1446,20 @@ void Player::_onSetCreativeModeSlot(protocol::SetCreativeModeSlot &pck)
     this->_inventory->at(pck.slot) = pck.clickedItem;
 }
 
-void Player::_onProgramJigsawBlock(UNUSED protocol::ProgramJigsawBlock &pck) { N_LDEBUG("Got a Program Jigsaw Block"); }
+void Player::_onProgramJigsawBlock(UNUSED protocol::ProgramJigsawBlock &pck)
+{
+    N_LDEBUG("Got a Program Jigsaw Block");
+}
 
-void Player::_onProgramStructureBlock(UNUSED protocol::ProgramStructureBlock &pck) { N_LDEBUG("Got a Program Structure Block"); }
+void Player::_onProgramStructureBlock(UNUSED protocol::ProgramStructureBlock &pck)
+{
+    N_LDEBUG("Got a Program Structure Block");
+}
 
-void Player::_onUpdateSign(UNUSED protocol::UpdateSign &pck) { N_LDEBUG("Got a Update Sign"); }
+void Player::_onUpdateSign(UNUSED protocol::UpdateSign &pck)
+{
+    N_LDEBUG("Got a Update Sign");
+}
 
 void Player::_onSwingArm(protocol::SwingArm &pck)
 {
@@ -1305,15 +1471,21 @@ void Player::_onSwingArm(protocol::SwingArm &pck)
     }
 }
 
-void Player::_onTeleportToEntity(UNUSED protocol::TeleportToEntity &pck) { N_LDEBUG("Got a Teleport To Entity"); }
+void Player::_onTeleportToEntity(UNUSED protocol::TeleportToEntity &pck)
+{
+    N_LDEBUG("Got a Teleport To Entity");
+}
 
 void Player::_onUseItemOn(protocol::UseItemOn &pck)
 {
     N_LDEBUG("Got a Use Item On {} -> {}", pck.location, this->_heldItem);
 
     if (!this->_crouching) {
-        if (GLOBAL_PALETTE.fromProtocolIdToBlock(this->getDimension()->getBlock(pck.location)).name == "minecraft:crafting_table") {
-            _containers.emplace_back(std::make_shared<protocol::container::CraftingTable>(this->dynamicWeakFromThis<Player>()));
+        if (GLOBAL_PALETTE.fromProtocolIdToBlock(this->getDimension()->getBlock(pck.location)).name
+            == "minecraft:crafting_table") {
+            _containers.emplace_back(
+                std::make_shared<protocol::container::CraftingTable>(this->dynamicWeakFromThis<Player>())
+            );
             return;
         }
         if (auto tileEntity = this->getDimension()->getTileEntity(pck.location); tileEntity != nullptr) {
@@ -1322,10 +1494,10 @@ void Player::_onUseItemOn(protocol::UseItemOn &pck)
                 LERROR("tile entity at {} has type UnknownType", pck.location);
                 break;
             case tile_entity::TileEntityType::Furnace: {
-                auto &container = _containers.emplace_back(
-                    std::make_shared<protocol::container::Furnace>(this->dynamicWeakFromThis<Player>(), std::dynamic_pointer_cast<tile_entity::Furnace>(tileEntity))
-                );
-                this->sendSetContainerContent({container});
+                auto &container = _containers.emplace_back(std::make_shared<protocol::container::Furnace>(
+                    this->dynamicWeakFromThis<Player>(), std::dynamic_pointer_cast<tile_entity::Furnace>(tileEntity)
+                ));
+                this->sendSetContainerContent({ container });
                 break;
             }
             default:
@@ -1356,19 +1528,23 @@ void Player::_onUseItemOn(protocol::UseItemOn &pck)
         break;
     }
 
-    if (this->_inventory->hotbar().at(this->_heldItem).itemID == ITEM_CONVERTER.fromItemToProtocolId("minecraft:wheat_seeds")) {
-        const BlockId &belowBlock = this->getDimension()->getBlock({pck.location.x, pck.location.y - 1, pck.location.z});
+    if (this->_inventory->hotbar().at(this->_heldItem).itemID
+        == ITEM_CONVERTER.fromItemToProtocolId("minecraft:wheat_seeds")) {
+        const BlockId &belowBlock = this->getDimension()->getBlock({ pck.location.x, pck.location.y - 1,
+                                                                     pck.location.z });
 
-        if (this->getDimension()->getBlock(pck.location) == Blocks::Air::toProtocol() &&
-            (belowBlock == Blocks::Farmland::toProtocol(Blocks::Farmland::Properties::Moisture::ZERO) ||
-             belowBlock == Blocks::Farmland::toProtocol(Blocks::Farmland::Properties::Moisture::ONE) ||
-             belowBlock == Blocks::Farmland::toProtocol(Blocks::Farmland::Properties::Moisture::TWO) ||
-             belowBlock == Blocks::Farmland::toProtocol(Blocks::Farmland::Properties::Moisture::THREE) ||
-             belowBlock == Blocks::Farmland::toProtocol(Blocks::Farmland::Properties::Moisture::FOUR) ||
-             belowBlock == Blocks::Farmland::toProtocol(Blocks::Farmland::Properties::Moisture::FIVE) ||
-             belowBlock == Blocks::Farmland::toProtocol(Blocks::Farmland::Properties::Moisture::SIX) ||
-             belowBlock == Blocks::Farmland::toProtocol(Blocks::Farmland::Properties::Moisture::SEVEN))) {
-            this->getDimension()->updateBlock(pck.location, Blocks::Wheat::toProtocol(Blocks::Wheat::Properties::Age::ZERO));
+        if (this->getDimension()->getBlock(pck.location) == Blocks::Air::toProtocol()
+            && (belowBlock == Blocks::Farmland::toProtocol(Blocks::Farmland::Properties::Moisture::ZERO)
+                || belowBlock == Blocks::Farmland::toProtocol(Blocks::Farmland::Properties::Moisture::ONE)
+                || belowBlock == Blocks::Farmland::toProtocol(Blocks::Farmland::Properties::Moisture::TWO)
+                || belowBlock == Blocks::Farmland::toProtocol(Blocks::Farmland::Properties::Moisture::THREE)
+                || belowBlock == Blocks::Farmland::toProtocol(Blocks::Farmland::Properties::Moisture::FOUR)
+                || belowBlock == Blocks::Farmland::toProtocol(Blocks::Farmland::Properties::Moisture::FIVE)
+                || belowBlock == Blocks::Farmland::toProtocol(Blocks::Farmland::Properties::Moisture::SIX)
+                || belowBlock == Blocks::Farmland::toProtocol(Blocks::Farmland::Properties::Moisture::SEVEN))) {
+            this->getDimension()->updateBlock(
+                pck.location, Blocks::Wheat::toProtocol(Blocks::Wheat::Properties::Age::ZERO)
+            );
             this->_inventory->hotbar().at(this->_heldItem).takeOne();
             return;
         }
@@ -1376,22 +1552,33 @@ void Player::_onUseItemOn(protocol::UseItemOn &pck)
 
     auto item = this->_inventory->hotbar().at(this->_heldItem).getUsableItemFromSlot();
     if (Items::Hoe *usedItem = std::get_if<Items::Hoe>(&item)) {
-        if (usedItem->_usabilityType == Items::UsabilityType::RightMouseClickUsable || usedItem->_usabilityType == Items::UsabilityType::BothMouseClicksUsable) {
-            usedItem->onUseOn(this->getDimension(), pck.location, Items::UsabilityType::RightMouseClickUsable, (int32_t) pck.face, *this);
+        if (usedItem->_usabilityType == Items::UsabilityType::RightMouseClickUsable
+            || usedItem->_usabilityType == Items::UsabilityType::BothMouseClicksUsable) {
+            usedItem->onUseOn(
+                this->getDimension(), pck.location, Items::UsabilityType::RightMouseClickUsable, (int32_t) pck.face,
+                *this
+            );
             if (usedItem->canUpdateDamage) {
                 this->_inventory->hotbar().at(this->_heldItem).updateDamage();
             }
-            this->sendSetContainerSlot({this->_inventory, static_cast<int16_t>(this->_heldItem + HOTBAR_OFFSET)});
+            this->sendSetContainerSlot({ this->_inventory, static_cast<int16_t>(this->_heldItem + HOTBAR_OFFSET) });
         }
         return;
     } else if (Items::FlintAndSteel *usedItem = std::get_if<Items::FlintAndSteel>(&item)) {
-        usedItem->onUseOn(this->getDimension(), pck.location, Items::UsabilityType::RightMouseClickUsable, (int32_t) pck.face, *this);
+        usedItem->onUseOn(
+            this->getDimension(), pck.location, Items::UsabilityType::RightMouseClickUsable, (int32_t) pck.face, *this
+        );
         this->_inventory->hotbar().at(this->_heldItem).updateDamage();
-        this->sendSetContainerSlot({this->_inventory, static_cast<int16_t>(this->_heldItem + HOTBAR_OFFSET)});
+        this->sendSetContainerSlot({ this->_inventory, static_cast<int16_t>(this->_heldItem + HOTBAR_OFFSET) });
         return;
     }
     if (_inventory->hotbar().at(this->_heldItem).present) {
-        this->getDimension()->updateBlock(pck.location, GLOBAL_PALETTE.fromBlockToProtocolId(ITEM_CONVERTER.fromProtocolIdToItem(_inventory->hotbar().at(this->_heldItem).itemID)));
+        this->getDimension()->updateBlock(
+            pck.location,
+            GLOBAL_PALETTE.fromBlockToProtocolId(
+                ITEM_CONVERTER.fromProtocolIdToItem(_inventory->hotbar().at(this->_heldItem).itemID)
+            )
+        );
     }
     if (_gamemode == player_attributes::Gamemode::Creative)
         return;
@@ -1404,7 +1591,10 @@ void Player::_onUseItemOn(protocol::UseItemOn &pck)
     }
 }
 
-void Player::_onUseItem(UNUSED protocol::UseItem &pck) { N_LDEBUG("Got a Use Item"); }
+void Player::_onUseItem(UNUSED protocol::UseItem &pck)
+{
+    N_LDEBUG("Got a Use Item");
+}
 
 #pragma endregion Serverbound
 
@@ -1433,57 +1623,69 @@ void Player::_updateRenderedChunks(const Position2D &oldChunkPos, const Position
 
     //* Old chunks
     // Positive changes
-    for (int32_t x = oldChunkPos.x - renderDistance; x < std::min(newChunkPos.x - renderDistance, oldChunkPos.x + renderDistance + 1); x++) {
+    for (int32_t x = oldChunkPos.x - renderDistance;
+         x < std::min(newChunkPos.x - renderDistance, oldChunkPos.x + renderDistance + 1); x++) {
         for (int32_t z = oldChunkPos.z - renderDistance; z < oldChunkPos.z + renderDistance + 1; z++)
             this->_unloadChunk(x, z);
     }
-    for (int32_t z = oldChunkPos.z - renderDistance; z < std::min(newChunkPos.z - renderDistance, oldChunkPos.z + renderDistance + 1); z++) {
-        for (int32_t x = oldChunkPos.x - renderDistance + (newChunkPos.x - oldChunkPos.x); x < oldChunkPos.x + renderDistance + 1; x++)
+    for (int32_t z = oldChunkPos.z - renderDistance;
+         z < std::min(newChunkPos.z - renderDistance, oldChunkPos.z + renderDistance + 1); z++) {
+        for (int32_t x = oldChunkPos.x - renderDistance + (newChunkPos.x - oldChunkPos.x);
+             x < oldChunkPos.x + renderDistance + 1; x++)
             this->_unloadChunk(x, z);
     }
 
     // Negative changes
-    for (int32_t x = oldChunkPos.x + renderDistance; x >= std::max(newChunkPos.x + renderDistance + 1, oldChunkPos.x - renderDistance); x--) {
+    for (int32_t x = oldChunkPos.x + renderDistance;
+         x >= std::max(newChunkPos.x + renderDistance + 1, oldChunkPos.x - renderDistance); x--) {
         for (int32_t z = oldChunkPos.z - renderDistance; z < oldChunkPos.z + renderDistance + 1; z++)
             this->_unloadChunk(x, z);
     }
-    for (int32_t z = oldChunkPos.z + renderDistance; z >= std::max(newChunkPos.z + renderDistance + 1, oldChunkPos.z - renderDistance); z--) {
-        for (int32_t x = oldChunkPos.x - renderDistance; x < oldChunkPos.x + renderDistance + 1 + (newChunkPos.x - oldChunkPos.x); x++)
+    for (int32_t z = oldChunkPos.z + renderDistance;
+         z >= std::max(newChunkPos.z + renderDistance + 1, oldChunkPos.z - renderDistance); z--) {
+        for (int32_t x = oldChunkPos.x - renderDistance;
+             x < oldChunkPos.x + renderDistance + 1 + (newChunkPos.x - oldChunkPos.x); x++)
             this->_unloadChunk(x, z);
     }
 
     //* New chunks
     // Positive changes
-    for (int32_t x = newChunkPos.x + renderDistance; x >= std::max(oldChunkPos.x + renderDistance + 1, newChunkPos.x - renderDistance); x--) {
+    for (int32_t x = newChunkPos.x + renderDistance;
+         x >= std::max(oldChunkPos.x + renderDistance + 1, newChunkPos.x - renderDistance); x--) {
         for (int32_t z = newChunkPos.z - renderDistance; z < newChunkPos.z + renderDistance + 1; z++)
             this->sendChunkAndLightUpdate(x, z);
     }
-    for (int32_t z = newChunkPos.z + renderDistance; z >= std::max(oldChunkPos.z + renderDistance + 1, newChunkPos.z - renderDistance); z--) {
-        for (int32_t x = newChunkPos.x - renderDistance; x < newChunkPos.x + renderDistance + 1 - (newChunkPos.x - oldChunkPos.x); x++)
+    for (int32_t z = newChunkPos.z + renderDistance;
+         z >= std::max(oldChunkPos.z + renderDistance + 1, newChunkPos.z - renderDistance); z--) {
+        for (int32_t x = newChunkPos.x - renderDistance;
+             x < newChunkPos.x + renderDistance + 1 - (newChunkPos.x - oldChunkPos.x); x++)
             this->sendChunkAndLightUpdate(x, z);
     }
 
     // Negative changes
-    for (int32_t x = newChunkPos.x - renderDistance; x < std::min(oldChunkPos.x - renderDistance, newChunkPos.x + renderDistance + 1); x++) {
+    for (int32_t x = newChunkPos.x - renderDistance;
+         x < std::min(oldChunkPos.x - renderDistance, newChunkPos.x + renderDistance + 1); x++) {
         for (int32_t z = newChunkPos.z - renderDistance; z < newChunkPos.z + renderDistance + 1; z++)
             this->sendChunkAndLightUpdate(x, z);
     }
-    for (int32_t z = newChunkPos.z - renderDistance; z < std::min(oldChunkPos.z - renderDistance, newChunkPos.z + renderDistance + 1); z++) {
-        for (int32_t x = newChunkPos.x - renderDistance - (newChunkPos.x - oldChunkPos.x); x < newChunkPos.x + renderDistance + 1; x++)
+    for (int32_t z = newChunkPos.z - renderDistance;
+         z < std::min(oldChunkPos.z - renderDistance, newChunkPos.z + renderDistance + 1); z++) {
+        for (int32_t x = newChunkPos.x - renderDistance - (newChunkPos.x - oldChunkPos.x);
+             x < newChunkPos.x + renderDistance + 1; x++)
             this->sendChunkAndLightUpdate(x, z);
     }
 }
 
 void Player::_continueLoginSequence()
 {
-    this->sendFeatureFlags({{"minecraft:vanilla"}});
+    this->sendFeatureFlags({ { "minecraft:vanilla" } });
 
     // TODO: Fix that to the real values (currently it's in easy and it's locked for the client)
-    this->sendChangeDifficulty({1, true});
+    this->sendChangeDifficulty({ 1, true });
 
-    this->sendPlayerAbilities({player_attributes::getAbilitiesByGamemode(getGamemode()), 0.05, 0.1});
+    this->sendPlayerAbilities({ player_attributes::getAbilitiesByGamemode(getGamemode()), 0.05, 0.1 });
     // TODO: send the value stored in the player data
-    this->sendSetHeldItem({4});
+    this->sendSetHeldItem({ 4 });
 
     // TODO: send the recipes
     this->sendUpdateRecipes({});
@@ -1492,7 +1694,7 @@ void Player::_continueLoginSequence()
     // this->sendUpdateTags({});
 
     // TODO: implement the event Statues correctly // 24 (set op permission level)
-    this->sendEntityEvent({this->_id, 24});
+    this->sendEntityEvent({ this->_id, 24 });
 
     // TODO: send all the commands avaliable in the server
     // this->sendCommands({{}, 0});
@@ -1501,16 +1703,16 @@ void Player::_continueLoginSequence()
     // this->sendUpdateRecipiesBook({});
 
     // TODO: change that to player_attributes::DEFAULT_SPAWN_POINT
-    this->teleport({8.5, 75, 8.5});
+    this->teleport({ 8.5, 75, 8.5 });
 
-    this->sendServerData({false, "", false, "", false});
+    this->sendServerData({ false, "", false, "", false });
 
     _dim->addEntity(shared_from_this());
     _dim->addPlayer(dynamic_pointer_cast<Player>(shared_from_this()));
     LDEBUG("Added entity player to dimension");
     getDimension()->getWorld()->sendPlayerInfoAddPlayer(this);
 
-    this->sendSetCenterChunk({0, 0});
+    this->sendSetCenterChunk({ 0, 0 });
 
     auto renderDistance = this->getDimension()->getWorld()->getRenderDistance();
     // Send all chunks around the player
@@ -1525,25 +1727,28 @@ void Player::_continueLoginSequence()
     }
 
     // TODO: Initialize world border
-    this->sendInitializeWorldBorder({0, 0, 0, CONFIG["world-border"].as<double>(), 0, 29999984, 10, 10});
+    this->sendInitializeWorldBorder({ 0, 0, 0, CONFIG["world-border"].as<double>(), 0, 29999984, 10, 10 });
 
-    this->sendSetDefaultSpawnPosition({{0, 100, 0}, 0.0f});
+    this->sendSetDefaultSpawnPosition({
+        {0, 100, 0},
+        0.0f
+    });
 
-    this->sendSetContainerContent({_inventory});
+    this->sendSetContainerContent({ _inventory });
 
     // TODO: set entity metadata
     this->sendEntityMetadata(*this);
 
     // TODO: send the player's attributes
-    this->sendUpdateAttributes({this->getId(), {}});
+    this->sendUpdateAttributes({ this->getId(), {} });
 
     // TODO: send the player's advancements
-    this->sendUpdateAdvancements({false, {}, {}, {}});
+    this->sendUpdateAdvancements({ false, {}, {}, {} });
 
     this->sendHealth();
 
     // TODO: send the player's experience
-    this->sendSetExperience({0, 0, 0});
+    this->sendSetExperience({ 0, 0, 0 });
 
     // TODO: set entity metadata
 
@@ -1561,13 +1766,17 @@ void Player::_continueLoginSequence()
             protocol::SetEquipment equip;
 
             equip.entityId = other->getId();
-            equip.equipment.push_back(std::make_pair(protocol::SetEquipment::EquipmentPosition::MainHand, other->getInventory()->hotbar().at(other->getHeldItem())));
+            equip.equipment.push_back(std::make_pair(
+                protocol::SetEquipment::EquipmentPosition::MainHand,
+                other->getInventory()->hotbar().at(other->getHeldItem())
+            ));
             this->sendSetEquipment(equip);
         }
     }
 
     // Send login message
-    chat::Message connectionMsg = chat::Message::fromTranslationKey<chat::message::TranslationKey::MultiplayerPlayerJoined>(*this);
+    chat::Message connectionMsg = chat::Message::fromTranslationKey<
+        chat::message::TranslationKey::MultiplayerPlayerJoined>(*this);
 
     this->getWorld()->getChat()->sendSystemMessage(connectionMsg, *this->getWorldGroup());
     onEvent(Server::getInstance()->getPluginManager(), onPlayerJoin, this);
@@ -1575,16 +1784,16 @@ void Player::_continueLoginSequence()
 
 void Player::_unloadChunk(int32_t x, int32_t z)
 {
-    if (!this->_chunks.contains({x, z}))
+    if (!this->_chunks.contains({ x, z }))
         return;
-    else if (this->_chunks[{x, z}] == ChunkState::Loading) {
-        this->_dim->removePlayerFromLoadingChunk({x, z}, dynamic_pointer_cast<Player>(shared_from_this()));
-        this->_chunks.erase({x, z});
+    else if (this->_chunks[{ x, z }] == ChunkState::Loading) {
+        this->_dim->removePlayerFromLoadingChunk({ x, z }, dynamic_pointer_cast<Player>(shared_from_this()));
+        this->_chunks.erase({ x, z });
         return;
     }
 
     this->sendUnloadChunk(x, z);
-    this->_chunks.erase({x, z});
+    this->_chunks.erase({ x, z });
 }
 
 void Player::_foodTick()
@@ -1628,8 +1837,9 @@ void Player::_foodTick()
         this->sendHealth();
         LDEBUG("Health is now {} and food level is now {}", _health, _foodLevel);
     }
-    if (needUpdate == false &&
-        ((_foodLevel >= MIN_FOOD_LEVEL_FOR_REGENERATION && _health < _maxHealth) || (_foodLevel == MIN_FOOD_LEVEL && _health > 10))) // TODO: Make it depends on difficulty
+    if (needUpdate == false
+        && ((_foodLevel >= MIN_FOOD_LEVEL_FOR_REGENERATION && _health < _maxHealth)
+            || (_foodLevel == MIN_FOOD_LEVEL && _health > 10))) // TODO: Make it depends on difficulty
         _foodTickTimer++;
 }
 
@@ -1660,7 +1870,7 @@ void Player::_eat()
         _foodSaturationLevel = _foodLevel;
     this->sendHealth();
     _inventory->hotbar().at(this->_heldItem).itemCount--;
-    this->sendSetContainerSlot({_inventory, static_cast<int16_t>(this->_heldItem + HOTBAR_OFFSET)});
+    this->sendSetContainerSlot({ _inventory, static_cast<int16_t>(this->_heldItem + HOTBAR_OFFSET) });
     if (_inventory->hotbar().at(this->_heldItem).itemCount == 0) {
         _inventory->hotbar().at(this->_heldItem).reset();
 
@@ -1695,9 +1905,9 @@ void Player::_respawn()
         true, // Has death location
         this->_dim->getDimensionName(), // Dimension name
         {
-            static_cast<long>(this->_pos.x), // death X
+                                                      static_cast<long>(this->_pos.x), // death X
             static_cast<long>(this->_pos.y), // death Y
-            static_cast<long>(this->_pos.z) // death Z
+            static_cast<long>(this->_pos.z)  // death Z
         }, // Position
     });
 
@@ -1709,7 +1919,10 @@ void Player::_respawn()
     this->_dim->spawnPlayer(*this);
 }
 
-bool Player::isInRenderDistance(UNUSED const Vector2<double> &pos) const { return true; }
+bool Player::isInRenderDistance(UNUSED const Vector2<double> &pos) const
+{
+    return true;
+}
 
 void Player::sendEntityMetadata(const Entity &entity)
 {

@@ -12,10 +12,10 @@
 
 #include "types.hpp"
 
-#include "LootTable.hpp"
 #include "conditions/Condition.hpp"
 #include "entries/Entry.hpp"
 #include "functions/Function.hpp"
+#include "LootTable.hpp"
 #include "rolls/Roll.hpp"
 
 void addDefaultRollCreators(void);
@@ -39,8 +39,12 @@ public:
     // creators handle specific loot table components
     void addRollCreator(LootTable::Roll::Creator creator, LootTable::Roll::IsOfType check);
     void addEntryCreator(const std::string &_namespace, const std::string &_name, LootTable::Entry::Creator creator);
-    void addFunctionCreator(const std::string &_namespace, const std::string &_name, LootTable::Function::Creator creator);
-    void addConditionCreator(const std::string &_namespace, const std::string &_name, LootTable::Condition::Creator creator);
+    void addFunctionCreator(
+        const std::string &_namespace, const std::string &_name, LootTable::Function::Creator creator
+    );
+    void addConditionCreator(
+        const std::string &_namespace, const std::string &_name, LootTable::Condition::Creator creator
+    );
 
     // calls the right creator
     std::unique_ptr<LootTable::Roll::Roll> createRoll(const nlohmann::json &roll);

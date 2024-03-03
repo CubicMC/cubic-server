@@ -8,5 +8,5 @@ Chest::Chest(const Position &origin, const Entity *entity):
     entity(entity)
 {
 }
-}
-}
+} // namespace Context
+} // namespace LootTable

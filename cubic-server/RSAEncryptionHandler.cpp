@@ -3,9 +3,9 @@
 
 #include <mbedtls/pk.h>
 
-#include "RSAEncryptionHandler.hpp"
 #include "logging/logging.hpp"
 #include "mbedtls/rsa.h"
+#include "RSAEncryptionHandler.hpp"
 
 constexpr auto keySizeBits = 1024;
 #define CHECK_SUS(x)                                                                        \
@@ -54,7 +54,9 @@ std::vector<uint8_t> RSAEncryptionHandler::getPublicKey()
     return std::vector<uint8_t>(buf + sizeof(buf) - length, buf + sizeof(buf));
 }
 
-int RSAEncryptionHandler::decrypt(const std::vector<uint8_t> &encryptedData, uint8_t *decryptedData, size_t decryptedMaxSize)
+int RSAEncryptionHandler::decrypt(
+    const std::vector<uint8_t> &encryptedData, uint8_t *decryptedData, size_t decryptedMaxSize
+)
 {
     const auto keyLength = mbedtls_rsa_get_len(&_context);
     if (keyLength > encryptedData.size()) {
@@ -67,7 +69,8 @@ int RSAEncryptionHandler::decrypt(const std::vector<uint8_t> &encryptedData, uin
     }
     size_t toRet = 0;
     int ret = mbedtls_rsa_pkcs1_decrypt(
-        &_context, mbedtls_ctr_drbg_random, &_ctrDrbgContext, &toRet, reinterpret_cast<const unsigned char *>(encryptedData.data()), decryptedData, decryptedMaxSize
+        &_context, mbedtls_ctr_drbg_random, &_ctrDrbgContext, &toRet,
+        reinterpret_cast<const unsigned char *>(encryptedData.data()), decryptedData, decryptedMaxSize
     );
     return !ret ? (int) (toRet) : -1;
 }

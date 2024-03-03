@@ -65,8 +65,9 @@ constexpr float FOOD_EXHAUSTION_ATTACK = 0.1f;
 // The maximum amount of time (in ticks) that a player can be idle before being kicked.
 constexpr uint16_t MAX_TICK_BEFORE_TIMEOUT = 6000;
 
-// constexpr Vector3<double> DEFAULT_SPAWN_POINT = {8.5, 100, 8.5}; // TODO(trompettesib): huntears, please fix this in your pr with constexpr vectors
+// constexpr Vector3<double> DEFAULT_SPAWN_POINT = {8.5, 100, 8.5}; // TODO(trompettesib): huntears, please fix this in
+// your pr with constexpr vectors
 
-}
+} // namespace player_attributes
 
 #endif // CUBICSERVER_PLAYERATTRIBUTES_HPP

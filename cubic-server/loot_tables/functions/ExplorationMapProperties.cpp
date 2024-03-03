@@ -8,8 +8,14 @@ ExplorationMapProperties::ExplorationMapProperties(const nlohmann::json &functio
     this->setValidity(true);
 }
 
-void ExplorationMapProperties::apply(const LootContext &context) { (void) context; }
+void ExplorationMapProperties::apply(const LootContext &context)
+{
+    (void) context;
+}
 
-std::unique_ptr<Function> ExplorationMapProperties::create(const nlohmann::json &function) { return (std::make_unique<ExplorationMapProperties>(function)); }
-};
-};
+std::unique_ptr<Function> ExplorationMapProperties::create(const nlohmann::json &function)
+{
+    return (std::make_unique<ExplorationMapProperties>(function));
+}
+}; // namespace Function
+}; // namespace LootTable

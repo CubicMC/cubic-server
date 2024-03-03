@@ -1,7 +1,7 @@
 #include "CraftingShaped.hpp"
 
-#include "Server.hpp"
 #include "logging/logging.hpp"
+#include "Server.hpp"
 
 namespace Recipe {
 CraftingShaped::CraftingShaped(const std::string &identifier, const nlohmann::json &recipe):
@@ -11,8 +11,9 @@ CraftingShaped::CraftingShaped(const std::string &identifier, const nlohmann::js
 
 {
     // returns if any value is missing or does not have the right type
-    if (!recipe.contains("pattern") || !recipe.contains("key") || !recipe.contains("result") || !recipe["pattern"].is_array() || !recipe["key"].is_object() ||
-        !recipe["result"].is_object() || !recipe["result"].contains("item") || !recipe["result"]["item"].is_string())
+    if (!recipe.contains("pattern") || !recipe.contains("key") || !recipe.contains("result")
+        || !recipe["pattern"].is_array() || !recipe["key"].is_object() || !recipe["result"].is_object()
+        || !recipe["result"].contains("item") || !recipe["result"]["item"].is_string())
         return;
     // get the recipe values
     this->_result = ITEM_CONVERTER.fromItemToProtocolId(recipe["result"]["item"].get<std::string>());
@@ -39,7 +40,7 @@ CraftingShaped::CraftingShaped(const std::string &identifier, const nlohmann::js
 
         for (size_t pos_on_line = 0; pos_on_line < pattern_line.size(); pos_on_line++) {
             char key = pattern_line.at(pos_on_line);
-            const char keystring[2] = {key, '\0'};
+            const char keystring[2] = { key, '\0' };
 
             this->_pattern[(pattern_line_pos * this->_x) + pos_on_line] = key;
             if (key != ' ' && !this->_key.contains(key)) {
@@ -103,15 +104,33 @@ std::shared_ptr<Recipe> CraftingShaped::create(const std::string &identifier, co
     return (std::make_shared<CraftingShaped>(CraftingShaped(identifier, recipe)));
 }
 
-const std::unordered_map<char, std::shared_ptr<std::unordered_set<ItemId>>> &CraftingShaped::getKeys() const { return (this->_key); }
+const std::unordered_map<char, std::shared_ptr<std::unordered_set<ItemId>>> &CraftingShaped::getKeys() const
+{
+    return (this->_key);
+}
 
-const std::vector<char> &CraftingShaped::getPattern() const { return (this->_pattern); }
+const std::vector<char> &CraftingShaped::getPattern() const
+{
+    return (this->_pattern);
+}
 
-size_t CraftingShaped::getXSize() const noexcept { return (this->_x); }
+size_t CraftingShaped::getXSize() const noexcept
+{
+    return (this->_x);
+}
 
-size_t CraftingShaped::getYSize() const noexcept { return (this->_y); }
+size_t CraftingShaped::getYSize() const noexcept
+{
+    return (this->_y);
+}
 
-ItemId CraftingShaped::getCraftedItem() const noexcept { return (this->_result); }
+ItemId CraftingShaped::getCraftedItem() const noexcept
+{
+    return (this->_result);
+}
 
-uint64_t CraftingShaped::getCraftedItemCount() const noexcept { return (this->_count); }
+uint64_t CraftingShaped::getCraftedItemCount() const noexcept
+{
+    return (this->_count);
+}
 } // namespace Recipe

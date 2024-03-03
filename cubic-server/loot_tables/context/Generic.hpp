@@ -12,7 +12,7 @@ public:
     Generic();
     ~Generic() = default;
 };
-}
-}
+} // namespace Context
+} // namespace LootTable
 
 #endif // CUBIC_SERVER_LOOT_TABLES_CONTEXT_GENERIC_HPP

@@ -2,10 +2,10 @@
 
 #include "Chat.hpp"
 #include "Dimension.hpp"
+#include "logging/logging.hpp"
 #include "Player.hpp"
 #include "Server.hpp"
 #include "World.hpp"
-#include "logging/logging.hpp"
 
 void command_parser::TitleTimes::autocomplete(UNUSED std::vector<std::string> &args, UNUSED Player *invoker) const { }
 
@@ -27,13 +27,17 @@ void command_parser::TitleTimes::execute(std::vector<std::string> &args, UNUSED 
             times[i] = std::stoi(args[i + 1]);
         } catch (const std::invalid_argument &err) {
             if (invoker)
-                invoker->getDimension()->getWorld()->getChat()->sendSystemMessage("titletimes: " + args[i + 1] + " is not a number", *invoker);
+                invoker->getDimension()->getWorld()->getChat()->sendSystemMessage(
+                    "titletimes: " + args[i + 1] + " is not a number", *invoker
+                );
             else
                 LINFO("titletimes: " + args[i + 1] + " is not a number");
             return;
         } catch (const std::out_of_range &err) {
             if (invoker)
-                invoker->getDimension()->getWorld()->getChat()->sendSystemMessage("titletimes: " + args[i + 1] + " is out of range", *invoker);
+                invoker->getDimension()->getWorld()->getChat()->sendSystemMessage(
+                    "titletimes: " + args[i + 1] + " is out of range", *invoker
+                );
             else
                 LINFO("titletimes: " + args[i + 1] + " is not a number");
             return;
@@ -45,7 +49,7 @@ void command_parser::TitleTimes::execute(std::vector<std::string> &args, UNUSED 
             for (auto &[_, dim] : world->getDimensions()) {
                 for (auto &player : dim->getPlayers()) {
                     if (player->getUsername() == args[0]) {
-                        player->sendTitleAnimationTimes({times[0], times[1], times[2]});
+                        player->sendTitleAnimationTimes({ times[0], times[1], times[2] });
                         return;
                     }
                 }

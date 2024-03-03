@@ -8,8 +8,14 @@ SetNBT::SetNBT(const nlohmann::json &function):
     this->setValidity(true);
 }
 
-void SetNBT::apply(const LootContext &context) { (void) context; }
+void SetNBT::apply(const LootContext &context)
+{
+    (void) context;
+}
 
-std::unique_ptr<Function> SetNBT::create(const nlohmann::json &function) { return (std::make_unique<SetNBT>(function)); }
-};
-};
+std::unique_ptr<Function> SetNBT::create(const nlohmann::json &function)
+{
+    return (std::make_unique<SetNBT>(function));
+}
+}; // namespace Function
+}; // namespace LootTable

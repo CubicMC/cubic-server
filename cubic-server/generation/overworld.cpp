@@ -17,7 +17,8 @@ BlockId generation::Overworld::getBlock(positionType x, positionType y, position
     // auto noise = getNoise(x, y, z);
     // double densityMultiplier = y < heightOffset
     //     ? ((y - world_storage::CHUNK_HEIGHT_MIN) / (heightOffset - (double) world_storage::CHUNK_HEIGHT_MIN)) / 100.0
-    //     : ((y - world_storage::CHUNK_HEIGHT_MIN) / ((double) world_storage::CHUNK_HEIGHT_MAX - heightOffset)) / 100.0;
+    //     : ((y - world_storage::CHUNK_HEIGHT_MIN) / ((double) world_storage::CHUNK_HEIGHT_MAX - heightOffset)) /
+    //     100.0;
 
     // // LINFO(std::to_string(densityMultiplier));
 
@@ -36,7 +37,8 @@ BlockId generation::Overworld::getBlock(positionType x, positionType y, position
     // double n = 2 * std::abs(
     //     (y - world_storage::CHUNK_HEIGHT_MIN) / (world_storage::CHUNK_HEIGHT_MAX - world_storage::CHUNK_HEIGHT_MIN)
     //     -
-    //     (heightOffset - world_storage::CHUNK_HEIGHT_MIN) / (world_storage::CHUNK_HEIGHT_MAX - world_storage::CHUNK_HEIGHT_MIN)
+    //     (heightOffset - world_storage::CHUNK_HEIGHT_MIN) / (world_storage::CHUNK_HEIGHT_MAX -
+    //     world_storage::CHUNK_HEIGHT_MIN)
     // );
     // // h correspond a la force de l'effet avec la hauteur
     // double h = 2;
@@ -51,7 +53,8 @@ BlockId generation::Overworld::getBlock(positionType x, positionType y, position
     //! NEW NEW
     auto noise = getNoise(x, y, z);
     int heightOffset = 70; //< Allows the surface to be lower, around y=70
-    int surfaceLevel = heightOffset + noise.noise2D.continentalness * 5; //< Makes the world flatter than before (20 -> 5)
+    int surfaceLevel = heightOffset
+        + noise.noise2D.continentalness * 5; //< Makes the world flatter than before (20 -> 5)
     BlockId blockId = Blocks::Air::toProtocol();
 
     if (y < surfaceLevel)
@@ -72,13 +75,17 @@ BlockId generation::Overworld::getBlock(positionType x, positionType y, position
     if (blockId == Blocks::Stone::toProtocol() && density >= -.15 && density <= .05)
         blockId = Blocks::Air::toProtocol();
     // Trying to repair caves surface
-    if (blockId == Blocks::Air::toProtocol() && noise.noise3D.density >= -.4 && noise.noise3D.density <= .4 && y < surfaceLevel && y > heightOffset - 10)
+    if (blockId == Blocks::Air::toProtocol() && noise.noise3D.density >= -.4 && noise.noise3D.density <= .4
+        && y < surfaceLevel && y > heightOffset - 10)
         blockId = Blocks::Stone::toProtocol();
 
     return blockId;
 }
 
-BlockId generation::Overworld::getBlock(const Position &pos) { return getBlock(pos.x, pos.y, pos.z); }
+BlockId generation::Overworld::getBlock(const Position &pos)
+{
+    return getBlock(pos.x, pos.y, pos.z);
+}
 
 BiomeId generation::Overworld::getBiome(positionType x, positionType y, positionType z)
 {
@@ -86,11 +93,17 @@ BiomeId generation::Overworld::getBiome(positionType x, positionType y, position
     return getNoise(x, y, z).noise2D.weirdness > 0.0 ? 0 : 1;
 }
 
-BiomeId generation::Overworld::getBiome(const Position &pos) { return getBiome(pos.x, pos.y, pos.z); }
+BiomeId generation::Overworld::getBiome(const Position &pos)
+{
+    return getBiome(pos.x, pos.y, pos.z);
+}
 
 int generation::Overworld::getTreeSize(positionType x, positionType y, positionType z, const TreeSize &treeSize)
 {
     return getNoise(x, y, z).noise3D.temperature * (treeSize.sizeMax - treeSize.sizeMin) + treeSize.sizeMin;
 }
 
-int generation::Overworld::getTreeSize(const Position &pos, const TreeSize &treeSize) { return getTreeSize(pos.x, pos.y, pos.z, treeSize); }
+int generation::Overworld::getTreeSize(const Position &pos, const TreeSize &treeSize)
+{
+    return getTreeSize(pos.x, pos.y, pos.z, treeSize);
+}

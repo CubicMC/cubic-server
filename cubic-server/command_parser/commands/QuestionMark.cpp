@@ -2,10 +2,10 @@
 
 #include "Chat.hpp"
 #include "Dimension.hpp"
+#include "logging/logging.hpp"
 #include "Player.hpp"
 #include "Server.hpp"
 #include "World.hpp"
-#include "logging/logging.hpp"
 
 void command_parser::QuestionMark::autocomplete(UNUSED std::vector<std::string> &args, Player *invoker) const
 {
@@ -35,7 +35,9 @@ void command_parser::QuestionMark::execute(std::vector<std::string> &args, Playe
             }
         }
         if (invoker) {
-            invoker->getDimension()->getWorld()->getChat()->sendSystemMessage("Unknown command or insufficient permissions", *invoker);
+            invoker->getDimension()->getWorld()->getChat()->sendSystemMessage(
+                "Unknown command or insufficient permissions", *invoker
+            );
         } else {
             LINFO("Unknown command or insufficient permissions");
         }

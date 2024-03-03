@@ -6,10 +6,10 @@
 #include <thread>
 
 #include "CommandLine.hpp"
-#include "Server.hpp"
 #include "logging/logging.hpp"
 #include "options.hpp"
 #include "protocol/ServerPackets.hpp"
+#include "Server.hpp"
 #include "world_storage/Persistence.hpp"
 
 #if GUI_UNAVAILABLE == 0

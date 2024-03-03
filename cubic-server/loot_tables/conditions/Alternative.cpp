@@ -15,6 +15,9 @@ bool Alternative::verify(const LootContext *context) const
     return (true);
 }
 
-std::unique_ptr<Condition> Alternative::create(const nlohmann::json &condition) { return (std::make_unique<Alternative>(condition)); }
-};
-};
+std::unique_ptr<Condition> Alternative::create(const nlohmann::json &condition)
+{
+    return (std::make_unique<Alternative>(condition));
+}
+}; // namespace Condition
+}; // namespace LootTable

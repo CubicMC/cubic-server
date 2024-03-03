@@ -15,6 +15,9 @@ bool EntityScores::verify(const LootContext *context) const
     return (true);
 }
 
-std::unique_ptr<Condition> EntityScores::create(const nlohmann::json &condition) { return (std::make_unique<EntityScores>(condition)); }
-};
-};
+std::unique_ptr<Condition> EntityScores::create(const nlohmann::json &condition)
+{
+    return (std::make_unique<EntityScores>(condition));
+}
+}; // namespace Condition
+}; // namespace LootTable

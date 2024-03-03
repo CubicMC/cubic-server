@@ -20,7 +20,8 @@ public:
     typedef size_t Id;
 
 public:
-    // This constructor should be private, but because we are making shared_ptr<Task> in the Pool class, we need to make it public
+    // This constructor should be private, but because we are making shared_ptr<Task> in the Pool class, we need to make
+    // it public
     /**
      * @brief Construct a new Task object
      *

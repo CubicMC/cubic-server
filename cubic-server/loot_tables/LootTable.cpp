@@ -2,11 +2,14 @@
 
 #include "LootTable.hpp"
 
-#include "Pool.hpp"
 #include "context/LootContext.hpp"
+#include "Pool.hpp"
 
 namespace LootTable {
-const std::unordered_map<ItemId, uint8_t> &LootTablePoll::getRolledItems(void) const { return (this->_items); }
+const std::unordered_map<ItemId, uint8_t> &LootTablePoll::getRolledItems(void) const
+{
+    return (this->_items);
+}
 
 void LootTablePoll::addRolledItem(ItemId item, uint8_t count)
 {
@@ -23,7 +26,10 @@ void LootTablePoll::addRolledItem(const std::unordered_map<ItemId, uint8_t> &ite
     }
 }
 
-void LootTablePoll::addRolledItem(const LootTablePoll &poll) { this->addRolledItem(poll.getRolledItems()); }
+void LootTablePoll::addRolledItem(const LootTablePoll &poll)
+{
+    this->addRolledItem(poll.getRolledItems());
+}
 
 LootTable::LootTable(const nlohmann::json &table):
     _validity(false)
@@ -46,7 +52,8 @@ LootTable::LootTable(const nlohmann::json &table):
     // get functions
     if (table.contains("functions") && table["functions"].is_array()) {
         for (const auto &function : table["functions"]) {
-            std::unique_ptr<Function::Function> newFunction = Server::getInstance()->getLootTableSystem().createFunction(function);
+            std::unique_ptr<Function::Function>
+                newFunction = Server::getInstance()->getLootTableSystem().createFunction(function);
 
             const auto &it = this->_functions.insert(this->_functions.end(), nullptr);
             it->swap(newFunction);
@@ -57,7 +64,10 @@ LootTable::LootTable(const nlohmann::json &table):
     this->setValidity();
 }
 
-bool LootTable::isValid(void) const noexcept { return (this->_validity); }
+bool LootTable::isValid(void) const noexcept
+{
+    return (this->_validity);
+}
 
 void LootTable::setValidity(void) noexcept
 {
@@ -87,5 +97,8 @@ LootTablePoll LootTable::poll(LootContext *context) const
     return (newPoll);
 }
 
-const std::string &LootTable::getType(void) const noexcept { return (this->_type); }
-};
+const std::string &LootTable::getType(void) const noexcept
+{
+    return (this->_type);
+}
+}; // namespace LootTable

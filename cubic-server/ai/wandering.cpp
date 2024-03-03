@@ -1,10 +1,10 @@
 #include "wandering.hpp"
-#include "Dimension.hpp"
-#include "Server.hpp"
 #include "blocks.hpp"
+#include "Dimension.hpp"
 #include "entities/Entity.hpp"
 #include "logging/logging.hpp"
 #include "math/Vector3.hpp"
+#include "Server.hpp"
 #include "utility/PseudoRandomGenerator.hpp"
 #include "world_storage/Level.hpp"
 
@@ -16,7 +16,10 @@ Wandering::Wandering(Entity &entity):
 
 Wandering::~Wandering() { }
 
-bool Wandering::see() { return true; }
+bool Wandering::see()
+{
+    return true;
+}
 
 void Wandering::think()
 {
@@ -25,29 +28,40 @@ void Wandering::think()
     int x = utility::PseudoRandomGenerator::getInstance()->generateNumber(-9, 9);
     int z = utility::PseudoRandomGenerator::getInstance()->generateNumber(-9, 9);
 
-    Vector3<double> finalPos = {actualPos.x + x, actualPos.y, actualPos.z + z};
+    Vector3<double> finalPos = { actualPos.x + x, actualPos.y, actualPos.z + z };
 
-    if (!_entity.getDimension()->hasChunkLoaded(transformBlockPosToChunkPos(finalPos.x), transformBlockPosToChunkPos(finalPos.z)))
+    if (!_entity.getDimension()->hasChunkLoaded(
+            transformBlockPosToChunkPos(finalPos.x), transformBlockPosToChunkPos(finalPos.z)
+        ))
         return;
-    if (_entity.getDimension()->getBlock({int(finalPos.x), int(finalPos.y) - 1, int(finalPos.z)}) == Blocks::Air::toProtocol() ||
-        _entity.getDimension()->getBlock({int(finalPos.x), int(finalPos.y), int(finalPos.z)}) != Blocks::Air::toProtocol())
+    if (_entity.getDimension()->getBlock({ int(finalPos.x), int(finalPos.y) - 1, int(finalPos.z) })
+            == Blocks::Air::toProtocol()
+        || _entity.getDimension()->getBlock({ int(finalPos.x), int(finalPos.y), int(finalPos.z) })
+            != Blocks::Air::toProtocol())
         return;
 
     /* DEBUG CODE
     // place a bedrock block at the final position
-    // _entity.getDimension()->modifyBlock({int(finalPos.x), int(finalPos.y), int(finalPos.z)}, Blocks::Bedrock::toProtocol());
+    // _entity.getDimension()->modifyBlock({int(finalPos.x), int(finalPos.y), int(finalPos.z)},
+    Blocks::Bedrock::toProtocol());
 
     // display some important informations
     // LINFO(Vector3<double> {finalPos.x, finalPos.y - 1, finalPos.z});
-    // LINFO(GLOBAL_PALETTE.fromProtocolIdToBlock(_entity.getDimension()->getBlock({int(finalPos.x), int(finalPos.y) - 1, int(finalPos.z)})).name);
-    // LINFO(_entity.getDimension()->getBlock({int(finalPos.x), int(finalPos.y) - 1, int(finalPos.z)}) == Blocks::Air::toProtocol());
+    // LINFO(GLOBAL_PALETTE.fromProtocolIdToBlock(_entity.getDimension()->getBlock({int(finalPos.x), int(finalPos.y) -
+    1, int(finalPos.z)})).name);
+    // LINFO(_entity.getDimension()->getBlock({int(finalPos.x), int(finalPos.y) - 1, int(finalPos.z)}) ==
+    Blocks::Air::toProtocol());
     // LINFO(finalPos);
-    // LINFO(GLOBAL_PALETTE.fromProtocolIdToBlock(_entity.getDimension()->getBlock({int(finalPos.x), int(finalPos.y), int(finalPos.z)})).name);
-    // LINFO(_entity.getDimension()->getBlock({int(finalPos.x), int(finalPos.y), int(finalPos.z)}) != Blocks::Air::toProtocol());
+    // LINFO(GLOBAL_PALETTE.fromProtocolIdToBlock(_entity.getDimension()->getBlock({int(finalPos.x), int(finalPos.y),
+    int(finalPos.z)})).name);
+    // LINFO(_entity.getDimension()->getBlock({int(finalPos.x), int(finalPos.y), int(finalPos.z)}) !=
+    Blocks::Air::toProtocol());
     // LINFO(
     //     "total of conditions {}",
-    //     _entity.getDimension()->getBlock({int(finalPos.x), int(finalPos.y) - 1, int(finalPos.z)}) == Blocks::Air::toProtocol() ||
-    //         _entity.getDimension()->getBlock({int(finalPos.x), int(finalPos.y), int(finalPos.z)}) != Blocks::Air::toProtocol()
+    //     _entity.getDimension()->getBlock({int(finalPos.x), int(finalPos.y) - 1, int(finalPos.z)}) ==
+    Blocks::Air::toProtocol() ||
+    //         _entity.getDimension()->getBlock({int(finalPos.x), int(finalPos.y), int(finalPos.z)}) !=
+    Blocks::Air::toProtocol()
     // );
     */
 
@@ -63,7 +77,7 @@ void Wandering::think()
         double x = actualPos.x + ((finalPos.x - actualPos.x) / (distance * 10)) * i;
         double z = m * x + b;
         // set the next position
-        this->_path.push({x, actualPos.y, z});
+        this->_path.push({ x, actualPos.y, z });
     }
     this->_path.push(finalPos);
 }

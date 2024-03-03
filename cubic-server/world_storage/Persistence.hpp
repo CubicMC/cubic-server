@@ -23,11 +23,20 @@ namespace world_storage {
 struct __attribute__((__packed__)) RegionLocation {
     uint32_t data;
 
-    inline uint32_t getOffset() const { return ((data & 0x00FF0000) >> 16) | (data & 0x0000FF00) | ((data & 0x000000FF) << 16); }
+    inline uint32_t getOffset() const
+    {
+        return ((data & 0x00FF0000) >> 16) | (data & 0x0000FF00) | ((data & 0x000000FF) << 16);
+    }
 
-    inline uint8_t getSize() const { return data >> 24; }
+    inline uint8_t getSize() const
+    {
+        return data >> 24;
+    }
 
-    inline bool isEmpty() const { return data == 0; }
+    inline bool isEmpty() const
+    {
+        return data == 0;
+    }
 
     RegionLocation(uint32_t offset, uint8_t size):
         data(((offset & 0x00FF0000) >> 16) | (offset & 0x0000FF00) | ((offset & 0x000000FF) << 16) | (size << 24))
@@ -69,9 +78,15 @@ struct __attribute__((__packed__)) ChunkHeader {
     uint32_t length;
     RegionChunkCompressionScheme compressionScheme;
 
-    inline uint32_t getLength() const { return ntohl(length); }
+    inline uint32_t getLength() const
+    {
+        return ntohl(length);
+    }
 
-    inline RegionChunkCompressionScheme getCompressionScheme() const { return compressionScheme; }
+    inline RegionChunkCompressionScheme getCompressionScheme() const
+    {
+        return compressionScheme;
+    }
 };
 
 /**
@@ -225,6 +240,6 @@ private:
     void _regionLoadBlocks(uint8_t sectionY, nbt_tag_t *section, ChunkColumn &chunk);
 };
 
-}
+} // namespace world_storage
 
 #endif /* D3EBB5BA_3F3F_4BBD_A2B5_05FD6729E432 */

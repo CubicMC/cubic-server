@@ -107,7 +107,7 @@ struct Position {
     template<typename T>
     constexpr operator Vector3<T>() const
     {
-        return Vector3<T> {static_cast<T>(x), static_cast<T>(y), static_cast<T>(z)};
+        return Vector3<T>{ static_cast<T>(x), static_cast<T>(y), static_cast<T>(z) };
     }
 
     /**
@@ -162,72 +162,156 @@ struct Rotation {
 };
 
 // Position
-constexpr Position Position::operator*(valueType i) const { return Position {x * i, y * i, z * i}; }
-constexpr Position Position::operator*(const Position &other) const { return Position {x * other.x, y * other.y, z * other.z}; }
+constexpr Position Position::operator*(valueType i) const
+{
+    return Position{ x * i, y * i, z * i };
+}
+constexpr Position Position::operator*(const Position &other) const
+{
+    return Position{ x * other.x, y * other.y, z * other.z };
+}
 
-constexpr Position Position::operator/(valueType i) const { return Position {x / i, y / i, z / i}; }
-constexpr Position Position::operator/(const Position &other) const { return Position {x / other.x, y / other.y, z / other.z}; }
+constexpr Position Position::operator/(valueType i) const
+{
+    return Position{ x / i, y / i, z / i };
+}
+constexpr Position Position::operator/(const Position &other) const
+{
+    return Position{ x / other.x, y / other.y, z / other.z };
+}
 
-constexpr Position Position::operator%(valueType i) const { return Position {x % i, y % i, z % i}; }
-constexpr Position Position::operator%(const Position &other) const { return Position {x % other.x, y % other.y, z % other.z}; }
+constexpr Position Position::operator%(valueType i) const
+{
+    return Position{ x % i, y % i, z % i };
+}
+constexpr Position Position::operator%(const Position &other) const
+{
+    return Position{ x % other.x, y % other.y, z % other.z };
+}
 
-constexpr Position Position::operator+(valueType i) const { return Position {x + i, y + i, z + i}; }
-constexpr Position Position::operator+(const Position &other) const { return Position {x + other.x, y + other.y, z + other.z}; }
+constexpr Position Position::operator+(valueType i) const
+{
+    return Position{ x + i, y + i, z + i };
+}
+constexpr Position Position::operator+(const Position &other) const
+{
+    return Position{ x + other.x, y + other.y, z + other.z };
+}
 
-constexpr Position Position::operator-(const Position &other) const { return Position {x - other.x, y - other.y, z - other.z}; }
-constexpr Position Position::operator-(valueType i) const { return Position {x - i, y - i, z - i}; }
+constexpr Position Position::operator-(const Position &other) const
+{
+    return Position{ x - other.x, y - other.y, z - other.z };
+}
+constexpr Position Position::operator-(valueType i) const
+{
+    return Position{ x - i, y - i, z - i };
+}
 
-constexpr bool Position::operator>(valueType i) const { return x > i && y > i && z > i; }
-constexpr bool Position::operator<(valueType i) const { return x < i && y < i && z < i; }
+constexpr bool Position::operator>(valueType i) const
+{
+    return x > i && y > i && z > i;
+}
+constexpr bool Position::operator<(valueType i) const
+{
+    return x < i && y < i && z < i;
+}
 
-constexpr bool Position::operator>=(valueType i) const { return x >= i && y >= i && z >= i; }
-constexpr bool Position::operator<=(valueType i) const { return x <= i && y <= i && z <= i; }
+constexpr bool Position::operator>=(valueType i) const
+{
+    return x >= i && y >= i && z >= i;
+}
+constexpr bool Position::operator<=(valueType i) const
+{
+    return x <= i && y <= i && z <= i;
+}
 
 template<>
 struct std::hash<Position> {
     std::size_t operator()(const Position &pos) const noexcept
     {
-        std::size_t h1 = std::hash<Position::valueType> {}(pos.x);
-        std::size_t h2 = std::hash<Position::valueType> {}(pos.y);
-        std::size_t h3 = std::hash<Position::valueType> {}(pos.z);
+        std::size_t h1 = std::hash<Position::valueType>{}(pos.x);
+        std::size_t h2 = std::hash<Position::valueType>{}(pos.y);
+        std::size_t h3 = std::hash<Position::valueType>{}(pos.z);
         return h1 ^ (h2 << 1) ^ (h3 << 2);
     }
 };
 
 // Position2D
 
-constexpr Position2D Position2D::operator*(const valueType &i) const { return Position2D {x * i, z * i}; }
+constexpr Position2D Position2D::operator*(const valueType &i) const
+{
+    return Position2D{ x * i, z * i };
+}
 
-constexpr Position2D Position2D::operator*(const Position2D &other) const { return Position2D {x * other.x, z * other.z}; }
+constexpr Position2D Position2D::operator*(const Position2D &other) const
+{
+    return Position2D{ x * other.x, z * other.z };
+}
 
-constexpr Position2D Position2D::operator/(const valueType &i) const { return Position2D {x / i, z / i}; }
+constexpr Position2D Position2D::operator/(const valueType &i) const
+{
+    return Position2D{ x / i, z / i };
+}
 
-constexpr Position2D Position2D::operator/(const Position2D &other) const { return Position2D {x / other.x, z / other.z}; }
+constexpr Position2D Position2D::operator/(const Position2D &other) const
+{
+    return Position2D{ x / other.x, z / other.z };
+}
 
-constexpr Position2D Position2D::operator%(const valueType &i) const { return Position2D {x % i, z % i}; }
+constexpr Position2D Position2D::operator%(const valueType &i) const
+{
+    return Position2D{ x % i, z % i };
+}
 
-constexpr Position2D Position2D::operator%(const Position2D &other) const { return Position2D {x % other.x, z % other.z}; }
+constexpr Position2D Position2D::operator%(const Position2D &other) const
+{
+    return Position2D{ x % other.x, z % other.z };
+}
 
-constexpr Position2D Position2D::operator+(const valueType &i) const { return Position2D {x + i, z + i}; }
+constexpr Position2D Position2D::operator+(const valueType &i) const
+{
+    return Position2D{ x + i, z + i };
+}
 
-constexpr Position2D Position2D::operator+(const Position2D &other) const { return Position2D {x + other.x, z + other.z}; }
+constexpr Position2D Position2D::operator+(const Position2D &other) const
+{
+    return Position2D{ x + other.x, z + other.z };
+}
 
-constexpr Position2D Position2D::operator-(const Position2D &other) const { return Position2D {x - other.x, z - other.z}; }
+constexpr Position2D Position2D::operator-(const Position2D &other) const
+{
+    return Position2D{ x - other.x, z - other.z };
+}
 
-constexpr Position2D Position2D::operator-(const valueType &i) const { return Position2D {x - i, z - i}; }
+constexpr Position2D Position2D::operator-(const valueType &i) const
+{
+    return Position2D{ x - i, z - i };
+}
 
-constexpr bool Position2D::operator>(valueType i) const { return x > i && z > i; }
-constexpr bool Position2D::operator<(valueType i) const { return x < i && z < i; }
+constexpr bool Position2D::operator>(valueType i) const
+{
+    return x > i && z > i;
+}
+constexpr bool Position2D::operator<(valueType i) const
+{
+    return x < i && z < i;
+}
 
-constexpr bool Position2D::operator>=(valueType i) const { return x >= i && z >= i; }
-constexpr bool Position2D::operator<=(valueType i) const { return x <= i && z <= i; }
+constexpr bool Position2D::operator>=(valueType i) const
+{
+    return x >= i && z >= i;
+}
+constexpr bool Position2D::operator<=(valueType i) const
+{
+    return x <= i && z <= i;
+}
 
 template<>
 struct std::hash<Position2D> {
     std::size_t operator()(const Position2D &pos) const noexcept
     {
-        std::size_t h1 = std::hash<Position2D::valueType> {}(pos.x);
-        std::size_t h2 = std::hash<Position2D::valueType> {}(pos.z);
+        std::size_t h1 = std::hash<Position2D::valueType>{}(pos.x);
+        std::size_t h2 = std::hash<Position2D::valueType>{}(pos.z);
         return h1 ^ (h2 << 1);
     }
 };

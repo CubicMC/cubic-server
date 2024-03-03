@@ -2,10 +2,10 @@
 
 #include "Chat.hpp"
 #include "Dimension.hpp"
+#include "logging/logging.hpp"
 #include "Player.hpp"
 #include "Server.hpp"
 #include "World.hpp"
-#include "logging/logging.hpp"
 
 void command_parser::Title::autocomplete(UNUSED std::vector<std::string> &args, UNUSED Player *invoker) const { }
 
@@ -32,7 +32,7 @@ void command_parser::Title::execute(std::vector<std::string> &args, UNUSED Playe
             for (auto &[_, dim] : world->getDimensions()) {
                 for (auto &player : dim->getPlayers()) {
                     if (player->getUsername() == args[0]) {
-                        player->sendTitleText({args[1]});
+                        player->sendTitleText({ args[1] });
                         return;
                     }
                 }

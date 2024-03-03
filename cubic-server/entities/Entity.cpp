@@ -1,22 +1,22 @@
 #include "Entity.hpp"
 #include "Item.hpp"
 
-#include "Dimension.hpp"
-#include "Player.hpp"
-#include "Server.hpp"
-#include "World.hpp"
-#include "WorldGroup.hpp"
 #include "chat/Message.hpp"
 #include "default/Overworld.hpp"
 #include "default/TheNether.hpp"
+#include "Dimension.hpp"
 #include "entities/EntityType.hpp"
 #include "logging/logging.hpp"
 #include "math/Vector3.hpp"
 #include "options.hpp"
+#include "Player.hpp"
 #include "protocol/metadata.hpp"
+#include "Server.hpp"
 #include "types.hpp"
+#include "World.hpp"
 #include "world_storage/ChunkColumn.hpp"
 #include "world_storage/Level.hpp"
+#include "WorldGroup.hpp"
 #include <memory>
 #include <optional>
 #include <utility>
@@ -81,9 +81,9 @@ void Entity::setDimension(std::shared_ptr<Dimension> dim)
     // if entity is a player
     if (player) {
         // send init scoreboard data if entered another worldgroup
-        if (this->getDimension() == nullptr || // no previous dimension or
-            this->getDimension() == dim || // different previous dimension or
-            this->getWorld() == dim->getWorld() || // different previous world or
+        if (this->getDimension() == nullptr ||                           // no previous dimension or
+            this->getDimension() == dim ||                               // different previous dimension or
+            this->getWorld() == dim->getWorld() ||                       // different previous world or
             this->getWorldGroup() == dim->getWorld()->getWorldGroup()) { // different previous worldgroup
             dim->getWorld()->getWorldGroup()->getScoreboard().sendScoreboardStatus(*player);
         }
@@ -91,11 +91,20 @@ void Entity::setDimension(std::shared_ptr<Dimension> dim)
     _dim = dim;
 }
 
-void Entity::setPosition(const Vector3<double> &pos, UNUSED bool onGround) { _pos = pos; }
+void Entity::setPosition(const Vector3<double> &pos, UNUSED bool onGround)
+{
+    _pos = pos;
+}
 
-void Entity::setPosition(double x, double y, double z, bool onGround) { this->setPosition({x, y, z}, onGround); }
+void Entity::setPosition(double x, double y, double z, bool onGround)
+{
+    this->setPosition({ x, y, z }, onGround);
+}
 
-void Entity::setVelocity(const Vector3<double> &vel) { this->setVelocity(vel.x, vel.y, vel.z); };
+void Entity::setVelocity(const Vector3<double> &vel)
+{
+    this->setVelocity(vel.x, vel.y, vel.z);
+};
 
 void Entity::setVelocity(double x, double y, double z)
 {
@@ -110,11 +119,20 @@ void Entity::forceSetPosition(const Vector3<double> &pos)
     _lastPos = _pos;
 }
 
-void Entity::forceSetPosition(double x, double y, double z) { this->forceSetPosition({x, y, z}); }
+void Entity::forceSetPosition(double x, double y, double z)
+{
+    this->forceSetPosition({ x, y, z });
+}
 
-void Entity::setRotation(const Vector2<uint8_t> &rot) { _rot = rot; }
+void Entity::setRotation(const Vector2<uint8_t> &rot)
+{
+    _rot = rot;
+}
 
-void Entity::setRotation(uint8_t x, uint8_t y) { this->setRotation({x, y}); }
+void Entity::setRotation(uint8_t x, uint8_t y)
+{
+    this->setRotation({ x, y });
+}
 
 void Entity::setRotation(float yaw, float pitch)
 {
@@ -128,13 +146,25 @@ void Entity::setRotation(float yaw, float pitch)
     this->_rot.z = pitch * (256.0 / 360.0);
 }
 
-std::shared_ptr<World> Entity::getWorld() { return _dim->getWorld(); }
+std::shared_ptr<World> Entity::getWorld()
+{
+    return _dim->getWorld();
+}
 
-std::shared_ptr<const World> Entity::getWorld() const { return _dim->getWorld(); }
+std::shared_ptr<const World> Entity::getWorld() const
+{
+    return _dim->getWorld();
+}
 
-std::shared_ptr<WorldGroup> Entity::getWorldGroup() { return _dim->getWorld()->getWorldGroup(); }
+std::shared_ptr<WorldGroup> Entity::getWorldGroup()
+{
+    return _dim->getWorld()->getWorldGroup();
+}
 
-std::shared_ptr<const WorldGroup> Entity::getWorldGroup() const { return _dim->getWorld()->getWorldGroup(); }
+std::shared_ptr<const WorldGroup> Entity::getWorldGroup() const
+{
+    return _dim->getWorld()->getWorldGroup();
+}
 
 void Entity::teleport(const Vector3<double> &pos)
 {
@@ -143,23 +173,27 @@ void Entity::teleport(const Vector3<double> &pos)
     for (auto i : this->getDimension()->getPlayers()) {
         if (i->getId() == this->getId())
             continue;
-        i->sendTeleportEntity(this->getId(), pos, {0, 0});
+        i->sendTeleportEntity(this->getId(), pos, { 0, 0 });
     }
 }
 
 const std::shared_ptr<Entity> Entity::pickupItem()
 {
     auto collectorPosition = this->getPosition();
-    Vector3<double> pickupBoxH = {1, 1, 1};
-    Vector3<double> pickupBoxV = {0.5, 0.5, 0.5};
+    Vector3<double> pickupBoxH = { 1, 1, 1 };
+    Vector3<double> pickupBoxV = { 0.5, 0.5, 0.5 };
 
     for (auto item : this->getDimension()->getEntities()) {
-        if (item->getType() == EntityType::Item && item->getId() != this->getId() && std::static_pointer_cast<Item>(item)->isPickable()) {
-            if (collectorPosition.x - item->getPosition().x <= pickupBoxH.x && collectorPosition.x - item->getPosition().x >= -pickupBoxH.x &&
-                collectorPosition.y - item->getPosition().y <= pickupBoxV.y && collectorPosition.y - item->getPosition().y >= -pickupBoxV.y &&
-                collectorPosition.z - item->getPosition().z <= pickupBoxH.z && collectorPosition.z - item->getPosition().z >= -pickupBoxH.z) {
-                // LINFO("There is an item to pickup at {}, {}, {}", (collectorPosition.x - item->getPosition().x), (collectorPosition.y -
-                // item->getPosition().y),(collectorPosition.z - item->getPosition().z));
+        if (item->getType() == EntityType::Item && item->getId() != this->getId()
+            && std::static_pointer_cast<Item>(item)->isPickable()) {
+            if (collectorPosition.x - item->getPosition().x <= pickupBoxH.x
+                && collectorPosition.x - item->getPosition().x >= -pickupBoxH.x
+                && collectorPosition.y - item->getPosition().y <= pickupBoxV.y
+                && collectorPosition.y - item->getPosition().y >= -pickupBoxV.y
+                && collectorPosition.z - item->getPosition().z <= pickupBoxH.z
+                && collectorPosition.z - item->getPosition().z >= -pickupBoxH.z) {
+                // LINFO("There is an item to pickup at {}, {}, {}", (collectorPosition.x - item->getPosition().x),
+                // (collectorPosition.y - item->getPosition().y),(collectorPosition.z - item->getPosition().z));
                 return item;
             }
         }
@@ -170,10 +204,11 @@ const std::shared_ptr<Entity> Entity::pickupItem()
 void Entity::tick()
 {
     this->tickPosition();
-    Position2D chunkPos = {transformBlockPosToChunkPos(_pos.x), transformBlockPosToChunkPos(_pos.z)};
+    Position2D chunkPos = { transformBlockPosToChunkPos(_pos.x), transformBlockPosToChunkPos(_pos.z) };
     if (_dim->hasChunkLoaded(chunkPos.x, chunkPos.z)) {
 
-        // here is an error arising from the '%' in the 'getBlock' below, so in negative positions, the gotten block position is 1 block less than needed
+        // here is an error arising from the '%' in the 'getBlock' below, so in negative positions, the gotten block
+        // position is 1 block less than needed
         Position pos = _pos;
         if (_pos.x < 0)
             pos.x -= 1;
@@ -184,8 +219,8 @@ void Entity::tick()
 
         // LTRACE("Block: {}, {} . {} . {}", block, _pos.x, _pos.y, _pos.z);
 
-        if (block == Blocks::NetherPortal::toProtocol(Blocks::NetherPortal::Properties::Axis::Z) ||
-            block == Blocks::NetherPortal::toProtocol(Blocks::NetherPortal::Properties::Axis::X)) {
+        if (block == Blocks::NetherPortal::toProtocol(Blocks::NetherPortal::Properties::Axis::Z)
+            || block == Blocks::NetherPortal::toProtocol(Blocks::NetherPortal::Properties::Axis::X)) {
             if (_type == EntityType::Player) {
                 _tickCounter++;
                 LTRACE("Counter: {}", _tickCounter);
@@ -226,21 +261,22 @@ void Entity::tickPosition()
         for (auto i : this->getDimension()->getPlayers()) {
             if (i->getId() == this->getId())
                 continue;
-            i->sendUpdateEntityPositionAndRotation({this->getId(), deltaX, deltaY, deltaZ, this->_rot.x, this->_rot.z, true});
-            i->sendHeadRotation({this->getId(), _rot.x});
+            i->sendUpdateEntityPositionAndRotation({ this->getId(), deltaX, deltaY, deltaZ, this->_rot.x, this->_rot.z,
+                                                     true });
+            i->sendHeadRotation({ this->getId(), _rot.x });
         }
     } else if (updatePos && !updateRot) {
         for (auto i : this->getDimension()->getPlayers()) {
             if (i->getId() == this->getId())
                 continue;
-            i->sendUpdateEntityPosition({this->getId(), deltaX, deltaY, deltaZ, true});
+            i->sendUpdateEntityPosition({ this->getId(), deltaX, deltaY, deltaZ, true });
         }
     } else if (!updatePos && updateRot) {
         for (auto i : this->getDimension()->getPlayers()) {
             if (i->getId() == this->getId())
                 continue;
-            i->sendUpdateEntityRotation({this->getId(), this->_rot.x, this->_rot.z, true});
-            i->sendHeadRotation({this->getId(), _rot.x});
+            i->sendUpdateEntityRotation({ this->getId(), this->_rot.x, this->_rot.z, true });
+            i->sendHeadRotation({ this->getId(), _rot.x });
         }
     }
 }
@@ -360,7 +396,7 @@ void Entity::teleportPlayerThroughPortal(std::shared_ptr<Dimension> currentDimen
     }
     auto augh = this->dynamicSharedFromThis<Entity>();
     currentDimension->pushBackIdToRemove(_id);
-    thisPlayer->sendRemoveEntities({_id});
+    thisPlayer->sendRemoveEntities({ _id });
     thisPlayer->setDimension(nextDimension);
     thisPlayer->sendRespawn({
         nextDimension->getDimensionTypeName(),
@@ -373,15 +409,16 @@ void Entity::teleportPlayerThroughPortal(std::shared_ptr<Dimension> currentDimen
         0,
         false,
     });
-    thisPlayer->sendFeatureFlags({{"minecraft:vanilla"}});
-    thisPlayer->sendPlayerAbilities({player_attributes::getAbilitiesByGamemode(thisPlayer->getGamemode()), 0.05, 0.1});
-    thisPlayer->sendSetHeldItem({thisPlayer->getHeldItem()});
+    thisPlayer->sendFeatureFlags({ { "minecraft:vanilla" } });
+    thisPlayer->sendPlayerAbilities({ player_attributes::getAbilitiesByGamemode(thisPlayer->getGamemode()), 0.05, 0.1 }
+    );
+    thisPlayer->sendSetHeldItem({ thisPlayer->getHeldItem() });
     thisPlayer->sendUpdateRecipes({});
     thisPlayer->sendUpdateTags({});
-    thisPlayer->sendEntityEvent({thisPlayer->_id, 24});
-    thisPlayer->sendCommands({{}, 0});
+    thisPlayer->sendEntityEvent({ thisPlayer->_id, 24 });
+    thisPlayer->sendCommands({ {}, 0 });
     thisPlayer->sendUpdateRecipiesBook({});
-    thisPlayer->sendServerData({false, "", false, "", false});
+    thisPlayer->sendServerData({ false, "", false, "", false });
     nextDimension->addEntity(augh);
     nextDimension->addPlayer(thisPlayer);
     auto renderDistance = nextDimension->getWorld()->getRenderDistance();
@@ -393,12 +430,12 @@ void Entity::teleportPlayerThroughPortal(std::shared_ptr<Dimension> currentDimen
             thisPlayer->sendChunkAndLightUpdate(x, z);
         }
     }
-    thisPlayer->sendSetContainerContent({thisPlayer->getInventory()});
+    thisPlayer->sendSetContainerContent({ thisPlayer->getInventory() });
     thisPlayer->sendEntityMetadata(*thisPlayer);
-    thisPlayer->sendUpdateAttributes({thisPlayer->getId(), {}});
-    thisPlayer->sendUpdateAdvancements({false, {}, {}, {}});
+    thisPlayer->sendUpdateAttributes({ thisPlayer->getId(), {} });
+    thisPlayer->sendUpdateAdvancements({ false, {}, {}, {} });
     thisPlayer->sendHealth();
-    thisPlayer->sendSetExperience({0, 0, 0});
-    thisPlayer->teleport({8.5, 70, 8.5});
+    thisPlayer->sendSetExperience({ 0, 0, 0 });
+    thisPlayer->teleport({ 8.5, 70, 8.5 });
     nextDimension->spawnPlayer(*thisPlayer);
 }

@@ -29,7 +29,9 @@ std::shared_ptr<nbt::Base> registry::ChatElement::toNBT() const
     if (_style.color.has_value())
         style->addValue(NBT_MAKE(nbt::String, "color", _style.color.value()));
 
-    auto chat = NBT_MAKE_AS(nbt::Compound, "chat", {NBT_MAKE(nbt::String, "translation_key", this->_chat.key), chatParameters});
+    auto chat = NBT_MAKE_AS(
+        nbt::Compound, "chat", { NBT_MAKE(nbt::String, "translation_key", this->_chat.key), chatParameters }
+    );
 
     if (style->size() <= 0) {
         style = nullptr;

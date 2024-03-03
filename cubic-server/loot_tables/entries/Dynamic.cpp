@@ -19,6 +19,9 @@ bool Dynamic::poll(LootTablePoll &poll, LootContext *context) const
     return (true);
 }
 
-std::unique_ptr<Entry> Dynamic::creator(const nlohmann::json &entry) { return (std::make_unique<Dynamic>(entry)); }
-};
-};
+std::unique_ptr<Entry> Dynamic::creator(const nlohmann::json &entry)
+{
+    return (std::make_unique<Dynamic>(entry));
+}
+}; // namespace Entry
+}; // namespace LootTable

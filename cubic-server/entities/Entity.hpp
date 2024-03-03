@@ -66,7 +66,7 @@ public:
     /**
      * @brief Destroy the Entity object
      */
-    virtual ~Entity() {};
+    virtual ~Entity(){};
 
     /**
      * @brief Called every tick to update the entity
@@ -121,26 +121,53 @@ public:
     virtual void setRotation(uint8_t yaw, uint8_t pitch);
     virtual void setRotation(float yaw, float pitch);
 
-    NODISCARD virtual std::shared_ptr<Dimension> getDimension() { return _dim; }
-    NODISCARD virtual std::shared_ptr<const Dimension> getDimension() const { return _dim; }
+    NODISCARD virtual std::shared_ptr<Dimension> getDimension()
+    {
+        return _dim;
+    }
+    NODISCARD virtual std::shared_ptr<const Dimension> getDimension() const
+    {
+        return _dim;
+    }
     NODISCARD virtual std::shared_ptr<World> getWorld();
     NODISCARD virtual std::shared_ptr<const World> getWorld() const;
     NODISCARD virtual std::shared_ptr<WorldGroup> getWorldGroup();
     NODISCARD virtual std::shared_ptr<const WorldGroup> getWorldGroup() const;
 
-    NODISCARD virtual int32_t getId() const { return _id; }
-    NODISCARD virtual const u128 &getUuid() const { return _uuid; }
-    NODISCARD virtual const Vector3<double> &getPosition() const { return _pos; }
-    NODISCARD virtual const Vector2<uint8_t> &getRotation() const { return _rot; }
-    NODISCARD virtual const Vector3<double> &getVelocity() const { return _velocity; }
-    NODISCARD virtual const Vector2<float> getRotationDegree() const { return {(float) _rot.x / (256.0f / 360.0f), (float) _rot.z / (256.0f / 360.0f)}; }
-    NODISCARD virtual EntityType getType() const { return _type; }
+    NODISCARD virtual int32_t getId() const
+    {
+        return _id;
+    }
+    NODISCARD virtual const u128 &getUuid() const
+    {
+        return _uuid;
+    }
+    NODISCARD virtual const Vector3<double> &getPosition() const
+    {
+        return _pos;
+    }
+    NODISCARD virtual const Vector2<uint8_t> &getRotation() const
+    {
+        return _rot;
+    }
+    NODISCARD virtual const Vector3<double> &getVelocity() const
+    {
+        return _velocity;
+    }
+    NODISCARD virtual const Vector2<float> getRotationDegree() const
+    {
+        return { (float) _rot.x / (256.0f / 360.0f), (float) _rot.z / (256.0f / 360.0f) };
+    }
+    NODISCARD virtual EntityType getType() const
+    {
+        return _type;
+    }
 
     virtual void teleport(const Vector3<double> &pos);
 
     // Drop an item when necessary (death of the entity, broken block, ...)
     // @todo The dropped item is determined by the loot tables. Actually that's not true
-    virtual void dropItem(UNUSED const Vector3<double> &pos, UNUSED bool isDroppedWillingly = true) {};
+    virtual void dropItem(UNUSED const Vector3<double> &pos, UNUSED bool isDroppedWillingly = true){};
 
     /**
      * @brief Used to update the position of an entity for all players
@@ -187,9 +214,15 @@ public:
      */
     void teleportPlayerThroughPortal(std::shared_ptr<Dimension> currentDimension);
 
-    bool isReadyToBeRemoved() const { return _readyToRemove; }
+    bool isReadyToBeRemoved() const
+    {
+        return _readyToRemove;
+    }
 
-    void setReadyToRemove(bool value) { _readyToRemove = value; }
+    void setReadyToRemove(bool value)
+    {
+        _readyToRemove = value;
+    }
 
 protected:
     std::shared_ptr<Dimension> _dim;

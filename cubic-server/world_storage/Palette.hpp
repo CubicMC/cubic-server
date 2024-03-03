@@ -11,7 +11,10 @@
 namespace world_storage {
 
 // https://stackoverflow.com/a/23784921
-constexpr uint8_t bitsNeeded(int32_t n) { return n <= 1 ? 0 : 1 + bitsNeeded((n + 1) / 2); }
+constexpr uint8_t bitsNeeded(int32_t n)
+{
+    return n <= 1 ? 0 : 1 + bitsNeeded((n + 1) / 2);
+}
 
 class Palette {
 public:
@@ -40,12 +43,30 @@ public:
 
     virtual uint8_t getBits() const = 0;
 
-    constexpr uint64_t size() const { return _nameToId.size(); }
-    constexpr std::vector<int32_t>::const_iterator begin() const { return _nameToId.begin(); }
-    constexpr std::vector<int32_t>::const_iterator end() const { return _nameToId.end(); }
-    constexpr const std::vector<int32_t> &data() const { return _nameToId; }
-    constexpr int32_t operator[](uint64_t index) const { return _nameToId.at(index); }
-    constexpr void clear() { _nameToId.clear(); }
+    constexpr uint64_t size() const
+    {
+        return _nameToId.size();
+    }
+    constexpr std::vector<int32_t>::const_iterator begin() const
+    {
+        return _nameToId.begin();
+    }
+    constexpr std::vector<int32_t>::const_iterator end() const
+    {
+        return _nameToId.end();
+    }
+    constexpr const std::vector<int32_t> &data() const
+    {
+        return _nameToId;
+    }
+    constexpr int32_t operator[](uint64_t index) const
+    {
+        return _nameToId.at(index);
+    }
+    constexpr void clear()
+    {
+        _nameToId.clear();
+    }
 
 protected:
     mutable std::mutex _lock;

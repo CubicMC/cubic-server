@@ -78,8 +78,9 @@ private:
     std::unordered_map<std::string, std::shared_ptr<Objective::Objective>> _objectives;
     std::unordered_map<std::string, std::unique_ptr<Team::Team>> _teams;
     std::array<Objective::Objective *, 18> _displaySlots;
-    std::unordered_map<std::string, std::unordered_map<std::string, std::shared_ptr<Objective::Objective>>> _objectivesByCriteria;
+    std::unordered_map<std::string, std::unordered_map<std::string, std::shared_ptr<Objective::Objective>>>
+        _objectivesByCriteria;
 };
-}
+} // namespace Scoreboard
 
 #endif // CUBICSERVER_SCOREBOARD_SCOREBOARD_HPP

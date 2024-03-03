@@ -15,6 +15,9 @@ bool DamageSourceProperties::verify(const LootContext *context) const
     return (true);
 }
 
-std::unique_ptr<Condition> DamageSourceProperties::create(const nlohmann::json &condition) { return (std::make_unique<DamageSourceProperties>(condition)); }
-};
-};
+std::unique_ptr<Condition> DamageSourceProperties::create(const nlohmann::json &condition)
+{
+    return (std::make_unique<DamageSourceProperties>(condition));
+}
+}; // namespace Condition
+}; // namespace LootTable

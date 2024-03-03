@@ -1,13 +1,14 @@
 #include <memory>
 #include <vector>
 
-#include "Player.hpp"
 #include "entities/Entity.hpp"
+#include "Player.hpp"
 #include "selectors.hpp"
 
 void fillSelector(
-    const std::string &selector, std::vector<std::reference_wrapper<Entity>> &out, const std::vector<std::shared_ptr<Entity>> &entities,
-    const std::vector<std::shared_ptr<Player>> &players, Player *invoker
+    const std::string &selector, std::vector<std::reference_wrapper<Entity>> &out,
+    const std::vector<std::shared_ptr<Entity>> &entities, const std::vector<std::shared_ptr<Player>> &players,
+    Player *invoker
 )
 {
     static std::random_device rd;
@@ -38,7 +39,8 @@ void fillSelector(
 }
 
 void fillSingleSelector(
-    const std::string &selector, Entity &out, UNUSED const std::vector<std::shared_ptr<Entity>> &entities, const std::vector<std::shared_ptr<Player>> &players, Player *invoker
+    const std::string &selector, Entity &out, UNUSED const std::vector<std::shared_ptr<Entity>> &entities,
+    const std::vector<std::shared_ptr<Player>> &players, Player *invoker
 )
 {
     static std::random_device rd;

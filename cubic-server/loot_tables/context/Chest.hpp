@@ -19,7 +19,7 @@ public:
     const Position &origin;
     const Entity *entity;
 };
-}
-}
+} // namespace Context
+} // namespace LootTable
 
 #endif // CUBIC_SERVER_LOOT_TABLES_CONTEXT_CHEST_HPP

@@ -18,8 +18,10 @@ public:
 
 private:
     const std::vector<Generator::FeatureBlock> getTree(const Position &pos) const override;
-    const std::vector<Generator::FeatureBlock> getTree(Generator::positionType x, Generator::positionType y, Generator::positionType z) const override;
-    generation::Generator::TreeSize _treeSize = {5, 7};
+    const std::vector<Generator::FeatureBlock> getTree(
+        Generator::positionType x, Generator::positionType y, Generator::positionType z
+    ) const override;
+    generation::Generator::TreeSize _treeSize = { 5, 7 };
 };
 } // namespace generation::trees
 

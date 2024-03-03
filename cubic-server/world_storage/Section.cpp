@@ -194,7 +194,10 @@ uint8_t world_storage::Section::getSkyLight(const Position &pos) const
     return this->_skyLight.get(calculateSectionBlockIdx(pos));
 }
 
-uint8_t world_storage::Section::getSkyLight(uint64_t idx) const { return this->_skyLight.get(idx); }
+uint8_t world_storage::Section::getSkyLight(uint64_t idx) const
+{
+    return this->_skyLight.get(idx);
+}
 
 uint8_t world_storage::Section::getBlockLight(const Position &pos) const
 {
@@ -203,7 +206,10 @@ uint8_t world_storage::Section::getBlockLight(const Position &pos) const
     return this->_blockLight.get(calculateSectionBlockIdx(pos));
 }
 
-uint8_t world_storage::Section::getBlockLight(uint64_t idx) const { return this->_blockLight.get(idx); }
+uint8_t world_storage::Section::getBlockLight(uint64_t idx) const
+{
+    return this->_blockLight.get(idx);
+}
 
 void world_storage::Section::processRandomTick(uint32_t rts, ChunkColumn &chunkColumn, size_t sectionIndex)
 {
@@ -217,14 +223,19 @@ void world_storage::Section::processRandomTick(uint32_t rts, ChunkColumn &chunkC
 void world_storage::Section::_processBlockRandomTick(uint32_t blockIndex, ChunkColumn &chunkColumn, size_t sectionIndex)
 {
     BlockId block = getBlock(blockIndex);
-    if (Blocks::Farmland::toProtocol(Blocks::Farmland::Properties::Moisture::ZERO) <= block &&
-        block <= Blocks::Farmland::toProtocol(Blocks::Farmland::Properties::Moisture::SEVEN)) {
-        auto ablsolutePosition = world_storage::calculateAbsolutePosition(blockIndex, chunkColumn.getChunkPos(), sectionIndex);
+    if (Blocks::Farmland::toProtocol(Blocks::Farmland::Properties::Moisture::ZERO) <= block
+        && block <= Blocks::Farmland::toProtocol(Blocks::Farmland::Properties::Moisture::SEVEN)) {
+        auto ablsolutePosition = world_storage::calculateAbsolutePosition(
+            blockIndex, chunkColumn.getChunkPos(), sectionIndex
+        );
         utility::farmland(block, chunkColumn, ablsolutePosition);
         LTRACE("Farmland random tick at {}", ablsolutePosition);
     }
-    if (Blocks::Wheat::toProtocol(Blocks::Wheat::Properties::Age::ZERO) <= block && block <= Blocks::Wheat::toProtocol(Blocks::Wheat::Properties::Age::SIX)) {
-        auto ablsolutePosition = world_storage::calculateAbsolutePosition(blockIndex, chunkColumn.getChunkPos(), sectionIndex);
+    if (Blocks::Wheat::toProtocol(Blocks::Wheat::Properties::Age::ZERO) <= block
+        && block <= Blocks::Wheat::toProtocol(Blocks::Wheat::Properties::Age::SIX)) {
+        auto ablsolutePosition = world_storage::calculateAbsolutePosition(
+            blockIndex, chunkColumn.getChunkPos(), sectionIndex
+        );
         utility::wheat(block, chunkColumn, ablsolutePosition);
         LTRACE("Wheat random tick at {}", ablsolutePosition);
     }

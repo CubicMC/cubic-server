@@ -7,11 +7,11 @@
 #include <mutex>
 #include <vector>
 
-#include "Palette.hpp"
-#include "Section.hpp"
 #include "generation/generator.hpp"
 #include "nbt.h"
 #include "nbt.hpp"
+#include "Palette.hpp"
+#include "Section.hpp"
 #include "types.hpp"
 
 class Dimension;
@@ -30,12 +30,12 @@ inline Position convertPositionToChunkPosition(const Position &position)
         x += 16;
     if (z < 0)
         z += 16;
-    return {x, position.y, z};
+    return { x, position.y, z };
 }
 
 inline Position convertChunkPositionToPosition(const Position2D &chunkPos, const Position &blockPos)
 {
-    return {chunkPos.x * 16 + blockPos.x, blockPos.y, chunkPos.z * 16 + blockPos.z};
+    return { chunkPos.x * 16 + blockPos.x, blockPos.y, chunkPos.z * 16 + blockPos.z };
 }
 
 // Heightmap
@@ -43,18 +43,28 @@ constexpr int HEIGHTMAP_BITS = bitsNeeded(CHUNK_HEIGHT + 1);
 // TODO(huntears): This + 1 here makes me wanna cry, but somehow we are off by one
 // So if a kind soul out here wants to go around to figure out why and fix this it
 // would be fucking awesome
-constexpr int HEIGHTMAP_ARRAY_SIZE = (SECTION_2D_SIZE * HEIGHTMAP_BITS / 64) + ((SECTION_2D_SIZE * HEIGHTMAP_BITS % 64) != 0) + 1;
-constexpr const char *const HEIGHTMAP_ENTRY[] = {"MOTION_BLOCKING", "WORLD_SURFACE", nullptr};
+constexpr int HEIGHTMAP_ARRAY_SIZE = (SECTION_2D_SIZE * HEIGHTMAP_BITS / 64)
+    + ((SECTION_2D_SIZE * HEIGHTMAP_BITS % 64) != 0) + 1;
+constexpr const char *const HEIGHTMAP_ENTRY[] = { "MOTION_BLOCKING", "WORLD_SURFACE", nullptr };
 
-constexpr uint8_t getSectionIndex(const Position &pos) { return (pos.y - CHUNK_HEIGHT_MIN + SECTION_WIDTH) / SECTION_WIDTH; }
-constexpr uint8_t getBiomeSectionIndex(const Position &pos) { return (pos.y - BIOME_HEIGHT_MIN + BIOME_SECTION_WIDTH) / BIOME_SECTION_WIDTH; }
+constexpr uint8_t getSectionIndex(const Position &pos)
+{
+    return (pos.y - CHUNK_HEIGHT_MIN + SECTION_WIDTH) / SECTION_WIDTH;
+}
+constexpr uint8_t getBiomeSectionIndex(const Position &pos)
+{
+    return (pos.y - BIOME_HEIGHT_MIN + BIOME_SECTION_WIDTH) / BIOME_SECTION_WIDTH;
+}
 
 // TODO: Accept negative position for y
 constexpr uint64_t calculateBlockIdx(const Position &pos)
 {
     auto y = pos.y - CHUNK_HEIGHT_MIN;
     if (pos.x < 0 || pos.x >= SECTION_WIDTH || y < 0 || y >= CHUNK_HEIGHT || pos.z < 0 || pos.z >= SECTION_WIDTH)
-        throw std::runtime_error("Invalid position: (" + std::to_string(pos.x) + ", " + std::to_string(y) + ", " + std::to_string(pos.z) + ")");
+        throw std::runtime_error(
+            "Invalid position: (" + std::to_string(pos.x) + ", " + std::to_string(y) + ", " + std::to_string(pos.z)
+            + ")"
+        );
     return pos.x + (pos.z * SECTION_WIDTH) + (y * SECTION_2D_SIZE);
 }
 
@@ -62,8 +72,12 @@ constexpr uint64_t calculateBlockIdx(const Position &pos)
 constexpr uint64_t calculateBiomeIdx(const Position &pos)
 {
     auto y = pos.y - BIOME_HEIGHT_MIN;
-    if (pos.x < 0 || pos.x >= BIOME_SECTION_WIDTH || y < 0 || y >= BIOME_HEIGHT || pos.z < 0 || pos.z >= BIOME_SECTION_WIDTH)
-        throw std::runtime_error("Invalid biome position: (" + std::to_string(pos.x) + ", " + std::to_string(y) + ", " + std::to_string(pos.z) + ")");
+    if (pos.x < 0 || pos.x >= BIOME_SECTION_WIDTH || y < 0 || y >= BIOME_HEIGHT || pos.z < 0
+        || pos.z >= BIOME_SECTION_WIDTH)
+        throw std::runtime_error(
+            "Invalid biome position: (" + std::to_string(pos.x) + ", " + std::to_string(y) + ", "
+            + std::to_string(pos.z) + ")"
+        );
     return pos.x + (pos.z * BIOME_SECTION_WIDTH) + (y * BIOME_SECTION_2D_SIZE);
 }
 
@@ -133,13 +147,28 @@ public:
     void updateBiome(const Position &pos, BiomeId biome);
     BiomeId getBiome(const Position &pos) const;
 
-    constexpr Section &getSection(uint8_t index) { return _sections.at(index); }
-    constexpr const Section &getSection(uint8_t index) const { return _sections.at(index); }
+    constexpr Section &getSection(uint8_t index)
+    {
+        return _sections.at(index);
+    }
+    constexpr const Section &getSection(uint8_t index) const
+    {
+        return _sections.at(index);
+    }
 
-    constexpr std::array<Section, NB_OF_SECTIONS> &getSections() { return _sections; }
-    constexpr const std::array<Section, NB_OF_SECTIONS> &getSections() const { return _sections; }
+    constexpr std::array<Section, NB_OF_SECTIONS> &getSections()
+    {
+        return _sections;
+    }
+    constexpr const std::array<Section, NB_OF_SECTIONS> &getSections() const
+    {
+        return _sections;
+    }
 
-    const std::shared_ptr<const Dimension> getDimension() const { return _dimension; }
+    const std::shared_ptr<const Dimension> getDimension() const
+    {
+        return _dimension;
+    }
 
     int64_t getTick();
     void setTick(int64_t tick);
@@ -157,7 +186,10 @@ public:
     // const std::deque<Entity *> &getEntities();
 
     void updateHeightMap();
-    NODISCARD constexpr inline const nbt::Compound &getHeightMap() const { return _heightMap; }
+    NODISCARD constexpr inline const nbt::Compound &getHeightMap() const
+    {
+        return _heightMap;
+    }
 
     void generate(GenerationState goalState = GenerationState::READY);
 
@@ -178,7 +210,10 @@ public:
      *
      * @return const std::unordered_map<Position, std::shared_ptr<TileEntity>>&
      */
-    constexpr const std::unordered_map<Position, std::shared_ptr<tile_entity::TileEntity>> &getTileEntities() const { return _tileEntities; }
+    constexpr const std::unordered_map<Position, std::shared_ptr<tile_entity::TileEntity>> &getTileEntities() const
+    {
+        return _tileEntities;
+    }
 
     /**
      * @brief Get the Tile Entity object at the given position
@@ -215,7 +250,10 @@ public:
      *
      * @return const std::vector<std::pair<Position, BlockId>>&
      */
-    constexpr std::vector<std::pair<Position, BlockId>> &getBlocksToBeUpdated() { return _blocksToBeUpdated; }
+    constexpr std::vector<std::pair<Position, BlockId>> &getBlocksToBeUpdated()
+    {
+        return _blocksToBeUpdated;
+    }
 
     /*
      * @brief Gets an nbt formatted to be saved to disk in a region file
@@ -248,6 +286,7 @@ private:
     void _generateTopLayerModification(generation::Generator &generator);
 
 private:
+
 private:
     std::array<Section, NB_OF_SECTIONS> _sections;
     // std::array<uint8_t, (NB_OF_PLAYABLE_SECTIONS + 2) * SECTION_3D_SIZE> _skyLights;

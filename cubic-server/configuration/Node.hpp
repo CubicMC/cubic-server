@@ -19,7 +19,7 @@ public:
         _Impl<T>(impl)
     {
     }
-    virtual ~_Node() {};
+    virtual ~_Node(){};
 
     virtual void load(const std::filesystem::path &path) = 0;
     virtual void save(const std::filesystem::path &path) = 0;
@@ -43,10 +43,22 @@ public:
 
     template<typename U>
     ChildNode &set(const std::vector<U> &values);
-    ChildNode &set(const auto &value) { return set(_details::Convertor<std::string>()(value)); }
-    bool operator==(const _Node &other) const { return this->_impl == other._impl; }
-    ChildNode &operator[](const auto &key) { return at(_details::Convertor<std::string>()(key)); }
-    const ChildNode &operator[](const auto &key) const { return at(_details::Convertor<std::string>()(key)); }
+    ChildNode &set(const auto &value)
+    {
+        return set(_details::Convertor<std::string>()(value));
+    }
+    bool operator==(const _Node &other) const
+    {
+        return this->_impl == other._impl;
+    }
+    ChildNode &operator[](const auto &key)
+    {
+        return at(_details::Convertor<std::string>()(key));
+    }
+    const ChildNode &operator[](const auto &key) const
+    {
+        return at(_details::Convertor<std::string>()(key));
+    }
 
 protected:
     std::unordered_map<std::string, ChildNode> _children;

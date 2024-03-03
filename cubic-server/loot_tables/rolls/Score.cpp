@@ -43,15 +43,21 @@ const RollResult Score::poll(LootContext *context) const
     return (RollResult(1, 1.0));
 }
 
-std::unique_ptr<Roll> Score::creator(const nlohmann::json &roll) { return (std::make_unique<Score>(roll)); }
+std::unique_ptr<Roll> Score::creator(const nlohmann::json &roll)
+{
+    return (std::make_unique<Score>(roll));
+}
 
 bool Score::isOfType(const nlohmann::json &roll)
 {
     return (
-        roll.is_object() && roll.contains("type") && roll["type"].is_string() && roll["type"].get<std::string>() == "minecraft:score" && roll.contains("score") &&
-        roll.contains("target") && roll["score"].is_string() &&
-        (roll["target"].is_string() || (roll["target"].is_object() && roll["target"].contains("target") && roll["target"]["target"].is_string()))
+        roll.is_object() && roll.contains("type") && roll["type"].is_string()
+        && roll["type"].get<std::string>() == "minecraft:score" && roll.contains("score") && roll.contains("target")
+        && roll["score"].is_string()
+        && (roll["target"].is_string()
+            || (roll["target"].is_object() && roll["target"].contains("target") && roll["target"]["target"].is_string())
+        )
     );
 }
-};
-};
+}; // namespace Roll
+}; // namespace LootTable

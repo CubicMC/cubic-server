@@ -19,7 +19,7 @@ public:
     const FloatingPosition &origin;
     const Entity &gifter;
 };
-}
-}
+} // namespace Context
+} // namespace LootTable
 
 #endif // CUBIC_SERVER_LOOT_TABLES_CONTEXT_GIFT_HPP

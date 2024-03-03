@@ -12,7 +12,10 @@ Checksum::Checksum() noexcept:
     mbedtls_sha1_starts(&_context);
 }
 
-Checksum::~Checksum() noexcept { mbedtls_sha1_free(&_context); }
+Checksum::~Checksum() noexcept
+{
+    mbedtls_sha1_free(&_context);
+}
 
 void Checksum::update(const uint8_t *data, size_t length)
 {

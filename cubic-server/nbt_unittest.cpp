@@ -10,7 +10,8 @@ namespace Nbt_Testing {
  * @param TestSuiteName The name of the test suite (in that case MathTest) this allow to group different tests
  * @param TestName The name of the test (in this case Factorial) this allow to group test
  *
- * @note I choose to use EXPECT instead of ASSERT because I want to test all the cases and not to stop at the first error
+ * @note I choose to use EXPECT instead of ASSERT because I want to test all the cases and not to stop at the first
+ * error
  *
  */
 
@@ -106,11 +107,14 @@ RC_GTEST_PROP(RapidCheckTest, NbtLongArrayChecker, (const std::vector<int64_t> v
 
 TEST(NbtTest, TestNbt)
 {
-    auto toserialize = nbt::Compound("hello world", {std::shared_ptr<nbt::String>(new nbt::String("name", "Bananrama"))});
+    auto toserialize = nbt::Compound(
+        "hello world", { std::shared_ptr<nbt::String>(new nbt::String("name", "Bananrama")) }
+    );
     auto serialized = toserialize.serialize();
 
-    std::vector<uint8_t> toGet({0x0a, 0x00, 0x0b, 0x68, 0x65, 0x6c, 0x6c, 0x6f, 0x20, 0x77, 0x6f, 0x72, 0x6c, 0x64, 0x08, 0x00, 0x04,
-                                0x6e, 0x61, 0x6d, 0x65, 0x00, 0x09, 0x42, 0x61, 0x6e, 0x61, 0x6e, 0x72, 0x61, 0x6d, 0x61, 0x00});
+    std::vector<uint8_t> toGet({ 0x0a, 0x00, 0x0b, 0x68, 0x65, 0x6c, 0x6c, 0x6f, 0x20, 0x77, 0x6f,
+                                 0x72, 0x6c, 0x64, 0x08, 0x00, 0x04, 0x6e, 0x61, 0x6d, 0x65, 0x00,
+                                 0x09, 0x42, 0x61, 0x6e, 0x61, 0x6e, 0x72, 0x61, 0x6d, 0x61, 0x00 });
     EXPECT_EQ(serialized.size(), toGet.size());
     EXPECT_EQ(serialized, toGet);
 }
@@ -118,11 +122,17 @@ TEST(NbtTest, TestNbt)
 TEST(NbtTest, hello_world)
 {
     std::ifstream file("hello_world.nbt", std::ios::binary);
-    ASSERT_TRUE(testing::AssertionResult(file.is_open() ? testing::AssertionSuccess() : testing::AssertionFailure()) << "Failed to open file");
+    ASSERT_TRUE(
+        testing::AssertionResult(file.is_open() ? testing::AssertionSuccess() : testing::AssertionFailure())
+        << "Failed to open file"
+    );
     std::vector<uint8_t> buffer(std::istreambuf_iterator<char>(file), {});
     auto at = buffer.data();
     auto content = nbt::parse(at, at + buffer.size() - 1);
-    ASSERT_TRUE(testing::AssertionResult(content == nullptr ? testing::AssertionFailure() : testing::AssertionSuccess()) << "Failed to parse file");
+    ASSERT_TRUE(
+        testing::AssertionResult(content == nullptr ? testing::AssertionFailure() : testing::AssertionSuccess())
+        << "Failed to parse file"
+    );
     auto result = content->serialize();
     EXPECT_EQ(result.size(), buffer.size());
     EXPECT_EQ(result, buffer);
@@ -131,13 +141,19 @@ TEST(NbtTest, hello_world)
 TEST(NbtTest, bigtest)
 {
     std::ifstream file("bigtest.nbt", std::ios::binary);
-    ASSERT_TRUE(testing::AssertionResult(file.is_open() ? testing::AssertionSuccess() : testing::AssertionFailure()) << "Failed to open file");
+    ASSERT_TRUE(
+        testing::AssertionResult(file.is_open() ? testing::AssertionSuccess() : testing::AssertionFailure())
+        << "Failed to open file"
+    );
     std::vector<uint8_t> buffer(std::istreambuf_iterator<char>(file), {});
     auto at = buffer.data();
     auto content = nbt::parse(at, at + buffer.size() - 1);
-    ASSERT_TRUE(testing::AssertionResult(content == nullptr ? testing::AssertionFailure() : testing::AssertionSuccess()) << "Failed to parse file");
+    ASSERT_TRUE(
+        testing::AssertionResult(content == nullptr ? testing::AssertionFailure() : testing::AssertionSuccess())
+        << "Failed to parse file"
+    );
     auto result = content->serialize();
     EXPECT_EQ(result.size(), buffer.size());
     EXPECT_EQ(result, buffer);
 }
-}
+} // namespace Nbt_Testing

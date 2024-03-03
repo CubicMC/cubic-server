@@ -14,7 +14,10 @@ public:
     void initialize(const std::array<uint8_t, 16> &key, const std::array<uint8_t, 16> &initialVector);
     void encrypt(std::vector<uint8_t> &data);
     void decrypt(uint8_t *data, size_t size);
-    inline bool isInitialized() const { return _isInitialized; }
+    inline bool isInitialized() const
+    {
+        return _isInitialized;
+    }
 
 private:
     mbedtls_aes_context _context;

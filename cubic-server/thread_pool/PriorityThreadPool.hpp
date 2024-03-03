@@ -15,15 +15,16 @@
 //=====================
 // thread_pool includes
 //=====================
+#include "concept.hpp"
 #include "PriorityThreadWorker.hpp"
 #include "Semaphore.hpp"
 #include "ThreadPoolUtility.hpp"
-#include "concept.hpp"
 
 namespace thread_pool {
 
 //-----------------------------------------------------------------------------
-/// @brief      Thread pool class. thread number is static. detached threads are no longer tracked by the class as they might get terminated before destruction
+/// @brief      Thread pool class. thread number is static. detached threads are no longer tracked by the class as they
+/// might get terminated before destruction
 ///
 /// @tparam     threadCount  number of threads requested.
 ///
@@ -32,15 +33,16 @@ private:
     PriorityThreadPoolUtility _toolBox;
     std::string_view _name;
 
-    [[nodiscard]] bool safeQueueEmpty() const;
+    [[nodiscard]]
+    bool safeQueueEmpty() const;
 
 public:
     explicit PriorityThreadPool(uint16_t threadCount, std::string_view name = "zenith_thread");
 
     ~PriorityThreadPool();
 
-    // we fetch target size, as it is the size the threadpool will converge to. the real size is only temporary as the threadPool cannot modify the thread number outside of its
-    // construction.
+    // we fetch target size, as it is the size the threadpool will converge to. the real size is only temporary as the
+    // threadPool cannot modify the thread number outside of its construction.
     int getWorkerNb() const
     {
         std::lock_guard<std::mutex> _(_toolBox.sizeProtection);
@@ -54,7 +56,8 @@ public:
         _toolBox.targetSize = newSize;
     }
 
-    // no verification for overflow. if you ever try to add more than UNSIGNED_16_BITS_MAX, you might want to rethink your life.
+    // no verification for overflow. if you ever try to add more than UNSIGNED_16_BITS_MAX, you might want to rethink
+    // your life.
     void addWorker()
     {
         std::lock_guard<std::mutex> _(_toolBox.sizeProtection);
@@ -108,7 +111,7 @@ public:
 
     int32_t addJob(std::function<int(void)> priority, sameFunction<helperSameFunction<void(void)>> auto... job)
     {
-        std::deque<std::function<void(void)>> jobList {job...};
+        std::deque<std::function<void(void)>> jobList{ job... };
         std::queue<std::function<void(void)>> realJobList(std::move(jobList));
         int32_t jobId = 0;
         {
@@ -122,22 +125,24 @@ public:
 
     int32_t addJob(int priority, sameFunction<helperSameFunction<void(void)>> auto... job)
     {
-        return addJob(
-            [priority] {
-                return priority;
-            },
-            job...
-        );
+        return addJob([priority] { return priority; }, job...);
     }
 
-    int32_t addJob(sameFunction<helperSameFunction<void(void)>> auto... job) { return addJob(0, job...); }
+    int32_t addJob(sameFunction<helperSameFunction<void(void)>> auto... job)
+    {
+        return addJob(0, job...);
+    }
 
-    [[maybe_unused]] void waitUntilJobsDone() const;
+    [[maybe_unused]]
+    void waitUntilJobsDone() const;
 
     // operator bool() const;
 };
 
-inline void waitUntilJobsDone(std::convertible_to<const PriorityThreadPool> auto... args) { (args.waitUntilJobsDone(), ...); }
+inline void waitUntilJobsDone(std::convertible_to<const PriorityThreadPool> auto... args)
+{
+    (args.waitUntilJobsDone(), ...);
 }
+} // namespace thread_pool
 
 #endif /* ZENITH_THREADPOOL_HPP */

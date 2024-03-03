@@ -23,7 +23,9 @@ constexpr void addBlockEntity(std::vector<uint8_t> &out, const BlockEntity &data
     addNBT(out, data.data);
 }
 
-void addBlockEntities(std::vector<uint8_t> &out, const std::unordered_map<Position, std::shared_ptr<tile_entity::TileEntity>> &data);
+void addBlockEntities(
+    std::vector<uint8_t> &out, const std::unordered_map<Position, std::shared_ptr<tile_entity::TileEntity>> &data
+);
 
 constexpr void addPalette(std::vector<uint8_t> &out, const world_storage::Palette &palette)
 {
@@ -81,14 +83,14 @@ constexpr void addLight(std::vector<uint8_t> &out, const world_storage::ChunkCol
     }
 
     // Light mask
-    addArray<uint64_t, addUnsignedLong>(out, {skyLightMask});
-    addArray<uint64_t, addUnsignedLong>(out, {blockLightMask});
+    addArray<uint64_t, addUnsignedLong>(out, { skyLightMask });
+    addArray<uint64_t, addUnsignedLong>(out, { blockLightMask });
     // addArray<int64_t, addLong>(out, {});
     // addArray<int64_t, addLong>(out, {});
 
     // Light empty mask
-    addArray<uint64_t, addUnsignedLong>(out, {emptySkyLightMask});
-    addArray<uint64_t, addUnsignedLong>(out, {emptyBlockLightMask});
+    addArray<uint64_t, addUnsignedLong>(out, { emptySkyLightMask });
+    addArray<uint64_t, addUnsignedLong>(out, { emptyBlockLightMask });
     // addArray<int64_t, addLong>(out, {});
     // addArray<int64_t, addLong>(out, {});
 
@@ -152,7 +154,9 @@ constexpr void addChunkColumn(std::vector<uint8_t> &out, const world_storage::Ch
     addLight(out, data);
 }
 
-constexpr void addAttributesPropertyModifier(std::vector<uint8_t> &out, const protocol::UpdateAttributes::Property::Modifier &data)
+constexpr void addAttributesPropertyModifier(
+    std::vector<uint8_t> &out, const protocol::UpdateAttributes::Property::Modifier &data
+)
 {
     addUUID(out, data.uuid);
     addDouble(out, data.amount);
@@ -166,7 +170,9 @@ constexpr void addAttributesProperty(std::vector<uint8_t> &out, const protocol::
     addArray<protocol::UpdateAttributes::Property::Modifier, addAttributesPropertyModifier>(out, data.modifiers);
 }
 
-constexpr void addAdvancementDisplay(std::vector<uint8_t> &out, const UpdateAdvancements::AdvancementMapping::Advancement::Display &data)
+constexpr void addAdvancementDisplay(
+    std::vector<uint8_t> &out, const UpdateAdvancements::AdvancementMapping::Advancement::Display &data
+)
 {
     using Flags = UpdateAdvancements::AdvancementMapping::Advancement::Display::Flags;
 
@@ -181,13 +187,17 @@ constexpr void addAdvancementDisplay(std::vector<uint8_t> &out, const UpdateAdva
     addFloat(out, data.yCoord);
 }
 
-constexpr void addAdvancementCriteria(std::vector<uint8_t> &out, const UpdateAdvancements::AdvancementMapping::Advancement::Criteria &data)
+constexpr void addAdvancementCriteria(
+    std::vector<uint8_t> &out, const UpdateAdvancements::AdvancementMapping::Advancement::Criteria &data
+)
 {
     addIdentifier(out, data.key);
     // addString(out, data.value);
 }
 
-constexpr void addAdvancement(std::vector<uint8_t> &out, const UpdateAdvancements::AdvancementMapping::Advancement &data)
+constexpr void addAdvancement(
+    std::vector<uint8_t> &out, const UpdateAdvancements::AdvancementMapping::Advancement &data
+)
 {
     using Criteria = UpdateAdvancements::AdvancementMapping::Advancement::Criteria;
 
@@ -207,13 +217,17 @@ constexpr void addAdvancementMapping(std::vector<uint8_t> &out, const UpdateAdva
     addAdvancement(out, data.advancement);
 }
 
-constexpr void addAdvancementCriterionProgress(std::vector<uint8_t> &out, const UpdateAdvancements::ProgressMapping::CriteriaMapping::CriterionProgress &data)
+constexpr void addAdvancementCriterionProgress(
+    std::vector<uint8_t> &out, const UpdateAdvancements::ProgressMapping::CriteriaMapping::CriterionProgress &data
+)
 {
     addBoolean(out, data.achived);
     addLong(out, data.dateOfAchieving);
 }
 
-constexpr void addAdvancementCriteriaMapping(std::vector<uint8_t> &out, const UpdateAdvancements::ProgressMapping::CriteriaMapping &data)
+constexpr void addAdvancementCriteriaMapping(
+    std::vector<uint8_t> &out, const UpdateAdvancements::ProgressMapping::CriteriaMapping &data
+)
 {
     addIdentifier(out, data.identifier);
     addAdvancementCriterionProgress(out, data.criteria);

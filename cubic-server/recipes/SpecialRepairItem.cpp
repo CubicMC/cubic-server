@@ -10,7 +10,10 @@ SpecialRepairItem::SpecialRepairItem(const std::string &identifier, const nlohma
     this->setValidity(false);
 }
 
-void SpecialRepairItem::dump(void) const { LTRACE("recipe special repair item"); }
+void SpecialRepairItem::dump(void) const
+{
+    LTRACE("recipe special repair item");
+}
 
 std::shared_ptr<Recipe> SpecialRepairItem::create(const std::string &identifier, const nlohmann::json &recipe)
 {

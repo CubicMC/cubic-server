@@ -38,28 +38,62 @@ public:
     virtual void tick();
     virtual void stop();
 
-    NODISCARD virtual bool isInitialized() const { return _isInitialized; }
+    NODISCARD virtual bool isInitialized() const
+    {
+        return _isInitialized;
+    }
 
-    NODISCARD virtual std::shared_ptr<World> getWorld() { return _world; }
-    NODISCARD virtual std::counting_semaphore<SEMAPHORE_MAX> &getDimensionLock() { return _dimensionLock; }
-    NODISCARD virtual std::vector<std::shared_ptr<Player>> &getPlayers() { return _players; }
-    NODISCARD virtual std::vector<std::shared_ptr<Entity>> &getEntities() { return _entities; }
+    NODISCARD virtual std::shared_ptr<World> getWorld()
+    {
+        return _world;
+    }
+    NODISCARD virtual std::counting_semaphore<SEMAPHORE_MAX> &getDimensionLock()
+    {
+        return _dimensionLock;
+    }
+    NODISCARD virtual std::vector<std::shared_ptr<Player>> &getPlayers()
+    {
+        return _players;
+    }
+    NODISCARD virtual std::vector<std::shared_ptr<Entity>> &getEntities()
+    {
+        return _entities;
+    }
     NODISCARD virtual std::shared_ptr<Entity> getEntityByID(int32_t id);
-    NODISCARD world_storage::Level &getLevel() { return _level; }
+    NODISCARD world_storage::Level &getLevel()
+    {
+        return _level;
+    }
 
-    NODISCARD virtual std::shared_ptr<const World> getWorld() const { return _world; }
-    NODISCARD virtual const std::vector<std::shared_ptr<Player>> &getPlayers() const { return _players; }
-    NODISCARD virtual const std::vector<std::shared_ptr<Entity>> &getEntities() const { return _entities; }
+    NODISCARD virtual std::shared_ptr<const World> getWorld() const
+    {
+        return _world;
+    }
+    NODISCARD virtual const std::vector<std::shared_ptr<Player>> &getPlayers() const
+    {
+        return _players;
+    }
+    NODISCARD virtual const std::vector<std::shared_ptr<Entity>> &getEntities() const
+    {
+        return _entities;
+    }
     NODISCARD virtual std::shared_ptr<const Entity> getEntityByID(int32_t id) const;
-    NODISCARD const world_storage::Level &getLevel() const { return _level; }
+    NODISCARD const world_storage::Level &getLevel() const
+    {
+        return _level;
+    }
 
     virtual void removeEntity(int32_t entity_id);
     virtual void removePlayer(int32_t entity_id);
     virtual void addEntity(std::shared_ptr<Entity> entity);
     virtual void addPlayer(std::shared_ptr<Player> player);
 
-    virtual void generateChunk(Position2D pos, world_storage::GenerationState goalState = world_storage::GenerationState::READY);
-    virtual void generateChunk(int x, int z, world_storage::GenerationState goalState = world_storage::GenerationState::READY);
+    virtual void generateChunk(
+        Position2D pos, world_storage::GenerationState goalState = world_storage::GenerationState::READY
+    );
+    virtual void generateChunk(
+        int x, int z, world_storage::GenerationState goalState = world_storage::GenerationState::READY
+    );
     virtual void updateBlock(Position position, int32_t id);
     void updateEntityAttributes(const protocol::UpdateAttributes &attributes);
     virtual void spawnPlayer(Player &player);
@@ -134,7 +168,10 @@ public:
      *
      * @return world_storage::DimensionType
      */
-    NODISCARD virtual world_storage::DimensionType getDimensionType() const { return _dimensionType; }
+    NODISCARD virtual world_storage::DimensionType getDimensionType() const
+    {
+        return _dimensionType;
+    }
 
     /**
      * @brief Get the dimension type
@@ -150,8 +187,14 @@ public:
      */
     NODISCARD virtual const std::string getDimensionName() const = 0;
 
-    virtual void lockLoadingChunksMutex() { _loadingChunksMutex.lock(); };
-    virtual void unlockLoadingChunksMutex() { _loadingChunksMutex.unlock(); };
+    virtual void lockLoadingChunksMutex()
+    {
+        _loadingChunksMutex.lock();
+    };
+    virtual void unlockLoadingChunksMutex()
+    {
+        _loadingChunksMutex.unlock();
+    };
 
     /**
      * @brief Get the BlockID of a block in the dimension
@@ -159,7 +202,12 @@ public:
      * @param pos The position of the block
      * @return BlockId The block ID
      */
-    virtual BlockId getBlock(const Position &pos) const { return getLevel().getChunkColumnFromBlockPos(pos.x, pos.z).getBlock(world_storage::convertPositionToChunkPosition(pos)); }
+    virtual BlockId getBlock(const Position &pos) const
+    {
+        return getLevel()
+            .getChunkColumnFromBlockPos(pos.x, pos.z)
+            .getBlock(world_storage::convertPositionToChunkPosition(pos));
+    }
 
     /**
      * @brief Get the tps of the dimension
@@ -206,7 +254,10 @@ public:
      */
     virtual std::shared_ptr<const tile_entity::TileEntity> getTileEntity(const Position &position) const;
 
-    virtual void pushBackIdToRemove(int32_t id) { _idsToRemove.push_back(id); }
+    virtual void pushBackIdToRemove(int32_t id)
+    {
+        _idsToRemove.push_back(id);
+    }
 
 protected:
     virtual void _run();
@@ -233,7 +284,8 @@ protected:
     std::thread _processingThread;
     world_storage::DimensionType _dimensionType;
     boost::circular_buffer_space_optimized<float> _circularBufferTps;
-    std::chrono::time_point<std::chrono::system_clock, std::chrono::duration<long, std::ratio<1, 1000000000>>> _previousTickTime;
+    std::chrono::time_point<std::chrono::system_clock, std::chrono::duration<long, std::ratio<1, 1000000000>>>
+        _previousTickTime;
     boost::circular_buffer_space_optimized<float> _circularBufferMSPT;
     std::vector<int32_t> _idsToRemove;
 };

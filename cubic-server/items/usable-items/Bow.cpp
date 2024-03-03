@@ -1,10 +1,10 @@
 #include "Bow.hpp"
 #include "Dimension.hpp"
-#include "Player.hpp"
 #include "entities/Arrow.hpp"
 #include "entities/Entity.hpp"
 #include "items/UsableItem.hpp"
 #include "logging/logging.hpp"
+#include "Player.hpp"
 #include <cmath>
 #include <limits>
 #include <numbers>
@@ -68,8 +68,8 @@ void Items::Bow::onUse(std::shared_ptr<Dimension> dim, Entity &user, UNUSED Usab
 
     const float playerHeight = 1.8f;
     const float playerEyePosition = playerHeight * 0.85;
-    // This is some random value taken from some old forge forum post, I have absolutely no idea what it is, but it works
-    // https://forums.minecraftforge.net/topic/33114-solved-18-change-eye-height-amp-held-item-sizelocation/
+    // This is some random value taken from some old forge forum post, I have absolutely no idea what it is, but it
+    // works https://forums.minecraftforge.net/topic/33114-solved-18-change-eye-height-amp-held-item-sizelocation/
     const float startingArrowPosition = user.getPosition().y + playerEyePosition - 0.10000000149011612;
 
     arr->forceSetPosition(user.getPosition().x, startingArrowPosition, user.getPosition().z);

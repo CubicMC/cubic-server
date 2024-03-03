@@ -1,9 +1,9 @@
 #include "Dimension.hpp"
+#include "logging/logging.hpp"
 #include "Player.hpp"
+#include "protocol/ClientPackets.hpp"
 #include "World.hpp"
 #include "WorldGroup.hpp"
-#include "logging/logging.hpp"
-#include "protocol/ClientPackets.hpp"
 
 #include "Objectives.hpp"
 #include "Scoreboard.hpp"
@@ -23,19 +23,40 @@ Score::Score(const int32_t &value, bool locked):
 
 Score::~Score() { }
 
-const int32_t &Score::get(void) const noexcept { return (this->_score); }
+const int32_t &Score::get(void) const noexcept
+{
+    return (this->_score);
+}
 
-void Score::set(int32_t value) noexcept { this->_score = value; }
+void Score::set(int32_t value) noexcept
+{
+    this->_score = value;
+}
 
-void Score::add(int32_t value) noexcept { this->_score += value; }
+void Score::add(int32_t value) noexcept
+{
+    this->_score += value;
+}
 
-void Score::substract(int32_t value) noexcept { this->_score -= value; }
+void Score::substract(int32_t value) noexcept
+{
+    this->_score -= value;
+}
 
-bool Score::isLocked(void) const noexcept { return (this->_locked); }
+bool Score::isLocked(void) const noexcept
+{
+    return (this->_locked);
+}
 
-void Score::enable(void) noexcept { this->_locked = false; }
+void Score::enable(void) noexcept
+{
+    this->_locked = false;
+}
 
-void Score::disable(void) noexcept { this->_locked = true; }
+void Score::disable(void) noexcept
+{
+    this->_locked = true;
+}
 
 namespace Objective {
 Objective::Objective(const Scoreboard &scoreboard, const std::string &name, const std::string &criteria):
@@ -48,7 +69,9 @@ Objective::Objective(const Scoreboard &scoreboard, const std::string &name, cons
     LDEBUG("Added objective \"{}\"", name);
 }
 
-Objective::Objective(const Scoreboard &scoreboard, const std::string &name, const std::string &criteria, const chat::Message &displayName):
+Objective::Objective(
+    const Scoreboard &scoreboard, const std::string &name, const std::string &criteria, const chat::Message &displayName
+):
     _scoreboard(scoreboard),
     _name(name),
     _criteria(criteria),
@@ -58,7 +81,9 @@ Objective::Objective(const Scoreboard &scoreboard, const std::string &name, cons
     LDEBUG("Added objective \"{}\"", name);
 }
 
-Objective::Objective(const Scoreboard &scoreboard, const std::string &name, const std::string &criteria, const RenderType &renderType):
+Objective::Objective(
+    const Scoreboard &scoreboard, const std::string &name, const std::string &criteria, const RenderType &renderType
+):
     _scoreboard(scoreboard),
     _name(name),
     _criteria(criteria),
@@ -68,7 +93,10 @@ Objective::Objective(const Scoreboard &scoreboard, const std::string &name, cons
     LDEBUG("Added objective \"{}\"", name);
 }
 
-Objective::Objective(const Scoreboard &scoreboard, const std::string &name, const std::string &criteria, const chat::Message &displayName, const RenderType &renderType):
+Objective::Objective(
+    const Scoreboard &scoreboard, const std::string &name, const std::string &criteria,
+    const chat::Message &displayName, const RenderType &renderType
+):
     _scoreboard(scoreboard),
     _name(name),
     _criteria(criteria),
@@ -78,19 +106,40 @@ Objective::Objective(const Scoreboard &scoreboard, const std::string &name, cons
     LDEBUG("Added objective \"{}\"", name);
 }
 
-Objective::~Objective() { LDEBUG("Removed objective \"{}\"", this->_name); }
+Objective::~Objective()
+{
+    LDEBUG("Removed objective \"{}\"", this->_name);
+}
 
-const std::string &Objective::getName(void) const noexcept { return (this->_name); }
+const std::string &Objective::getName(void) const noexcept
+{
+    return (this->_name);
+}
 
-const std::string &Objective::getCriteria(void) const noexcept { return (this->_criteria); }
+const std::string &Objective::getCriteria(void) const noexcept
+{
+    return (this->_criteria);
+}
 
-const chat::Message &Objective::getDisplayName(void) const noexcept { return (this->_displayName); }
+const chat::Message &Objective::getDisplayName(void) const noexcept
+{
+    return (this->_displayName);
+}
 
-const RenderType &Objective::getRenderType(void) const noexcept { return (this->_renderType); }
+const RenderType &Objective::getRenderType(void) const noexcept
+{
+    return (this->_renderType);
+}
 
-std::unordered_map<std::string, Score> &Objective::getScores(void) noexcept { return (this->_values); }
+std::unordered_map<std::string, Score> &Objective::getScores(void) noexcept
+{
+    return (this->_values);
+}
 
-Score &Objective::getScore(const std::string &name) { return (this->_values.at(name)); }
+Score &Objective::getScore(const std::string &name)
+{
+    return (this->_values.at(name));
+}
 
 void Objective::setDisplayName(const std::string &displayName) noexcept
 {
@@ -135,11 +184,15 @@ void Objective::deleteScore(const std::string &name)
     this->_values.erase(name);
 }
 
-Score &Objective::operator[](const std::string &name) { return (this->getScore(name)); }
+Score &Objective::operator[](const std::string &name)
+{
+    return (this->getScore(name));
+}
 
 void Objective::sendUpdateObjective(void) const
 {
-    const protocol::UpdateObjectives update {this->getName(), 0, this->getDisplayName(), static_cast<protocol::UpdateObjectives::Type>(this->getRenderType())};
+    const protocol::UpdateObjectives update{ this->getName(), 0, this->getDisplayName(),
+                                             static_cast<protocol::UpdateObjectives::Type>(this->getRenderType()) };
 
     for (const auto &[_, world] : this->_scoreboard.getWorldGroup().getWorlds()) {
         for (const auto &[_, dimension] : world->getDimensions()) {
@@ -152,7 +205,7 @@ void Objective::sendUpdateObjective(void) const
 
 void Objective::sendUpdateScore(const std::string &name, const Score &score) const
 {
-    const protocol::UpdateScore update {name, 0, this->_name, score.get()};
+    const protocol::UpdateScore update{ name, 0, this->_name, score.get() };
     for (const auto &[_, world] : this->_scoreboard.getWorldGroup().getWorlds()) {
         for (const auto &[_, dimension] : world->getDimensions()) {
             for (const auto &player : dimension->getPlayers()) {
@@ -164,7 +217,7 @@ void Objective::sendUpdateScore(const std::string &name, const Score &score) con
 
 void Objective::sendRemoveScore(const std::string &name) const
 {
-    const protocol::UpdateScore update {name, 1, this->_name, 0};
+    const protocol::UpdateScore update{ name, 1, this->_name, 0 };
     for (const auto &[_, world] : this->_scoreboard.getWorldGroup().getWorlds()) {
         for (const auto &[_, dimension] : world->getDimensions()) {
             for (const auto &player : dimension->getPlayers()) {
@@ -173,5 +226,5 @@ void Objective::sendRemoveScore(const std::string &name) const
         }
     }
 }
-}
-}
+} // namespace Objective
+} // namespace Scoreboard

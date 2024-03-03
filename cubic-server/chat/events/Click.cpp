@@ -7,7 +7,10 @@
 #include "clicks/SuggestCommand.hpp"
 #include "logging/logging.hpp"
 
-std::shared_ptr<chat::message::event::OnClick> chat::message::event::OnClick::deserialize(const std::string &json) { return fromJson(nlohmann::json::parse(json)); }
+std::shared_ptr<chat::message::event::OnClick> chat::message::event::OnClick::deserialize(const std::string &json)
+{
+    return fromJson(nlohmann::json::parse(json));
+}
 
 std::shared_ptr<chat::message::event::OnClick> chat::message::event::OnClick::fromJson(const nlohmann::json &json)
 {

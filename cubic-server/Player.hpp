@@ -2,19 +2,19 @@
 #define CUBICSERVER_PLAYER_HPP
 
 #include "Chat.hpp"
-#include "PlayerAttributes.hpp"
-#include "SoundList.hpp"
-#include "TickClock.hpp"
 #include "chat/Message.hpp"
 #include "concept.hpp"
 #include "entities/Entity.hpp"
 #include "entities/LivingEntity.hpp"
 #include "math/Vector3.hpp"
+#include "PlayerAttributes.hpp"
 #include "protocol/ClientPackets.hpp"
-#include "protocol/ServerPackets.hpp"
 #include "protocol/common.hpp"
 #include "protocol/container/Container.hpp"
 #include "protocol/container/Inventory.hpp"
+#include "protocol/ServerPackets.hpp"
+#include "SoundList.hpp"
+#include "TickClock.hpp"
 #include "types.hpp"
 #include "world_storage/ChunkColumn.hpp"
 #include <compare>
@@ -50,8 +50,14 @@ public:
     uint8_t keepAliveIgnored() const;
     bool isOperator() const;
     NODISCARD const std::vector<protocol::PlayerProperty> &getProperties() const;
-    std::shared_ptr<protocol::container::Inventory> getInventory() { return _inventory; };
-    std::shared_ptr<const protocol::container::Inventory> getInventory() const { return _inventory; };
+    std::shared_ptr<protocol::container::Inventory> getInventory()
+    {
+        return _inventory;
+    };
+    std::shared_ptr<const protocol::container::Inventory> getInventory() const
+    {
+        return _inventory;
+    };
 
 public:
     void setPosition(const Vector3<double> &pos, bool onGround) override;
@@ -63,7 +69,10 @@ public:
     void setKeepAliveId(long id);
     void updatePlayerInfo(const protocol::PlayerInfoUpdate &data);
     void playerPickupItem();
-    void updateEquipment(bool mainHand, UNUSED bool offHand, UNUSED bool boots, UNUSED bool leggings, UNUSED bool chestplate, UNUSED bool helmet);
+    void updateEquipment(
+        bool mainHand, UNUSED bool offHand, UNUSED bool boots, UNUSED bool leggings, UNUSED bool chestplate,
+        UNUSED bool helmet
+    );
 
     template<isBaseOf<protocol::container::Container> Container, typename... Args>
     std::shared_ptr<Container> openContainer(Args &...);
@@ -98,7 +107,10 @@ public:
      *
      * @return uint8_t The window id
      */
-    uint8_t getWindowId() { return ++_windowId; }
+    uint8_t getWindowId()
+    {
+        return ++_windowId;
+    }
 
     /**
      * @brief Get a container by its window id

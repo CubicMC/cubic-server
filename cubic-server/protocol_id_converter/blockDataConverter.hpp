@@ -32,8 +32,8 @@ struct BlockData {
 
 class BlockDataConverter {
 public:
-    BlockDataConverter() {};
-    ~BlockDataConverter() {};
+    BlockDataConverter(){};
+    ~BlockDataConverter(){};
 
     /**
      * @brief Initialize the block data converter
@@ -63,6 +63,6 @@ public:
 private:
     std::vector<BlockData> _blocks;
 };
-}
+} // namespace Blocks
 
 #endif // CUBICSERVER_PROTOCOLIDCONVERTER_BLOCKDATACONVERTER_HPP

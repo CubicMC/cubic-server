@@ -53,7 +53,10 @@ void Whitelist::addPlayer(u128 uuid, std::string playerName)
     bool check = isPlayerWhitelisted(uuid, playerName).first;
 
     if (!check) {
-        _whitelistData.push_back({{"name", playerName}, {"uuid", u128ToUuidString(uuid)}});
+        _whitelistData.push_back({
+            {"name",  playerName            },
+            { "uuid", u128ToUuidString(uuid)}
+        });
         std::ofstream whitelistFile(this->_filename);
         whitelistFile << std::setw(4) << _whitelistData << std::endl;
         whitelistFile.close();
@@ -90,4 +93,4 @@ std::pair<bool, int> Whitelist::isPlayerWhitelisted(u128 uuid, std::string playe
     std::pair<bool, int> p = std::make_pair(check, playerPos);
     return p;
 }
-}
+} // namespace WhitelistHandling

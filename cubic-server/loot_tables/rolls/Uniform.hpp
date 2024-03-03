@@ -21,7 +21,7 @@ private:
     int64_t _min;
     int64_t _max;
 };
-};
-};
+}; // namespace Roll
+}; // namespace LootTable
 
 #endif // CUBIC_SERVER_LOOT_TABLES_ROOLS_ROLL_UNIFORM_HPP

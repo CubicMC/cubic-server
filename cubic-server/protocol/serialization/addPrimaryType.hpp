@@ -19,7 +19,10 @@
 #include "world_storage/DynamicStorage.hpp"
 
 namespace protocol {
-constexpr void addByte(std::vector<uint8_t> &out, const uint8_t &data) { out.push_back(data); }
+constexpr void addByte(std::vector<uint8_t> &out, const uint8_t &data)
+{
+    out.push_back(data);
+}
 
 constexpr void addBoolean(std::vector<uint8_t> &out, const bool &data)
 {
@@ -134,10 +137,16 @@ static constexpr void _addString(std::vector<uint8_t> &out, const std::string &d
 constexpr size_t MAX_STRING_SIZE = 32767;
 constexpr size_t MAX_CHAT_SIZE = 262144;
 
-constexpr void addString(std::vector<uint8_t> &out, const std::string &data) { _addString(out, data, MAX_STRING_SIZE); }
+constexpr void addString(std::vector<uint8_t> &out, const std::string &data)
+{
+    _addString(out, data, MAX_STRING_SIZE);
+}
 
 // Should use chat::Message, but can't because the JSON lib is not constexpr
-constexpr void addChat(std::vector<uint8_t> &out, const std::string &data) { _addString(out, data, MAX_CHAT_SIZE); }
+constexpr void addChat(std::vector<uint8_t> &out, const std::string &data)
+{
+    _addString(out, data, MAX_CHAT_SIZE);
+}
 
 // TODO: gl :>
 // constexpr void addEntityMetadata(std::vector<uint8_t>, const EntityMetadata &data)
@@ -159,7 +168,7 @@ inline void addNBT(std::vector<uint8_t> &out, nbt_tag_t *tag, nbt_write_flags_t 
         addByte(out, 0);
         return;
     }
-    nbt_writer_t writer {_nbtWriter, &out};
+    nbt_writer_t writer{ _nbtWriter, &out };
     nbt_write(writer, tag, writeFlag);
 }
 
@@ -180,7 +189,10 @@ constexpr void addSlot(std::vector<uint8_t> &out, const Slot &data)
     }
 }
 
-constexpr void addIdentifier(std::vector<uint8_t> &out, const std::string &data) { addString(out, data); }
+constexpr void addIdentifier(std::vector<uint8_t> &out, const std::string &data)
+{
+    addString(out, data);
+}
 
 constexpr void addUUID(std::vector<uint8_t> &out, const u128 &data)
 {
@@ -216,7 +228,10 @@ constexpr void addArray(std::vector<uint8_t> &out, const std::array<T, Size> &da
         add(out, i);
 }
 
-constexpr void addPosition(std::vector<uint8_t> &out, const Position &data) { addLong(out, ((data.x & 0x3FFFFFF) << 38) | ((data.z & 0x3FFFFFF) << 12) | (data.y & 0xFFF)); }
+constexpr void addPosition(std::vector<uint8_t> &out, const Position &data)
+{
+    addLong(out, ((data.x & 0x3FFFFFF) << 38) | ((data.z & 0x3FFFFFF) << 12) | (data.y & 0xFFF));
+}
 } // namespace protocol
 
 #endif // CUBICSERVER_PROTOCOL_SERIALIZATION_ADDPRIMARYTYPE_HPP

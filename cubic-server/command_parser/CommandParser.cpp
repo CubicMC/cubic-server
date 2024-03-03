@@ -2,10 +2,10 @@
 
 #include "Chat.hpp"
 #include "Dimension.hpp"
+#include "logging/logging.hpp"
 #include "Player.hpp"
 #include "Server.hpp"
 #include "World.hpp"
-#include "logging/logging.hpp"
 
 void command_parser::parseCommand(std::string &command, Player *invoker)
 {
@@ -34,8 +34,12 @@ void command_parser::parseCommand(std::string &command, Player *invoker)
         }
     }
     if (invoker) {
-        invoker->getDimension()->getWorld()->getChat()->sendSystemMessage("Unknown or incomplete command, see below for error", *invoker);
-        invoker->getDimension()->getWorld()->getChat()->sendSystemMessage(commandName.erase(commandName.find_last_not_of(' ') + 1) + "<--[HERE]", *invoker);
+        invoker->getDimension()->getWorld()->getChat()->sendSystemMessage(
+            "Unknown or incomplete command, see below for error", *invoker
+        );
+        invoker->getDimension()->getWorld()->getChat()->sendSystemMessage(
+            commandName.erase(commandName.find_last_not_of(' ') + 1) + "<--[HERE]", *invoker
+        );
     } else {
         LINFO("Unknown or incomplete command, see below for error");
         LINFO("{}<--[HERE]", commandName.erase(commandName.find_last_not_of(' ') + 1));

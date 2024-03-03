@@ -1,8 +1,8 @@
 #ifndef CUBICSERVER_TILEENTITY_FURNACE_HPP
 #define CUBICSERVER_TILEENTITY_FURNACE_HPP
 
-#include "TileEntity.hpp"
 #include "blocks.hpp"
+#include "TileEntity.hpp"
 
 class Player;
 namespace Recipe {
@@ -17,19 +17,49 @@ public:
 
     void tick() override;
 
-    BlockId getBlockId() const override { return Blocks::Furnace::toProtocol(_facing, _lit); }
+    BlockId getBlockId() const override
+    {
+        return Blocks::Furnace::toProtocol(_facing, _lit);
+    }
 
-    int getBurningTime() const { return _burningTime; }
-    int getBurnTimeCurrentFuel() const { return _burnTimeCurrentFuel; }
-    int getCookTime() const { return _cookTime; }
+    int getBurningTime() const
+    {
+        return _burningTime;
+    }
+    int getBurnTimeCurrentFuel() const
+    {
+        return _burnTimeCurrentFuel;
+    }
+    int getCookTime() const
+    {
+        return _cookTime;
+    }
 
-    protocol::Slot &fuel() { return _fuel; }
-    protocol::Slot &ingredient() { return _ingredient; }
-    protocol::Slot &result() { return _result; }
+    protocol::Slot &fuel()
+    {
+        return _fuel;
+    }
+    protocol::Slot &ingredient()
+    {
+        return _ingredient;
+    }
+    protocol::Slot &result()
+    {
+        return _result;
+    }
 
-    const protocol::Slot &fuel() const { return _fuel; }
-    const protocol::Slot &ingredient() const { return _ingredient; }
-    const protocol::Slot &result() const { return _result; }
+    const protocol::Slot &fuel() const
+    {
+        return _fuel;
+    }
+    const protocol::Slot &ingredient() const
+    {
+        return _ingredient;
+    }
+    const protocol::Slot &result() const
+    {
+        return _result;
+    }
 
     void addPlayer(std::weak_ptr<Player> player, uint8_t windowId);
     void removePlayer(int playerId);
@@ -54,6 +84,6 @@ private:
     std::vector<std::pair<std::weak_ptr<Player>, uint8_t>> _players;
     std::unordered_map<std::string, std::shared_ptr<Recipe::Smelting>> _recipes;
 };
-}
+} // namespace tile_entity
 
 #endif // CUBICSERVER_TILEENTITY_FURNACE_HPP

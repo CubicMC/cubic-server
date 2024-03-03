@@ -141,9 +141,11 @@ constexpr double BLOB_SKIP_RATE_EMERALD = SkipRate[0];
  * index.
  *
  */
-constexpr std::array<int, 65> MAX_NB_OF_BLOCKS = {0,   0,   0,   4,   5,   8,   9,   10,  10,  13,  16,  17,  23,  24,  24,  29,  32,  37,  46,  52,  52,  60,
-                                                  68,  68,  74,  82,  94,  104, 106, 120, 128, 135, 149, 160, 180, 190, 204, 212, 228, 246, 262, 276, 292, 308,
-                                                  324, 344, 360, 381, 403, 429, 452, 480, 500, 530, 558, 584, 616, 634, 664, 694, 730, 760, 790, 826, 864};
+constexpr std::array<int, 65> MAX_NB_OF_BLOCKS = { 0,   0,   0,   4,   5,   8,   9,   10,  10,  13,  16,  17,  23,
+                                                   24,  24,  29,  32,  37,  46,  52,  52,  60,  68,  68,  74,  82,
+                                                   94,  104, 106, 120, 128, 135, 149, 160, 180, 190, 204, 212, 228,
+                                                   246, 262, 276, 292, 308, 324, 344, 360, 381, 403, 429, 452, 480,
+                                                   500, 530, 558, 584, 616, 634, 664, 694, 730, 760, 790, 826, 864 };
 
 /* Ore distribution type */
 enum class GenerationType {
@@ -170,7 +172,9 @@ public:
      * @return a deque holding all the positions where a blob can generate for the triangle distribution
      *
      */
-    std::deque<Position> computeTriangleDistribution(const int spawnSize, const double spawnTries, const int minY, const int maxY, const double skipRate);
+    std::deque<Position> computeTriangleDistribution(
+        const int spawnSize, const double spawnTries, const int minY, const int maxY, const double skipRate
+    );
 
     /**
      * @brief Define all the positions where a blob can generate
@@ -184,8 +188,10 @@ public:
      * @return a deque holding all the positions where a blob can generate
      *
      */
-    std::deque<Position>
-    defineAllBlobPositions(const GenerationType generationType, const int spawnSize, const int minY, const int maxY, const double skipRate, const double spawnTries);
+    std::deque<Position> defineAllBlobPositions(
+        const GenerationType generationType, const int spawnSize, const int minY, const int maxY, const double skipRate,
+        const double spawnTries
+    );
 
     /**
      * @brief Define all the positions where a blob can generate for the uniform distribution
@@ -198,7 +204,10 @@ public:
      * @return a deque holding all the positions where a blob can generate for the uniform distribution
      *
      */
-    std::deque<Position> computeUniformDistribution(const double spawnTries, const int minY, const int maxY, const int spawnSize, const double skipRate, const int spawnRate);
+    std::deque<Position> computeUniformDistribution(
+        const double spawnTries, const int minY, const int maxY, const int spawnSize, const double skipRate,
+        const int spawnRate
+    );
 
     /**
      * @brief Skip the position if the ore is exposed to air
@@ -226,6 +235,7 @@ public:
     void generateBlobs();
 
 protected:
+
 private:
     void generateIronBlobs();
     void generateRedstoneBlobs();

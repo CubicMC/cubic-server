@@ -19,8 +19,8 @@ struct InternalItem {
  */
 class ItemConverter {
 public:
-    ItemConverter() {};
-    ~ItemConverter() {};
+    ItemConverter(){};
+    ~ItemConverter(){};
 
     /**
      * @brief Convert an item name to a protocol id
@@ -46,6 +46,6 @@ public:
 private:
     std::vector<InternalItem> _items; // The internal representation of the items
 };
-}
+} // namespace Items
 
 #endif // CUBICSERVER_PROTOCOLIDCONVERTER_ITEMCONVERTER_HPP

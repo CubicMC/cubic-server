@@ -58,6 +58,9 @@ bool PlayersInterface::onTimeout()
     return true;
 }
 
-std::string PlayersInterface::getNbPlayers() { return this->_nbPlayers; }
+std::string PlayersInterface::getNbPlayers()
+{
+    return this->_nbPlayers;
+}
 
 PlayersInterface::~PlayersInterface() { }

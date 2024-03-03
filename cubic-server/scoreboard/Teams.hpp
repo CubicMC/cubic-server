@@ -19,7 +19,7 @@ enum NametagVisibility {
     always
 };
 const std::string getProtocolFlag(const NametagVisibility &flag);
-}
+} // namespace NametagVisibility
 
 namespace DeathMessageVisibility {
 enum DeathMessageVisibility {
@@ -28,7 +28,7 @@ enum DeathMessageVisibility {
     hideForOwnTeam,
     always
 };
-}
+} // namespace DeathMessageVisibility
 
 namespace CollisionRule {
 enum CollisionRule {
@@ -38,7 +38,7 @@ enum CollisionRule {
     pushOtherTeams
 };
 const std::string getProtocolFlag(const CollisionRule &flag);
-}
+} // namespace CollisionRule
 
 using Color = protocol::UpdateTeams::Color;
 
@@ -91,12 +91,12 @@ private:
     CollisionRule::CollisionRule _collisionRule;
     const std::string _name;
     Color _color;
-    chat::Message _displayName; // json format
+    chat::Message _displayName;      // json format
     chat::Message _memberNamePrefix; // json format
     chat::Message _memberNameSuffix; // json format
     std::unordered_set<std::string> _members;
 };
-}
-}
+} // namespace Team
+} // namespace Scoreboard
 
 #endif /* CUBICSERVER_SCOREBOARD_TEAMS_HPP */

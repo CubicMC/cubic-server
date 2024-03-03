@@ -1,8 +1,8 @@
 #ifndef CUBICSERVER_REGISTRY_CHAT_HPP
 #define CUBICSERVER_REGISTRY_CHAT_HPP
 
-#include "Registry.hpp"
 #include "chat/Message.hpp"
+#include "Registry.hpp"
 #include <cstdint>
 
 namespace registry {
@@ -28,7 +28,10 @@ public:
     inline ChatElement &narrateKey(const std::string &key);
 
     std::shared_ptr<nbt::Base> toNBT() const override;
-    inline bool operator==(const std::string &name) const override { return name == _name; }
+    inline bool operator==(const std::string &name) const override
+    {
+        return name == _name;
+    }
 
 private:
     int32_t _id;

@@ -117,6 +117,6 @@ void addMOptPosition(std::vector<uint8_t> &data, uint8_t index, const std::optio
  */
 void addMSlot(std::vector<uint8_t> &data, uint8_t index, const Slot &value);
 
-}
+} // namespace protocol::entity_metadata
 
 #endif /* DDDBD732_FDAE_4790_80AF_0C6F59D38D59 */

@@ -8,5 +8,5 @@ AdvancementReward::AdvancementReward(const Player &player, const FloatingPositio
     origin(origin)
 {
 }
-}
-}
+} // namespace Context
+} // namespace LootTable

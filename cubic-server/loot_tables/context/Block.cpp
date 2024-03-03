@@ -2,7 +2,10 @@
 
 namespace LootTable {
 namespace Context {
-Block::Block(const int32_t &blockState, const FloatingPosition &origin, const ItemId &tool, const Entity *breaker, const int32_t *blockEntityData, const int32_t *explosionRadius):
+Block::Block(
+    const int32_t &blockState, const FloatingPosition &origin, const ItemId &tool, const Entity *breaker,
+    const int32_t *blockEntityData, const int32_t *explosionRadius
+):
     LootContext("minecraft:block"),
     blockState(blockState),
     origin(origin),
@@ -12,5 +15,5 @@ Block::Block(const int32_t &blockState, const FloatingPosition &origin, const It
     explosionRadius(explosionRadius)
 {
 }
-}
-}
+} // namespace Context
+} // namespace LootTable

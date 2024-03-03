@@ -4,10 +4,10 @@
 
 #include "Chat.hpp"
 #include "Dimension.hpp"
+#include "logging/logging.hpp"
 #include "Player.hpp"
 #include "Server.hpp"
 #include "World.hpp"
-#include "logging/logging.hpp"
 
 using namespace command_parser;
 
@@ -30,7 +30,9 @@ void Deop::execute(std::vector<std::string> &args, Player *invoker) const
     // do nothing if operator with that name not found, otherwise, removes operator privilege
     if (!server->permissions.isOperator(args[0])) {
         if (invoker)
-            invoker->getDimension()->getWorld()->getChat()->sendSystemMessage(args[0] + " is not an operator.", *invoker);
+            invoker->getDimension()->getWorld()->getChat()->sendSystemMessage(
+                args[0] + " is not an operator.", *invoker
+            );
         LINFO(args[0] + " is not an operator.");
     } else {
         if (invoker)

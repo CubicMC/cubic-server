@@ -39,9 +39,11 @@ private:
      */
     const std::vector<Generator::FeatureBlock> getVegetation(const Position &pos) const;
 
-    void placeDandelions(std::vector<generation::Generator::FeatureBlock> &listOfFeatureBlocks, const Position &pos) const;
+    void placeDandelions(std::vector<generation::Generator::FeatureBlock> &listOfFeatureBlocks, const Position &pos)
+        const;
     void placePoppies(std::vector<generation::Generator::FeatureBlock> &listOfFeatureBlocks, const Position &pos) const;
-    void placeOxeyeDaisies(std::vector<generation::Generator::FeatureBlock> &listOfFeatureBlocks, const Position &pos) const;
+    void placeOxeyeDaisies(std::vector<generation::Generator::FeatureBlock> &listOfFeatureBlocks, const Position &pos)
+        const;
     void placeGrass(std::vector<generation::Generator::FeatureBlock> &listOfFeatureBlocks, const Position &pos) const;
 
     /**

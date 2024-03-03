@@ -10,7 +10,10 @@ SpecialBannerDuplicate::SpecialBannerDuplicate(const std::string &identifier, co
     this->setValidity(false);
 }
 
-void SpecialBannerDuplicate::dump(void) const { LTRACE("recipe special banner duplicate"); }
+void SpecialBannerDuplicate::dump(void) const
+{
+    LTRACE("recipe special banner duplicate");
+}
 
 std::shared_ptr<Recipe> SpecialBannerDuplicate::create(const std::string &identifier, const nlohmann::json &recipe)
 {

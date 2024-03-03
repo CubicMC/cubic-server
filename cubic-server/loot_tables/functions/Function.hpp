@@ -38,7 +38,7 @@ private:
 typedef std::unique_ptr<Function> (*Creator)(const nlohmann::json &function);
 
 DEFINE_EXCEPTION(NoFunctionContructor);
-};
-};
+}; // namespace Function
+}; // namespace LootTable
 
 #endif // CUBIC_SERVER_LOOT_TABLES_FUNCTIONS_FUNCTION_HPP

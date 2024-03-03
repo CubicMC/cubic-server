@@ -3,12 +3,12 @@
 #include <algorithm>
 
 #include "Chat.hpp"
+#include "chat/Message.hpp"
 #include "Dimension.hpp"
+#include "logging/logging.hpp"
 #include "Player.hpp"
 #include "Server.hpp"
 #include "World.hpp"
-#include "chat/Message.hpp"
-#include "logging/logging.hpp"
 
 void worldTPSMessage(Player *invoker)
 {
@@ -30,15 +30,20 @@ void worldTPSMessage(Player *invoker)
 
 void dimensionTPSMessage(std::vector<std::string> &args, Player *invoker)
 {
-    if (auto search = Server::getInstance()->getWorldGroup("default")->getWorld("default")->getDimensions().find(args[0]);
+    if (auto search = Server::getInstance()->getWorldGroup("default")->getWorld("default")->getDimensions().find(args[0]
+        );
         search != Server::getInstance()->getWorldGroup("default")->getWorld("default")->getDimensions().end()) {
         if (invoker)
-            invoker->getDimension()->getWorld()->getChat()->sendSystemMessage(chat::Message(args[0] + " " + search->second->getTps().toString(), {false, true}), *invoker);
+            invoker->getDimension()->getWorld()->getChat()->sendSystemMessage(
+                chat::Message(args[0] + " " + search->second->getTps().toString(), { false, true }), *invoker
+            );
         else
             LINFO(args[0] + " " + search->second->getTps().toString());
     } else {
         if (invoker)
-            invoker->getDimension()->getWorld()->getChat()->sendSystemMessage("Dimension " + args[0] + " not found", *invoker);
+            invoker->getDimension()->getWorld()->getChat()->sendSystemMessage(
+                "Dimension " + args[0] + " not found", *invoker
+            );
         else
             LINFO("Dimension {} not found", args[0]);
     }
@@ -72,4 +77,4 @@ void Tps::help(UNUSED std::vector<std::string> &args, Player *invoker) const
     else
         LINFO(this->_help);
 }
-}
+} // namespace command_parser

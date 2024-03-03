@@ -8,8 +8,14 @@ ExplosionDecay::ExplosionDecay(const nlohmann::json &function):
     this->setValidity(true);
 }
 
-void ExplosionDecay::apply(const LootContext &context) { (void) context; }
+void ExplosionDecay::apply(const LootContext &context)
+{
+    (void) context;
+}
 
-std::unique_ptr<Function> ExplosionDecay::create(const nlohmann::json &function) { return (std::make_unique<ExplosionDecay>(function)); }
-};
-};
+std::unique_ptr<Function> ExplosionDecay::create(const nlohmann::json &function)
+{
+    return (std::make_unique<ExplosionDecay>(function));
+}
+}; // namespace Function
+}; // namespace LootTable

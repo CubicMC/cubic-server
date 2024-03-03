@@ -15,6 +15,9 @@ bool Inverted::verify(const LootContext *context) const
     return (true);
 }
 
-std::unique_ptr<Condition> Inverted::create(const nlohmann::json &condition) { return (std::make_unique<Inverted>(condition)); }
-};
-};
+std::unique_ptr<Condition> Inverted::create(const nlohmann::json &condition)
+{
+    return (std::make_unique<Inverted>(condition));
+}
+}; // namespace Condition
+}; // namespace LootTable

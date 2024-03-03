@@ -17,9 +17,9 @@ public:
 
 private:
     std::unordered_set<ItemId> _ingredients; // item to be cut
-    ItemId _result; // item obtained
-    uint64_t _count; // number of items obtained
+    ItemId _result;                          // item obtained
+    uint64_t _count;                         // number of items obtained
 };
-};
+}; // namespace Recipe
 
 #endif // CUBICSERVER_RECIPES_STONE_CUTTING_HPP

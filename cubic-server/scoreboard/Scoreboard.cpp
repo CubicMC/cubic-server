@@ -1,9 +1,9 @@
 #include "Dimension.hpp"
+#include "logging/logging.hpp"
 #include "Player.hpp"
+#include "protocol/ClientPackets.hpp"
 #include "World.hpp"
 #include "WorldGroup.hpp"
-#include "logging/logging.hpp"
-#include "protocol/ClientPackets.hpp"
 #include <string>
 
 #include "Scoreboard.hpp"
@@ -17,13 +17,25 @@ Scoreboard::Scoreboard(const ScoreboardSystem &system, const WorldGroup &worldGr
     this->_displaySlots.fill(nullptr);
 }
 
-const WorldGroup &Scoreboard::getWorldGroup(void) const noexcept { return (this->_worldGroup); }
+const WorldGroup &Scoreboard::getWorldGroup(void) const noexcept
+{
+    return (this->_worldGroup);
+}
 
-bool Scoreboard::isObjective(const std::string &name) const noexcept { return (this->_objectives.contains(name)); }
+bool Scoreboard::isObjective(const std::string &name) const noexcept
+{
+    return (this->_objectives.contains(name));
+}
 
-Objective::Objective &Scoreboard::getObjective(const std::string &name) { return (*this->_objectives.at(name)); }
+Objective::Objective &Scoreboard::getObjective(const std::string &name)
+{
+    return (*this->_objectives.at(name));
+}
 
-std::unordered_map<std::string, std::shared_ptr<Objective::Objective>> &Scoreboard::getObjectives(void) noexcept { return (this->_objectives); }
+std::unordered_map<std::string, std::shared_ptr<Objective::Objective>> &Scoreboard::getObjectives(void) noexcept
+{
+    return (this->_objectives);
+}
 
 bool Scoreboard::addObjective(const std::string &name, const std::string &criteria)
 {
@@ -81,11 +93,20 @@ void Scoreboard::setToObjectivebyCriteria(const std::string &criteria, const std
         objective->setScore(entity, value);
 }
 
-bool Scoreboard::isTeam(const std::string &name) const noexcept { return (this->_teams.contains(name)); }
+bool Scoreboard::isTeam(const std::string &name) const noexcept
+{
+    return (this->_teams.contains(name));
+}
 
-Team::Team &Scoreboard::getTeam(const std::string &name) { return (*this->_teams.at(name)); }
+Team::Team &Scoreboard::getTeam(const std::string &name)
+{
+    return (*this->_teams.at(name));
+}
 
-std::unordered_map<std::string, std::unique_ptr<Team::Team>> &Scoreboard::getTeams(void) noexcept { return (this->_teams); }
+std::unordered_map<std::string, std::unique_ptr<Team::Team>> &Scoreboard::getTeams(void) noexcept
+{
+    return (this->_teams);
+}
 
 bool Scoreboard::addTeam(const std::string &name)
 {
@@ -134,7 +155,8 @@ bool Scoreboard::removeTeam(const std::string &name)
 
 void Scoreboard::sendAddObjective(const Objective::Objective &objective) const
 {
-    const protocol::UpdateObjectives update {objective.getName(), 0, objective.getDisplayName(), static_cast<protocol::UpdateObjectives::Type>(objective.getRenderType())};
+    const protocol::UpdateObjectives update{ objective.getName(), 0, objective.getDisplayName(),
+                                             static_cast<protocol::UpdateObjectives::Type>(objective.getRenderType()) };
 
     for (const auto &[_, world] : this->_worldGroup.getWorlds()) {
         for (const auto &[_, dimension] : world->getDimensions()) {
@@ -147,7 +169,7 @@ void Scoreboard::sendAddObjective(const Objective::Objective &objective) const
 
 void Scoreboard::sendRemoveObjective(const Objective::Objective &objective) const
 {
-    const protocol::UpdateObjectives update {objective.getName(), 1, "", protocol::UpdateObjectives::Type::Integers};
+    const protocol::UpdateObjectives update{ objective.getName(), 1, "", protocol::UpdateObjectives::Type::Integers };
 
     for (const auto &[_, world] : this->_worldGroup.getWorlds()) {
         for (const auto &[_, dimension] : world->getDimensions()) {
@@ -165,7 +187,7 @@ void Scoreboard::sendDisplayObjective(DisplaySlot slot, const Objective::Objecti
     if (objective)
         name = objective->getName();
 
-    const protocol::DisplayObjective display {static_cast<uint8_t>(slot), name};
+    const protocol::DisplayObjective display{ static_cast<uint8_t>(slot), name };
     for (const auto &[_, world] : this->_worldGroup.getWorlds()) {
         for (const auto &[_, dimension] : world->getDimensions()) {
             for (const auto &player : dimension->getPlayers()) {
@@ -208,7 +230,9 @@ void Scoreboard::sendAddTeam(const Team::Team &team) const
 
 void Scoreboard::sendRemoveTeam(const Team::Team &team) const
 {
-    const protocol::UpdateTeams update {team.getName(), 1, team.getDisplayName(), 0, "", "", team.getColor(), "", "", {}};
+    const protocol::UpdateTeams update{
+        team.getName(), 1, team.getDisplayName(), 0, "", "", team.getColor(), "", "", {}
+    };
     for (const auto &[_, world] : this->_worldGroup.getWorlds()) {
         for (const auto &[_, dimension] : world->getDimensions()) {
             for (const auto &player : dimension->getPlayers()) {
@@ -222,12 +246,14 @@ void Scoreboard::sendScoreboardStatus(Player &player) const
     LDEBUG("scoreboard status? {}", player.getUsername());
     // send all objectives
     for (const auto &[_, objective] : this->_objectives) {
-        const protocol::UpdateObjectives update {objective->getName(), 0, objective->getDisplayName(), static_cast<protocol::UpdateObjectives::Type>(objective->getRenderType())};
+        const protocol::UpdateObjectives update{ objective->getName(), 0, objective->getDisplayName(),
+                                                 static_cast<protocol::UpdateObjectives::Type>(objective->getRenderType(
+                                                 )) };
         player.sendUpdateObjective(update);
 
         // send all scores for this objective
         for (const auto &[name, score] : objective->getScores()) {
-            const protocol::UpdateScore update {name, 0, objective->getName(), score.get()};
+            const protocol::UpdateScore update{ name, 0, objective->getName(), score.get() };
             player.sendUpdateScore(update);
         }
     }
@@ -271,4 +297,4 @@ void Scoreboard::sendScoreboardStatus(Player &player) const
         player.sendUpdateTeams(update);
     }
 }
-}
+} // namespace Scoreboard

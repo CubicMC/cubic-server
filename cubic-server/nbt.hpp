@@ -39,15 +39,21 @@ public:
 public:
     constexpr Base(std::string name, TagType type):
         _name(std::move(name)),
-        _type(type) {};
+        _type(type){};
     constexpr Base(const char name[], TagType type):
         _name(name),
-        _type(type) {};
+        _type(type){};
     virtual ~Base() { }
 
-    NODISCARD constexpr const std::string &getName() const { return _name; };
+    NODISCARD constexpr const std::string &getName() const
+    {
+        return _name;
+    };
 
-    NODISCARD constexpr TagType getType() const { return _type; }
+    NODISCARD constexpr TagType getType() const
+    {
+        return _type;
+    }
 
     template<isBaseOf<Base> T>
     NODISCARD constexpr std::shared_ptr<T> as()
@@ -100,12 +106,18 @@ public:
 public:
     explicit constexpr Int(const std::string &name, int32_t value = 0):
         Base(name, TagType::Int),
-        _value(value) {};
+        _value(value){};
     ~Int() override = default;
 
-    NODISCARD constexpr int32_t getValue() const { return _value; }
+    NODISCARD constexpr int32_t getValue() const
+    {
+        return _value;
+    }
 
-    constexpr void setValue(int32_t value) { _value = value; }
+    constexpr void setValue(int32_t value)
+    {
+        _value = value;
+    }
 
     NODISCARD constexpr std::vector<uint8_t> serialize() const override
     {
@@ -132,12 +144,18 @@ public:
 public:
     explicit constexpr Byte(std::string name, int8_t value = 0):
         Base(std::move(name), TagType::Byte),
-        _value(value) {};
+        _value(value){};
     ~Byte() override = default;
 
-    NODISCARD constexpr int8_t getValue() const { return _value; }
+    NODISCARD constexpr int8_t getValue() const
+    {
+        return _value;
+    }
 
-    constexpr void setValue(int8_t value) { _value = value; }
+    constexpr void setValue(int8_t value)
+    {
+        _value = value;
+    }
 
     NODISCARD constexpr std::vector<uint8_t> serialize() const override
     {
@@ -163,15 +181,21 @@ public:
 public:
     explicit constexpr ByteArray(std::string name, std::vector<int8_t> value = std::vector<int8_t>()):
         Base(std::move(name), TagType::ByteArray),
-        _value(std::move(value)) {};
+        _value(std::move(value)){};
     explicit constexpr ByteArray(std::string &&name, std::vector<int8_t> &&value = std::vector<int8_t>()):
         Base(std::move(name), TagType::ByteArray),
-        _value(std::move(value)) {};
+        _value(std::move(value)){};
     ~ByteArray() override = default;
 
-    NODISCARD constexpr std::vector<int8_t> &getValues() { return _value; }
+    NODISCARD constexpr std::vector<int8_t> &getValues()
+    {
+        return _value;
+    }
 
-    NODISCARD constexpr const std::vector<int8_t> &getValues() const { return _value; }
+    NODISCARD constexpr const std::vector<int8_t> &getValues() const
+    {
+        return _value;
+    }
 
     NODISCARD constexpr std::vector<uint8_t> serialize() const override
     {
@@ -200,23 +224,31 @@ public:
     static constexpr auto type = TagType::Compound;
 
 public:
-    constexpr Compound(std::string name, std::vector<std::shared_ptr<Base>> &&value = std::vector<std::shared_ptr<Base>>()):
+    constexpr Compound(
+        std::string name, std::vector<std::shared_ptr<Base>> &&value = std::vector<std::shared_ptr<Base>>()
+    ):
         Base(std::move(name), TagType::Compound),
-        _value(std::move(value)) {};
+        _value(std::move(value)){};
     constexpr Compound(std::string name, std::vector<std::shared_ptr<Base>> &value):
         Base(std::move(name), TagType::Compound),
-        _value(std::move(value)) {};
+        _value(std::move(value)){};
     constexpr Compound(std::string name, std::initializer_list<std::shared_ptr<Base>> value):
         Base(std::move(name), TagType::Compound),
-        _value(value) {};
+        _value(value){};
     constexpr Compound(const char *name, std::initializer_list<std::shared_ptr<Base>> value):
         Base(name, TagType::Compound),
-        _value(value) {};
+        _value(value){};
     ~Compound() override = default;
 
-    inline void addValue(std::shared_ptr<Base> value) { _value.push_back(value); }
+    inline void addValue(std::shared_ptr<Base> value)
+    {
+        _value.push_back(value);
+    }
 
-    constexpr size_t size() const { return _value.size(); }
+    constexpr size_t size() const
+    {
+        return _value.size();
+    }
 
     /**
      * @brief Checks if an NBT Tag exists
@@ -274,9 +306,15 @@ public:
         return nullptr;
     }
 
-    constexpr std::vector<std::shared_ptr<Base>> &getValues() { return _value; }
+    constexpr std::vector<std::shared_ptr<Base>> &getValues()
+    {
+        return _value;
+    }
 
-    constexpr const std::vector<std::shared_ptr<Base>> &getValues() const { return _value; }
+    constexpr const std::vector<std::shared_ptr<Base>> &getValues() const
+    {
+        return _value;
+    }
 
     NODISCARD constexpr std::vector<uint8_t> serialize() const override
     {
@@ -312,12 +350,18 @@ public:
 public:
     explicit constexpr Double(std::string name, double value = 0):
         Base(std::move(name), TagType::Double),
-        _value(value) {};
+        _value(value){};
     ~Double() override = default;
 
-    NODISCARD constexpr double getValue() const { return _value; }
+    NODISCARD constexpr double getValue() const
+    {
+        return _value;
+    }
 
-    constexpr void setValue(double value) { _value = value; }
+    constexpr void setValue(double value)
+    {
+        _value = value;
+    }
 
     NODISCARD constexpr std::vector<uint8_t> serialize() const override
     {
@@ -349,12 +393,18 @@ public:
 public:
     explicit constexpr Float(std::string name, float value = 0):
         Base(std::move(name), TagType::Float),
-        _value(value) {};
+        _value(value){};
     ~Float() override = default;
 
-    NODISCARD constexpr float getValue() const { return _value; }
+    NODISCARD constexpr float getValue() const
+    {
+        return _value;
+    }
 
-    constexpr void setValue(float value) { _value = value; }
+    constexpr void setValue(float value)
+    {
+        _value = value;
+    }
 
     NODISCARD constexpr std::vector<uint8_t> serialize() const override
     {
@@ -386,18 +436,33 @@ public:
 public:
     explicit constexpr Long(std::string name, int64_t value = 0):
         Base(std::move(name), TagType::Long),
-        _value(value) {};
+        _value(value){};
     ~Long() override = default;
 
-    NODISCARD constexpr int64_t getValue() const { return _value; }
+    NODISCARD constexpr int64_t getValue() const
+    {
+        return _value;
+    }
 
-    constexpr void setValue(int64_t value) { _value = value; }
+    constexpr void setValue(int64_t value)
+    {
+        _value = value;
+    }
 
-    constexpr int64_t operator|(int64_t value) const { return _value | value; }
+    constexpr int64_t operator|(int64_t value) const
+    {
+        return _value | value;
+    }
 
-    constexpr void operator|=(int64_t value) { _value |= value; }
+    constexpr void operator|=(int64_t value)
+    {
+        _value |= value;
+    }
 
-    constexpr void operator=(int64_t value) { this->setValue(value); }
+    constexpr void operator=(int64_t value)
+    {
+        this->setValue(value);
+    }
 
     NODISCARD constexpr std::vector<uint8_t> serialize() const override
     {
@@ -424,12 +489,18 @@ public:
 public:
     explicit constexpr Short(std::string name, int16_t value = 0):
         Base(std::move(name), TagType::Short),
-        _value(value) {};
+        _value(value){};
     ~Short() override = default;
 
-    NODISCARD constexpr int16_t getValue() const { return _value; }
+    NODISCARD constexpr int16_t getValue() const
+    {
+        return _value;
+    }
 
-    constexpr void setValue(int16_t value) { _value = value; }
+    constexpr void setValue(int16_t value)
+    {
+        _value = value;
+    }
 
     NODISCARD constexpr std::vector<uint8_t> serialize() const override
     {
@@ -456,15 +527,24 @@ public:
 public:
     explicit constexpr String(std::string name, std::string value = ""):
         Base(std::move(name), TagType::String),
-        _value(std::move(value)) {};
+        _value(std::move(value)){};
 
     ~String() override = default;
 
-    NODISCARD constexpr const std::string &getValue() const { return _value; }
+    NODISCARD constexpr const std::string &getValue() const
+    {
+        return _value;
+    }
 
-    constexpr void setValue(std::string value) { _value = std::move(value); }
+    constexpr void setValue(std::string value)
+    {
+        _value = std::move(value);
+    }
 
-    constexpr void setValue(std::string &&value) { _value = std::move(value); }
+    constexpr void setValue(std::string &&value)
+    {
+        _value = std::move(value);
+    }
 
     NODISCARD constexpr std::vector<uint8_t> serialize() const override
     {
@@ -496,12 +576,18 @@ public:
 public:
     explicit constexpr IntArray(std::string name, std::vector<int32_t> value = std::vector<int32_t>()):
         Base(std::move(name), TagType::IntArray),
-        _value(std::move(value)) {};
+        _value(std::move(value)){};
     ~IntArray() override = default;
 
-    NODISCARD constexpr std::vector<int32_t> &getValues() { return _value; }
+    NODISCARD constexpr std::vector<int32_t> &getValues()
+    {
+        return _value;
+    }
 
-    NODISCARD constexpr const std::vector<int32_t> &getValues() const { return _value; }
+    NODISCARD constexpr const std::vector<int32_t> &getValues() const
+    {
+        return _value;
+    }
 
     NODISCARD constexpr std::vector<uint8_t> serialize() const override
     {
@@ -534,12 +620,18 @@ public:
 public:
     explicit constexpr LongArray(std::string name, std::vector<int64_t> value = std::vector<int64_t>()):
         Base(std::move(name), TagType::LongArray),
-        _value(std::move(value)) {};
+        _value(std::move(value)){};
     ~LongArray() override = default;
 
-    NODISCARD constexpr std::vector<int64_t> &getValues() { return _value; }
+    NODISCARD constexpr std::vector<int64_t> &getValues()
+    {
+        return _value;
+    }
 
-    NODISCARD constexpr const std::vector<int64_t> &getValues() const { return _value; }
+    NODISCARD constexpr const std::vector<int64_t> &getValues() const
+    {
+        return _value;
+    }
 
     NODISCARD constexpr std::vector<uint8_t> serialize() const override
     {
@@ -570,24 +662,38 @@ public:
     static constexpr auto type = TagType::List;
 
 public:
-    explicit constexpr List(std::string name, std::vector<std::shared_ptr<Base>> &&value = std::vector<std::shared_ptr<Base>>()):
+    explicit constexpr List(
+        std::string name, std::vector<std::shared_ptr<Base>> &&value = std::vector<std::shared_ptr<Base>>()
+    ):
         Base(std::move(name), TagType::List),
-        _value(std::move(value)) {};
+        _value(std::move(value)){};
     explicit constexpr List(std::string name, std::vector<std::shared_ptr<Base>> &value):
         Base(std::move(name), TagType::List),
-        _value(value) {};
+        _value(value){};
     explicit constexpr List(std::string name, std::initializer_list<std::shared_ptr<Base>> value):
         Base(std::move(name), TagType::List),
-        _value(value) {};
+        _value(value){};
     ~List() override = default;
 
-    NODISCARD constexpr std::vector<std::shared_ptr<Base>> &getValues() noexcept { return _value; }
+    NODISCARD constexpr std::vector<std::shared_ptr<Base>> &getValues() noexcept
+    {
+        return _value;
+    }
 
-    NODISCARD constexpr const std::vector<std::shared_ptr<Base>> &getValues() const noexcept { return _value; }
+    NODISCARD constexpr const std::vector<std::shared_ptr<Base>> &getValues() const noexcept
+    {
+        return _value;
+    }
 
-    inline void push_back(std::shared_ptr<Base> value) { _value.push_back(value); }
+    inline void push_back(std::shared_ptr<Base> value)
+    {
+        _value.push_back(value);
+    }
 
-    NODISCARD constexpr size_t size() const noexcept { return _value.size(); }
+    NODISCARD constexpr size_t size() const noexcept
+    {
+        return _value.size();
+    }
 
     NODISCARD constexpr std::vector<uint8_t> serialize() const override
     {
@@ -644,15 +750,19 @@ std::shared_ptr<Int> parseInt(uint8_t *&at, const uint8_t *end, bool includeName
 std::shared_ptr<Long> parseLong(uint8_t *&at, const uint8_t *end, bool includeName = true, bool inList = false);
 std::shared_ptr<Float> parseFloat(uint8_t *&at, const uint8_t *end, bool includeName = true, bool inList = false);
 std::shared_ptr<Double> parseDouble(uint8_t *&at, const uint8_t *end, bool includeName = true, bool inList = false);
-std::shared_ptr<ByteArray> parseByteArray(uint8_t *&at, const uint8_t *end, bool includeName = true, bool inList = false);
+std::shared_ptr<ByteArray> parseByteArray(
+    uint8_t *&at, const uint8_t *end, bool includeName = true, bool inList = false
+);
 std::shared_ptr<String> parseString(uint8_t *&at, const uint8_t *end, bool includeName = true, bool inList = false);
 std::shared_ptr<List> parseList(uint8_t *&at, const uint8_t *end, bool includeName = true, bool inList = false);
 std::shared_ptr<Compound> parseCompound(uint8_t *&at, const uint8_t *end, bool includeName = true, bool inList = false);
 std::shared_ptr<IntArray> parseIntArray(uint8_t *&at, const uint8_t *end, bool includeName = true, bool inList = false);
-std::shared_ptr<LongArray> parseLongArray(uint8_t *&at, const uint8_t *end, bool includeName = true, bool inList = false);
+std::shared_ptr<LongArray> parseLongArray(
+    uint8_t *&at, const uint8_t *end, bool includeName = true, bool inList = false
+);
 
 std::shared_ptr<Base> parse(uint8_t *&at, const uint8_t *end);
 
-}
+} // namespace nbt
 
 #endif // CUBICSERVER_NBT_HPP

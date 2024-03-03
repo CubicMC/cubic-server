@@ -10,7 +10,10 @@ SpecialTippedArrow::SpecialTippedArrow(const std::string &identifier, const nloh
     this->setValidity(false);
 }
 
-void SpecialTippedArrow::dump(void) const { LTRACE("recipe special tipped arrow"); }
+void SpecialTippedArrow::dump(void) const
+{
+    LTRACE("recipe special tipped arrow");
+}
 
 std::shared_ptr<Recipe> SpecialTippedArrow::create(const std::string &identifier, const nlohmann::json &recipe)
 {

@@ -37,17 +37,46 @@ public:
     constexpr void setValueSize(uint8_t valueSize);
 
     constexpr void set(uint64_t idx, StoreType value);
-    [[nodiscard]] constexpr StoreType get(uint64_t idx) const;
-    [[nodiscard]] constexpr bool canContainData() const { return _valueSize != 0; }
+    [[nodiscard]]
+    constexpr StoreType get(uint64_t idx) const;
+    [[nodiscard]]
+    constexpr bool canContainData() const
+    {
+        return _valueSize != 0;
+    }
 
-    [[nodiscard]] constexpr Array &data() { return _store; }
-    [[nodiscard]] constexpr const Array &data() const { return _store; }
+    [[nodiscard]]
+    constexpr Array &data()
+    {
+        return _store;
+    }
+    [[nodiscard]]
+    constexpr const Array &data() const
+    {
+        return _store;
+    }
 
-    [[nodiscard]] constexpr iterator begin() { return _store.begin(); }
-    [[nodiscard]] constexpr const_iterator begin() const { return _store.begin(); }
+    [[nodiscard]]
+    constexpr iterator begin()
+    {
+        return _store.begin();
+    }
+    [[nodiscard]]
+    constexpr const_iterator begin() const
+    {
+        return _store.begin();
+    }
 
-    [[nodiscard]] constexpr iterator end() { return _store.end(); }
-    [[nodiscard]] constexpr const_iterator end() const { return _store.end(); }
+    [[nodiscard]]
+    constexpr iterator end()
+    {
+        return _store.end();
+    }
+    [[nodiscard]]
+    constexpr const_iterator end() const
+    {
+        return _store.end();
+    }
 
 private:
     Array _store;

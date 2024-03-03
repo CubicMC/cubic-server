@@ -1,13 +1,13 @@
 #include "LivingEntity.hpp"
 
 #include "Dimension.hpp"
-#include "Player.hpp"
-#include "PluginManager.hpp"
-#include "Server.hpp"
 #include "events/CancelEvents.hpp"
 #include "events/Events.hpp"
+#include "Player.hpp"
+#include "PluginManager.hpp"
 #include "protocol/ClientPackets.hpp"
 #include "protocol/metadata.hpp"
+#include "Server.hpp"
 #include <algorithm>
 #include <optional>
 
@@ -27,7 +27,16 @@ void LivingEntity::damage(float damage)
 
     if (canceled)
         return;
-    _health -= damage * (1.0f - ((std::min(20.0f, std::max(this->_armorDefense / 5.0f, this->_armorDefense - ((4.0f * damage) / (this->_armorToughness + 8.0f))))) / 25));
+    _health -= damage
+        * (1.0f
+           - ((std::min(
+                  20.0f,
+                  std::max(
+                      this->_armorDefense / 5.0f,
+                      this->_armorDefense - ((4.0f * damage) / (this->_armorToughness + 8.0f))
+                  )
+              ))
+              / 25));
     broadcastMetadata();
     LDEBUG("entity type {} with id {} took damage {}, health is now {}", this->_type, this->_id, damage, _health);
 }
@@ -47,32 +56,66 @@ void LivingEntity::knockback(const Vector3<double> &source, float force)
 
     // send entity velocity too connected players (should be optimized)
     for (auto player : _dim->getPlayers()) {
-        player->sendEntityVelocity({_id, static_cast<int16_t>(kb.x), static_cast<int16_t>(kb.y), static_cast<int16_t>(kb.z)});
+        player->sendEntityVelocity({ _id, static_cast<int16_t>(kb.x), static_cast<int16_t>(kb.y),
+                                     static_cast<int16_t>(kb.z) });
         player->sendEntityAnimation(protocol::EntityAnimation::ID::TakeDamage, _id);
     }
 }
 
-void LivingEntity::setHealth(float health) { _health = health; }
+void LivingEntity::setHealth(float health)
+{
+    _health = health;
+}
 
-float &LivingEntity::getHealth() { return _health; }
+float &LivingEntity::getHealth()
+{
+    return _health;
+}
 
-const float &LivingEntity::getHealth() const { return _health; }
+const float &LivingEntity::getHealth() const
+{
+    return _health;
+}
 
-void LivingEntity::setDefense(float value) { this->_armorDefense = value; }
+void LivingEntity::setDefense(float value)
+{
+    this->_armorDefense = value;
+}
 
-void LivingEntity::addDefense(float value) { this->_armorDefense += value; }
+void LivingEntity::addDefense(float value)
+{
+    this->_armorDefense += value;
+}
 
-void LivingEntity::removeDefense(float value) { this->_armorDefense -= value; }
+void LivingEntity::removeDefense(float value)
+{
+    this->_armorDefense -= value;
+}
 
-float LivingEntity::getDefense() const noexcept { return (this->_armorDefense); }
+float LivingEntity::getDefense() const noexcept
+{
+    return (this->_armorDefense);
+}
 
-void LivingEntity::setToughness(float value) { this->_armorToughness = value; }
+void LivingEntity::setToughness(float value)
+{
+    this->_armorToughness = value;
+}
 
-void LivingEntity::addToughness(float value) { this->_armorToughness += value; }
+void LivingEntity::addToughness(float value)
+{
+    this->_armorToughness += value;
+}
 
-void LivingEntity::removeToughness(float value) { this->_armorToughness -= value; }
+void LivingEntity::removeToughness(float value)
+{
+    this->_armorToughness -= value;
+}
 
-float LivingEntity::getToughness() const noexcept { return (this->_armorToughness); }
+float LivingEntity::getToughness() const noexcept
+{
+    return (this->_armorToughness);
+}
 
 void LivingEntity::appendMetadataPacket(std::vector<uint8_t> &data) const
 {

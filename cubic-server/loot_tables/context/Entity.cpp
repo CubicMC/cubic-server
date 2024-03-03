@@ -2,7 +2,10 @@
 
 namespace LootTable {
 namespace Context {
-Entity::Entity(const Entity &victim, const FloatingPosition &origin, const int32_t &damageSource, const Entity *killer, const Entity *direct_killer, const Player *killer_player):
+Entity::Entity(
+    const Entity &victim, const FloatingPosition &origin, const int32_t &damageSource, const Entity *killer,
+    const Entity *direct_killer, const Player *killer_player
+):
     LootContext("minecraft:entity"),
     victim(victim),
     origin(origin),
@@ -12,5 +15,5 @@ Entity::Entity(const Entity &victim, const FloatingPosition &origin, const int32
     killer_player(killer_player)
 {
 }
-}
-}
+} // namespace Context
+} // namespace LootTable

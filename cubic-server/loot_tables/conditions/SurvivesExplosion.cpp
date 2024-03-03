@@ -15,6 +15,9 @@ bool SurvivesExplosion::verify(const LootContext *context) const
     return (true);
 }
 
-std::unique_ptr<Condition> SurvivesExplosion::create(const nlohmann::json &condition) { return (std::make_unique<SurvivesExplosion>(condition)); }
-};
-};
+std::unique_ptr<Condition> SurvivesExplosion::create(const nlohmann::json &condition)
+{
+    return (std::make_unique<SurvivesExplosion>(condition));
+}
+}; // namespace Condition
+}; // namespace LootTable

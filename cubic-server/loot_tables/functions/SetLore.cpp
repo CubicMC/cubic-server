@@ -8,8 +8,14 @@ SetLore::SetLore(const nlohmann::json &function):
     this->setValidity(true);
 }
 
-void SetLore::apply(const LootContext &context) { (void) context; }
+void SetLore::apply(const LootContext &context)
+{
+    (void) context;
+}
 
-std::unique_ptr<Function> SetLore::create(const nlohmann::json &function) { return (std::make_unique<SetLore>(function)); }
-};
-};
+std::unique_ptr<Function> SetLore::create(const nlohmann::json &function)
+{
+    return (std::make_unique<SetLore>(function));
+}
+}; // namespace Function
+}; // namespace LootTable

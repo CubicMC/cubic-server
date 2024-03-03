@@ -39,10 +39,22 @@ void TickClock::tick()
         _callback();
 }
 
-void TickClock::setTickRate(uint16_t tickRate) { _tickRate = tickRate; }
+void TickClock::setTickRate(uint16_t tickRate)
+{
+    _tickRate = tickRate;
+}
 
-uint16_t TickClock::tickRate() const { return _tickRate; }
+uint16_t TickClock::tickRate() const
+{
+    return _tickRate;
+}
 
-void TickClock::setCallback(std::function<void()> callback) { _callback = callback; }
+void TickClock::setCallback(std::function<void()> callback)
+{
+    _callback = callback;
+}
 
-const std::function<void()> &TickClock::callback() const { return _callback; }
+const std::function<void()> &TickClock::callback() const
+{
+    return _callback;
+}

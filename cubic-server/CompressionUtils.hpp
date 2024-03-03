@@ -23,6 +23,8 @@ int compressVector(const std::vector<uint8_t> &source, std::vector<uint8_t> &des
  * @return int Whatever zlib return when uncompressing
  * @todo Needs to be heavily optimized, so much weird code
  */
-int decompressVector(const std::vector<uint8_t> &compressedBytes, std::vector<uint8_t> &uncompressedBytes, uint32_t size);
+int decompressVector(
+    const std::vector<uint8_t> &compressedBytes, std::vector<uint8_t> &uncompressedBytes, uint32_t size
+);
 
 #endif // COMPRESSION_UTILS_HPP_

@@ -10,7 +10,9 @@ void EASEncryptionHandler::encrypt(std::vector<uint8_t> &data)
 {
     std::lock_guard _(_lock);
     assert(_isInitialized);
-    if (mbedtls_aes_crypt_cfb8(&_context, MBEDTLS_AES_ENCRYPT, data.size(), _initialVectorEncrypt.data(), data.data(), data.data())) {
+    if (mbedtls_aes_crypt_cfb8(
+            &_context, MBEDTLS_AES_ENCRYPT, data.size(), _initialVectorEncrypt.data(), data.data(), data.data()
+        )) {
         LERROR("Encryption error");
     }
 }
@@ -40,4 +42,7 @@ EASEncryptionHandler::EASEncryptionHandler():
     mbedtls_aes_init(&_context);
 }
 
-EASEncryptionHandler::~EASEncryptionHandler() { mbedtls_aes_free(&_context); }
+EASEncryptionHandler::~EASEncryptionHandler()
+{
+    mbedtls_aes_free(&_context);
+}

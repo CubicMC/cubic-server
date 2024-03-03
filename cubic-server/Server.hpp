@@ -14,16 +14,16 @@
 #include <vector>
 
 #include "Client.hpp"
-#include "RSAEncryptionHandler.hpp"
 #include "command_parser/commands/Gamemode.hpp"
 #include "command_parser/commands/Help.hpp"
 #include "nbt.hpp"
 #include "protocol/ServerPackets.hpp"
+#include "RSAEncryptionHandler.hpp"
 
-#include "WorldGroup.hpp"
 #include "configuration/ConfigHandler.hpp"
 #include "registry/Registry.hpp"
 #include "whitelist/Whitelist.hpp"
+#include "WorldGroup.hpp"
 
 #include "allCommands.hpp"
 
@@ -32,8 +32,8 @@
 #include "protocol_id_converter/itemConverter.hpp"
 #include "protocol_id_converter/soundEventConverter.hpp"
 
-#include "Permissions.hpp"
 #include "loot_tables/LootTables.hpp"
+#include "Permissions.hpp"
 
 #include "options.hpp"
 #include "scoreboard/ScoreboardSystem.hpp"
@@ -92,10 +92,22 @@ public:
     void stop();
     void reload();
 
-    const configuration::ConfigHandler &getConfig() const { return _config; }
-    const WhitelistHandling::Whitelist &getWhitelist() const { return _whitelist; }
-    bool isWhitelistEnabled() const { return _config["whitelist-enabled"]; }
-    bool isWhitelistEnforce() const { return _config["enforce-whitelist"]; }
+    const configuration::ConfigHandler &getConfig() const
+    {
+        return _config;
+    }
+    const WhitelistHandling::Whitelist &getWhitelist() const
+    {
+        return _whitelist;
+    }
+    bool isWhitelistEnabled() const
+    {
+        return _config["whitelist-enabled"];
+    }
+    bool isWhitelistEnforce() const
+    {
+        return _config["enforce-whitelist"];
+    }
 
     static Server *getInstance()
     {
@@ -103,27 +115,82 @@ public:
         return &srv;
     }
 
-    NODISCARD const std::unordered_map<size_t, std::shared_ptr<Client>> &getClients() const { return _clients; }
-    NODISCARD std::shared_ptr<const WorldGroup> getWorldGroup(const std::string_view &name) const { return this->_worldGroups.at(name); }
-    NODISCARD const std::unordered_map<std::string_view, std::shared_ptr<WorldGroup>> &getWorldGroups() const { return _worldGroups; }
-    NODISCARD const std::vector<std::unique_ptr<CommandBase>> &getCommands() const { return _commands; }
-    NODISCARD bool isRunning() const { return _running; }
-    NODISCARD Blocks::GlobalPalette &getGlobalPalette() { return _globalPalette; }
-    NODISCARD const Blocks::GlobalPalette &getGlobalPalette() const { return _globalPalette; }
-    NODISCARD const Items::ItemConverter &getItemConverter() const { return _itemConverter; }
-    NODISCARD const SoundEvents::SoundEventConverter &getSoundEventConverter() const { return _soundEventConverter; }
-    NODISCARD const Blocks::BlockDataConverter &getBlockDataConverter() const { return _blockDataConverter; }
+    NODISCARD const std::unordered_map<size_t, std::shared_ptr<Client>> &getClients() const
+    {
+        return _clients;
+    }
+    NODISCARD std::shared_ptr<const WorldGroup> getWorldGroup(const std::string_view &name) const
+    {
+        return this->_worldGroups.at(name);
+    }
+    NODISCARD const std::unordered_map<std::string_view, std::shared_ptr<WorldGroup>> &getWorldGroups() const
+    {
+        return _worldGroups;
+    }
+    NODISCARD const std::vector<std::unique_ptr<CommandBase>> &getCommands() const
+    {
+        return _commands;
+    }
+    NODISCARD bool isRunning() const
+    {
+        return _running;
+    }
+    NODISCARD Blocks::GlobalPalette &getGlobalPalette()
+    {
+        return _globalPalette;
+    }
+    NODISCARD const Blocks::GlobalPalette &getGlobalPalette() const
+    {
+        return _globalPalette;
+    }
+    NODISCARD const Items::ItemConverter &getItemConverter() const
+    {
+        return _itemConverter;
+    }
+    NODISCARD const SoundEvents::SoundEventConverter &getSoundEventConverter() const
+    {
+        return _soundEventConverter;
+    }
+    NODISCARD const Blocks::BlockDataConverter &getBlockDataConverter() const
+    {
+        return _blockDataConverter;
+    }
 
-    NODISCARD registry::MasterRegistry &getRegistry() noexcept { return _registry; }
-    NODISCARD std::shared_ptr<WorldGroup> getWorldGroup(const std::string_view &name) { return this->_worldGroups.at(name); }
-    NODISCARD std::unordered_map<std::string_view, std::shared_ptr<WorldGroup>> &getWorldGroups() { return _worldGroups; }
-    NODISCARD PluginManager &getPluginManager() noexcept { return _pluginManager; }
-    NODISCARD Recipes &getRecipeSystem() noexcept { return _recipes; }
-    NODISCARD ScoreboardSystem &getScoreboardSystem() { return _scoreboardSystem; }
-    NODISCARD LootTables &getLootTableSystem() noexcept { return _lootTables; }
-    NODISCARD RSAEncryptionHandler &getPrivateKey() { return _rsaKey; }
+    NODISCARD registry::MasterRegistry &getRegistry() noexcept
+    {
+        return _registry;
+    }
+    NODISCARD std::shared_ptr<WorldGroup> getWorldGroup(const std::string_view &name)
+    {
+        return this->_worldGroups.at(name);
+    }
+    NODISCARD std::unordered_map<std::string_view, std::shared_ptr<WorldGroup>> &getWorldGroups()
+    {
+        return _worldGroups;
+    }
+    NODISCARD PluginManager &getPluginManager() noexcept
+    {
+        return _pluginManager;
+    }
+    NODISCARD Recipes &getRecipeSystem() noexcept
+    {
+        return _recipes;
+    }
+    NODISCARD ScoreboardSystem &getScoreboardSystem()
+    {
+        return _scoreboardSystem;
+    }
+    NODISCARD LootTables &getLootTableSystem() noexcept
+    {
+        return _lootTables;
+    }
+    NODISCARD RSAEncryptionHandler &getPrivateKey()
+    {
+        return _rsaKey;
+    }
 
     // Network
+
 public:
     void sendData(size_t clientID, std::unique_ptr<std::vector<uint8_t>> &&data);
     void triggerClientCleanup(size_t clientID = -1);
@@ -142,6 +209,7 @@ private:
     void _writeLoop();
 
     // Random mutex
+
 public:
     mutable std::mutex clientsMutex;
 
@@ -183,13 +251,25 @@ private:
     bool _prometheusExporterOn;
 
 public:
-    NODISCARD inline const PrometheusExporter &getPrometheusExporter() const { return *_prometheusExporter; }
-    NODISCARD inline PrometheusExporter &getPrometheusExporter() { return *_prometheusExporter; }
-    bool prometheusExporterOn() const noexcept { return _prometheusExporterOn; }
+    NODISCARD inline const PrometheusExporter &getPrometheusExporter() const
+    {
+        return *_prometheusExporter;
+    }
+    NODISCARD inline PrometheusExporter &getPrometheusExporter()
+    {
+        return *_prometheusExporter;
+    }
+    bool prometheusExporterOn() const noexcept
+    {
+        return _prometheusExporterOn;
+    }
 #endif
 
 public:
-    NODISCARD inline bool isCompressed() const { return _config["compression"].as<bool>(); }
+    NODISCARD inline bool isCompressed() const
+    {
+        return _config["compression"].as<bool>();
+    }
 };
 
 #endif // CUBICSERVER_SERVER_HPP

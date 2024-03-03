@@ -10,7 +10,9 @@ nlohmann::json chat::message::event::CopyToClipboardClick::toJson() const
     return response;
 }
 
-std::shared_ptr<chat::message::event::CopyToClipboardClick> chat::message::event::CopyToClipboardClick::fromJson(const nlohmann::json &json)
+std::shared_ptr<chat::message::event::CopyToClipboardClick> chat::message::event::CopyToClipboardClick::fromJson(
+    const nlohmann::json &json
+)
 {
     return std::make_shared<CopyToClipboardClick>(json["value"].get<std::string>());
 }

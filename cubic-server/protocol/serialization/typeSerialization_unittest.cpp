@@ -145,7 +145,7 @@ TEST(Serialization_Testing, SlotChecker)
     nbt_tag_compound_append(display, name);
     nbt_tag_compound_append(root, display);
 
-    protocol::Slot slot {true, 1, 32, root};
+    protocol::Slot slot{ true, 1, 32, root };
 
     std::vector<uint8_t> out;
     protocol::addSlot(out, slot);
@@ -160,7 +160,7 @@ TEST(Serialization_Testing, SlotChecker)
 
 RC_GTEST_PROP(Serialization_Testing, UUIDChecker, (uint64_t most, uint64_t least))
 {
-    u128 uuid {most, least};
+    u128 uuid{ most, least };
     std::vector<uint8_t> out;
     protocol::addUUID(out, uuid);
     auto at = out.data();
@@ -168,4 +168,4 @@ RC_GTEST_PROP(Serialization_Testing, UUIDChecker, (uint64_t most, uint64_t least
     ASSERT_EQ(uuid.most, parsed.most);
     ASSERT_EQ(uuid.least, parsed.least);
 }
-}
+} // namespace Serialization_Testing

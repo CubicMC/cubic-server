@@ -8,5 +8,5 @@ AdvancementEntity::AdvancementEntity(const Entity &gifter, const FloatingPositio
     origin(origin)
 {
 }
-}
-}
+} // namespace Context
+} // namespace LootTable

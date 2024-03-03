@@ -1,12 +1,12 @@
 #include "World.hpp"
 
 #include "Dimension.hpp"
+#include "logging/logging.hpp"
 #include "Player.hpp"
 #include "Server.hpp"
-#include "WorldGroup.hpp"
-#include "logging/logging.hpp"
 #include "types.hpp"
 #include "world_storage/ChunkColumn.hpp"
+#include "WorldGroup.hpp"
 #include <cmath>
 #include <cstdint>
 #include <vector>
@@ -90,7 +90,7 @@ void World::updateTime()
 
     for (auto [_, dim] : this->_dimensions) {
         for (auto player : dim->getPlayers()) {
-            player->sendUpdateTime({_age, _time});
+            player->sendUpdateTime({ _age, _time });
         }
     }
 }
@@ -100,9 +100,12 @@ void World::sendPlayerInfoAddPlayer(Player *current)
     // get list of players
     std::vector<protocol::PlayerInfoUpdate::Action> playersInfo;
 
-    uint8_t actions = (uint8_t) protocol::PlayerInfoUpdate::Actions::AddPlayer | (uint8_t) protocol::PlayerInfoUpdate::Actions::InitializeChat |
-        (uint8_t) protocol::PlayerInfoUpdate::Actions::UpdateGamemode | (uint8_t) protocol::PlayerInfoUpdate::Actions::UpdateListed |
-        (uint8_t) protocol::PlayerInfoUpdate::Actions::UpdateLatency | (uint8_t) protocol::PlayerInfoUpdate::Actions::UpdateDisplayName;
+    uint8_t actions = (uint8_t) protocol::PlayerInfoUpdate::Actions::AddPlayer
+        | (uint8_t) protocol::PlayerInfoUpdate::Actions::InitializeChat
+        | (uint8_t) protocol::PlayerInfoUpdate::Actions::UpdateGamemode
+        | (uint8_t) protocol::PlayerInfoUpdate::Actions::UpdateListed
+        | (uint8_t) protocol::PlayerInfoUpdate::Actions::UpdateLatency
+        | (uint8_t) protocol::PlayerInfoUpdate::Actions::UpdateDisplayName;
 
     // iterate through the list of players
     for (auto [_, dim] : _dimensions) {
@@ -182,7 +185,7 @@ void World::sendPlayerInfoRemovePlayer(const Player *current)
         for (auto &player : dim->getPlayers()) {
             // send to each player the info of the current removed player
             if (player->getId() != current->getId()) {
-                player->sendPlayerInfoRemove({std::vector<u128>({current->getUuid()})});
+                player->sendPlayerInfoRemove({ std::vector<u128>({ current->getUuid() }) });
             }
         }
     }

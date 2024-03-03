@@ -21,31 +21,93 @@ public:
     ~DimensionElement() = default;
 
     std::shared_ptr<nbt::Base> toNBT() const override;
-    bool operator==(const std::string &name) const override { return name == _name; }
+    bool operator==(const std::string &name) const override
+    {
+        return name == _name;
+    }
 
     // Getters
+
 public:
-    inline std::string name() const { return _name; }
-    inline int32_t id() const { return _id; }
-    inline bool ultrawarm() const { return _ultrawarm; }
-    inline int32_t logicalHeight() const { return _logicalHeight; }
-    inline std::string infiniburn() const { return _infiniburn; }
-    inline bool piglinSafe() const { return _piglinSafe; }
-    inline float ambientLight() const { return _ambientLight; }
-    inline bool hasSkylight() const { return _hasSkylight; }
-    inline std::string effects() const { return _effects; }
-    inline bool hasRaids() const { return _hasRaids; }
-    inline int32_t monsterSpawnBlockLightLimit() const { return _monsterSpawnBlockLightLimit; }
-    inline bool respawnAnchorWorks() const { return _respawnAnchorWorks; }
-    inline int32_t height() const { return _height; }
-    inline bool hasCeiling() const { return _hasCeiling; }
-    inline MonsterSpawnLightLevel monsterSpawnLightLevel() const { return _monsterSpawnLightLevel; }
-    inline bool natural() const { return _natural; }
-    inline int32_t minY() const { return _minY; }
-    inline float coordinateScale() const { return _coordinateScale; }
-    inline bool bedWorks() const { return _bedWorks; }
+    inline std::string name() const
+    {
+        return _name;
+    }
+    inline int32_t id() const
+    {
+        return _id;
+    }
+    inline bool ultrawarm() const
+    {
+        return _ultrawarm;
+    }
+    inline int32_t logicalHeight() const
+    {
+        return _logicalHeight;
+    }
+    inline std::string infiniburn() const
+    {
+        return _infiniburn;
+    }
+    inline bool piglinSafe() const
+    {
+        return _piglinSafe;
+    }
+    inline float ambientLight() const
+    {
+        return _ambientLight;
+    }
+    inline bool hasSkylight() const
+    {
+        return _hasSkylight;
+    }
+    inline std::string effects() const
+    {
+        return _effects;
+    }
+    inline bool hasRaids() const
+    {
+        return _hasRaids;
+    }
+    inline int32_t monsterSpawnBlockLightLimit() const
+    {
+        return _monsterSpawnBlockLightLimit;
+    }
+    inline bool respawnAnchorWorks() const
+    {
+        return _respawnAnchorWorks;
+    }
+    inline int32_t height() const
+    {
+        return _height;
+    }
+    inline bool hasCeiling() const
+    {
+        return _hasCeiling;
+    }
+    inline MonsterSpawnLightLevel monsterSpawnLightLevel() const
+    {
+        return _monsterSpawnLightLevel;
+    }
+    inline bool natural() const
+    {
+        return _natural;
+    }
+    inline int32_t minY() const
+    {
+        return _minY;
+    }
+    inline float coordinateScale() const
+    {
+        return _coordinateScale;
+    }
+    inline bool bedWorks() const
+    {
+        return _bedWorks;
+    }
 
     // Setters
+
 public:
     inline DimensionElement &name(std::string name);
     inline DimensionElement &id(int32_t id);
@@ -155,7 +217,9 @@ inline registry::DimensionElement &registry::DimensionElement::hasRaids(bool has
     return *this;
 }
 
-inline registry::DimensionElement &registry::DimensionElement::monsterSpawnBlockLightLimit(int32_t monsterSpawnBlockLightLimit)
+inline registry::DimensionElement &registry::DimensionElement::monsterSpawnBlockLightLimit(
+    int32_t monsterSpawnBlockLightLimit
+)
 {
     _monsterSpawnBlockLightLimit = monsterSpawnBlockLightLimit;
     return *this;
@@ -179,7 +243,9 @@ inline registry::DimensionElement &registry::DimensionElement::hasCeiling(bool h
     return *this;
 }
 
-inline registry::DimensionElement &registry::DimensionElement::monsterSpawnLightLevel(MonsterSpawnLightLevel monsterSpawnLightLevel)
+inline registry::DimensionElement &registry::DimensionElement::monsterSpawnLightLevel(
+    MonsterSpawnLightLevel monsterSpawnLightLevel
+)
 {
     _monsterSpawnLightLevel = monsterSpawnLightLevel;
     return *this;

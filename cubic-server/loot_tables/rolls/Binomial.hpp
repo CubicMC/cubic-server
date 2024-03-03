@@ -21,7 +21,7 @@ private:
     int64_t _n;
     double _p;
 };
-};
-};
+}; // namespace Roll
+}; // namespace LootTable
 
 #endif // CUBIC_SERVER_LOOT_TABLES_ROOLS_ROLL_BINOMIAL_HPP
