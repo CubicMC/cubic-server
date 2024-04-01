@@ -47,5 +47,36 @@
           clang-tools
         ];
       };
+      packages =
+        let
+          build-csmc = releaseType:
+            pkgs.stdenv.mkDerivation {
+              name = "CubicServer";
+
+              src = ./.;
+              buildInputs = with pkgs; [
+                gcc11
+                xmake
+              ];
+
+              installPhase = ''
+                mkdir -p $out/bin
+                install -D build/linux/x86_64/release/CubicServer $out/bin/CubicServer --mode 755
+              '';
+
+              preConfigure = ''
+                xmake f --ld=g++ --cc=gcc --cxx=g++ -m ${releaseType}
+              '';
+
+              buildPhase = ''
+                xmake b
+              '';
+            };
+        in
+        rec {
+          default = csmc;
+          csmc = build-csmc "release";
+          debug = build-csmc "debug";
+        };
     });
 }

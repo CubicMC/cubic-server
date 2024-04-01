@@ -54,3 +54,4 @@ cmake-build-*
 .envrc
 .pre-commit-config.yaml
 .xmake
+result
