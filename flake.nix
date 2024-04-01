@@ -30,6 +30,9 @@
         hooks = {
           nixpkgs-fmt.enable = true;
           clang-format.enable = true;
+          check-merge-conflicts.enable = true;
+          check-shebang-scripts-are-executable.enable = true;
+          check-added-large-files.enable = true;
         };
       };
 
