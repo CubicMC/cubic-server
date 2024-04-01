@@ -27,7 +27,10 @@
 
       checks.pre-commit-check = pre-commit-hooks.lib.${system}.run {
         src = ./.;
-        hooks.nixpkgs-fmt.enable = true;
+        hooks = {
+          nixpkgs-fmt.enable = true;
+          clang-format.enable = true;
+        };
       };
 
       devShells.default = pkgs.mkShell {
@@ -38,6 +41,7 @@
           gcc11
           python3Packages.compiledb
           xmake
+          clang-tools
         ];
       };
     });
