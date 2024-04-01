@@ -49,3 +49,8 @@ compile_commands.json
 # CLion
 cmake-build-*
 .idea
+
+.direnv
+.envrc
+.pre-commit-config.yaml
+.xmake
