@@ -45,6 +45,7 @@
           python3Packages.compiledb
           xmake
           clang-tools
+          valgrind
         ];
       };
       packages =
