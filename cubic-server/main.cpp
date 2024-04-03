@@ -1,51 +1,77 @@
+#include <algorithm>
 #include <array>
+#include <cassert>
 #include <cstdint>
-#include <iostream>
+#include <cstdio>
 #include <netdb.h>
 #include <sys/poll.h>
 #include <sys/socket.h>
 #include <unistd.h>
 #include <vector>
 
-#define TIMEOUT 5
-
-class Client {
-public:
+struct Client {
     int fd;
     bool isRunning;
     std::vector<uint8_t> inBuffer;
-    // TODO: Out buffer
+    std::vector<uint8_t> outBuffer;
+};
 
-    Client(int fd, bool is_running)
-    {
-        this->fd = fd;
-        this->isRunning = is_running;
-    }
+struct ServerContext {
+    int socket_fd;
+    std::vector<Client> clients;
 };
 
 namespace {
+constexpr size_t CSMC_MAX_NETWORK_READ_SIZE = 2048;
+
 auto init_fd_list(std::vector<pollfd> &fds, std::vector<Client> &clients, int server_fd) -> void
 {
+    // Clear the previous fds as we don't really know
+    fds.clear();
+    // Set the server fd all the time to accept new connections
     fds.push_back({ .fd = server_fd, .events = POLLIN });
 
-    for (auto &cli : clients) {
-        if (cli.isRunning) {
+    // Add all running clients to the read list
+    for (auto &cli : clients)
+        if (cli.isRunning)
             fds.push_back({ .fd = cli.fd, .events = POLLIN });
-        }
-    }
 }
-} // namespace
 
-auto main() -> int
+auto cleanup_client_list(std::vector<Client> &clients) -> void
 {
-    int socket_fd = socket(AF_INET, SOCK_STREAM, getprotobyname("TCP")->p_proto);
+    // Remove all the clients that are currently not running
+    clients.erase(
+        std::remove_if(clients.begin(), clients.end(), [](Client &cli) { return !cli.isRunning; }), clients.end()
+    );
+}
 
-    if (socket_fd == -1) {
-        perror("socket");
-        return 1;
-    }
+auto get_client_from_fd(int fd, std::vector<Client> &clients) -> Client *
+{
+    for (auto &cli : clients)
+        if (cli.fd == fd)
+            return &cli;
+    return nullptr;
+}
 
-    const uint16_t port = 25565;
+auto disconnect_client(Client &cli) -> bool
+{
+    bool was_running = cli.isRunning;
+    cli.isRunning = false;
+    if (was_running)
+        close(cli.fd);
+    return !was_running;
+}
+
+auto disconnect_client_from_fd(int fd, std::vector<Client> &clients) -> bool
+{
+    auto *cli = get_client_from_fd(fd, clients);
+    return cli == nullptr ? true : disconnect_client(*cli);
+}
+
+auto setup_and_launch_socket(int socket_fd) -> bool
+{
+    constexpr uint16_t port = 25565;
+    // TODO: Support ipv6 - Shouldn't be hard at all, but I don't want to test it rn :)
     sockaddr_in addr = {
         .sin_family = AF_INET,
         .sin_port = htons(port),
@@ -53,48 +79,93 @@ auto main() -> int
             .s_addr = htonl(INADDR_ANY),
         },
     };
-    int some_l_value = 1;
-    setsockopt(socket_fd, SOL_SOCKET, SO_REUSEADDR, &some_l_value, sizeof(int));
+    // TODO: Check if there are more socket options we would want to enable here
+    const int sock_enable_value = 1;
+    setsockopt(socket_fd, SOL_SOCKET, SO_REUSEADDR, &sock_enable_value, sizeof sock_enable_value);
     if (bind(socket_fd, (struct sockaddr *) &addr, sizeof addr) == -1) {
         perror("bind");
-        return 1;
+        return true;
     }
     listen(socket_fd, 0);
+    return false;
+}
 
-    std::vector<Client> clients;
-    std::array<uint8_t, 1024> in_buffer;
+auto try_accept_new_client(ServerContext &ctx, std::vector<pollfd> &fds) -> void
+{
+    if ((fds[0].revents & POLLIN) != 0) {
+        int cli_fd = accept(ctx.socket_fd, nullptr, nullptr);
+        if (cli_fd != -1)
+            ctx.clients.emplace_back((Client){ .fd = cli_fd, .isRunning = true });
+        else
+            perror("accept");
+    }
+}
+
+auto add_to_client_buffer(Client &cli, std::array<uint8_t, CSMC_MAX_NETWORK_READ_SIZE> &read_buffer, int num_bytes)
+{
+    // TODO: Lock a mutex related to that buffer
+    cli.inBuffer.insert(cli.inBuffer.end(), read_buffer.data(), read_buffer.data() + num_bytes);
+    // TODO: Remove that when proper logging is implemented
+    printf("Got %d bytes from client %p on fd %d\n", num_bytes, &cli, cli.fd);
+}
+
+auto handle_clients_callbacks(ServerContext &ctx, std::vector<pollfd> &fds) -> void
+{
+    // No need to recreate that whole buffer everytime so you I just make it static
+    static std::array<uint8_t, CSMC_MAX_NETWORK_READ_SIZE> in_buffer;
+
+    for (size_t i = 1; i < fds.size(); i++) {
+        if ((fds[i].revents & POLLIN) != 0) {
+            // TODO: Read properly from client
+            int num_bytes_read = read(fds[i].fd, in_buffer.data(), 1024);
+            if (num_bytes_read == 0) {
+                disconnect_client_from_fd(fds[i].fd, ctx.clients);
+                continue;
+            }
+            auto *cli = get_client_from_fd(fds[i].fd, ctx.clients);
+            assert(cli);
+            add_to_client_buffer(*cli, in_buffer, num_bytes_read);
+        }
+        if ((fds[i].revents & POLLHUP) != 0)
+            disconnect_client_from_fd(fds[i].fd, ctx.clients);
+    }
+}
+
+auto launch_network_loop(ServerContext &ctx) -> void
+{
+    std::vector<pollfd> fds;
 
     for (;;) {
-        std::vector<pollfd> fds;
-        init_fd_list(fds, clients, socket_fd);
+        init_fd_list(fds, ctx.clients, ctx.socket_fd);
 
         if (poll(fds.data(), fds.size(), -1) == -1) {
             perror("poll");
             break;
         }
-        if ((fds[0].revents & POLLIN) != 0) {
-            int cli_fd = accept(socket_fd, nullptr, nullptr);
-            if (cli_fd != -1)
-                clients.emplace_back(cli_fd, true);
-            else
-                perror("accept");
-        }
-
-        for (size_t i = 1; i < fds.size(); i++) {
-            if ((fds[i].revents & POLLIN) != 0) {
-                // TODO: Read properly from client
-                int ret = read(fds[i].fd, in_buffer.data(), 1024);
-                if (ret == 0) {
-                    for (auto &cli : clients) {
-                        if (cli.fd == fds[i].fd)
-                            cli.isRunning = false;
-                    }
-                }
-            }
-            if ((fds[i].revents & POLLHUP) != 0) {
-                // TODO: Handle client close
-            }
-        }
+        // Handle everything that poll gave us
+        handle_clients_callbacks(ctx, fds);
+        try_accept_new_client(ctx, fds);
+        // Now we need to remove all the clients that disconnected or errored
+        cleanup_client_list(ctx.clients);
     }
+}
+} // namespace
+
+auto main() -> int
+{
+    int socket_fd = socket(AF_INET, SOCK_STREAM, getprotobyname("TCP")->p_proto);
+    if (socket_fd == -1) {
+        perror("socket");
+        return 1;
+    }
+    if (setup_and_launch_socket(socket_fd))
+        return 1;
+
+    ServerContext ctx = {
+        .socket_fd = socket_fd,
+        .clients = {},
+    };
+    launch_network_loop(ctx);
+
     return 0;
 }
