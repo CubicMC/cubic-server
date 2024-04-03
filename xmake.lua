@@ -1,4 +1,4 @@
-set_project("ige")
+set_project("cubic-server")
 
 add_rules("mode.debug", "mode.release")
 
