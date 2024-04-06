@@ -26,6 +26,7 @@ struct ServerContext {
 
 namespace {
 constexpr size_t CSMC_MAX_NETWORK_READ_SIZE = 2048;
+constexpr size_t CSMC_MAX_NETWORK_WRITE_SIZE = 2048;
 
 auto init_fd_list(std::vector<pollfd> &fds, std::vector<Client> &clients, int server_fd) -> void
 {
@@ -35,9 +36,14 @@ auto init_fd_list(std::vector<pollfd> &fds, std::vector<Client> &clients, int se
     fds.push_back({ .fd = server_fd, .events = POLLIN });
 
     // Add all running clients to the read list
-    for (auto &cli : clients)
-        if (cli.isRunning)
-            fds.push_back({ .fd = cli.fd, .events = POLLIN });
+    for (auto &cli : clients) {
+        if (cli.isRunning) {
+            if (!cli.outBuffer.empty())
+                fds.push_back({ .fd = cli.fd, .events = POLLIN | POLLOUT });
+            else
+                fds.push_back({ .fd = cli.fd, .events = POLLIN });
+        }
+    }
 }
 
 auto cleanup_client_list(std::vector<Client> &clients) -> void
@@ -130,6 +136,18 @@ auto handle_clients_callbacks(ServerContext &ctx, std::vector<pollfd> &fds) -> v
             auto *cli = get_client_from_fd(fds[i].fd, ctx.clients);
             assert(cli);
             add_to_client_buffer(*cli, in_buffer, num_bytes_read);
+        }
+        if ((fds[i].revents & POLLOUT) != 0) {
+            auto *cli = get_client_from_fd(fds[i].fd, ctx.clients);
+            assert(cli);
+            {
+                std::unique_lock<std::mutex> _(cli->outBufferMutex);
+
+                int num_bytes_write = write(
+                    fds[i].fd, cli->outBuffer.data(), std::min(cli->outBuffer.size(), CSMC_MAX_NETWORK_WRITE_SIZE)
+                );
+                cli->outBuffer.erase(cli->outBuffer.begin(), cli->outBuffer.begin() + num_bytes_write);
+            }
         }
         if ((fds[i].revents & POLLHUP) != 0)
             disconnect_client_from_fd(fds[i].fd, ctx.clients);
