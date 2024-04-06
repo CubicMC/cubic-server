@@ -139,15 +139,18 @@ auto handle_clients_callbacks(ServerContext &ctx, std::vector<pollfd> &fds) -> v
         }
         if ((fds[i].revents & POLLOUT) != 0) {
             auto *cli = get_client_from_fd(fds[i].fd, ctx.clients);
+            int num_bytes_written = 0;
             assert(cli);
             {
                 std::unique_lock<std::mutex> _(cli->outBufferMutex);
 
-                int num_bytes_write = write(
+                num_bytes_written = write(
                     fds[i].fd, cli->outBuffer.data(), std::min(cli->outBuffer.size(), CSMC_MAX_NETWORK_WRITE_SIZE)
                 );
-                cli->outBuffer.erase(cli->outBuffer.begin(), cli->outBuffer.begin() + num_bytes_write);
+                cli->outBuffer.erase(cli->outBuffer.begin(), cli->outBuffer.begin() + num_bytes_written);
             }
+            // TODO: Remove that when proper logging is implemented
+            printf("Sent %d bytes to client %p on fd %d\n", num_bytes_written, cli, cli->fd);
         }
         if ((fds[i].revents & POLLHUP) != 0)
             disconnect_client_from_fd(fds[i].fd, ctx.clients);
