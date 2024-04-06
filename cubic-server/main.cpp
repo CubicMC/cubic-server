@@ -3,6 +3,7 @@
 #include <cassert>
 #include <cstdint>
 #include <cstdio>
+#include <memory>
 #include <mutex>
 #include <netdb.h>
 #include <sys/poll.h>
@@ -10,25 +11,31 @@
 #include <unistd.h>
 #include <vector>
 
-struct Client {
+class Client {
+public:
     int fd;
-    bool isRunning;
+    bool isRunning = true;
     std::vector<uint8_t> inBuffer;
     std::vector<uint8_t> outBuffer;
-    mutable std::mutex inBufferMutex;
-    mutable std::mutex outBufferMutex;
+    mutable std::mutex inBufferMutex{};
+    mutable std::mutex outBufferMutex{};
+
+    Client(int fd):
+        fd(fd)
+    {
+    }
 };
 
 struct ServerContext {
     int socket_fd;
-    std::vector<Client> clients;
+    std::vector<std::unique_ptr<Client>> clients;
 };
 
 namespace {
 constexpr size_t CSMC_MAX_NETWORK_READ_SIZE = 2048;
 constexpr size_t CSMC_MAX_NETWORK_WRITE_SIZE = 2048;
 
-auto init_fd_list(std::vector<pollfd> &fds, std::vector<Client> &clients, int server_fd) -> void
+auto init_fd_list(std::vector<pollfd> &fds, std::vector<std::unique_ptr<Client>> &clients, int server_fd) -> void
 {
     // Clear the previous fds as we don't really know
     fds.clear();
@@ -37,28 +44,29 @@ auto init_fd_list(std::vector<pollfd> &fds, std::vector<Client> &clients, int se
 
     // Add all running clients to the read list
     for (auto &cli : clients) {
-        if (cli.isRunning) {
-            if (!cli.outBuffer.empty())
-                fds.push_back({ .fd = cli.fd, .events = POLLIN | POLLOUT });
+        if (cli->isRunning) {
+            if (!cli->outBuffer.empty())
+                fds.push_back({ .fd = cli->fd, .events = POLLIN | POLLOUT });
             else
-                fds.push_back({ .fd = cli.fd, .events = POLLIN });
+                fds.push_back({ .fd = cli->fd, .events = POLLIN });
         }
     }
 }
 
-auto cleanup_client_list(std::vector<Client> &clients) -> void
+auto cleanup_client_list(std::vector<std::unique_ptr<Client>> &clients) -> void
 {
     // Remove all the clients that are currently not running
     clients.erase(
-        std::remove_if(clients.begin(), clients.end(), [](Client &cli) { return !cli.isRunning; }), clients.end()
+        std::remove_if(clients.begin(), clients.end(), [](std::unique_ptr<Client> &cli) { return !cli->isRunning; }),
+        clients.end()
     );
 }
 
-auto get_client_from_fd(int fd, std::vector<Client> &clients) -> Client *
+auto get_client_from_fd(int fd, std::vector<std::unique_ptr<Client>> &clients) -> Client *
 {
     for (auto &cli : clients)
-        if (cli.fd == fd)
-            return &cli;
+        if (cli->fd == fd)
+            return cli.get();
     return nullptr;
 }
 
@@ -71,7 +79,7 @@ auto disconnect_client(Client &cli) -> bool
     return !was_running;
 }
 
-auto disconnect_client_from_fd(int fd, std::vector<Client> &clients) -> bool
+auto disconnect_client_from_fd(int fd, std::vector<std::unique_ptr<Client>> &clients) -> bool
 {
     auto *cli = get_client_from_fd(fd, clients);
     return cli == nullptr ? true : disconnect_client(*cli);
@@ -104,7 +112,7 @@ auto try_accept_new_client(ServerContext &ctx, std::vector<pollfd> &fds) -> void
     if ((fds[0].revents & POLLIN) != 0) {
         int cli_fd = accept(ctx.socket_fd, nullptr, nullptr);
         if (cli_fd != -1)
-            ctx.clients.emplace_back((Client){ .fd = cli_fd, .isRunning = true });
+            ctx.clients.emplace_back(std::make_unique<Client>(cli_fd));
         else
             perror("accept");
     }
@@ -119,6 +127,26 @@ auto add_to_client_buffer(Client &cli, std::array<uint8_t, CSMC_MAX_NETWORK_READ
     }
     // TODO: Remove that when proper logging is implemented
     printf("Got %d bytes from client %p on fd %d\n", num_bytes, &cli, cli.fd);
+}
+
+auto handle_high_priority_clients(std::vector<std::unique_ptr<Client>> &clients) -> void
+{
+    // For now all the clients are high priority
+    // TODO: Change that :3
+
+    for (auto &cli : clients) {
+        if (cli->inBuffer.empty())
+            continue;
+        {
+            std::unique_lock<std::mutex> a(cli->inBufferMutex, std::defer_lock);
+            std::unique_lock<std::mutex> b(cli->outBufferMutex, std::defer_lock);
+            std::lock(a, b);
+
+            // TODO: Obviously change that later :3
+            cli->outBuffer.insert(cli->outBuffer.end(), cli->inBuffer.begin(), cli->inBuffer.begin());
+            cli->inBuffer.clear();
+        }
+    }
 }
 
 auto handle_clients_callbacks(ServerContext &ctx, std::vector<pollfd> &fds) -> void
@@ -171,6 +199,7 @@ auto launch_network_loop(ServerContext &ctx) -> void
         // Handle everything that poll gave us
         handle_clients_callbacks(ctx, fds);
         try_accept_new_client(ctx, fds);
+        handle_high_priority_clients(ctx.clients);
         // Now we need to remove all the clients that disconnected or errored
         cleanup_client_list(ctx.clients);
     }
