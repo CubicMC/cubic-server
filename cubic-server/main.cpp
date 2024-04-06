@@ -3,6 +3,7 @@
 #include <cassert>
 #include <cstdint>
 #include <cstdio>
+#include <mutex>
 #include <netdb.h>
 #include <sys/poll.h>
 #include <sys/socket.h>
@@ -14,6 +15,8 @@ struct Client {
     bool isRunning;
     std::vector<uint8_t> inBuffer;
     std::vector<uint8_t> outBuffer;
+    mutable std::mutex inBufferMutex;
+    mutable std::mutex outBufferMutex;
 };
 
 struct ServerContext {
@@ -103,8 +106,11 @@ auto try_accept_new_client(ServerContext &ctx, std::vector<pollfd> &fds) -> void
 
 auto add_to_client_buffer(Client &cli, std::array<uint8_t, CSMC_MAX_NETWORK_READ_SIZE> &read_buffer, int num_bytes)
 {
-    // TODO: Lock a mutex related to that buffer
-    cli.inBuffer.insert(cli.inBuffer.end(), read_buffer.data(), read_buffer.data() + num_bytes);
+    {
+        std::unique_lock<std::mutex> _(cli.inBufferMutex);
+
+        cli.inBuffer.insert(cli.inBuffer.end(), read_buffer.data(), read_buffer.data() + num_bytes);
+    }
     // TODO: Remove that when proper logging is implemented
     printf("Got %d bytes from client %p on fd %d\n", num_bytes, &cli, cli.fd);
 }
@@ -116,7 +122,6 @@ auto handle_clients_callbacks(ServerContext &ctx, std::vector<pollfd> &fds) -> v
 
     for (size_t i = 1; i < fds.size(); i++) {
         if ((fds[i].revents & POLLIN) != 0) {
-            // TODO: Read properly from client
             int num_bytes_read = read(fds[i].fd, in_buffer.data(), 1024);
             if (num_bytes_read == 0) {
                 disconnect_client_from_fd(fds[i].fd, ctx.clients);
