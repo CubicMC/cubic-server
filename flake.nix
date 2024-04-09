@@ -46,6 +46,7 @@
           xmake
           clang-tools
           valgrind
+          unzip
         ];
       };
       packages =
@@ -58,6 +59,7 @@
               buildInputs = with pkgs; [
                 gcc11
                 xmake
+                unzip
               ];
 
               installPhase = ''
@@ -66,7 +68,7 @@
               '';
 
               preConfigure = ''
-                xmake f --ld=g++ --cc=gcc --cxx=g++ -m ${releaseType}
+                xmake f --ld=g++ --cc=gcc --cxx=g++ -m ${releaseType} -y
               '';
 
               buildPhase = ''
