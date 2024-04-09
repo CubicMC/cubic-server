@@ -32,6 +32,7 @@ struct ServerContext {
 };
 
 namespace {
+// TODO: Check that this is good values
 constexpr size_t CSMC_MAX_NETWORK_READ_SIZE = 2048;
 constexpr size_t CSMC_MAX_NETWORK_WRITE_SIZE = 2048;
 
@@ -143,7 +144,7 @@ auto handle_high_priority_clients(std::vector<std::unique_ptr<Client>> &clients)
             std::lock(a, b);
 
             // TODO: Obviously change that later :3
-            cli->outBuffer.insert(cli->outBuffer.end(), cli->inBuffer.begin(), cli->inBuffer.begin());
+            cli->outBuffer.insert(cli->outBuffer.end(), cli->inBuffer.begin(), cli->inBuffer.end());
             cli->inBuffer.clear();
         }
     }
