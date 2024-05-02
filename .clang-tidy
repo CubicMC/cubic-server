@@ -1,0 +1,39 @@
+Checks: "-*,
+  bugprone-*,
+  -bugprone-easily-swappable-parameters,
+  misc-*,
+  -misc-no-recursion,
+  -misc-non-private-member-variables-in-classes,
+  -misc-include-cleaner,
+  performance-*,
+  portability-*,
+  readability-*,
+  -bugprone-narrowing-conversions,
+  -readability-magic-numbers,
+  -readability-braces-around-statements,
+  -readability-identifier-length,
+  clang-analyzer-*,
+  modernize-*,
+  llvm-*,
+"
+
+CheckOptions:
+  - key:   readability-identifier-naming.EnumCase
+    value: lower_case
+  - key:   readability-identifier-naming.UnionCase
+    value: lower_case
+
+  - key:   readability-identifier-naming.FunctionCase
+    value: lower_case
+  - key:   readability-identifier-naming.ParameterCase
+    value: lower_case
+  - key:   readability-identifier-naming.VariableCase
+    value: lower_case
+
+  - key:   readability-identifier-naming.MacroDefinitionCase
+    value: UPPER_CASE
+  - key:   readability-identifier-naming.GlobalVariableCase
+    value: UPPER_CASE
+
+  - key:   readability-function-cognitive-complexity.IgnoreMacros
+    value: true
