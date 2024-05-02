@@ -38,7 +38,7 @@ logs
 config.yml
 .cache
 debug
-build*
+build
 .kdev4
 *.kdev4
 world*
