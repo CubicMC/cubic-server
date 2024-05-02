@@ -41,45 +41,30 @@
 
         hardeningDisable = [ "all" ];
         packages = with pkgs; [
-          gcc11
+          gcc13
           python3Packages.compiledb
-          xmake
+          gnumake
           clang-tools
           valgrind
           unzip
         ];
       };
-      packages =
-        let
-          build-csmc = releaseType:
-            pkgs.stdenv.mkDerivation {
-              name = "CubicServer";
+      packages = rec {
+        CubicServer = default;
+        default = pkgs.stdenvNoCC.mkDerivation rec {
+          name = "CubicServer";
 
-              src = ./.;
-              buildInputs = with pkgs; [
-                gcc11
-                xmake
-                unzip
-              ];
+          src = ./.;
+          nativeBuildInputs = with pkgs; [
+            gcc13
+            gnumake
+          ];
 
-              installPhase = ''
-                mkdir -p $out/bin
-                install -D build/linux/x86_64/release/CubicServer $out/bin/CubicServer --mode 755
-              '';
-
-              preConfigure = ''
-                xmake f --ld=g++ --cc=gcc --cxx=g++ -m ${releaseType} -y
-              '';
-
-              buildPhase = ''
-                xmake b
-              '';
-            };
-        in
-        rec {
-          default = csmc;
-          csmc = build-csmc "release";
-          debug = build-csmc "debug";
+          installPhase = ''
+            mkdir -p $out/bin
+            install -D ${name} $out/bin/${name} --mode 0755
+          '';
         };
+      };
     });
 }
