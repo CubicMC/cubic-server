@@ -73,7 +73,7 @@ auto get_client_from_fd(int fd, std::vector<std::unique_ptr<Client>> &clients) -
 
 auto disconnect_client(Client &cli) -> bool
 {
-    bool was_running = cli.isRunning;
+    const bool was_running = cli.isRunning;
     cli.isRunning = false;
     if (was_running)
         close(cli.fd);
@@ -111,7 +111,7 @@ auto setup_and_launch_socket(int socket_fd) -> bool
 auto try_accept_new_client(ServerContext &ctx, std::vector<pollfd> &fds) -> void
 {
     if ((fds[0].revents & POLLIN) != 0) {
-        int cli_fd = accept(ctx.socket_fd, nullptr, nullptr);
+        const int cli_fd = accept(ctx.socket_fd, nullptr, nullptr);
         if (cli_fd != -1)
             ctx.clients.emplace_back(std::make_unique<Client>(cli_fd));
         else
@@ -122,7 +122,7 @@ auto try_accept_new_client(ServerContext &ctx, std::vector<pollfd> &fds) -> void
 auto add_to_client_buffer(Client &cli, std::array<uint8_t, CSMC_MAX_NETWORK_READ_SIZE> &read_buffer, int num_bytes)
 {
     {
-        std::unique_lock<std::mutex> _(cli.inBufferMutex);
+        const std::unique_lock<std::mutex> _(cli.inBufferMutex);
 
         cli.inBuffer.insert(cli.inBuffer.end(), read_buffer.data(), read_buffer.data() + num_bytes);
     }
@@ -157,7 +157,7 @@ auto handle_clients_callbacks(ServerContext &ctx, std::vector<pollfd> &fds) -> v
 
     for (size_t i = 1; i < fds.size(); i++) {
         if ((fds[i].revents & POLLIN) != 0) {
-            int num_bytes_read = read(fds[i].fd, in_buffer.data(), 1024);
+            const int num_bytes_read = read(fds[i].fd, in_buffer.data(), 1024);
             if (num_bytes_read == 0) {
                 disconnect_client_from_fd(fds[i].fd, ctx.clients);
                 continue;
@@ -171,7 +171,7 @@ auto handle_clients_callbacks(ServerContext &ctx, std::vector<pollfd> &fds) -> v
             int num_bytes_written = 0;
             assert(cli);
             {
-                std::unique_lock<std::mutex> _(cli->outBufferMutex);
+                const std::unique_lock<std::mutex> _(cli->outBufferMutex);
 
                 num_bytes_written = write(
                     fds[i].fd, cli->outBuffer.data(), std::min(cli->outBuffer.size(), CSMC_MAX_NETWORK_WRITE_SIZE)
@@ -209,7 +209,7 @@ auto launch_network_loop(ServerContext &ctx) -> void
 
 auto main() -> int
 {
-    int socket_fd = socket(AF_INET, SOCK_STREAM, getprotobyname("TCP")->p_proto);
+    const int socket_fd = socket(AF_INET, SOCK_STREAM, getprotobyname("TCP")->p_proto);
     if (socket_fd == -1) {
         perror("socket");
         return 1;
