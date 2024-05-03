@@ -70,7 +70,6 @@ clean:
 .PHONY: fclean
 fclean: clean
 	rm -f $(TARGET_EXEC)
-	rm -f $(TARGET_EXEC_TESTS)
 
 .PHONY: re
 re: fclean
