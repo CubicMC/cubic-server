@@ -41,7 +41,7 @@
 
         hardeningDisable = [ "all" ];
         packages = with pkgs; [
-          gcc13
+          gcc
           python3Packages.compiledb
           gnumake
           clang-tools
@@ -56,7 +56,7 @@
 
           src = ./.;
           nativeBuildInputs = with pkgs; [
-            gcc13
+            gcc
             gnumake
           ];
 
