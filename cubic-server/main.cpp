@@ -179,7 +179,7 @@ auto handle_clients_callbacks(ServerContext &ctx, std::vector<pollfd> &fds) -> v
                 cli->outBuffer.erase(cli->outBuffer.begin(), cli->outBuffer.begin() + num_bytes_written);
             }
             // TODO: Remove that when proper logging is implemented
-            printf("Sent %d bytes to client %p on fd %d\n", num_bytes_written, cli, cli->fd);
+            printf("Sent %ld bytes to client %p on fd %d\n", num_bytes_written, cli, cli->fd);
         }
         if ((fds[i].revents & POLLHUP) != 0)
             disconnect_client_from_fd(fds[i].fd, ctx.clients);
