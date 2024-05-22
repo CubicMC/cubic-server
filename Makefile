@@ -27,7 +27,7 @@ CXXFLAGS += -MMD -MP
 # CXXFLAGS += -fanalyzer
 CXXFLAGS += -fno-builtin
 CXXFLAGS += -pipe
-CXXFLAGS += -O2 -march=native -mtune=native
+CXXFLAGS += -march=native -mtune=native
 CXXFLAGS += -Wcast-qual
 CXXFLAGS += -Wconversion
 CXXFLAGS += -Wdisabled-optimization
@@ -47,11 +47,19 @@ CXXFLAGS += -Wunreachable-code
 CXXFLAGS += -Wwrite-strings
 CXXFLAGS += -Wno-missing-field-initializers
 
+LDFLAGS	:=
+
 ifeq ($(DEBUG), 1)
-	CXXFLAGS	+=	-ggdb
+        CXXFLAGS += -O0 -ggdb
+else
+        CXXFLAGS += -O3 -flto -DNDEBUG
+        LDFLAGS += -s -flto -O3
 endif
 
-LDFLAGS	:=
+ifeq ($(ASAN), 1)
+        CXXFLAGS += -fsanitize=address,leak,undefined
+        LDFLAGS += -lasan -lubsan -fsanitize=address,leak,undefined
+endif
 
 $(TARGET_EXEC): $(BUILD_DIR)/$(TARGET_EXEC)
 	cp $(BUILD_DIR)/$(TARGET_EXEC) $(TARGET_EXEC)
