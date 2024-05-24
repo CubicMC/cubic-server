@@ -1,9 +1,9 @@
-TARGET_EXEC ?= CubicServer
+TARGET_LIB ?= libcubic-protocol.a
 
 CXX	?=	gcc
 
 BUILD_DIR := build
-SRC_DIRS := cubic-server
+SRC_DIRS := src
 
 SRCS := $(shell find $(SRC_DIRS) -name '*.cpp')
 
@@ -11,9 +11,7 @@ OBJS := $(SRCS:%=$(BUILD_DIR)/%.o)
 
 DEPS := $(OBJS:.o=.d)
 
-LIB_FOLDERS := $(shell ls -d libs/*/)
-
-INC_DIRS := $(SRC_DIRS) $(addsuffix include,$(LIB_FOLDERS))
+INC_DIRS := $(SRC_DIRS) include
 INC_FLAGS := $(addprefix -I,$(INC_DIRS))
 
 CPPFLAGS := $(INC_FLAGS) -MMD -MP
@@ -50,60 +48,43 @@ CXXFLAGS += -Wwrite-strings
 CXXFLAGS += -Wno-missing-field-initializers
 CXXFLAGS += -fno-exceptions
 
-LDFLAGS	:= -Llibs/cubic-protocol -lcubic-protocol
+AR := ar
 
-# TODO: Set this up in a more generic way
-NEEDED_LIBS := libs/cubic-protocol/libcubic-protocol.a
+ARFLAGS := rc
 
 ifeq ($(DEBUG), 1)
         CXXFLAGS += -O0 -ggdb
 else
         CXXFLAGS += -O3 -flto -DNDEBUG
-        LDFLAGS += -s -flto -O3
 endif
 
 ifeq ($(ASAN), 1)
         CXXFLAGS += -fsanitize=address,leak,undefined
-        LDFLAGS += -lasan -lubsan -fsanitize=address,leak,undefined
 endif
 
-.PHONY: all
-all:
-	$(MAKE) all-libs
-	$(MAKE) $(TARGET_EXEC)
+$(TARGET_LIB): $(BUILD_DIR)/$(TARGET_LIB)
+	cp $(BUILD_DIR)/$(TARGET_LIB) $(TARGET_LIB)
 
-$(TARGET_EXEC): $(BUILD_DIR)/$(TARGET_EXEC)
-	cp $(BUILD_DIR)/$(TARGET_EXEC) $(TARGET_EXEC)
-
-$(BUILD_DIR)/$(TARGET_EXEC): $(OBJS) $(NEEDED_LIBS)
-	$(CXX) $(OBJS) -o $@ $(LDFLAGS)
+$(BUILD_DIR)/$(TARGET_LIB): $(OBJS)
+	$(AR) $(ARFLAGS) $@ $(OBJS)
 
 $(BUILD_DIR)/%.cpp.o: %.cpp
 	@mkdir -p $(dir $@)
 	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -c $< -o $@
 
-.PHONY: all-libs
-all-libs: $(LIB_FOLDERS)
-	$(MAKE) -C $^ all
-
-.PHONY: clean-libs
-clean-libs: $(LIB_FOLDERS)
-	$(MAKE) -C $^ clean
-
-.PHONY: fclean-libs
-fclean-libs: $(LIB_FOLDERS)
-	$(MAKE) -C $^ fclean
-
 .PHONY: clean
-clean: clean-libs
+clean:
 	rm -rf $(BUILD_DIR)
 
 .PHONY: fclean
-fclean: fclean-libs clean
-	rm -f $(TARGET_EXEC)
+fclean: clean
+	rm -f $(TARGET_LIB)
 
 .PHONY: re
 re: fclean
-	$(MAKE) all
+	$(MAKE) $(TARGET_LIB)
+
+.PHONY: all
+all: $(TARGET_LIB)
 
 -include $(DEPS)

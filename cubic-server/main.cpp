@@ -11,6 +11,8 @@
 #include <unistd.h>
 #include <vector>
 
+#include "cubic-protocol/s2c.hpp"
+
 class Client {
 public:
     int fd;
@@ -233,5 +235,5 @@ auto main() -> int
     };
     launch_network_loop(ctx);
 
-    return 0;
+    return cubic::protocol::dummy();
 }
