@@ -55,7 +55,11 @@ ARFLAGS := rc
 ifeq ($(DEBUG), 1)
         CXXFLAGS += -O0 -ggdb
 else
-        CXXFLAGS += -O3 -flto -DNDEBUG
+        CXXFLAGS += -O3 -DNDEBUG
+endif
+
+ifeq ($(LTO), 1)
+        CXXFLAGS += -flto
 endif
 
 ifeq ($(ASAN), 1)

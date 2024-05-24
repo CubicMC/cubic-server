@@ -58,8 +58,17 @@ NEEDED_LIBS := libs/cubic-protocol/libcubic-protocol.a
 ifeq ($(DEBUG), 1)
         CXXFLAGS += -O0 -ggdb
 else
-        CXXFLAGS += -O3 -flto -DNDEBUG
-        LDFLAGS += -s -flto -O3
+        CXXFLAGS += -O3 -DNDEBUG
+        LDFLAGS += -s
+endif
+
+ifeq ($(LTO), 1)
+        CXXFLAGS += -flto
+		# This will break with DEBUG=1, but who the hell builds with
+		# LTOs and debug at the same time?
+		# I could also make it throw an error if DEBUG and LTO are activated
+		# at the same time but for now this will do
+        LDFLAGS += -flto -O3
 endif
 
 ifeq ($(ASAN), 1)
