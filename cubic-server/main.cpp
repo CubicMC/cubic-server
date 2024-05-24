@@ -36,7 +36,9 @@ namespace {
 constexpr size_t CSMC_MAX_NETWORK_READ_SIZE = 2048;
 constexpr size_t CSMC_MAX_NETWORK_WRITE_SIZE = 2048;
 
-auto init_fd_list(std::vector<pollfd> &fds, std::vector<std::unique_ptr<Client>> &clients, int server_fd) -> void
+auto init_fd_list(
+    std::vector<pollfd> &fds, std::vector<std::unique_ptr<Client>> &clients, int server_fd
+) -> void
 {
     // Clear the previous fds as we don't really know
     fds.clear();
@@ -58,7 +60,10 @@ auto cleanup_client_list(std::vector<std::unique_ptr<Client>> &clients) -> void
 {
     // Remove all the clients that are currently not running
     clients.erase(
-        std::remove_if(clients.begin(), clients.end(), [](std::unique_ptr<Client> &cli) { return !cli->isRunning; }),
+        std::remove_if(
+            clients.begin(), clients.end(),
+            [](std::unique_ptr<Client> &cli) { return !cli->isRunning; }
+        ),
         clients.end()
     );
 }
@@ -119,7 +124,9 @@ auto try_accept_new_client(ServerContext &ctx, std::vector<pollfd> &fds) -> void
     }
 }
 
-auto add_to_client_buffer(Client &cli, std::array<uint8_t, CSMC_MAX_NETWORK_READ_SIZE> &read_buffer, ssize_t num_bytes)
+auto add_to_client_buffer(
+    Client &cli, std::array<uint8_t, CSMC_MAX_NETWORK_READ_SIZE> &read_buffer, ssize_t num_bytes
+)
 {
     {
         const std::unique_lock<std::mutex> _(cli.inBufferMutex);
@@ -174,9 +181,12 @@ auto handle_clients_callbacks(ServerContext &ctx, std::vector<pollfd> &fds) -> v
                 const std::unique_lock<std::mutex> _(cli->outBufferMutex);
 
                 num_bytes_written = write(
-                    fds[i].fd, cli->outBuffer.data(), std::min(cli->outBuffer.size(), CSMC_MAX_NETWORK_WRITE_SIZE)
+                    fds[i].fd, cli->outBuffer.data(),
+                    std::min(cli->outBuffer.size(), CSMC_MAX_NETWORK_WRITE_SIZE)
                 );
-                cli->outBuffer.erase(cli->outBuffer.begin(), cli->outBuffer.begin() + num_bytes_written);
+                cli->outBuffer.erase(
+                    cli->outBuffer.begin(), cli->outBuffer.begin() + num_bytes_written
+                );
             }
             // TODO: Remove that when proper logging is implemented
             printf("Sent %ld bytes to client %p on fd %d\n", num_bytes_written, cli, cli->fd);

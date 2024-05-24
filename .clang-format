@@ -19,7 +19,7 @@ BinPackParameters: true
 BitFieldColonSpacing: After
 BreakAfterAttributes: Always
 BreakConstructorInitializers: AfterColon
-ColumnLimit: 120
+ColumnLimit: 100
 Cpp11BracedListStyle: false
 EmptyLineBeforeAccessModifier: Always
 FixNamespaceComments: true
