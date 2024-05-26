@@ -9,6 +9,7 @@ auto parse(const uint8_t *data, uint32_t available_bytes, int32_t *value) -> uin
     constexpr uint8_t continue_bit = 0x80;
     constexpr uint8_t segment_bits = 0x7f;
     uint32_t byte_position = 0;
+    *value = 0;
 
     while (true) {
         if (byte_position >= available_bytes)
