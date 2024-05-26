@@ -10,18 +10,20 @@ auto parse(const uint8_t *data, uint32_t available_bytes, uint16_t *value) -> ui
     return 2;
 }
 
-auto parse(uint8_t *const *data, uint32_t available_bytes) -> std::optional<uint16_t>
+auto parse(uint8_t **const data, uint32_t available_bytes) -> std::optional<uint16_t>
 {
     uint16_t result;
     uint32_t parsed = parse(*data, available_bytes, &result);
 
     if (parsed == 0)
         return std::nullopt;
+    (*data) += parsed;
     return result;
 }
 
-auto parse(const uint8_t *data, uint32_t available_bytes, uint16_t *value, int32_t min, int32_t max)
-    -> uint32_t
+auto parse(
+    const uint8_t *data, uint32_t available_bytes, uint16_t *value, uint16_t min, uint16_t max
+) -> uint32_t
 {
     uint32_t parsed = parse(data, available_bytes, value);
 
@@ -30,7 +32,7 @@ auto parse(const uint8_t *data, uint32_t available_bytes, uint16_t *value, int32
     return parsed;
 }
 
-auto parse(uint8_t *const *data, uint32_t available_bytes, int32_t min, int32_t max)
+auto parse(uint8_t **const data, uint32_t available_bytes, uint16_t min, int16_t max)
     -> std::optional<uint16_t>
 {
     uint16_t result;
@@ -38,6 +40,7 @@ auto parse(uint8_t *const *data, uint32_t available_bytes, int32_t min, int32_t 
 
     if (parsed == 0 || result < min || result > max)
         return std::nullopt;
+    (*data) += parsed;
     return parsed;
 }
 
