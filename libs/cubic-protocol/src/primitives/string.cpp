@@ -1,0 +1,124 @@
+#include <limits>
+
+#include "cubic-protocol/primitives/string.hpp"
+#include "cubic-protocol/primitives/varint.hpp"
+
+namespace cubic::protocol::primitives::string {
+
+auto parse(const uint8_t *data, uint32_t available_bytes, std::string *value) -> uint32_t
+{
+    int32_t size;
+    uint32_t parsed = varint::parse(
+        data, available_bytes, &size, 0, std::numeric_limits<int32_t>::max()
+    );
+
+    if (parsed == 0)
+        return 0;
+    if (available_bytes - parsed < (uint32_t) size)
+        return 0;
+    value->insert(value->begin(), data + parsed, data + parsed + size);
+    return parsed + (uint32_t) size;
+}
+
+auto parse(uint8_t **data, uint32_t available_bytes) -> std::optional<std::string>
+{
+    std::string result;
+    uint32_t parsed = parse(*data, available_bytes, &result);
+
+    if (parsed == 0)
+        return std::nullopt;
+    (*data) += parsed;
+    return result;
+}
+
+auto parse(
+    const uint8_t *data, uint32_t available_bytes, std::string *value, size_t min, size_t max
+) -> uint32_t
+{
+    uint32_t parsed = parse(data, available_bytes, value);
+
+    if (parsed == 0 || value->size() < min || value->size() > max)
+        return 0;
+    return parsed;
+}
+
+auto parse(uint8_t **data, uint32_t available_bytes, size_t min, size_t max)
+    -> std::optional<std::string>
+{
+    std::string result;
+    uint32_t parsed = parse(*data, available_bytes, &result);
+
+    if (parsed == 0 || result.size() < min || result.size() > max)
+        return std::nullopt;
+    (*data) += parsed;
+    return result;
+}
+
+} // namespace cubic::protocol::primitives::string
+
+#ifdef UNIT_TESTS
+
+#include <criterion/criterion.h>
+
+TestSuite(primitives_string, .timeout = 1);
+
+Test(primitives_string, parse_0)
+{
+    using namespace cubic::protocol::primitives::string;
+    uint8_t data[] = { 0x00 };
+    std::string value;
+    uint32_t bytes_parsed = parse(data, sizeof data, &value);
+    cr_assert_eq(bytes_parsed, 1);
+    cr_assert_eq(value, "");
+}
+
+Test(primitives_string, parse_1)
+{
+    using namespace cubic::protocol::primitives::string;
+    uint8_t data[] = { 0x01, 0x68 };
+    std::string value;
+    uint32_t bytes_parsed = parse(data, sizeof data, &value);
+    cr_assert_eq(bytes_parsed, 2);
+    cr_assert_eq(value, "h");
+}
+
+Test(primitives_string, parse_hello_world)
+{
+    using namespace cubic::protocol::primitives::string;
+    uint8_t data[] = { 0x0d, 0x48, 0x65, 0x6c, 0x6c, 0x6f, 0x2c,
+                       0x20, 0x57, 0x6f, 0x72, 0x6c, 0x64, 0x21 };
+    std::string value;
+    uint32_t bytes_parsed = parse(data, sizeof data, &value);
+    cr_assert_eq(bytes_parsed, 14);
+    cr_assert_eq(value, "Hello, World!");
+}
+
+Test(primitives_string, parse_0_extra)
+{
+    using namespace cubic::protocol::primitives::string;
+    uint8_t data[] = { 0x00, 0x68 };
+    std::string value;
+    uint32_t bytes_parsed = parse(data, sizeof data, &value);
+    cr_assert_eq(bytes_parsed, 1);
+    cr_assert_eq(value, "");
+}
+
+Test(primitives_string, parse_fail_1_almost)
+{
+    using namespace cubic::protocol::primitives::string;
+    uint8_t data[] = { 0x01 };
+    std::string value;
+    uint32_t bytes_parsed = parse(data, sizeof data, &value);
+    cr_assert_eq(bytes_parsed, 0);
+}
+
+Test(primitives_string, parse_fail_negative)
+{
+    using namespace cubic::protocol::primitives::string;
+    uint8_t data[] = { 0xff, 0xff, 0xff, 0xff, 0x0f };
+    std::string value;
+    uint32_t bytes_parsed = parse(data, sizeof data, &value);
+    cr_assert_eq(bytes_parsed, 0);
+}
+
+#endif
