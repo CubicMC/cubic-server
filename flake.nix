@@ -58,6 +58,9 @@
           nativeBuildInputs = with pkgs; [
             gcc
             gnumake
+          ];
+
+          checkInputs = with pkgs; [
             criterion
           ];
 
