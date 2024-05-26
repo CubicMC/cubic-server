@@ -55,3 +55,4 @@ cmake-build-*
 .pre-commit-config.yaml
 result
 glados
+build_tests

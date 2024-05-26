@@ -47,6 +47,7 @@
           clang-tools
           valgrind
           criterion
+          gcovr
         ];
       };
       packages = rec {
