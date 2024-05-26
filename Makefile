@@ -85,6 +85,7 @@ all:
 	$(MAKE) all-libs
 	$(MAKE) $(TARGET_EXEC)
 
+.PHONY: tests_run
 tests_run:
 	$(MAKE) all-libs
 	$(MAKE) tests_run-libs
