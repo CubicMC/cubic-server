@@ -1,10 +1,6 @@
 #ifndef CUBIC_PROTOCOL_S2C_
 #define CUBIC_PROTOCOL_S2C_
 
-namespace cubic::protocol {
-
-auto dummy() -> int;
-
-} // namespace cubic::protocol
+#include "cubic-protocol/s2c/handshake.hpp"
 
 #endif // CUBIC_PROTOCOL_S2C_
