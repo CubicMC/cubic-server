@@ -11,8 +11,6 @@
 #include <unistd.h>
 #include <vector>
 
-#include "cubic-protocol/s2c.hpp"
-
 class Client {
 public:
     int fd;
@@ -224,10 +222,10 @@ auto main() -> int
     const int socket_fd = socket(AF_INET, SOCK_STREAM, getprotobyname("TCP")->p_proto);
     if (socket_fd == -1) {
         perror("socket");
-        return 1;
+        return EXIT_FAILURE;
     }
     if (setup_and_launch_socket(socket_fd))
-        return 1;
+        return EXIT_FAILURE;
 
     ServerContext ctx = {
         .socket_fd = socket_fd,
@@ -235,5 +233,5 @@ auto main() -> int
     };
     launch_network_loop(ctx);
 
-    return cubic::protocol::dummy();
+    return EXIT_SUCCESS;
 }
