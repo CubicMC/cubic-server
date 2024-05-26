@@ -46,7 +46,7 @@
           gnumake
           clang-tools
           valgrind
-          unzip
+          criterion
         ];
       };
       packages = rec {
