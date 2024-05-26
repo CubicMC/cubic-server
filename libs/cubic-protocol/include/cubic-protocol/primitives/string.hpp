@@ -10,11 +10,11 @@
 namespace cubic::protocol::primitives::string {
 
 auto parse(const uint8_t *data, uint32_t available_bytes, std::string *value) -> uint32_t;
-auto parse(uint8_t **data, uint32_t available_bytes) -> std::optional<std::string>;
+auto parse(uint8_t **data, uint32_t *available_bytes) -> std::optional<std::string>;
 auto parse(
     const uint8_t *data, uint32_t available_bytes, std::string *value, size_t min, size_t max
 ) -> uint32_t;
-auto parse(uint8_t **data, uint32_t available_bytes, size_t min, size_t max)
+auto parse(uint8_t **data, uint32_t *available_bytes, size_t min, size_t max)
     -> std::optional<std::string>;
 
 } // namespace cubic::protocol::primitives::string

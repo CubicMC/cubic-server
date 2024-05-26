@@ -8,11 +8,11 @@
 namespace cubic::protocol::primitives::ushort {
 
 auto parse(const uint8_t *data, uint32_t available_bytes, uint16_t *value) -> uint32_t;
-auto parse(uint8_t **data, uint32_t available_bytes, uint16_t *value) -> std::optional<uint16_t>;
+auto parse(uint8_t **data, uint32_t *available_bytes, uint16_t *value) -> std::optional<uint16_t>;
 auto parse(
     const uint8_t *data, uint32_t available_bytes, uint16_t *value, uint16_t min, uint16_t max
 ) -> uint32_t;
-auto parse(uint8_t **data, uint32_t available_bytes, uint16_t min, uint16_t max)
+auto parse(uint8_t **data, uint32_t *available_bytes, uint16_t min, uint16_t max)
     -> std::optional<uint16_t>;
 
 } // namespace cubic::protocol::primitives::ushort
