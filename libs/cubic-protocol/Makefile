@@ -1,13 +1,18 @@
 TARGET_LIB ?= libcubic-protocol.a
 
+TARGET_TESTS ?= glados
+
 CXX	?=	gcc
 
 BUILD_DIR := build
+BUILD_DIR_TESTS := build_tests
 SRC_DIRS := src
 
 SRCS := $(shell find $(SRC_DIRS) -name '*.cpp')
 
 OBJS := $(SRCS:%=$(BUILD_DIR)/%.o)
+
+OBJS_TESTS := $(SRCS:%=$(BUILD_DIR_TESTS)/%.o)
 
 DEPS := $(OBJS:.o=.d)
 
@@ -46,11 +51,12 @@ CXXFLAGS += -Wundef
 CXXFLAGS += -Wunreachable-code
 CXXFLAGS += -Wwrite-strings
 CXXFLAGS += -Wno-missing-field-initializers
-CXXFLAGS += -fno-exceptions
 
 AR := ar
 
 ARFLAGS := rc
+
+LDFLAGS :=
 
 ifeq ($(DEBUG), 1)
         CXXFLAGS += -O0 -ggdb
@@ -64,6 +70,7 @@ endif
 
 ifeq ($(ASAN), 1)
         CXXFLAGS += -fsanitize=address,leak,undefined
+        LDFLAGS += -lasan -lubsan -fsanitize=address,leak,undefined
 endif
 
 $(TARGET_LIB): $(BUILD_DIR)/$(TARGET_LIB)
@@ -72,6 +79,18 @@ $(TARGET_LIB): $(BUILD_DIR)/$(TARGET_LIB)
 $(BUILD_DIR)/$(TARGET_LIB): $(OBJS)
 	$(AR) $(ARFLAGS) $@ $(OBJS)
 
+$(TARGET_TESTS): $(BUILD_DIR_TESTS)/$(TARGET_TESTS)
+	cp $(BUILD_DIR_TESTS)/$(TARGET_TESTS) $(TARGET_TESTS)
+
+$(BUILD_DIR_TESTS)/$(TARGET_TESTS): CPPFLAGS += -DUNIT_TESTS=1
+$(BUILD_DIR_TESTS)/$(TARGET_TESTS): LDFLAGS += -lcriterion
+$(BUILD_DIR_TESTS)/$(TARGET_TESTS): $(OBJS_TESTS) $(NEEDED_LIBS)
+	$(CXX) $(OBJS_TESTS) -o $@ $(LDFLAGS)
+
+$(BUILD_DIR_TESTS)/%.cpp.o: %.cpp
+	@mkdir -p $(dir $@)
+	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -c $< -o $@
+
 $(BUILD_DIR)/%.cpp.o: %.cpp
 	@mkdir -p $(dir $@)
 	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -c $< -o $@
@@ -79,10 +98,12 @@ $(BUILD_DIR)/%.cpp.o: %.cpp
 .PHONY: clean
 clean:
 	rm -rf $(BUILD_DIR)
+	rm -rf $(BUILD_DIR_TESTS)
 
 .PHONY: fclean
 fclean: clean
 	rm -f $(TARGET_LIB)
+	rm -f $(TARGET_TESTS)
 
 .PHONY: re
 re: fclean
@@ -90,5 +111,9 @@ re: fclean
 
 .PHONY: all
 all: $(TARGET_LIB)
+
+.PHONY: tests_run
+tests_run: $(TARGET_TESTS)
+	./$(TARGET_TESTS)
 
 -include $(DEPS)

@@ -217,7 +217,13 @@ auto launch_network_loop(ServerContext &ctx) -> void
 }
 } // namespace
 
-auto main() -> int
+#ifdef UNIT_TESTS
+#define MAIN definitely_not_main
+#else
+#define MAIN main
+#endif
+
+auto MAIN() -> int
 {
     const int socket_fd = socket(AF_INET, SOCK_STREAM, getprotobyname("TCP")->p_proto);
     if (socket_fd == -1) {

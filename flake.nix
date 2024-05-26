@@ -58,7 +58,13 @@
           nativeBuildInputs = with pkgs; [
             gcc
             gnumake
+            criterion
           ];
+
+          doCheck = true;
+          checkPhase = ''
+            make tests_run
+          '';
 
           installPhase = ''
             mkdir -p $out/bin
