@@ -1,8 +1,6 @@
-#include "cubic-protocol/primitives.hpp"
+#include "cubic-protocol/primitives/varint.hpp"
 
-namespace cubic::protocol::primitives {
-
-namespace varint {
+namespace cubic::protocol::primitives::varint {
 
 auto parse(const uint8_t *data, uint32_t available_bytes, int32_t *value) -> uint32_t
 {
@@ -59,25 +57,15 @@ auto parse(uint8_t *const *data, uint32_t available_bytes, int32_t min, int32_t 
     return parsed;
 }
 
-} // namespace varint
-
-namespace string {
-
-} // namespace string
-
-namespace ushort {
-
-} // namespace ushort
-
-} // namespace cubic::protocol::primitives
+} // namespace cubic::protocol::primitives::varint
 
 #ifdef UNIT_TESTS
 
 #include <criterion/criterion.h>
 
-TestSuite(primitives, .timeout = 1);
+TestSuite(primitives_varint, .timeout = 1);
 
-Test(primitives, varint_parse_0)
+Test(primitives_varint, parse_0)
 {
     using namespace cubic::protocol::primitives::varint;
     uint8_t data[] = { 0x00 };
@@ -87,7 +75,7 @@ Test(primitives, varint_parse_0)
     cr_assert_eq(value, 0);
 }
 
-Test(primitives, varint_parse_1)
+Test(primitives_varint, parse_1)
 {
     using namespace cubic::protocol::primitives::varint;
     uint8_t data[] = { 0x01 };
@@ -97,7 +85,7 @@ Test(primitives, varint_parse_1)
     cr_assert_eq(value, 1);
 }
 
-Test(primitives, varint_parse_127)
+Test(primitives_varint, parse_127)
 {
     using namespace cubic::protocol::primitives::varint;
     uint8_t data[] = { 0x7f };
@@ -107,7 +95,7 @@ Test(primitives, varint_parse_127)
     cr_assert_eq(value, 127);
 }
 
-Test(primitives, varint_parse_128)
+Test(primitives_varint, parse_128)
 {
     using namespace cubic::protocol::primitives::varint;
     uint8_t data[] = { 0x80, 0x01 };
@@ -117,7 +105,7 @@ Test(primitives, varint_parse_128)
     cr_assert_eq(value, 128);
 }
 
-Test(primitives, varint_parse_255)
+Test(primitives_varint, parse_255)
 {
     using namespace cubic::protocol::primitives::varint;
     uint8_t data[] = { 0xff, 0x01 };
@@ -127,7 +115,7 @@ Test(primitives, varint_parse_255)
     cr_assert_eq(value, 255);
 }
 
-Test(primitives, varint_parse_25565)
+Test(primitives_varint, parse_25565)
 {
     using namespace cubic::protocol::primitives::varint;
     uint8_t data[] = { 0xdd, 0xc7, 0x01 };
@@ -137,7 +125,7 @@ Test(primitives, varint_parse_25565)
     cr_assert_eq(value, 25565);
 }
 
-Test(primitives, varint_parse_2097151)
+Test(primitives_varint, parse_2097151)
 {
     using namespace cubic::protocol::primitives::varint;
     uint8_t data[] = { 0xff, 0xff, 0x7f };
@@ -147,7 +135,7 @@ Test(primitives, varint_parse_2097151)
     cr_assert_eq(value, 2097151);
 }
 
-Test(primitives, varint_parse_2147483647)
+Test(primitives_varint, parse_2147483647)
 {
     using namespace cubic::protocol::primitives::varint;
     uint8_t data[] = { 0xff, 0xff, 0xff, 0xff, 0x07 };
@@ -157,7 +145,7 @@ Test(primitives, varint_parse_2147483647)
     cr_assert_eq(value, 2147483647);
 }
 
-Test(primitives, varint_parse_m1)
+Test(primitives_varint, parse_m1)
 {
     using namespace cubic::protocol::primitives::varint;
     uint8_t data[] = { 0xff, 0xff, 0xff, 0xff, 0x0f };
@@ -167,7 +155,7 @@ Test(primitives, varint_parse_m1)
     cr_assert_eq(value, -1);
 }
 
-Test(primitives, varint_parse_m2147483648)
+Test(primitives_varint, parse_m2147483648)
 {
     using namespace cubic::protocol::primitives::varint;
     uint8_t data[] = { 0x80, 0x80, 0x80, 0x80, 0x08 };
