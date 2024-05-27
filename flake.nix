@@ -47,6 +47,7 @@
           valgrind
           criterion
           gcovr
+          gdb
         ];
       };
       packages = rec {
