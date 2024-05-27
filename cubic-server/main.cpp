@@ -33,8 +33,8 @@ struct ServerContext {
 
 namespace {
 // TODO: Check that this is good values
-constexpr size_t CSMC_MAX_NETWORK_READ_SIZE = 2048;
-constexpr size_t CSMC_MAX_NETWORK_WRITE_SIZE = 2048;
+constexpr size_t CUBIC_MAX_NETWORK_READ_SIZE = 2048;
+constexpr size_t CUBIC_MAX_NETWORK_WRITE_SIZE = 2048;
 
 auto init_fd_list(
     std::vector<pollfd> &fds, std::vector<std::unique_ptr<Client>> &clients, int server_fd
@@ -125,7 +125,7 @@ auto try_accept_new_client(ServerContext &ctx, std::vector<pollfd> &fds) -> void
 }
 
 auto add_to_client_buffer(
-    Client &cli, std::array<uint8_t, CSMC_MAX_NETWORK_READ_SIZE> &read_buffer, ssize_t num_bytes
+    Client &cli, std::array<uint8_t, CUBIC_MAX_NETWORK_READ_SIZE> &read_buffer, ssize_t num_bytes
 )
 {
     {
@@ -160,7 +160,7 @@ auto handle_high_priority_clients(std::vector<std::unique_ptr<Client>> &clients)
 auto handle_clients_callbacks(ServerContext &ctx, std::vector<pollfd> &fds) -> void
 {
     // No need to recreate that whole buffer everytime so you I just make it static
-    static std::array<uint8_t, CSMC_MAX_NETWORK_READ_SIZE> in_buffer;
+    static std::array<uint8_t, CUBIC_MAX_NETWORK_READ_SIZE> in_buffer;
 
     for (size_t i = 1; i < fds.size(); i++) {
         if ((fds[i].revents & POLLIN) != 0) {
@@ -182,7 +182,7 @@ auto handle_clients_callbacks(ServerContext &ctx, std::vector<pollfd> &fds) -> v
 
                 num_bytes_written = write(
                     fds[i].fd, cli->outBuffer.data(),
-                    std::min(cli->outBuffer.size(), CSMC_MAX_NETWORK_WRITE_SIZE)
+                    std::min(cli->outBuffer.size(), CUBIC_MAX_NETWORK_WRITE_SIZE)
                 );
                 cli->outBuffer.erase(
                     cli->outBuffer.begin(), cli->outBuffer.begin() + num_bytes_written
