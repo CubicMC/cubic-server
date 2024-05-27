@@ -16,7 +16,9 @@ OBJS_TESTS := $(SRCS:%=$(BUILD_DIR_TESTS)/%.o)
 
 DEPS := $(OBJS:.o=.d)
 
-INC_DIRS := $(SRC_DIRS) include
+LIB_FOLDERS := $(shell ls -d ../../libs/*/)
+
+INC_DIRS := $(SRC_DIRS) $(addsuffix include,$(LIB_FOLDERS))
 INC_FLAGS := $(addprefix -I,$(INC_DIRS))
 
 CPPFLAGS := $(INC_FLAGS) -MMD -MP
