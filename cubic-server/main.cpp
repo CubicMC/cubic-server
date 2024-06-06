@@ -218,7 +218,7 @@ auto handle_clients_callbacks(ServerContext &ctx, std::vector<pollfd> &fds) -> v
 }
 
 #define TMP_MACRO_HP(type)                                                              \
-    case packet_id::Handshake: {                                                        \
+    case packet_id::type: {                                                             \
         auto *p = new (type);                                                           \
         assert(p);                                                                      \
         parsed = type::parse(current_data, bytes_left, p);                              \
