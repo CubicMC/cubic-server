@@ -183,7 +183,9 @@ auto handle_clients_callbacks(ServerContext &ctx, std::vector<pollfd> &fds) -> v
 
     for (size_t i = 1; i < fds.size(); i++) {
         if ((fds[i].revents & POLLIN) != 0) {
-            const ssize_t num_bytes_read = read(fds[i].fd, in_buffer.data(), 1024);
+            const ssize_t num_bytes_read = read(
+                fds[i].fd, in_buffer.data(), CUBIC_MAX_NETWORK_READ_SIZE
+            );
             if (num_bytes_read == 0) {
                 disconnect_client_from_fd(fds[i].fd, ctx.clients);
                 continue;
