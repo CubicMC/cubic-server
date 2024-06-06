@@ -4,16 +4,17 @@ A fast and extensible C++ implementation of Minecraft's server.
 
 ## Status
 
-This project is before anything a school project, therefore it is in its
-early stage and not a lot works for now. Most of the stuff made here could also
-already exists somewhere else but reimplemented here for the sake of having
-something to work on. I would therefore not recommend anyone using it
-for now, but **contributions are more than welcome** ;).
+This project is currently undergoing a complete rewrite and is therefore not
+usable at all in its current state, if you wish to use the previous "working"
+version switch to the master branch of this repo and follow the instructions
+there.
 
 ## Goals
 
-The version currently targeted is **1.19.3**, but future versions may
+The version currently targeted is **1.20.6**, but future versions may
 be implemented depending on how well Cubic Server gets developed.
+
+Older versions might be maintained too but the support is not quite planned yet.
 
 The principal points we want to target are better performances, since Minecraft's
 server performance is going downhill since 1.13, but also proper extensibility
@@ -22,34 +23,23 @@ without needing a third-party to implement changes into the server downstream
 
 ## Running
 
-Precompiled binaries are currently available [here](https://github.com/CubicMC/cubic-server/releases).
-
-You can also use the docker-compose file to run the server using docker.
+Precompiled binaries are not currently available.
 
 See **Building** section to know how to compile the server.
 
 ## Building
 
-Currently **only Linux x86_64 and FreeBSD** are targeted, it might build on another system
-but it isn't guaranted for now.
+Currently **only Linux x86_64** is targeted, it might build on another system
+but it isn't guaranted for now (Windows, FreeBSD and OpenBSD will be supported
+later down the road, but not until we have a solid codebase.)
 
 ### Dependencies
 
 Here is the list of dependencies required to build CubicServer:
 
- - gcc12/g++12 or clang15/clang++15 (Minimum versions, above should work too, but below will definitely not)
- - cmake (The build system)
- - make (Building system, you might work without but it is not tested)
- - pkgconf (Cmake package shenanigans)
- - git (Cloning deps)
- - libcurl-dev (Calling the Mojang API)
- - wget (For the bootstrap script)
- - python3 (Generating code)
- - zlib-dev (Compression)
- - boost-dev (Optional, will be cloned and built here if not present)
-
-To install those dependencies you can see an example for Fedora 38 from our
-[build image](https://github.com/CubicMC/cubic-runners/blob/master/Dockerfile)
+ - gcc9 (Any c++17 compliant compiler should work but it is not guarranted as
+ we do not code strictly to the standard)
+ - gnumake (Build system)
 
 ### How to build
 #### Build from source on your machine
@@ -62,13 +52,10 @@ cd build
 cmake -DCMAKE_BUILD_TYPE=RELEASE ..
 make -j `nproc` # The "-j `nproc`" is here to speed-up the compilation
 ```
-#### Build from source with docker
+#### Build from source with nix
 To build with docker follow those steps :
 ```bash
-git clone https://github.com/CubicMC/cubic-server
-cd cubic-server
-docker build --tag cubic-server .
-docker compose up
+nix build github:CubicMC/cubic-server/rewrite
 ```
 
 ## Contributing
