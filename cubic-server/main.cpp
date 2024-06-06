@@ -179,7 +179,7 @@ auto handle_high_priority_clients(std::vector<std::unique_ptr<Client>> &clients)
 
 auto handle_clients_callbacks(ServerContext &ctx, std::vector<pollfd> &fds) -> void
 {
-    // No need to recreate that whole buffer everytime so you I just make it static
+    // No need to recreate that whole buffer everytime so I just put it in static
     static std::array<uint8_t, CUBIC_MAX_NETWORK_READ_SIZE> in_buffer;
 
     for (size_t i = 1; i < fds.size(); i++) {
