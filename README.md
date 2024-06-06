@@ -53,10 +53,7 @@ To build follow those steps :
 ```bash
 git clone https://github.com/CubicMC/cubic-server
 cd cubic-server
-mkdir build
-cd build
-cmake -DCMAKE_BUILD_TYPE=RELEASE ..
-make -j `nproc` # The "-j `nproc`" is here to speed-up the compilation
+make -j `nproc --exclude 1` # The -j option is here to speed-up the compilation
 ```
 #### Build from source with nix
 To build with docker follow those steps :
