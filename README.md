@@ -43,7 +43,8 @@ Here is the list of dependencies required to build CubicServer:
 
 \* gcc7 is the lowest version that should work with this codebase but it has
 not been tested yet, a higher compiler version will always be recommended for
-optimization reasons.
+optimization reasons. See the gcc c++17 feature matrix
+[here](https://gcc.gnu.org/projects/cxx-status.html#cxx17).
 
 ### How to build
 #### Build from source on your machine
