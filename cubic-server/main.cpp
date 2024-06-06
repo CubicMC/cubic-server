@@ -1,6 +1,7 @@
 #include <algorithm>
 #include <array>
 #include <cassert>
+#include <cstddef>
 #include <cstdint>
 #include <cstdio>
 #include <memory>
@@ -47,8 +48,8 @@ struct ServerContext {
 
 namespace {
 // TODO: Check that this is good values
-constexpr size_t CUBIC_MAX_NETWORK_READ_SIZE = 2048;
-constexpr size_t CUBIC_MAX_NETWORK_WRITE_SIZE = 2048;
+constexpr size_t CUBIC_MAX_NETWORK_READ_SIZE = 65536;
+constexpr size_t CUBIC_MAX_NETWORK_WRITE_SIZE = 65536;
 constexpr int32_t CUBIC_MAX_PACKET_SIZE = 2 << 21;
 
 auto init_fd_list(
