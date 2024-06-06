@@ -39,7 +39,8 @@ Here is the list of dependencies required to build CubicServer:
 
  - gcc7\* (Any c++17 compliant compiler should work but it is not guarranted as
  we do not code strictly to the standard)
- - gnumake (Build system)
+ - gnumake (Build system, other make versions might work but have not been
+ tested)
 
 \* gcc7 is the lowest version that should work with this codebase but it has
 not been tested yet, a higher compiler version will always be recommended for
