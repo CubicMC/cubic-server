@@ -30,8 +30,6 @@ CXXFLAGS += -std=c++17
 CXXFLAGS += -Wp,-U_FORTIFY_SOURCE
 CXXFLAGS += -Wformat=2
 CXXFLAGS += -MMD -MP
-# This needs to be reactivated once we know how it f****** works :3
-# CXXFLAGS += -fanalyzer
 CXXFLAGS += -fno-builtin
 CXXFLAGS += -pipe
 CXXFLAGS += -march=native -mtune=native
@@ -73,6 +71,12 @@ endif
 ifeq ($(ASAN), 1)
         CXXFLAGS += -fsanitize=address,leak,undefined
         LDFLAGS += -lasan -lubsan -fsanitize=address,leak,undefined
+endif
+
+# -fanalyzer is quite broken in g++, deactivate by default
+ifeq ($(ANALYZER), 1)
+	CXXFLAGS += -fanalyzer
+	CXXFLAGS += -Wno-analyzer-use-of-uninitialized-value
 endif
 
 $(TARGET_LIB): $(BUILD_DIR)/$(TARGET_LIB)
