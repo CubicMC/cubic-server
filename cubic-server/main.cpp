@@ -130,30 +130,35 @@ auto add_to_client_buffer(
     printf("Got %lu bytes from client %p on fd %d\n", num_bytes, &cli, cli.fd);
 }
 
+#define TMP_MACRO_HP_HANDLE(pck_state, packet, packet_ns, packet_cb)                \
+    case (int32_t) client::Client::state::pck_state                                 \
+        | (int32_t) cubic::protocol::c2s::packet_ns::packet_id::packet: {           \
+        const auto *h = (const cubic::protocol::c2s::packet_ns::packet *) p.second; \
+        client::hpcb::packet_cb(cli, *h);                                           \
+        delete h;                                                                   \
+        break;                                                                      \
+    }
+
+auto handle_high_priority_packet(client::Client &cli, std::pair<int, void *> p) -> void
+{
+    printf(
+        "Handling high priority packet with id %d (%d | %d)\n", p.first, p.first >> 8 & 0xff,
+        p.first & 0xff
+    );
+    switch (p.first) {
+        TMP_MACRO_HP_HANDLE(Handshaking, Handshake, handshake, handshake);
+    default:
+        break;
+    }
+}
+
 auto handle_high_priority_clients(std::vector<std::unique_ptr<client::Client>> &clients) -> void
 {
-    // For now all the clients are high priority
-    // TODO: Change that :3
-
     for (auto &cli : clients) {
         if (cli->inHighPriorityPackets.empty())
             continue;
-        for (const auto &p : cli->inHighPriorityPackets) {
-            printf(
-                "Handling high priority packet with id %d (%d | %d)\n", p.first,
-                p.first >> 8 & 0xff, p.first & 0xff
-            );
-            // TODO: Delete the packet
-            if ((p.first & 0xff)
-                == (int32_t) cubic::protocol::c2s::handshake::packet_id::Handshake) {
-                const auto *h = (const cubic::protocol::c2s::handshake::Handshake *) p.second;
-                printf("addr: %s\n", h->server_address.c_str());
-                printf("protocol_version: %d\n", h->protocol_version);
-                printf("next_state: %d\n", h->next_state);
-                printf("port: %d\n", h->server_port);
-                delete h;
-            }
-        }
+        for (const auto &p : cli->inHighPriorityPackets)
+            handle_high_priority_packet(*cli, p);
         cli->inHighPriorityPackets.clear();
     }
 }
