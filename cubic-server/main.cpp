@@ -130,7 +130,7 @@ auto add_to_client_buffer(
     printf("Got %lu bytes from client %p on fd %d\n", num_bytes, &cli, cli.fd);
 }
 
-#define TMP_MACRO_HP_HANDLE(pck_state, packet, packet_ns, packet_cb)                \
+#define CUBIC_HP_CALLBACK(pck_state, packet, packet_ns, packet_cb)                  \
     case (int32_t) client::Client::state::pck_state                                 \
         | (int32_t) cubic::protocol::c2s::packet_ns::packet_id::packet: {           \
         const auto *h = (const cubic::protocol::c2s::packet_ns::packet *) p.second; \
@@ -146,7 +146,7 @@ auto handle_high_priority_packet(client::Client &cli, std::pair<int, void *> p) 
         p.first & 0xff
     );
     switch (p.first) {
-        TMP_MACRO_HP_HANDLE(Handshaking, Handshake, handshake, handshake);
+        CUBIC_HP_CALLBACK(Handshaking, Handshake, handshake, handshake);
     default:
         break;
     }
@@ -204,7 +204,7 @@ auto handle_clients_callbacks(ServerContext &ctx, std::vector<pollfd> &fds) -> v
     }
 }
 
-#define TMP_MACRO_HP(type)                                                              \
+#define CUBIC_HP_PARSE(type)                                                            \
     case packet_id::type: {                                                             \
         auto *p = new (type);                                                           \
         assert(p);                                                                      \
@@ -228,7 +228,7 @@ auto parse_client_packet(client::Client &cli, uint32_t bytes_read, int32_t p_id)
     case client::Client::state::Handshaking: {
         using namespace cubic::protocol::c2s::handshake;
         switch ((packet_id) p_id) {
-            TMP_MACRO_HP(Handshake);
+            CUBIC_HP_PARSE(Handshake);
         default:
             cli.isRunning = false;
             return false;
