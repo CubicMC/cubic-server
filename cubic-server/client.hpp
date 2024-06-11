@@ -37,7 +37,7 @@ public:
 
 namespace hpcb {
 
-auto handshake(Client &cli, const protocol::c2s::handshake::Handshake &packet) -> void;
+auto handshake(Client &cli, const protocol::c2s::handshake::Handshake &pck) -> void;
 
 } // namespace hpcb
 
