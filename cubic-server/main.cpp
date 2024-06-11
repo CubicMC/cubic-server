@@ -15,35 +15,13 @@
 #include "cubic-protocol/c2s/handshake.hpp"
 #include "cubic-protocol/primitives/varint.hpp"
 
-enum class client_state {
-    Handshaking = 1 << 8,
-    Status = 2 << 8,
-    Login = 3 << 8,
-    Configuration = 4 << 8,
-    Playing = 5 << 8,
-};
+#include "client.hpp"
 
-class Client {
-public:
-    int fd;
-    bool isRunning = true;
-    client_state state = client_state::Handshaking;
-    std::vector<uint8_t> inBuffer;
-    std::vector<uint8_t> outBuffer;
-    std::vector<std::pair<int32_t, void *>> inPackets;
-    std::vector<std::pair<int32_t, void *>> inHighPriorityPackets;
-    mutable std::mutex outBufferMutex{};
-    mutable std::mutex inPacketsMutex{};
-
-    Client(int client_fd):
-        fd(client_fd)
-    {
-    }
-};
+using namespace cubic::server;
 
 struct ServerContext {
     int socket_fd;
-    std::vector<std::unique_ptr<Client>> clients;
+    std::vector<std::unique_ptr<client::Client>> clients;
 };
 
 namespace {
@@ -53,7 +31,7 @@ constexpr size_t CUBIC_MAX_NETWORK_WRITE_SIZE = 65536;
 constexpr int32_t CUBIC_MAX_PACKET_SIZE = 2 << 21;
 
 auto init_fd_list(
-    std::vector<pollfd> &fds, std::vector<std::unique_ptr<Client>> &clients, int server_fd
+    std::vector<pollfd> &fds, std::vector<std::unique_ptr<client::Client>> &clients, int server_fd
 ) -> void
 {
     // Clear the previous fds as we don't really know
@@ -72,19 +50,20 @@ auto init_fd_list(
     }
 }
 
-auto cleanup_client_list(std::vector<std::unique_ptr<Client>> &clients) -> void
+auto cleanup_client_list(std::vector<std::unique_ptr<client::Client>> &clients) -> void
 {
     // Remove all the clients that are currently not running
     clients.erase(
         std::remove_if(
             clients.begin(), clients.end(),
-            [](std::unique_ptr<Client> &cli) { return !cli->isRunning; }
+            [](std::unique_ptr<client::Client> &cli) { return !cli->isRunning; }
         ),
         clients.end()
     );
 }
 
-auto get_client_from_fd(int fd, std::vector<std::unique_ptr<Client>> &clients) -> Client *
+auto get_client_from_fd(int fd, std::vector<std::unique_ptr<client::Client>> &clients)
+    -> client::Client *
 {
     for (auto &cli : clients)
         if (cli->fd == fd)
@@ -92,7 +71,7 @@ auto get_client_from_fd(int fd, std::vector<std::unique_ptr<Client>> &clients) -
     return nullptr;
 }
 
-auto disconnect_client(Client &cli) -> bool
+auto disconnect_client(client::Client &cli) -> bool
 {
     const bool was_running = cli.isRunning;
     cli.isRunning = false;
@@ -101,7 +80,8 @@ auto disconnect_client(Client &cli) -> bool
     return !was_running;
 }
 
-auto disconnect_client_from_fd(int fd, std::vector<std::unique_ptr<Client>> &clients) -> bool
+auto disconnect_client_from_fd(int fd, std::vector<std::unique_ptr<client::Client>> &clients)
+    -> bool
 {
     auto *cli = get_client_from_fd(fd, clients);
     return cli == nullptr ? true : disconnect_client(*cli);
@@ -134,14 +114,15 @@ auto try_accept_new_client(ServerContext &ctx, std::vector<pollfd> &fds) -> void
     if ((fds[0].revents & POLLIN) != 0) {
         const int cli_fd = accept(ctx.socket_fd, nullptr, nullptr);
         if (cli_fd != -1)
-            ctx.clients.emplace_back(std::make_unique<Client>(cli_fd));
+            ctx.clients.emplace_back(std::make_unique<client::Client>(cli_fd));
         else
             perror("accept");
     }
 }
 
 auto add_to_client_buffer(
-    Client &cli, std::array<uint8_t, CUBIC_MAX_NETWORK_READ_SIZE> &read_buffer, ssize_t num_bytes
+    client::Client &cli, std::array<uint8_t, CUBIC_MAX_NETWORK_READ_SIZE> &read_buffer,
+    ssize_t num_bytes
 )
 {
     cli.inBuffer.insert(cli.inBuffer.end(), read_buffer.data(), read_buffer.data() + num_bytes);
@@ -149,7 +130,7 @@ auto add_to_client_buffer(
     printf("Got %lu bytes from client %p on fd %d\n", num_bytes, &cli, cli.fd);
 }
 
-auto handle_high_priority_clients(std::vector<std::unique_ptr<Client>> &clients) -> void
+auto handle_high_priority_clients(std::vector<std::unique_ptr<client::Client>> &clients) -> void
 {
     // For now all the clients are high priority
     // TODO: Change that :3
@@ -232,14 +213,14 @@ auto handle_clients_callbacks(ServerContext &ctx, std::vector<pollfd> &fds) -> v
         break;                                                                          \
     }
 
-auto parse_client_packet(Client &cli, uint32_t bytes_read, int32_t p_id) -> bool
+auto parse_client_packet(client::Client &cli, uint32_t bytes_read, int32_t p_id) -> bool
 {
     const uint8_t *current_data = cli.inBuffer.data() + bytes_read;
     const uint32_t bytes_left = (uint32_t) cli.inBuffer.size() - bytes_read;
     uint32_t parsed = 0;
 
     switch (cli.state) {
-    case client_state::Handshaking: {
+    case client::Client::state::Handshaking: {
         using namespace cubic::protocol::c2s::handshake;
         switch ((packet_id) p_id) {
             TMP_MACRO_HP(Handshake);
@@ -258,7 +239,7 @@ auto parse_client_packet(Client &cli, uint32_t bytes_read, int32_t p_id) -> bool
     return true;
 }
 
-auto parse_client_packets(Client &cli) -> void
+auto parse_client_packets(client::Client &cli) -> void
 {
     while (true) {
         using namespace cubic::protocol::primitives;
@@ -288,7 +269,7 @@ auto parse_client_packets(Client &cli) -> void
     }
 }
 
-auto parse_clients_packets(std::vector<std::unique_ptr<Client>> &clients) -> void
+auto parse_clients_packets(std::vector<std::unique_ptr<client::Client>> &clients) -> void
 {
     for (auto &cli : clients)
         parse_client_packets(*cli);
