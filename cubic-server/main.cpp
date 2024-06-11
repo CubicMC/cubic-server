@@ -13,6 +13,7 @@
 #include <vector>
 
 #include "cubic-protocol/c2s/handshake.hpp"
+#include "cubic-protocol/c2s/status.hpp"
 #include "cubic-protocol/primitives/varint.hpp"
 
 #include "client.hpp"
@@ -146,7 +147,11 @@ auto handle_high_priority_packet(client::Client &cli, std::pair<int, void *> p) 
         p.first & 0xff
     );
     switch (p.first) {
+        // Handshake
         CUBIC_HP_CALLBACK(Handshaking, Handshake, handshake, handshake);
+        // Status
+        CUBIC_HP_CALLBACK(Status, StatusRequest, status, status_request);
+        CUBIC_HP_CALLBACK(Status, PingRequest, status, ping_request);
     default:
         break;
     }
@@ -218,6 +223,14 @@ auto handle_clients_callbacks(ServerContext &ctx, std::vector<pollfd> &fds) -> v
         break;                                                                          \
     }
 
+#define CUBIC_HP_NO_PARSE(type)                                                         \
+    case packet_id::type: {                                                             \
+        auto *p = new (type);                                                           \
+        assert(p);                                                                      \
+        cli.inHighPriorityPackets.emplace_back(p_id | (int32_t) cli.state, (void *) p); \
+        break;                                                                          \
+    }
+
 auto parse_client_packet(client::Client &cli, uint32_t bytes_read, int32_t p_id) -> bool
 {
     const uint8_t *current_data = cli.inBuffer.data() + bytes_read;
@@ -235,11 +248,22 @@ auto parse_client_packet(client::Client &cli, uint32_t bytes_read, int32_t p_id)
         }
         break;
     }
+    case client::Client::state::Status: {
+        using namespace cubic::protocol::c2s::status;
+        switch ((packet_id) p_id) {
+            CUBIC_HP_NO_PARSE(StatusRequest);
+            CUBIC_HP_PARSE(PingRequest);
+        default:
+            cli.isRunning = false;
+            return false;
+        }
+        break;
+    }
     default:
         cli.isRunning = false;
         return false;
     }
-    cli.inBuffer.erase(cli.inBuffer.begin(), cli.inBuffer.begin() + parsed);
+    cli.inBuffer.erase(cli.inBuffer.begin(), cli.inBuffer.begin() + parsed + bytes_read);
 
     return true;
 }
@@ -260,15 +284,22 @@ auto parse_client_packets(client::Client &cli) -> void
             cli.isRunning = false;
             return;
         }
-        if ((uint32_t) size > (uint32_t) cli.inBuffer.size() - parsed_size)
+        if ((uint32_t) size > (uint32_t) cli.inBuffer.size() - parsed_size) {
+            printf(
+                "aaaaa | size %d | parsed_size %d | inBuffer.size() %d\n", size, parsed_size,
+                (int32_t) cli.inBuffer.size()
+            );
             return;
+        }
         int32_t packet_id;
         uint32_t parsed_id = varint::parse(
             cli.inBuffer.data() + parsed_size, (uint32_t) cli.inBuffer.size() - parsed_size,
             &packet_id
         );
-        if (parsed_id == 0)
+        if (parsed_id == 0) {
+            printf("bbbbb\n");
             return;
+        }
         if (!parse_client_packet(cli, parsed_id + parsed_size, packet_id))
             return;
     }

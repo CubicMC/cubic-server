@@ -32,8 +32,24 @@ auto handshake(Client &cli, const protocol::c2s::handshake::Handshake &pck) -> v
     else {
         // TODO: Handle transfers
         printf("Unsupported next state transfer in handshake\n");
+        // TODO: Shutdown state
+        cli.isRunning = false;
     }
     printf("Client %p new state: %d\n", &cli, (int32_t) cli.state);
+}
+
+auto status_request(Client &cli, const protocol::c2s::status::StatusRequest &pck) -> void
+{
+    constexpr std::string_view base_status = R"({"version":{"name":"1.19.4","protocol":762}})";
+
+    printf("Got a status request from client %p\n", &cli);
+    // TODO: Answer the status request
+}
+
+auto ping_request(Client &cli, const protocol::c2s::status::PingRequest &pck) -> void
+{
+    printf("Got a ping request from client %p\n", &cli);
+    // TODO
 }
 
 } // namespace cubic::server::client::hpcb

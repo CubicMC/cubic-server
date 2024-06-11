@@ -8,6 +8,10 @@
 namespace cubic::protocol::c2s::handshake {
 struct Handshake;
 } // namespace cubic::protocol::c2s::handshake
+namespace cubic::protocol::c2s::status {
+struct StatusRequest;
+struct PingRequest;
+} // namespace cubic::protocol::c2s::status
 
 namespace cubic::server::client {
 
@@ -37,7 +41,12 @@ public:
 
 namespace hpcb {
 
+// Handshake
 auto handshake(Client &cli, const protocol::c2s::handshake::Handshake &pck) -> void;
+
+// Status
+auto status_request(Client &cli, const protocol::c2s::status::StatusRequest &pck) -> void;
+auto ping_request(Client &cli, const protocol::c2s::status::PingRequest &pck) -> void;
 
 } // namespace hpcb
 
