@@ -1,6 +1,27 @@
+#include <cassert>
+
 #include "cubic-protocol/primitives/varint.hpp"
 
 namespace cubic::protocol::primitives::varint {
+
+// TODO: Add more stuff in there to support other platforms/compilers
+#if defined __has_builtin
+#if __has_builtin(__builtin_clz)
+#define GET_LEADING_ZEROS(i) __builtin_clz(i)
+#endif
+#endif
+
+auto get_num_bytes(int32_t value) -> uint8_t
+{
+    if (value == 0)
+        return 1; // Special case to go around undefined gcc builtin behaviour
+    if (value < 0)
+        return 5; // Max varint size on negative numbers
+    int num_leading_zeros = GET_LEADING_ZEROS((uint32_t) value);
+    assert(num_leading_zeros != 0); // Can't happen except maybe on big endian machines (Not sure)
+    int num_set_bits = 32 - num_leading_zeros;
+    return (uint8_t) ((num_set_bits - 1) / 7 + 1);
+}
 
 auto parse(const uint8_t *data, uint32_t available_bytes, int32_t *value) -> uint32_t
 {
@@ -70,6 +91,8 @@ auto parse(uint8_t **data, uint32_t *available_bytes, int32_t min, int32_t max)
 
 TestSuite(primitives_varint, .timeout = 1);
 
+TestSuite(primitives_varint_size, .timeout = 1);
+
 Test(primitives_varint, parse_0)
 {
     using namespace cubic::protocol::primitives::varint;
@@ -78,6 +101,14 @@ Test(primitives_varint, parse_0)
     uint32_t bytes_parsed = parse(data, sizeof data, &value);
     cr_assert_eq(bytes_parsed, 1);
     cr_assert_eq(value, 0);
+}
+
+Test(primitives_varint_size, size_0)
+{
+    using namespace cubic::protocol::primitives::varint;
+    int32_t value = 0;
+    uint8_t counted = get_num_bytes(value);
+    cr_assert_eq(counted, 1);
 }
 
 Test(primitives_varint, parse_1)
@@ -90,6 +121,14 @@ Test(primitives_varint, parse_1)
     cr_assert_eq(value, 1);
 }
 
+Test(primitives_varint_size, size_1)
+{
+    using namespace cubic::protocol::primitives::varint;
+    int32_t value = 1;
+    uint8_t counted = get_num_bytes(value);
+    cr_assert_eq(counted, 1);
+}
+
 Test(primitives_varint, parse_127)
 {
     using namespace cubic::protocol::primitives::varint;
@@ -98,6 +137,22 @@ Test(primitives_varint, parse_127)
     uint32_t bytes_parsed = parse(data, sizeof data, &value);
     cr_assert_eq(bytes_parsed, 1);
     cr_assert_eq(value, 127);
+}
+
+Test(primitives_varint_size, size_127)
+{
+    using namespace cubic::protocol::primitives::varint;
+    int32_t value = 127;
+    uint8_t counted = get_num_bytes(value);
+    cr_assert_eq(counted, 1);
+}
+
+Test(primitives_varint_size, size_126)
+{
+    using namespace cubic::protocol::primitives::varint;
+    int32_t value = 126;
+    uint8_t counted = get_num_bytes(value);
+    cr_assert_eq(counted, 1);
 }
 
 Test(primitives_varint, parse_128)
@@ -110,6 +165,14 @@ Test(primitives_varint, parse_128)
     cr_assert_eq(value, 128);
 }
 
+Test(primitives_varint_size, size_128)
+{
+    using namespace cubic::protocol::primitives::varint;
+    int32_t value = 128;
+    uint8_t counted = get_num_bytes(value);
+    cr_assert_eq(counted, 2);
+}
+
 Test(primitives_varint, parse_255)
 {
     using namespace cubic::protocol::primitives::varint;
@@ -118,6 +181,14 @@ Test(primitives_varint, parse_255)
     uint32_t bytes_parsed = parse(data, sizeof data, &value);
     cr_assert_eq(bytes_parsed, 2);
     cr_assert_eq(value, 255);
+}
+
+Test(primitives_varint_size, size_255)
+{
+    using namespace cubic::protocol::primitives::varint;
+    int32_t value = 255;
+    uint8_t counted = get_num_bytes(value);
+    cr_assert_eq(counted, 2);
 }
 
 Test(primitives_varint, parse_25565)
@@ -130,6 +201,14 @@ Test(primitives_varint, parse_25565)
     cr_assert_eq(value, 25565);
 }
 
+Test(primitives_varint_size, size_25565)
+{
+    using namespace cubic::protocol::primitives::varint;
+    int32_t value = 25565;
+    uint8_t counted = get_num_bytes(value);
+    cr_assert_eq(counted, 3);
+}
+
 Test(primitives_varint, parse_2097151)
 {
     using namespace cubic::protocol::primitives::varint;
@@ -138,6 +217,14 @@ Test(primitives_varint, parse_2097151)
     uint32_t bytes_parsed = parse(data, sizeof data, &value);
     cr_assert_eq(bytes_parsed, 3);
     cr_assert_eq(value, 2097151);
+}
+
+Test(primitives_varint_size, size_2097151)
+{
+    using namespace cubic::protocol::primitives::varint;
+    int32_t value = 2097151;
+    uint8_t counted = get_num_bytes(value);
+    cr_assert_eq(counted, 3);
 }
 
 Test(primitives_varint, parse_2147483647)
@@ -150,6 +237,14 @@ Test(primitives_varint, parse_2147483647)
     cr_assert_eq(value, 2147483647);
 }
 
+Test(primitives_varint_size, size_2147483647)
+{
+    using namespace cubic::protocol::primitives::varint;
+    int32_t value = 2147483647;
+    uint8_t counted = get_num_bytes(value);
+    cr_assert_eq(counted, 5);
+}
+
 Test(primitives_varint, parse_m1)
 {
     using namespace cubic::protocol::primitives::varint;
@@ -160,6 +255,14 @@ Test(primitives_varint, parse_m1)
     cr_assert_eq(value, -1);
 }
 
+Test(primitives_varint_size, size_m1)
+{
+    using namespace cubic::protocol::primitives::varint;
+    int32_t value = -1;
+    uint8_t counted = get_num_bytes(value);
+    cr_assert_eq(counted, 5);
+}
+
 Test(primitives_varint, parse_m2147483648)
 {
     using namespace cubic::protocol::primitives::varint;
@@ -168,6 +271,14 @@ Test(primitives_varint, parse_m2147483648)
     uint32_t bytes_parsed = parse(data, sizeof data, &value);
     cr_assert_eq(bytes_parsed, 5);
     cr_assert_eq(value, -2147483648);
+}
+
+Test(primitives_varint_size, size_m2147483648)
+{
+    using namespace cubic::protocol::primitives::varint;
+    int32_t value = -2147483648;
+    uint8_t counted = get_num_bytes(value);
+    cr_assert_eq(counted, 5);
 }
 
 #endif
