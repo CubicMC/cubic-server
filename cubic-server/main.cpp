@@ -228,6 +228,7 @@ auto handle_clients_callbacks(ServerContext &ctx, std::vector<pollfd> &fds) -> v
         break;                                                                          \
     }
 
+// Currently only used at one place but aight
 #define CUBIC_HP_NO_PARSE(type)                                                         \
     case packet_id::type: {                                                             \
         auto *p = new (type);                                                           \
