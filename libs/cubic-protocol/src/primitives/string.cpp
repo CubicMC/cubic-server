@@ -20,18 +20,6 @@ auto parse(const uint8_t *data, uint32_t available_bytes, std::string *value) ->
     return parsed + (uint32_t) size;
 }
 
-auto parse(uint8_t **data, uint32_t *available_bytes) -> std::optional<std::string>
-{
-    std::string result;
-    uint32_t parsed = parse(*data, *available_bytes, &result);
-
-    if (parsed == 0)
-        return std::nullopt;
-    *data += parsed;
-    *available_bytes -= parsed;
-    return result;
-}
-
 auto parse(
     const uint8_t *data, uint32_t available_bytes, std::string *value, size_t min, size_t max
 ) -> uint32_t
@@ -41,19 +29,6 @@ auto parse(
     if (parsed == 0 || value->size() < min || value->size() > max)
         return 0;
     return parsed;
-}
-
-auto parse(uint8_t **data, uint32_t *available_bytes, size_t min, size_t max)
-    -> std::optional<std::string>
-{
-    std::string result;
-    uint32_t parsed = parse(*data, *available_bytes, &result);
-
-    if (parsed == 0 || result.size() < min || result.size() > max)
-        return std::nullopt;
-    *data += parsed;
-    *available_bytes -= parsed;
-    return result;
 }
 
 } // namespace cubic::protocol::primitives::string

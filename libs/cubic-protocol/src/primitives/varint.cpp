@@ -48,18 +48,6 @@ auto parse(const uint8_t *data, uint32_t available_bytes, int32_t *value) -> uin
     }
 }
 
-auto parse(uint8_t **data, uint32_t *available_bytes) -> std::optional<int32_t>
-{
-    int32_t result;
-    uint32_t parsed = parse(*data, *available_bytes, &result);
-
-    if (parsed == 0)
-        return std::nullopt;
-    *data += parsed;
-    *available_bytes -= parsed;
-    return result;
-}
-
 auto parse(const uint8_t *data, uint32_t available_bytes, int32_t *value, int32_t min, int32_t max)
     -> uint32_t
 {
@@ -68,19 +56,6 @@ auto parse(const uint8_t *data, uint32_t available_bytes, int32_t *value, int32_
     if (parsed == 0 || *value < min || *value > max)
         return 0;
     return parsed;
-}
-
-auto parse(uint8_t **data, uint32_t *available_bytes, int32_t min, int32_t max)
-    -> std::optional<int32_t>
-{
-    int32_t result;
-    uint32_t parsed = parse(*data, *available_bytes, &result);
-
-    if (parsed == 0 || result < min || result > max)
-        return std::nullopt;
-    *data += parsed;
-    *available_bytes -= parsed;
-    return result;
 }
 
 } // namespace cubic::protocol::primitives::varint

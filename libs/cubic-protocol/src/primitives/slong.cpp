@@ -13,18 +13,6 @@ auto parse(const uint8_t *data, uint32_t available_bytes, int64_t *value) -> uin
     return 8;
 }
 
-auto parse(uint8_t **data, uint32_t *available_bytes) -> std::optional<int64_t>
-{
-    int64_t result;
-    uint32_t parsed = parse(*data, *available_bytes, &result);
-
-    if (parsed == 0)
-        return std::nullopt;
-    *data += parsed;
-    *available_bytes -= parsed;
-    return result;
-}
-
 auto parse(const uint8_t *data, uint32_t available_bytes, int64_t *value, int64_t min, int64_t max)
     -> uint32_t
 {
@@ -33,19 +21,6 @@ auto parse(const uint8_t *data, uint32_t available_bytes, int64_t *value, int64_
     if (parsed == 0 || *value < min || *value > max)
         return 0;
     return parsed;
-}
-
-auto parse(uint8_t **data, uint32_t *available_bytes, int64_t min, int64_t max)
-    -> std::optional<int64_t>
-{
-    int64_t result;
-    uint32_t parsed = parse(*data, *available_bytes, &result);
-
-    if (parsed == 0 || result < min || result > max)
-        return std::nullopt;
-    *data += parsed;
-    *available_bytes -= parsed;
-    return result;
 }
 
 } // namespace cubic::protocol::primitives::slong
