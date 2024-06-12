@@ -4,6 +4,7 @@
 #include <cstddef>
 #include <cstdint>
 #include <cstdio>
+#include <cstring>
 #include <memory>
 #include <mutex>
 #include <netdb.h>
@@ -172,6 +173,7 @@ auto handle_clients_callbacks(ServerContext &ctx, std::vector<pollfd> &fds) -> v
 {
     // No need to recreate that whole buffer everytime so I just put it in static
     static std::array<uint8_t, CUBIC_MAX_NETWORK_READ_SIZE> in_buffer;
+    static std::array<uint8_t, CUBIC_MAX_NETWORK_WRITE_SIZE> out_buffer;
 
     for (size_t i = 1; i < fds.size(); i++) {
         if ((fds[i].revents & POLLIN) != 0) {
@@ -190,13 +192,16 @@ auto handle_clients_callbacks(ServerContext &ctx, std::vector<pollfd> &fds) -> v
             auto *cli = get_client_from_fd(fds[i].fd, ctx.clients);
             ssize_t num_bytes_written = 0;
             assert(cli);
+            size_t nb_bytes_to_write = std::min(
+                cli->outBuffer.size(), CUBIC_MAX_NETWORK_WRITE_SIZE
+            );
             {
                 const std::unique_lock<std::mutex> _(cli->outBufferMutex);
-
-                num_bytes_written = write(
-                    fds[i].fd, cli->outBuffer.data(),
-                    std::min(cli->outBuffer.size(), CUBIC_MAX_NETWORK_WRITE_SIZE)
-                );
+                memcpy(out_buffer.data(), cli->outBuffer.data(), nb_bytes_to_write);
+            }
+            num_bytes_written = write(fds[i].fd, out_buffer.data(), nb_bytes_to_write);
+            {
+                const std::unique_lock<std::mutex> _(cli->outBufferMutex);
                 cli->outBuffer.erase(
                     cli->outBuffer.begin(), cli->outBuffer.begin() + num_bytes_written
                 );
