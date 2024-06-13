@@ -3,7 +3,6 @@
 
 // TODO: Check if any of those can be forward declared
 #include <cstdint>
-#include <optional>
 
 namespace cubic::protocol::primitives::ushort {
 

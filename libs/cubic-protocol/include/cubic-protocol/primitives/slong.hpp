@@ -2,8 +2,8 @@
 #define CUBIC_PROTOCOL_PRIMITIVES_SLONG_
 
 // TODO: Check if any of those can be forward declared
+#include <cstddef>
 #include <cstdint>
-#include <optional>
 
 namespace cubic::protocol::primitives::slong {
 

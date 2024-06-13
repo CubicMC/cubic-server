@@ -3,7 +3,6 @@
 
 // TODO: Check if any of those can be forward declared
 #include <cstdint>
-#include <optional>
 // TODO: Check if we want to use std::string for string parsing
 #include <string>
 
