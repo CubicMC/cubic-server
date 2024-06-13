@@ -58,7 +58,7 @@ make -j `nproc --exclude 1` # The -j option is here to speed-up the compilation
 #### Build from source with nix
 To build with nix follow this step :
 ```bash
-nix build github:CubicMC/cubic-server/rewrite
+nix build github:CubicMC/cubic-server
 ```
 
 ## Contributing
