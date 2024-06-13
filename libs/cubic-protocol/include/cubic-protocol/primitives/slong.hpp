@@ -2,13 +2,12 @@
 #define CUBIC_PROTOCOL_PRIMITIVES_SLONG_
 
 // TODO: Check if any of those can be forward declared
-#include <cstddef>
 #include <cstdint>
 
 namespace cubic::protocol::primitives::slong {
 
 auto parse(const uint8_t *data, uint32_t available_bytes, int64_t *value) -> uint32_t;
-auto parse(const uint8_t *data, uint32_t available_bytes, int64_t *value, size_t min, size_t max)
+auto parse(const uint8_t *data, uint32_t available_bytes, int64_t *value, int64_t min, int64_t max)
     -> uint32_t;
 
 } // namespace cubic::protocol::primitives::slong
