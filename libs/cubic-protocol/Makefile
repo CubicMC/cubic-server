@@ -54,7 +54,7 @@ CXXFLAGS += -Wno-missing-field-initializers
 
 AR := ar
 
-ARFLAGS := rc
+ARFLAGS := rcsPv
 
 LDFLAGS :=
 
