@@ -2,6 +2,7 @@
 #define CUBIC_PROTOCOL_PRIMITIVES_VARINT_
 
 #include <cstdint>
+#include <vector>
 
 namespace cubic::protocol::primitives::varint {
 
@@ -12,6 +13,14 @@ namespace cubic::protocol::primitives::varint {
  * @return The number of bytes used by the given value as a varint
  */
 auto get_num_bytes(int32_t value) -> uint8_t;
+
+/**
+ * Tries to serialize the given value to a byte buffer
+ *
+ * @param out Byte buffer where the data will be appended to
+ * @param value Value to be serialized
+ */
+auto serialize(std::vector<uint8_t> &out, int32_t value) -> void;
 
 /**
  * Tries to parse a varint
