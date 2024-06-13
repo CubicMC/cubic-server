@@ -1,7 +1,6 @@
 #ifndef CUBIC_PROTOCOL_PRIMITIVES_USHORT_
 #define CUBIC_PROTOCOL_PRIMITIVES_USHORT_
 
-// TODO: Check if any of those can be forward declared
 #include <cstdint>
 
 namespace cubic::protocol::primitives::ushort {
