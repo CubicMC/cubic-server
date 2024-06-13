@@ -290,22 +290,15 @@ auto parse_client_packets(client::Client &cli) -> void
             cli.isRunning = false;
             return;
         }
-        if ((uint32_t) size > (uint32_t) cli.inBuffer.size() - parsed_size) {
-            printf(
-                "aaaaa | size %d | parsed_size %d | inBuffer.size() %d\n", size, parsed_size,
-                (int32_t) cli.inBuffer.size()
-            );
+        if ((uint32_t) size > (uint32_t) cli.inBuffer.size() - parsed_size)
             return;
-        }
         int32_t packet_id;
         uint32_t parsed_id = varint::parse(
             cli.inBuffer.data() + parsed_size, (uint32_t) cli.inBuffer.size() - parsed_size,
             &packet_id
         );
-        if (parsed_id == 0) {
-            printf("bbbbb\n");
+        if (parsed_id == 0)
             return;
-        }
         if (!parse_client_packet(cli, parsed_id + parsed_size, packet_id))
             return;
     }
