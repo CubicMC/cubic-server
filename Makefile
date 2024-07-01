@@ -58,7 +58,7 @@ LDFLAGS	:= -Llibs/cubic-protocol -lcubic-protocol
 NEEDED_LIBS := libs/cubic-protocol/libcubic-protocol.a
 
 ifeq ($(DEBUG), 1)
-        CXXFLAGS += -O0 -ggdb
+        CXXFLAGS += -Og -ggdb
 else
         CXXFLAGS += -O3 -DNDEBUG
         LDFLAGS += -s

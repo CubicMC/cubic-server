@@ -59,7 +59,7 @@ ARFLAGS := rcsPv
 LDFLAGS :=
 
 ifeq ($(DEBUG), 1)
-        CXXFLAGS += -O0 -ggdb
+        CXXFLAGS += -Og -ggdb
 else
         CXXFLAGS += -O3 -DNDEBUG
 endif
