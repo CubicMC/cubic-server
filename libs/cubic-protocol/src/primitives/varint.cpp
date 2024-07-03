@@ -44,7 +44,7 @@ auto serialize(std::vector<uint8_t> &out, int32_t value) -> void
             *current_data++ = (uint8_t) value;
             return;
         }
-        *current_data++ = (value & SEGMENT_BITS) | CONTINUE_BIT;
+        *current_data++ = (uint8_t) (value & SEGMENT_BITS) | CONTINUE_BIT;
         value = *((uint32_t *) &value) >> 7;
     }
 }
