@@ -1,4 +1,5 @@
 #include <cassert>
+#include <cstddef>
 
 #include "cubic-protocol/primitives/varint.hpp"
 
