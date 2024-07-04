@@ -23,6 +23,14 @@ auto get_num_bytes(int32_t value) -> uint8_t;
 auto serialize(std::vector<uint8_t> &out, int32_t value) -> void;
 
 /**
+ * Tries to serialize the given value to a byte buffer
+ *
+ * @param out Byte buffer where the data will be written to
+ * @param value Value to be serialized
+ */
+auto serialize(uint8_t *out, int32_t value) -> void;
+
+/**
  * Tries to parse a varint
  *
  * If the parsing fails then the content of the given value is undefined

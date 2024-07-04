@@ -12,7 +12,7 @@ namespace cubic::protocol::primitives::varint {
 #endif
 #endif
 
-__attribute__((const)) auto get_num_bytes(int32_t value) -> uint8_t
+auto get_num_bytes(int32_t value) -> uint8_t
 {
     if (value == 0)
         return 1; // Special case to go around undefined gcc builtin behaviour

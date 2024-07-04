@@ -21,7 +21,9 @@ enum class packet_id : int32_t {
  * is normally completely empty
  */
 struct StatusRequest {
-    [[maybe_unused]] uint8_t dummy = 42;
+    [[maybe_unused]]
+    uint8_t dummy
+        = 42;
 };
 
 /**

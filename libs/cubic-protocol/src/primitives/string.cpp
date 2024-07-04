@@ -5,6 +5,14 @@
 
 namespace cubic::protocol::primitives::string {
 
+// TODO: Test
+auto serialize(std::vector<uint8_t> &out, const std::string_view &value) -> void
+{
+    const uint32_t varint_size = varint::get_num_bytes((int32_t) value.size());
+    const auto total_size = (uint32_t) (varint_size + value.size());
+    out.resize(out.size() + total_size);
+}
+
 auto parse(const uint8_t *data, uint32_t available_bytes, std::string *value) -> uint32_t
 {
     int32_t size;

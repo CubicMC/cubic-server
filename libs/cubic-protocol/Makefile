@@ -36,21 +36,22 @@ CXXFLAGS += -march=native -mtune=native
 CXXFLAGS += -Wcast-qual
 CXXFLAGS += -Wconversion
 CXXFLAGS += -Wdisabled-optimization
-CXXFLAGS += -Wduplicated-branches
-CXXFLAGS += -Wduplicated-cond
 CXXFLAGS += -Werror=return-type
-CXXFLAGS += -Werror=vla-larger-than=0
 CXXFLAGS += -Winit-self
 CXXFLAGS += -Winline
-CXXFLAGS += -Wlogical-op
 CXXFLAGS += -Wredundant-decls
 CXXFLAGS += -Wshadow
-CXXFLAGS += -Wsuggest-attribute=pure
-CXXFLAGS += -Wsuggest-attribute=const
 CXXFLAGS += -Wundef
 CXXFLAGS += -Wunreachable-code
 CXXFLAGS += -Wwrite-strings
 CXXFLAGS += -Wno-missing-field-initializers
+
+ifeq ($(CXX), g++)
+CXXFLAGS += -Wduplicated-branches
+CXXFLAGS += -Wduplicated-cond
+CXXFLAGS += -Werror=vla-larger-than=0
+CXXFLAGS += -Wlogical-op
+endif
 
 AR := ar
 
@@ -70,13 +71,15 @@ endif
 
 ifeq ($(ASAN), 1)
         CXXFLAGS += -fsanitize=address,leak,undefined
-        LDFLAGS += -lasan -lubsan -fsanitize=address,leak,undefined
+        LDFLAGS += -fsanitize=address,leak,undefined
 endif
 
 # -fanalyzer is quite broken in g++, deactivate by default
 ifeq ($(ANALYZER), 1)
+ifeq ($(CXX), g++)
 	CXXFLAGS += -fanalyzer
 	CXXFLAGS += -Wno-analyzer-use-of-uninitialized-value
+endif
 endif
 
 $(TARGET_LIB): $(BUILD_DIR)/$(TARGET_LIB)

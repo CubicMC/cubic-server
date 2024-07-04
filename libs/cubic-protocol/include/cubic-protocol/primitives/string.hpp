@@ -4,8 +4,17 @@
 #include <cstdint>
 // TODO: Check if we want to use std::string for string parsing
 #include <string>
+#include <vector>
 
 namespace cubic::protocol::primitives::string {
+
+/**
+ * Tries to serialize the given value to a byte buffer
+ *
+ * @param out Byte buffer where the data will be appended to
+ * @param value Value to be serialized
+ */
+auto serialize(std::vector<uint8_t> &out, const std::string_view &value) -> void;
 
 /**
  * Tries to parse a string
