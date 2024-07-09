@@ -1,0 +1,2 @@
+# actions/checkout does funky stuff on windows runners so we force it on zig files
+*.zig text eol=lf

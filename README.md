@@ -1,6 +1,6 @@
 # Cubic Server
 
-A fast and extensible C++ implementation of Minecraft's server.
+A fast and extensible implementation of Minecraft's server.
 
 ## Status
 
@@ -11,7 +11,7 @@ there.
 
 ## Goals
 
-The version currently targeted is **1.20.6**, but future versions may
+The version currently targeted is **1.21**, but future versions may
 be implemented depending on how well Cubic Server gets developed.
 
 Older versions might be maintained too but the support is not quite planned yet.
@@ -37,15 +37,7 @@ later down the road, but not until we have a solid codebase.)
 
 Here is the list of dependencies required to build CubicServer:
 
- - gcc7\* (Any c++17 compliant compiler should work but it is not guarranted as
- we do not code strictly to the standard)
- - gnumake (Build system, other make versions might work but have not been
- tested)
-
-\* gcc7 is the lowest version that should work with this codebase but it has
-not been tested yet, a higher compiler version will always be recommended for
-optimization reasons. See the gcc c++17 feature matrix
-[here](https://gcc.gnu.org/projects/cxx-status.html#cxx17).
+ - zig 0.13.0
 
 ### How to build
 #### Build from source on your machine
@@ -53,12 +45,7 @@ To build follow those steps :
 ```bash
 git clone https://github.com/CubicMC/cubic-server
 cd cubic-server
-make -j `nproc --exclude 1` # The -j option is here to speed-up the compilation
-```
-#### Build from source with nix
-To build with nix follow this step :
-```bash
-nix build github:CubicMC/cubic-server
+zig build
 ```
 
 ## Contributing

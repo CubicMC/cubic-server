@@ -1,0 +1,29 @@
+# See https://pre-commit.com for more information
+# See https://pre-commit.com/hooks.html for more hooks
+repos:
+-   repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: ae7cee538b6ba3457d1307040d6d29962692e8f6
+    hooks:
+    -   id: trailing-whitespace
+    -   id: end-of-file-fixer
+    -   id: check-yaml
+    -   id: check-added-large-files
+    -   id: check-case-conflict
+    -   id: check-executables-have-shebangs
+    -   id: check-json
+    -   id: check-illegal-windows-names
+    -   id: check-merge-conflict
+    -   id: check-shebang-scripts-are-executable
+    -   id: check-symlinks
+    -   id: destroyed-symlinks
+    -   id: detect-private-key
+
+-   repo: https://github.com/rhysd/actionlint
+    rev: v1.7.1
+    hooks:
+    -   id: actionlint
+
+-   repo: https://github.com/batmac/pre-commit-zig
+    rev: 3ee6c779d70ef77c8cf9677f0feac71804306173
+    hooks:
+    -   id: zig-fmt
