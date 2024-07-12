@@ -37,14 +37,17 @@ auto serialize(std::vector<uint8_t> &out, int32_t value) -> void
     // -fanalyzer thinks that out.data() can return null after the resize somehow so we just put a
     // debug assert there to make it happy, and it will disappear in release builds so it's fine
     assert(out.data() != nullptr);
-    uint8_t *current_data = out.data() + current_size;
+    serialize(out.data() + current_size, value);
+}
 
+auto serialize(uint8_t *out, int32_t value) -> void
+{
     while (true) {
         if ((value & ~SEGMENT_BITS) == 0) {
-            *current_data++ = (uint8_t) value;
+            *out++ = (uint8_t) value;
             return;
         }
-        *current_data++ = (uint8_t) (value & SEGMENT_BITS) | CONTINUE_BIT;
+        *out++ = (uint8_t) (value & SEGMENT_BITS) | CONTINUE_BIT;
         value = *((uint32_t *) &value) >> 7;
     }
 }
