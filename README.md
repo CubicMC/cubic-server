@@ -51,7 +51,7 @@ optimization reasons. See the gcc c++17 feature matrix
 #### Build from source on your machine
 To build follow those steps :
 ```bash
-git clone https://github.com/CubicMC/cubic-server
+git clone https://github.com/CubicMC/cubic-server --recursive
 cd cubic-server
 make -j `nproc --exclude 1` # The -j option is here to speed-up the compilation
 ```
