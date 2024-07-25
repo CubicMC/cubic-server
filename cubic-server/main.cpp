@@ -79,6 +79,8 @@ auto disconnect_client(client::Client &cli) -> bool
     cli.isRunning = false;
     if (was_running)
         close(cli.fd);
+    cli.inBuffer.clear();
+    cli.inHighPriorityPackets.clear();
     return !was_running;
 }
 
@@ -324,6 +326,7 @@ auto launch_network_loop(ServerContext &ctx) -> void
         // Handle everything that poll gave us
         handle_clients_callbacks(ctx, fds);
         try_accept_new_client(ctx, fds);
+        cleanup_client_list(ctx.clients);
         parse_clients_packets(ctx.clients);
         handle_high_priority_clients(ctx.clients);
         // Now we need to remove all the clients that disconnected or errored

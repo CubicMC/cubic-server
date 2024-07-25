@@ -19,7 +19,7 @@ auto handshake(Client &cli, const protocol::c2s::handshake::Handshake &pck) -> v
     printf("port: %d\n", pck.server_port);
 
     // TODO: Change that magic value to be defined somewhere
-    if (pck.protocol_version != 766) {
+    if (pck.protocol_version != CUBIC_MC_PROTOCOL) {
         // TODO: Add a way to schedule a client to shutdown so that we can send it data before
         // killing it such as a disconnection notice
         cli.isRunning = false;
@@ -40,7 +40,7 @@ auto handshake(Client &cli, const protocol::c2s::handshake::Handshake &pck) -> v
 
 auto status_request(Client &cli, const protocol::c2s::status::StatusRequest &pck) -> void
 {
-    constexpr std::string_view base_status = R"({"version":{"name":"1.19.4","protocol":762}})";
+    constexpr std::string_view base_status = R"({"version":{"name":"1.21","protocol":767}})";
 
     printf("Got a status request from client %p\n", &cli);
     // TODO: Answer the status request
