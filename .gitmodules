@@ -1,0 +1,3 @@
+[submodule "libs/cubic-protocol"]
+	path = libs/cubic-protocol
+	url = git@github.com:CubicMC/cubic-protocol.git

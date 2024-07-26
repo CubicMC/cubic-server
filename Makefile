@@ -23,34 +23,37 @@ INC_FLAGS := $(addprefix -I,$(INC_DIRS))
 
 CPPFLAGS := $(INC_FLAGS) -MMD -MP
 
+ifeq ($(MC_VERSION), 1.21)
+CPPFLAGS += -DCUBIC_MC_VERSION=1.21 -DCUBIC_MC_PROTOCOL=767
+else
+$(error Minecraft version not supported or MC_VERSION env variable not set)
+endif
+
 CXXFLAGS := -Wall
 CXXFLAGS += -Wextra
 CXXFLAGS += -Wconversion
 CXXFLAGS += -std=c++17
 CXXFLAGS += -Wp,-U_FORTIFY_SOURCE
 CXXFLAGS += -Wformat=2
-CXXFLAGS += -MMD -MP
-CXXFLAGS += -fno-builtin
-CXXFLAGS += -pipe
-CXXFLAGS += -march=native -mtune=native
 CXXFLAGS += -Wcast-qual
 CXXFLAGS += -Wconversion
 CXXFLAGS += -Wdisabled-optimization
-CXXFLAGS += -Wduplicated-branches
-CXXFLAGS += -Wduplicated-cond
 CXXFLAGS += -Werror=return-type
-CXXFLAGS += -Werror=vla-larger-than=0
 CXXFLAGS += -Winit-self
 CXXFLAGS += -Winline
-CXXFLAGS += -Wlogical-op
 CXXFLAGS += -Wredundant-decls
 CXXFLAGS += -Wshadow
-CXXFLAGS += -Wsuggest-attribute=pure
-CXXFLAGS += -Wsuggest-attribute=const
 CXXFLAGS += -Wundef
 CXXFLAGS += -Wunreachable-code
 CXXFLAGS += -Wwrite-strings
 CXXFLAGS += -Wno-missing-field-initializers
+
+ifeq ($(CXX), g++)
+CXXFLAGS += -Wduplicated-branches
+CXXFLAGS += -Wduplicated-cond
+CXXFLAGS += -Werror=vla-larger-than=0
+CXXFLAGS += -Wlogical-op
+endif
 
 LDFLAGS	:= -Llibs/cubic-protocol -lcubic-protocol
 
@@ -58,30 +61,36 @@ LDFLAGS	:= -Llibs/cubic-protocol -lcubic-protocol
 NEEDED_LIBS := libs/cubic-protocol/libcubic-protocol.a
 
 ifeq ($(DEBUG), 1)
-        CXXFLAGS += -Og -ggdb
+CXXFLAGS += -Og -ggdb
 else
-        CXXFLAGS += -O3 -DNDEBUG
-        LDFLAGS += -s
+CXXFLAGS += -O3 -DNDEBUG
+LDFLAGS += -s
 endif
 
 ifeq ($(LTO), 1)
-        CXXFLAGS += -flto
-		# This will break with DEBUG=1, but who the hell builds with
-		# LTOs and debug at the same time?
-		# I could also make it throw an error if DEBUG and LTO are activated
-		# at the same time but for now this will do
-        LDFLAGS += -flto -O3
+CXXFLAGS += -flto
+# This will break with DEBUG=1, but who the hell builds with
+# LTOs and debug at the same time?
+# I could also make it throw an error if DEBUG and LTO are activated
+# at the same time but for now this will do
+LDFLAGS += -flto -O3
 endif
 
 ifeq ($(ASAN), 1)
-        CXXFLAGS += -fsanitize=address,leak,undefined
-        LDFLAGS += -lasan -lubsan -fsanitize=address,leak,undefined
+CXXFLAGS += -fsanitize=address,leak,undefined
+LDFLAGS += -fsanitize=address,leak,undefined
+endif
+
+ifeq ($(NATIVE), 1)
+CXXFLAGS += -march=native -mtune=native
 endif
 
 # -fanalyzer is quite broken in g++, deactivate by default
 ifeq ($(ANALYZER), 1)
-	CXXFLAGS += -fanalyzer
-	CXXFLAGS += -Wno-analyzer-use-of-uninitialized-value
+ifeq ($(CXX), g++)
+CXXFLAGS += -fanalyzer
+CXXFLAGS += -Wno-analyzer-use-of-uninitialized-value
+endif
 endif
 
 .PHONY: all
