@@ -1,10 +1,20 @@
 #include <cassert>
 
 #include "cubic-protocol/c2s/handshake.hpp"
+#include "cubic-protocol/c2s/status.hpp"
+#include "cubic-protocol/s2c/status.hpp"
 
 #include "client.hpp"
 
-namespace cubic::server::client::hpcb {
+namespace cubic::server::client {
+
+void Client::send(const std::vector<uint8_t> &data)
+{
+    std::unique_lock<std::mutex> _(this->outBufferMutex);
+    this->outBuffer.insert(this->outBuffer.end(), data.begin(), data.end());
+}
+
+namespace hpcb {
 
 auto handshake(Client &cli, const protocol::c2s::handshake::Handshake &pck) -> void
 {
@@ -18,7 +28,6 @@ auto handshake(Client &cli, const protocol::c2s::handshake::Handshake &pck) -> v
     printf("next_state: %d\n", pck.next_state);
     printf("port: %d\n", pck.server_port);
 
-    // TODO: Change that magic value to be defined somewhere
     if (pck.protocol_version != CUBIC_MC_PROTOCOL) {
         // TODO: Add a way to schedule a client to shutdown so that we can send it data before
         // killing it such as a disconnection notice
@@ -38,12 +47,17 @@ auto handshake(Client &cli, const protocol::c2s::handshake::Handshake &pck) -> v
     printf("Client %p new state: %d\n", &cli, (int32_t) cli.state);
 }
 
-auto status_request(Client &cli, const protocol::c2s::status::StatusRequest &pck) -> void
+auto status_request(Client &cli, [[gnu::unused]] const protocol::c2s::status::StatusRequest &pck)
+    -> void
 {
-    constexpr std::string_view base_status = R"({"version":{"name":"1.21","protocol":767}})";
+    constexpr std::string_view base_status
+        = R"({"version":{"name":"1.21","protocol":767},"description":{"text":"Hello, world!"}})";
+    constexpr protocol::s2c::status::StatusResponse resp = { base_status };
+    std::vector<uint8_t> out;
 
     printf("Got a status request from client %p\n", &cli);
-    // TODO: Answer the status request
+    decltype(resp)::serialize(out, resp);
+    cli.send(out);
 }
 
 auto ping_request(Client &cli, const protocol::c2s::status::PingRequest &pck) -> void
@@ -52,4 +66,6 @@ auto ping_request(Client &cli, const protocol::c2s::status::PingRequest &pck) ->
     // TODO
 }
 
-} // namespace cubic::server::client::hpcb
+} // namespace hpcb
+
+} // namespace cubic::server::client

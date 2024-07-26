@@ -30,13 +30,15 @@ public:
     std::vector<uint8_t> outBuffer;
     std::vector<std::pair<int32_t, void *>> inPackets;
     std::vector<std::pair<int32_t, void *>> inHighPriorityPackets;
-    mutable std::mutex outBufferMutex{};
-    mutable std::mutex inPacketsMutex{};
+    mutable std::mutex outBufferMutex;
+    mutable std::mutex inPacketsMutex;
 
     Client(int client_fd):
         fd(client_fd)
     {
     }
+
+    void send(const std::vector<uint8_t> &data);
 };
 
 namespace hpcb {
