@@ -11,6 +11,7 @@
 
 /* Error codes */
 enum class PortalError {
+    PORTAL_NONE = 0,
     PORTAL_SIZE_OVERFLOW = -1,
     PORTAL_WRONG_DIRECTION = -2,
     PORTAL_WRONG_AXIS = -3,

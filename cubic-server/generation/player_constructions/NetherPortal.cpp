@@ -52,17 +52,17 @@ Vector2<int> NetherPortal::computeSize(Position pos, PortalDirection direction) 
     Vector2<int> size = {0, 0};
 
     if (direction == PortalDirection::PORTAL_POS_X || direction == PortalDirection::PORTAL_NEG_X) {
-        while (_dim->getBlock({pos.x + countRight, pos.y, pos.z}) == PortalBlocks::PORTAL_OBSIDIAN && _dim->getBlock({pos.x + (countRight-1), pos.y, pos.z}) == PortalBlocks::PORTAL_OBSIDIAN)
+        while (_dim->getBlock({pos.x + countRight, pos.y, pos.z}) == PortalBlocks::PORTAL_OBSIDIAN && _dim->getBlock({pos.x + (countRight-1), pos.y, pos.z}) == PortalBlocks::PORTAL_OBSIDIAN && _dim->getBlock({pos.x + countRight, pos.y + 1, pos.z}) == PortalBlocks::PORTAL_AIR)
             countRight++;
-        while (_dim->getBlock({pos.x - countLeft, pos.y, pos.z}) == PortalBlocks::PORTAL_OBSIDIAN && _dim->getBlock({pos.x - (countLeft-1), pos.y, pos.z}) == PortalBlocks::PORTAL_OBSIDIAN)
+        while (_dim->getBlock({pos.x - countLeft, pos.y, pos.z}) == PortalBlocks::PORTAL_OBSIDIAN && _dim->getBlock({pos.x - (countLeft-1), pos.y, pos.z}) == PortalBlocks::PORTAL_OBSIDIAN && _dim->getBlock({pos.x - countLeft, pos.y + 1, pos.z}) == PortalBlocks::PORTAL_AIR)
             countLeft++;
         while ((_dim->getBlock({pos.x-(countLeft-1), pos.y + totalCountVertical, pos.z}) == PortalBlocks::PORTAL_OBSIDIAN && _dim->getBlock({pos.x-(countLeft-1), pos.y + (totalCountVertical-1), pos.z}) == PortalBlocks::PORTAL_OBSIDIAN)
         || (_dim->getBlock({pos.x+(countRight+1), pos.y + totalCountVertical, pos.z}) == PortalBlocks::PORTAL_OBSIDIAN && _dim->getBlock({pos.x+countRight+1, pos.y + (totalCountVertical-1), pos.z}) == PortalBlocks::PORTAL_OBSIDIAN))
             totalCountVertical++;
     } else if (direction == PortalDirection::PORTAL_POS_Z || direction == PortalDirection::PORTAL_NEG_Z) {
-        while (_dim->getBlock({pos.x, pos.y, pos.z + countRight}) == PortalBlocks::PORTAL_OBSIDIAN && _dim->getBlock({pos.x, pos.y, pos.z + (countRight-1)}) == PortalBlocks::PORTAL_OBSIDIAN)
+        while (_dim->getBlock({pos.x, pos.y, pos.z + countRight}) == PortalBlocks::PORTAL_OBSIDIAN && _dim->getBlock({pos.x, pos.y, pos.z + (countRight-1)}) == PortalBlocks::PORTAL_OBSIDIAN && _dim->getBlock({pos.x, pos.y + 1, pos.z + countRight}) == PortalBlocks::PORTAL_AIR)
             countRight++;
-        while (_dim->getBlock({pos.x, pos.y, pos.z - countLeft}) == PortalBlocks::PORTAL_OBSIDIAN && _dim->getBlock({pos.x, pos.y, pos.z - (countLeft-1)}) == PortalBlocks::PORTAL_OBSIDIAN)
+        while (_dim->getBlock({pos.x, pos.y, pos.z - countLeft}) == PortalBlocks::PORTAL_OBSIDIAN && _dim->getBlock({pos.x, pos.y, pos.z - (countLeft-1)}) == PortalBlocks::PORTAL_OBSIDIAN && _dim->getBlock({pos.x, pos.y + 1, pos.z - countLeft}) == PortalBlocks::PORTAL_AIR)
             countLeft++;
         while ((_dim->getBlock({pos.x, pos.y + totalCountVertical, pos.z+(countRight+1)}) == PortalBlocks::PORTAL_OBSIDIAN && _dim->getBlock({pos.x, pos.y + (totalCountVertical-1), pos.z+(countRight+1)}) == PortalBlocks::PORTAL_OBSIDIAN)
         || (_dim->getBlock({pos.x, pos.y + totalCountVertical, pos.z-(countLeft-1)}) == PortalBlocks::PORTAL_OBSIDIAN && _dim->getBlock({pos.x, pos.y + (totalCountVertical-1), pos.z-(countLeft-1)}) == PortalBlocks::PORTAL_OBSIDIAN))
@@ -92,26 +92,30 @@ void NetherPortal::buildPortal(Position pos)
 
     for (int y = 0; y < size.z - 1; y++) {
         for (int x = 0; x < size.x - 1; x++) {
-            if (direction == PortalDirection::PORTAL_POS_X) {
-                block = _dim->getBlock({pos.x - 1 + x, pos.y + y, pos.z});
-                if (block == PortalBlocks::PORTAL_AIR || block == PortalBlocks::PORTAL_FIRE ) {
-                    blocksArray.push_back({{pos.x - 1 + x, pos.y + y, pos.z}, PortalBlocks::PORTAL_NETHER_X});
-                }
-            } else if (PortalDirection::PORTAL_POS_Z) {
-                block = _dim->getBlock({pos.x, pos.y + y, pos.z - 1 + x});
-                if (block == PortalBlocks::PORTAL_AIR || block == PortalBlocks::PORTAL_FIRE ) {
-                    blocksArray.push_back({{pos.x, pos.y + y, pos.z - 1 + x}, PortalBlocks::PORTAL_NETHER_Z});
-                }
-            } else if (PortalDirection::PORTAL_NEG_X) {
-                block = _dim->getBlock({pos.x - 2 + x, pos.y + y, pos.z});
-                if (block == PortalBlocks::PORTAL_AIR || block == PortalBlocks::PORTAL_FIRE ) {
-                    blocksArray.push_back({{pos.x - 2 + x, pos.y + y, pos.z}, PortalBlocks::PORTAL_NETHER_X});
-                }
-            } else if (PortalDirection::PORTAL_NEG_Z) {
+            switch(direction) {
+                case PortalDirection::PORTAL_POS_X:
+                    block = _dim->getBlock({pos.x - 1 + x, pos.y + y, pos.z});
+                    if (block == PortalBlocks::PORTAL_AIR || block == PortalBlocks::PORTAL_FIRE )
+                        blocksArray.push_back({{pos.x - 1 + x, pos.y + y, pos.z}, PortalBlocks::PORTAL_NETHER_X});
+                    break;
+                case PortalDirection::PORTAL_NEG_X:
+                    block = _dim->getBlock({pos.x - 2 + x, pos.y + y, pos.z});
+                    if (block == PortalBlocks::PORTAL_AIR || block == PortalBlocks::PORTAL_FIRE )
+                        blocksArray.push_back({{pos.x - 2 + x, pos.y + y, pos.z}, PortalBlocks::PORTAL_NETHER_X});
+                    break;
+                case PortalDirection::PORTAL_POS_Z:
+                    block = _dim->getBlock({pos.x, pos.y + y, pos.z - 1 + x});
+                    if (block == PortalBlocks::PORTAL_AIR || block == PortalBlocks::PORTAL_FIRE )
+                        blocksArray.push_back({{pos.x, pos.y + y, pos.z - 1 + x}, PortalBlocks::PORTAL_NETHER_Z});
+                    break;
+                case PortalDirection::PORTAL_NEG_Z:
                 block = _dim->getBlock({pos.x, pos.y + y, pos.z - 2 + x});
-                if (block == PortalBlocks::PORTAL_AIR || block == PortalBlocks::PORTAL_FIRE ) {
-                    blocksArray.push_back({{pos.x, pos.y + y, pos.z - 2 + x}, PortalBlocks::PORTAL_NETHER_Z});
-                }
+                    if (block == PortalBlocks::PORTAL_AIR || block == PortalBlocks::PORTAL_FIRE )
+                        blocksArray.push_back({{pos.x, pos.y + y, pos.z - 2 + x}, PortalBlocks::PORTAL_NETHER_Z});
+                    break;
+                default:
+                    LDEBUG("Portal error code: PORTAL_NONE ({})", PortalError::PORTAL_NONE);
+                    break;
             }
         }
     }
