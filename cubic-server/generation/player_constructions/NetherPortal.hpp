@@ -1,6 +1,7 @@
 #ifndef CUBICSERVER_GENERATION_PLAYER_CONSTRUCTIONS_NETHER_PORTAL_HPP
 #define CUBICSERVER_GENERATION_PLAYER_CONSTRUCTIONS_NETHER_PORTAL_HPP
 
+#include "math/Vector2.hpp"
 #include "blocks.hpp"
 #include "generation/generator.hpp"
 #include "types.hpp"
@@ -8,19 +9,33 @@
 
 #include <array>
 
-#define AXIS_UNDEFINED -1
-#define AXIS_X 0
-#define AXIS_Z 1
-#define UNDEFINED_POS -1
-#define NEGATIVE_POS 0
-#define POSITIVE_POS 1
+/* The minimum & maximum sizes of the portal */
+enum class PortalBoundary {
+    PORTAL_MIN_WIDTH,
+    PORTAL_MIN_HEIGHT,
+    PORTAL_MAX_WIDTH,
+    PORTAL_MAX_HEIGHT
+};
 
-#define FRAME_WIDTH 4
-#define FRAME_HEIGHT 5
+/* The 2 axes defining the portal */
+enum class PortalAxis {
+    PORTAL_WIDTH,
+    PORTAL_HEIGHT
+};
 
-struct Frame {
-    int axis;
-    int direction;
+/* The horizontal direction of the portal on the X or Z axis */
+enum class PortalDirection {
+    PORTAL_POS_X,
+    PORTAL_NEG_X,
+    PORTAL_POS_Z,
+    PORTAL_NEG_Z
+};
+
+/* Error codes */
+enum class PortalError {
+    PORTAL_SIZE_OVERFLOW = -1,
+    PORTAL_WRONG_DIRECTION = -2,
+    PORTAL_WRONG_AXIS = -3
 };
 
 /**
@@ -46,35 +61,23 @@ public:
     }
 
     /**
-     * @brief Get the axis on which the frame is built (x or z)
+     * @brief
      *
-     * @param pos   The position of the frame
-     * @return Frame  The axis and direction of the frame
      */
-    Frame getFrame(Position pos);
+     Vector2<int> setSize(Vector2<int> value);
 
     /**
-     * @brief Build the portal within the already built frame
+     * @brief Sets the direction of the portal
      *
-     * @param pos   The position of the frame
+     * @param value The position of the bottom-left corner of the frame
+     * @return the value of NetherPortal::dimension (POS_X, NEG_X, POS_Z, NEG_Z)
      */
-    void buildPortal(Position pos);
-
-    /**
-     * @brief Checks every layer of the alleged frame
-     *
-     * @param pos        The position of the bottom-left corner of the frame
-     * @param axis       The axis of the frame (x or z)
-     * @return true      There is a frame
-     * @return false     There isn't a frame
-     */
-    bool checkLayers(Position pos, int axis);
+    int setDirection(int value);
 
 private:
-    /**
-     * The dimension where the portal is in
-     */
-    std::shared_ptr<Dimension> _dim;
+    std::shared_ptr<Dimension> _dim; /**< The dimension where the portal is in */
+    Vector2<int> size; /**< The size of the sides of the portal {WIDTH, HEIGHT} */
+    PortalDirection direction; /**< The horizontal direction of the portal */
 };
 
 #endif // CUBICSERVER_GENERATION_PLAYER_CONSTRUCTIONS_NETHER_PORTAL_HPP
