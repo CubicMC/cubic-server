@@ -5,7 +5,6 @@
 #include "logging/logging.hpp"
 #include "types.hpp"
 #include <utility>
-#include <unistd.h>
 
 PortalDirection NetherPortal::computeDirection(Position pos) {
     int countRightX = 1;
@@ -16,16 +15,16 @@ PortalDirection NetherPortal::computeDirection(Position pos) {
     int totalCountZ = -1;
 
     // Count how many aligned obsidian blocks on the X axis
-    while (_dim->getBlock({pos.x + countRightX, pos.y, pos.z}) == PortalBlocks::PORTAL_OBSIDIAN && _dim->getBlock({pos.x + (countRightX-1), pos.y, pos.z}) == PortalBlocks::PORTAL_OBSIDIAN)
+    while (_dim->getBlock({pos.x + countRightX, pos.y, pos.z}) == Blocks::Obsidian::toProtocol() && _dim->getBlock({pos.x + (countRightX-1), pos.y, pos.z}) == Blocks::Obsidian::toProtocol())
         countRightX++;
-    while (_dim->getBlock({pos.x - countLeftX, pos.y, pos.z}) == PortalBlocks::PORTAL_OBSIDIAN && _dim->getBlock({pos.x - (countLeftX-1), pos.y, pos.z}) == PortalBlocks::PORTAL_OBSIDIAN)
+    while (_dim->getBlock({pos.x - countLeftX, pos.y, pos.z}) == Blocks::Obsidian::toProtocol() && _dim->getBlock({pos.x - (countLeftX-1), pos.y, pos.z}) == Blocks::Obsidian::toProtocol())
         countLeftX++;
     totalCountX += countRightX + countLeftX;
 
     // Count how many aligned obsidian blocks on the Z axis
-    while (_dim->getBlock({pos.x, pos.y, pos.z + countRightZ}) == PortalBlocks::PORTAL_OBSIDIAN && _dim->getBlock({pos.x, pos.y, pos.z + (countRightZ-1)}) == PortalBlocks::PORTAL_OBSIDIAN)
+    while (_dim->getBlock({pos.x, pos.y, pos.z + countRightZ}) == Blocks::Obsidian::toProtocol() && _dim->getBlock({pos.x, pos.y, pos.z + (countRightZ-1)}) == Blocks::Obsidian::toProtocol())
         countRightZ++;
-    while (_dim->getBlock({pos.x, pos.y, pos.z - countLeftZ}) == PortalBlocks::PORTAL_OBSIDIAN && _dim->getBlock({pos.x, pos.y, pos.z - (countLeftZ-1)}) == PortalBlocks::PORTAL_OBSIDIAN)
+    while (_dim->getBlock({pos.x, pos.y, pos.z - countLeftZ}) == Blocks::Obsidian::toProtocol() && _dim->getBlock({pos.x, pos.y, pos.z - (countLeftZ-1)}) == Blocks::Obsidian::toProtocol())
         countLeftZ++;
     totalCountZ += countRightZ + countLeftZ;
 
@@ -52,20 +51,20 @@ Vector2<int> NetherPortal::computeSize(Position pos, PortalDirection direction) 
     Vector2<int> size = {0, 0};
 
     if (direction == PortalDirection::PORTAL_POS_X || direction == PortalDirection::PORTAL_NEG_X) {
-        while (_dim->getBlock({pos.x + countRight, pos.y, pos.z}) == PortalBlocks::PORTAL_OBSIDIAN && _dim->getBlock({pos.x + (countRight-1), pos.y, pos.z}) == PortalBlocks::PORTAL_OBSIDIAN && _dim->getBlock({pos.x + countRight, pos.y + 1, pos.z}) == PortalBlocks::PORTAL_AIR)
+        while (_dim->getBlock({pos.x + countRight, pos.y, pos.z}) == Blocks::Obsidian::toProtocol() && _dim->getBlock({pos.x + (countRight-1), pos.y, pos.z}) == Blocks::Obsidian::toProtocol() && _dim->getBlock({pos.x + countRight, pos.y + 1, pos.z}) == Blocks::Air::toProtocol())
             countRight++;
-        while (_dim->getBlock({pos.x - countLeft, pos.y, pos.z}) == PortalBlocks::PORTAL_OBSIDIAN && _dim->getBlock({pos.x - (countLeft-1), pos.y, pos.z}) == PortalBlocks::PORTAL_OBSIDIAN && _dim->getBlock({pos.x - countLeft, pos.y + 1, pos.z}) == PortalBlocks::PORTAL_AIR)
+        while (_dim->getBlock({pos.x - countLeft, pos.y, pos.z}) == Blocks::Obsidian::toProtocol() && _dim->getBlock({pos.x - (countLeft-1), pos.y, pos.z}) == Blocks::Obsidian::toProtocol() && _dim->getBlock({pos.x - countLeft, pos.y + 1, pos.z}) == Blocks::Air::toProtocol())
             countLeft++;
-        while ((_dim->getBlock({pos.x-(countLeft-1), pos.y + totalCountVertical, pos.z}) == PortalBlocks::PORTAL_OBSIDIAN && _dim->getBlock({pos.x-(countLeft-1), pos.y + (totalCountVertical-1), pos.z}) == PortalBlocks::PORTAL_OBSIDIAN)
-        || (_dim->getBlock({pos.x+(countRight+1), pos.y + totalCountVertical, pos.z}) == PortalBlocks::PORTAL_OBSIDIAN && _dim->getBlock({pos.x+countRight+1, pos.y + (totalCountVertical-1), pos.z}) == PortalBlocks::PORTAL_OBSIDIAN))
+        while ((_dim->getBlock({pos.x-(countLeft-1), pos.y + totalCountVertical, pos.z}) == Blocks::Obsidian::toProtocol() && _dim->getBlock({pos.x-(countLeft-1), pos.y + (totalCountVertical-1), pos.z}) == Blocks::Obsidian::toProtocol())
+        || (_dim->getBlock({pos.x+(countRight+1), pos.y + totalCountVertical, pos.z}) == Blocks::Obsidian::toProtocol() && _dim->getBlock({pos.x+countRight+1, pos.y + (totalCountVertical-1), pos.z}) == Blocks::Obsidian::toProtocol()))
             totalCountVertical++;
     } else if (direction == PortalDirection::PORTAL_POS_Z || direction == PortalDirection::PORTAL_NEG_Z) {
-        while (_dim->getBlock({pos.x, pos.y, pos.z + countRight}) == PortalBlocks::PORTAL_OBSIDIAN && _dim->getBlock({pos.x, pos.y, pos.z + (countRight-1)}) == PortalBlocks::PORTAL_OBSIDIAN && _dim->getBlock({pos.x, pos.y + 1, pos.z + countRight}) == PortalBlocks::PORTAL_AIR)
+        while (_dim->getBlock({pos.x, pos.y, pos.z + countRight}) == Blocks::Obsidian::toProtocol() && _dim->getBlock({pos.x, pos.y, pos.z + (countRight-1)}) == Blocks::Obsidian::toProtocol() && _dim->getBlock({pos.x, pos.y + 1, pos.z + countRight}) == Blocks::Air::toProtocol())
             countRight++;
-        while (_dim->getBlock({pos.x, pos.y, pos.z - countLeft}) == PortalBlocks::PORTAL_OBSIDIAN && _dim->getBlock({pos.x, pos.y, pos.z - (countLeft-1)}) == PortalBlocks::PORTAL_OBSIDIAN && _dim->getBlock({pos.x, pos.y + 1, pos.z - countLeft}) == PortalBlocks::PORTAL_AIR)
+        while (_dim->getBlock({pos.x, pos.y, pos.z - countLeft}) == Blocks::Obsidian::toProtocol() && _dim->getBlock({pos.x, pos.y, pos.z - (countLeft-1)}) == Blocks::Obsidian::toProtocol() && _dim->getBlock({pos.x, pos.y + 1, pos.z - countLeft}) == Blocks::Air::toProtocol())
             countLeft++;
-        while ((_dim->getBlock({pos.x, pos.y + totalCountVertical, pos.z+(countRight+1)}) == PortalBlocks::PORTAL_OBSIDIAN && _dim->getBlock({pos.x, pos.y + (totalCountVertical-1), pos.z+(countRight+1)}) == PortalBlocks::PORTAL_OBSIDIAN)
-        || (_dim->getBlock({pos.x, pos.y + totalCountVertical, pos.z-(countLeft-1)}) == PortalBlocks::PORTAL_OBSIDIAN && _dim->getBlock({pos.x, pos.y + (totalCountVertical-1), pos.z-(countLeft-1)}) == PortalBlocks::PORTAL_OBSIDIAN))
+        while ((_dim->getBlock({pos.x, pos.y + totalCountVertical, pos.z+(countRight+1)}) == Blocks::Obsidian::toProtocol() && _dim->getBlock({pos.x, pos.y + (totalCountVertical-1), pos.z+(countRight+1)}) == Blocks::Obsidian::toProtocol())
+        || (_dim->getBlock({pos.x, pos.y + totalCountVertical, pos.z-(countLeft-1)}) == Blocks::Obsidian::toProtocol() && _dim->getBlock({pos.x, pos.y + (totalCountVertical-1), pos.z-(countLeft-1)}) == Blocks::Obsidian::toProtocol()))
             totalCountVertical++;
     } else
         return {PortalError::PORTAL_BAD_PORTAL, PortalError::PORTAL_WRONG_DIRECTION};
@@ -78,7 +77,7 @@ Vector2<int> NetherPortal::computeSize(Position pos, PortalDirection direction) 
     if (totalCountVertical + PortalBoundary::PORTAL_MIN_HEIGHT > PortalBoundary::PORTAL_MAX_HEIGHT)
         return {PortalError::PORTAL_BAD_PORTAL, PortalError::PORTAL_SIZE_OVERFLOW};
 
-    size = {totalCountHorizontal, totalCountVertical}
+    size = {totalCountHorizontal, totalCountVertical};
 
     return size;
 }
@@ -95,23 +94,23 @@ void NetherPortal::buildPortal(Position pos)
             switch(direction) {
                 case PortalDirection::PORTAL_POS_X:
                     block = _dim->getBlock({pos.x - 1 + x, pos.y + y, pos.z});
-                    if (block == PortalBlocks::PORTAL_AIR || block == PortalBlocks::PORTAL_FIRE )
-                        blocksArray.push_back({{pos.x - 1 + x, pos.y + y, pos.z}, PortalBlocks::PORTAL_NETHER_X});
+                    if (block == Blocks::Air::toProtocol() || block == Blocks::Fire::toProtocol(Blocks::Fire::Properties::Age::ZERO, Blocks::Fire::Properties::East::FALSE, Blocks::Fire::Properties::North::FALSE, Blocks::Fire::Properties::South::FALSE, Blocks::Fire::Properties::Up::FALSE, Blocks::Fire::Properties::West::FALSE))
+                        blocksArray.push_back({{pos.x - 1 + x, pos.y + y, pos.z}, Blocks::NetherPortal::toProtocol(Blocks::NetherPortal::Properties::Axis::X)});
                     break;
                 case PortalDirection::PORTAL_NEG_X:
                     block = _dim->getBlock({pos.x - 2 + x, pos.y + y, pos.z});
-                    if (block == PortalBlocks::PORTAL_AIR || block == PortalBlocks::PORTAL_FIRE )
-                        blocksArray.push_back({{pos.x - 2 + x, pos.y + y, pos.z}, PortalBlocks::PORTAL_NETHER_X});
+                    if (block == Blocks::Air::toProtocol() || block == Blocks::Fire::toProtocol(Blocks::Fire::Properties::Age::ZERO, Blocks::Fire::Properties::East::FALSE, Blocks::Fire::Properties::North::FALSE, Blocks::Fire::Properties::South::FALSE, Blocks::Fire::Properties::Up::FALSE, Blocks::Fire::Properties::West::FALSE))
+                        blocksArray.push_back({{pos.x - 2 + x, pos.y + y, pos.z}, Blocks::NetherPortal::toProtocol(Blocks::NetherPortal::Properties::Axis::X)});
                     break;
                 case PortalDirection::PORTAL_POS_Z:
                     block = _dim->getBlock({pos.x, pos.y + y, pos.z - 1 + x});
-                    if (block == PortalBlocks::PORTAL_AIR || block == PortalBlocks::PORTAL_FIRE )
-                        blocksArray.push_back({{pos.x, pos.y + y, pos.z - 1 + x}, PortalBlocks::PORTAL_NETHER_Z});
+                    if (block == Blocks::Air::toProtocol() || block == Blocks::Fire::toProtocol(Blocks::Fire::Properties::Age::ZERO, Blocks::Fire::Properties::East::FALSE, Blocks::Fire::Properties::North::FALSE, Blocks::Fire::Properties::South::FALSE, Blocks::Fire::Properties::Up::FALSE, Blocks::Fire::Properties::West::FALSE))
+                        blocksArray.push_back({{pos.x, pos.y + y, pos.z - 1 + x}, Blocks::NetherPortal::toProtocol(Blocks::NetherPortal::Properties::Axis::Z)});
                     break;
                 case PortalDirection::PORTAL_NEG_Z:
                 block = _dim->getBlock({pos.x, pos.y + y, pos.z - 2 + x});
-                    if (block == PortalBlocks::PORTAL_AIR || block == PortalBlocks::PORTAL_FIRE )
-                        blocksArray.push_back({{pos.x, pos.y + y, pos.z - 2 + x}, PortalBlocks::PORTAL_NETHER_Z});
+                    if (block == Blocks::Air::toProtocol() || block == Blocks::Fire::toProtocol(Blocks::Fire::Properties::Age::ZERO, Blocks::Fire::Properties::East::FALSE, Blocks::Fire::Properties::North::FALSE, Blocks::Fire::Properties::South::FALSE, Blocks::Fire::Properties::Up::FALSE, Blocks::Fire::Properties::West::FALSE))
+                        blocksArray.push_back({{pos.x, pos.y + y, pos.z - 2 + x}, Blocks::NetherPortal::toProtocol(Blocks::NetherPortal::Properties::Axis::Z)});
                     break;
                 default:
                     LDEBUG("Portal error code: PORTAL_NONE ({})", PortalError::PORTAL_NONE);

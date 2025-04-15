@@ -1,13 +1,14 @@
 #ifndef CUBICSERVER_GENERATION_PLAYER_CONSTRUCTIONS_NETHER_PORTAL_HPP
 #define CUBICSERVER_GENERATION_PLAYER_CONSTRUCTIONS_NETHER_PORTAL_HPP
 
-#include "math/Vector2.hpp"
+#include "Vector2.hpp"
 #include "blocks.hpp"
 #include "generation/generator.hpp"
 #include "types.hpp"
 #include "world_storage/ChunkColumn.hpp"
 
 #include <array>
+#include <unistd.h>
 
 /* Error codes */
 enum class PortalError {
@@ -25,14 +26,14 @@ enum class PortalBoundary {
     PORTAL_MIN_HEIGHT = 5,
     PORTAL_MAX_WIDTH = 23,
     PORTAL_MAX_HEIGHT = 23,
-    PORTAL_WRONG_SIZE = static_cast<std::underlying_type_t<PortalDirection>>(PortalError::PORTAL_BAD_PORTAL)
+    PORTAL_WRONG_SIZE = static_cast<int>(PortalError::PORTAL_BAD_PORTAL)
 };
 
 /* The 2 axes defining the portal */
 enum class PortalAxis {
     PORTAL_WIDTH,
     PORTAL_HEIGHT,
-    PORTAL_WRONG_AXIS = static_cast<std::underlying_type_t<PortalDirection>>(PortalError::PORTAL_WRONG_AXIS)
+    PORTAL_WRONG_AXIS = static_cast<int>(PortalError::PORTAL_WRONG_AXIS)
 };
 
 /* The horizontal direction of the portal on the X or Z axis */
@@ -41,18 +42,8 @@ enum class PortalDirection {
     PORTAL_NEG_X,
     PORTAL_POS_Z,
     PORTAL_NEG_Z,
-    PORTAL_WRONG_DIRECTION = static_cast<std::underlying_type_t<PortalDirection>>(PortalError::PORTAL_WRONG_DIRECTION)
+    PORTAL_WRONG_DIRECTION = static_cast<int>(PortalError::PORTAL_WRONG_DIRECTION)
 };
-
-/* The blocks involved at some point in the building of the portal */
-enum class PortalBlocks {
-    PORTAL_OBSIDIAN = Blocks::Obsidian::toProtocol(),
-    PORTAL_NETHER_X = Blocks::NetherPortal::toProtocol(Blocks::NetherPortal::Properties::Axis::X),
-    PORTAL_NETHER_Z = Blocks::NetherPortal::toProtocol(Blocks::NetherPortal::Properties::Axis::Z),
-    PORTAL_AIR = Blocks::Air::toProtocol(),
-    PORTAL_FIRE = Blocks::Fire::toProtocol(Blocks::Fire::Properties::Age::ZERO, Blocks::Fire::Properties::East::FALSE, Blocks::Fire::Properties::North::FALSE, Blocks::Fire::Properties::South::FALSE, Blocks::Fire::Properties::Up::FALSE, Blocks::Fire::Properties::West::FALSE),
-    PORTAL_WRONG_BLOCK = static_cast<std::underlying_type_t<PortalDirection>>(PortalError::PORTAL_WRONG_BLOCK)
-}
 
 /**
  * @brief A Nether Portal is a player construction that acts as a gateway between the Overworld and the Nether dimensions. It is made of Obsidian and ignited with a Flint&Steel.
