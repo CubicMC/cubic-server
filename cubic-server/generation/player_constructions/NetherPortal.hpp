@@ -35,7 +35,8 @@ enum class PortalDirection {
 enum class PortalError {
     PORTAL_SIZE_OVERFLOW = -1,
     PORTAL_WRONG_DIRECTION = -2,
-    PORTAL_WRONG_AXIS = -3
+    PORTAL_WRONG_AXIS = -3,
+    PORTAL_BAD_PORTAL = -42
 };
 
 /**
@@ -61,23 +62,32 @@ public:
     }
 
     /**
-     * @brief
+     * @brief Computes the two dimentional sizes of the portal (atm, only works when lighting a bottom block)
      *
+     * @param pos The position of the ignited block
+     * @param direction The direction of the alledged portal on the horizontal axis (X or Z)
+     * @return A Vector2<int> containing the width & the height of the portal (respectively): {PORTAL_WIDTH, PORTAL_HEIGHT}
      */
-     Vector2<int> setSize(Vector2<int> value);
+    Vector2<int> computeSize(Position pos, PortalDirection direction);
+
+    /**
+     * @brief Sets the size of the portal
+     *
+     * @param value The computed value of the size of the portal
+     */
+    void setSize(Vector2<int> size) { _size = size; }
 
     /**
      * @brief Sets the direction of the portal
      *
-     * @param value The position of the bottom-left corner of the frame
-     * @return the value of NetherPortal::dimension (POS_X, NEG_X, POS_Z, NEG_Z)
+     * @param value The computed value of the direction of the portal
      */
-    int setDirection(int value);
+    void setDirection(int direction) { _direction = direction; }
 
 private:
     std::shared_ptr<Dimension> _dim; /**< The dimension where the portal is in */
-    Vector2<int> size; /**< The size of the sides of the portal {WIDTH, HEIGHT} */
-    PortalDirection direction; /**< The horizontal direction of the portal */
+    Vector2<int> _size; /**< The size of the portal {PORTAL_WIDTH, PORTAL_HEIGHT} */
+    PortalDirection _direction; /**< The horizontal direction of the portal (POS_X, NEG_X, POS_Z, NEG_Z) */
 };
 
 #endif // CUBICSERVER_GENERATION_PLAYER_CONSTRUCTIONS_NETHER_PORTAL_HPP
