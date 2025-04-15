@@ -40,5 +40,5 @@ void Items::FlintAndSteel::onUseOn(std::shared_ptr<Dimension> dim, Position &pos
              )}
         );
     }
-    portal.buildPortal({pos.x, pos.y - 1, pos.z});
+    portal.buildPortal({pos.x, pos.y - 1, pos.z}); /**< Position of the ignited block */
 }

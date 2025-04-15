@@ -9,18 +9,29 @@
 
 #include <array>
 
+/* Error codes */
+enum class PortalError {
+    PORTAL_SIZE_OVERFLOW = -1,
+    PORTAL_WRONG_DIRECTION = -2,
+    PORTAL_WRONG_AXIS = -3,
+    PORTAL_WRONG_BLOCK = -4,
+    PORTAL_BAD_PORTAL = -42
+};
+
 /* The minimum & maximum sizes of the portal */
 enum class PortalBoundary {
-    PORTAL_MIN_WIDTH,
-    PORTAL_MIN_HEIGHT,
-    PORTAL_MAX_WIDTH,
-    PORTAL_MAX_HEIGHT
+    PORTAL_MIN_WIDTH = 4,
+    PORTAL_MIN_HEIGHT = 5,
+    PORTAL_MAX_WIDTH = 23,
+    PORTAL_MAX_HEIGHT = 23,
+    PORTAL_WRONG_SIZE = static_cast<std::underlying_type_t<PortalDirection>>(PortalError::PORTAL_BAD_PORTAL)
 };
 
 /* The 2 axes defining the portal */
 enum class PortalAxis {
     PORTAL_WIDTH,
-    PORTAL_HEIGHT
+    PORTAL_HEIGHT,
+    PORTAL_WRONG_AXIS = static_cast<std::underlying_type_t<PortalDirection>>(PortalError::PORTAL_WRONG_AXIS)
 };
 
 /* The horizontal direction of the portal on the X or Z axis */
@@ -28,23 +39,18 @@ enum class PortalDirection {
     PORTAL_POS_X,
     PORTAL_NEG_X,
     PORTAL_POS_Z,
-    PORTAL_NEG_Z
+    PORTAL_NEG_Z,
+    PORTAL_WRONG_DIRECTION = static_cast<std::underlying_type_t<PortalDirection>>(PortalError::PORTAL_WRONG_DIRECTION)
 };
 
-/* Error codes */
-enum class PortalError {
-    PORTAL_SIZE_OVERFLOW = -1,
-    PORTAL_WRONG_DIRECTION = -2,
-    PORTAL_WRONG_AXIS = -3,
-    PORTAL_BAD_PORTAL = -42
-};
-
+/* The blocks involved at some point in the building of the portal */
 enum class PortalBlocks {
     PORTAL_OBSIDIAN = Blocks::Obsidian::toProtocol(),
     PORTAL_NETHER_X = Blocks::NetherPortal::toProtocol(Blocks::NetherPortal::Properties::Axis::X),
     PORTAL_NETHER_Z = Blocks::NetherPortal::toProtocol(Blocks::NetherPortal::Properties::Axis::Z),
     PORTAL_AIR = Blocks::Air::toProtocol(),
-    PORTAL_FIRE = Blocks::Fire::toProtocol(Blocks::Fire::Properties::Age::ZERO, Blocks::Fire::Properties::East::FALSE, Blocks::Fire::Properties::North::FALSE, Blocks::Fire::Properties::South::FALSE, Blocks::Fire::Properties::Up::FALSE, Blocks::Fire::Properties::West::FALSE)
+    PORTAL_FIRE = Blocks::Fire::toProtocol(Blocks::Fire::Properties::Age::ZERO, Blocks::Fire::Properties::East::FALSE, Blocks::Fire::Properties::North::FALSE, Blocks::Fire::Properties::South::FALSE, Blocks::Fire::Properties::Up::FALSE, Blocks::Fire::Properties::West::FALSE),
+    PORTAL_WRONG_BLOCK = static_cast<std::underlying_type_t<PortalDirection>>(PortalError::PORTAL_WRONG_BLOCK)
 }
 
 /**
@@ -87,18 +93,11 @@ public:
     Vector2<int> computeSize(Position pos, PortalDirection direction);
 
     /**
-     * @brief Sets the size of the portal
+     * @brief Build the portal within the already built frame
      *
-     * @param size The computed value of the size of the portal
+     * @param pos   The position of the frame
      */
-    void setSize(Vector2<int> size) { _size = size; }
-
-    /**
-     * @brief Sets the direction of the portal
-     *
-     * @param direction The computed value of the direction of the portal
-     */
-    void setDirection(PortalDirection direction) { _direction = direction; }
+    void buildPortal(Position pos);
 
 private:
     std::shared_ptr<Dimension> _dim; /**< The dimension where the portal is in */

@@ -41,7 +41,7 @@ PortalDirection NetherPortal::computeDirection(Position pos) {
             return PortalDirection::PORTAL_POS_Z;
     }
 
-    return static_cast<std::underlying_type_t<PortalDirection>>(PortalError::PORTAL_BAD_PORTAL);
+    return PortalDirection::PORTAL_WRONG_DIRECTION;
 }
 
 Vector2<int> NetherPortal::computeSize(Position pos, PortalDirection direction) {
@@ -81,4 +81,46 @@ Vector2<int> NetherPortal::computeSize(Position pos, PortalDirection direction) 
     size = {totalCountHorizontal, totalCountVertical}
 
     return size;
+}
+
+void NetherPortal::buildPortal(Position pos)
+{
+    std::vector<std::pair<Position, BlockId>> blocksArray;
+    PortalDirection direction = NetherPortal::computeDirection(pos);
+    Vector2<int> size = NetherPortal::computeSize(pos, direction);
+    auto block = _dim->getBlock(pos);
+
+    for (int y = 0; y < size.z - 1; y++) {
+        for (int x = 0; x < size.x - 1; x++) {
+            if (direction == PortalDirection::PORTAL_POS_X) {
+                block = _dim->getBlock({pos.x - 1 + x, pos.y + y, pos.z});
+                if (block == PortalBlocks::PORTAL_AIR || block == PortalBlocks::PORTAL_FIRE ) {
+                    blocksArray.push_back({{pos.x - 1 + x, pos.y + y, pos.z}, PortalBlocks::PORTAL_NETHER_X});
+                }
+            } else if (PortalDirection::PORTAL_POS_Z) {
+                block = _dim->getBlock({pos.x, pos.y + y, pos.z - 1 + x});
+                if (block == PortalBlocks::PORTAL_AIR || block == PortalBlocks::PORTAL_FIRE ) {
+                    blocksArray.push_back({{pos.x, pos.y + y, pos.z - 1 + x}, PortalBlocks::PORTAL_NETHER_Z});
+                }
+            } else if (PortalDirection::PORTAL_NEG_X) {
+                block = _dim->getBlock({pos.x - 2 + x, pos.y + y, pos.z});
+                if (block == PortalBlocks::PORTAL_AIR || block == PortalBlocks::PORTAL_FIRE ) {
+                    blocksArray.push_back({{pos.x - 2 + x, pos.y + y, pos.z}, PortalBlocks::PORTAL_NETHER_X});
+                }
+            } else if (PortalDirection::PORTAL_NEG_Z) {
+                block = _dim->getBlock({pos.x, pos.y + y, pos.z - 2 + x});
+                if (block == PortalBlocks::PORTAL_AIR || block == PortalBlocks::PORTAL_FIRE ) {
+                    blocksArray.push_back({{pos.x, pos.y + y, pos.z - 2 + x}, PortalBlocks::PORTAL_NETHER_Z});
+                }
+            }
+        }
+    }
+    for (auto [position, id] : blocksArray) {
+        _dim->updateBlock(position, id);
+        for (auto player : _dim->getPlayers()) {
+            player->sendBlockUpdate({pos, _dim->getBlock(pos)});
+            player->sendBlockUpdate({position, id});
+            // player->sendUpdateSectionBlock({position,chunk, true, blocksArray});
+        }
+    }
 }
