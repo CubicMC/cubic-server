@@ -39,6 +39,14 @@ enum class PortalError {
     PORTAL_BAD_PORTAL = -42
 };
 
+enum class PortalBlocks {
+    PORTAL_OBSIDIAN = Blocks::Obsidian::toProtocol(),
+    PORTAL_NETHER_X = Blocks::NetherPortal::toProtocol(Blocks::NetherPortal::Properties::Axis::X),
+    PORTAL_NETHER_Z = Blocks::NetherPortal::toProtocol(Blocks::NetherPortal::Properties::Axis::Z),
+    PORTAL_AIR = Blocks::Air::toProtocol(),
+    PORTAL_FIRE = Blocks::Fire::toProtocol(Blocks::Fire::Properties::Age::ZERO, Blocks::Fire::Properties::East::FALSE, Blocks::Fire::Properties::North::FALSE, Blocks::Fire::Properties::South::FALSE, Blocks::Fire::Properties::Up::FALSE, Blocks::Fire::Properties::West::FALSE)
+}
+
 /**
  * @brief A Nether Portal is a player construction that acts as a gateway between the Overworld and the Nether dimensions. It is made of Obsidian and ignited with a Flint&Steel.
  * The portal is built like this :
@@ -62,6 +70,14 @@ public:
     }
 
     /**
+     * @brief Computes the horizontal direction of the portal, meaning if the portal is positionned on the X or Z axis, and whether the coordinates are positives or negatives (POS_X, NEG_X, POS_Z, NEG_Z) (atm, only works when lighting a bottom block)
+     *
+     * @param pos The position of the ignited block
+     * @return A PortalDirection containing the horizontal direction of the portal (POS_X, NEG_X, POS_Z, NEG_Z)
+     */
+    PortalDirection computeDirection(Position pos);
+
+    /**
      * @brief Computes the two dimentional sizes of the portal (atm, only works when lighting a bottom block)
      *
      * @param pos The position of the ignited block
@@ -73,16 +89,16 @@ public:
     /**
      * @brief Sets the size of the portal
      *
-     * @param value The computed value of the size of the portal
+     * @param size The computed value of the size of the portal
      */
     void setSize(Vector2<int> size) { _size = size; }
 
     /**
      * @brief Sets the direction of the portal
      *
-     * @param value The computed value of the direction of the portal
+     * @param direction The computed value of the direction of the portal
      */
-    void setDirection(int direction) { _direction = direction; }
+    void setDirection(PortalDirection direction) { _direction = direction; }
 
 private:
     std::shared_ptr<Dimension> _dim; /**< The dimension where the portal is in */

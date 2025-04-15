@@ -5,13 +5,46 @@
 #include "logging/logging.hpp"
 #include "types.hpp"
 #include <utility>
+#include <unistd.h>
 
-// int getDirection(Position pos) {
+PortalDirection NetherPortal::computeDirection(Position pos) {
+    int countRightX = 1;
+    int countLeftX = 1;
+    int totalCountX = -1;
+    int countRightZ = 1;
+    int countLeftZ = 1;
+    int totalCountZ = -1;
 
-// }
+    // Count how many aligned obsidian blocks on the X axis
+    while (_dim->getBlock({pos.x + countRightX, pos.y, pos.z}) == PortalBlocks::PORTAL_OBSIDIAN && _dim->getBlock({pos.x + (countRightX-1), pos.y, pos.z}) == PortalBlocks::PORTAL_OBSIDIAN)
+        countRightX++;
+    while (_dim->getBlock({pos.x - countLeftX, pos.y, pos.z}) == PortalBlocks::PORTAL_OBSIDIAN && _dim->getBlock({pos.x - (countLeftX-1), pos.y, pos.z}) == PortalBlocks::PORTAL_OBSIDIAN)
+        countLeftX++;
+    totalCountX += countRightX + countLeftX;
+
+    // Count how many aligned obsidian blocks on the Z axis
+    while (_dim->getBlock({pos.x, pos.y, pos.z + countRightZ}) == PortalBlocks::PORTAL_OBSIDIAN && _dim->getBlock({pos.x, pos.y, pos.z + (countRightZ-1)}) == PortalBlocks::PORTAL_OBSIDIAN)
+        countRightZ++;
+    while (_dim->getBlock({pos.x, pos.y, pos.z - countLeftZ}) == PortalBlocks::PORTAL_OBSIDIAN && _dim->getBlock({pos.x, pos.y, pos.z - (countLeftZ-1)}) == PortalBlocks::PORTAL_OBSIDIAN)
+        countLeftZ++;
+    totalCountZ += countRightZ + countLeftZ;
+
+    if (totalCountX > totalCountZ) {
+        if (countLeftX > countRightX)
+            return PortalDirection::PORTAL_NEG_X;
+        else
+            return PortalDirection::PORTAL_POS_X;
+    } else {
+        if (countLeftZ > countRightZ)
+            return PortalDirection::PORTAL_NEG_Z;
+        else
+            return PortalDirection::PORTAL_POS_Z;
+    }
+
+    return static_cast<std::underlying_type_t<PortalDirection>>(PortalError::PORTAL_BAD_PORTAL);
+}
 
 Vector2<int> NetherPortal::computeSize(Position pos, PortalDirection direction) {
-    auto block = _dim->getBlock(pos); // (block{n;0;0} or block{0;0;n})
     int countRight = 1; /**< for the right blocks from block horizontally (set to 1 to take block into account) */
     int countLeft = 1; /**< for the left blocks from block horizontally (set to 1 to take block into account) */
     int totalCountHorizontal = -1; /**< for the total blocks horizontally (set to -1 to address the offset when adding the right & left parts) */
@@ -19,18 +52,20 @@ Vector2<int> NetherPortal::computeSize(Position pos, PortalDirection direction) 
     Vector2<int> size = {0, 0};
 
     if (direction == PortalDirection::PORTAL_POS_X || direction == PortalDirection::PORTAL_NEG_X) {
-        while (_dim->getBlock({pos.x + countRight, pos.y, pos.z}) == Blocks::Obsidian::toProtocol() && _dim->getBlock({pos.x + (countRight-1), pos.y, pos.z}) == Blocks::Obsidian::toProtocol())
+        while (_dim->getBlock({pos.x + countRight, pos.y, pos.z}) == PortalBlocks::PORTAL_OBSIDIAN && _dim->getBlock({pos.x + (countRight-1), pos.y, pos.z}) == PortalBlocks::PORTAL_OBSIDIAN)
             countRight++;
-        while (_dim->getBlock({pos.x - countLeft, pos.y, pos.z}) == Blocks::Obsidian::toProtocol() && _dim->getBlock({pos.x - (countLeft-1), pos.y, pos.z}) == Blocks::Obsidian::toProtocol())
+        while (_dim->getBlock({pos.x - countLeft, pos.y, pos.z}) == PortalBlocks::PORTAL_OBSIDIAN && _dim->getBlock({pos.x - (countLeft-1), pos.y, pos.z}) == PortalBlocks::PORTAL_OBSIDIAN)
             countLeft++;
-        while ((_dim->getBlock({pos.x-countLeft-1, pos.y + totalCountVertical, pos.z}) == Blocks::Obsidian::toProtocol() && _dim->getBlock({pos.x-countLeft-1, pos.y + (totalCountVertical-1), pos.z}) == Blocks::Obsidian::toProtocol()) || (_dim->getBlock({pos.x+countRight+1, pos.y + totalCountVertical, pos.z}) == Blocks::Obsidian::toProtocol() && _dim->getBlock({pos.x+countRight+1, pos.y + (totalCountVertical-1), pos.z}) == Blocks::Obsidian::toProtocol()))
+        while ((_dim->getBlock({pos.x-(countLeft-1), pos.y + totalCountVertical, pos.z}) == PortalBlocks::PORTAL_OBSIDIAN && _dim->getBlock({pos.x-(countLeft-1), pos.y + (totalCountVertical-1), pos.z}) == PortalBlocks::PORTAL_OBSIDIAN)
+        || (_dim->getBlock({pos.x+(countRight+1), pos.y + totalCountVertical, pos.z}) == PortalBlocks::PORTAL_OBSIDIAN && _dim->getBlock({pos.x+countRight+1, pos.y + (totalCountVertical-1), pos.z}) == PortalBlocks::PORTAL_OBSIDIAN))
             totalCountVertical++;
     } else if (direction == PortalDirection::PORTAL_POS_Z || direction == PortalDirection::PORTAL_NEG_Z) {
-        while (_dim->getBlock({pos.x, pos.y, pos.z + countRight}) == Blocks::Obsidian::toProtocol() && _dim->getBlock({pos.x, pos.y, pos.z + (countRight-1)}) == Blocks::Obsidian::toProtocol())
+        while (_dim->getBlock({pos.x, pos.y, pos.z + countRight}) == PortalBlocks::PORTAL_OBSIDIAN && _dim->getBlock({pos.x, pos.y, pos.z + (countRight-1)}) == PortalBlocks::PORTAL_OBSIDIAN)
             countRight++;
-        while (_dim->getBlock({pos.x, pos.y, pos.z - countLeft}) == Blocks::Obsidian::toProtocol() && _dim->getBlock({pos.x, pos.y, pos.z - (countLeft-1)}) == Blocks::Obsidian::toProtocol())
+        while (_dim->getBlock({pos.x, pos.y, pos.z - countLeft}) == PortalBlocks::PORTAL_OBSIDIAN && _dim->getBlock({pos.x, pos.y, pos.z - (countLeft-1)}) == PortalBlocks::PORTAL_OBSIDIAN)
             countLeft++;
-        while ((_dim->getBlock({pos.x, pos.y + totalCountVertical, pos.z+countRight+1}) == Blocks::Obsidian::toProtocol() && _dim->getBlock({pos.x, pos.y + (totalCountVertical-1), pos.z+countRight+1}) == Blocks::Obsidian::toProtocol()) || (_dim->getBlock({pos.x, pos.y + totalCountVertical, pos.z-countLeft-1}) == Blocks::Obsidian::toProtocol() && _dim->getBlock({pos.x, pos.y + (totalCountVertical-1), pos.z-countLeft-1}) == Blocks::Obsidian::toProtocol()))
+        while ((_dim->getBlock({pos.x, pos.y + totalCountVertical, pos.z+(countRight+1)}) == PortalBlocks::PORTAL_OBSIDIAN && _dim->getBlock({pos.x, pos.y + (totalCountVertical-1), pos.z+(countRight+1)}) == PortalBlocks::PORTAL_OBSIDIAN)
+        || (_dim->getBlock({pos.x, pos.y + totalCountVertical, pos.z-(countLeft-1)}) == PortalBlocks::PORTAL_OBSIDIAN && _dim->getBlock({pos.x, pos.y + (totalCountVertical-1), pos.z-(countLeft-1)}) == PortalBlocks::PORTAL_OBSIDIAN))
             totalCountVertical++;
     } else
         return {PortalError::PORTAL_BAD_PORTAL, PortalError::PORTAL_WRONG_DIRECTION};
@@ -47,40 +82,3 @@ Vector2<int> NetherPortal::computeSize(Position pos, PortalDirection direction) 
 
     return size;
 }
-
-// int NetherPortal::checkLayers(Position pos, int axis)
-// {
-//     auto block = _dim->getBlock(pos);
-//     for (int y = 0; y < this->_size.z; y++) {
-//         for (int x = 0; x < this->_size.x; x++) {
-//             if (axis == WIDTH) {
-//                 block = _dim->getBlock({pos.x + x, pos.y + y, pos.z});
-//             } else if (axis == HEIGHT) {
-//                 block = _dim->getBlock({pos.x, pos.y + y, pos.z + x});
-//             } else {
-//                 return WRONG_AXIS;
-//             }
-//             if ((y == 0 || y == FRAME_HEIGHT - 1) && (x == 0 || x == FRAME_WIDTH - 1)) {
-//                 if (block != Blocks::Obsidian::toProtocol()) {
-//                     return false;
-//                 }
-//             } else if (x != 0 && x < FRAME_WIDTH - 1 && y == 1) {
-//                 if (block == Blocks::Air::toProtocol() ||
-//                     block ==
-//                         Blocks::Fire::toProtocol(
-//                             Blocks::Fire::Properties::Age::ZERO, Blocks::Fire::Properties::East::FALSE, Blocks::Fire::Properties::North::FALSE,
-//                             Blocks::Fire::Properties::South::FALSE, Blocks::Fire::Properties::Up::FALSE, Blocks::Fire::Properties::West::FALSE
-//                         )) {
-//                     continue;
-//                 } else {
-//                     return false;
-//                 }
-//             } else if (x > 1 && x < FRAME_WIDTH - 1 && y != 0 && y < FRAME_HEIGHT - 1) {
-//                 if (block != Blocks::Air::toProtocol()) {
-//                     return false;
-//                 }
-//             }
-//         }
-//     }
-//     return 1;
-// }
