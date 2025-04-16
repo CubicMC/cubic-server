@@ -23,7 +23,7 @@ nbt_tag_t *Items::FlintAndSteel::setNbtTag()
 
 void Items::FlintAndSteel::onUseOn(std::shared_ptr<Dimension> dim, Position &pos, UNUSED UsabilityType usage, UNUSED int32_t face, UNUSED Entity &user)
 {
-    auto portal = NetherPortal(dim);
+    auto portal = NetherPortal(dim, pos);
     dim->updateBlock(
         pos,
         Blocks::Fire::toProtocol(
@@ -40,5 +40,5 @@ void Items::FlintAndSteel::onUseOn(std::shared_ptr<Dimension> dim, Position &pos
              )}
         );
     }
-    portal.buildPortal({pos.x, pos.y - 1, pos.z}); /**< Position of the ignited block */
+    portal.openPortal();
 }
