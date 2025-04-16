@@ -70,7 +70,19 @@ void NetherPortal::setIgnitedBlock() {
 }
 
 void NetherPortal::setBottomLeftCorner() {
-    _bottomLeftCorner = _pos;
+    auto block = _dim->getBlock(_pos);
+
+    if (_ignitedBlock == PortalIgnition::PORTAL_BOTTOM_LEFT_CORNER) {
+        _bottomLeftCorner = {_pos.x, pos.y - 1, pos.z};
+        return;
+    } else if (_ignitedBlock == PortalIgnition::PORTAL_TOP_LEFT_CORNER || _ignitedBlock == PortalIgnition::PORTAL_LEFT_CENTER) {
+        for (int count = 0; count < PortalBoundary::PORTAL_MAX_HEIGHT - PortalBoundary::PORTAL_MIN_HEIGHT; count++) {
+            if (_dim->getBlock({_pos.x, pos.y - count, pos.z}) != Blocks::Obsidian::toProtocol())
+                continue;
+            _bottomLeftCorner = {_pos.x, pos.y - count, pos.z};
+            return;
+        }
+    }
 }
 
 void NetherPortal::setDirection() {
@@ -148,7 +160,7 @@ void NetherPortal::setSize() {
     }
 
     totalCountVertical += PortalBoundary::PORTAL_MIN_HEIGHT;
-    if (totalCountVertical + PortalBoundary::PORTAL_MIN_HEIGHT > PortalBoundary::PORTAL_MAX_HEIGHT) {
+    if (totalCountVertical > PortalBoundary::PORTAL_MAX_HEIGHT) {
         _size = {PortalError::PORTAL_BAD_PORTAL, PortalError::PORTAL_SIZE_OVERFLOW};
         return;
     }
