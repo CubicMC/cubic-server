@@ -1,9 +1,9 @@
 #ifndef CUBICSERVER_GENERATION_PLAYER_CONSTRUCTIONS_NETHER_PORTAL_HPP
 #define CUBICSERVER_GENERATION_PLAYER_CONSTRUCTIONS_NETHER_PORTAL_HPP
 
-#include "math/Vector2.hpp"
 #include "blocks.hpp"
 #include "generation/generator.hpp"
+#include "math/Vector2.hpp"
 #include "types.hpp"
 #include "world_storage/ChunkColumn.hpp"
 
@@ -78,25 +78,27 @@ public:
         _pos(pos)
     {
         setIgnitedBlock();
-        setLeftCornerPosition();
+        setBottomLeftCorner();
         setDirection();
         setSize();
     }
 
     /**
-     * @brief Sets _ignitedBlock to (TOP_CENTER, LEFT_CENTER, RIGHT_CENTER, BOTTOM_CENTER, TOP_RIGHT_CORNER, TOP_LEFT_CORNER, BOTTOM_RIGHT_CORNER, BOTTOM_LEFT_CORNER, NONE) depending on which side of the alleged frame the ignited block is located
+     * @brief Sets _ignitedBlock to (TOP_CENTER, LEFT_CENTER, RIGHT_CENTER, BOTTOM_CENTER, TOP_RIGHT_CORNER, TOP_LEFT_CORNER, BOTTOM_RIGHT_CORNER, BOTTOM_LEFT_CORNER, NONE)
+     * depending on which side of the alleged frame the ignited block is located
      *
      */
     void setIgnitedBlock();
-    
+
     /**
-     * @brief Sets _bottomLeftCorner to the position of the leftmost obsidian block on the bottom side of the portal, from the inner part of the portal (the corner block, if obsidian, isn't taken into account)
+     * @brief Sets _bottomLeftCorner to the position of the leftmost obsidian block on the bottom side of the portal, from the inner part of the portal
+     * (the corner block, if obsidian, isn't taken into account)
      *
      */
     void setBottomLeftCorner();
 
     /**
-     * @brief Sets _direction to the horizontal direction of the portal, meaning if the portal is positionned on the X or Z axis, and whether the coordinates are positives or negatives (POS_X, NEG_X, POS_Z, NEG_Z) (atm, only works when lighting a bottom block)
+     * @brief Sets _direction to the horizontal direction of the portal, meaning if the portal is positionned on the X or Z axis
      *
      */
     void setDirection();
