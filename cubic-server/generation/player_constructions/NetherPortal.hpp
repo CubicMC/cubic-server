@@ -12,9 +12,9 @@
 
 /* Error codes */
 enum class PortalError {
-    PORTAL_SIZE_OVERFLOW = -1,
+    PORTAL_OUT_OF_BOUNDARIES = -1,
     PORTAL_WRONG_DIRECTION = -2,
-    PORTAL_WRONG_AXIS = -3,
+    PORTAL_WRONG_SIZE = -3,
     PORTAL_WRONG_BLOCK = -4,
     PORTAL_BAD_PORTAL = -42,
     PORTAL_NONE = -84
@@ -26,22 +26,20 @@ enum class PortalBoundary {
     PORTAL_MIN_HEIGHT = 5,
     PORTAL_MAX_WIDTH = 23,
     PORTAL_MAX_HEIGHT = 23,
-    PORTAL_WRONG_SIZE = static_cast<int>(PortalError::PORTAL_BAD_PORTAL)
+    PORTAL_OUT_OF_BOUNDARIES = static_cast<int>(PortalError::PORTAL_OUT_OF_BOUNDARIES)
 };
 
-/* The 2 axes defining the portal */
-enum class PortalAxis {
+/* The 2 dimensions defining the portal */
+enum class PortalSize {
     PORTAL_WIDTH,
     PORTAL_HEIGHT,
-    PORTAL_WRONG_AXIS = static_cast<int>(PortalError::PORTAL_WRONG_AXIS)
+    PORTAL_WRONG_SIZE = static_cast<int>(PortalError::PORTAL_WRONG_SIZE)
 };
 
-/* The horizontal direction of the portal on the X or Z axis */
+/* The horizontal direction of the portal (on the X or Z axis) */
 enum class PortalDirection {
-    PORTAL_POS_X,
-    PORTAL_NEG_X,
-    PORTAL_POS_Z,
-    PORTAL_NEG_Z,
+    PORTAL_X_AXIS,
+    PORTAL_Z_AXIS,
     PORTAL_WRONG_DIRECTION = static_cast<int>(PortalError::PORTAL_WRONG_DIRECTION)
 };
 
@@ -121,8 +119,8 @@ private:
     Position _pos; /**< The position of the fire block created by the Flint&Steel */
     PortalIgnition _ignitedBlock; /**< The side of the alleged frame the ignited block is located */
     Position _bottomLeftCorner; /**< The position of the bottom-left block under the inner frame (used for calculations) */
-    PortalDirection _direction; /**< The horizontal direction of the portal (POS_X, NEG_X, POS_Z, NEG_Z) */
-    Vector2<int> _size; /**< The size of the portal {PORTAL_WIDTH, PORTAL_HEIGHT} */
+    PortalDirection _direction; /**< The horizontal direction of the portal (X or Z) */
+    Vector2<int> _size; /**< The size of the inner part of the portal {PORTAL_WIDTH, PORTAL_HEIGHT} */
 };
 
 #endif // CUBICSERVER_GENERATION_PLAYER_CONSTRUCTIONS_NETHER_PORTAL_HPP
