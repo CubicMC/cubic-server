@@ -1,3 +1,5 @@
+#include <algorithm>
+
 #include "Pool.hpp"
 
 thread_pool::Pool::Pool(size_t nbThreads, const std::string &name, const Behavior &behavior):
