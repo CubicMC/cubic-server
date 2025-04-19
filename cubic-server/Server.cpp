@@ -14,7 +14,10 @@
 
 #include <mbedtls/rsa.h>
 
+#if PROMETHEUS_SUPPORT == 1
 #include "PrometheusExporter.hpp"
+#endif
+
 #include "Server.hpp"
 #include "World.hpp"
 
