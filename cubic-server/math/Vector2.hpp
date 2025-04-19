@@ -126,7 +126,7 @@ public:
         return *this;
     }
 
-    constexpr Vector2 operator%(const Vector2 &other) noexcept { return Vector2<T>(other.x % this->x, other.z % this->y, other.z % this->z); }
+    constexpr Vector2 operator%(const Vector2 &other) noexcept { return Vector2<T>(other.x % this->x, other.z % this->z); }
 
     constexpr Vector2 operator%(const T &other) noexcept { return Vector2<T>(other % this->x, other % this->z); }
 
