@@ -4,6 +4,7 @@
 //=============
 // STD includes
 //=============
+#include <algorithm>
 #include <atomic>
 #include <climits>
 #include <cstdint>
